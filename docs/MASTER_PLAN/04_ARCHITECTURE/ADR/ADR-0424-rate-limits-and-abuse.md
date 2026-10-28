@@ -64,3 +64,13 @@ BE-0 fixes `clientIp` with `IYNK_TRUST_PROXY` and removes CORS `*` on the remain
 ## Known limitations
 
 Counters reset on restart (except usage). Limits are per process. The /64 grouping can lump unrelated IPv6 users of one provider into one key. Thresholds are PROPOSAL values to confirm in RA-08.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-18 | Added the enrolment-code row below. The file had none. |
+
+| Code | Shape | Strike rule |
+|---|---|---|
+| Enrolment code, typed fallback | 12 Crockford base32 characters (60 bits), valid 24 h, one use, hashed over canonical bytes (RECONCILIATION RC-18) | UNKNOWN. No strike rule is decided here or in BE 6.3 line 239. Until it is set, the typed form falls under the default per-address and per-device limits of the route registry. To decide in RA-08. |

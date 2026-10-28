@@ -1,6 +1,6 @@
 # ADR-0012: Offline application shell with an explicit update flow
 
-Status: Decided, 2026-10-27: a hand-written service worker. Detail ADR: ADR-0406 (FRONTEND 10), which wins where the two differ. Author: system architecture seat.
+Status: proposed, 2026-10-27: a hand-written service worker. Detail ADR: ADR-0406 (FRONTEND 10), which wins where the two differ. Author: system architecture seat.
 Upstream: D-015, D-011; R-040, BUD-05, BUD-15; F-094; Next PWA guide (DOCUMENTED, names Serwist for service-worker caching).
 Downstream: `SYSTEM_ARCHITECTURE.md` 12.3; AR-01, AR-19.
 
@@ -60,3 +60,9 @@ CORE with the local store (X4). Test with the network off (AR-01) and across a d
 ## Known limitations
 
 Safari and mobile browsers may evict Cache Storage; the app then falls back to the network and says so. iOS behaviour is UNKNOWN (no device). Cache size is not budgeted yet.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-62 | Status line changed from "Decided, 2026-10-27" to "proposed, 2026-10-27". Status words are `proposed`, `accepted` (only Amar accepts), `superseded`, `pointer`, `pending RS-xx`. The precedence line (ADR-0406 wins on implementation) was already present and is unchanged. |

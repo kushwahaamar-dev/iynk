@@ -2,7 +2,7 @@
 
 Status: specification for the build, written 2026-10-27 for BRIEF section 10 (and the 20.3 fidelity registry, the 19.3 execution-placement question).
 Author role: simulation architecture team. Output of one workflow step; later passes fold in spike results that were still running.
-ADR range used: ADR-0300 to ADR-0315. Each is a full twelve-field file in [`ADR/`](ADR/) (`ADR/ADR-0300-*.md` to `ADR/ADR-0315-*.md`). ADR-0306 is a pointer to ADR-0013, the single record of the compile decision.
+ADR range used: ADR-0300 to ADR-0315. Each is a file following the ADR template (required fields in ADR/README rule 3) in [`ADR/`](ADR/) (`ADR/ADR-0300-*.md` to `ADR/ADR-0315-*.md`). ADR-0306 is a pointer to ADR-0013, the single record of the compile decision.
 
 ## 0. How to read this file
 
@@ -31,9 +31,9 @@ Downstream: the ADRs in sections 1 and 20 (ADR-0300 to ADR-0315); features F-038
 | ADR-0301 | One simulation clock: integer nanoseconds (`SimTime`), no wall-clock reads in any engine, a fixed order of events inside one timestamp. CPU engines keep their own cycle counters and convert with an exact rational rate. | `clock.ts` is microseconds as a float today; DET-5 | Decided |
 | ADR-0302 | Four fidelity tiers T0 to T3 plus a separate "bench-checked" mark that is never named "validated". A project shows one tier per layer and a summary equal to the lowest. | D-007, council/fidelity.md section 7 | Decided |
 | ADR-0303 | Determinism classes: B (bit-exact), N (numerically reproducible to a stated tolerance), D (display only). A deterministic math module `dmath` replaces `Math.sin/cos/atan2/exp/log/pow` on replay-critical paths if a cross-engine test passes. | A12: raw state drifts by 1 ulp across Node, Chromium, WebKit; RS-13 | Decided; adoption of `dmath` PENDING its own cross-browser test (SA-12) |
-| ADR-0304 | Circuit solver: keep the MNA core, extract it as a pure module with a convergence flag, then add Newton devices and transient. ngspice WASM is an oracle and an on-demand "analyse" button, not the live engine. | RS-08 (a): 20 of 20 matched, 10 of 20 against realistic models; (b) not run | Extraction decided; transient engine PENDING RS-08(b) and RS-07 |
+| ADR-0304 | Circuit solver: keep the MNA core, extract it as a pure module with a convergence flag, then add Newton devices and transient. ngspice WASM is an oracle and an on-demand "analyse" button, not the live engine. | RS-08 (a): 20 of 20 matched, 10 of 20 against realistic models; (b) not run | Extraction and Newton devices decided and buildable now (`08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md`). Live transient backend stays open: RS-08(b) was not run and RS-07 has no report. Build the `AnalogBackend` interface and a Fidelity-phase transient-fidelity task (section 7.4) |
 | ADR-0305 | MCU execution: the TypeScript interpreters stay the default path (T1). avr8js runs compiled Uno and Nano firmware as an opt-in mode in the worker (T3). rp2040js is a test oracle only in the first release. ESP32, STM32, Uno R4, Pi stay T1 or T0 and say so. | RS-03 PASS (desktop), RS-06 FAIL on CPU clause | Decided; avr8js device speed INCONCLUSIVE |
-| ADR-0306 | Compile path for real firmware: decided in `ADR-0013` (the only record). This number is kept so existing citations resolve. | RS-04, RS-05, RS-17 have no verdict | PENDING RS-04, RS-05, RS-17 (see ADR-0013) |
+| ADR-0306 | Compile path for real firmware: decided in `ADR-0013` (the only record). This number is kept so existing citations resolve. | RS-04, RS-05, RS-17 never ran. RS-03 measured a laptop compile (1.17 to 1.40 s cold, 0.33 to 0.56 s warm) and the arduino-cli licence (GPL-3.0) | First release ships import-hex plus the `CompileService` slot; local `arduino-cli` on the user's own server is the reversible option (ADR-0013). RS-04, RS-05, RS-17 not run |
 | ADR-0307 | Peripheral buses are first-class models (I2C, SPI, UART, 1-Wire, PWM capture). A device is data plus an optional behaviour registered by id. No silent stubs: an unmodelled call returns a named "not modelled yet" diagnostic. | interp D4, R-109 | Decided |
 | ADR-0308 | Rigid-body physics: Rapier deterministic build in the simulation worker behind a `PhysicsBackend` interface; Jolt stays the named fallback. The engine version is pinned in every replay record. | RS-13 PASS on determinism and speed, size undecided | Decided with a reversible interface |
 | ADR-0309 | Flight dynamics: split `sim.ts` by craft class, keep the existing model as the labelled "flight game" (`flight-game@1`, T1), add a 6-DoF rigid-body model (`multirotor-rigid@1`) with a rotor ODE, rate-loop and IMU models as a second backend. A craft has one thrust source. | B3-09, B3-10, B3-11; DRONE ADR-0710 to ADR-0712 | Split decided; 6-DoF validation PENDING RS-14 |
@@ -53,7 +53,7 @@ The decisions are binding and this file follows them. These are the places where
 1. **DET-2 as written is ambiguous and, for raw state, false today.** DET-2 asks for "identical hashes" in Chromium and WebKit. A12 measured that the 100 sampled `frameOf` hashes were equal in all three engines, but the raw simulation state differed from step 12 (Chromium) or step 1 (WebKit), because `Math.sin`, `cos`, `atan2` and `exp` differ in the last bit between engines (`TECHNICAL_DEBT.md` A12, VERIFIED, one macOS arm64 machine, Firefox not run). The requirement must say which hash. This file defines three classes (ADR-0303) and asks DET-2 to name one per test.
 2. **REF-1 does not say which device model the 2 percent applies to.** RS-08 passes 20 of 20 when ngspice is given the solver's own piecewise-linear devices ("matched"), and 10 of 20 against ordinary exponential LED, diode and generic transistor models ("realistic", 6 of them off by more than 10 percent, worst 229.6 percent on a saturated 2N2222). The independent check corrected the spike verdict to "linear solve PASS, device-model fidelity FAIL, transient INCONCLUSIVE". REF-1 should name the flavour. Here the T1 gate uses "matched" and the T2 gate uses "realistic" with per-family tolerances (section 7.3).
 3. **D-010 says the cause id list is closed; R-119 says cause ids are open strings.** Both cannot hold. Faults on user circuits (R-124) and custom parts (F-101) need new causes. This file treats the list as a registry with a closed core set shipped by the project and open extension ids (`x-` prefix), and asks the product documents to say the same.
-4. **BUD-07 and R-100 assume a cost per tick that holds only for catalogue-sized circuits.** The measured solve is 0.04 ms on the largest of 79 catalogue circuits (14 nodes) and 0.088 ms in Node; dense elimination alone is 1.2 ms at n = 240 (RS-08). A 500-part project with an analog part count in the hundreds can leave that regime. The plan keeps the 1 ms per tick line but adds component partitioning and factorisation reuse (section 7.2) and a measured gate (SA-07), instead of assuming it.
+4. **BUD-07 and R-100 assume a cost per tick that holds only for catalogue-sized circuits.** The measured solve is 0.04 ms on the largest circuit in the fault corpus (`tests/fixtures/fault-corpus/` `clean/` and `broken/`; 14 nodes) and 0.088 ms in Node; dense elimination alone is 1.2 ms at n = 240 (RS-08). A 500-part project with an analog part count in the hundreds can leave that regime. The plan keeps the 1 ms per tick line but adds component partitioning and factorisation reuse (section 7.2) and a measured gate (SA-07), instead of assuming it.
 5. **R-102 and BUD-07 speed lines were measured on one laptop.** avr8js ran at 6.1 to 7.5 times real time on an Apple M4 Pro, but the throttled main-thread proxy gave about 1.7 times at 4x and 1.1 times at 6x (RS-03; Workers cannot be throttled over CDP, so no throttled Worker number exists). rp2040js ran at 0.54 to 0.79 times on the same laptop. A "3 times real time on a Chromebook" line cannot be promised; this file makes slower-than-real-time a first-class, visible state (section 6.8).
 
 ## 3. The layer model
@@ -161,7 +161,7 @@ Rules:
 | NodeMCU (ESP8266) | interpreter | T1 | none | logic | Wi-Fi stack | no maintained engine |
 | Raspberry Pi Pico, W, 2 | TypeScript MicroPython subset | T1 | rp2040js with stock MicroPython: test oracle only (REF-7) | pin, ADC, I2C (stub or model), Timer on the virtual clock | `machine.SPI`, `UART`, PIO, `json`, `os`; Pico 2 (RP2350) has no engine | RS-06: all four features work but 0.54 to 0.79 times real time on an M4 Pro |
 | Nucleo F401RE | interpreter, "HAL level" | T1 | none | logic | every peripheral register, DMA | no engine |
-| micro:bit V2 | TypeScript micro:bit runtime | T1 | none at first release | 5x5 matrix, buttons, radio mock | nRF52833 peripherals | self-hosted Foundation simulator is PENDING RS-18 |
+| micro:bit V2 | TypeScript micro:bit runtime | T1 | none at first release | 5x5 matrix, buttons, radio mock | nRF52833 peripherals | a self-hosted Foundation simulator stays undecided: RS-18 never ran, so the TypeScript runtime is the only path |
 | Raspberry Pi 4, 5 | TypeScript Python with `gpiozero`, `rclpy` mocks | T1 | none | GPIO API shapes | No operating system, no kernel, no DDS: labelled "Raspberry Pi API mock, not a Raspberry Pi OS" | BRIEF 10.2 |
 | Basys 3, DE10-Lite | TypeScript Verilog 2-state cycle simulator | T1 | Inspect mode: Yosys elaboration plus DigitalJS netlist view (a view, not a simulation tier) | clocked synchronous designs in a 32-bit subset | 4-state, delays, `function`, `generate`, memories, timing, bitstreams | RS-12: 10 of 10 reference designs elaborate; DigitalJS needs init patching |
 
@@ -200,11 +200,11 @@ Rules:
 
 | Engine | Spike result (cited) | Decision | What would reverse it |
 |---|---|---|---|
-| avr8js 0.21.1, MIT | RS-03: serial text equal on 80 of 80 lines; duty within 0.4 points over 53 samples; blink period within 0.14 ms; 6.1 to 7.5 times real time on an M4 Pro in Node, Chromium and WebKit; main-thread throttle proxy 1.7 times at 4x and 1.1 times at 6x; phone and Chromebook not tested (INCONCLUSIVE on devices) | Adopt as the opt-in T3 mode for Uno and Nano. The interpreter stays the default and the instant path. The mode shows "running slower than real time" when it is | A real Chromebook run below 1 times real time on the lesson set, or an adapter cost above 4 person-weeks, demotes the mode to desktop-only. REF-2 stays in CI either way |
+| avr8js 0.21.1, MIT | RS-03: serial text equal on 80 of 80 lines; duty within 0.4 points over 53 samples; blink period within 0.14 ms; 6.1 to 7.5 times real time on an M4 Pro in Node, Chromium and WebKit; main-thread throttle proxy 1.7 times at 4x and 1.1 times at 6x; phone and Chromebook not tested. INCONCLUSIVE overall; the independent check reads the throttled result (1.7 times at 4x against a 3 times pass line) as likely not met on low-end devices | Adopt as the opt-in T3 mode for Uno and Nano. The interpreter stays the default and the instant path. The mode shows "running slower than real time" when it is | A real Chromebook run below 1 times real time on the lesson set, or an adapter cost above 4 person-weeks, demotes the mode to desktop-only. REF-2 stays in CI either way |
 | rp2040js 1.4.1, MIT | RS-06: boot to REPL in 15.1 ms simulated; blink, ADC, LittleFS (after a 30-line flash hook) and I2C (after a GPIO-level model for `scan`) work; 0.54 to 0.79 times real time, 100 percent of one core, 0.13 to 0.19 times under 4x to 6x throttle; Pass clause "under 60 percent of a core" missed | Not a user mode in the first release. Used as a differential oracle for the Pico interpreter (REF-7) | Profiling shows an idle-skip hook on MicroPython's poll loop is possible (core was idle-waiting 4 percent of instructions, so the opportunity is untested) and a throttled run reaches 1 times real time |
 | In-house MNA versus ngspice-45.2 (via `eecircuit-engine` 1.9.0) | RS-08 (a): matched models 20 of 20 within 2 percent, worst 0.26 percent; 60 random resistor networks 0 mismatches; realistic models 10 of 20 within 2 percent; largest catalogue circuit 0.45 ms per solve at 6x throttle. (b) transient not run | Keep and extract the MNA core; add Newton devices for T2; ngspice is the oracle and an on-demand analysis | RS-08(b) fail (more than 1 percent from ngspice or over 16 ms per frame) sends transient to ngspice for user-visible waveforms, as `TECHNICAL_RESEARCH.md` section 6 says |
 | Yosys 0.70 (YoWASP 0.71.188-dev.1267) plus DigitalJS 0.14.2 | RS-12: 10 of 10 reference designs elaborate; 13 to 29 ms warm; 12.5 MB over the wire with Brotli q9 (79.7 MB raw); 662 to 725 MB renderer memory; DigitalJS needed hand-patched initial values to match on the blink design and is about 50 times slower than the interpreter | Inspect mode only, on request, desktop first, refused when `navigator.deviceMemory` reports 4 GB or less and never loaded without an explicit click when the property is undefined (Safari, Firefox; section 8.6, R-110). The TypeScript simulator keeps running tests | A real-device run showing the memory fails on mainstream machines removes it from the client; a server-side Yosys run in the compile process is the fallback |
-| Rapier 0.21.0 deterministic build (Apache-2.0) | RS-13: identical 16-hex-digit snapshot hash after 10,000 steps in Node, Chromium and WebKit, also under 4x and 6x throttle; 20 bodies in 0.07 to 0.09 ms per step (0.44 to 0.54 ms at 6x); first step stalls 24 to 27 ms; split build about 0.88 MB brotli | Default physics backend. Jolt 1.1.1 (0.61 MB brotli, no first-step stall) stays behind the same interface | Firefox or x86-64 hash mismatch; a size budget below 0.88 MB |
+| Rapier 0.21.0 deterministic build (Apache-2.0) | RS-13 hash: identical 16-hex-digit snapshot hash after 10,000 steps in Node, Chromium and WebKit, also under 4x and 6x throttle, measured on the single-file compat build and on one CPU architecture; the split build was hashed in Node only; Chromium, WebKit, Firefox and x86-64 hashes for the split build are open (ROB RA-01, RA-02). Step 0.07 to 0.09 ms at 20 bodies (0.44 to 0.54 ms at 6x); first step stalls 24 to 27 ms. Size is a separate, self-proposed result: split build about 0.88 MB brotli, single-file compat build 1.20 MB (over the 1.0 MB budget) | Rapier, split build only, behind `PhysicsBackend`, lazy-loaded in a Worker. Jolt 1.1.1 (0.61 MB brotli, no first-step stall) stays behind the same interface and is used only if ROB RA-01 fails | A split-build hash mismatch in RA-01 or RA-02 (Chromium, WebKit, Firefox, x86-64); a size budget below 0.88 MB |
 
 ### 4.4 User-facing honesty labels
 
@@ -249,7 +249,7 @@ Rules:
 
 1. `parseQuantity(text, dimension)` returns `{ ok: true, value } | { ok: false, reason }`. It accepts SI prefixes `p n u m k M G`, the micro sign, and the "4k7" and "2R2" forms. It rejects NaN, infinity and out-of-range values with a message that names the field. This closes B3-03, where `calc` returns Infinity for `mah = 0` (`src/lib/drone/calc.ts:151-230`, VERIFIED).
 2. Tolerance is data: `{ nominal: number; tol?: { kind: 'pct' | 'abs'; value: number }; dist?: 'uniform' | 'normal3' }`. A run has `toleranceMode: 'nominal' | 'seeded' | 'corners'`. `seeded` draws each part's value once at load from stream `tol:<partId>` (section 6.5). `corners` solves the 2^k extreme combinations for at most k = 6 parts and reports a band; more parts fall back to seeded Monte Carlo with 32 draws.
-3. Identifiers are open strings (`PartId`, `NetId`, `PinRef = { part: PartId; pin: string }`), validated by length (at most 64 characters) and a character set (`[A-Za-z0-9_.:-]`). Registry ids look like `part:resistor@1`, `model:led.pwl@1`, `engine:mna-dc@1`.
+3. Identifiers are open strings (`PartId`, `NetId`, `PinRef = { part: PartId; pin: string }`), validated by length (at most 64 characters) and a character set (`[A-Za-z0-9_.:-]`). Registry ids look like `part:resistor@1`, `model:led.pwl@1`, `engine:mna-dc@1.0.0`.
 
 ### 5.2 The netlist the simulator consumes
 
@@ -283,7 +283,7 @@ export interface SimSettings {
 
 Today the same information is `MD.circuits[id]` compiled into a figure page (`bench.js:479`, `bench-bb.js:136`) and `WorldInput.pins` per lesson (`interp.md`). The catalogue converter (F-077) turns each of the 38 catalogue items into a `SimNetlist`; REF-3 uses them as the regression corpus.
 
-**Model id format (stated once).** A model id is `[<namespace>:]<name>@<major>`, for example `model:led.pwl@1`, `engine:avr@1`, `flight-game@1`, `multirotor-rigid@1`. The id is the registry key (16.2), the value of `FlightModel.id`, and the key in `ReplayRecord.versions.models`. The full semver of that model is the value: `versions.models['multirotor-rigid@1'] = '1.0.0'`. The major in the id changes only when older replay records can no longer be replayed; a minor or patch change changes the value only. The two flight models carry no namespace because DRONE 5.3 already stores `flight-game@1` and `multirotor-rigid@1` in the project document (`DroneData.flight.model`). DRONE 11.1 must write the key with the `@1` (`versions.models['multirotor-rigid@1']`), not the bare name. The registry build rejects a key that has no `@<major>` (16.3 rule 6).
+**Model id format (stated once).** A model id is `[<namespace>:]<name>@<major>`, for example `model:led.pwl@1`, `flight-game@1`, `multirotor-rigid@1`. The id is the registry key (16.2), the value of `FlightModel.id`, and the key in `ReplayRecord.versions.models`. The full semver of that model is the value: `versions.models['multirotor-rigid@1'] = '1.0.0'`. The major in the id changes only when older replay records can no longer be replayed; a minor or patch change changes the value only. The two flight models carry no namespace because DRONE 5.3 already stores `flight-game@1` and `multirotor-rigid@1` in the project document (`DroneData.flight.model`). Model ids are `<name>@<major>`; engine ids (`engine:<name>@<semver>`, for example `engine:avr@1.0.0`) are a separate namespace with the full semver in the id, and their versions are recorded under `ReplayRecord.versions`, not `versions.models`. The registry build rejects a key that has no `@<major>` (16.3 rule 6).
 
 ### 5.3 Domain classification of nets
 
@@ -678,7 +678,7 @@ Design points:
 2. **Partition and reuse.** The analog graph is split into connected components. Each component keeps its own matrix and LU factors. A component is re-solved only when one of its sources, switches, parameters or faults changed (dirty flag). For a fixed step and a linear component the LU is computed once per topology and step size and each step is a forward and back substitution, O(n squared). Dense LU is used up to 150 unknowns, a sparse LU above that. The 150 threshold is the shape Falstad's engine uses (TECHNICAL_RESEARCH D2, source read), and RS-08 measured dense elimination at 1.2 ms for n = 240 (no reuse), so n up to 150 is comfortable; the sparse LU is own code written from textbooks (Falstad is GPL-2.0-or-later and is never copied). Effort for the sparse path is not estimated by any source (UNKNOWN); it is deferred until a real project exceeds 150 analog unknowns (SA-07 measures where that happens).
 3. **State names are an enum.** The `meas[partId]` strings chosen by `if` chains (`ok`, `off`, `open`, `reverse`, `burnt`, `clamp`, `block`, `linear`, `on`, `hot`, `overdrive`, `spike`, `stall`, `over`, `jitter`, `bench-solve.js:303-345`) become a closed `DeviceState` set with the same words, so figures and tests keep working.
 4. **Per-board pin model.** `rOutOhms` and `maxAmps` come from the board descriptor. Today `PIN_R = 25` ohm applies to every board, including 3.3 V ARM, ESP and FPGA pins (defect 3 of `figure-engine.md`), and the per-board `pinMaxMa` (Uno 40, R4 8, Pico 12, micro:bit 5, `profiles.ts`) is never read by the solver. The first descriptor keeps 25 ohm for AVR boards ("typical AVR pin figure", no datasheet citation in the file) and copies it to the other boards flagged `assumption: copied from AVR, not sourced`, so the registry shows it honestly (UNKNOWN true values). The `maxAmps` limit raises the `pin-overcurrent` diagnostic.
-5. **Backward compatibility.** `mode: 'pwl'` reproduces the present numbers. The extraction acceptance is: on all 79 catalogue circuits and the 20 RS-08 circuits, every node voltage and branch current equals the old solver's within 1e-9 relative (SA-02). Only then does a catalogue figure switch to the new module (`PRODUCT_REQUIREMENTS.md` line 394). The 126 figure-engine tests, 16 of them in `bench-solve.test.mjs`, become the first regression corpus.
+5. **Backward compatibility.** `mode: 'pwl'` reproduces the present numbers. The extraction acceptance is: on all circuits of the `clean/` corpus (`tests/fixtures/fault-corpus/clean/`) and the 20 RS-08 circuits (a separate set, named as such), every node voltage and branch current equals the old solver's within 1e-9 relative (SA-02). Only then does a catalogue figure switch to the new module (`PRODUCT_REQUIREMENTS.md` line 394). The 126 figure-engine tests, 16 of them in `bench-solve.test.mjs`, become the first regression corpus.
 
 ### 7.3 Accuracy gates
 
@@ -705,7 +705,7 @@ Method: trapezoidal companion models. A capacitor becomes a conductance `2C/h` i
 
 Events that fall between grid steps (a pin edge at 2,500,125 ns with a 1 us grid): the solver takes a short step to the event time (backward Euler), applies the change, then returns to the grid. This depends only on state and event times, so it is deterministic. The factorisation for a short step is not cached.
 
-**Backends and the reversible decision (PENDING RS-08(b) and RS-07).** The orchestrator talks to `AnalogBackend`, not to a specific solver:
+**Backends and the reversible decision (transient backend open: RS-08(b) was not run, RS-07 has no report).** The orchestrator talks to `AnalogBackend`, not to a specific solver:
 
 ```ts
 export interface AnalogBackend {
@@ -862,7 +862,7 @@ Disposition: extend (audit `interp.md` recommendation). Changes in order of valu
 
 ### 8.4 avr8js firmware mode (T3), design
 
-Engine: `engine:avr@1` wrapping avr8js 0.21.1 (MIT), one instance per MCU, in the simulation worker.
+Engine: `engine:avr@1.0.0` wrapping avr8js 0.21.1 (MIT), one instance per MCU, in the simulation worker.
 
 | Concern | Design | Evidence |
 |---|---|---|
@@ -875,14 +875,16 @@ Engine: `engine:avr@1` wrapping avr8js 0.21.1 (MIT), one instance per MCU, in th
 | Serial | USART0 byte callback produces timestamped bytes; baud timing comes from the peripheral | RS-03: 80 of 80 lines equal; avr8js lines drift up to 25.3 ms late over 4 s because the real loop costs about 50.27 ms |
 | I2C, SPI | avr8js TWI and SPI peripherals expose event handlers; a `BusPort` adapter turns them into bus transactions on the models of section 9 | RS-03: "TWI peripheral exists, models need bridging"; not built |
 | Not bound at first release | Timer capture inputs, analog comparator, external interrupts on parts that have no model | listed in the "What it models" panel as "not modelled yet" |
-| Speed | Node 6.1 to 6.5 times real time with listeners (about 100 million AVR cycles per wall second on one M4 Pro core); Chromium Worker 7.3 to 7.5; WebKit 7.0 to 7.3; main-thread throttle proxy 1.6 to 1.8 at 4x and 1.1 to 1.2 at 6x | RS-03 and its independent check |
+| Speed | Node 6.1 to 6.5 times real time with listeners (about 100 million AVR cycles per wall second on one M4 Pro core); Chromium Worker 7.3 to 7.5; WebKit 7.0 to 7.3; main-thread throttle proxy 1.6 to 1.8 at 4x and 1.1 to 1.2 at 6x | RS-03 and its independent check, which says the throttled numbers are below the 3 times pass line and likely not met on low-end devices (INCONCLUSIVE overall) |
 | Effort | Adapter 2 to 4 person-weeks; I2C and SPI device models 2 to 3 more | `TECHNICAL_RESEARCH.md` D1, ESTIMATED by the dossier |
 
 Differential gate (REF-2, class B for serial text, class N for duty): `blink`, `motor`, `knob` equal serial text, duty within 2 percent, toggle period within one PWM period. The same three sketches become the first SA-14 corpus.
 
 Unknowns, stated: avr8js state serialisation (section 6.7), phone and Chromebook speed (RS-03 had neither), behaviour of `Servo`, `tone`, `pulseIn`, interrupts and I2C against the interpreter (RS-03 tested default lesson parameters only).
 
-### 8.5 Compile paths (ADR-0013, PENDING RS-04, RS-05, RS-17)
+**Decision from the spikes (RS-08 REPORT, its independent check).** The interface above is built in the first Fidelity-phase task. The in-house engine gets trapezoidal transient behind it. A transient-fidelity task then runs RC, RLC and buck waveforms against ngspice at a 1 microsecond step and times the solve at 4x and 6x CPU throttle on the build machine, which is the RS-08(b) and RS-07 question. Until that task reports, the live transient backend is not claimed: `mna-inhouse` reports `capabilities.transient = false` and waveforms come from `ngspice-batch` ("Analyse"). What would change it: the in-house engine within 1 percent and under 16 ms per frame turns `transient` on and keeps ngspice as the oracle; a miss keeps ngspice for waveforms. A phone or Chromebook run is work only a person can do (For Amar, Q-2, `docs/device-results.md`).
+
+### 8.5 Compile paths (ADR-0013; RS-04, RS-05, RS-17 never ran)
 
 Real firmware needs a hex. The decision is not made; the options and the rule are. The one decision record is `ADR/ADR-0013-compile-service-deployment-shape.md`; ADR-0306 and ADR-0427 point to it, and the limits below (1 GiB, 30 s, 1 MiB output) are the single limit set until RS-05 reports.
 
@@ -892,7 +894,7 @@ Real firmware needs a hex. The decision is not made; the options and the rule ar
 | B. `browser-avr-gcc-wasm` | avr-gcc compiled to WASM, in the browser | `horang-corp/avr-gcc-wasm`: 0.62 to 1.09 s for 24 to 38 KB firmware in Chrome (the author's own table); tools 16 to 17 MB, prebuilt objects about 38 MB; 3 stars, no licence file found | GCC is GPL-3.0 with a runtime exception; shipping it means offering source; unlicensed wrapper |
 | C. `import-hex` | the user compiles elsewhere and imports a `.hex` (and optionally the `.elf`) | always available | none |
 
-Decision rule (`TECHNICAL_RESEARCH.md` section 6, RS-04): pass if p95 click-to-running is under 3 s warm and under 8 s cold on a 4G phone with no licence blocker; fail if either path is over 15 s cold or a licence blocker appears. Until then the first release ships option C and the `CompileService` interface:
+Decision rule (`TECHNICAL_RESEARCH.md` section 6, RS-04): pass if p95 click-to-running is under 3 s warm and under 8 s cold on a 4G phone with no licence blocker; fail if either path is over 15 s cold or a licence blocker appears. Under D-015 the 4G-phone clause and RS-05's managed-sandbox cost assume users this self-hosted app does not have, so the agent-doable check is a local compile timing on the build machine (RS-03 above is the first data point), run as a task in the export and physical-build phase. Choosing the licence route is For Amar. Until then the first release ships option C and the `CompileService` interface:
 
 ```ts
 export interface CompileRequest { fqbn: string; files: { path: string; text: string }[]; libraries: LibraryRef[]; debug: boolean }
@@ -907,7 +909,7 @@ export interface CompileResult {
 export interface CompileService { compile(r: CompileRequest, signal: AbortSignal): Promise<CompileResult> }
 ```
 
-If option A is chosen the server compile process runs only on the user's own server (BRIEF 19.3: no arbitrary computation in an unrestricted shared runtime), in a rootless container or an `nsjail`-class sandbox with: no network, wall limit 30 s (the RS-05 pass line is a median under 30 s), memory limit 1 GiB, output limit 1 MiB, source limit 256 KiB and 32 files, a vendored library allowlist (no downloads at compile time), and a cache key of `sha256(files + fqbn + library versions + toolchain version)`. The server holds no user accounts; the device token of F-005 rate-limits it.
+If option A is chosen the server compile process runs only on the user's own server (BRIEF 19.3: no arbitrary computation in an unrestricted shared runtime), in the ADR-0013 fourth compose service (no network, read-only root, tmpfs workdir) with: no network, wall limit 30 s (the RS-05 pass line is a median under 30 s), memory limit 1 GiB, output limit 1 MiB, source limit 256 KiB and 32 files, a vendored library allowlist (no downloads at compile time), and a cache key of `sha256(files + fqbn + library versions + toolchain version)`. The server holds no user accounts; the device token of F-005 rate-limits it.
 
 `debug: true` adds `-g` and `-Og` through arduino-cli build properties; arduino-cli inserts `#line` directives so DWARF line tables refer to `.ino` lines (EXTERNAL knowledge, verified by SA-15).
 
@@ -919,7 +921,7 @@ If option A is chosen the server compile process runs only on the user's own ser
 | Yosys 0.70 (YoWASP) plus DigitalJS 0.14.2 | "Inspect" mode: elaboration, netlist view, gate counts, a lint step (`default_nettype none`, because Yosys silently makes undeclared names into implicit wires while the interpreter reports them). Not a simulation tier. On request only; shows the 12.5 MB (Brotli q9; 79.7 MB raw) size; memory gate below; runs in its own Worker (662 to 725 MB renderer memory, 853 to 917 MB total, measured in Chromium). Needs WebAssembly exception handling with `exnref` (Chromium 156 and WebKit 27.2 ran it; Node 24.8 needed `--experimental-wasm-exnref`; Firefox not run) | RS-12 |
 | DigitalJS as a simulator | Not used for checks. It matched the counter design on all 12,000 cycles but the blink design only after hand-patching initial values, bits it never drives show `x`, and it is about 50 times slower (1.1 s vs 21 ms; 8.9 s vs 38 ms) | RS-12 |
 | rp2040js | Oracle in CI (REF-7), section 4.3 | RS-06 |
-| micro:bit Foundation simulator | Not in the first release: PENDING RS-18 | |
+| micro:bit Foundation simulator | Not built; undecided because RS-18 never ran. The TypeScript runtime stays the only path | |
 | Pyodide with a GPIO shim | Not in the first release: 9.6 MB WASM (3.5 MB gzip) plus 2.5 MB stdlib (EXTERNAL); it would give CPython semantics, not hardware; F-050 is "could" | |
 | Espressif QEMU, Renode | Not used (RS-19 not run); revisit only if a server-side oracle for ESP32 blink is wanted | |
 
@@ -1278,9 +1280,9 @@ Equations of the rigid-body model (form only; parameter values come from part de
 5. **Craft and course as data.** `createSim(craft, course, calc, opts)` already takes plain objects (`sim.ts:103`). The only producer is `flightOf(content)` and it needs a catalogue `DroneContent` and the static `DRONES` palette (`registry.ts:164, 260`). A `craftFromProject(doc)` producer is added so a user-built drone flies without the registry (B3-12).
 6. **Calculator input validation.** `calc` rejects non-finite and out-of-range inputs with a named field (B3-03); this is the same `parseQuantity` of section 5.1.
 
-### 11.3 Validation: PENDING RS-14
+### 11.3 Validation: RS-14 never ran (fidelity label undecided)
 
-No RS-14 folder exists. The decision rule from `TECHNICAL_RESEARCH.md` section 6 is: pass if the TypeScript model is within 15 percent of PX4 SIH on rise time and overshoot for 3 craft, and (RS-14b) PX4 SIH runs under 50 percent of one shared vCPU for 30 minutes. The design keeps the choice reversible: `FlightModel` is an interface, so a PX4 SIH or ArduPilot SITL process behind a socket could be a third implementation on the user's own server (D-015 forbids a hosted service) without touching the UI. Until RS-14 reports, the rigid-body model is labelled T1 "Rigid-body teaching model, not checked against flight-controller firmware", and the flight game stays the default.
+No RS-14 folder exists. The decision rule from `TECHNICAL_RESEARCH.md` section 6 is: pass if the TypeScript model is within 15 percent of PX4 SIH on rise time and overshoot for 3 craft, and (RS-14b) PX4 SIH runs under 50 percent of one shared vCPU for 30 minutes. The design keeps the choice reversible: `FlightModel` is an interface, so a PX4 SIH or ArduPilot SITL process behind a socket could be a third implementation on the user's own server (D-015 forbids a hosted service) without touching the UI. Under D-014 and D-015 the agent-doable part is an offline PX4 SIH comparison of 3 craft, run as a Drone-phase task; the shared-vCPU clause (RS-14b) assumes a hosted service and is kept only as a local timing. Until that reports, the rigid-body model is labelled T1 "Rigid-body teaching model, not checked against flight-controller firmware", and the flight game stays the default.
 
 Server-verified lap times are not needed among friends (F-075 is "later"); the replay record of section 6.7 makes it possible (the sim is pure TypeScript with no DOM; A12 notes the server's Node and the player's browser already differ in the last bit, which is why class N exists and why `dmath` is adopted).
 
@@ -1366,6 +1368,30 @@ The four kinds added for the robotics and drone files:
 | `sensor` | `mode` `dropout` stops new samples and marks the reading invalid; `stuck` holds the last good value; `bias` adds `magnitude` in the sensor's unit; `noise` multiplies the noise sigma by `magnitude` (default 10, which is DRONE's `noise-x10`). `atNs` and optional `durationNs` are integer `SimTime`; at load the orchestrator expands the op into a start input at `atNs` and, if `durationNs` is given, an end input at `atNs + durationNs` | DRONE `sensorFailures`, a gyro dropout, GPS loss |
 | `swap-phase` | `motor` is a motor slot or component id; reverses the rotation direction of a three-phase motor whose phases are not nets, so `swap` of two `PinRef`s cannot express it | DRONE "motor direction reversed" |
 
+**Stored `Fault.kind` to `FaultOp` (RC-45).** The project `Fault.kind` enum (`schemas/project.schema.json`) says what a person broke; `FaultOp` says what the solver does. The loader turns each stored fault into one or more ops. The schema enum gains `param`, `mount`, `sensor` and `swap-phase` (RC-45; the schema file is owned elsewhere).
+
+| Stored `Fault.kind` | `FaultOp` kind | How |
+|---|---|---|
+| `reverse-polarity` | `polarity` | on the part |
+| `reversed-part` | `polarity` for a polarised part; `swap` of two pins for a part without polarity (an IC turned round) | |
+| `short` | `short` | `a`, `b`, `ohms` from `params` |
+| `overcurrent` | `short` | a low `ohms` across the load |
+| `missing-part` | `open` | one op per pin of the part |
+| `open-wire` | `open` | the wire's pin |
+| `floating-input` | `open` | the input pin |
+| `wrong-connection` | `swap` | pin-level: swaps the nets of two `PinRef`s |
+| `cold-solder` | `cold-joint` | `onFraction`, `periodNs` from `params` |
+| `stuck-level` | `stuck` | `level` from `params` |
+| `boot-strap` | `stuck` | the strapping pin held at the wrong level |
+| `wrong-value` | `value` | `param`, `factor` |
+| `wrong-voltage`, `brownout` | `value` | on the supply part's voltage (`setSupply`) |
+| `level-mismatch` | `value` | on the supply of one side of the interface |
+| `thermal` | `param` | thermal path or ambient |
+| `config` | `code-pin` | `file`, `line`, `from`, `to` |
+| `param`, `mount`, `sensor`, `swap-phase` | the same name | as in the table above |
+
+PROPOSAL for the rows that need a choice of target (`overcurrent`, `boot-strap`, `level-mismatch`, `thermal`); the rest follow from the op's meaning.
+
 Where these live. `param` and `mount` faults change the simulator's working copy of the netlist or scene when applied at P0 as inputs; they never edit the stored document by themselves. They are also written as project operations (a merge patch on the domain for `param`, `mech.set` for `mount`) only when a person injects them from the UI. A fault that arrives from a schedule (a drone course's `sensorFailures`, a lesson's scripted fault) is an input only. Times are integer `SimTime`: a document that stores seconds (`at_s`) is converted once, at load, with `round(at_s * 1e9)`, so floats never enter the clock. This reuses what the present code has: `Run.coldJoint(pin, cold)` and `setSupply(volts)` (`run.ts:56-86`) become two fault kinds; the 144 board failures and 106 bench faults of the catalogue become `FaultOp` lists (F-017, F-058). Faults on user circuits use the same ops (F-029, F-030).
 
 ### 13.3 Failure records with derivation (BRIEF 10.4)
@@ -1417,7 +1443,7 @@ Columns. "Seat" names the architecture file that owns the detector text and the 
 
 | cause_id | Detector | Layer | Seat | Replaces |
 |---|---|---|---|---|
-| `led-no-series-resistor` | solve: LED peak current above rating (113 mA through a 20 mA part, VERIFIED C010) | L4 | SIM | |
+| `led-no-series-resistor` | solve: LED peak current above rating (RS-08: 117.65 mA solver, 114.46 mA realistic; the value shown is computed) | L4 | SIM | |
 | `led-reversed` | solve: LED reverse biased with no current while the anode net is high | L4 | SIM | |
 | `output-contention` | digital resolve: two strong drivers disagree | L3 | SIM | |
 | `supply-shorted-to-ground` | solve: current at the source above its limit with a node pair at 0 V | L4 | SIM | |
@@ -1463,13 +1489,13 @@ Columns. "Seat" names the architecture file that owns the detector text and the 
 | `link-lost` | receiver link-loss event (a `sensor` fault on the receiver) | L8, L9 | DRN | |
 | `sensor-drift` | estimator error against truth grows beyond the bound because of gyro, accelerometer or barometer bias or noise | L8, L9 | DRN | |
 
-Forty-five ids (the second review pass added `library-not-modelled`): 18 core electrical plus that one, 12 added from ROB, 14 added from DRN, with `motor-direction-reversed` shared by ROB and DRN (counted once) and the two brownout names merged into `battery-sag-reset`. `brownout` stays as the generic detector (the supply crossed the MCU minimum); `battery-sag-reset` is the more specific cause that follows a motor start. `sensor-saturated` (reading pinned at the end of its range) and `sensor-drift` (bias or noise grows) are different concepts and both stay. Extension ids (custom parts, F-101) carry the prefix `x-`.
+Forty-five ids (the second review pass added `library-not-modelled`): 18 core electrical plus that one, 12 added from ROB, 14 added from DRN, with `motor-direction-reversed` shared by ROB and DRN (counted once) and the two brownout names merged into `battery-sag-reset`. `brownout` stays as the generic detector (the supply crossed the MCU minimum); `battery-sag-reset` is the more specific cause that follows a motor start. `sensor-saturated` (reading pinned at the end of its range) and `sensor-drift` (bias or noise grows) are different concepts and both stay. Extension ids (custom parts, F-101) carry the prefix `x-`. Part-local ids not in this table must start with `x-`; the registry build rejects any other unknown id.
 
-Each id has a symptom text key and a three-step hint ladder (D-010), and each row's detector is tested by the seat that owns it. Downstream edits required in the other two files: replace ROBOTICS 13's table and DRONE 10's id list by a pointer to this table, rename `motor-direction-wrong` to `motor-direction-reversed`, and use `battery-sag-reset` for both brownout names.
+Each id has a symptom text key and a three-step hint ladder (D-010), and each row's detector is tested by the seat that owns it. ROBOTICS 13 and DRONE 10 point here and keep no list of their own.
 
 **Symptom ids for an I2C device that does not answer.** `i2c-no-ack` is the symptom when an address phase gets no ACK. It is paired with a cause by evidence: `swapped-pins` when the code-plus-netlist rule above matches, `i2c-missing-pullup` when SDA or SCL has no resistor to supply (the bus then reads low or floats, reported as `stuck-low` in the evidence), `part-not-powered` when the device supply is below its minimum, `wrong-value` when the sketch address differs from the wired `SDO` level. Both lines idle high with their 4.7 kOhm pull-ups in the swapped case; neither is stuck low, so the evidence says NACK and names the nets, not a stuck line.
 
-The static rule set (F-028, R-123) runs in the editor without a solve using the same ids; the solved detectors confirm and add evidence. The target for the generic rules on the catalogue is the F-029 line: zero false alarms on the 79 catalogue circuits and 18 of 20 deliberate faults found.
+The static rule set (F-028, R-123) runs in the editor without a solve using the same ids; the solved detectors confirm and add evidence. The target for the generic rules on the catalogue is the F-029 line: zero false alarms on the `clean/` corpus and at least 18 of the 20 files in `broken/` caught, with at least 8 distinct rules (`tests/fixtures/fault-corpus/`; EDU 6.6 owns the corpus). The 20 RS-08 circuits are a different set and are not the broken corpus.
 
 ### 13.5 Degradation
 
@@ -1570,7 +1596,7 @@ An oracle is an independent implementation that answers the same question. Tests
 | Verilator or Icarus (server or developer machine only, never shipped) | Verilog subset | the 10 reference designs | B per clock cycle | not started. Icarus is GPL-2.0, Verilator LGPL-3.0 or Artistic-2.0; developer-side use only, licence handling is D-017's problem |
 | DigitalJS (via Yosys) | Verilog subset | counter, blink | B per cycle after initial-value patching | counter 12,000 cycles zero mismatches, blink matched only with patched initial values (RS-12) |
 | Rapier (Firefox, x86-64) | itself across runtimes | RS-13 scene | B (hash) | arm64 Node, Chromium, WebKit equal (RS-13); others not run |
-| PX4 SIH | rigid-body flight model | 3 craft step response | within 15 percent on rise time and overshoot | PENDING RS-14 |
+| PX4 SIH | rigid-body flight model | 3 craft step response | within 15 percent on rise time and overshoot | RS-14 never ran; Drone-phase offline task |
 | Real board and bench instruments | LED, divider, transistor switch, 10 faults on an Uno; 24 circuits later | F-183, F-184 | the registry stores the error table | not started (zero hardware-oracle tests exist; 15 of 1,677 declared tests transcribe a datasheet fact by hand, `TEST_COVERAGE.md`) |
 
 ### 15.3 Golden corpora and what they are for
@@ -1578,7 +1604,7 @@ An oracle is an independent implementation that answers the same question. Tests
 | Corpus | Size | Use |
 |---|---|---|
 | Lesson reference runs | 102 (74 Arduino, 10 MicroPython, 8 Python, 10 Verilog); the starter fails at least one check in 102 of 102 | regression of interpreters; replay records |
-| Catalogue circuits | 79 circuits (median 2 parts, max 9) | solver extraction (G-T1) |
+| Catalogue circuits | the `clean/` corpus (median 2 parts, max 9; ESTIMATED from the catalogue) | solver extraction (G-T1) |
 | Catalogue items as projects | 38 | REF-3: the converter output must reproduce pin behaviour and check results |
 | RS-08 circuits | 20 plus 60 random | oracle gate |
 | Flight scenarios | the 60,000-step `fixed` and `lcg` scenarios of A12 | cross-engine class N/B tests |
@@ -1621,7 +1647,7 @@ export interface RangeSpec { quantity: string; min: number; max: number; unit: s
 export interface PerfRecord { benchId: string; metric: string; value: number; unit: string; machine: string; load?: string; date: string; label: 'MEASURED' | 'ESTIMATED' }
 
 export interface FidelityEntry {
-  id: string;                                 // "engine:mna-dc-pwl@1"
+  id: string;                                 // "engine:mna-dc-pwl@1.0.0"
   version: string;                            // semver of the model
   kind: 'engine' | 'part-model' | 'failure-model' | 'runtime' | 'device' | 'bus' | 'sensor' | 'environment' | 'rule';
   title: string;
@@ -1668,7 +1694,7 @@ Values are taken from the audit and the spikes; where a source does not exist th
 
 ```json
 {
-  "id": "engine:mna-dc-pwl@1",
+  "id": "engine:mna-dc-pwl@1.0.0",
   "version": "1.0.0",
   "kind": "engine",
   "title": "DC nodal solver, piecewise-linear devices",
@@ -1708,7 +1734,7 @@ Values are taken from the audit and the spikes; where a source does not exist th
     { "name": "worst node or branch error vs matched ngspice", "value": 0.26, "unit": "percent", "condition": "20 circuits, motor conductance stopping rule" }
   ],
   "operatingRange": [
-    { "quantity": "analog nodes", "min": 2, "max": 14, "unit": "nodes", "evidence": "largest of 79 catalogue circuits has 14 nodes" }
+    { "quantity": "analog nodes", "min": 2, "max": 14, "unit": "nodes", "evidence": "largest circuit in tests/fixtures/fault-corpus/ (clean/ and broken/) has 14 nodes" }
   ],
   "knownFailureCases": [
     "Exits after 40 junction rounds or 6 motor passes without a flag (bench-solve.js:213, 264)",
@@ -1865,8 +1891,8 @@ Values are taken from the audit and the spikes; where a source does not exist th
 | `model:flight.faults-scripted@1` | T0 | named scripted outcomes | everything physical | magic constants | none |
 | `multirotor-rigid@1` (planned) | T1 | 6-DoF rigid body, rotor ODE, battery with sag, rate-loop controller, gyro, accelerometer, barometer, GPS, complementary filter | EKF, ground effect beyond the stated form, turbulence spectra, notch and RPM filters | unsourced defaults flagged `assumption` (DRONE 6.1, 9.1) | PENDING RS-14; hover and step tests in DRONE 15 |
 | `model:motor.dc-cycle@1` (planned) | T1 | brushed DC motor with gearbox, closed form per PWM cycle, slow, fast and coast decay, bridge drop | motor heating, brush wear, cogging, gear friction nonlinearity, backlash | per-part `mechanics.motor` blocks; unsourced until each descriptor cites a datasheet | ROBOTICS RA-10: within 1 percent of a 5 microsecond reference in six cases (prototype 0.14 to 0.52 percent) |
-| `rule:static-electrical@1` | T1 | F-028 static checks | circuits with unmodelled parts | rule text | target: zero false alarms on 79 circuits |
-| `engine:avr8js@1` (planned) | T3 | AVR CPU, Timer0/1/2, ports, USART, ADC, TWI, SPI, EEPROM, watchdog | peripherals the adapter does not bind | n/a | RS-03 differential pass on 3 sketches; device speed INCONCLUSIVE |
+| `rule:static-electrical@1` | T1 | F-028 static checks | circuits with unmodelled parts | rule text | target: zero false alarms on the `clean/` corpus |
+| `engine:avr@1.0.0` (planned, wraps avr8js 0.21.1) | T3 | AVR CPU, Timer0/1/2, ports, USART, ADC, TWI, SPI, EEPROM, watchdog | peripherals the adapter does not bind | n/a | RS-03 differential pass on 3 sketches; device speed INCONCLUSIVE |
 | `engine:rapier-deterministic@0.21.0` (planned) | engine, no tier alone | rigid bodies, joints, contacts | n/a | n/a | RS-13 hash equal on 3 runtimes, arm64 only |
 
 ## 17. Where execution happens (BRIEF 19.3)
@@ -1880,7 +1906,7 @@ Costs are the numbers measured in the spikes and audit (one Apple M4 Pro unless 
 | Interpreter live run | today (`boardlab/engine.ts:164`) | yes | n/a | no | no | **SimWorker** | about 15M statements/s in Node; Uno blink 10 s virtual in 3 to 13 ms; busy loop 62 ms wall per virtual second; at the 400,000-statement cap one step is about 27 ms (ESTIMATED), over a 16.7 ms frame, so the main thread is the wrong place |
 | Check runs | no | already (`check.worker.ts`) | n/a | optional re-run (F-132) | no | **Worker** | 102 reference runs sum 27.8 s unloaded, 60.6 s loaded; Verilog median 867 ms; slowest content (ESP32 web lessons) 2.3 to 2.7 s unloaded, 17.3 s loaded |
 | DC solve | no | yes | n/a | no | no | **SimWorker** | 0.04 to 0.09 ms largest catalogue circuit; 0.446 ms at 6x |
-| Transient (in-house) | no | yes | n/a | no | no | **SimWorker**, PENDING RS-08(b) | rule: under 16 ms per frame on a phone |
+| Transient (in-house) | no | yes | n/a | no | no | **SimWorker**, backend open (RS-08(b) not run; reversible behind `AnalogBackend`, 7.4) | rule: under 16 ms per frame on a phone |
 | ngspice batch | no | own Worker | yes | no | no | **AnalysisWorker, on request** | 20.3 MB JS, 5.7 MB gzip, 349 ms start, RC step 34 ms, rectifier 23 ms, buck 28,208 points in 159 ms (dossier TESTED) |
 | avr8js | no | yes | JS | no | no | **SimWorker, opt-in** | 6.1 to 7.5 times real time; throttled main-thread proxy 1.1 to 1.7 times |
 | rp2040js | no | possible | JS | CI only | no | **CI (Node)** | 0.54 to 0.79 times real time, 100 percent of a core; 0.13 to 0.19 times throttled |
@@ -1888,7 +1914,7 @@ Costs are the numbers measured in the spikes and audit (one Apple M4 Pro unless 
 | Rapier | no | yes | yes | no | no | **SimWorker** | 0.07 to 0.09 ms per step at 20 bodies; 0.44 to 0.54 ms at 6x; 0.88 MB wire |
 | Flight sim | today | yes | n/a | optional SITL later | no | **SimWorker** | 0.5 to 0.63 microseconds per step |
 | Figure drawing (SVG iframes) | yes | no | no | no | no | main thread | P1: 48 to 65 percent of one core idle on lab pages (`PERFORMANCE_BASELINE.md`); a cost the simulation must not add to |
-| Sketch compile | no | no | possible (option B) | **option A**, isolated | no | PENDING RS-04, RS-05, RS-17 | laptop: 0.33 to 1.4 s |
+| Sketch compile | no | no | possible (option B) | **option A**, isolated | no | option C first; A reversible (ADR-0013); RS-04, RS-05, RS-17 never ran | laptop: 0.33 to 1.4 s |
 | GPU compute | no | no | no | no | no | **none** | no workload needs it; WebGPU is off by default in Firefox desktop through version 161 (EXTERNAL, TECHNICAL_RESEARCH F8) |
 | Persistent service | n/a | n/a | n/a | relay: orders operations, moves hashes, never simulates | no | **relay only** | D-015, section 17.4 |
 
@@ -1992,10 +2018,10 @@ Each criterion is a test with a number. "Class" is from section 6.9.
 | ID | Criterion | Class and threshold | Links |
 |---|---|---|---|
 | SA-01 | Worker equivalence: all 102 lesson reference runs produce the same `RunTrace` in the worker as in-thread; starters still fail at least one check (102 of 102) | B | R-041, R-043 |
-| SA-02 | Extraction: new solver in `pwl` mode equals the old on 79 catalogue circuits and the 20 RS-08 circuits, every quantity within 1e-9 relative | N | G-T1, REF-3 |
+| SA-02 | Extraction: new solver in `pwl` mode equals the old on the `clean/` corpus and the 20 RS-08 circuits, every quantity within 1e-9 relative | N | G-T1, REF-3 |
 | SA-03 | Linear T2: 60 random networks and C01 to C05, C18, C19 within 1e-6 of ngspice | N | G-T2 linear |
 | SA-04 | Convergence: three constructed non-convergent circuits report `no-convergence` with the worst net; zero silent exits across the corpus | n/a | G-conv, R-099 |
-| SA-05 | Transient: RC, RLC and buck within 1 percent of ngspice at 1 microsecond and under 16 ms per frame on the throttled target; otherwise the backend rule of section 7.4 applies | N | R-105; PENDING RS-08(b), RS-07 |
+| SA-05 | Transient: RC, RLC and buck within 1 percent of ngspice at 1 microsecond and under 16 ms per frame on the throttled target; otherwise the backend rule of section 7.4 applies | N | R-105; backend open: RS-08(b) not run, RS-07 no report; the Fidelity-phase transient-fidelity task runs it |
 | SA-06 | Ten runs, same seed: identical serial text and pin-trace hash | B | DET-1 |
 | SA-07 | Largest catalogue circuit under 1 ms per tick at 4x throttle; a synthetic 150-node mixed circuit measured and recorded, and the value that triggers the sparse path is written down | n/a | R-100, BUD-07 |
 | SA-08 | Phase order: pin write and the resulting node voltage carry one timestamp in `dc-event` mode; permuting same-rank engine registration changes no hash | B | section 5.5 |
@@ -2103,7 +2129,7 @@ export interface Diagnostic {
 export type SolveDiagnostic = Diagnostic;   // ref.net or ref.part always set
 export interface LoadResult { ok: boolean; diagnostics: Diagnostic[]; models: string[]; analog?: LoadReport }   // at most 1,000 diagnostics; more are cut with 'diagnostics-truncated'
 export interface Engine {
-  readonly id: string;                // 'engine:avr@1', 'sim/mech'
+  readonly id: string;                // 'engine:avr@1.0.0', 'sim/mech'
   readonly rank: number;              // the table of 5.5
   nextDue(): SimTime | null;
   advanceTo(horizon: SimTime, budget: SliceBudget): { reached: SimTime; stoppedEarly: boolean };
@@ -2235,7 +2261,7 @@ One entry per review issue. "Applied" means the text of this file changed; other
 | 5 | Motor coupling contradicts ROBOTICS | Applied. 7.2 defines `MotorElectrical {r_ohm, l_henry, ke_vs_per_rad, j_kgm2, b_nms_per_rad, i0_a, gear, decay, vdrop_v}` and adds PWM mode `'cycle'`, the default for motor loads. 5.6 now has one "Motor coupling rules" block: cycle form for chopped drive, the "L/R below two steps" rule only as the DC fallback, and the stability criterion `h * c < 2` (load rejects at `h * c >= 1`, RB-E-COUPLING) stated once. The coupling table rows, 5.7, 10.4, 7.8 and 4.2 follow. RA-10 and RA-12 are cited. ROBOTICS 6.1 calls the no-load current `i_noload_a`; this file uses `i0_a` as the issue specified, and the loader maps one to the other. |
 | 6 | Flight rotor model contradicts DRONE | Applied. 11.2 now takes `kT` from the single thrust source (ADR-0710) and models the rotor as the ODE of DRONE 7.1, with the first-order lag only as a fallback labelled "assumed time constant". The 6.3 row is changed to match and points to DRONE 7.1. |
 | 7 | Flight model ids disagree | Applied. `flight-game@1` and `multirotor-rigid@1` are used in 11.2, in the 16.5 registry entry 4 (id changed from `model:flight.game@1`) and in ADR-0309 (sections 1 and 20). 5.2 defines the id format once: `<name>@<major>` is the id, and `versions.models[<id>]` holds the full semver. 16.3 gets rule 6 (id format check). A row for `multirotor-rigid@1` is added to the compact entries. |
-| 8 | Cause-id registry not reconciled | Applied. 13.4 is now the single registry: 44 ids with detector, layer, seat and "Replaces" columns, and a stated naming rule (kebab-case, noun first, no layer words; eight older core ids keep their modifier-first names). Chosen: `motor-direction-reversed` (replaces `motor-direction-wrong`) and `battery-sag-reset` (replaces `logic-brownout-from-motors` and `battery-sag-brownout`). `brownout` stays as the generic detector. `sensor-saturated` and `sensor-drift` are different concepts (pinned at range end versus growing bias or noise), so both stay and the text says so. Detector wording for the DRONE ids is taken from DRONE 8.1 (DB-C-01 to DB-C-11) and DRONE 10; the three estimator and fault ids (`fc-orientation-wrong`, `motor-out`, `controller-oscillation`) have detector text written here from DRONE 10, and DRONE should confirm it. |
+| 8 | Cause-id registry not reconciled | Applied. 13.4 is now the single registry: 45 ids with detector, layer, seat and "Replaces" columns, and a stated naming rule (kebab-case, noun first, no layer words; eight older core ids keep their modifier-first names). Chosen: `motor-direction-reversed` (replaces `motor-direction-wrong`) and `battery-sag-reset` (replaces `logic-brownout-from-motors` and `battery-sag-brownout`). `brownout` stays as the generic detector. `sensor-saturated` and `sensor-drift` are different concepts (pinned at range end versus growing bias or noise), so both stay and the text says so. Detector wording for the DRONE ids is taken from DRONE 8.1 (DB-C-01 to DB-C-11) and DRONE 10; the three estimator and fault ids (`fc-orientation-wrong`, `motor-out`, `controller-oscillation`) have detector text written here from DRONE 10, and DRONE should confirm it. |
 | 9 | `FaultOp` cannot express other files' faults | Applied. 13.2 adds `param`, `mount`, `sensor` (with integer `atNs`, `durationNs`) and `swap-phase`, the semantics of each, the conversion of `at_s` to integer nanoseconds at load, and the rule that `param` and `mount` faults are inputs at P0 and become project ops only when a person injects them. `value` is `number | string` in `param` so `prop_spin` can be expressed. The existing `value` kind stays for part parameters. |
 | 10 | `ReplayRecord` lacks physics fields | Applied. 6.7 adds `physics?`, `flight?`, and the format `'<pkg>@<semver>+sha256:<hex>'` for `versions.rapier` and `versions.avr8js`. The physics block uses the name `combine`, as in the issue; ROBOTICS 17 calls it `combine_rules` and should be aligned. `physics.step_hz` duplicates `settings.mech.stepRate` as an integer, so the text says the writer derives both from one source. |
 | 11 | No rank for the ROS graph | Applied. `ros 35` added after `mcu 30`; the P2 row says it also runs ROS timers and callbacks; 5.5 states that publish-to-subscribe delivery is same-timestamp, next `seq`; a coupling row and `sim/ros` in the package map follow. |
@@ -2246,11 +2272,7 @@ One entry per review issue. "Applied" means the text of this file changed; other
 | 16 | `deviceMemory` rule untestable | Applied. 8.6 has a four-case gate (4 or less refuses, above 4 asks, undefined asks, never auto-loads); 4.3, 17.1 rule 4 match; WebKit and Firefox memory are marked UNKNOWN (and listed in 21); SA-21 added. The 662 to 725 MB renderer and 853 to 917 MB whole-browser figures were re-read in RS-12 (report lines 88 to 102; WebKit memory was not measured). |
 | 17 | No caps on imported programs | Applied. 8.8 adds rows for hex, ELF, DWARF, parse time and parser failure with the caps from the issue and named errors; SA-22 (1,000-file fuzz corpus, under 2 s each) added and placed in slice SIM-6. The line-length cap of 523 characters and the section-header cap of 16 program headers are derived here (the first from the Intel HEX record format, the second a chosen limit), not from the issue. |
 
-Downstream edits that other files' owners must make so the set is consistent (not done here, because this pass edits only this file):
-
-1. ROBOTICS 13: replace the cause-id table by a pointer to SIM 13.4; ROBOTICS 4.4 rule 1: list statics first; ROBOTICS 17: rename `combine_rules` to `combine`.
-2. DRONE 10: replace the id list by a pointer to SIM 13.4 and use `motor-direction-reversed` and `battery-sag-reset`; DRONE 11.1: write `versions.models['multirotor-rigid@1'] = '1.0.0'`.
-3. ROBOTICS 6.1 and SIM 7.2 should agree on `i_noload_a` versus `i0_a` (loader mapping, or rename one).
+Still open from this pass: ROBOTICS 6.1 calls the no-load current `i_noload_a` and section 7.2 here calls it `i0_a`; the loader maps one to the other. ROBOTICS 13 and DRONE 10 now point to 13.4, ROBOTICS 4.4 lists statics first and ROBOTICS 17 uses `combine`, and DRONE 11.1 writes `versions.models['multirotor-rigid@1']`, so the other downstream edits are done.
 
 
 ## Review fixes (2026-10-27), second pass
@@ -2262,7 +2284,40 @@ Downstream edits that other files' owners must make so the set is consistent (no
 
 Findings made while fixing, for other owners:
 
-1. `schemas/examples/env-monitor-esp32.project.json` uses fault `cause: "sda-scl-swapped"`, which is not in the cause-id registry of 13.4 and would fail the registry build (16.3). The registry id is `swapped-pins`. PROJECT_DATA_MODEL and the example need the rename (or an `x-` id).
-2. `SYSTEM_ARCHITECTURE.md` lines 163 and 633 still say "PROPOSAL 512 MB, 1 CPU" for the compile service. They should read 1 GiB, 1 CPU, 30 s (ADR-0013).
+1. APPLIED (renamed to `cause_id: swapped-pins`; RC-44). `schemas/examples/env-monitor-esp32.project.json` used fault `cause: "sda-scl-swapped"`, which is not in the cause-id registry of 13.4 and would fail the registry build (16.3). The registry id is `swapped-pins`. PROJECT_DATA_MODEL and the example need the rename (or an `x-` id).
+2. APPLIED (SYSTEM_ARCHITECTURE lines 163 and 638 say 1 GiB; RC-44). `SYSTEM_ARCHITECTURE.md` lines 163 and 633 said "PROPOSAL 512 MB, 1 CPU" for the compile service. They should read 1 GiB, 1 CPU, 30 s (ADR-0013).
 3. `ADR/README.md` rows for ADR-0300 to ADR-0315 say "inline"; they should link the new files. `SYSTEM_ARCHITECTURE.md` lines 198-213 have the same "inline" column, and line 324 says ADR-0310 is "inline".
 4. The issue wording "stuck-low/NACK diagnostic" for the swapped bus: with 4.7 kOhm pull-ups on both lines neither line is stuck low, so the diagnosis is a NACK (`i2c-no-ack`, cause `swapped-pins`). `stuck-low` appears as evidence only when a pull-up is missing (13.4). The acceptance test SA-23 asserts the NACK.
+
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-43 | 13.4: one count, 45 rows (counted), stated in the paragraph after the table and in review row 8 (was 44). Added "part-local ids not in this table must start with `x-`". The first-pass "downstream edits required" list is replaced by one open line (`i_noload_a` against `i0_a`); ROBOTICS 13 and DRONE 10 already point to 13.4. |
+| RC-45 | 13.2: table mapping every stored `Fault.kind` to a `FaultOp`; `wrong-connection` maps to a pin-level `swap`. The schema enum change is outside this file. |
+| RC-47 | 13.4 `led-no-series-resistor` row: no hard-coded 113 mA; cites RS-08 (117.65 mA solver, 114.46 mA realistic); the value shown is computed. |
+| RC-48 | 7.1 item 5 (line 681), the 13.5 rule paragraph, the corpus table, the `rule:static-electrical@1` row and SA-02 now cite the `clean/` corpus, not 79; the 20 RS-08 circuits are named as that set. Lines 56 and 1711 (largest circuit has 14 nodes) were left: that figure comes from RS-08, not the fault gate. |
+| RC-52 | Engine table, Rapier row: hash result separated from size result, compat build against split build, one CPU architecture, RA-01 and RA-02 open, Rapier split build default and Jolt only if RA-01 fails (same as SYS 433). |
+| RC-54 | 5.2: model ids `<name>@<major>`; engine ids `engine:<name>@<semver>` are a separate namespace. `engine:avr@1`, `engine:mna-dc@1` and `engine:mna-dc-pwl@1` became `@1.0.0` and `engine:avr8js@1` became `@0.21.1` (no other file cites them). The "DRONE 11.1 must write the key with @1" leftover is deleted; DRONE 11.1 already does. |
+| RS-08 | ADR-0304 row, 7.4 heading and a new decision paragraph, Transient row and SA-05: extraction and Newton devices go ahead; transient backend open (RS-08(b) not run, RS-07 no report); `AnalogBackend` and a Fidelity-phase transient-fidelity task are the plan; `mna-inhouse` does not claim transient until it reports. Device run is For Amar. |
+| RS-04, RS-05, RS-17 | ADR-0306 row, 8.5 heading and rule, registry row: never ran; first release ships import-hex; local arduino-cli is reversible; RS-03 laptop timing quoted; the 4G-phone and managed-sandbox clauses noted as scale assumptions; local compile timing assigned to the export phase; licence choice is For Amar. |
+| RS-14 | 11.3 heading, the 11.3 text and the PX4 SIH row: only two literal PENDING RS-14 strings existed (not four). Offline PX4 SIH comparison is a Drone-phase task; label stays "teaching model, not checked". |
+| RS-18 | 3 (micro:bit row) and 8.7 row: undecided because it never ran; TypeScript runtime only. |
+| RS-03 | Engine table and 8.2 speed row: added the check's reading that the throttled result is likely not met on low-end devices and the overall INCONCLUSIVE. Numbers already matched (6.1 to 7.5 times; 1.6 to 1.8 at 4x). |
+| RS-06 | No change: the Pico row already says test oracle only (REF-7). |
+| RS-01, RS-09, RS-12, RS-13 | No change: not cited as PENDING in this file. |
+| D-014 order | No wording in this file makes Studio wait for interviews, a pilot or Fault Lab (searched). |
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-44 | Findings 1 and 2 at the end of the first reconcile table marked APPLIED (example renamed to `cause_id: swapped-pins`; SYSTEM_ARCHITECTURE 163 and 638 say 1 GiB). |
+| RC-59 | Section 12 compile sandbox line: now "in the ADR-0013 fourth compose service (no network, read-only root, tmpfs workdir)". Limits unchanged. |
+| RC-54 | Engine id form is `engine:<name>@<semver>` everywhere. The AVR engine is `engine:avr@1.0.0` (lines 865, 2132 and the engine table); the table said `engine:avr8js@0.21.1`, now `engine:avr@1.0.0` with avr8js 0.21.1 named as the wrapped library. The RC-54 row above still mentions the old `avr8js@0.21.1` rename as history. DRONE and ROBOTICS model-key text matches SIM 6.7: VERIFIED. |
+| RC-63 | Line 5 no longer says "twelve-field"; it points to ADR/README rule 3. The "all twelve BRIEF 19.6 fields" wording at API_CONTRACTS.md line 1023 was not edited here (this task may edit only this file); the owner of that file should add "(see RC-63)". |
+
+## Reconcile, final nits (2026-10-27)
+
+- RC-48: issue 4 (line 56) and the `analog nodes` evidence string (line 1737) no longer say "79 catalogue circuits". They cite the corpus directory `tests/fixtures/fault-corpus/` (`clean/` and `broken/`) instead.

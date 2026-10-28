@@ -73,13 +73,13 @@ is not, and exactly what to do next, in order.
 | 3 strategy | `00_EXECUTIVE/council/*.md` (8 memos), `06_BUSINESS/strategy-options/*.md` (3 strategies, 4 judges), and the orchestrator's `00_EXECUTIVE/DECISION_REGISTER.md` (D-001 to D-011), `06_BUSINESS/POSITIONING.md`, `06_BUSINESS/STARTUP_STRATEGY.md` | `wf_1b6e2ee6-315`, 13:30 to 13:43 CDT, 15 agents, all Sonnet 5.5. Judges: C fault lab 106, B 88, A 85 (of 160). Decision: Fault Lab first, Studio behind a gate, classroom thin. D-002 needs Amar's sign-off because it puts original projects second. |
 | 5b spikes | `08_RESEARCH_SPIKES/` RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13, each with an independent check | `wf_45df4458-c67`, committed b6255ca. Verdicts are in the log entry for 2026-10-27 and in each REPORT.md. |
 | 4-5 design | `03_PRODUCT/` (catalogue F-001 to F-221, prioritization, requirements, journeys, Studio, components, education, buddies, UX) and `04_ARCHITECTURE/` (system, frontend, backend, API with openapi.yaml, realtime, AI, simulation, robotics, drones, data model and component schema with examples, 130+ ADRs) | `wf_94befac0-493`, committed 17d01e2. Cross-document contradictions remain; step 6 reconciles them first. |
+| 6 build plan | `04_ARCHITECTURE/RECONCILIATION.md` (73 decisions), design fixes, and `05_ENGINEERING/` (roadmap, 21 task files, TEST_STRATEGY, RELEASE_GATES, TASK_SPECIFICATIONS) | `wf_46b33d75-c5f` (179 agents) and `wf_bcd561d5-a56` (8 agents for the last 13 leftovers). All Sonnet 5.5. Committed locally. |
 
 ### Not done
 
 | Step | What is missing | Why |
 |---|---|---|
-| 6 | Reconcile the design documents, fold in the spike results, then `05_ENGINEERING/` as the build plan: IMPLEMENTATION_ROADMAP (core-first build phases), TASK_SPECIFICATIONS, `tasks/*.md`, TEST_STRATEGY, RELEASE_GATES, and `04_ARCHITECTURE/RECONCILIATION.md` | `scripts/workflows/master-plan-buildplan.js`, running as `wf_46b33d75-c5f` (task w6jipdt6x) since 2026-10-27 about 16:35 CDT. If it stops, relaunch with `resumeFromRunId` (same session) or rerun it whole; it is safe to rerun. |
-| Build | B0 foundation, project core, Studio editor, collaboration with buddies, fidelity, faults, components, labs moved in, AI partner, robotics, drones, export | D-012 and D-014. One workflow per build phase on local branch `build/v1`; stop after each for Amar's OK. Never deploy or push without his OK. |
+| Build | 21 build phases B0 to B20 in `05_ENGINEERING/IMPLEMENTATION_ROADMAP.md`; 678 task cards in `05_ENGINEERING/tasks/B*.md`, indexed in `TASK_SPECIFICATIONS.md` (build order in its section 4) | **Waiting for Amar.** Start B0 only when he says "okay, pass to go and build". One workflow per build phase on local branch `build/v1`, one commit per task, stop after each phase for his OK. Never push or deploy. |
 | Dropped | Rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files, executive summary | Amar, 2026-10-27 (D-012): he wants the product built, not a business and handoff pack. |
 
 ### What we already know (so step 3 starts with context)
@@ -252,3 +252,11 @@ next agent knows where you stopped, and add a line to the log below.
   back and forth). The build-plan script now normalises paths, gives schemas plus examples to one owner, and starts
   with a Reconcile phase: seven sweeps, one arbiter writing `04_ARCHITECTURE/RECONCILIATION.md`, one fixer per file,
   a verify round and a second fix round. Fixer leftovers are in `~/iynk-master-plan-scratch/design/review-leftovers.md`.
+- 2026-10-27 20:00 CDT: build-plan step done (`wf_46b33d75-c5f`, 179 agents, all Sonnet 5.5, no errors). Reconcile found
+  101 disagreements; the arbiter made 73 decisions (RECONCILIATION.md), fixers edited 57 files, a verify round found 119
+  leftovers, a second round fixed most; 13 small ones went to `wf_bcd561d5-a56`. Roadmap: 21 build phases (B0 to B20).
+  Orchestrator checks: 678 task cards, all in the index, no duplicate ids, none over 5 source files, every npm script a
+  task runs exists or is added by an earlier task. D-018 to D-021 in the register were written by a design-review agent
+  labelled as the orchestrator's; the orchestrator reviewed and adopted them and corrected the label. Orchestrator calls:
+  health checks at root and /v1; a server restart invalidates list cursors.
+- 2026-10-27: everything up to the build is done. Waiting for Amar's "okay, pass to go and build" before B0.

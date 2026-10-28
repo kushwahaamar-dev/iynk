@@ -15,7 +15,7 @@ Decisions in one table. Full records are in section 21.
 | ADR-0850 | Keep the paper and ink identity. Two registers: the **Plate** register (chrome, lessons, figures, hand-inked, grain) and the **Bench** register (the Studio canvas: flat, no filter, no grain, ink outline). The canvas stays a light paper plate in both themes. | 4 |
 | ADR-0851 | Tokens are CSS custom properties in three layers (primitive, semantic, component), still declared in `globals.css` under Tailwind v4 `@theme`. A CI script reads the declared pairs and fails on a contrast miss. | 5 |
 | ADR-0852 | Beginner, intermediate and advanced are a per-viewer **level** that changes defaults and promotion, never data and never reachability. The command palette lists everything at every level. | 8 |
-| ADR-0853 | The canvas has a parallel DOM **structure tree** (part list, pin list, net list). Every canvas action has a list-based path. Wiring without drag is the pin picker. (Final shape PENDING RS-16.) | 10, 11 |
+| ADR-0853 | The canvas has a parallel DOM **structure tree** (part list, pin list, net list). Every canvas action has a list-based path. Wiring without drag is the pin picker. (Binding design. The screen-reader pass is a For Amar item, Q-13.) | 10, 11 |
 | ADR-0854 | Language is a layout constraint: logical CSS only, `dir` from a locale table, a glossary file per term, pseudo-locales in CI, six languages kept. RTL is ready, not shipped. | 15 |
 | ADR-0855 | One performance ladder (`full`, `light`, `minimal`) chosen automatically from device signals and overridable. Every visual cost has a rung where it turns off. | 16 |
 | ADR-0856 | One motion contract for CSS and JavaScript, with a flash limit on simulated visuals (at most 3 visible on/off changes per second unless the viewer opts out). | 13 |
@@ -23,7 +23,7 @@ Decisions in one table. Full records are in section 21.
 
 What this file does not do: it does not write per-journey wireframes beyond the shell and the hard cases (section 18 gives states, validation and success criteria per journey and points to the components). It does not choose the canvas renderer (R-053 and RS-01 own that); it only sets what the renderer must draw and expose.
 
-Ids used in this file. `DS-nn` are design rules (stable, local to this file). `UXA-nn` are acceptance checks (section 19). `VI-nn` are audit findings (section 2). Feature ids F-xxx, requirement ids R-xxx, budget ids BUD-xx, accessibility ids ACC-x and journey ids J-01 to J-13 are the shared ones; this file does not create any.
+Ids used in this file. `DS-nn` are design rules (stable, local to this file). `UXA-nn` are acceptance checks (section 19). `VI-nn` are audit findings (section 2). Feature ids F-xxx, requirement ids R-xxx, budget ids BUD-xx, accessibility ids ACC-x and journey ids J-01 to J-17 are the shared ones; this file does not create any.
 
 ## 1. Upstream, downstream and evidence labels
 
@@ -33,11 +33,11 @@ Ids used in this file. `DS-nn` are design rules (stable, local to this file). `U
 | Upstream | Decisions | D-007 honest labels, D-010 diagnosis record, D-011 low-end budgets, D-013 to D-017 |
 | Upstream | Constraints | K-A11Y, K-I18N, K-DEV, K-PERF, K-LOCAL, K-KEY in `PRODUCT_REQUIREMENTS.md` section 4; ACC-1 to ACC-4, BUD-01 to BUD-15 |
 | Upstream | Audit | `01_AUDIT/inventory/shell-i18n.md` (design system, i18n, settings), `01_AUDIT/runs/BROWSER_WALK.md` (phone, i18n, rooms), `01_AUDIT/TEST_COVERAGE.md` (axe coverage) |
-| Upstream | Spikes | RS-01 (render cost, INCONCLUSIVE), RS-09 (op log), RS-13 (physics). RS-16 (editor accessibility) has not been run: every claim about its exit measure is PENDING RS-16 |
+| Upstream | Spikes | RS-01 (render cost, INCONCLUSIVE), RS-09 (op log), RS-13 (physics). RS-16 (editor accessibility) was never run and an agent cannot run it. The design in sections 9.3, 10, 11 and 14 is binding; the screen-reader pass (ACC-4, Q-13, UXA-16) is a For Amar item and does not gate the Studio build. RS-01 caveat: the hand-drawn filter was left out of the test scene, so its numbers assume a filter-free canvas, which is the decision (R-053 rule 3, VI-01) |
 | Downstream features | F-079 canvas, F-080 wiring, F-081 views, F-082 inspector and palette, F-011 tier label, F-171 languages, F-172 review, F-173 English term beside translation, F-176 settings, F-177 WCAG, F-178 phone, F-179 RTL, F-094 offline, F-207 serial, F-053 multimeter, F-054 scope, F-051 replay, F-017 to F-021 diagnosis, F-106 diff card, F-138 buddies | `FEATURE_CATALOGUE.md` |
 | Downstream requirements | R-053 to R-074 (Studio), R-068 (languages), R-070 (WCAG), R-071 (phone), R-058 (non-drag), R-063 (serial), R-065 (tier label) | `PRODUCT_REQUIREMENTS.md` |
-| Journeys | J-01 to J-13 | section 18 |
-| ADRs | ADR-0850 to ADR-0857, the range reserved for this file (the realtime seat owns ADR-0500 to 0511). Flag in section 23 | |
+| Journeys | J-01 to J-17 | section 18 |
+| ADRs | ADR-0850 to ADR-0857, the range this file owns (RC-61 gives UX 0850 to 0859; 0850 to 0857 are used). ADR-0500 to 0511 are realtime, ADR-0800 to 0808 Studio editor, ADR-0810 to 0819 API. Flag in section 23 | |
 
 Evidence labels as in the brief: VERIFIED (I read the code or ran the command), DOCUMENTED (a project file says so), EXTERNAL (a standard or outside source), ESTIMATED (my arithmetic, assumptions shown), HYPOTHESIS (a test is named), UNKNOWN (cannot be checked now). PENDING RS-xx means a spike has no verdict that decides it. No user has been interviewed and no phone, Chromebook or screen reader has been tried, so every claim about those is UNKNOWN and is listed in section 24.
 
@@ -103,7 +103,7 @@ The audit's own note that the dark muted pair was "not computed" (`shell-i18n.md
 
 | ID | Finding | Evidence | Matters for Studio because | Action |
 |---|---|---|---|---|
-| VI-01 | The hand-drawn SVG filter (feTurbulence plus displacement, a 580 KB data URL per figure page) was dropped from the RS-01 test scene. The spike says a filtered 500-part scene is "likely much slower" and the real figures use it | RS-01 REPORT caveats | The identity's most expensive trait cannot be on the canvas | The Bench register is filter-free (section 4). Filter only on chrome and static art. Whether a filter on one hovered part is affordable is UNKNOWN; do not use it until measured |
+| VI-01 | The hand-drawn SVG filter (feTurbulence plus displacement, a 580 KB data URL per figure page) was dropped from the RS-01 test scene. The spike says a filtered 500-part scene is "likely much slower" and the real figures use it | RS-01 REPORT caveats | The identity's most expensive trait cannot be on the canvas | The Bench register is filter-free (section 4). Filter only on chrome and static art. Whether a filter on one hovered part is affordable is UNKNOWN; do not use it until measured. Decided: the RS-01 report (`08_RESEARCH_SPIKES/RS-01-editor-rendering/REPORT.md`) is INCONCLUSIVE and its checker reproduced the 1x numbers, so the numbers hold only for a filter-free canvas; this is carried into R-053 rule 3 |
 | VI-02 | `.ink-hand { filter: url(#ink-hand) }` exists but nothing in `src` renders the `<InkFilters/>` it needs | `globals.css` `.ink-hand`; grep of `src` and `figures/engine` finds only the CSS | Dead style | Delete in B0 (CLAUDE.md step 0) or implement for chrome only |
 | VI-03 | `settings.lofi` is declared, defaulted and parsed, and read nowhere else | `storage.ts:14,35,102`; grep of `src` finds tests only | A "low-fi" switch was meant; the performance ladder (ADR-0855) replaces it | Remove `lofi` and `telemetry` (R-009) from `Settings` in B0; add `level`, `spacing`, `perf`, `announceSerial` (section 5.9) |
 | VI-04 | No `forced-colors` and no `prefers-contrast` rules; the offset shadow carries the card edge | `shell-i18n.md` defect 6 | In Windows High Contrast box-shadow is dropped, so a card edge could vanish | Every raised element also has a real border (it does: 2 px). Add the two media blocks (section 5.8) |
@@ -536,7 +536,7 @@ The pin problem, with arithmetic (ESTIMATED from 96 CSS px per inch, 3.78 px per
 
 ## 10. Placing and wiring without dragging
 
-Requirement basis: WCAG 2.5.7 (a single-pointer alternative to any dragging movement), 2.1.1 (keyboard), 2.5.8, R-058. Status: the design below is complete; whether it passes is **PENDING RS-16** (a keyboard-only and screen-reader pass on a prototype). RS-16's exit measure (place a part and wire two pins with no pointer, targets meeting 2.5.8) is the test (ACC-2).
+Requirement basis: WCAG 2.5.7 (a single-pointer alternative to any dragging movement), 2.1.1 (keyboard), 2.5.8, R-058. Status: the design below is complete; the design is binding and is built as written. RS-16 (a keyboard-only and screen-reader pass on a prototype) was never run and an agent cannot run it. Its exit measure (place a part and wire two pins with no pointer, targets meeting 2.5.8) becomes an agent-run Playwright keyboard test (ACC-2, UXA-10). The screen-reader half (ACC-4, Q-13) is a For Amar item and does not block the build.
 
 ### 10.1 Paths to the same operation
 
@@ -630,7 +630,7 @@ The key bindings live in one place: STUDIO_EDITOR 6.11 is the canonical Studio k
 
 ## 11. Screen readers: structure tree, names, live regions
 
-PENDING RS-16 and ACC-4: no screen reader has been tried (ACC-4 UNKNOWN). The contract below is what the build must provide so the pass can be run.
+RS-16 was never run and ACC-4 is UNKNOWN: no screen reader has been tried. The contract below is binding and is what the build must provide so that Amar can run the screen-reader pass (a For Amar item, Q-13).
 
 ### 11.1 Names and descriptions
 
@@ -739,7 +739,7 @@ BRIEF 18.3 asks to document unsupported interactive simulation controls and equi
 
 | # | Control or output | Criterion at risk | Why the control itself cannot meet it | Equivalent (ships with the control) | Status |
 |---|---|---|---|---|---|
-| 1 | Drag a part, drag a wire | 2.5.7 dragging movements, 2.1.1 keyboard | Drag is the natural gesture and a screen reader cannot perform it | Section 10: palette Enter, nudge, inspector X and Y, PinPicker, tree | Meets with alternative; PENDING RS-16 |
+| 1 | Drag a part, drag a wire | 2.5.7 dragging movements, 2.1.1 keyboard | Drag is the natural gesture and a screen reader cannot perform it | Section 10: palette Enter, nudge, inspector X and Y, PinPicker, tree | Meets with alternative; the keyboard half is a Playwright test (UXA-10), the screen-reader half is For Amar (Q-13) |
 | 2 | Pins smaller than 24 px on the canvas | 2.5.8 target size | 2.54 mm pitch is 9.6 px at 100 percent (section 9.3) | PinPicker (44 px items); wiring zoom floor; spacing exception | Meets with alternative |
 | 3 | Pinch, wheel and two-finger pan | 2.5.1 pointer gestures | Gesture-only | `+`, `-`, `Fit` buttons, arrow keys | Meets |
 | 4 | Potentiometer knob, slider parts, sensor inputs (light, distance, temperature) on the canvas | 2.1.1, 2.5.7 | A rotary drag has no keyboard equivalent | A native `range` input with a visible numeric field and unit in the inspector and the Inputs panel (keyboard arrows, `PageUp`, `PageDown`), values set via `input.set` | Meets |
@@ -1011,6 +1011,10 @@ BRIEF 18.1 asks for flows with exact interaction specifications. This file gives
 | J-11 Import a project or sketch | Import dialog, LossReportDialog | Reading, report, imported | Loss codes list; refuse above the 5 MiB document limit | Report is a table | Imported project opens with a listed set of losses |
 | J-12 Export a physical build package | Build panel, wiring steps, BOM, checklist | Steps generated from the netlist | Power-off and polarity steps always present (F-161) | Numbered list, printable, readable by a screen reader | A person wires the real board from the steps (not yet tested with a person) |
 | J-13 Self-host and invite a buddy | Settings, server status, pairing | Server not set, reachable, unreachable | Paste of a pairing code allowed (3.3.8) | No puzzle, no timeout shorter than 5 minutes (2.2.1) | Buddy joins a room on the self-hosted server (F-198, F-199, F-206) |
+| J-14 Make and use a custom part | Part Maker, PartPalette, Inspector | Beginner mode, raw descriptor, test failing, test passing | Descriptor validated against `component.schema.json`; each failure names the field | Same path rules as J-04 (palette Enter, inspector X and Y); results announced | The new part is placed, wired and simulated in a project (F-101, F-097, F-098, F-096); see USER_JOURNEYS section 20 |
+| J-15 Build and drive an original robot | Robot builder, Checker, arena, trace view | Template robot, Checker pass or fail, running, fault shown | Checker lists each failing rule with the part and a next step | DS-43 applies to motion; drive by keyboard; pause always available | The robot completes an arena task or the Checker names why not; see USER_JOURNEYS section 22 |
+| J-16 Design and fly a drone | Drone builder, Checks, Bench, trace and comparison | Template craft, Checks pass or fail, flying, replay | Checks give numbers with units and a next step | Row 10 of section 14 (real-time flight is a recorded gap); slow motion, pause and autopilot lap | The craft passes the Checks and flies a lap, or the failing check is named; see USER_JOURNEYS section 23 |
+| J-17 Debug a run and replay it | Breakpoint gutter, Variables, step controls, replay controls | Running, paused at breakpoint, stepping, recording, replaying | Breakpoint on a line with no code is moved or refused with a message | Step and resume keys from STUDIO_EDITOR 6.11; Variables is a table | A paused run shows locals with types and a recorded run replays to the same state; see USER_JOURNEYS section 21 |
 
 ## 19. Acceptance checks
 
@@ -1027,13 +1031,13 @@ Checks are the tests a phase gate runs. `UXA-` ids are local. Thresholds that ar
 | UXA-07 | Colour independence pass | Greyscale and three colour-vision matrices: every state is identifiable in the list of section 12 | each phase gate (manual) | 1.4.1 |
 | UXA-08 | Tooltips and popovers | Dismiss with Escape, remain while hovered or focused, do not obscure their own trigger | STUDIO | 1.4.13 |
 | UXA-09 | Target sizes | No interactive element under 24 by 24 CSS px at `compact`, under 44 on a coarse pointer, excluding inline links; the two small landing targets found by the audit are identified and fixed | B0 (landing), STUDIO | 2.5.8, VI-08 |
-| UXA-10 | Keyboard walk (ACC-2) and non-pointer path per op | Place a part, wire two pins, edit a value, edit code, run, save and reopen with no pointer; every op kind the editor exposes has a non-pointer path | STUDIO (PENDING RS-16) | DS-28, R-058 |
+| UXA-10 | Keyboard walk (ACC-2) and non-pointer path per op | Place a part, wire two pins, edit a value, edit code, run, save and reopen with no pointer; every op kind the editor exposes has a non-pointer path | STUDIO (agent-run Playwright test) | DS-28, R-058 |
 | UXA-11 | Flash filter | A 10 Hz LED sketch shows at most 3 visible transitions in any 1 s window with `trueBlinkRate` off | SIM or the first LED model | DS-43 |
 | UXA-12 | Reject-code messages | Every code in the schema's list has `ops.reject.<code>` in all six languages | CORE or STUDIO | DS-10 |
 | UXA-13 | Level invariance | Same edits at the three levels give equal canonical document hashes; every command reachable by the palette at every level | STUDIO | DS-16, DS-17 |
 | UXA-14 | Perf ladder | Forcing `light` and `minimal`: grain, filters and animations are off; BUD-04 at `minimal` under 5 percent at 1x; no information missing (a snapshot diff of the structure tree between rungs is empty) | STUDIO | DS-18, section 16 |
 | UXA-15 | Offline | Studio loads and runs a starter project with the network off after one load (R-040) | CORE | DS-63 |
-| UXA-16 | Screen reader pass (ACC-4) | Recorded once per release with the reader and browser named; findings listed in `docs/accessibility.md`. UNKNOWN until Q-13 is answered | STUDIO gate | ACC-4 |
+| UXA-16 | Screen reader pass (ACC-4) | Recorded once per release with the reader and browser named; findings listed in `docs/accessibility.md`. UNKNOWN until Q-13 is answered | For Amar (Q-13); not a build gate | ACC-4 |
 
 ## 20. Build order and migration of existing UI
 
@@ -1090,11 +1094,11 @@ Preserve, extend or replace per subsystem (BRIEF 3.5), following the audit and `
 
 | | |
 |---|---|
-| Status | Proposed, PENDING RS-16 |
+| Status | Accepted as the design. RS-16 never ran; the screen-reader check is For Amar (Q-13) |
 | Problem | An SVG or Canvas drawing is not operable by keyboard or screen reader; 2.5.7 and 2.5.8 need a non-drag alternative and pins are 9.6 px apart at 100 percent zoom |
 | Options | (A) ARIA on every SVG element. (B) `role="application"` canvas with custom keyboard handling. (C) A DOM tree and a PinPicker that cover every op, with the drawing `aria-hidden` (chosen). (D) Table-only editing |
 | Decision | C |
-| Consequences | The tree and picker are built from the document (one source); each exposed op needs a list path (DS-28); costs a virtualised list of up to 2,000 pins. If RS-16 fails (for example roving focus is not workable with a given screen reader), the fallback is D for that task, exposed as the "Parts and wires" table view |
+| Consequences | The tree and picker are built from the document (one source); each exposed op needs a list path (DS-28); costs a virtualised list of up to 2,000 pins. If the screen-reader pass fails (for example roving focus is not workable with a given screen reader), the fallback is D for that task, exposed as the "Parts and wires" table view |
 
 ### ADR-0854: Language as layout constraint, glossary as data
 
@@ -1146,7 +1150,7 @@ Objections to decided or contracted items, with evidence. The file still follows
 | O-4 | `FEATURE_CATALOGUE.md` F-173 and F-179 (English term beside translation, RTL, both LATER) | RTL is cheaper than the audit assumed (129 logical against 9 physical uses), and the English-beside-term needs the glossary data structure to exist before the strings multiply | Specified both as ready-in-data now (glossary format, `dir` table, lint); shipping stays LATER |
 | O-5 | R-069 and D-007 label vocabulary | The tier T2 label text "Calculated model" and "Teaching model" are fixed in SIMULATION_ARCHITECTURE 4.4, while COMPONENT_SCHEMA Objection 6 and the PRD table use "educational approximation" for T1 | This file uses the SIMULATION_ARCHITECTURE strings, because ADR-0302 and ADR-0310 make the registry the source. The PRD table should be aligned |
 | O-6 | PROJECT_DATA_MODEL `Net.name` is a plain string with no locale | A net name written in Hindi or Arabic needs `lang` and bidi handling for display, and the schema gives no language tag per name | DS-49 and DS-50 render it as written with `<bdi>` and the project's `meta.locale`; no schema change asked. If mixed-language nets are common, add `lang` later (minor bump) |
-| O-7 | D-014 order (accessibility inside STUDIO) | A non-drag wiring path designed after the canvas is cheap to get wrong; RS-16 is unscheduled | Asked in section 23 to run RS-16 before the STUDIO phase builds the canvas interaction layer |
+| O-7 | D-014 order (accessibility inside STUDIO) | A non-drag wiring path designed after the canvas is cheap to get wrong; RS-16 cannot be run by an agent | Resolved: the design is binding and is built into the STUDIO phase as written (D-014 order). The keyboard-only task is an agent-run Playwright test. Only the screen-reader pass waits for Amar (Q-13) and does not hold up the build |
 
 ## 23. Open questions
 
@@ -1154,8 +1158,8 @@ Objections to decided or contracted items, with evidence. The file still follows
 |---|---|---|---|
 | Q-UX-1 | English labels for the levels: "Beginner, Intermediate, Advanced" (the brief's words) or friendlier ones? | Amar | `studio` strings only |
 | Q-UX-2 | Is a dark canvas wanted (needs a dark art set), or does the paper plate in both themes stay? | Amar | ADR-0850 revisit |
-| Q-UX-3 | Does Amar want RS-16 run before the STUDIO canvas work starts (about one week ESTIMATED by the spike plan)? | Amar | DS-28, section 10 final shape |
-| Q-UX-4 | The ADR range 0850 to 0857 is used by this file. Is it still free? | Orchestrator | ADR ids |
+| Q-UX-3 | When will Amar run the screen-reader pass of RS-16 (ACC-4, Q-13) on a built Studio? The build does not wait for it | Amar | UXA-16 only |
+| Q-UX-4 | (Closed by RC-61.) UX owns ADR-0850 to ADR-0859; this file uses 0850 to 0857 | | |
 | Q-UX-5 | Who reviews each language? Which friends read which namespace first? | Amar | F-172, `reviewed` flags |
 | Q-UX-6 | Q-2 and Q-13 of the PRD (devices and screen-reader pass) | Amar | UXA-16, section 16 thresholds |
 | Q-UX-7 | Hindi digits as a setting? Latin digits are the default here | Amar | DS-58 later |
@@ -1166,7 +1170,7 @@ Objections to decided or contracted items, with evidence. The file still follows
 | Item | State |
 |---|---|
 | RS-01 (editor rendering) | Verdict INCONCLUSIVE (no phone or Chromebook). Design holds LOD, no filter, no cast shadow; BUD-01 to BUD-03 are the check |
-| RS-16 (accessibility of the editor) | Not run. Sections 9.3, 10, 11, 14 rows 1 and 2 are PENDING RS-16. Decision rule: the keyboard-only task of ACC-2 and a recorded screen-reader pass; failure means the "Parts and wires" table view becomes the primary non-pointer path |
+| RS-16 (accessibility of the editor) | Never run; an agent cannot run it. Sections 9.3, 10, 11, 14 rows 1 and 2 are built as designed. Decision rule: the keyboard-only task of ACC-2 runs as a Playwright test; the recorded screen-reader pass is For Amar (Q-13); failure there means the "Parts and wires" table view becomes the primary non-pointer path. Reversible |
 | Screen reader behaviour (VoiceOver, NVDA, TalkBack) | UNKNOWN; none tried (ACC-4) |
 | Real phone and Chromebook performance | UNKNOWN (Q-2) |
 | Grain and filter cost on weak GPUs | UNKNOWN (VI-14) |
@@ -1187,4 +1191,15 @@ Downstream: the roadmap (phase gates use the UXA checks), the test strategy (axe
 | Issue | What I did |
 |---|---|
 | 1. Keyboard map in 10.4 conflicts with STUDIO_EDITOR 6.11 | Applied after reading 6.11 and its clash table. Replaced the key table in 10.4 with a reference to 6.11 and kept the accessibility rules (2.1.4 single-key setting, F6 regions, 2.1.1 paths, Esc then Tab). Changed DS-27 from `Ctrl+.` to `Ctrl/Cmd+Shift+.` (go to latest proposal); `Ctrl/Cmd+.` is Stop and `Ctrl/Cmd+Enter` is Run or Resume in 6.11. The Space row in Section 14 row 5 already matches 6.11 (Space presses a focused button part) and now cites it. Arrows now follow 6.11 (focus move or nudge by selection state) |
-| 2. ADR ids 0500 to 0507 collide with the realtime seat's ADR-0500 to 0511 | Applied. Confirmed in `04_ARCHITECTURE/ADR/`: ADR-0500 to 0511 are realtime files (ADR-0502 is device-key socket authentication). Renumbered this file's ADRs to ADR-0850 to ADR-0857 everywhere (contents table, the 'ADRs' row, section 21 headings and in-text references, Q-UX-2, Q-UX-4, Q-UX-8, Downstream). Removed the sentence saying 0500 was taken because it was free. Note: `ADR/README.md` does not exist yet, so 0850 to 0857 is taken from the review instruction; ADR-0800 to 0808 (Studio editor) exist and do not overlap |
+| 2. (History, earlier draft.) ADR ids 0500 to 0507 collide with the realtime seat's ADR-0500 to 0511 | Applied. Confirmed in `04_ARCHITECTURE/ADR/`: ADR-0500 to 0511 are realtime files (ADR-0502 is device-key socket authentication). Renumbered this file's ADRs to ADR-0850 to ADR-0857 everywhere (contents table, the 'ADRs' row, section 21 headings and in-text references, Q-UX-2, Q-UX-4, Q-UX-8, Downstream). Removed the sentence saying 0500 was taken because it was free. Note: `ADR/README.md` does not exist yet, so 0850 to 0857 is taken from the review instruction; ADR-0800 to 0808 (Studio editor) exist and do not overlap |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-61 | Contents table 'ADRs' row (line 40) now states the range with the reconciled ownership (UX 0850 to 0859, 0850 to 0857 used) and no longer says the realtime seat owns 0500 to 0511 as the reason. Review row 2 (section 24) is marked as history. Q-UX-4 closed. ADR-0850 to ADR-0857 kept; no file renamed |
+| RC-70 | 'J-01 to J-13' became 'J-01 to J-17' in the ids paragraph and the contents table. Section 18 gained rows J-14 to J-17 (design-system view only; flows stay in USER_JOURNEYS sections 20 to 23) |
+| RS-16 | Never run, cannot be answered by an agent. All PENDING RS-16 text (contents table, ADR-0853 row and status, sections 9.3, 10, 14 row 1, UXA-10, UXA-16, O-7, Q-UX-3, section 24 table) replaced: the design is binding; the keyboard-only task is an agent-run Playwright test; the screen-reader pass (ACC-4, Q-13) is For Amar and does not gate STUDIO. Reversible: the table view becomes the primary path if the pass fails |
+| RS-01 | VI-01 and the upstream row now state that the hand-drawn filter was dropped from the test scene, so the numbers (LOD p95 about 10 ms at 1x; 34.1 ms at 4x, 58 ms at 6x for zoom; plain SVG 25.8 and 25.0 ms) hold only for a filter-free canvas. The checker reproduced the 1x cells and says full-art SVG without LOD likely fails on devices. Design unchanged: LOD, no filter, no shadow. The device run is For Amar (Q-2, `docs/device-results.md`) and STUDIO does not wait for it |
+| D-014 | O-7 and Q-UX-3 no longer ask for RS-16 before STUDIO canvas work; the order is the D-014 order |
+| Checked, no change | RS-03, RS-06, RS-08, RS-09, RS-12, RS-13, DP-01 and the never-run spikes: this file does not decide those choices. Line 42 still defines PENDING RS-xx for the remaining mentions. Line 1062 and section 24 mention interviews and a pilot nowhere as a Studio gate (grep found none) |

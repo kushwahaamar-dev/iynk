@@ -34,7 +34,7 @@ Argument in REALTIME_ARCHITECTURE 13.2: mirrors cannot pass the runner's publish
 
 ## Performance data
 
-UNKNOWN: mirror lag and input latency (RB-9, RT-2). avr8js 6.1 to 7.5x real time on an M4 Pro, about 1.7x at 4x throttle (RS-03); rp2040js 0.54 to 0.78x (RS-06 FAIL), so a slow runner slows the room and the UI says so.
+UNKNOWN: mirror lag and input latency (RB-9, RT-2). avr8js 6.1 to 7.5x real time on an M4 Pro, about 1.7x at 4x throttle (RS-03); rp2040js 0.54x to 0.79x real time (pass clause of CPU under 60 percent of a core not met, VERIFIED in RS-06; fail clause not triggered), so a slow runner slows the room and the UI says so.
 
 ## Cost implications
 
@@ -59,3 +59,9 @@ S7 after S4 to S6. Flight ghosts and lap submission remain local (F-070).
 ## Known limitations
 
 Mirror lag is a design cost. Physics and flight are class D across machines until DET-2. Run state is lost at server restart. Edit-while-running behaviour depends on the Studio spec (Q-R2).
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-51 | Performance data: replaced "0.54 to 0.78x (RS-06 FAIL)" with the RS-06 wording: 0.54x to 0.79x real time, pass clause not met, fail clause not triggered, VERIFIED. |

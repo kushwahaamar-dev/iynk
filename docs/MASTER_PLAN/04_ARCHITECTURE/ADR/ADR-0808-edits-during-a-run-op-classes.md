@@ -1,6 +1,6 @@
 # ADR-0808: Edits during a run: every op kind has one class; circuit and program changes mark the run stale; layout changes do not
 
-Status: proposed, 2026-10-27; decided for the first Studio phase. Author: Studio editor design seat.
+Status: proposed, 2026-10-27. Author: Studio editor design seat.
 Upstream: SA 17.2 (worker protocol); PDM 7.2; audit D5. Downstream: F-101, F-121; STU-17, STU-32. Spec: `03_PRODUCT/STUDIO_EDITOR.md`, STUDIO_EDITOR section 11.4.
 
 ## Problem
@@ -58,3 +58,7 @@ Write `opClass.ts` and the schema enumeration test with the first run client; ad
 
 - Every edit to a resistor value needs a Restart in the first phase.
 - New op kinds added by PDM minor versions fail the build until classed; that is the intent.
+
+## Reconcile, final nits (2026-10-27)
+
+- RC-62: status line now reads `proposed`; dropped the words "decided for the first Studio phase".

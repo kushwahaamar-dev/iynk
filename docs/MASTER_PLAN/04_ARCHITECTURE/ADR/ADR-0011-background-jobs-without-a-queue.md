@@ -25,7 +25,7 @@ The server must expire invites, pairing offers, shares and rooms, compact op log
 
 ## Decision
 
-Jobs in `server/src/jobs/`: `expire` every 60 s (pairings, enrolments, invites, rooms past `expires_at`, shares, cache, usage older than 90 days); `compact` on the ADR-0505 schedule (snapshot every 500 ops or 10 minutes with activity, keep 8 plus named, null envelope payloads beyond the latest 20,000 ops; the numbers live in ADR-0505 and are not restated here); `checkpoint` every 5 minutes and at shutdown (`PRAGMA wal_checkpoint(TRUNCATE)`); `backup` only on command. Each job does at most one bounded transaction per run, logs its counts, and is skipped if the previous run is still in progress.
+Jobs in `server/src/jobs/`: `expire` every 60 s (pairings, enrolments, invites, rooms past `expires_at`, shares, cache, usage older than 90 days); `compact` on the ADR-0505 schedule (snapshot every 500 ops or 10 minutes with activity, keep 8 plus named, null envelope payloads beyond the latest 20,000 ops; the numbers live in ADR-0505 and are not restated here); `checkpoint` every 5 minutes (`PRAGMA wal_checkpoint(PASSIVE)`, never blocks on readers) and `TRUNCATE` once at shutdown; `backup` only on command. Each job does at most one bounded transaction per run, logs its counts, and is skipped if the previous run is still in progress.
 
 ## Technical justification
 
@@ -62,3 +62,9 @@ Timer drift under heavy load delays sweeps (use-time checks cover security). Sin
 ## Review fixes (2026-10-27)
 
 1. [medium] Compaction trigger of 1,000 ops conflicted with ADR-0505. Applied: the `compact` job now follows ADR-0505 (every 500 ops or 10 minutes with activity, keep 8 plus named, null payloads beyond 20,000 ops) by reference, and the upstream line no longer cites a 1,000-op rule. Checked ADR-0505 Decision (matches). ADR-0423 line 29 (keep two snapshots, prune at revision minus 1,500) is the older wording and is left to its own editor; ADR-0505 is the store decision and governs retention.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change | Status |
+|---|---|---|
+| RC-05 | The `checkpoint` job in Decision now runs `PRAGMA wal_checkpoint(PASSIVE)` every 5 minutes and `TRUNCATE` once at shutdown. This matches SYSTEM_ARCHITECTURE 6.15. RT-1 measures stalls over 100 ms (PROPOSAL until then). Source: RECONCILIATION.md row RC-05. | Applied |

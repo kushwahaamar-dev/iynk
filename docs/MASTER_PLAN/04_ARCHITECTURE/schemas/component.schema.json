@@ -209,7 +209,7 @@
         "manufacturer": {"type": "string", "maxLength": 200, "description": "The maker, or 'generic' when no single maker exists."},
         "model": {"type": "string", "maxLength": 200},
         "mpn": {"type": "string", "maxLength": 100},
-        "refdes_prefix": {"type": "string", "pattern": "^[A-Z]{1,4}$", "description": "Reference designator prefix for this part: R, C, D, U, Q, J, SW, BT. The editor numbers parts R1, R2... Absent: the editor derives a prefix from category (Studio O-S3 table)."},
+        "refdes_prefix": {"type": "string", "pattern": "^[A-Z]{1,4}$", "description": "Reference designator prefix for this part: R, C, D, U, Q, J, SW, BT, M (motor). The editor numbers parts R1, R2... Absent: the editor derives a prefix from category (Studio O-S3 table)."},
         "generic": {
           "type": "boolean",
           "description": "True when there is no maker datasheet for this exact part (a 5 mm LED, a red L298N board). A non-generic part must cite a datasheet-class source."
@@ -330,7 +330,7 @@
       "properties": {
         "id": {"$ref": "#/$defs/localId"},
         "kind": {"enum": ["internal-short", "strip", "plane"]},
-        "pins": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/localId"}, "uniqueItems": true},
+        "pins": {"type": "array", "minItems": 2, "maxItems": 256, "items": {"$ref": "#/$defs/localId"}, "uniqueItems": true},
         "note": {"$ref": "#/$defs/text"}
       }
     },

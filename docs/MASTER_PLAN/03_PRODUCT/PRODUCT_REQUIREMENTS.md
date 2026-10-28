@@ -60,7 +60,7 @@ Phase codes follow `FEATURE_CATALOGUE.md` section 2. "Gate" is the stop for Amar
 | 11 | Drone creation | DRONE | Design a drone to flight, traces, comparison | R-172 to R-180, R-193, R-194 | shorter |
 | 12 | Export and physical build | EXPORT | BOM, wiring, flashing, hardware twin, reality gap | R-181 to R-192 | shorter |
 
-Milestone 1 (`FEATURE_PRIORITIZATION.md` section 7) is a cut line across phases 1 to 4: start from scratch, place an Uno and parts, wire, write code, run and see serial output, save and reopen, open the same project with a buddy. It has 47 of 184 kept features. Requirements that belong to M1 carry the tag **M1**; their M1 slice is stated in the requirement, and the rest of the feature lands in its own phase. The 11-step acceptance walk of section 7.2 of that file is reused here as the Studio and COLLAB gate checks.
+Milestone 1 (`FEATURE_PRIORITIZATION.md` section 7) is a cut line across phases 1 to 4: start from scratch, place an Uno and parts, wire, write code, run and see serial output, save and reopen, open the same project with a buddy. It has 51 of 184 kept features. Requirements that belong to M1 carry the tag **M1**; their M1 slice is stated in the requirement, and the rest of the feature lands in its own phase. The 11-step acceptance walk of section 7.2 of that file is reused here as the Studio and COLLAB gate checks.
 
 ```mermaid
 flowchart LR
@@ -84,7 +84,7 @@ Order notes. The order is Amar's. Three dependencies cut across it and are handl
 
 ## 3. Engineering success measures
 
-These replace market metrics. Each is something the build can measure on a laptop and in CI. Source marks say whether the number comes from a measurement (cite it) or is a PROPOSAL to confirm at the phase start. Nothing here is a benchmark invented to pass a gate (BRIEF section 32).
+These replace market metrics. Each is something the build can measure on a laptop and in CI. Source marks say whether the number comes from a measurement (cite it) or is a PROPOSAL to confirm at the phase start. Nothing here is a benchmark invented to pass a gate (BRIEF section 32). Two scales are used in this file and they are not the same: `must`, `should` and `could` is requirement priority; the `FEATURE_PRIORITIZATION.md` class (NOW, NEXT, LATER, LONG-TERM RESEARCH and the others) is build order.
 
 ### 3.1 Performance budgets (D-011)
 
@@ -133,7 +133,7 @@ Correctness is stated against named references, never as "validated" (D-007). Ea
 | REF-4 | Operation log convergence | Zero divergence in a randomised property test with dropped connections, offline edits, resends and snapshot resume (40 runs, about 10,900 ops each today) | RS-09 PASS |
 | REF-5 | Verilog elaboration | 10 of 10 reference designs and the starter elaborate in Yosys WASM | RS-12 PASS, memory risk open |
 | REF-6 | Hardware oracle (every lab at least 10 class-A tests: tests that load a datasheet table, a bench measurement or a trace) | Grows with SIM, FAULTS, LABS. Zero such tests exist today; 15 of 1,677 declared tests transcribe a datasheet fact by hand (MEASURED, `TEST_COVERAGE.md` section 0) | `TEST_COVERAGE.md` section 5 item 1 |
-| REF-7 | MicroPython on a real RP2040 core (rp2040js) | Not a pass: RS-06 FAILED the CPU clause (0.54x to 0.78x of real time on an M4 Pro, 100 percent of a core). rp2040js is kept for non-real-time differential tests only; the TypeScript MicroPython interpreter stays the runtime. | RS-06 MEASURED |
+| REF-7 | MicroPython on a real RP2040 core (rp2040js) | Not a pass: RS-06 pass clause (under 60 percent of a core) not met: 0.54x to 0.79x real time on an M4 Pro at 100 percent of a core; fail clause not triggered. rp2040js is kept for non-real-time differential tests only; the TypeScript MicroPython interpreter stays the runtime. | RS-06 MEASURED |
 
 ### 3.4 Test and accessibility pass rates
 
@@ -176,9 +176,11 @@ BRIEF 10.2 says to define explicit tiers, and not to call a hand-written Arduino
 
 | Tier id | Label shown | Meaning | Today |
 |---|---|---|---|
-| T1 | Educational approximation | Simplified behaviour to explain a concept; no claim about a real part's numbers | Circuit solver with piecewise-linear parts; interpreter peripherals |
-| T2 | Component behavioural model | A stated physical or logical model with stated constraints and parameters | I2C register-level devices (MPU-6050, PCA9685, SSD1306 subset), HC-SR04 timing |
-| T3 | Firmware or hardware-target engine | Real compiled firmware, or behaviour compared against a reference | None shipped. avr8js is PASS for correctness (RS-03) but not wired in |
+| T0 | Illustration | Scripted outcome, not a calculation (SIM 4.1) | Flight faults and the Pi 5 ROS 2 concept bench |
+| T1 | Teaching model | Simplified behaviour to explain a concept; no claim about a real part's numbers | Circuit solver with piecewise-linear parts; interpreter peripherals |
+| T2 | Calculated model | A stated physical or logical model with stated constraints and parameters | I2C register-level devices (MPU-6050, PCA9685, SSD1306 subset), HC-SR04 timing |
+| T3 | Runs your firmware | Real compiled firmware on a CPU engine | None shipped. avr8js is PASS for correctness (RS-03) but not wired in |
+| mark | Checked on a real board | Bench data with source, conditions and error table (SIM 4.1). A mark, not a tier. The word "validated" is never printed (D-007) | None yet |
 | none | Not modelled yet | The part or feature has no model; the simulator says so | SPI data, UART to a second device, 1-Wire, timer interrupts, no electrical model on most boards (`inventory/interp.md`) |
 
 ### Requirements
@@ -186,13 +188,13 @@ BRIEF 10.2 says to define explicit tiers, and not to call a hand-written Arduino
 **R-FID-1. Every project shows its tier and what it models.** Feature F-011; priority must; **M1 slice in STUDIO, full registry version in SIM**.
 Story: As a buddy opening Amar's project, I see at a glance what the simulation covers and what it does not, so I do not trust a result it cannot give.
 Acceptance:
-- Given any project open in Studio, When I look at the project header, Then a tier label (T1, T2, T3 or "mixed") and a "What it models" panel are one click away.
+- Given any project open in Studio, When I look at the project header, Then a tier label (the lowest tier among its parts and engines, T0 to T3; there is no "mixed") and a "What it models" panel are one click away.
 - Given a project with a part whose model field is `not-modelled-yet`, When I run, Then the part is drawn with a visible "not modelled yet" mark and the panel lists it by name. It never behaves as if modelled.
 - Given the words "validated", "verified against hardware", "accurate", "exact" or "real" used about simulation output in any UI string, README or page, When CI runs the copy check (R-013), Then it fails unless the string cites a named reference suite (section 3.3) in the same sentence.
 Constraints: K-I18N (all six languages carry "not modelled yet"), K-A11Y (the mark has a text alternative).
 
-**R-FID-2. Every part declares its model.** Feature F-098; must; M1 slice (a `model` field on each part descriptor: `modelled`, `partly-modelled`, `not-modelled-yet`), full provenance in PARTS.
-Acceptance: Given a part descriptor without a `model.fidelity` value, When the registry loads it, Then loading fails in CI with the part id; custom parts without it are refused with a message.
+**R-FID-2. Every part declares its model.** Feature F-098; must; M1 slice (a `simulation` object on each part descriptor with `tier` and `status`: `modelled`, `partly-modelled`, `not-modelled-yet`), full provenance in PARTS.
+Acceptance: Given a part descriptor without a `simulation.tier` and `simulation.status`, When the registry loads it, Then loading fails in CI with the part id; custom parts without it are refused with a message.
 
 **R-FID-3. Unsupported code fails loudly.** Feature F-025; must; M1 slice.
 Acceptance:
@@ -202,7 +204,7 @@ Acceptance:
 
 **R-FID-4. Reality gap panel.** Feature F-162; should; EXPORT phase, specified in R-189.
 
-**R-FID-5. Never describe an interpreter as the real thing.** Feature F-009 and F-011; must.
+**R-FID-5. Never describe an interpreter as the real thing.** Feature F-009 and F-011; must; M1.
 Acceptance: Given the Arduino C++ subset interpreter, the Python runtime or the Verilog cycle simulator, When their names appear in UI or docs, Then they are called "Arduino C++ subset interpreter", "MicroPython-compatible interpreter" and "Verilog 2-state cycle simulator", and the "What it models" panel says the Verilog path is not synthesis and has no timing, delta cycles, X propagation or tri-state (`inventory/interp.md`).
 
 **R-FID-6. Measurements keep their conditions.** Every number shown to the person that came from a model (current in mA, voltage, flight time) carries its tier, and where a part is outside its tested range the display says so. A burnt-LED state states the model rule behind it (today: "113 mA is far above its 20 mA", VERIFIED).
@@ -255,7 +257,7 @@ Acceptance: Given `npm run e2e` with a developer's `.env.local`, When Playwright
 Story: As a contributor reading the repo, I find no wallet, mint, faucet, story or night-planner code.
 Acceptance:
 - Given the repository after the change, When I search it, Then there is no `solana/` directory, no `src/app/api/solana/*`, no `src/lib/solana`, no passport or verify page, no Build Stories, no Build Night, no `@solana/*` or `@coral-xyz/anchor` in `package.json`, and no navigation entry, i18n key (all six languages) or e2e test for them.
-- Given the old URLs `/passport`, `/verify`, `/together` stories and night pages, When requested, Then they return the standard not-found page. No redirect keeps a dead feature alive.
+- Given the old URLs `/passport`, `/verify` and the `/together` story and night pages, When requested, Then they return the standard not-found page; the `/together` page shell stays (hidden behind the rooms flag, off). No redirect keeps a dead feature alive.
 - Given `npm audit --omit=dev`, When it runs after the removal, Then the count of high advisories is 0. Today 2 high and 13 moderate; the two high come from `@coral-xyz/anchor` (SECURITY_BASELINE quick win 13; ESTIMATED that removal clears them, to be confirmed by the run).
 - Given the build output, When I compare it with `PERFORMANCE_BASELINE.md`, Then the wallet library no longer loads on any page (139 KB gzip on 5 page types today).
 - Given the Build Buddies code, When the extras go, Then the buddy server code and its data model are kept in place unrouted for R-081, and the public 24-hour list route is closed (R-007).
@@ -274,18 +276,18 @@ Story: As Amar, I leave my server running and no stranger can use it.
 Acceptance:
 - Given the 23 route files under `src/app/api` (VERIFIED count), When a test enumerates them, Then each one appears in an allow-list with a class (`removed`, `local-only`, `needs-server-token`, `needs-user-key`), and a route file not in the list fails the test.
 - Given a request with no token to any `needs-server-token` route, When it arrives from curl, Then the answer is 401 with an empty detail body. A bad token and a missing token look the same.
-- Given the three routes with CORS `*` today (`/api/mcp`, `/api/mcp/tools/[name]`, `/api/openapi.json`), When the change lands, Then none sends `Access-Control-Allow-Origin: *`; MCP and REST need the server token or the person's own key (F-167 in AI phase).
+- Given the three routes with CORS `*` today (`/api/mcp`, `/api/mcp/tools/[name]`, `/api/openapi.json`), When the change lands, Then none sends `Access-Control-Allow-Origin: *`; MCP and REST need IYNK_SERVER_TOKEN in B0 (BACKEND 13.1, deleted later), then the device bearer token from the collaboration phase (ADR-0007, D-018), or the person's own key (F-167 in AI phase).
 - Given the public buddies, leaderboard and live-counter routes, When the change lands, Then they are deleted or closed until COLLAB rebuilds them behind pairing (R-081, R-091); no route returns other people's names or free text to an anonymous caller (D1, D2 in SECURITY_BASELINE).
 - Given `/metrics` on the relay, When deployed behind the documented proxy, Then it is not proxied (R10).
 
 **R-008. Local usage meter, rate limits and kill switch.** Feature F-003; must; M1 slice (in-memory limits on the routes the M1 server exposes); K-SEC, K-KEY.
 Acceptance:
 - Given a request, When the limiter picks a key, Then it uses the device token when one exists (R-077) and otherwise the socket address; `X-Forwarded-For`, `x-real-ip` and `cf-connecting-ip` are read only when `IYNK_TRUST_PROXY=1` (today the first `x-forwarded-for` value is client-controlled, C7). A missing header never maps every caller to the shared key `unknown`.
-- Given the AI or search proxy routes, When a person has entered a key (R-010), Then the settings page shows tokens and searches used this day and month from a local counter; a per-provider daily cap and one environment kill switch (`IYNK_DISABLE_AI=1`, `IYNK_DISABLE_SEARCH=1`) stop calls with a clear "turned off by the operator" state.
+- Given the AI or search proxy routes, When a person has entered a key (R-010), Then the settings page shows tokens and searches used this day and month from a local counter; a per-provider daily cap applies; AI and search are opt-in via `IYNK_AI_ENABLE=1` and `IYNK_SEARCH_ENABLE=1` (default 0); when off, the route returns 501 `feature_disabled` and the probe key is false.
 - Given the SerpApi budget, When the server restarts, Then the count does not reset to zero in a way that bypasses the cap (C3: the counter is a closure variable today); with a file-backed store it survives restart.
 Not in B0: a Redis or Postgres limiter. A single process is the supported self-host shape (K-SELF); the limiter is per process and documented as such.
 
-**R-009. Telemetry removed or opt-in, events stay local.** Feature F-006 (with F-016, F-141); must; M1; K-LOCAL.
+**R-009. Telemetry removed or opt-in, events stay local.** Feature F-006 (with F-016, F-141); must; K-LOCAL.
 Story: As a buddy, I open iynk and nothing about me leaves my browser unless I turn it on.
 Acceptance:
 - Given a first visit with empty storage, When I use the app for ten minutes, Then the browser makes no request to any origin but the app's own, and no `POST /api/telemetry`. The default `telemetry: true` at `src/lib/progress/storage.ts:38` becomes `false`.
@@ -334,7 +336,7 @@ Acceptance:
 **R-016. Third-party content cleared or rewritten.** Feature F-197; should; K-I18N.
 Acceptance: Given a row in the provenance record marked `rewrite-needed`, When it is rewritten, Then the new text is original, the row becomes `own`, the golden fixtures that were derived from the other site are replaced by fixtures with a datasheet or hand-calculation source (REF-6), and all six languages are updated. This is due before the repo is published as open source; the publish gate is `npm run provenance:check` exiting zero.
 
-**R-017. Dependency and secret hygiene.** Feature F-001; must.
+**R-017. Dependency and secret hygiene.** Feature F-001; must; M1.
 Acceptance: Given CI, When it runs, Then a secret scanner (full history on the first run, then the diff) finds none (history is clean today: 0 key shapes in 797 commits, VERIFIED, `SECURITY_BASELINE.md` section 9); `npm audit --omit=dev` reports 0 high or critical; `.env.example` contains only names with empty values and no name for a removed service (Solana, Vultr, Timescale). `.env.local` stays ignored.
 
 **R-018. Interpreter size caps.** Feature F-044 (slice); must; M1; K-PERF, K-SEC.
@@ -354,7 +356,7 @@ Acceptance:
 - Given the drone and fly pages, When they load, Then they do not download the 1.9 MB raw JS bundle for a 65 KB figure (B2 note).
 
 **R-021. Low-end device and slow-connection test protocol.** Feature F-015; should; K-DEV.
-Acceptance: Given `docs/LOW_END_TESTING.md`, When Amar or a buddy follows it on a real device, Then it tells them which pages to open, what to time and where to record the result in `docs/device-results.md`. The first result row, once a phone or Chromebook exists, closes the "UNKNOWN" on RS-01, RS-03 and RS-12 device questions. Until then every device claim in docs says UNKNOWN.
+Acceptance: Given `docs/LOW_END_TESTING.md`, When Amar or a buddy follows it on a real device, Then it tells them which pages to open, what to time and where to record the result in `docs/device-results.md`. The first result row, once a phone or Chromebook exists, closes the "UNKNOWN" on RS-01, RS-03 and RS-12 device questions. This is work for Amar or a buddy, not a build gate. Until then every device claim in docs says UNKNOWN.
 
 **R-022. The social layer stays off until COLLAB.** Features F-012 and F-118 (deployment); must; M1; D-006.
 Acceptance: Given a default build, When the app starts, Then the Together/rooms entry, chat and buddy pages are hidden behind a flag that is off, and no code path opens a WebSocket. The relay is not deployed from this repo. It returns when R-075 (relay authority) passes.
@@ -417,7 +419,7 @@ Limits (PROPOSAL; equal to PDM section 9.4, which is the place to change them; f
 **R-025. Canonical project document.** Feature F-076; must; M1; K-LOCAL.
 Story: As Amar, my project is one thing I can save, copy, diff and send, not scattered state.
 Acceptance:
-- Given a new project on the Uno, When it is created, Then the document has `format = "iynk.project"`, `schemaVersion = "1.0"`, a fresh `id` of the form `prj_...`, `meta.title` set, one entry in `boards[]` for the Uno R3, `components = []`, `nets = []`, one entry in `views[]` with no placements or wires, one entry in `sources[]` (`main.ino` with the Blink template), `simulation.seed` set, and `revision = 0` (M1 step 2).
+- Given a new project on the Uno, When it is created, Then the document has `format = "iynk.project"`, `schemaVersion = "1.1"`, a fresh `id` of the form `prj_...`, `meta.title` set, one entry in `boards[]` for the Uno R3, `components = []`, `nets = []`, one entry in `views[]` with no placements or wires, one entry in `sources[]` (`main.ino` with the Blink template), `simulation.seed` set, and `revision = 0` (M1 step 2).
 - Given any feature that changes a project, When I read the code, Then it changes the document only through an operation (R-033). No lab store, bench store or figure keeps its own copy of project state (one source of truth).
 - Given the document type, When the build runs, Then it is a zod schema and a TypeScript type derived from the one definition in PROJECT_DATA_MODEL.md and `schemas/project.schema.json`, used by the store, the file loader, the room and the tests.
 Preserve: `Check`, `WorldModel`, `CodeTemplate`, `FailureMode`, `BuildStep` are reused; lessons, checks and fault rules become optional document sections in LABS and FAULTS.
@@ -445,13 +447,13 @@ Acceptance:
 **R-029. Part descriptor.** Feature F-097; must; M1 (descriptor and the first parts); K-A11Y, K-I18N.
 Story: As Amar, a part is data, so adding one does not mean editing the engine.
 Acceptance:
-- Given a descriptor, When it is validated, Then it has: `id` and `version`; `name` as an i18n key; `pins[]` each with `id`, `name` key, `role` (`power`, `ground`, `digital`, `analog`, `passive`, `bus`), and a position in 0.01 mm; `groups[]` of pins that are internally connected (breadboard strips, the Uno's GND pins); `footprint`; `artwork` (a figure id plus a draw fallback); `model` (R-FID-2) with `kind` and parameter schema; `provenance`; and an optional datasheet URL. Pins may be generated by a pattern (a breadboard has hundreds).
+- Given a descriptor, When it is validated, Then it has: `id` and `version`; `name` as an i18n key; `pins[]` each with `id`, `name` key, `type` (the pin type enum of `component.schema.json`) and `class` (`power`, `ground`, `digital`, `analog`, `passive`, `bus`, `mechanical`, `nc`), and a position in 0.01 mm; `groups[]` of pins that are internally connected (breadboard strips, the Uno's GND pins); `footprint`; `artwork` (a figure id plus a draw fallback); `simulation` (R-FID-2) with `tier`, `status` and `what_it_models`, and `parameters` with their schema; `provenance`; and an optional datasheet URL. Pins may be generated by a pattern (a breadboard has hundreds).
 - Given the first parts, When the registry loads, Then it holds the Uno R3, LED, resistor, push button, buzzer, potentiometer and one existing I2C display (SSD1306 or 1602, chosen at phase start). The other 11 board profiles (`nano`, `uno-r4`, `esp32-devkitc`, `esp32-s3-devkitc-1`, `nodemcu`, `pico`, `nucleo-f401re`, `microbit-v2`, `pi4-pi5`, `basys3`, `de10-lite`) get descriptors in STUDIO (R-072).
-- Given a descriptor without `model.fidelity` or without an artwork fallback, When CI runs, Then it fails.
+- Given a descriptor without `simulation.tier` and `simulation.status`, or without an artwork fallback, When CI runs, Then it fails.
 - Given two descriptor versions of one part, When a document pins `led@1`, Then it keeps loading with version 1 behaviour; a newer version never changes an old project silently.
 Needs ADR: where descriptors live (JSON files in the repo, loaded lazily) and how a custom part (PARTS) is added without touching the engine.
 
-**R-030. Open ids and the registry.** Feature F-076, F-097; must.
+**R-030. Open ids and the registry.** Feature F-076, F-097; must; M1.
 Acceptance: Given the code, When I grep for `BoardId` and the five `as const` arrays in `src/content/ids.ts`, Then board, part and device ids come from the registry as strings, there is one `BoardId` type (it is declared twice today: `profiles.ts:6-18` and `ids.ts`), and adding a part needs no change to a union type. The closed unions stay only for the catalogue items that are bound to figure files, until LABS moves them.
 
 **R-031. Netlist derived from connectivity.** Feature F-078; must; M1; K-PERF.
@@ -490,7 +492,7 @@ Acceptance:
 **R-035. Local project store (IndexedDB).** Feature F-200; must; M1; K-LOCAL, K-PERF.
 Story: As Amar, closing the tab does not lose my project.
 Acceptance:
-- Given the app, When it starts, Then it opens an IndexedDB database named `iynk` with stores `projects` (id to `{ doc, hash, writtenAt }`), `index` (id to `{ name, updatedAt, hash, board, size, hasFileCopy }`), `trash`, and `backups` (the previous version after a migration). Settings stay in `localStorage` key `iynk:v1` (`STORAGE_VERSION`).
+- Given the app, When it starts, Then it opens an IndexedDB database named `iynk` with stores `projects` (id to `{ doc, hash, writtenAt }`), `index` (id to `{ name, updatedAt, hash, board, size, hasFileCopy, archived }`), `trash`, and `backups` (the previous version after a migration); these are the first of the 19 stores of ADR-0106 (PDM 12.1). Settings stay in `localStorage` key `iynk:v1` (`STORAGE_VERSION`).
 - Given a save, When it runs, Then the new record is written before the old one is replaced (two-slot, so a crash mid-write leaves a good copy), and the `index` row is updated in the same transaction.
 - Given a write that fails (quota, private window, storage disabled), When it fails, Then a visible, persistent warning names the cause and says what to do ("save to a file now"), the last good copy is kept, and editing continues in memory (M1 step 7 error case).
 - Given IndexedDB is unavailable at start, When the app opens, Then a banner says projects will not be kept and offers file save (R-037) (M1 step 1 error case).
@@ -499,7 +501,7 @@ Acceptance:
 Risk: browsers may evict IndexedDB (Safari after 7 days without use under some settings; EXTERNAL, HYPOTHESIS for the exact policy). This is why files on disk (R-037) and the warning exist.
 
 **R-036. Autosave of code and layout.** Feature F-087; must; M1.
-Acceptance: Given a committed operation, When 500 ms pass without another (PROPOSAL), or the tab becomes hidden, or `pagehide` fires, Then the document is saved (BUD-08), the chip shows "saved" with the time, and a reload gives a document with an equal hash (DET-3, M1 step 7). Given the lesson pages (Board, Robotics, Drone labs) today, When the person edits code there, Then it is saved too and survives reload (walk step 14 fails today; this closes it for lessons in LABS, using the same store).
+Acceptance: Given a committed operation, When 500 ms pass without another (PROPOSAL), or at most 5 s after the first unsaved commit when edits keep coming, or the tab becomes hidden, or `pagehide` fires, Then the document is saved (BUD-08), the chip shows "saved" with the time, and a reload gives a document with an equal hash (DET-3, M1 step 7). Given the lesson pages (Board, Robotics, Drone labs) today, When the person edits code there, Then it is saved too and survives reload (walk step 14 fails today; this closes it for lessons in LABS, using the same store).
 
 **R-037. Project files on disk.** Feature F-201; must; M1; K-DEV, K-LOCAL.
 Story: As Amar, I keep my project as a file I can put in git or send to a friend.
@@ -514,7 +516,7 @@ Folder-per-project layout (a directory with `project.json` and separate source f
 Acceptance: Given the library page, When it loads, Then it lists projects by last change with name, board, size, a "saved to file" mark; Given rename, duplicate, delete: delete moves to a local trash for 30 days (PROPOSAL) from which restore works; empty-trash is explicit. Search, tags and archive are not in this phase.
 
 **R-039. Fork.** Feature F-088; should.
-Acceptance: Given any project or any template, When I choose Fork, Then a new project with a new `id`, `meta.origin` pointing at the source and its version, and `revision = 0` is created; the source is untouched.
+Acceptance: Given any project or any template, When I choose Fork, Then a new project with a new `id`, `provenance.origin` (kind `fork`) pointing at the source and its version, and `revision = 0` is created; the source is untouched.
 
 **R-040. Offline use.** Feature F-094; must (as the app shell, a precache); K-LOCAL, K-PERF.
 Acceptance: Given I have loaded the app once online, When I turn the network off and reload, Then the home page, the library, the editor and a run all work, and any feature that needs a server or a key says why it is unavailable. A service worker precaches the shell and the interpreter worker; the cache version changes with the build and old caches are removed. The heavy optional engines (Yosys, physics, ngspice) are cached only after first use.
@@ -532,13 +534,13 @@ Acceptance: Given a project with `main.ino` and an Uno, When I run, Then the Ard
 
 **R-043. Run limits and worker kill.** Feature F-044; must; M1; BUD-12.
 Acceptance:
-- Given the limits, When a program runs, Then these hold: 400,000 statements per step, call depth 100 (Python) and 120 (Arduino), 5,000,000 operations inside one expression (the existing caps, `runtime.ts`, `interp.ts`), plus an array or string cap of 1,000,000 elements (R-018), a total instruction budget per virtual second that the project settings can raise to a stated maximum, and a serial buffer of 1 MB.
-- Given a breach, When it happens, Then the worker is terminated by the host when it misses a heartbeat for 2 s (BUD-12), `status` becomes `limit`, the editor stays responsive, and the message names which limit hit (M1 step 6 error case). A memory blow-up that the interpreter's own accounting does not catch is stopped by the same watchdog; JavaScript cannot cap a worker's heap, so the honest guarantee is "the tab survives", stated in the docs.
+- Given the limits, When a program runs, Then these hold: 400,000 statements per slice, call depth 100 (Python) and 120 (Arduino), 5,000,000 operations inside one expression (the existing caps, `runtime.ts`, `interp.ts`), plus an array or string cap of 1,000,000 elements (R-018), a total instruction budget per virtual second that the project settings can raise to a stated maximum, and a serial buffer of 1 MB.
+- Given a breach, When it happens, Then the host calls `cancel()`; if the worker has not answered in 2 s the host terminates it (SIM 6.8, BUD-12), `status` becomes `limit`, the editor stays responsive, and the message names which limit hit (M1 step 6 error case). A memory blow-up that the interpreter's own accounting does not catch is stopped by the same watchdog; JavaScript cannot cap a worker's heap, so the honest guarantee is "the tab survives", stated in the docs.
 - Given the three OOM repros from the audit, When they run, Then each ends with a `limit` message and the page keeps working.
 
 **R-044. Virtual clock, World and device binding to the netlist.** Feature F-041; must; M1 slice; DET-5.
 Acceptance:
-- Given the clock, When a program runs, Then time advances only by virtual cost (`opUs` per board profile) and by `delay` and timers; no wall clock or `Math.random()` enters the simulation; the seed in `settings.seed` feeds every random source (DET-1).
+- Given the clock, When a program runs, Then time advances only by virtual cost (`opUs` per board profile) and by `delay` and timers; no wall clock or `Math.random()` enters the simulation; the seed in `simulation.seed` feeds every random source (DET-1).
 - Given a pin on the Uno, When the netlist connects it to a part pin, Then the World binds the existing devices (button, switch, pot, divider, tmp36, hc-sr04, mpu6050, qtr-rc, onboard) through the netlist rather than through figure pin names.
 - Given the 11 device kinds in `DeviceModel` (`schema.ts:304-315`), When this phase ends, Then they are entries in a device registry; a new device is data plus an optional behaviour module, not a new union member. Protocol models beyond today (SPI data, UART, 1-Wire) are SIM (R-109).
 Preserve: `clock.ts`, `world.ts`, `devices.ts`, `profiles.ts`.
@@ -558,7 +560,7 @@ Acceptance:
 - Speed: the audit measured about 0.04 ms per solve on the largest catalogue circuit (9 parts, 19 wires; MEASURED in jsdom), against a 16.7 ms frame. Solver cost is not the risk; reuse and test coverage are.
 
 **R-047. Python, MicroPython and Verilog in the worker.** Features F-039 and F-040; should.
-Acceptance: Given a project file with `lang: micropython`, `python` or `verilog`, When I run, Then it runs in the same worker host with the same limits; the Pico profile uses the TypeScript MicroPython interpreter (RS-06 FAILED the real-time CPU clause for rp2040js, so it is not the runtime); Verilog runs the 2-state cycle simulator and carries the R-FID-5 wording. Yosys WASM for "inspect the circuit" is SIM (R-110, RS-12 PASS).
+Acceptance: Given a project file with `lang: micropython`, `python` or `verilog`, When I run, Then it runs in the same worker host with the same limits; the Pico profile uses the TypeScript MicroPython interpreter (RS-06 pass clause, CPU under 60 percent of a core, not met by rp2040js: 0.54x to 0.79x real time, VERIFIED; fail clause not triggered; so it is not the runtime); Verilog runs the 2-state cycle simulator and carries the R-FID-5 wording. Yosys WASM for "inspect the circuit" is SIM (R-110, RS-12 PASS).
 
 **R-048. Cross-browser determinism check.** Feature F-186; should; DET-2.
 Acceptance: Given a nightly job, When it runs the converted Uno corpus in Chromium and WebKit (Firefox when installed), Then serial text and pin-trace hashes are equal across browsers and across ten runs; a difference fails the job and prints the first differing event. Flight replay already passes in one engine (A12, MEASURED).
@@ -582,7 +584,7 @@ Acceptance: Given the test suite, When it runs, Then steps 1, 2 and 6 to 8 of `F
 | Headless walk | R-052 passes in CI, including DET-1 and DET-3 |
 | Document | R-026 hash stable across key order; R-027 refuses a newer version without damage; R-028 recovery view opens a corrupted record |
 | Netlist | R-031 property test passes; REF-3 corpus all converts or is listed |
-| Worker | R-043: all three OOM repros end in `limit`; heartbeat kill within 2 s |
+| Worker | R-043: all three OOM repros end in `limit`; `cancel()` then terminate within 2 s |
 | Store | R-035: quota failure shows a warning and keeps the last good copy; two tabs do not overwrite each other |
 | Performance | BUD-08 and BUD-09 measured and recorded; idle CPU not worse than the B0 baseline |
 | Solver | If R-046 is done: REF-1a at 18 of 20 or better, REF-1b recorded per circuit with the 6 over-5-percent circuits labelled 'approximation', and the decision rule for RS-08 (b) is written down with its measured result or "PENDING" |
@@ -594,7 +596,7 @@ Acceptance: Given the test suite, When it runs, Then steps 1, 2 and 6 to 8 of `F
 
 Goals. Amar starts from nothing, places an Uno and parts, wires them, writes code, runs it and reads the serial output, on a project that already saves (CORE). Uno first; then the other 11 boards. Pointer, touch and keyboard all work. The editor meets BUD-01 to BUD-03 on desktop and the accessibility checks of section 3.4 for the tasks of M1.
 
-Non-goals. No faults or diagnosis on the drawn circuit (FAULTS). No analog behaviour (SIM). No AI. No export beyond R-037 and R-051. No 2D/3D mechanical placement (F-086, LATER: WebGPU is off in Firefox, `TECHNICAL_RESEARCH.md` F8). No right-to-left layout (F-179, LATER). No interface levels or learning paths (LABS).
+Non-goals. No faults or diagnosis on the drawn circuit (FAULTS). No analog behaviour (SIM). No AI. No export beyond R-037 and R-051. No 2D/3D mechanical placement (F-086, LONG-TERM RESEARCH: WebGPU is off in Firefox, `TECHNICAL_RESEARCH.md` F8). No right-to-left layout (F-179, LATER). No interface levels or learning paths (LABS).
 
 ### 8.2 Subsystem verdicts for STUDIO
 
@@ -609,13 +611,14 @@ Non-goals. No faults or diagnosis on the drawn circuit (FAULTS). No analog behav
 
 ### 8.3 Requirements
 
-**R-053. Editor canvas behind a renderer interface.** Feature F-079; must; M1; K-PERF, K-A11Y; **PENDING RS-01 device run**.
+**R-053. Editor canvas behind a renderer interface.** Feature F-079; must; M1; K-PERF, K-A11Y; **DECIDED by RS-01 (INCONCLUSIVE on devices, so the choice stays reversible); the device run is a record step for Amar, not a gate**.
 Story: As Amar on a modest laptop, the canvas never lags when I move parts.
 Acceptance:
 - Given the canvas, When I read the code, Then drawing goes through a `Renderer` interface (`mount`, `setViewport`, `draw(scene)`, `hitTest`, `dispose`) with an SVG implementation; a second implementation can replace it without touching tools or state.
 - Given the RS-01 rules, When the scene is built, Then (1) the budget is the number of drawn art elements in view, not the number of parts (47,000 elements in view is what hurts in the spike); (2) level of detail is built in from the start: outline rectangles when zoomed out, plus viewport culling; (3) the hand-drawn filter is not applied on the editor canvas.
 - Given a scene of 500 parts and 1,000 wires, When I pan, drag, hover and zoom, Then BUD-01 to BUD-03 hold on the Studio gate run and the numbers are recorded in `docs/device-results.md`.
-Decision rule (RS-01): if, after the first real phone or Chromebook run, p95 is over 33 ms in any interaction with LOD on, then reduce the art elements per part further and move wires to a single canvas layer (Canvas or Pixi for wires only, the spike's fallback); the spike found wires are not the first cost, so expect the part art to change first. Choose the smaller of the two implementations (the custom core is). Needs ADR: renderer choice, closed only after the device run.
+Decision rule (RS-01): if, after the first real phone or Chromebook run, p95 is over 33 ms in any interaction with LOD on, then reduce the art elements per part further and move wires to a single canvas layer (Canvas or Pixi for wires only, the spike's fallback); the spike found wires are not the first cost, so expect the part art to change first. Choose the smaller of the two implementations (the custom core is). The renderer choice is recorded in ADR-0403 and ADR-0801 (SVG scene core behind `Renderer`, with LOD and culling from the start, no hand-drawn filter on the canvas, the drawn-element count as the budget). It closes on the desktop Chromium numbers plus recorded misses (section 8.4); the Studio phase does not wait for a phone or Chromebook.
+Spike basis (`08_RESEARCH_SPIKES/RS-01-editor-rendering/REPORT.md`, MEASURED; the independent check reproduced all 30 cells at 1x): on an M4 Pro at 1x, plain SVG and React SVG miss p95 20 ms in the fit view (25.8 ms) and in zoom (25.0 ms); SVG with LOD and culling holds about 10 ms; with LOD, zoom is 34.1 ms at 4x CPU throttle and 58 ms at 6x; naive full-redraw Canvas 2D was worse; WebKit plain SVG pan-fit is 63 ms and 22 ms with LOD. The checker reads full-art SVG without LOD as likely to fail on real devices, so this is not "SVG is fine". Not run: phone, Chromebook, headless, DPR 2, the hand-drawn filter. What would change it: the decision rule above. For Amar: the device run (Q-2, `docs/device-results.md`).
 
 **R-054. Pan, zoom, select and fit.** Feature F-079; must; M1.
 Acceptance: Given the canvas, When I pan by drag, wheel or arrow keys, zoom by wheel, pinch or `+`/`-`, and press `0` to fit, Then the view changes without a frame over 33 ms at 4x throttle (BUD-02), the zoom case that misses today (34.1 ms at 4x, 58 ms at 6x, MEASURED) is fixed or recorded as a known miss at the gate, and the viewport is saved in the project's local view state (not in the shared document).
@@ -629,7 +632,7 @@ Acceptance:
 Constraints: every palette item and inspector field has a text label and keyboard path.
 
 **R-056. Starter templates.** Feature F-084; should; K-I18N.
-Acceptance: Given New project from template, When I choose one of ten starters made from the converted Uno catalogue (Blink, button, PWM fade, potentiometer, buzzer, serial echo, I2C display, and three more chosen at the phase start from the REF-3 corpus), Then a new project opens with parts, wires and code, a one-sentence description and `meta.origin`; each starter runs on the digital slice without the solver (the test of the HYPOTHESIS in R-045).
+Acceptance: Given New project from template, When I choose one of ten starters made from the converted Uno catalogue (Blink, button, PWM fade, potentiometer, buzzer, serial echo, I2C display, and three more chosen at the phase start from the REF-3 corpus), Then a new project opens with parts, wires and code, a one-sentence description and `provenance.origin` (kind `template`, or `migration` per STU 4.3); each starter runs on the digital slice without the solver (the test of the HYPOTHESIS in R-045).
 
 **R-057. Wiring with pointer and touch.** Feature F-080; must; M1; K-A11Y, K-DEV.
 Story: As Amar, I drag from one pin to another and the wire is there; as a buddy on a tablet I tap one pin then the other.
@@ -648,7 +651,7 @@ Acceptance: Given the breadboard view, When I select a net in the overlay list, 
 **R-060. Schematic view.** Feature F-081; should; post-M1 in this phase.
 Acceptance: Given any project, When I switch to the schematic view, Then parts appear as symbols from their descriptors with nets drawn as labelled connections, auto-placed from the netlist, with a stored per-project placement that the person can adjust; the same netlist drives it and a test compares breadboard and schematic nets for equality. Moving a part in one view does not change another view's layout and never changes the netlist.
 
-**R-061. Board and pin-map view.** Feature F-081; should.
+**R-061. Board and pin-map view.** Feature F-081; should; M1.
 Acceptance: Given the active board, When I open the board view, Then I see its pins with names, roles and what each is connected to, and the current pin states while running; for FPGA boards (Basys 3, DE10-Lite) it shows ports (switches, LEDs, seven-segment) instead of pins.
 
 **R-062. Code editor in the project.** Feature F-034; must; M1; K-I18N, K-A11Y.
@@ -657,14 +660,14 @@ Acceptance: Given the project's files, When I open the editor, Then I get tabs p
 **R-063. Serial monitor.** Feature F-207; must; M1 slice (output and an input line); K-A11Y.
 Acceptance: Given a running Blink sketch that prints, When serial text arrives, Then it shows with virtual-time stamps (`[t=1.000 s]`), keeps the last 5,000 lines (PROPOSAL) with "older lines dropped" marked, can be cleared and copied, and sends typed lines to `Serial.read()`; the output is a live region announced politely, rate-limited so a fast printer does not flood a screen reader. Plotter and scope are SIM.
 
-**R-064. Run controls and live part state.** Features F-044 (UI), F-052; must; M1.
+**R-064. Run controls and live part state.** Features F-044 (UI), F-052; must.
 Acceptance: Given Run, When it starts, Then the status shows `running`, virtual time, and a limit message if one hits (R-043); LED parts light with the pin and PWM duty; a button part can be pressed with the pointer or `Space` and drives the pin; a potentiometer has a keyboard-operable slider; a part with no model shows the mark. Stop and Reset return parts to the initial state.
 
 **R-065. Tier label and "What it models" in Studio.** Feature F-011; must; M1 slice (static); implements R-FID-1.
 Acceptance: Given any Studio project, When I open it, Then the header shows the tier and the panel lists, from the registry, the parts that are modelled, partly modelled or not modelled yet, and the engine in use ("Arduino C++ subset interpreter, digital pin model"). Registry-driven version and per-claim sources are SIM (F-185, R-114).
 
 **R-066. Revision history and compare.** Feature F-093; should.
-Acceptance: Given a project, When I open History, Then I see named checkpoints (made on save-to-file, on run and on request, at most 50 kept locally, PROPOSAL) and can compare any two as a diff of parts, wires and files, and restore one as a new revision. The operation log is not persisted locally in this phase; checkpoints are snapshots.
+Acceptance: Given a project, When I open History, Then I see named checkpoints (made on save-to-file, on run and on request, at most 256 checkpoints in the document header (PDM limits)) and can compare any two as a diff of parts, wires and files, and restore one as a new revision. `history.ops` keeps up to 1,000 ops, then compacts into a checkpoint; checkpoints are snapshots.
 
 **R-067. Author checks on your own project.** Feature F-221; could.
 Acceptance: Given a project, When I add a check ("pin 13 is HIGH at 1000 ms", "serial contains 'ready'"), Then it uses the existing `Check` engine against the project and shows pass or fail on each run; saved checks live in the document's `checks` section.
@@ -732,14 +735,14 @@ Acceptance:
 - Given host rights, When a non-host sends `room/baton`, kick, lock or close, Then the relay refuses; a baton change is accepted only from the holder, or from the host when the holder has left (R6, `room.ts:589`).
 - Given a chat frame, When it arrives, Then the relay sets `kind: "text"` itself; `ai` and `system` kinds can only come from the relay (R7).
 - Given a hostile client that sends 600 frames in 5 s, When the bucket drops them, Then the socket is closed as today, plus a chat-specific limit of 2 lines per second per member (R8; the general bucket is 60 frames per second for all frame types today).
-- Given a join to an unknown room code with no creation right, When it arrives, Then the answer is "room not found" and no room is created (R3: any join creates a room today). Room creation needs a device token (R-077), is limited per token and per address per minute (PROPOSAL: 6 per minute), and the maximum rooms and members per room are configuration (500 and 8 today).
+- Given a join to an unknown room code with no creation right, When it arrives, Then the answer is "room not found" and no room is created (R3: any join creates a room today). Room creation needs a device token (R-077), is limited per token and per address per minute (PROPOSAL: 6 per minute), and the maximum rooms and members per room are configuration (defaults 20 live rooms, 100 stored, 8 members; 500 and 8 describe the old relay).
 - Given room creation, When the host opens a room on a project up to the canonical limit of 5,242,880 bytes (section 7.3), Then the project enters the room gzipped and is accepted. Given a snapshot frame that a member supplies, When it arrives, Then it is accepted only from the peer the relay asked, is validated against the project schema and the operation vocabulary before it is stored, is never executed or rendered as HTML (R9), and is refused when it exceeds the client-to-server cap. The byte caps are stated here once and come from REALTIME_ARCHITECTURE (section 7.1 and the caps table): client to server 512 KiB inflated and 128 KiB on the wire, server to client snapshot 6 MiB inflated and 1 MiB on the wire. The 512 KiB client-to-server cap covers a joiner's frames and operations; the full project goes to a joiner as a server-to-client snapshot, so a legal project between 512 KiB and 5 MiB can enter a room.
 - Given the hostile-client suite (R-097), When it runs against the relay, Then it passes.
 
 **R-076. Invites and room secrets.** Feature F-116; must; M1; K-SEC.
 Acceptance:
-- Given a room, When Amar invites a buddy, Then the invite is a capability: a 128-bit random token in a link, valid for a stated time (default 24 hours, PROPOSAL), single room, revocable by the host; the six-character room codes of today (about 29.7 bits, R1) are not used as the only secret.
-- Given a pairing code (R-080) shown on one screen to type on another, When it is entered wrong 5 times (PROPOSAL), Then the code is deleted; it expires in 10 minutes; a wrong or expired code gives one generic error.
+- Given a room, When Amar invites a buddy, Then the invite is a capability: a 128-bit random token in a link, valid for a stated time (default 24 hours, PROPOSAL; default uses 1 for editor invites, 5 for viewer invites, at most 20; at most 7 days), single room, revocable by the host; the six-character room codes of today (about 29.7 bits, R1) are not used as the only secret.
+- Given a pairing code (R-080) shown on one screen to type on another, When 5 wrong secrets are entered on one channel, Then the code is deleted; the code has the shape XXXX-XXXXXX (a 4-character public channel plus a 6-character secret, Crockford base32 without I, L, O, U; ADR-0812) and is valid for 10 minutes; a wrong or expired code gives one generic error.
 - Given the welcome message, When a stranger without an invite connects, Then the relay reveals nothing about the room: not the item, not the roster, not whether it exists (R2).
 
 **R-077. Anonymous device token.** Feature F-005; must; M1; K-SEC, K-LOCAL.
@@ -753,7 +756,7 @@ Acceptance:
 Acceptance:
 - Given the server, When started, Then one Node process provides: the realtime relay, device tokens, buddy pairing, share links, and the file-backed store; it serves no AI or search routes unless the operator turns them on (R-010, R-011 proxy path).
 - Given a restart, When the process comes back, Then rooms with unexpired invites and their project snapshots plus operation tails are restored from the store; members reconnect and resume (RS-09 left this unbuilt; this requirement builds it).
-- Given configuration, When the operator sets environment variables, Then these are all that is needed: data directory, signing secret, enrolment mode (`IYNK_ENROL`), maximum data bytes, maximum devices, allowed origins (`IYNK_ALLOWED_ORIGINS`), trust-proxy flag, maximum rooms, maximum members per room, maximum project size, and log level; unknown or unsafe values (a `*` origin list) make the server refuse to start with a message.
+- Given configuration, When the operator sets environment variables, Then these are all that is needed: data directory, enrolment mode (`IYNK_ENROL`), maximum data bytes, maximum devices, allowed origins (`IYNK_ALLOWED_ORIGINS`), trust-proxy flag, maximum rooms, maximum members per room, maximum project size, and log level; unknown or unsafe values (a `*` origin list) make the server refuse to start with a message.
 - Given a server reachable by strangers, When someone tries to enrol, Then enrolment requires an operator-issued one-time code, or the server runs with `IYNK_ENROL=closed` and refuses all new enrolments; there is no open mode (BACKEND_ARCHITECTURE section 6.3). The server has `IYNK_MAX_DATA_BYTES` and `IYNK_MAX_DEVICES` (PROPOSAL names; defaults are set at build) and, at either cap, refuses new enrolments or uploads with a named error (`server_full` or `storage_full`, final names from API_CONTRACTS). Per-device quotas alone do not count: N devices must not be able to exhaust the disk.
 - Given the process, When it runs, Then it runs as a non-root user, never logs tokens, invite secrets, project text or chat, and exposes `/metrics` only on a loopback or separate port.
 Needs ADR: the store (embedded SQLite file against append-only log files plus snapshots). The requirement is the behaviour: durability across restart, one data directory to back up.
@@ -778,20 +781,20 @@ Acceptance: Given my buddy list, When I choose a buddy and a project, Then "Work
 **R-082. Realtime relay transport.** Feature F-118; must; M1; K-LOCAL.
 Acceptance: Given the relay, When clients connect, Then it speaks WebSocket with a `protocol` version in the first frame and refuses an incompatible one with a clear close code; the document namespace is an opaque string, not the `LABS` enum (`protocol.js:7`); the BroadcastChannel fallback stays for two tabs of one browser (and for tests); the 39 relay tests plus the new authority tests pass; `server/realtime` tests join the CI gate (R-001).
 
-**R-083. Server store.** Feature F-165; must (SQLite file, ADR-0004, with ADR-0422; Postgres out); K-SELF.
-Acceptance: Given the store, When I inspect it, Then it holds: devices (token hash, created, last seen, display name), buddy pairs, rooms (id, project id, host device, invite hashes, expiry), per-room operation log with sequence numbers, periodic snapshots, and share links; it holds no chat text beyond the last 50 lines per room (today's replay, `relay.js:294`) and no keys; log retention is longer than the snapshot interval (RS-09 found a smaller retention makes a reconnect resume impossible and rejects stale text edits: 18,554 rejections at retention 150 and 400). Defaults (PROPOSAL): snapshot every 500 operations, retain 2,000. Rooms expire 30 days after last activity unless pinned by the host. Postgres and Timescale are out: ADR-0004 keeps the store behind a port, so a later Postgres implementation is possible but is not planned. The `db/migrations/0001-0003` and `src/lib/server/db/*` code served the deleted counter, leaderboard and buddy pool (D-016) and is deleted with them.
+**R-083. Server store.** Feature F-165; must (SQLite file, ADR-0004; SQLite only in the build, Postgres is a could, a later adapter behind `ServerStore`, not built); K-SELF.
+Acceptance: Given the store, When I inspect it, Then it holds: devices (token hash, created, last seen, display name), buddy pairs, rooms (id, project id, host device, invite hashes, expiry), per-room operation log with sequence numbers, periodic snapshots, and share links; it holds no chat text beyond the last 50 lines per room (today's replay, `relay.js:294`) and no keys; log retention is longer than the snapshot interval (RS-09 found a smaller retention makes a reconnect resume impossible and rejects stale text edits: 18,554 rejections at retention 150 and 400). Defaults (PROPOSAL): snapshot every 500 operations; resume tail at most 1,000 ops and 200 KB gzipped; payloads kept for 20,000 ops. Rooms expire 30 days after last activity unless pinned by the host. Timescale is out. ADR-0004 keeps the store behind the `ServerStore` port, so a later Postgres adapter is possible but is not built and not planned in any phase. The `db/migrations/0001-0003` and `src/lib/server/db/*` code served the deleted counter, leaderboard and buddy pool (D-016) and is deleted with them.
 
 **R-084. Shared rooms, invite-only.** Feature F-116; must; M1; K-A11Y.
 Acceptance: Given Open room on a project, When I confirm, Then the room is created, my project snapshot is stored on the server as the room's base, and the invite UI (R-076) opens. The room shows who is present (display names), who holds the baton, and connection state. Only invited device tokens can join. Room size and count caps come from configuration and a full server answers "server full" clearly (R3).
 
 **R-085. Rooms on user projects.** Feature F-121; must; M1.
-Acceptance: Given a buddy joins my room, When they connect, Then they receive a snapshot plus the tail of operations since it (not the whole log), see the same parts, wires and code (M1 step 10), and their local store gets a copy under the same project `id` marked as shared. If they edit, I see it. When the room closes, each side keeps its own copy and can keep editing independently (a fork at close, with `meta.origin`). The host's copy is the one that returns to their library.
+Acceptance: Given a buddy joins my room, When they connect, Then they receive a snapshot plus the tail of operations since it (not the whole log), see the same parts, wires and code (M1 step 10), and their local store gets a copy under the same project `id` marked as shared. If they edit, I see it. When the room closes, each side keeps its own copy and can keep editing independently (a fork at close, with `provenance.origin` of kind `fork`). The host's copy is the one that returns to their library.
 
 **R-086. Part, wire and setting edits synchronise.** Feature F-121; must; M1.
 Acceptance: Given two members, When either performs `component.add`, `view.place`, `component.set`, `component.remove`, `net.connect`, `wire.add`, `wire.remove` or `sim.set` (the PDM section 7 kinds), Then the other sees it within the reconnect rule of BUD-10 (under 2 s after a drop; in normal use within one round trip), and both documents have equal hashes (DET-3) after 1,000 random operations in the property test (REF-4).
 
 **R-087. Late join and reconnect.** Feature F-121; must; M1; BUD-10.
-Acceptance: Given a dropped connection, When the client reconnects, Then it resumes from its last acknowledged sequence number: snapshot plus tail when the tail is long (over 1,000 operations or over 200 KB, PROPOSAL), gzip on the wire, and local editing continues meanwhile. Given a resume that fails (log trimmed), When it happens, Then the client gets a fresh snapshot and re-applies its pending operations that still validate, telling the person what was dropped.
+Acceptance: Given a dropped connection, When the client reconnects, Then it resumes from its last acknowledged sequence number: snapshot plus tail when the tail is long (over 1,000 operations or over 200 KB gzipped; RS-09, VERIFIED: a 10,000-op tail is 268 KB gzipped), gzip on the wire, and local editing continues meanwhile. Given a resume that fails (log trimmed), When it happens, Then the client gets a fresh snapshot and re-applies its pending operations that still validate, telling the person what was dropped.
 
 **R-088. Server unreachable.** Feature F-121; must; M1; K-LOCAL.
 Acceptance: Given the server stops mid-session, When I keep editing, Then local editing continues, a banner says "room is offline, your changes are kept", pending operations queue (limit 1,000, then editing is paused in the room only, never lost locally), and on return they are sent; the document in my local store is the source of truth for my side (M1 step 10 error case).
@@ -799,10 +802,10 @@ Acceptance: Given the server stops mid-session, When I keep editing, Then local 
 **R-089. Server-ordered operations.** Feature F-121; must; M1; REF-4.
 Acceptance: Given an operation from a client, When the server receives it, Then it assigns the next global sequence number, validates it against current state (R-033 invariants), appends it to the log and broadcasts it with the result; a rejected operation returns a reason and the client rebuilds its view without it (RS-09: confirmed state plus pending queue replayed on top, one operation in flight at a time). Given the property test of RS-09 ported to CI, When it runs with dropped connections, offline edits, resends and snapshot resume, Then there is no divergence, no lost acknowledged operation and no dangling wire, and the checker detects a missing cascade and a skipped operation (both mutants are caught today).
 
-**R-090. Divergence detection and resync.** Feature F-121; should.
+**R-090. Divergence detection and resync.** Feature F-121; should; M1.
 Acceptance: Given a room, When 100 operations pass or 30 s elapse (PROPOSAL), Then the server sends the document hash for its sequence number; a client whose hash differs asks for a snapshot, replaces its view and reports the event to the local error log (R-009).
 
-**R-091. Buddies-only leaderboard.** Feature F-140; could; D-016.
+**R-091. Buddies-only leaderboard.** Feature F-140; could; D-016. Laps first; the tracks (`lap`, `diagnosis`, `built`, `solved`) and keys are COMMUNITY 3.10, with one opt-in for the leaderboard.
 Acceptance: Given the drone flight range, When a flight ends, Then the person may submit a lap to their buddies' board; only buddies see names and times; there is no public board, no names of strangers and no `name` in the stored payload beyond the display name from R-080 (`lapPayload` drops `name` today per quick win 6); laps are trusted, not verified (F-075 LATER). Deleting a buddy removes their rows from my view.
 
 **R-092. Room chat.** Feature F-117; should.
@@ -815,7 +818,7 @@ Acceptance: Given the host, When they choose Lock, Kick, Close or Pass host, The
 Story: As a buddy helping Amar, I can take the keyboard for the code while he watches, and give it back.
 Acceptance: Given a room, When one member holds the baton, Then they edit the code and everyone else sees it read-only with the holder's name; any member may request it and the holder or host may grant it; the relay enforces it (a non-holder's `source.edit` is rejected); parts and wires remain editable by everyone. Simultaneous typing is out of scope here (section 9.2 decision rule).
 
-**R-095. Share by room invite or by file.** Feature F-089; must; M1.
+**R-095. Share by room invite or by file.** Feature F-089; must; M1. The M1 part is file and room invite; the server share link ships in COLLAB, not M1.
 Acceptance: Given Share, When I choose Invite to room, Then R-076 applies; When I choose Send file, Then a `.iynk` file (R-037) is produced that opens on any iynk, no server needed; When I choose Share link (read-only snapshot), Then the server stores an immutable snapshot under an unguessable token (128 bits, expiry set by me, revocable) and anyone with the link can view and fork it, not edit it. A share link is never created from the browser alone without a server (it says "needs a server" instead of embedding a project in a URL over 8 KB).
 
 **R-096. Buddies' gallery and challenges.** Features F-143 and F-144; could; LATER within the phase.
@@ -824,7 +827,7 @@ Acceptance: Given a buddy has marked a project as shared with buddies, When I op
 **R-097. Hostile-client test suite for the server.** Feature F-119; must; M1; K-SEC.
 Acceptance: Given a script that plays a hostile client, When it runs in CI against a fresh server, Then each of these is refused and the room continues: take over the host's peer id; send `room/baton` as non-holder; post chat with `kind: ai`; flood 600 frames in 5 s; join 1,000 unknown codes in a minute; create 501 rooms; send a snapshot whose canonical size exceeds 5,242,880 bytes, and a snapshot frame over the client-to-server cap (REALTIME_ARCHITECTURE caps); enrol 1,000 devices without an enrolment code (all refused, R-078); send a snapshot with an unknown operation kind; use a forged, expired and revoked token; replay an old invite after expiry. The cases R3, R4, R6, R7, R8, R9 of SECURITY_BASELINE are named in the test titles.
 
-**R-098. Operability of the server.** Feature F-199; should; K-SELF.
+**R-098. Operability of the server.** Feature F-199; should; M1; K-SELF.
 Acceptance: Given the server, When it runs, Then it writes structured logs (no secrets, no project text), exposes `/healthz` and an internal `/metrics` (rooms, members, frame rates, store size), shuts down gracefully by flushing logs and snapshots, passes a backup and restore drill from the guide (stop, copy data directory, start elsewhere, buddies reconnect), and an `upgrade` drill from one version to the next with a rollback note. A restart under load (5 members, 10,000 operations) restores and resumes within BUD-10.
 
 ### 9.4 COLLAB gate checks (Milestone 1 steps 9 to 11)
@@ -858,9 +861,9 @@ Spike status that shapes the phase:
 | Spike | Result | What the phase does |
 |---|---|---|
 | RS-03 avr8js | PASS for correctness (80 of 80 serial lines, PWM within 0.4 points); desktop speed 6.1 to 7.5x real time; under throttle 1.7x at 4x and 1.1x at 6x (main-thread proxy); phone and Chromebook INCONCLUSIVE | Build the adapter (R-102) behind an engine interface; ship avr8js as an opt-in "firmware mode" for Uno-class boards; keep the interpreter as the default and the fallback. Decision rule: if a real low-end device runs avr8js under 1x real time, keep it desktop-only and say so in the label |
-| RS-04 compile speed, RS-05 compile cost and isolation, RS-17 licences | PENDING RS-04, RS-05, RS-17 | Options in R-103; the choice is PENDING. Decision rule from the register: p95 click-to-running under 3 s warm and 8 s cold on a 4G phone with no licence blocker; fail if either path is over 15 s cold or a licence blocker |
-| RS-06 rp2040js | FAIL on CPU (0.54x to 0.78x real time on an M4 Pro) | Not a runtime. Use only as an offline differential oracle for MicroPython behaviour |
-| RS-07 ngspice WASM, RS-08 (b) transient | PENDING RS-07; RS-08 (b) INCONCLUSIVE (not measured) | R-105: decision rule in R-046 |
+| RS-04 compile speed, RS-05 compile cost and isolation, RS-17 licences | Never run (no report). RS-03 measured local `arduino-cli`: 1.17 to 1.40 s cold, 0.33 to 0.56 s warm; GPL-3.0 | R-103: local `arduino-cli` in a container on the user's own server, off by default; imported `.hex` as fallback. The 4G-phone rule is dropped (D-013). What would change it: a cold compile over 8 s on the user's server |
+| RS-06 rp2040js | Pass clause (under 60 percent of a core) not met: 0.54x to 0.79x real time on an M4 Pro; fail clause not triggered. Stock loop only, idle-skip not tested | Not a runtime. Use only as an offline differential oracle for MicroPython behaviour |
+| RS-07 ngspice WASM, RS-08 (b) transient | RS-07 never ran (no folder); RS-08 (b) NOT RUN, INCONCLUSIVE | R-105 is a build and verification task, not a wait: build the `AnalogBackend` interface (ADR-0304), add transient to the in-house engine, then run RS-07 and RS-08(b) style checks as a SIM-phase task. Rule in R-046 |
 | RS-12 Yosys | PASS (10 of 10 elaborate; 2.3 s first load at 50 Mbps; 662 to 725 MB renderer) | R-110, gated on device memory |
 | RS-18 micro:bit simulator, RS-19 ESP32 QEMU | PENDING RS-18, RS-19 | Pass rule: RS-18 at least 90 percent of existing micro:bit lesson checks pass; RS-19 a GPIO change observable from outside QEMU |
 | RS-11 | PENDING | AI phase |
@@ -870,10 +873,10 @@ Spike status that shapes the phase:
 | R-099 | F-043 | must | Honest solver states. Given a circuit with a part the solver cannot express, When I run, Then the part is marked "not modelled yet" with the reason, the rest still solves, and no number is shown for the unmodelled part. Given a circuit among the 6 of RS-08 that are off by more than 5 percent against realistic models, Then the overlay carries a visible 'approximation' provenance on its numbers. Given a solve that fails to converge, Then the message says which net and the last state. | safe, i18n |
 | R-100 | F-042, F-045, F-047 | must | Analog on the live path. Given the netlist and the solver (R-046), When I run, Then pin states and PWM duty enter the solve each tick, part currents and voltages return to part states, and a resistor-less LED burns with the message "113 mA is far above its 20 mA" as the catalogue does today (VERIFIED). Solve cost stays under 1 ms per tick on the largest corpus circuit (0.04 ms today). The REF-3 corpus still passes. | perf, safe |
 | R-101 | F-053 | should | Virtual multimeter. Given a probe on two pins, When running, Then it shows volts (DC), amps (in series) and ohms (power off), each with the tier label and the solver's tolerance; reading an unmodelled node shows "not modelled yet". Keyboard-operable probe placement by pin list. | a11y, safe |
-| R-102 | F-048 | should | Firmware mode with avr8js. Given an Uno project and the compile service (R-103) or an imported hex, When I choose Firmware mode, Then avr8js runs in the worker and an adapter (a) reads DDR to set pin mode, (b) turns edges into duty and frequency per pin, (c) maps analog volts onto ADC channels, (d) drives inputs with `port.setPin`, (e) emits a snapshot at 30 Hz; figures, checks and the serial monitor see the same `Snapshot` and `RunTrace`. REF-2 passes in CI. The label becomes T3 for the CPU and stays T1 for passive parts. **PENDING RS-03 device run.** | perf, safe |
-| R-103 | F-049 | should | Sketch compile service. Options: (A) arduino-cli on Amar's server in a locked container; (B) avr-gcc WASM in the browser. Given a sketch, When I press Build, Then I get a hex and the compiler's real messages. Acceptance numbers from RS-04 and RS-05 (see table above). Licence: arduino-cli is GPL-3.0 or commercial; running it on a server Amar controls for his friends and publishing the server code needs a written answer (RS-17); the browser WASM option has no licence file in the repository found (S4). **PENDING RS-04, RS-05, RS-17.** | self, sec |
+| R-102 | F-048 | should | Firmware mode with avr8js. Given an Uno project and the compile service (R-103) or an imported hex, When I choose Firmware mode, Then avr8js runs in the worker and an adapter (a) reads DDR to set pin mode, (b) turns edges into duty and frequency per pin, (c) maps analog volts onto ADC channels, (d) drives inputs with `port.setPin`, (e) emits a snapshot at 30 Hz; figures, checks and the serial monitor see the same `Snapshot` and `RunTrace`. REF-2 passes in CI. The label becomes T3 for the CPU and stays T1 for passive parts. Decided from RS-03 (`08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md`): correctness PASS, so it is built behind the engine interface without waiting for a device result. Reversal rule: if a real low-end device runs it under 1x real time, Firmware mode is labelled desktop-only. For Amar: that device run (Q-2). | perf, safe |
+| R-103 | F-049 | should | Sketch compile service. Default: local `arduino-cli` in a locked container on the user's own server, off by default; an imported `.hex` is the fallback and always works. Browser avr-gcc WASM is not built (it stays a slot behind ADR-0013 and ADR-0427). Given a sketch, When I press Build, Then I get a hex and the compiler's real messages. Acceptance: a local compile timing task records click-to-hex on the laptop (RS-03 measured 1.17 to 1.40 s cold and 0.33 to 0.56 s warm with `arduino-cli`, MEASURED, one machine); the target is under 3 s warm and 8 s cold. RS-04, RS-05 and RS-17 never ran, and their phone and managed-sandbox clauses assume scale this app does not have (D-013), so they are dropped. Licence: `arduino-cli` is GPL-3.0 (RS-03); running it on a server the user controls is the default, and the licence choice for iynk's own code is For Amar (D-017). | self, sec |
 | R-104 | F-050 | could | Other real engines. Per spike pass rule only (RS-18, RS-19). Each engine is optional, lazy-loaded, labelled with its tier, and absent engines leave the interpreter path unchanged. **PENDING RS-18, RS-19.** | perf |
-| R-105 | F-046 | should | Transient analysis. Given an RC, RLC or buck circuit, When I run a transient, Then the result is within 1 percent of ngspice and a frame costs under 16 ms on the target throttled setting, using the in-house engine if RS-08(b) passes and ngspice WASM otherwise (RS-07: bit-identical across Chrome, Firefox and Safari, and 1 s of simulation under 5 s wall, else drop). **PENDING RS-08(b), RS-07.** | perf |
+| R-105 | F-046 | should | Transient analysis. Given an RC, RLC or buck circuit, When I run a transient, Then the result is within 1 percent of ngspice and a frame costs under 16 ms on the target throttled setting, using the in-house engine if RS-08(b) passes and ngspice WASM otherwise (RS-07: bit-identical across Chrome, Firefox and Safari, and 1 s of simulation under 5 s wall, else drop). Not a wait: RS-08(b) was never run and RS-07 has no report, so the first SIM task builds the `AnalogBackend` interface (ADR-0304) with the in-house engine and runs both checks; ngspice WASM stays the on-demand oracle. | perf |
 | R-106 | F-055 | should | Breakpoints and variable inspector. Given a gutter click, When execution reaches the line, Then the worker pauses with virtual time frozen, locals and globals show with types, Step, Step over and Continue work, and breakpoints are keyboard-operable. | a11y |
 | R-107 | F-051 | should | Pause, step, speed and replay. Given a run, When I pause, Then I can step one tick, change speed from 0.1x to 100x, take a snapshot and restore it; Given a recorded run (the seed plus input log), When I replay, Then pin traces and serial text are equal to the original (DET-1, DET-4). | local |
 | R-108 | F-054, F-207 | should | Oscilloscope, logic analyser, event timeline, serial plotter. Given pins selected, When running, Then traces show virtual time, can be paused and exported as CSV; the 20,000-edge cap is shown and configurable (R-FID-3). | perf, a11y |
@@ -898,7 +901,7 @@ The shared record (D-010; type defined in CORE, used here):
 
 ```
 Diagnosis { cause_id: string, symptom_id: string, evidence: Evidence[], hint_level: 0|1|2|3 }
-Evidence  { kind: "pin"|"net"|"measurement"|"serial"|"state", ref: string, t: number /* virtual ms */, value: string }
+Evidence  { kind: "pin-level"|"net-voltage"|"branch-current"|"serial-line"|"state"|"timeline", ref: string, at: number /* integer ns */, value: number|string, unit?: string, provenance: "computed"|"approximation"|"mocked", tier: "T0"|"T1"|"T2"|"T3", modelIds: string[] }  // SIMULATION_ARCHITECTURE 13.4
 ```
 
 Verdicts: `FailureMode` and the 250 authored faults: preserve and extend (A1). Fault rules on the netlist: new, generic. The existing Break it content: preserve.
@@ -906,7 +909,7 @@ Verdicts: `FailureMode` and the 250 authored faults: preserve and extend (A1). F
 | ID | Feature | Pri | Requirement and acceptance | Cons |
 |---|---|---|---|---|
 | R-118 | F-017 | must | Break it. Given a catalogue circuit or a project, When I choose Break it, Then a fault is injected, the symptom shows, and Explain reveals the cause with the evidence trace; the existing 250 faults keep working. | i18n |
-| R-119 | F-019 | must | Shared diagnosis record. Given any fault, When it is found or explained, Then one `Diagnosis` record (above) is written to the local event log; cause ids come from a closed list in the cause registry (SIMULATION_ARCHITECTURE 13.4); adding one is a code change plus a schema test; a schema test fails if a new fault lacks a `cause_id` and a `symptom_id`. | local |
+| R-119 | F-019 | must | Shared diagnosis record. Given any fault, When it is found or explained, Then one `Diagnosis` record (above) is written to the local event log; cause ids come from a closed list in the cause registry (SIMULATION_ARCHITECTURE 13.4); extension ids start with `x-`; adding a core one is a code change plus a schema test; a schema test fails if a new fault lacks a `cause_id` and a `symptom_id`. | local |
 | R-120 | F-018 | must | Diagnose-first mode. Given a fault with the cause hidden, When I pick a diagnosis from a list that includes plausible wrong causes, Then the app says right or wrong, logs a `diagnose.answer` event with correct=false (not an evidence entry), and lets me try again; I can switch to cause-visible at any time. | a11y |
 | R-121 | F-020 | should | Hint ladder. Given a stuck diagnosis, When I ask for a hint, Then three levels appear in order (where to look, what to measure, which part), each logged as `hint_level` 1 to 3 (0 = none opened), and level 3 never names the fix directly. | i18n |
 | R-122 | F-024 | should | Learning events, local only. Given any diagnosis, hint or pass, When it happens, Then an event is appended to the local log (R-009), viewable and clearable; none is sent anywhere. | local |
@@ -919,7 +922,7 @@ Verdicts: `FailureMode` and the 250 authored faults: preserve and extend (A1). F
 | R-129 | F-022 | should | Reviewed items. Given the English set of 40 reviewed diagnose items, When Amar reviews them, Then each has a cause, a symptom, an expected-evidence list and a source (his own reasoning, a datasheet or a bench result); items he cannot back with a source are marked "model-only". | safe |
 | R-130 | F-183 | should | Real-board check of 10 faults. Given a real Uno and the 10 most common faults, When Amar reproduces each on the bench, Then he records the real symptom beside the simulated one in a fixtures file with date and photos; mismatches become bugs or "not modelled yet" notes. This is the first class-A test set (REF-6). | safe |
 
-FAULTS gate checks: R-124 generates at least 8 distinct rule types that all work on the converted Uno corpus; Diagnosis schema test green; R-123 produces no false warning on the 10 starter projects; R-130 results recorded (or the gate says "not yet checked on hardware").
+FAULTS gate checks: R-124 generates at least 8 distinct rules; zero false alarms on `tests/fixtures/fault-corpus/clean/`; at least 18 of the 20 files in `broken/` caught; Diagnosis schema test green; R-123 produces no false warning on the 10 starter projects; R-130 results recorded (or the gate says "not yet checked on hardware").
 
 ### 10.3 Components and custom parts (PARTS)
 
@@ -937,7 +940,7 @@ Verdicts: figures and the 29 hand-drawn parts: preserve (F-096 KEEP). Fact sheet
 | R-135 | F-102 | could | Code-bearing parts. Only if code parts are in scope. Given a part with behaviour code, When it loads, Then it runs in an opaque-origin iframe with a Worker and no network (RS-15 red-team pass: host stays responsive, no cookie or storage access, worker killed under 2 s against infinite loop, 2 GB allocation, message flood and a parent-origin fetch). **PENDING RS-15.** | sec |
 | R-136 | F-104 | should | New boards and parts beyond the 12. Given a board request from Amar, When added, Then it follows the R-072 checklist; languages stay at the three runtimes. | i18n |
 | R-137 | F-220 | could | Part and template packs for buddies. Given a pack file (descriptors, artwork, templates), When a buddy imports it, Then the app validates it, shows the licence and source fields, refuses a pack with code unless R-135 is on, and never auto-updates. | sec |
-| R-138 | F-097 | must | Part licence field. Given any imported part data, When it is saved, Then `provenance.licence` is required; parts copied from third-party libraries are not accepted without one (BRIEF question 19: hidden licensing risk in imported component data). | safe |
+| R-138 | F-097 | must | Part licence field. Given any imported part data, When it is saved, Then `provenance.license` is required; parts copied from third-party libraries are not accepted without one (BRIEF question 19: hidden licensing risk in imported component data). | safe |
 
 PARTS gate checks: every descriptor passes the schema test; each part has at least one model test against a source (REF-6); import of a malformed pack fails with a message and no state change.
 
@@ -973,7 +976,7 @@ LABS gate checks: parity of verdicts over all migrated lessons, benches and craf
 ### 10.5 AI partner (AI)
 
 Goals. A partner that reads the project, explains, and proposes changes as operations Amar reviews and applies. It works only with a key he brings (K-KEY) and never changes anything unreviewed.
-Non-goals. No hosted AI, no shared key, no child-safety moderation product (shelved with D-004). No learner memory or on-device model (F-115 LATER). No model-initiated action without confirmation.
+Non-goals. No hosted AI, no shared key, no child-safety moderation product (shelved with D-004). No learner memory or on-device model (F-115 LONG-TERM RESEARCH). No model-initiated action without confirmation.
 
 Verdicts: chat, tool calling, search tools: extend. The AI route code: replace the access model with the person's key. The accept-a-change path: replace with operations plus a stale check (A10: the AI cannot change wires at all today; code and part changes sit behind an Accept click, but a stale accept overwrites newer edits, and tool output is unfenced).
 
@@ -1000,12 +1003,12 @@ AI gate checks: injection test set passes; stale-accept test passes; with no key
 Goals. Amar builds a robot from parts, runs it in a physics world, controls it from code and watches it behave the same way every time.
 Non-goals. No full ROS 2 graph in the browser. No walking or arms until the line follower works (F-061 is a research row). No server physics.
 
-Verdicts: the 13 benches (electronics) are preserved and are not robots (council finding, VERIFIED grep); the robot builder is new. Physics engine: **RS-13 PASS for both Rapier and Jolt**: identical snapshot hash after 10,000 steps in Node, Chromium and WebKit, also under 4x and 6x throttle; step mean 0.07 to 0.09 ms unthrottled and 0.44 to 0.54 ms at 6x. The choice is open between two passes. Decision rule: build the line follower on both in a day each; pick the one whose chassis is stable at 5 cm wheel scale without hand-tuning; prefer Rapier (Apache-2.0, council lean) if it is, Jolt (smaller: 0.61 MB brotli split build against 0.88 MB) if not; a single-file Rapier build (1.20 MB brotli) fails the size budget BUD-14. The determinism result is one CPU architecture only (arm64); x86-64 and Firefox are untested (UNKNOWN).
+Verdicts: the 13 benches (electronics) are preserved and are not robots (council finding, VERIFIED grep); the robot builder is new. Physics engine: **RS-13 PASS for both Rapier and Jolt**: identical snapshot hash after 10,000 steps in Node, Chromium and WebKit, also under 4x and 6x throttle; step mean 0.07 to 0.09 ms unthrottled and 0.44 to 0.54 ms at 6x. Rapier, split build, behind `PhysicsBackend` (ADR-0700, SIM 4.3); Jolt only if ROB RA-01 fails (Jolt split build is smaller: 0.61 MB brotli against 0.88 MB). RS-13 determinism is measured on the single-file build on one CPU architecture; a single-file Rapier build (1.20 MB brotli) fails the size budget BUD-14. The determinism result is one CPU architecture only (arm64); x86-64 and Firefox are untested (UNKNOWN).
 
 | ID | Feature | Pri | Requirement and acceptance | Cons |
 |---|---|---|---|---|
 | R-164 | F-213 | must | Robot builder. Given a project with a chassis, motors, wheels and sensors from descriptors, When I place them in 2D mechanical placement, Then joints and masses derive from part properties (kg, mm, N·m) and the robot appears in the physics world; units are SI in the model and shown in the unit the person picks. | a11y |
-| R-165 | F-061 | must | Physics engine integration. Given the engine (lazy, BUD-14), When a robot runs, Then fixed step 1/240 s (PROPOSAL), seeded, in a worker, step under 1 ms at 20 bodies (BUD-13); sleeping is allowed once it keeps the hash test green; the engine loads only on robot pages. Needs ADR: Rapier or Jolt. | perf |
+| R-165 | F-061 | must | Physics engine integration. Given the engine (lazy, BUD-14), When a robot runs, Then fixed step 1/240 s (PROPOSAL), seeded, in a worker, step under 1 ms at 20 bodies (BUD-13); sleeping is allowed once it keeps the hash test green; the engine loads only on robot pages. ADR-0308 / ADR-0700: Rapier, split build, behind `PhysicsBackend`; Jolt only if ROB RA-01 fails. | perf |
 | R-166 | F-060 | must | First robot slice. Given the line follower template (Uno, two motors, two reflectance sensors, track), When I run my code, Then it follows the line, and the same code with the same seed gives the same path hash ten times and in Chromium and WebKit (DET-2). | safe |
 | R-167 | F-214 | must | Control and navigation. Given motor and sensor parts bound through the netlist, When code drives PWM and reads sensors, Then the physics world applies motor models from the part descriptors and returns sensor readings through the World; an unmodelled sensor says so. | safe |
 | R-168 | F-209 | should | Robot sensors. Distance, line, IMU, encoder with noise from the seed and stated ranges. | safe |
@@ -1092,7 +1095,7 @@ Thresholds that come from a measurement (cited) and those that are proposals, so
 | DC solver 18 of 20 within 2 percent (REF-1) | Exit condition; 20 of 20 MEASURED only for matched piecewise-linear models (tests the linear algebra, not the device models); 10 of 20 within 2 percent for realistic models, 6 outside 5 percent | RS-08 REPORT, Independent check |
 | avr8js equal serial text and PWM within 2 percent (REF-2); 3x real time | Exit condition; correctness MEASURED PASS; speed PASS on desktop, not met under throttle | RS-03 REPORT |
 | Yosys 90 percent elaborate, under 15 s, under 1 GB (REF-5, R-110) | Exit condition; MEASURED PASS (10 of 10, 2.3 s at 50 Mbps, 853 to 917 MB whole browser) | RS-12 REPORT |
-| rp2040js CPU under 60 percent of a core | Exit condition; FAILED | RS-06 REPORT |
+| rp2040js CPU under 60 percent of a core | Exit condition; pass clause not met, fail clause not triggered | RS-06 REPORT |
 | Idle CPU, first-load JS, Run start, memory, autosave, document limits, undo and trash retention, hint and rate-limit numbers, coverage floors (BUD-04, 05, 06, 08, 09, 11, 12, 15, TST-3, section 7.3) | PROPOSAL | This file. Baselines where they exist are MEASURED (`PERFORMANCE_BASELINE.md`, `TEST_COVERAGE.md`); the targets are mine. Amar confirms or changes them at each phase start |
 | WCAG criteria (ACC-3) | EXTERNAL | WCAG 2.2 |
 | Accessibility keyboard pass (ACC-2) | PROPOSAL derived from WCAG | RS-16 PENDING |
@@ -1117,18 +1120,18 @@ Shelved by D-013 or removed by D-016. Rows keep their ids in the catalogue so nu
 | New interface languages, right-to-left layout | Six languages kept; RTL is LATER | F-179 |
 | Managed hosting or any paid service run by this project | D-015 | none |
 | Native mobile apps | Not in any phase | none |
-| Mains-voltage design help, manufacturing files (gerber), real ROS 2 graph in the browser, learner memory and on-device model | Safety, not requested, browser limits, LATER | F-115, F-062 (bridge only as a local helper) |
+| Mains-voltage design help, manufacturing files (gerber), real ROS 2 graph in the browser, learner memory and on-device model | Safety, not requested, browser limits, LONG-TERM RESEARCH | F-115, F-062 (bridge only as a local helper) |
 | Offline multi-user merge | RS-20 conditional | F-123 |
 
-LATER, no requirement yet. These catalogue rows are deliberately without an R row. Each gets one when its trigger happens.
+Not built yet, no requirement yet. These catalogue rows (class LATER or LONG-TERM RESEARCH in `FEATURE_PRIORITIZATION.md`; F-086, F-115 and F-123 are LONG-TERM RESEARCH) are deliberately without an R row. Each gets one when its trigger happens.
 
 | Feature | Why later | Trigger for a requirement |
 |---|---|---|
 | F-085 Kit sandbox | Superseded by the blank-project Studio (D-014); fallback only | The Studio editor (R-053 onward) slips past M1 |
-| F-086 2D and 3D mechanical placement | WebGPU is off in Firefox (`TECHNICAL_RESEARCH.md` F8); ROBOT needs 2D placement first | ROBOT phase plan asks for 2D placement |
+| F-086 2D and 3D mechanical placement (LONG-TERM RESEARCH) | WebGPU is off in Firefox (`TECHNICAL_RESEARCH.md` F8); ROBOT needs 2D placement first | ROBOT phase plan asks for 2D placement |
 | F-108 Voice messages and chat translation | Needs rooms first (F-116) | R-084 and R-085 are done |
-| F-115 Learner memory and on-device model | Memory stays on the device; WebGPU gap | Amar asks for cross-session AI memory |
-| F-123 CRDT for offline multi-user merge | PENDING RS-09, RS-20; the server-ordered op log (R-086) is the default | RS-20 shows offline editing is required |
+| F-115 Learner memory and on-device model (LONG-TERM RESEARCH) | Memory stays on the device; WebGPU gap | Amar asks for cross-session AI memory |
+| F-123 CRDT for offline multi-user merge | RS-09 PASS for convergence (`08_RESEARCH_SPIKES/RS-09-op-log-collab/REPORT.md`; Yjs left a dangling wire and lost a move in its runs); only RS-20 is open; the server-ordered op log (R-086) is the default | RS-20 shows offline editing is required |
 | F-179 Right-to-left layout | Six languages kept | A right-to-left language is wanted |
 
 ---
@@ -1140,17 +1143,17 @@ For Amar unless stated. None blocks writing the later phase plans; each blocks a
 | # | Question | Blocks | Notes |
 |---|---|---|---|
 | Q-1 | Which licence, and when is the publish date? | R-015, R-016 | D-017. The provenance check is advisory until the date is set |
-| Q-2 | Can you get a mid-range Android phone and a school-grade Chromebook (and an iPhone if possible) for the device passes? | BUD-01 to BUD-03, BUD-11, REF-2 speed, RS-03, RS-12 | Every device claim is UNKNOWN until then |
+| Q-2 | Can you get a mid-range Android phone and a low-end Chromebook (and an iPhone if possible) for the device passes? For Amar or a buddy; not a build gate | BUD-01 to BUD-03, BUD-11, REF-2 speed, RS-03, RS-12 | Every device claim is UNKNOWN until then |
 | Q-3 | Is a code editor with simultaneous typing needed, or is the baton enough? | R-094 | If yes, a text CRDT for code files only, needs ADR (RS-09, RS-20) |
 | Q-4 | Do you want a folder-per-project layout (git friendly) as well as the single `.iynk` file? | R-037 | UNKNOWN demand |
-| Q-5 | Server store | R-078, R-083 | CLOSED. SQLite file behind a port, `ADR-0004` and `ADR-0422`; Postgres out; the old `db/` migrations are deleted with the counter, leaderboard and buddy pool (D-016) |
-| Q-6 | Compile route for real firmware: a container with arduino-cli on your server, browser WASM, or neither for now? | R-102, R-103 | PENDING RS-04, RS-05, RS-17 |
+| Q-5 | Server store | R-078, R-083 | CLOSED. SQLite file behind a port, `ADR-0004`; SQLite only in the build, Postgres is a could, a later adapter behind `ServerStore`, not built; the old `db/` migrations are deleted with the counter, leaderboard and buddy pool (D-016) |
+| Q-6 | Compile route for real firmware: a container with arduino-cli on your server, browser WASM, or neither for now? | R-102, R-103 | DEFAULT: local `arduino-cli` in a container on your own server, off by default, imported `.hex` as fallback (RS-03 numbers). Changes if cold compile is over 8 s |
 | Q-7 | Do the AI providers you will use allow browser-direct calls? If not, the "optional" server must proxy AI | R-010, R-154 | UNKNOWN (CORS). See objection O-2 |
 | Q-8 | Board order in Studio after the Uno (R-072)? | R-072 | A PROPOSAL order is given |
-| Q-9 | What is on the leaderboard: flight laps only, or lesson completions too? | R-091 | Laps only is the default |
+| Q-9 | What is on the leaderboard: flight laps only, or lesson completions too? | R-091 | CLOSED: laps first; the tracks and keys are COMMUNITY 3.10; lesson counts are not posted |
 | Q-10 | Should telemetry ever have an opt-in upload to a server you run? | R-009 | Default: no |
 | Q-11 | Which contributor-only files (HANDOFF, handoff notes, hackathon docs, requests) are published, rewritten or kept private? | R-014 | The audit notes many cited files are git-ignored |
-| Q-12 | Are read-only share links (which need your server) acceptable, given a project in a URL is too large? | R-095 | |
+| Q-12 | Are read-only share links (which need your server) acceptable, given a project in a URL is too large? | R-095 | CLOSED by D-021: links are off by default, immutable and expiring |
 | Q-13 | Who runs the screen-reader pass and with which reader? | ACC-4, R-070 | UNKNOWN today |
 | Q-14 | Stored coordinates unit and rounding (0.01 mm integer): confirm at CORE start (ids are `prj_` and the vocabulary is PDM section 7, both decided) | R-025, R-033 | Needs ADR |
 
@@ -1168,7 +1171,7 @@ Objections to decisions, with evidence. The requirements above still follow the 
 | O-2 | D-015 (the server is optional; AI uses keys the user brings) | If an AI provider does not allow browser-direct calls (CORS is UNKNOWN), AI needs a proxy, so the server is optional for editing and rooms but not for AI. The Next.js app already has server routes, so a self-hoster runs a Node process either way. A purely static, serverless local-first app is not what the repository is. | Specified the proxy path (R-010) and the "not set up" state, and left the browser-direct path as an open question (Q-7) |
 | O-3 | D-014 order (export last) | A local-first app that keeps projects in a browser needs a file export on day one, or an evicted IndexedDB loses work (Safari policy is EXTERNAL and HYPOTHESIS; the lost-project case is stated in the M1 walk). Waiting until the last phase for export is unsafe. | Pulled the project file (R-037), `.ino` export and import (R-051) and local data export (R-049) into CORE as slices; the rest of export stays in the last phase |
 | O-4 | D-014 order (faults after fidelity, labs moved in late) | Faults on any circuit (R-123, R-124) need the netlist from CORE and the solver for current-based rules; the solver module is specified in CORE (R-046) as a should so FAULTS does not wait for the whole SIM phase. This is a slice move, not a reorder. | Marked R-046 as a CORE should; R-100 integrates it live in SIM |
-| O-5 | D-010 / the technical research lean toward real-chip engines | RS-06 FAILED the CPU clause (rp2040js at 0.54x to 0.78x real time on an M4 Pro) and RS-03's speed passes only on desktop. "Real emulators where a browser-ready engine exists" holds for AVR on desktop and not for the RP2040 in the browser. | The TypeScript interpreters stay the default runtime; avr8js is optional; rp2040js is a test oracle only |
+| O-5 | D-010 / the technical research lean toward real-chip engines | RS-06 pass clause (under 60 percent of a core) not met: rp2040js at 0.54x to 0.79x real time on an M4 Pro; fail clause not triggered and RS-03's speed passes only on desktop. "Real emulators where a browser-ready engine exists" holds for AVR on desktop and not for the RP2040 in the browser. | The TypeScript interpreters stay the default runtime; avr8js is optional; rp2040js is a test oracle only |
 | O-6 | M1 uses the digital slice without the solver (FEATURE_PRIORITIZATION 7.4) | The cost is that no analog behaviour (divider, wrong resistor, brown-out) exists in M1, and the Studio is then close to the old lessons plus wiring. The prioritization marks "enough for a useful first Studio" as a HYPOTHESIS. | Added the test: the ten starters run on the digital slice (R-056), and R-046 is built in CORE to keep SIM short |
 | O-7 | RS-01 INCONCLUSIVE and Studio is the biggest build | The editor canvas is the largest single risk to the budgets, and its device verdict is open. Starting STUDIO before a device run risks a rework of the renderer. | Put the renderer behind an interface (R-053) with a decision rule, so a swap costs one module |
 
@@ -1191,7 +1194,7 @@ Upstream.
 | `08_RESEARCH_SPIKES/RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13/REPORT.md` | Measured results and verdicts |
 | `03_PRODUCT/FEATURE_CATALOGUE.md`, `FEATURE_PRIORITIZATION.md` | Feature ids, phases, Milestone 1 |
 
-Journeys to requirements (J-01 to J-13 as in the catalogue, section 5).
+Journeys to requirements (J-01 to J-17, USER_JOURNEYS.md).
 
 | Journey | Requirements |
 |---|---|
@@ -1208,6 +1211,10 @@ Journeys to requirements (J-01 to J-13 as in the catalogue, section 5).
 | J-11 Import a project or sketch | R-051, R-181, R-103, R-134 |
 | J-12 Export a physical build | R-182, R-185, R-186, R-189 |
 | J-13 Run your own server | R-078, R-079, R-077, R-080 |
+| J-14 Make and use a custom part | R-134, R-132, R-138 |
+| J-15 Build and drive an original robot | R-164, R-165, R-166, R-167 |
+| J-16 Design and fly a drone | R-172, R-173, R-174, R-175 |
+| J-17 Debug a run and replay it | R-106, R-107 |
 
 Downstream. Feature ids F-001 to F-221 as in the catalogue (each requirement names its feature). The architecture pass assigns ADR ids to the list in section 13. The roadmap reads the phase ranges of section 2 and the gate tables of section 11. The test strategy reads section 3 and the REF, DET, TST and ACC ids. R-ids are stable: new requirements are appended, retired ones are marked, none renumbered.
 
@@ -1238,3 +1245,81 @@ New objection from this pass: the three architecture files disagree on the enrol
 | # | Issue | What I did |
 |---|---|---|
 | 1 | F-070 and F-071 had no requirement; six LATER ids had no R row; R-083 listed Postgres; Q-5 open | Applied. Added R-193 (F-070, ghosts keyed by `(course, model id)`, DRONE Objection 7, CM-25) and R-194 (F-071, medals and daily challenge for the game model only, C095 caveat) at the end of the 10.7 table, with Given/When/Then. Section 12 now has a "LATER, no requirement yet" table for F-085, F-086, F-108, F-115, F-123, F-179 with the trigger for each. R-083 now reads "SQLite file, ADR-0004; Postgres out"; the Postgres/`db/` text in R-083, the B0 `.env.example` line and the 9.x server-store row follow it. Q-5 is closed with a pointer to ADR-0004 and ADR-0422. Range references updated to R-194 (contents and section 10 title). Note: ADR-0004 is still marked "proposed" in its own header; I treated it as decided as the review states. The section 2 DRONE row now reads "R-172 to R-180, R-193, R-194" because the new ids sit after the EXPORT block. |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Sources: `04_ARCHITECTURE/RECONCILIATION.md` (RC rows) and the spike reports under `08_RESEARCH_SPIKES/`. Line numbers below are the file as edited.
+
+### Reconcile changes
+
+| Id | Change |
+|---|---|
+| RC-02 | R-083 and Q-5 cite `ADR-0004` only. |
+| RC-03 | R-083 and Q-5: SQLite only in the build; Postgres is a could, a later adapter behind `ServerStore`, not built. |
+| RC-06 | R-083 defaults: resume tail at most 1,000 ops and 200 KB gzipped; payloads kept for 20,000 ops. The old "retain 2,000" is gone. |
+| RC-12 | R-066: at most 256 checkpoints in the document header; `history.ops` keeps up to 1,000 ops, then compacts into a checkpoint. |
+| RC-13 | R-095: the M1 part is file and room invite; the server share link ships in COLLAB. Q-12 closed by D-021. |
+| RC-14 | Not applied as worded. R-097 and R-078 already read `IYNK_ENROL`. The two `IYNK_ENROLLMENT` strings are in the "Review fixes" rows, where they quote the name API_CONTRACTS used at the time; changing them would make those rows false. They stay as history. |
+| RC-20 | R-076: default uses 1 for editor invites, 5 for viewer invites, at most 20; at most 7 days. |
+| RC-34 | R-025: `schemaVersion = "1.1"`. |
+| RC-40 | R-039 fork acceptance: `provenance.origin` (kind `fork`), not `meta.origin`. |
+| RC-43 | R-119: extension ids start with `x-`. |
+| RC-49 | Diagnosis block: `Evidence` now has the SIM 13.4 shape (`kind` pin-level, net-voltage, branch-current, serial-line, state, timeline; `at` integer ns; `value`; `unit?`; `provenance`; `tier`; `modelIds`). |
+| RC-51 | REF-7, spike table, exit-condition row and O-5: "pass clause not met, fail clause not triggered, 0.54x to 0.79x". |
+| RC-52 | BUD-14 note and the Robotics verdicts: Rapier, split build, behind `PhysicsBackend`; Jolt only if ROB RA-01 fails; determinism measured on the single-file build on one CPU architecture. |
+| RC-58 | R-043 and the section 7 gate row: `cancel()`, then terminate after 2 s; 400,000 statements per slice. |
+| RC-60 | Section 5 tier table now T0 Illustration, T1 Teaching model, T2 Calculated model, T3 Runs your firmware, plus the "Checked on a real board" mark. R-FID-1: chip shows the lowest tier, no "mixed". R-FID-2 and R-029: `simulation.tier` and `simulation.status`; pins use `type` and `class`. |
+| RC-64 | M1 count 51 of 184. M1 tag removed from R-064 and R-009; added to R-017, R-030, R-061, R-090, R-098, R-FID-5. |
+| RC-65 | R-091 and Q-9: laps first; tracks and keys are COMMUNITY 3.10. Q-9 closed. |
+| RC-66 | R-025 already lists `boards`, `components`, `nets`, `views`, `sources`; left as is. R-044: `simulation.seed`. |
+| RC-68 | R-004: `/passport`, `/verify` and the `/together` story and night pages return not-found; the `/together` shell stays. |
+| RC-70 | Section 15 reads J-01 to J-17; rows J-14 to J-17 added (R-134/R-132/R-138; R-164 to R-167; R-172 to R-175; R-106/R-107). The row choices are mine; the journey owner should confirm. |
+| RC-71 | R-075: defaults 20 live rooms, 100 stored, 8 members; 500 and 8 describe the old relay. |
+| RC-72 | F-115 and F-086 read LONG-TERM RESEARCH (section 12 and the AI non-goals). Section 3 says `must/should/could` is requirement priority and the FEATURE_PRIORITIZATION class is build order. The "later" table lead-in names both classes. |
+
+### Spike changes
+
+| Spike | Change |
+|---|---|
+| RS-01 | R-053 is decided with three rules (drawn-element budget, LOD from the start, no hand-drawn filter). The renderer ADR closes on desktop Chromium numbers plus recorded misses. Numbers and the checker's reading are in R-053. Device run moved to For Amar. |
+| RS-03 | R-102 no longer PENDING; built behind the engine interface, with a desktop-only reversal rule. R-103 and the RS-04/05/17 row: local `arduino-cli` in a container on the user's server, off by default; `.hex` import as fallback. Q-6 gets that default. |
+| RS-06 | 0.54x to 0.79x wording (see RC-51). Pico stays on the TypeScript interpreter. |
+| RS-07, RS-08(b) | R-105 and the spike row: a build and verification task in SIM, not a wait. |
+| RS-09 | F-123 row: RS-09 PASS; only RS-20 open; the op log is the default. |
+| RS-12, RS-13 | Already current; RS-13 caveats added through RC-52. |
+| Section 11 | The gate table already says "there is no pilot" (D-013). No change. |
+| Q-2 and the device-results record step | Wording is "low-end Chromebook"; the device run is For Amar or a buddy, not a build gate. |
+
+### For Amar (not agent tasks)
+
+| Item | Where |
+|---|---|
+| Phone and Chromebook runs for RS-01, RS-03, RS-12 (UNKNOWN until done), recorded in `docs/device-results.md` | Q-2, R-053, R-102 |
+| Choose the licence for iynk's own code | D-017, R-103 |
+| Reconnect time on a real home network (UNKNOWN) | RS-09, BUD-10 |
+| Screen-reader pass of the editor | Q-13, RS-16 |
+| Check simulated faults on a real board with a multimeter | R-130 |
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-07, RC-17 | R-078 configuration list: "signing secret" removed (ADR-0428, no signing secret exists). |
+| RC-28 | R-008 acceptance: `IYNK_AI_ENABLE=1` / `IYNK_SEARCH_ENABLE=1` opt-in (default 0); off gives 501 `feature_disabled` and probe key false. |
+| RC-40 | Starters acceptance (R-056) and room close (R-087 area): `provenance.origin` (`template`/`migration`; `fork`). |
+| RC-52 | R-165: ADR-0308 / ADR-0700, Rapier behind `PhysicsBackend`; Jolt only if ROB RA-01 fails. |
+| RC-11 | BUD-08 autosave: added "at most 5 s after the first unsaved commit". |
+| RC-06 | R-087 resume threshold: 200 KB gzipped, RS-09 VERIFIED (268 KB for a 10,000-op tail). |
+| RC-09 | R-035: index row now includes `archived`; points to the 19 stores of ADR-0106 (PDM 12.1). |
+| RC-18 | R-076: XXXX-XXXXXX shape, 5 wrong secrets per channel, 10 minutes (ADR-0812). The matching row in `USER_JOURNEYS.md` (line 1522, "Needs an ADR") is outside this file's edit scope and still needs closing. |
+| RC-33 | R-138: `provenance.license`. |
+| RC-48 | FAULTS gate: 8 rules, zero false alarms on `clean/`, 18 of 20 in `broken/`. |
+| RC-51 | R-045 area: RS-06 wording corrected to the pass clause not met (0.54x to 0.79x), fail clause not triggered. |
+| RC-60 | R-029: CI fails on a descriptor without `simulation.tier` and `simulation.status`. |
+| RC-72 | Section 3 sentence was already present; left as is. Line for F-086 now reads LONG-TERM RESEARCH. |
+| RC-66 | No leftover found (R-025, R-044, FP 7.2 already use schema names). No change. |
+
+
+## Reconcile, final nits (2026-10-27)
+
+- CORS acceptance line (about line 279): "the server token" now names IYNK_SERVER_TOKEN in B0 (BACKEND 13.1, deleted later), then the device bearer token from the collaboration phase (ADR-0007, D-018). No setup token (RC-15, RC-16).

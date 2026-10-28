@@ -1,6 +1,6 @@
 # ADR-0801: The canvas is an SVG scene core behind a Renderer interface, with level of detail and culling from the first commit
 
-Status: proposed, 2026-10-27; the renderer implementation stays open until the RS-01 device run (INCONCLUSIVE). Author: Studio editor design seat.
+Status: proposed, 2026-10-27. RS-01 is INCONCLUSIVE on real devices, so the choice is reversible behind `Renderer` (see Reversibility). The phone and Chromebook run is a For Amar check (Q-2, `docs/device-results.md`) and does not gate starting Studio (D-014). Author: Studio editor design seat.
 Upstream: D-011; audit P1; RS-01 report; R-053, BUD-01 to BUD-03. Downstream: F-076, F-080; STU-01, STU-02, STU-28. Spec: `03_PRODUCT/STUDIO_EDITOR.md`, STUDIO_EDITOR sections 5.1 and 5.4.
 
 ## Problem
@@ -21,7 +21,7 @@ A 500-part, 1,000-wire scene with illustrated art has about 47,000 SVG elements.
 | `@xyflow/react` | Node-and-edge library | Rejected: 61.6 KB gzip beyond React, node-and-edge model, loose handles needed for pins on parts |
 | React-reconciled SVG scene | Parts as React components | Rejected: frame time equal at 1x in RS-01, but every pan and zoom would pass through reconciliation |
 | Naive full-redraw Canvas 2D | One canvas, redraw each frame | Rejected: worse in fit and zoom in RS-01 |
-| Thin TypeScript scene core drawing SVG DOM behind `Renderer`, LOD and culling from the start | `mount`, `setViewport`, `draw`, `hitTest`, `hitRect`, `dispose` | **Chosen** (implementation open) |
+| Thin TypeScript scene core drawing SVG DOM behind `Renderer`, LOD and culling from the start | `mount`, `setViewport`, `draw`, `hitTest`, `hitRect`, `dispose` | **Chosen** |
 
 ## Decision
 
@@ -34,7 +34,7 @@ Build a thin scene core in TypeScript that draws SVG DOM behind a `Renderer` int
 
 ## Performance data
 
-VERIFIED, RS-01 (Apple M4 Pro, 500 parts, 1,000 wires, 47,097 elements). Headed Chromium 1x p95 pan-fit / zoom: plain SVG 25.8 / 25.0 ms, SVG with culling 25.2 / 25.0 ms, SVG with culling and LOD 10.6 / 10.7 ms, Canvas 2D full redraw 33.6 / 25.0 ms. 4x CPU throttle zoom p95: 42.4, 49.9, 34.1, 49.3 ms. DPR 2 zoom p95: 66.4, not run, 9.2, 25.1 ms. The RS-01 independent check says the full-art configuration is unlikely to pass on a real phone or Chromebook. No phone or Chromebook was measured: UNKNOWN. The 10,000-element starting budget and the 35 and 120 px thresholds are PROPOSAL, to be replaced by the harness sweep in section 14.2.
+VERIFIED, RS-01 (Apple M4 Pro, 500 parts, 1,000 wires, 47,097 elements). Headed Chromium 1x p95 pan-fit / zoom: plain SVG 25.8 / 25.0 ms, SVG with culling 25.2 / 25.0 ms, SVG with culling and LOD 10.6 / 10.7 ms, Canvas 2D full redraw 33.6 / 25.0 ms. 4x CPU throttle zoom p95: 42.4, 49.9, 34.1, 49.3 ms. DPR 2 zoom p95: 66.4, not run, 9.2, 25.1 ms. The RS-01 independent check says the full-art configuration is unlikely to pass on a real phone or Chromebook. No phone or Chromebook was measured: UNKNOWN. The 10,000-element starting budget and the 35 and 120 px thresholds are HYPOTHESIS (RC-57), to be replaced by the harness sweep in section 14.2. The RS-01 check (`08_RESEARCH_SPIKES/RS-01-editor-rendering/REPORT.md`) reproduced the 1x results in all 30 cells, found 4x results up to one display frame slower than reported, and did not re-run 6x, headless, WebKit or DPR 2. Other RS-01 figures: 4x/6x zoom with LOD is 34.1 ms / 58 ms, WebKit plain SVG pan-fit is 63 ms (22 ms with LOD), bundle cost of the custom core is 1.6 KB gzip against 61.6 KB for `@xyflow/react`. The numbers assume a filter-free canvas.
 
 ## Cost implications
 
@@ -50,14 +50,28 @@ Part art is flat SVG without script, extracted at build time and referenced by `
 
 ## Reversibility
 
-High for the renderer (swap behind the interface, STU-01 test renderer runs every tool test); Medium for the LOD thresholds (measured numbers replace them).
+High for the renderer. What would change the choice: if the device run (For Amar) shows LOD SVG over 33 ms p95 at gesture time on a phone or Chromebook even after the R-053 rule, replace the SVG implementation with Canvas 2D or WebGL behind the same interface. (swap behind the interface, STU-01 test renderer runs every tool test); Medium for the LOD thresholds (measured numbers replace them).
 
 ## Migration plan
 
-1. Land `Renderer`, a test renderer, and the SVG implementation. 2. Run the section 14.2 harness on Amar's devices. 3. Replace the proposed thresholds and element budget with the measured knee. 4. If gesture mode fails at 4x, apply the R-053 rule: fewer elements per part, then wires on one canvas layer.
+1. Land `Renderer`, a test renderer, and the SVG implementation with LOD and culling (agent task, STU-01, STU-02; Studio does not wait for step 2). 2. For Amar: run the section 14.2 harness on his devices and record it in `docs/device-results.md` (Q-2). Agents run the same harness under 4x and 6x CPU throttle meanwhile and label those results as throttle-only. 3. Replace the proposed thresholds and element budget with the measured knee. 4. If gesture mode fails at 4x, apply the R-053 rule: fewer elements per part, then wires on one canvas layer.
 
 ## Known limitations
 
-- Device results are missing (INCONCLUSIVE).
+- Device results are missing (RS-01 INCONCLUSIVE); throttled runs stand in until Amar's device run and are never reported as "met on devices".
 - Isometric extracted art may look wrong top-down; a few core parts may need redraws (Q-S1).
 - Gesture mode is a HYPOTHESIS.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RS-01 | Status line replaced: the old gate "stays open until the RS-01 device run" is removed. Decision is SVG scene core with LOD and culling behind `Renderer`, no canvas filter, drawn-element count as the budget. The device run is a For Amar check (Q-2, `docs/device-results.md`), not a gate on Studio (D-014). |
+| RS-01 | Performance data: added the independent-check scope (1x reproduced in 30 cells, 4x up to one frame slower, 6x/headless/WebKit/DPR 2 not re-run), 6x and WebKit figures, and bundle sizes, citing `08_RESEARCH_SPIKES/RS-01-editor-rendering/REPORT.md`. |
+| RS-01 | Reversibility: added what would change the choice (LOD SVG over 33 ms p95 on a real device after the R-053 rule). Migration plan: device run moved to For Amar; agents run throttled harness meanwhile. |
+| RC-57 | LOD thresholds (35 and 120 px, 15 percent hysteresis) relabelled from PROPOSAL to HYPOTHESIS, matching RECONCILIATION.md. |
+| Skipped | `Renderer` method names, option table and constraints were already consistent with the decision; left unchanged. |
+
+## Reconcile, final nits (2026-10-27)
+
+- RC-62: status line now reads `proposed`. The rest of the old line (Studio build may start, device run is a For Amar check) is kept as written elsewhere in this file.

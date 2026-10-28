@@ -134,9 +134,15 @@ export interface RoboticsData {
   arena: Arena;                         // static world
   ros?: RosConfig;                      // section 11
 }
+// RosConfig as defined in schemas/robotics.domain.schema.json ($defs/RosConfig); all three fields are required.
+export interface RosConfig {
+  namespace: string;                    // '/' then 1 to 4 lowercase segments, e.g. '/robot'
+  nodes: RosNode[];                     // up to 32; kinds robot_state_publisher, diff_drive_controller (left_joint, right_joint), user (source: src_ id)
+  sensor_topics: { sensor: string; topic: string; message: 'sensor_msgs/Range' | 'sensor_msgs/LaserScan' | 'sensor_msgs/Imu' | 'sensor_msgs/JointState' | 'sensor_msgs/BatteryState' }[];  // up to 64
+}
 export interface Surface { id: string; name: string; mu: number; crr: number; reflectance: number }   // mu 0..3, crr (rolling resistance coefficient) 0..0.2, reflectance 0..1
 export interface BodyPhysics {
-  collider: 'from-shape' | { kind: 'box'|'cylinder'|'sphere'|'convex'; size_mm?: number[]; points_mm?: number[][] };  // convex: up to 256 points
+  collider: 'from-shape' | { kind: 'box'|'cylinder'|'sphere'|'convex'; size_mm?: number[]; points_mm?: number[][] };  // convex: up to 256 points; size_mm is box [x, y, z] full extents, cylinder [radius, height] (axis along body z), sphere [radius]
   friction: number;                     // 0..3
   restitution: number;                  // 0..1, default 0
   damping_lin: number; damping_ang: number;   // 1/s, default 0
@@ -170,7 +176,7 @@ Why not put these in `mechanical`: the core document would grow robot-only field
 
 The scene builder is a pure function `buildScene(doc, deps): SceneSpec` (the `SceneSpec` of SIM_ARCH 10.2). Rules:
 
-1. **Order.** Bodies, colliders and joints are created in canonical order: bodies sorted by id, then each body's colliders, then joints sorted by id. `order.mjs` showed that a different creation order gives a different hash and a position difference of 10 mm after contact (VERIFIED). The sort uses code-unit order (PDM 6.2).
+1. **Order.** Bodies, colliders and joints are created in canonical order: statics first (sorted by id), then bodies sorted by id with each body's colliders, then joints sorted by id (SIM_ARCH 6.7). `order.mjs` showed that a different creation order gives a different hash and a position difference of 10 mm after contact (VERIFIED). The sort uses code-unit order (PDM 6.2).
 2. **Mass.** Body mass is `mass_g / 1000` kg. If a body has a `component` and no `mass_g`, the mass is the part's mass. A body with mass 0, or a non-fixed joint child with no mass, is an error `RB-E-MASS`. Colliders get density 0 and mass properties are set on the body, so a collider is never counted twice. (RS-13 used density; the builder sets mass explicitly because the document stores mass, not density.)
 3. **Inertia.** From the `Body.inertia_g_mm2` override if present; otherwise from the shape and mass: box `m(b²+c²)/12` per axis, cylinder about its axis `m r²/2` and across `m(3r²+h²)/12`, sphere `2mr²/5`. For a mesh body: the inertia of its axis-aligned bounding box, with a warning `RB-W-INERTIA-BOX`. Inertia must satisfy the triangle inequality (`Ixx + Iyy >= Izz`, cyclic) or the error is `RB-E-INERTIA`.
 4. **Colliders.** `from-shape` maps box, cylinder and sphere directly. A mesh body is visual only unless it is static (then a triangle mesh, up to 20,000 triangles) or has a `convex` collider (up to 256 points). Dynamic trimesh is refused. Minimum collider dimension is 5 mm (error `RB-E-THIN`; below that the engine behaviour is unreliable and the tunnel limit of 4.4 gets silly).
@@ -529,26 +535,9 @@ Import only, later, for a subset (links, joints, simple geometry, inertial). Gaz
 
 ## 13. Faults and diagnosis for robots
 
-Faults are operations on the model and failures are derived (ADR-0314). Robot-specific fault ops reuse the `FaultOp` kinds of SIM_ARCH 13.2 (`open`, `swap`, `value`, `stuck`, `degrade`) and add physical ones as `value` or `stuck` on mechanical parameters: a wheel's friction, a motor's `ke` (weak magnet), a gearbox's efficiency (seized gear), a sensor's mount pose (`mount` pose change as a `mech.set` op), encoder channel swap (`swap` on A/B pins), battery capacity. "Break it" and "Repair" are the same ops as on a board (F-017, F-030).
+Faults are operations on the model and failures are derived (ADR-0314). Robot-specific fault ops use the `FaultOp` kinds of SIM_ARCH 13.2 (`open`, `short`, `swap`, `value`, `polarity`, `cold-joint`, `stuck`, `degrade`, `code-pin`, `param`, `mount`, `sensor`, `swap-phase`). A sensor failure is a `sensor` op (`sensor`, `mode` of `dropout`, `stuck`, `bias` or `noise`, optional `magnitude`, `atNs`, optional `durationNs`). Swapped motor phases are a `swap-phase` op on the `motor` id. Mechanical parameters are `param` ops (`target`, dotted `path`, `factor` or `value`): a wheel's friction, a motor's `ke` (weak magnet), a gearbox's efficiency (seized gear), battery capacity. A sensor's mount pose change is a `mount` op (`mount`, `pose`). Encoder channel swap is `swap` on the A/B pins. `stuck` takes a level (`{ part, level }`). `param` and `mount` faults change the simulator's working copy and become project ops only when a person injects them (SIM_ARCH 13.2). "Break it" and "Repair" are the same ops as on a board (F-017, F-030).
 
-Proposed core cause ids (the list in SIM_ARCH 13.4 is a registry; these are additions the simulation seat must accept; each has a detector, a layer and a symptom text key):
-
-| cause_id | Detector | Layer |
-|---|---|---|
-| `motor-stall` (exists) | joint speed near 0 with current near `V/R` for over 0.5 s | L4, L7 |
-| `motor-direction-reversed` | commanded direction sign differs from joint velocity sign for 0.5 s with torque applied | L7 |
-| `encoder-channel-swapped` | counts decrease while the joint angle increases | L7 |
-| `wheel-slip` | wheel surface speed differs from ground speed by more than 20 percent (default) for 0.3 s | L7 |
-| `driver-undersized` | RB-C-04 fails or driver current limit reached | L4 |
-| `logic-brownout-from-motors` | `brownout` while motor current rises (correlation window 20 ms) | L4, L5 |
-| `battery-sag-reset` | MCU reset within 50 ms of a motor start with pack voltage below the regulator input minimum | L4, L5 |
-| `sensor-too-high` | line sensor height above the optimum range | L7, L9 |
-| `sensor-saturated` | ADC at full scale or empty for the whole run | L9 |
-| `ranger-beam-blocked` | ranger minimum-range hit inside the robot's own body | L7 |
-| `tip-over` | body tilt beyond 45 degrees or RB-C-07 triggered | L7 |
-| `loop-too-slow` | control loop period over 2 times its set period (from the loop-timing probe) | L5 |
-| `servo-jitter-supply` | servo rail dips with servo current while commanded position is constant | L4, L7 |
-| `stepper-lost-steps` | lost-steps counter above 0 | L7 |
+Cause ids: the single registry is SIMULATION_ARCHITECTURE 13.4 (45 ids, closed list plus `x-` extension ids, RC-43). This file keeps no list of its own. The robot-relevant ids are `motor-stall`, `motor-direction-reversed`, `encoder-channel-swapped`, `wheel-slip`, `driver-undersized`, `battery-sag-reset`, `sensor-too-high`, `sensor-saturated`, `ranger-beam-blocked`, `tip-over`, `loop-too-slow`, `servo-jitter-supply` and `stepper-lost-steps`; detectors, layers and symptom keys are in SIM_ARCH 13.4. Former `logic-brownout-from-motors` is now `battery-sag-reset`. A cause the registry lacks is added there first, or used here as `x-<part>.<name>`.
 
 Evidence uses the `Evidence` record of SIM_ARCH 13.4 with `provenance` and `tier`. The diagnosis record is the one D-010 fixes, unchanged: `{cause_id, symptom_id, evidence, hint_level}`.
 
@@ -570,7 +559,7 @@ Each row becomes a fidelity registry entry (ADR-0310) with `implements`, `mocked
 
 ## 15. Template ladder (ADR-0707)
 
-BRIEF 11.2: depth and correct behaviour over many shallow templates. Seven templates, built in order. A template is finished when: it has a project file with parts, wiring, code in Arduino C++ and (where the board supports it) MicroPython, a physics arena, a hash test (RA-02 style), at least five faults drawn from the cause ids of section 13, a checklist of checks (RB-C-xx) that pass on the shipped design, a "what it models and what it does not" panel, and a lesson path with the diagnosis flow.
+BRIEF 11.2: depth and correct behaviour over many shallow templates. Seven templates, built in order. A template is finished when: it has a project file with parts, wiring, code in Arduino C++ and (where the board supports it) MicroPython, a physics arena, a hash test (RA-02 style), at least five faults drawn from the cause ids of SIM_ARCH 13.4 (section 13), a checklist of checks (RB-C-xx) that pass on the shipped design, a "what it models and what it does not" panel, and a lesson path with the diagnosis flow.
 
 | # | Template | Parts (from the existing benches where possible) | What it teaches | New capability needed |
 |---|---|---|---|---|
@@ -591,7 +580,7 @@ All seven templates are two driven wheels plus a caster (templates 1 to 5 and 7)
 | Item | Spec | Evidence |
 |---|---|---|
 | Where | SimWorker; the engine loads lazily, after its size is shown (R-110); only on projects that contain a `mechanical` section with a dynamic body | SIM_ARCH 17.1 rule 3 |
-| Step cost | 0.07 to 0.09 ms mean at 20 bodies and 6 motor joints on the M4 Pro; 0.44 to 0.54 ms at 6x CPU throttle; p95 of 100-step batches at most 0.61 ms at 6x | RS-13 MEASURED. State readback and rendering are extra and unmeasured |
+| Step cost | 0.07 to 0.09 ms mean at 20 bodies and 6 motor joints on the M4 Pro; 0.44 to 0.54 ms at 6x CPU throttle; p95 of 100-step batches at most 0.61 ms at 6x | RS-13 MEASURED (check: Yes for hashes; the checker did not re-run the 4x and 6x timings or sizes). State readback and rendering are extra and unmeasured. RA-02 (x86-64 and Firefox hash) is the open item from that check |
 | First step | Rapier stalls 24 to 27 ms on the first step in Node and Chromium, 157 ms at 6x throttle; do one dummy step during load, behind the "loading physics" state | RS-13 MEASURED |
 | Worst single steps | 1 to 5 ms in warmed runs under throttle: p99.9 is not under 1 ms on a slow device. The step budget is read as mean and batch p95 (BUD-13) | RS-13 |
 | Wire size | split artifact of 16.1: 888,151 B brotli q11 (WASM 855,167 B plus TypeScript wrapper and glue 32,984 B), MEASURED including the wrapper; single-file compat 1,201,977 B. Budget 1.0 MB = 1,000,000 B (BUD-14, HYPOTHESIS); fallback 1.25 MB if the split form is lost | RS-13; `DP-01-robot-prototypes/results/split-build.json`; RA-27 |
@@ -643,7 +632,7 @@ Against the budget: 888,151 B is 88.8 percent of 1,000,000 B (the BUD-14 limit, 
 
 ## 17. Replay, snapshots, rooms
 
-**Replay record additions** (to `ReplayRecord` of SIM_ARCH 6.7): `versions.rapier` = package name, exact version, artifact form (`split-derived` per 16.1, or `compat`), the SHA-256 of the WASM file and the SHA-256 of the JavaScript file; `physics` = `{ step_hz, length_scale, sleeping, ccd, combine_rules, solver_iterations, scene_hash }` where `scene_hash` is the hash of `buildScene(doc)` output (so a builder change that alters the scene is visible). A record whose `versions.rapier` differs from the running build refuses to replay with the reason and offers a re-run (PDM and SIM_ARCH rule: do not mix engine versions).
+**Replay record additions** (to `ReplayRecord` of SIM_ARCH 6.7): `versions.rapier` = package name, exact version, artifact form (`split-derived` per 16.1, or `compat`), the SHA-256 of the WASM file and the SHA-256 of the JavaScript file; `physics` = `{ step_hz, length_scale, sleeping, ccd, combine: { friction, restitution }, solver_iterations, scene_hash }` where `scene_hash` is the hash of `buildScene(doc)` output (so a builder change that alters the scene is visible). A record whose `versions.rapier` differs from the running build refuses to replay with the reason and offers a re-run (PDM and SIM_ARCH rule: do not mix engine versions).
 
 **Checkpoints.** `hash2` every 1,000 ms of simulated time (SIM_ARCH 6.7), taken from the `prev` buffer of 9.2 (the state at the checkpoint time, not the engine's look-ahead state).
 
@@ -760,3 +749,24 @@ Total R0 to R8: about 19 to 28 engineer-weeks, ESTIMATED; the ranges are wide be
 | 5 | [medium] Prototype evidence only outside the repository | Applied. Scripts (`dbg`, `sa16`, `order`, `motor`, `motor2`, `prop`, `quad`, plus `split-build` and `run-split-hash`) are in `08_RESEARCH_SPIKES/DP-01-robot-prototypes/src`, raw outputs from a re-run today in `results`, with a `package.json` pinning Rapier 0.21.0 and a README. The absolute scratch paths in the Rapier scripts were replaced by the package name. The evidence table cites repo paths and carries the label "VERIFIED as a prototype, author-run, not independently checked". The re-run reproduced every quoted number except two small differences, corrected in the text: cost per PWM cycle 98 and 109 ns (now "about 100 ns"), and `quad.mjs` 1.92 and 1.99 microseconds per step. `DRONE_ARCHITECTURE.md` still quotes 1.92 and the scratch path; its owner should cite the repo folder | 0, 7.4 |
 
 Not done, and why: the ADR-0700 file and `PRODUCT_REQUIREMENTS.md` (BUD-14 row) were not edited because they are outside this file; the BUD-14 change applies only if the fallback is taken. No browser run of the split form was made; that is RA-01.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change | Where |
+|---|---|---|
+| RC-43 | The 14-row cause-id table is replaced by a pointer to SIM_ARCH 13.4 (45 ids). `logic-brownout-from-motors` and `battery-sag-brownout` become `battery-sag-reset`. Section 15 cites 13.4 | 13, 15 |
+| RC-45 | Fault ops use SIM_ARCH 13.2 names: mechanical parameters are `param`, mount pose change is `mount` (no `mech.set`), `stuck` takes a level | 13 |
+| RC-46 | `RosConfig` defined (required `namespace`, `nodes[]`, `sensor_topics[]`) as in `schemas/robotics.domain.schema.json`. Collider `size_mm`: box [x, y, z], cylinder [radius, height], sphere [radius] | 4.3 |
+| RC-54 | Creation order is statics, then bodies sorted by id with colliders, then joints sorted by id. `combine_rules` becomes `combine {friction, restitution}` | 4.4 rule 1, 17 |
+| RS-13 | Step-cost row notes the checker's scope (hashes re-run, 4x/6x timings and sizes not) and RA-02 as the open item. Rapier behind `PhysicsBackend`, split build only, Jolt fallback: already stated in 16, left as is | 16 |
+| RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, DP-01, other RS | Skipped: they do not touch this file's text (editor, firmware, solver, collaboration, Verilog). DP-01 is not cited as a spike verdict | none |
+
+No text in this file made Studio wait for interviews, a pilot or Fault Lab, so no D-014 wording change was needed. Section 17 still uses `mech.set` in the rooms paragraph (line 650 area), outside the four items; flagged for the next pass.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change | Where |
+|---|---|---|
+| RC-45 | Section 13 now lists all 13 `FaultOp` kinds of SIM_ARCH 13.2 (`open`, `short`, `swap`, `value`, `polarity`, `cold-joint`, `stuck`, `degrade`, `code-pin`, `param`, `mount`, `sensor`, `swap-phase`) and says what `sensor` and `swap-phase` are for. Checked against SIM_ARCH 13.2, lines 1343-1356 | 13 |
+| RC-45, `mech.set` in section 17 | Skipped. The rooms paragraph (line 639) says editing a robot together uses `domain.patch` and `mech.set` ops. `mech.set` is a project operation (`schemas/project.schema.json:4927`, PROJECT_DATA_MODEL.md:791), not a fault, so the wording is correct. The "flagged for the next pass" sentence above is closed by this entry | 17 |
+| Noise mode name | Not changed here. DRONE_ARCHITECTURE.md line 451 uses `noise-x10`; SIM_ARCH 13.2 (line 1357) uses `noise` with a `magnitude` field (so x10 becomes `magnitude: 10`). That file is outside this file's edit scope. The DRONE owner should change `mode` to `'dropout'\|'stuck'\|'bias'\|'noise'` and add `magnitude?` | none |

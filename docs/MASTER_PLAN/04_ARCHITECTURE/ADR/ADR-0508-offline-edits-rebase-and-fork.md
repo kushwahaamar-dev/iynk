@@ -24,7 +24,7 @@ Friends lose connections and close laptops. The question is whether the room nee
 
 ## Decision
 
-Pending queue up to 1,000 submissions; coalescing of repeated `view.place` and `component.set`; resend of the in-flight submission with the same `opId`; replay after the snapshot or tail, one at a time; a plain-language list of drops; "Keep a copy" forks the pre-rebase state with `meta.origin`. Forks also at room close and on a chain mismatch.
+Pending queue up to 1,000 submissions; coalescing of repeated `view.place` and `component.set`; resend of the in-flight submission with the same `opId`; replay after the snapshot or tail, one at a time; a plain-language list of drops; "Keep a copy" forks the pre-rebase state with `provenance.origin` kind `fork`. Forks also at room close and on a chain mismatch.
 
 ## Technical justification
 
@@ -57,3 +57,9 @@ S5; tests RA-02, RA-07, RA-18.
 ## Known limitations
 
 Replay is sequential and slow for long queues. Drops can surprise the person; the list explains them. No semantic merge of long concurrent sessions.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-40 | Line 27: "Keep a copy" now forks the pre-rebase state with `provenance.origin` kind `fork` (was `meta.origin`). |

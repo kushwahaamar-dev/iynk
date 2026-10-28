@@ -28,10 +28,10 @@ decision; they no longer steer the build.
 | D-015 | Local-first and self-hostable. The app runs in the browser with projects kept locally (browser storage plus project files on disk). An optional self-hostable server provides rooms, share links and buddies, and anyone can run it (one documented setup). AI and search use keys the user brings; nothing depends on Amar's paid keys. | Decided by Amar |
 | D-016 | Hackathon extras: remove Build Stories, Build Night and the Solana Proof of Build (wallet UI, mint and faucet routes, passport panel, the `solana/` program; git history keeps them). Keep Build Buddies and rebuild it as the friends feature: find your buddies and work on the same project together. Keep the leaderboard only among your buddies; no public board of strangers. | Decided by Amar (leaderboard scope by the orchestrator) |
 | D-017 | Licence: decided later by Amar. The build leaves a clearly marked placeholder. Before the repo is published as open source, the content copied from the three third-party sites (lessons, timings, formulas, drone constants) must be checked and rewritten where needed. | Decided by Amar |
-| D-018 | Identity and enrolment on the self-hosted server: a person is a P-256 key pair made in the browser; they enrol once with an operator-issued one-time code, sign a server challenge, and receive an opaque 12-hour bearer token. No email, no password, no profile. | Decided by orchestrator, Amar may overrule |
-| D-019 | Server store: one SQLite file behind a `ServerStore` port (ADR-0004, ADR-0422). A Postgres adapter is optional and later. | Decided by orchestrator, Amar may overrule |
-| D-020 | AI keys: the person's key lives in browser storage, or is sent per call through their own server's stateless relay. A key is never stored by the server and never enters a project, export, share, room, log or event. | Decided by orchestrator, Amar may overrule |
-| D-021 | Share links are off by default per project and, when made, are immutable read-only snapshots with an expiry that the owner can revoke. | Decided by orchestrator, Amar may overrule |
+| D-018 | Identity and enrolment on the self-hosted server: a person is a P-256 key pair made in the browser; they enrol once with an operator-issued one-time code, sign a server challenge, and receive an opaque 12-hour bearer token. No email, no password, no profile. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
+| D-019 | Server store: one SQLite file behind a `ServerStore` port (ADR-0004). Postgres is a could: a later adapter behind `ServerStore`, not built, not planned in any phase. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
+| D-020 | AI keys: the person's key lives in browser storage, or is sent per call through their own server's stateless relay. A key is never stored by the server and never enters a project, export, share, room, log or event. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
+| D-021 | Share links are off by default per project and, when made, are immutable read-only snapshots with an expiry that the owner can revoke. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
 
 How the earlier decisions stand now:
 
@@ -269,7 +269,7 @@ the core first, and the spikes shape how, not whether.
 **Decision.**
 - The codebase is a prototype to mine, not a foundation to extend (`council/cto-platform.md`). Keep: the interpreters, the
   Check, WorldModel and FailureMode types, the flight sim, the figure bridge, the relay core and the zod route pattern.
-- One diagnosis record, `{cause_id, symptom_id, evidence, hint_level}`, with a closed list of electrical cause ids.
+- One diagnosis record, `{cause_id, symptom_id, evidence, hint_level}`, with a closed list of cause ids (electrical, robot, drone) plus `x-` extension ids.
   Catalogue faults emit it now, and Studio's netlist-based fault rules emit the same shape (engineer judge). Without it,
   the fault corpus stays bound to 38 figures.
 - The core (a canonical project document, a netlist independent of the drawing, a simulation orchestrator with the solver
@@ -281,7 +281,7 @@ phone or Chromebook):
 | Spike | Verdict | What the build does |
 |---|---|---|
 | RS-01 editor rendering | INCONCLUSIVE (no real device). SVG with level of detail passes p95 under 20 ms at 1x; plain SVG misses in fit and zoom; 4x zoom with LOD misses at 34.1 ms | SVG DOM behind a `Renderer` interface with level of detail from the first commit, so Canvas stays swappable. Real-device run waits for devices |
-| RS-03 avr8js differential | PASS for correctness and desktop speed (6.1 to 7.5x real time); not met under 4x throttle (about 1.7x); phone and Chromebook INCONCLUSIVE | avr8js joins as the real-firmware engine for Uno; speed under throttle is a budget item |
+| RS-03 avr8js differential | PASS for correctness and desktop speed (6.1 to 7.5x real time); not met under 4x throttle (about 1.7x); phone and Chromebook INCONCLUSIVE | avr8js is an opt-in mode for compiled Uno and Nano firmware; the interpreters stay the default (ADR-0305); speed under throttle is a budget item |
 | RS-06 rp2040js MicroPython | Pass clause (CPU under 60 percent of a core) NOT MET: 0.54x to 0.79x real time, 100 percent of a core; fail clause not triggered; idle-skip untested | Pico engine stays opt-in, desktop, worker; the decision stays open until an idle-skip test |
 | RS-08 MNA vs ngspice | Not a clean PASS: linear solve 20 of 20 matched, but device-model fidelity FAIL (10 of 20 within 2 percent, 6 off over 10 percent); transient INCONCLUSIVE | Keep the solver as the teaching tier, replace the LED, diode, BJT and motor models, add a transient, and label the tier honestly (D-007) |
 | RS-09 op-log collaboration | PASS for convergence (no divergence in 40 runs); reconnect passes only with gzip or snapshot-plus-tail on a 5 Mbit/s link | Server-ordered log with snapshots and compression (ADR-0500) |
@@ -322,20 +322,23 @@ executive summary. The strategy, positioning and decision documents already writ
 **Still needs Amar's OK every time:** deploying to iynk.tech or any production service, pushing to GitHub, new paid
 services, and anything that spends money.
 
-## Decisions made by the orchestrator (D-018 to D-021)
+## Decisions adopted by the orchestrator (D-018 to D-021)
 
 The product and architecture cluster made these four choices on its own and recorded them as PROPOSAL in several files.
-They are decided here so that every document cites one source. Status for all four: **Decided by orchestrator, Amar may
-overrule.** If he overrules one, change it here first, then the documents in its "Cited by" row.
+A design-review agent wrote them up here on 2026-10-27 so that every document cites one source, and labelled them as the
+orchestrator's. The orchestrator read them that evening, checked them against D-013 to D-017, and adopted them. Status for
+all four: **adopted by the orchestrator, Amar may overrule.** If he overrules one, change it here first, then the documents
+in its "Cited by" row.
 
 ### D-018. Identity and enrolment
 
 **Decision.** There are no accounts. A person is a WebCrypto ECDSA P-256 key pair made in the browser (private key
 non-extractable, kept in IndexedDB). To join a server they present a one-time enrolment code that the operator prints with
-`iynk-server enroll` (12 Crockford base32 characters, 24 hours, one use), and sign a server challenge. Later visits sign a new
+`iynk-server enrol` (12 Crockford base32 characters, 24 hours, one use), and sign a server challenge. Later visits sign a new
 challenge and receive an opaque bearer token (256 bits, stored as SHA-256, 12 hours by default). Pairing makes two identities
-buddies. A lost browser store means a new identity that re-pairs; there is no recovery by email. Enrolment modes: `code`
-(default), `invite`, `open` (private networks only, with a start-up warning).
+buddies. A lost browser store means a new identity that re-pairs; there is no recovery by email. Setting `IYNK_ENROL`: `code` (default) or `closed`. No open mode.
+
+**Deviation note (RC-14).** An earlier draft listed `invite` and `open` modes. ADR-0007 rejects open enrolment and this decision requires a code, so only `code` and `closed` remain. A pairing never enrols a device; it links two enrolled identities as buddies.
 
 **Replaces the wording of** PRD R-077 ("signed device token on first visit, no gate"): the code gate is deliberate, because a
 public URL that issues tokens to anyone lets strangers store data (API_CONTRACTS Objection O-2).
@@ -343,14 +346,13 @@ public URL that issues tokens to anyone lets strangers store data (API_CONTRACTS
 on 23 of 23 routes and self-asserted peer ids (`01_AUDIT/SECURITY_BASELINE.md` R1, R4).
 **Evidence.** DOCUMENTED in `04_ARCHITECTURE/API_CONTRACTS.md` 5.1 and 5.2. RS-09 shows the log converges; it does not test
 identity.
-**Cited by.** ADR-0007, ADR-0421, ADR-0502, API_CONTRACTS ADR-0801, PRD R-075 to R-080, COMMUNITY (buddy identity),
+**Cited by.** ADR-0007, ADR-0421, ADR-0502, API_CONTRACTS ADR-0811, PRD R-075 to R-080, COMMUNITY (buddy identity),
 STUDIO_EDITOR (authors in the operation log). COMMUNITY's own identity ADR becomes a pointer to these (see "ADR number
 ranges").
 
 ### D-019. Server store
 
-**Decision.** SQLite, one file in one data directory, behind a `ServerStore` port with forward-only migrations (ADR-0004,
-ADR-0422). It holds identities, buddy pairs, rooms, the ordered operation log, snapshots and shares. A Postgres adapter is
+**Decision.** SQLite, one file in one data directory, behind a `ServerStore` port with forward-only migrations (ADR-0004). It holds identities, buddy pairs, rooms, the ordered operation log, snapshots and shares. A Postgres adapter is
 allowed later as a second implementation of the same port, with contract tests; it is not built in the first release.
 
 **Replaces the wording of** PRD R-083 ("must (file-backed); should (Postgres)"): read it as "must: SQLite; could: Postgres".
@@ -358,7 +360,7 @@ allowed later as a second implementation of the same port, with contract tests; 
 demonstrated need). The existing Timescale code served the deleted counter, leaderboard and buddy pool (ADR-0004).
 **Evidence.** DOCUMENTED. The single-writer limit is a known one-way door (ADR-0004). No load test exists; UNKNOWN beyond a
 friend group.
-**Cited by.** ADR-0004, ADR-0422, ADR-0505, PRD R-078 and R-083, USER_JOURNEYS J-13.
+**Cited by.** ADR-0004, ADR-0505, PRD R-078 and R-083, USER_JOURNEYS J-13.
 
 ### D-020. AI keys
 
@@ -371,7 +373,7 @@ log, telemetry or error report. The model never writes a project directly; chang
 **Why.** D-015: nothing depends on Amar's paid keys; the audit found keys and spend on the operator's account
 (SECURITY_BASELINE A1 to A7, C1 to C5).
 **Evidence.** DOCUMENTED in ADR-0008, ADR-0425, ADR-0612, AI_ARCHITECTURE. RS-11 (provider behaviour) is PENDING.
-**Cited by.** ADR-0008, ADR-0425, ADR-0612, PRD R-010 and R-011, API_CONTRACTS ADR-0806.
+**Cited by.** ADR-0008, ADR-0425, ADR-0612, PRD R-010 and R-011, API_CONTRACTS ADR-0816.
 
 ### D-021. Share links
 
@@ -382,9 +384,9 @@ operator can switch links off server-wide (`IYNK_ALLOW_LINKS=0`). Editing togeth
 gallery, no listing of links and no search over shares.
 
 **Why.** Public by default was the old behaviour and conflicts with "stranger who finds the URL gets nothing" (R-007);
-snapshots avoid an edit capability living in a URL (API_CONTRACTS ADR-0807).
+snapshots avoid an edit capability living in a URL (API_CONTRACTS ADR-0817).
 **Evidence.** DOCUMENTED. The default expiry and size caps are PROPOSAL.
-**Cited by.** ADR-0426, API_CONTRACTS ADR-0807, PRD R-095, COMMUNITY (shares), STUDIO_EDITOR (lifecycle), USER_JOURNEYS J-08.
+**Cited by.** ADR-0426, API_CONTRACTS ADR-0817, PRD R-095, COMMUNITY (shares), STUDIO_EDITOR (lifecycle), USER_JOURNEYS J-08.
 
 Two smaller choices belong with these. The 13th journey **J-13** (set up your own server and invite a buddy) is kept: it is a
 prerequisite of J-08 and J-09 (`03_PRODUCT/USER_JOURNEYS.md` section 15). The leaderboard scope in D-016 is made concrete in
@@ -393,42 +395,27 @@ streak, no season.
 
 ## ADR number ranges
 
-ADR ids are unique across the plan. Every document owns one range and numbers its records inside it. A reference such as
-"ADR-0804" must mean one record only. New documents take the next free block from 1020.
+ADR ids are unique across the plan. Each document owns one range. No file is renamed (RC-61): the ranges follow what the owner documents and the files in `04_ARCHITECTURE/ADR/` already use. A reference such as "ADR-0834" must mean one record only. New documents take the next free block from 0860.
 
-| Range | Owner | Records now | Notes |
-|---|---|---|---|
-| 0001 to 0014 | SYSTEM_ARCHITECTURE | 0001 to 0014 | Files in `04_ARCHITECTURE/ADR/` |
-| 0100 to 0110 | PROJECT_DATA_MODEL | 0100 to 0110 | Files exist |
-| 0200 to 0208 | COMPONENT_SCHEMA and COMPONENT_ECOSYSTEM | 0200 to 0208 | COMPONENT_ECOSYSTEM keeps citing these; it adds none |
-| 0300 to 0314 | SIMULATION_ARCHITECTURE | | |
-| 0400 to 0430 | FRONTEND_ARCHITECTURE (0400 to 0409) and BACKEND_ARCHITECTURE (0420 to 0430) | | Files exist |
-| 0500 to 0599 | REALTIME_ARCHITECTURE | 0500 to 0511 | UX no longer uses this range |
-| 0600 to 0699 | AI_ARCHITECTURE | 0600 to 0613 | |
-| 0700 to 0799 | ROBOTICS_ARCHITECTURE (0700 to 0707) and DRONE_ARCHITECTURE (0710 to 0716) | | |
-| 0800 to 0899 | API_CONTRACTS | 0800 to 0809 | Unchanged. No product document uses it |
-| 0900 to 0919 | STUDIO_EDITOR | 0900 to 0908 (0909 free) | |
-| 0920 to 0939 | COMMUNITY | 0920 to 0927 | 0920 is a pointer, not a record |
-| 0940 to 0959 | EDUCATION | 0940 to 0945 | |
-| 0960 to 0999 | Reserved | | Next product documents |
-| 1000 to 1019 | UX_DESIGN_SYSTEM | 1000 to 1007 | |
+| Range | Owner | Notes |
+|---|---|---|
+| 0001 to 0014 | SYSTEM_ARCHITECTURE | Files in `04_ARCHITECTURE/ADR/` |
+| 0100 to 0110 | PROJECT_DATA_MODEL | Files exist |
+| 0200 to 0208 | COMPONENT_SCHEMA and COMPONENT_ECOSYSTEM | COMPONENT_ECOSYSTEM cites these and adds none |
+| 0300 to 0314 | SIMULATION_ARCHITECTURE | |
+| 0400 to 0409, 0420 to 0430 | FRONTEND_ARCHITECTURE, BACKEND_ARCHITECTURE | Files exist |
+| 0500 to 0599 | REALTIME_ARCHITECTURE | |
+| 0600 to 0699 | AI_ARCHITECTURE | |
+| 0700 to 0707, 0710 to 0716 | ROBOTICS_ARCHITECTURE, DRONE_ARCHITECTURE | |
+| 0800 to 0809 | STUDIO_EDITOR | Nine files `ADR-0800-*.md` to `ADR-0808-*.md` stay as they are |
+| 0810 to 0819 | API_CONTRACTS | Identity is ADR-0811 (contract side of D-018) |
+| 0820 to 0829 | COMMUNITY | |
+| 0830 to 0839 | EDUCATION | |
+| 0850 to 0859 | UX_DESIGN_SYSTEM | |
 
-**Renumbering map.** Each product file renumbers its table, its inline references and any record files to match. The new id
-is the old id plus the offset shown. The nine STUDIO_EDITOR record files now sit in `04_ARCHITECTURE/ADR/` as `ADR-0800-*.md` to `ADR-0808-*.md`; rename them to
-`ADR-0900-*.md` to `ADR-0908-*.md` and fix their headings and links.
+**Stale cross-citations (RC-61).** COMMUNITY "ADR-0804" becomes ADR-0834. In this register D-018, D-020 and D-021 now cite ADR-0811, ADR-0816 and ADR-0817. SYSTEM_ARCHITECTURE "ADR-0801" becomes ADR-0811, USER_JOURNEYS "ADR-0802" becomes ADR-0817, and COMMUNITY cites ADR-0817 for the snapshot form. Those other files are edited by their own owners.
 
-| Document | Old ids | New ids | What changes |
-|---|---|---|---|
-| STUDIO_EDITOR | 0800 to 0808 (0809 free) | 0900 to 0908 (0909 free), offset +100 | Workspace 0900, renderer 0901, tools 0902, connection rules 0903, unplaced parts 0904, undo 0905, lifecycle 0906, outline pane 0907, edits during a run 0908 |
-| COMMUNITY | 0800 to 0807 | 0920 to 0927, offset +120 | 0920 (buddy identity) is deleted as a record and becomes a pointer to ADR-0007, ADR-0421, ADR-0502 and D-018. 0921 visibility, 0922 shares, 0923 attribution, 0924 leaderboard, 0925 build inputs, 0926 flashing recipes, 0927 live prices. Its one reference to ADR-0500 is the realtime record and stays |
-| EDUCATION | 0800 to 0805 | 0940 to 0945, offset +140 | 0940 guided plan, 0941 meaningful pass, 0942 diagnose item, 0943 hint ladder, 0944 challenge results, 0945 third-party clearance. Its "ADR-0809" is only the end of the range it claimed, not a record |
-| UX_DESIGN_SYSTEM | 0500 to 0507 | 1000 to 1007, offset +500 | 1000 paper and ink with two registers, 1001 tokens, 1002 levels, 1003 structure tree, 1004 language as layout, 1005 performance ladder, 1006 motion contract, 1007 phone layout. Its mention of "ADR-0502" for levels becomes ADR-1002 |
-| API_CONTRACTS | 0800 to 0809 | unchanged | STUDIO_EDITOR and the other product files no longer share its range. Its ADR-0801 (identity) is the contract side of D-018; its text at 0809 says BACKEND ADR-0420 to 0430 must be reconciled, which stays open |
-| REALTIME_ARCHITECTURE | 0500 to 0511 | unchanged | |
-
-The same ids appear in feature, requirement and journey files only as pointers; whoever renumbers a product file greps all of
-`03_PRODUCT/` and `04_ARCHITECTURE/` for the old ids, including `PRODUCT_REQUIREMENTS.md`, `FEATURE_CATALOGUE.md` and
-`USER_JOURNEYS.md`, and checks that "ADR-0800 to ADR-0809" now means API_CONTRACTS only.
+Feature, requirement and journey files cite these ids only as pointers. Whoever fixes a stale citation greps `03_PRODUCT/` and `04_ARCHITECTURE/` for it first.
 
 ## Open items
 
@@ -462,10 +449,36 @@ grants and the Solana layer is gone: D-013 and D-016 settled or shelved all of i
 
 | # | Issue | What I did | Evidence read |
 |---|---|---|---|
-| 1 | ADR number collisions (high) | Applied. Added "ADR number ranges" with one range per document and a renumbering map. Chose STUDIO_EDITOR 0900 to 0919, COMMUNITY 0920 to 0939, EDUCATION 0940 to 0959, UX_DESIGN_SYSTEM 1000 to 1019; 0500 to 0599 stays with realtime, 0800 to 0899 with API_CONTRACTS, 02xx with the component documents. COMMUNITY ADR-0800 becomes a pointer to ADR-0007, ADR-0421, ADR-0502 and D-018. I did not edit the product files (outside my output); each owner applies the map. Left open: the nine STUDIO_EDITOR record files (`ADR/ADR-0800-*` to `ADR-0808-*`) appeared while I worked and still carry the old numbers; the other `ADR/` files are untouched | `grep` of ADR ids in `03_PRODUCT/*.md` and API_CONTRACTS section 17; folder listing of `04_ARCHITECTURE/ADR/`; UX_DESIGN_SYSTEM line 40 (it took 0500 because it saw no range) |
+| 1 | ADR number collisions (high) | Applied, then reconciled by RC-61: ranges now follow the owner documents and files on disk (STUDIO 0800 to 0809, API 0810 to 0819, COMMUNITY 0820s, EDUCATION 0830s, UX 0850s). No file renamed | `grep` of ADR ids in `03_PRODUCT/*.md` and API_CONTRACTS; folder listing of `04_ARCHITECTURE/ADR/`; RECONCILIATION RC-61 |
 | 2 | Stale register text (high) | Applied. D-011 rewritten as an engineering target tied to BUD-01 to BUD-15 and real-device runs when Amar has devices. D-010 status is "Decided; spikes folded in" with one row per spike verdict (RS-01 INCONCLUSIVE, RS-03 PASS desktop, RS-06 pass clause not met, RS-08 not clean with device models FAIL, RS-09 PASS, RS-12 PASS desktop, RS-13 PASS). "Pilot" removed from D-007 (body and table row). D-012 no longer names Fault Lab as release 1. Old "Open founder decisions" replaced by "Open items" | The seven `REPORT.md` verdict sections; PRD 3.1 |
 | 3 | Orchestrator decisions missing (medium) | Applied. D-018 identity and enrolment, D-019 SQLite, D-020 AI keys, D-021 share links off by default, each "Decided by orchestrator, Amar may overrule", with the PRD wording they supersede (R-077 gate, R-083 read as SQLite must, Postgres could). J-13 and the buddies-only leaderboard tracks are recorded under them | API_CONTRACTS 5.1, 5.2 and 17; ADR-0004, ADR-0007, ADR-0008, ADR-0421, ADR-0422, ADR-0425, ADR-0426, ADR-0612; COMMUNITY 3.10; PRD R-077, R-083, R-095; USER_JOURNEYS section 15 |
 
 Not applied: nothing was judged wrong. One caution on issue 3: I wrote D-021's default share expiry as 30 days from
 API_CONTRACTS 5.1, while COMMUNITY's table says 7 days (maximum 30) for links. The two files disagree; the owner of each
 should settle on one value and the register keeps "settable, default 30 days" until they do.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+No decision D-001 to D-017 was changed. Source: `04_ARCHITECTURE/RECONCILIATION.md`.
+
+| Id | Change |
+|---|---|
+| RC-02 | D-019 and its Cited by: ADR-0422 removed; ADR-0004 owns the store; ADR-0505 stays in Cited by |
+| RC-14 | D-018: enrolment is `IYNK_ENROL` with `code` (default) or `closed`; deviation note added |
+| RC-15 | D-018: `iynk-server enroll` is now `iynk-server enrol` |
+| RC-43 | D-010: cause ids are a closed list (electrical, robot, drone) plus `x-` extension ids |
+| RC-56 | D-010 RS-03 row: avr8js is opt-in for compiled Uno and Nano firmware; interpreters stay default (ADR-0305) |
+| RC-61 | ADR ranges table and review-log row 1 rewritten, no renames; D-018, D-020, D-021 citations now ADR-0811, ADR-0816, ADR-0817 |
+
+Skipped: none.
+
+## Reconcile, second pass (2026-10-27)
+
+No decision D-001 to D-017 was changed. Only the D-019 cross-reference row (line 32) changed.
+
+| Id | Change |
+|---|---|
+| RC-02 | D-019 row: "(ADR-0004, ADR-0422)" is now "(ADR-0004)", matching the RC-02 log row (ADR-0422 removed; ADR-0004 owns the store) |
+| RC-03 | D-019 row: "A Postgres adapter is optional and later" is now "Postgres is a could: a later adapter behind `ServerStore`, not built, not planned in any phase", matching the D-019 section and PRD R-083 read as "must: SQLite; could: Postgres" |
+
+Skipped: none.

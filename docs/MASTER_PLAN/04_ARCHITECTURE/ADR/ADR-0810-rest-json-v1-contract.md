@@ -9,7 +9,7 @@ The server needs one API style that the app, the user's own scripts and MCP clie
 
 ## Constraints
 
-1. The server is a separate Node process serving `/v1/*` and `/v1/ws` (ADR-0420); the web app has no API routes.
+1. The server is a separate Node process serving `/v1/*` and `/ws` (ADR-0420); the web app has no API routes.
 2. Works over flaky links on low-end devices (D-011).
 3. Machine-checkable (BRIEF 19.5 asks for contracts).
 4. Existing UI picks translated text by error `code`, so the old `{error:{code,message}}` shape must stay valid.
@@ -31,8 +31,8 @@ The server needs one API style that the app, the user's own scripts and MCP clie
 2. Minor version in `Iynk-Api-Version`; additive changes only inside v1.
 3. One error envelope (`error.code`, `message`, `requestId`, `details[]`) that is a superset of today's.
 4. Cursor lists, `Idempotency-Key` on creating POSTs, `ETag` and `If-Match` on documents (ADR-0813, ADR-0814).
-5. The socket is `wss://host/v1/ws`; its frames are REALTIME_ARCHITECTURE's.
-6. Probe `GET /v1/server`, liveness `/v1/healthz`, readiness `/v1/readyz`, OpenAPI `/v1/openapi.json`.
+5. The socket is `wss://host/ws`; its frames are REALTIME_ARCHITECTURE's.
+6. Probe `GET /v1/server`, liveness `/v1/healthz`, readiness `/v1/readyz`. The same handlers also answer at root `/healthz` and `/readyz` for the container check and the proxy; these root paths are not in openapi. OpenAPI `/v1/openapi.json`.
 
 ## Technical justification
 
@@ -65,3 +65,13 @@ Today's 23 `src/app/api/**` routes map per API_CONTRACTS section 12: 8 versioned
 ## Known limitations
 
 No implementation exists. GraphQL-style field selection is not offered, so a client downloads whole records. Only one process is supported, so there is no cross-process rate limit.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-22 | Line 34: socket URL is now `wss://host/ws`. Line 12: the server path is now `/ws`, outside `/v1`. |
+
+## Reconcile, final nits (2026-10-27)
+
+- Item 6: added that the root `/healthz` and `/readyz` pair also exists for the container check and the proxy, and is not in openapi.

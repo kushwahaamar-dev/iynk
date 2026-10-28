@@ -19,7 +19,7 @@ makes their own, how every part says where its numbers and files came from, and 
 | CE-01 | The first complete library (end of the PARTS phase) is **85 descriptors**: 46 carried over from today's catalogue (VERIFIED count, section 3.3) and 39 new (PROPOSAL, section 3.5). Boards are 12 of the 46 | PROPOSAL, Amar may cut or reorder at the phase stop |
 | CE-02 | A part is "supported" only when it passes the PARTS gate (section 3.1): descriptor valid, fallback art renders, at least one test against a source, licence and sources filled, status honest. A part that fails is not shown in the default palette | PROPOSAL |
 | CE-03 | A part may be in the library with status `not-modelled-yet` (it places, wires and goes in the BOM, the simulator says so). 20 of the 39 new parts start there unless the simulation phase has delivered the element or protocol they need (section 3.5) | Follows R-FID-2 |
-| CE-04 | The custom part editor is one tool, called **Part Maker** here, with two modes. Beginner mode is on by default and runs no code. Advanced mode (code parts) is off until the person turns on "code parts" in settings, and does not ship until RS-15 passes | CS 9.1; **PENDING RS-15** |
+| CE-04 | The custom part editor is one tool, called **Part Maker** here, with two modes. Beginner mode is on by default and runs no code. Advanced mode (code parts) is off until the person turns on "code parts" in settings, and ships as data only (option F) until the Components-phase Worker-kill prototype passes. RS-15 never ran. Studio does not wait for it | CS 9.1, 9.6 decision; RS-15 not run |
 | CE-05 | Core data is cleared before publishing, not after. The repo already contains geometry taken from manufacturer and open-hardware CAD files and board text copied from a figure (section 6.2). Each source gets a licence record, and geometry is re-derived where the licence is share-alike or unknown | Follows D-017, R-015, R-016 |
 | CE-06 | No bulk import of third-party part libraries (Fritzing, KiCad, vendor SPICE models, reseller footprints) in any phase planned here. A one-off import lands as an `imported-pack`, never in `core`, with the source licence on every file | PROPOSAL |
 | CE-07 | Sharing parts with buddies uses three routes that share one validation path: the project carries the descriptors it needs, a `.iynkpack` file, or a room. There is no public marketplace, no publisher verification service and no moderation queue (D-013, F-103 out of scope) | CS ADR-0207 |
@@ -36,10 +36,10 @@ makes their own, how every part says where its numbers and files came from, and 
 | Contract documents | CS and `schemas/component.schema.json`; `PROJECT_DATA_MODEL.md` 5.3 and ADR-0107 (parts referenced as `{ref, version}` with a pinned interface, origins `builtin`, `library`, `embedded`); `SIMULATION_ARCHITECTURE.md` 4.1 (tiers), 9.2 (data-only devices), 16 (fidelity registry) |
 | Audit | `01_AUDIT/inventory/figure-engine.md` (part contract, solver elements), `01_AUDIT/REPOSITORY_INVENTORY.md` (licence, drone constants), `01_AUDIT/TECHNICAL_DEBT.md` B2-08, B3-02, `01_AUDIT/SECURITY_BASELINE.md` X3 |
 | Research | `02_RESEARCH/COMPETITOR_LANDSCAPE.md` section 5 (licence-checked open source), `02_RESEARCH/tech/platform-options.md` section 5 (sandboxes), `02_RESEARCH/TECHNICAL_RESEARCH.md` D8, section 6 row 16 |
-| Spikes | RS-08 (solver DC only; realistic devices off by 7 to 230 percent in places), RS-13 PASS, RS-03 PASS, RS-06 failed its real-time clause. RS-15 has no `REPORT.md` (checked: `08_RESEARCH_SPIKES/` holds RS-01, 03, 06, 08, 09, 12, 13) |
+| Spikes | RS-08 (solver DC only; realistic devices off by 7 to 230 percent in places), RS-13 PASS, RS-03 PASS, RS-06 pass clause not met, fail clause not triggered. RS-15 has no `REPORT.md` (checked: `08_RESEARCH_SPIKES/` holds RS-01, 03, 06, 08, 09, 12, 13) |
 | Features | F-096, F-097, F-098, F-099, F-101, F-102, F-104, F-220 (this phase); F-103 and F-100 out of scope; F-076, F-083, F-089, F-090, F-160, F-162, F-197 (neighbours); F-213, F-216 (later part libraries) |
 | Requirements | R-028, R-029, R-030, R-072, R-131 to R-138, R-014 (CONTRIBUTING "how to add a part"), R-015, R-016, R-FID-1 to R-FID-3 |
-| Journeys | J-04 add and wire components, J-08 share with a friend, J-11 import, J-06 meet a simulated fault (failure modes come from descriptors). No journey is named for "make a part"; section 5.2 walks it and Objection 1 asks for J-14 |
+| Journeys | J-04 add and wire components, J-08 share with a friend, J-11 import, J-06 meet a simulated fault (failure modes come from descriptors). J-14 "Make and use a custom part" (`USER_JOURNEYS.md`) is the journey for "make a part"; section 5.2 is its walk |
 | Priority classes (`FEATURE_PRIORITIZATION.md`) | F-097 REQUIRED FOUNDATION; F-098 CORE WORKFLOW; F-096, F-101, F-104 NEAR-TERM; F-220 LATER; F-102 LONG-TERM RESEARCH. This file does not move any of them |
 | Downstream | Studio palette and inspector, BOM export, the AI partner's `find_parts`, the robot and drone builders, the PARTS gate in the roadmap |
 
@@ -57,7 +57,7 @@ gate (R-131 to R-138) and the review checklist for a pull request that adds a pa
 | 3 | `simulation.status` is set; if not `not-modelled-yet`, `what_it_models` and at least one test exist, none `to-write` | CS 4.11, R-131 gate |
 | 4 | At least one test against a source: `datasheet-point`, `ngspice-comparison`, `bench-measurement` or `golden-trace` (REF-6). If none can exist yet, the part is `partly-modelled` and the gap is stated | `PRODUCT_REQUIREMENTS.md` PARTS gate |
 | 5 | `sources[]` has an entry for every number a user can see; a non-generic part has a datasheet, schematic, product page or reseller guide | CS 4.3 |
-| 6 | `provenance.licence` set, `third_party_content` set, every `sources[].licence` filled when the source gave files or text (this file, 6.3) | R-138, D-017 |
+| 6 | `provenance.license` set, `third_party_content` set, every `sources[].license` filled when the source gave files or text (this file, 6.3) | R-138, D-017 |
 | 7 | Copy check passes: none of the banned words in `what_it_models` and `not_modelled` | R-FID-1 |
 | 8 | Name, description and every pin name have an `i18n_key` and `en` text. Core parts carry keys for the six languages | K-I18N |
 
@@ -231,7 +231,7 @@ Twelve boards are 14 percent of the PARTS release by count and probably the most
 descriptor carries a profile, a language, a starter and its fidelity entry (R-072). Rules for boards:
 
 - A board is a descriptor with `kind: board` (CS 4.4, 10) and a `builtin` runtime ref (the interpreter, `avr8js`, the MicroPython interpreter,
-  the Verilog cycle simulator). The Pico stays on the TypeScript MicroPython interpreter (RS-06 failed the real-time clause) and the Pi 4 and 5
+  the Verilog cycle simulator). The Pico stays on the TypeScript MicroPython interpreter (RS-06 pass clause not met, fail clause not triggered) and the Pi 4 and 5
   stay labelled "Raspberry Pi API mock" (R-146).
 - The Uno R3 is first. The others follow the R-072 order, each with one starter that runs.
 - A board's silkscreen text and logos are art. Section 6.2 row 5 lists what the Pi 4 figure copies.
@@ -400,7 +400,7 @@ and the golden-trace differences (AC-CS-06). The editor shows the right bump and
 
 ### 5.5 Advanced mode (code parts)
 
-**Status: PENDING RS-15 and RS-15b.** Decision rule is CS 9.6 and is not restated. The rest of this section is the product around it and
+**Status: off by default; ships as option F (data only) until the Components-phase Worker-kill prototype passes (RS-15 and RS-15b never ran, no `REPORT.md`).** A pass moves option A or B to opt-in; a fail on all options cuts F-102. Decision rule is CS 9.6 and is not restated. The rest of this section is the product around it and
 holds whichever container wins.
 
 | Piece | Product behaviour |
@@ -484,7 +484,7 @@ is cheap: positions come from a measurement or a dimensioned drawing, with the s
 ### 6.3 Rules
 
 1. **Every file or text that came from outside gets a source record** in the descriptor: a `sources[]` entry with `kind`, `publisher`, `url`,
-   `retrieved`, `reliability`, and `licence` (the field exists in the schema). Allowed values for `licence` on a source: an SPDX id, or
+   `retrieved`, `reliability`, and `license` (the field exists in the schema). Allowed values for `license` on a source: an SPDX id, or
    `LicenseRef-cited-only` (we cite, we copy nothing), or `LicenseRef-unknown`.
 2. **`LicenseRef-unknown` and any share-alike licence block `core`.** The PARTS gate fails a core descriptor with such a source unless the
    source contributed only facts and the descriptor says so in the source `note`. Share-alike material can still enter a separate `imported-pack`.
@@ -492,9 +492,9 @@ is cheap: positions come from a measurement or a dimensioned drawing, with the s
    `dimensions.accuracy`), `datasheet` drawing page, or `library` file with its licence. Prefer the first two.
 4. **No datasheet text, table or curve is copied.** The descriptor holds the number and `{src, loc}`. A figure in a datasheet that matters is
    cited by page.
-5. **Art in a descriptor needs a licence.** `visual.assets[].licence` is required by the schema. Core art is the repo's own (licence decided in D-017);
+5. **Art in a descriptor needs a licence.** `visual.assets[].license` is required by the schema. Core art is the repo's own (licence decided in D-017);
    the Colorfigures engine is MIT.
-6. **Descriptor licence is split.** `licence_scope` gives `descriptor`, `art` and `model` separately. The D-017 decision can then license the
+6. **Descriptor licence is split.** `license_scope` gives `descriptor`, `art` and `model` separately. The D-017 decision can then license the
    data, the drawings and the models differently. Recording the input to that decision: an author may want a permissive licence for code and a
    share-alike one for art; share-alike sources in 6.2 would force the second.
 7. **Defaults for a person's own parts:** `LicenseRef-local-private`. Exporting a pack asks the person to confirm or change it (7.3).
@@ -593,7 +593,7 @@ One screen, one decision per pack hash.
 |---|---|
 | Sender | The room member or file name, not the `authors` text alone |
 | Parts | Name, id and version, tier and status, pin count |
-| Licence and sources | `provenance.licence`, `third_party_content`, list of `sources[]` with their licences |
+| Licence and sources | `provenance.license`, `third_party_content`, list of `sources[]` with their licences |
 | Code | Yes or no. If yes: permission list, limits (memory, work per step), `bundle_size_bytes`, dependency list with licences, model hash |
 | Conformance | "passed 7 of 8 checks" after the run in the sandbox, with failed checks named |
 | Actions | Use in this project; Add to my library; Cancel. For code parts: Approve this hash (needs "Code parts" on) |
@@ -633,7 +633,7 @@ Each is given, when, then. Ids `AC-CE-nn` are new here. CS has `AC-CS-01` to `AC
 | AC-CE-11 | Given an unknown-part placeholder, When the person chooses "Make a part from this placeholder", Then Part Maker opens with the placeholder's pins and the saved part replaces the placeholder in the project in one undo step |
 | AC-CE-12 | Given a saved part and a change to a pin, When the person saves, Then the editor requires a major version and lists local projects that stay on the old version |
 | AC-CE-13 | Given art with a script or an external reference, When uploaded, Then it is rejected with the reason and the part keeps the fallback |
-| AC-CE-14 | Given a hostile model (infinite loop, 2 GB allocation, call flood, `fetch`) in a code part, When it runs, Then the app stays responsive, the part faults with a code, and no storage or network was touched. **PENDING RS-15** (AC-CS-11) |
+| AC-CE-14 | Given a hostile model (infinite loop, 2 GB allocation, call flood, `fetch`) in a code part, When it runs, Then the app stays responsive, the part faults with a code, and no storage or network was touched. Verified by the Components-phase Worker-kill prototype; RS-15 never ran (AC-CS-11) |
 | AC-CE-15 | Given "Code parts" off and a project with an embedded code part, When opened, Then the project opens, the part is labelled "code part not approved", its pins float, and nothing from its model ran |
 | AC-CE-16 | Given a pack with a code part and the setting off, When imported, Then it is refused with that reason and the library is unchanged (AC-CS-10) |
 | AC-CE-17 | Given a malformed pack, a zip bomb, a path with `..`, or a hash mismatch, When imported, Then it is refused with a message and no state changes |
@@ -652,7 +652,7 @@ Each is given, when, then. Ids `AC-CE-nn` are new here. CS has `AC-CS-01` to `AC
 | 39 new parts are more work than the three timed conversions suggest | UNKNOWN (no timing) | PARTS runs long | Batches in 3.8; time one more round first; Amar can stop after batch 2 |
 | About half of the new parts ship as "not modelled yet" | Medium (depends on the simulation phase) | Library looks bigger than it is | Batch order; the part count on the library page shows modelled and not-modelled separately |
 | Geometry copied from CAD files carries obligations | UNKNOWN (licences unread) | Blocks publishing | Section 6.4 order of work; re-measure |
-| Beginner mode is too narrow (no registers, no sequential logic) | Medium (HYPOTHESIS) | People hit the wall at the second part they make | Objection 5; the register-device template; advanced mode if RS-15 passes |
+| Beginner mode is too narrow (no registers, no sequential logic) | Medium (HYPOTHESIS) | People hit the wall at the second part they make | Objection 5; the register-device template; advanced mode if the Worker-kill prototype passes |
 | A custom-part editor nobody uses | Unknown | Wasted phase | Keep the editor to the seven steps; do not build the SDK package or publishing; Amar's first real missing part is the test |
 | Sandbox cannot give deterministic faults | Medium (RS-15b not run) | Code parts non-replayable or cut | CS 9.6 rules 4 and 5 |
 | A friend's part contains copied datasheet text | Low | A licence problem in a private share | The dialog shows licence and sources; the app cannot detect copying |
@@ -661,9 +661,8 @@ Each is given, when, then. Ids `AC-CE-nn` are new here. CS has `AC-CS-01` to `AC
 
 These do not change the specification above; it follows the decided direction.
 
-1. **No journey covers making a part.** J-01 to J-13 have J-04 (add and wire) and J-11 (import) but nothing for "I need a part the library
-   lacks". R-134 is listed under J-11 only. Evidence: the journey table in `PRODUCT_REQUIREMENTS.md`. Suggest J-14 "Make a part" with
-   section 5.2 as its walk.
+1. **Resolved (RC-70): J-14 covers making a part.** `USER_JOURNEYS.md` defines J-01 to J-17, and J-14 "Make and use a custom part" is the journey
+   for "I need a part the library lacks". Section 5.2 is its walk. Check that R-134 is listed under J-14 as well as J-11.
 2. **Instruments are in two places.** The schema's category list has `instrument` and the figure `multimeter` is a part; the project
    document keeps instruments as `simulation.instruments[]` with kinds `voltmeter`, `ammeter`, `oscilloscope`, `logic-analyzer`,
    `serial-monitor`, `serial-plotter`, `multimeter` (`PROJECT_DATA_MODEL.md` line 451), and the BOM section lists "instruments" among
@@ -686,7 +685,7 @@ These do not change the specification above; it follows the decided direction.
 
 | Question | Who or what settles it |
 |---|---|
-| Which RS-15 container, and RS-15b numbers | The spikes (**PENDING**) |
+| Which RS-15 container, and RS-15b numbers | The Components-phase Worker-kill prototype (RS-15 never ran; option F ships meanwhile) |
 | Time to convert one more part | Run the draft tool on one module |
 | Which of the 39 new parts Amar actually wants | Amar, at the start of PARTS |
 | Variants of boards: separate descriptors or a parameter | Uno R4 and Uno R3 descriptors, after they exist (CS section 14) |
@@ -705,7 +704,7 @@ These do not change the specification above; it follows the decided direction.
 | `src/content/ids.ts:8-98` | `BOARD_IDS` (12), `MODULE_IDS` (12), `PART_IDS` (21) |
 | `src/content/drones/*.ts` | Distinct `label:` strings of `batts`, `motors`, `props` blocks: 38 each (my awk count; labels, not distinct parameter sets) |
 | `src/lib/interp/devices.ts` | Six device classes |
-| `docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json` | `elementKind` enum (12 existing and 11 planned), `source.licence`, `provenance` |
+| `docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json` | `elementKind` enum (12 existing and 11 planned), `source.license`, `provenance` |
 
 Change log: 2026-10-27 first version.
 
@@ -718,3 +717,21 @@ Change log: 2026-10-27 first version.
    those files and ADR-0107 need the rename. I also closed the "SSD1306 or 1602" choice for W0 in favour of SSD1306 to match the examples. The
    review asked for a column in the W0/W1 tables; those waves are one row each in 3.2, so the column is a table in 3.2.1 instead. I did not edit
    files outside this one.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-70 | Journeys row (was line 42) now names J-14; Objection 1 marked resolved, J-01 to J-17 exist (`USER_JOURNEYS.md` lines 3, 34) |
+| RS-15 | CE-04, section 5.5 status, AC-CE-14, the Beginner-mode risk row and the open-questions row no longer say PENDING. Decision follows `COMPONENT_SCHEMA.md` 9.6 (line 757): ship option F, keep A, B, C swappable, test in a Components-phase Worker-kill prototype. Reversible. Changes if the prototype passes (A or B opt-in) or fails (F-102 cut). Studio does not wait |
+| Line 39 spike summary | Wording corrected (RS-08 DC only, RS-13 PASS, RS-03 PASS, RS-06 pass clause not met, fail clause not triggered, RS-15 no REPORT.md). |
+| Line 5, 25, 171, 534, 611 | Already reframed by D-013 and have no PENDING or wait-for-interview wording. Left as is. Line 171 says no user was interviewed, which is a statement of evidence, not a gate |
+| Skipped | The section 5.6 risk row "Sandbox cannot give deterministic faults (RS-15b not run)" is accurate and unchanged |
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-33 | Backticked field names now match the contract schema: `provenance.license` (lines 60, 596), `sources[].license` and `license` (487), `license_scope` (497), `source.license` (707), and `visual.assets[].license` (495, same schema spelling at `component.schema.json:1368`). Prose uses of "licence" are unchanged |
+| RC-51 | Lines 39, 234 and 727 now say "RS-06 pass clause not met, fail clause not triggered". Line 727 wrongly said "Already current; left as is" in the first pass; its wording is corrected |
+| RC-33, other files | Not done here: `USER_JOURNEYS.md` line 1596, ADR-0207 line 36 and ADR-0204 line 36 are outside this task's one-file edit scope. They still carry `licence` and need their owners to apply the same rename |

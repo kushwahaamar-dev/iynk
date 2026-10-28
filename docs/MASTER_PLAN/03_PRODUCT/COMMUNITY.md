@@ -53,7 +53,7 @@ Verdicts follow the audit's recommendation (`00_EXECUTIVE/council/cto-platform.m
 | Piece | Path and lines | What it does today | Status | Verdict | Reason |
 |---|---|---|---|---|---|
 | Buddy pool API | `src/app/api/buddies/route.ts:27-56` (GET), `:59-72` (POST), `:75-88` (DELETE) | Returns the newest 50 live profiles (name, language, interests, built list, `wants` up to 280 chars) to any caller | VERIFIED; SECURITY_BASELINE D1 | DELETE, rebuild as the pair API | A public list of strangers with free text is the problem itself |
-| Profiles table | `db/migrations/0003_profiles.sql` | 24 h profile with `interests text[]`, `built text[]`, `wants text` and a TimescaleDB expiry job | VERIFIED | DELETE (a new migration drops it; the file stays in history) | Not reusable; the new store is the file-backed store of R-083 |
+| Profiles table | `db/migrations/0003_profiles.sql` | 24 h profile with `interests text[]`, `built text[]`, `wants text` and a TimescaleDB expiry job | VERIFIED | DELETE (a new migration drops it; the file stays in history) | Not reusable; the new store is the SQLite store of R-083 (SQLite only; Postgres is a later could, R-083, D-019) |
 | Profile queries | `src/lib/server/db/queries.ts:132-175` (`upsertProfile`, `listProfiles`, `deleteProfile`) | SQL for the pool | VERIFIED | DELETE | Same |
 | Matcher | `src/app/api/ai/match/route.ts`, `src/lib/server/ai/prompts/match.ts` | AI picks compatible strangers from the pool | VERIFIED-PARTIAL (C026) | DELETE | There is no pool |
 | Buddy UI | `src/app/[lang]/together/Buddies.tsx` (stores buddy id and token in plain localStorage, SECURITY_BASELINE D5) | Form, list, match | VERIFIED | DELETE; new `Buddies` view over the pair API | Credential in plain text |
@@ -86,7 +86,7 @@ Verdicts follow the audit's recommendation (`00_EXECUTIVE/council/cto-platform.m
 | Challenge pass line | Server score row `solved.{shareId}` (`PUT /v1/scores/{key}`), plus an optional `ChallengeResult` file | see 3.9 | A buddy's report that they passed your challenge. No attestation table and no attestation route |
 | Board row | Server scores (`PUT /v1/scores/{key}`, API_CONTRACTS 7) | see 3.10 | One personal best per (key, identity) |
 
-The server store is the file-backed store of R-083 (the engine choice belongs to the system seat). All tables above are additions to the tables R-083 lists (devices, pairs, rooms, operation logs, snapshots, share links).
+The server store is the SQLite store of R-083 (SQLite only; Postgres is a later could, R-083, D-019). All tables above are additions to the tables R-083 lists (devices, pairs, rooms, operation logs, snapshots, share links).
 
 ### 3.2 Finding a buddy: identity and pairing
 
@@ -96,9 +96,9 @@ Requirements this expands: R-076, R-077, R-080, R-081; features F-206 and F-005.
 
 **First visit to a server (enrolment and sign-in).** This follows API_CONTRACTS 5.2 and REALTIME_ARCHITECTURE 4 without change; this file adds no credential of its own.
 
-1. The operator runs `iynk-server enroll` on the host. It prints a one-time enrolment code (12 Crockford base32 characters, 24 hours, one use; API_CONTRACTS 5.1) and the person is given it out of band, with the server address.
+1. The operator runs `iynk-server enrol` on the host. It prints a one-time enrolment code (12 Crockford base32 characters, 24 hours, one use; API_CONTRACTS 5.1) and the person is given it out of band, with the server address.
 2. The browser checks `window.isSecureContext`, calls `GET /v1/server` (public) for the audience, enrolment mode and `minClient`, and makes the P-256 key pair (private key non-extractable).
-3. It calls `POST /v1/auth/challenges {purpose: "register", keyThumbprint}`, signs the returned `signingInput`, and calls `POST /v1/identities {challengeId, signature, publicKey, displayName, enrollmentCode}`. The server checks the code, the signature and that the key is on the curve, derives the `usr_` and `dev_` ids from the key, stores the public key, and answers `201 {identity, accessToken}`. A buddy may instead enrol by redeeming a pairing link or code when the operator set `IYNK_ENROLLMENT=invite` (the `registration` field of `POST /v1/pairings/redeem`).
+3. It calls `POST /v1/auth/challenges {purpose: "register", keyThumbprint}`, signs the returned `signingInput`, and calls `POST /v1/identities {challengeId, signature, publicKey, displayName, enrollmentCode}`. The server checks the code, the signature and that the key is on the curve, derives the `usr_` and `dev_` ids from the key, stores the public key, and answers `201 {identity, accessToken}`.
 4. Later visits and every 401: `POST /v1/auth/challenges {purpose: "login", identityId}`, sign, `POST /v1/auth/tokens {challengeId, signature}` for a 12-hour opaque bearer token (`iynk_at_...`, SHA-256 stored). The token lives in memory; there are no cookies and no refresh token.
 
 Display name rules are R-080's: 1 to 24 grapheme clusters, control, zero-width and bidi-override characters stripped as `server/realtime/src/protocol.js:21-24` does for names today.
@@ -115,8 +115,8 @@ sequenceDiagram
     A-->>B: link or code, said aloud, typed or sent in any chat
     B->>S: POST /v1/pairings/peek {token or code} (public)
     S-->>B: inviter display name, expiry, hasProjectGrant
-    B->>S: POST /v1/pairings/redeem {pairing, registration?}
-    S-->>B: buddy (and identity plus access token if it enrolled)
+    B->>S: POST /v1/pairings/redeem {pairing}
+    S-->>B: buddy
     S-->>A: lobby socket frame: new buddy
     Note over A,B: the app shows the same 6-digit fingerprint on both screens; comparing it is optional
 ```
@@ -125,7 +125,7 @@ Rules:
 
 | Rule | Value | Source |
 |---|---|---|
-| Typed code | `XXXX-XXXXXX`: a 4-character public channel plus a 6-character secret, from the 32-symbol alphabet `23456789ABCDEFGHJKMNPQRSTUVWXYZ` (no 0, O, 1, I, L); 30 secret bits. The channel names which pairing a wrong secret counts against, so "wrong 5 times, the code is deleted" (R-076) is countable | API_CONTRACTS 5.1 (DOCUMENTED); alphabet is this file's PROPOSAL |
+| Typed code | `XXXX-XXXXXX`: a 4-character public channel plus a 6-character secret, from the Crockford base32 alphabet (0-9 and A-Z without I, L, O, U; 32 symbols; O reads as 0, I and L as 1); 30 secret bits. The channel names which pairing a wrong secret counts against, so "wrong 5 times, the code is deleted" (R-076) is countable | API_CONTRACTS 5.1 (DOCUMENTED); alphabet fixed by RC-18 |
 | Link | `https://<host>/pair#<token>`; the token sits in the URL fragment, so it is not sent in the request line or logged by a proxy. The page posts it in the body of peek and redeem | API_CONTRACTS 5.1; fragment behaviour is EXTERNAL (HTTP) |
 | Link token | 128 random bits, SHA-256 stored | R-076, API_CONTRACTS 5.1 |
 | Expiry | Code: 10 minutes at most. Link: 24 hours by default, at most 7 days. Deleting the code after 5 wrong secrets leaves the link valid until it expires | API_CONTRACTS 5.1 and 5.3 rule 2 |
@@ -165,7 +165,7 @@ The server decides on every request, from the current `pairs` rows. Nothing abou
 | Online or offline | the device | active buddies, if the owner has `showOnline: true` (default; `PATCH /v1/identities/me`) | others | "Appear offline" hides it |
 | Which project is open and which room | the device | only buddies who hold an invite to that room | other buddies | R-081: the buddy sees "invited to room", not everything you open |
 | Shares | the owner | buddies in the share's audience (3.5) | others, unless the owner made a link (3.5) | |
-| Board rows | the owner | active buddies, per track the owner opted into | others | 3.10 |
+| Board rows | the owner | active buddies, when the owner has opted in to the leaderboard | others | 3.10 |
 | Block list | the device | the device only | the blocked person | They see a removal |
 | Operator view | the operator | anyone with shell access to the data directory can read everything the server stores (names, pairs, shares, rows). Chat and project text in rooms are not logged (R-078) | | Stated in `docs/DATA_HANDLING.md` (F-008). End-to-end encryption is not built (HYPOTHESIS that friends who trust the operator do not need it) |
 
@@ -212,7 +212,7 @@ This extends R-095 (three ways) with a fourth, "Share with buddies", which is th
 | `title`, `description` | copied from `meta` for the list; text only |
 | `audience` | `buddies` (all active buddies at read time), or `some` with a list of buddy device ids. In the document this is `access.visibility = "buddies"`, or `"private"` plus `access.grants[]` with role `viewer` for the chosen `actors` (PROJECT_DATA_MODEL 5.1) |
 | `bytes` | size of the `.iynkz` container as uploaded |
-| `createdAt`, `expiresAt` | expiry optional; none by default for buddies, 7 days for links (maximum 30) |
+| `createdAt`, `expiresAt` | expiry: default 30 days for link and buddies audiences; owner may choose none or up to 365 days; operator maximum `IYNK_SHARE_TTL_DAYS` |
 | `revokedAt` | set when the owner revokes |
 | `signature` | ECDSA signature by the owner over `shareId + ":" + stateHash + ":" + createdAt`, checked by the receiving browser against the buddy's stored key. A failure shows "Could not verify who sent this" and disables Fork |
 | `linkTokenHash` | present only for a link: SHA-256 of a 128-bit token (R-095) |
@@ -246,7 +246,7 @@ The mechanics (global order, snapshot plus tail, reconnect, divergence check, ba
 | Run, stop, reset, speed | These are operations in the same order as edits, allowed to `editor` and `owner`. The last accepted operation wins, and every member sees who pressed it. The host can switch "run controls: host only" for a session. View settings (zoom, panel layout, which instrument is open) are local and never shared. Each peer simulates locally from the same operations and replay log; the host's state hash is the reference, and a mismatch resyncs from the host (SIMULATION_ARCHITECTURE 17.4, R-090) |
 | Disagreement | Two people deleting the same part: the first accepted operation wins, the second is rejected with `not_found` and shown as a quiet notice. Two people setting the same value: the later in server order wins and both see the final value. Nobody can overwrite another person's code without the baton |
 | Undo | Per author (ADR-0104). One person cannot undo another's change |
-| Audit | The operation log carries `author.actor` (PROJECT_DATA_MODEL 7.1). The host can open "who changed this" per part. Retention is the R-083 default (2,000 operations); older history is summarised by checkpoints |
+| Audit | The operation log carries `author.actor` (PROJECT_DATA_MODEL 7.1). The host can open "who changed this" per part. Retention is the ADR-0505 rule (payloads for the latest 20,000 operations; older history is summarised by checkpoints) |
 | Helper joins | A buddy asked for help takes the baton for a session (F-122). Nothing else changes |
 | When the room closes | The host's copy returns to the host's library. Each guest is offered "Keep a copy", which creates a **new** project id with `provenance.origin = {kind: "fork", project: <room project id>, revision: <last seq>, stateHash}`. R-085 says the guest's copy keeps the same project `id`; that collides when host and guest share one browser (two tabs through the BroadcastChannel fallback), so a new id is needed (Objection O-4) |
 | Server stops | Local editing continues; banner; queue up to 1,000 operations; resume on return (R-088) |
@@ -287,7 +287,7 @@ Features F-088 (fork) and F-143 (buddies' gallery). The fields are in `project.s
 | Sending back | A fork can be shared back to the original owner as a normal share; the owner opens it next to their own with "Compare" (F-093, STUDIO). Merging is manual. No pull request machinery (HYPOTHESIS that friends do not need it) |
 | Credit is not removable in the UI | Editing `contributors` is possible in a file by hand (the document is advisory), but the editor offers no control to delete an `author` entry |
 | Counting for the leaderboard | A fork counts as a new build only after at least 20 accepted operations since the fork point (PROPOSAL), so forking a friend's finished project does not score (3.10) |
-| Licence | `LicenseRef-iynk-unspecified` until D-017 is decided; a project from a buddy keeps what it had |
+| Licence | `LicenseRef-iynk-pending` until D-017 is decided; a project from a buddy keeps what it had |
 
 ### 3.8 Templates and packs
 
@@ -299,7 +299,7 @@ F-084 (starter templates) and F-220 (packs for buddies). No new file format.
 | Make a template | Menu "Save as template" sets `meta.kind` on a copy and strips history. It stays local until shared |
 | Pack | A `.iynkz` container (PROJECT_DATA_MODEL format table, section 12) holding one or more projects and the embedded part descriptors (`dependencies.components[].origin = "embedded"`). It is the F-220 pack |
 | Sending | A pack goes as a file, or as a share whose `kind` is `pack` (same record as 3.5) |
-| Importing | Runs the hostile-zip limits (PROJECT_DATA_MODEL section 13: streaming size limits, no path traversal, no zip-slip). Code-bearing parts (F-102) arrive **disabled** with "this part runs code from <name>; enable?" and cannot be enabled until the sandbox spike RS-15 has a verdict (PENDING RS-15) |
+| Importing | Runs the hostile-zip limits (PROJECT_DATA_MODEL section 13: streaming size limits, no path traversal, no zip-slip). Code-bearing parts (F-102) arrive **disabled** with "this part runs code from <name>; enable?" and cannot be enabled until a Worker-kill sandbox prototype passes (RS-15 never ran, so the sandbox is PENDING; the prototype is an agent task in the Components phase) |
 | Template library | Local only: the shipped ones, the ones you saved and the ones buddies shared and you chose to keep |
 
 ### 3.9 Challenges among buddies
@@ -312,13 +312,13 @@ F-133, F-144. A challenge is a project the author made with the "Make a challeng
 | Attempt | The buddy forks it (EDUCATION 8.2), edits, and runs the checks locally |
 | Report | The buddy may press "Tell <author> I passed". The app builds a `ChallengeResult` (EDUCATION 8.3, below) and does two things. (1) If every non-null gate is `true`, it calls `PUT /v1/scores/solved.{shareId}` (`submitScore`) with `value = hintsMax`, `unit: "count"`, `better: "lower"`, `projectId` = the submission project and a `note` of at most 140 characters such as `T2, 3 runs, challenge 9f3a1c07`. (2) It offers the full `ChallengeResult` as a small `.iynkresult.json` file the runner sends by any channel, or attaches to the buddies-audience share of the submission; EDUCATION 8.3 allows "a file or through the server". The author sees who passed with `GET /v1/leaderboards/solved.{shareId}` (`getLeaderboard`) and can import the file to read the details |
 | Record | The score row is the contract `LeaderboardRow` (`rank`, `identityId`, `displayName`, `value`, `unit`, `submittedAt`, `verification: "claimed"`, `note`). The runner is the bearer token's identity, never a body field. `shareId` is `SharedProject.share.id` (runner) or `Share.id` (author); both are the same `shr_` id when the author shared by buddies audience. The key `solved.shr_...` fits the contract pattern `^[a-z0-9][a-z0-9._-]{0,63}$` (`shr_` plus 16 base32 characters is 20 characters, so the key is 27) |
-| Trust | It is a claim by a friend, labelled "reported by <name>" (`verification: "claimed"`). The sender can re-run the original tests against the submission locally (EDUCATION 8.3, ADR-0804 there); the server never does (server re-run is F-132, out of scope) |
+| Trust | It is a claim by a friend, labelled "reported by <name>" (`verification: "claimed"`). The sender can re-run the original tests against the submission locally (EDUCATION 8.3, ADR-0834 in EDUCATION 8.3); the server never does (server re-run is F-132, out of scope) |
 | Sharing the answer | Re-running needs the submission. The runner may share the submission project with the author as a buddies-audience share (a checkbox, default off); the `ChallengeResult.submission` field then names it. Without it the result stays an unverified claim |
 
 `ChallengeResult` v1 is the type in EDUCATION 8.3, copied here for reading only (EDUCATION wins if they ever differ):
 
 ```ts
-interface ChallengeResult {            // EDUCATION 8.3, ADR-0804
+interface ChallengeResult {            // EDUCATION 8.3, ADR-0834
   v: 1;
   challenge: { project: string; stateHash: string };    // the challenge as received
   submission: { project: string; stateHash: string };   // the receiver's fork
@@ -337,13 +337,13 @@ Read access: the board follows the contract rule: the caller and the caller's bu
 
 ### 3.10 The buddies-only leaderboard
 
-Feature F-140, requirement R-091, decision D-016. Q-9 in the requirements asks what is ranked; its default is flight laps only. This section proposes a short list of tracks and ships only the first with COLLAB; the others arrive when the thing they rank exists.
+Feature F-140, requirement R-091, decision D-016. Q-9 is closed: laps first, tracks as below. This section lists the tracks and ships only the first with COLLAB; the others arrive when the thing they rank exists.
 
 **Design principle (CD-5).** A rank should answer "who made the best thing" or "who understood the most", and should not answer "who spent the most time". So:
 
 - Each track ranks one **personal best per subject** (one course, one fault item, one challenge, one project). Repeating the thing never adds anything.
 - No total across tracks. No streaks, no daily or weekly reset, no season, no count of attempts, laps flown, minutes online or messages sent. The server never stores an attempt counter (the existing `laps` column of `laps_best_daily` is not exposed).
-- Opt in per track. A buddy who has not opted in is not on that board and is not shown as "missing".
+- One opt-in for the leaderboard, not one per track. A buddy who has not opted in is not on any board and is not shown as "missing".
 - A tie is a tie: the same rank is shown.
 
 | Track id | Subject | Value | Better is | Counts only if | Source of the number | Needs |
@@ -384,7 +384,7 @@ There is no report button and no moderation queue. The tools for a friend who be
 
 ### 3.12 Server surface
 
-This section lists what the buddy features call. Names, methods and rate buckets are API_CONTRACTS section 7 and `schemas/openapi.yaml`; this file adds no route and no table to them. Base path `{origin}/v1` (API_CONTRACTS 3.1, `servers` in `openapi.yaml`; the lobby socket is `wss://host/v1/ws`, ADR-0420).
+This section lists what the buddy features call. Names, methods and rate buckets are API_CONTRACTS section 7 and `schemas/openapi.yaml`; this file adds no route and no table to them. Base path `{origin}/v1` (API_CONTRACTS 3.1, `servers` in `openapi.yaml`; the lobby socket is `wss://host/ws`, ADR-0420).
 
 **Authentication.** Every route needs `Authorization: Bearer <access token>` (12 hours, from the signed challenge of 3.2) except the public routes below. A missing, malformed, expired, forged or revoked token is 401 `unauthorized` with a fixed message and no detail (API_CONTRACTS 4.1 rule 5). The bearer token is not enough for the socket: the WebSocket handshake signs again (REALTIME_ARCHITECTURE 4.3).
 
@@ -399,10 +399,10 @@ This section lists what the buddy features call. Names, methods and rate buckets
 | `POST /v1/auth/tokens` | the second half of sign-in; the signature is the credential | `auth.token`, 20/min/address and 5 failures/min/identity |
 | `POST /v1/identities` | enrolment (the only way to get a first token): needs an operator one-time code and a valid signature | `identity.register`, 5/min/address |
 | `POST /v1/pairings/peek` | a would-be buddy previews who invited them | `pairing.guess`, 10/min and 100/h per address |
-| `POST /v1/pairings/redeem` | optional token; may enrol in the same call when the operator allows it | `pairing.guess`, 10/min and 100/h per address |
+| `POST /v1/pairings/redeem` | bearer token of an enrolled identity; a pairing never enrols | `pairing.guess`, 10/min and 100/h per address |
 | `GET /v1/shares/{token}` and `GET /v1/shares/{token}/assets/{sha256}` | the read-only share-link view; the 128-bit token is the credential (a `buddies`-audience share still needs a signed-in buddy) | `share.read`, 120/min/address |
 
-`POST /v1/identities` (enrol) and the share-link read are the two public routes that matter for buddies. The challenge, token and pairing routes are public because there is no other way to obtain a first credential; each is guarded by a one-time secret or a signature, a rate limit and an identical failure answer. Enrolment is closed unless the operator issues a code (`IYNK_ENROLLMENT=code`, the default; there is no open mode on a public URL without a logged warning, API_CONTRACTS 5.2 rule 4).
+`POST /v1/identities` (enrol) and the share-link read are the two public routes that matter for buddies. The challenge, token and pairing routes are public because there is no other way to obtain a first credential; each is guarded by a one-time secret or a signature, a rate limit and an identical failure answer. Enrolment is closed unless the operator issues a code (`IYNK_ENROL=code`, the default; there is no open mode on a public URL without a logged warning, API_CONTRACTS 5.2 rule 4).
 
 **Routes the buddy features use.**
 
@@ -417,9 +417,9 @@ This section lists what the buddy features call. Names, methods and rate buckets
 | `POST /v1/pairings/peek`, `POST /v1/pairings/redeem` | preview, then become buddies | public; lockouts in 3.2 |
 | `GET /v1/buddies`, `GET /v1/buddies/{identityId}`, `PATCH /v1/buddies/{identityId}` | the paired list, one buddy, your private `alias` | the only list route for people |
 | `DELETE /v1/buddies/{identityId}` | remove | removes both rows, mutual grants and room membership in one transaction |
-| Lobby socket at `ServerInfo.wsUrl` (`wss://host/v1/ws`) | online state, incoming room invites, new-share counts | REALTIME_ARCHITECTURE 5.5; there is no `GET /presence` route |
-| `POST /v1/projects/{projectId}/shares`, `GET /v1/projects/{projectId}/shares`, `DELETE /v1/projects/{projectId}/shares/{shareId}` | make, list and revoke a share (`audience: link` or `buddies`) | owner only; `project.write` 60/min |
-| `GET /v1/shares/{token}`, `POST /v1/shares/{token}/fork` | open a share, make your copy | read is public; fork needs a bearer |
+| Lobby socket at `ServerInfo.wsUrl` (`wss://host/ws`) | online state, incoming room invites, new-share counts | REALTIME_ARCHITECTURE 5.5; there is no `GET /presence` route |
+| `POST /v1/shares` (body holds the snapshot), `GET /v1/shares`, `DELETE /v1/shares/{shareId}` | make, list and revoke a share (`audience: link` or `buddies`) | owner only; `project.write` 60/min |
+| `GET /v1/shares/{token}` | open a share; the fork is made locally from the opened snapshot | read is public |
 | `PUT /v1/scores/{key}`, `DELETE /v1/scores/{key}`, `GET /v1/leaderboards/{key}` | personal bests (3.10) | buddies only |
 | `POST /v1/rooms`, `POST /v1/rooms/{roomId}/invites`, `POST /v1/room-invites/redeem`, `POST /v1/rooms/{roomId}/invites/{inviteId}/accept` | rooms | REALTIME_ARCHITECTURE; API_CONTRACTS 7 Rooms |
 
@@ -435,12 +435,12 @@ Anything not in the contract or this table returns 404. No listing route over id
 | Pairing guesses | 5 wrong secrets per real channel delete the code; 10 per minute and 100 per hour per address (API_CONTRACTS 4.3) |
 | Shares per device; bytes per share; quota | 200; 16 MiB; 256 MiB |
 | Revisions kept per shared project | 10 |
-| Link lifetime | 7 days default, 30 days maximum |
+| Link lifetime | default 30 days for link and buddies audiences; owner may choose none or up to 365 days; operator maximum `IYNK_SHARE_TTL_DAYS` |
 | Pass lines per challenge per identity | 1 (the score key `solved.{shareId}`; a better value replaces the older); 8 KiB body |
 | Board rows per identity per track | 200 (one per key) |
 | Replay attached to a lap | 64 KiB |
 | Block list | 256 (browser only) |
-| Rooms, members per room | R-075: 500 and 8 |
+| Rooms, members per room live rooms 20, stored rooms 100, members 8, spectators 8 (BACKEND defaults) |
 
 ### 3.14 Failure and abuse cases
 
@@ -517,7 +517,7 @@ Order of work: one commit chain, the three deletes first, then the cleanups that
 | Edit | `src/app/[lang]/together/Lobby.tsx:14` and `:172` |
 | Edit | `src/lib/server/db/queries.ts:132-175` (profile functions), `src/lib/server/db/schema.ts:77-93` (`profile`, `buddyPost`, `buddyDelete`, `buddyQuery`) and `queries.test.ts` |
 | Edit | `src/lib/telemetry/responses.ts` (`BuddyProfile`, `BuddiesResponse`, `BuddyPostResponse`) |
-| New migration | A migration that drops `profiles` and `simlab_expire_profiles`, unless the Postgres store is dropped altogether by the system seat's decision. `db/migrations/0003_profiles.sql` stays in history |
+| New migration | A migration that drops `profiles` and `simlab_expire_profiles`. SQLite only; Postgres is a later could (R-083, D-019). `db/migrations/0003_profiles.sql` stays in history |
 | Edit | `src/i18n/messages/*/together.json` (the `buddies` object, from `:181` in `en`) |
 
 ### 4.4 Public leaderboard and live counter (replaced by 3.10; F-141)
@@ -528,7 +528,7 @@ Order of work: one commit chain, the three deletes first, then the cleanups that
 | Delete | `src/components/data/Leaderboard.tsx`, `LiveCounter.tsx`, `useFeed.ts`, and the matching parts of `components.test.tsx`, `messages.ts`, `messages/*.json`, `index.ts` |
 | Delete | `src/app/api/live/route.ts`, `route.test.ts`, `src/lib/server/db/live.ts` |
 | Edit | `src/components/dronelab/FlyWorkspace.tsx:5` and `:205-215` (replaced by the buddies board panel) |
-| Edit | `src/lib/server/db/queries.ts:45-87` (`getLeaderboard`), `src/lib/server/db/schema.ts:30-34` (`name` in `lapPayload`) and `:69-76` (`leaderboardQuery`), `db/migrations/0002_aggregates.sql` (the `laps_best_daily` aggregate) through a new migration if Postgres stays; `timescale.test.ts` |
+| Edit | `src/lib/server/db/queries.ts:45-87` (`getLeaderboard`), `src/lib/server/db/schema.ts:30-34` (`name` in `lapPayload`) and `:69-76` (`leaderboardQuery`), `db/migrations/0002_aggregates.sql` (the `laps_best_daily` aggregate) through a new migration; `timescale.test.ts` |
 
 ### 4.5 Solana Proof of Build (F-146 to F-150)
 
@@ -614,8 +614,8 @@ Relative to D-014. COLLAB is one phase and stops for Amar's OK at its end.
 | Step | Work | Needs | Done when |
 |---|---|---|---|
 | B0 | Section 4 deletions (F-195). The buddy pool and public leaderboard routes are deleted; the Together page keeps rooms behind the "off" flag (R-081 notes) | none | CM-40, CM-41 |
-| COLLAB-1 | Relay authority (F-119) and the store (R-083) | B0 | R-097 passes |
-| COLLAB-2 | Enrolment, key and bearer token (F-005), pairing, buddy list, lobby presence (3.2 to 3.4) | COLLAB-1 | CM-01 to CM-07 |
+| COLLAB-1 | The store (R-083), enrolment, key, bearer token and pairing (F-198, F-199, F-005, F-206), buddy list, lobby presence (3.2 to 3.4) | B0 | CM-01 to CM-07 |
+| COLLAB-2 | Relay authority (F-118, F-119) | COLLAB-1 | R-097 passes |
 | COLLAB-3 | Rooms on projects (F-121, R-084 to R-094) | CORE operation log | M1 steps 9 to 11 |
 | COLLAB-4 | Shares, forks, attribution (3.5, 3.7) | CORE fork (F-088), file format (F-201) | CM-08 to CM-15 |
 | COLLAB-5 | Buddies board, `lap` track (3.10) | DRONE range (exists) | CM-20 to CM-25 |
@@ -642,7 +642,7 @@ The document cannot derive a budget, a price someone typed, a chosen alternate o
 
 ```ts
 type BuildInputs = {
-  schemaVersion: "1.0";
+  schemaVersion: "1.1";   // project document; domain data keeps 1.0
   currency: string;                    // ISO 4217, one per project, default "USD"
   budgetMinor?: number;                // integer minor units (cents)
   spares: { smallPassivesPercent: number }; // default 0; 10 is a suggested value, never applied silently
@@ -844,7 +844,7 @@ A net with more than two members is expanded to a minimal tree of wires only if 
 
 ### 8.9 Flashing and programming steps
 
-Feature F-161, R-181, R-185. The compile path for real firmware is PENDING RS-04, RS-05, RS-17 (SIMULATION_ARCHITECTURE ADR-0306), so **iynk does not claim to produce a flashable binary yet**. The guide produces the source and the recipe; the toolchain is the person's.
+Feature F-161, R-181, R-185. The compile path for real firmware has no verdict: RS-04, RS-05 and RS-17 never ran (SIMULATION_ARCHITECTURE ADR-0306). RS-03 measured local `arduino-cli` compile at 1.17 to 1.40 s cold and 0.33 to 0.56 s warm, and found it GPL-3.0 (`08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md`; the checker did not re-verify the licence statement), so a local compile is plausible but not decided. **iynk does not claim to produce a flashable binary.** The export is a sketch folder and a flashing guide: the guide produces the source and the recipe; the toolchain is the person's. A local compile timing is an agent task in the export phase; the compile route stays reversible behind an interface until then.
 
 | Board | Source export | Recipe (EXTERNAL, check before shipping) |
 |---|---|---|
@@ -986,12 +986,12 @@ Requirements deepened: R-075 to R-098, R-181 to R-192.
 |---|---|---|---|
 | CQ-1 | Should a person be able to back up and move their buddy identity (export the key)? Without it, clearing browser storage means re-pairing everyone (R-077 accepts this) | No export. HYPOTHESIS that a small circle can re-pair in five minutes | Amar |
 | CQ-2 | Are read-only links wanted at all, since they let a non-buddy read a project (Q-12)? | Built, off by default per project, operator switch | Amar |
-| CQ-3 | Are the `built`, `diagnosis` and `solved` tracks wanted, or only laps? | Laps ship; the rest wait for their sources (Q-9) | Amar |
+| CQ-3 | Are the `built`, `diagnosis` and `solved` tracks wanted, or only laps? | Q-9 is closed: laps first. This stays a For Amar question only about whether to build the other tracks later | Amar |
 | CQ-4 | Is the optional fingerprint comparison worth the screen space? | Yes, collapsed | Amar |
 | CQ-5 | Which search provider after SerpApi, if any? Terms for caching listings are UNKNOWN | SerpApi adapter only | Amar |
 | CQ-6 | Do `identity.tags` strings of the form `hazard:` satisfy the component seat, or is a first-class field wanted? | Tags | component seat |
 | CQ-7 | Who writes the first `build.json` recipes and checks the vendor menus (EXTERNAL, they change)? | One per shipped board during EXPORT | Amar |
-| CQ-8 | Is Postgres kept at all? It decides whether the migrations in 4.3 and 4.4 are written | R-083: file-backed first, Postgres optional | system seat |
+| CQ-8 | Closed by RC-03. The migrations in 4.3 and 4.4 are written | SQLite only; Postgres is a later could (R-083, D-019) | closed |
 
 ---
 
@@ -1024,7 +1024,7 @@ Full ADR files are not written in this pass (the task named one output file). Ea
 |---|---|---|---|---|---|
 | ADR-0820 | Buddy identity and pairing without accounts | Friends must find each other on a private server without email or a public list (D1) | (a) email magic link; (b) public handle search; (c) keypair, operator enrolment code, signed challenge and bearer, then link or typed-code pairing; (d) shared room code only | (c), as API_CONTRACTS 5 (ADR-0801 there) | Re-pair after storage loss; HTTPS required; no recovery. Closes D1 by removing the surface |
 | ADR-0821 | Server-side visibility from the live pair table | Where to enforce "only buddies" | (a) audience lists copied into each record; (b) check pairs on every read; (c) encrypt per buddy | (b) | One place to test (CM-04); small read cost; the operator can read all |
-| ADR-0822 | Shares are signed immutable snapshots | How a project reaches a buddy | (a) live sync of the owner's local copy; (b) immutable `.iynkz` snapshot keyed by `stateHash`; (c) git-like repository | (b) | The owner need not be online; a stale view until they share again; Compare covers diffs |
+| ADR-0822 | Shares are signed immutable snapshots | How a project reaches a buddy | (a) live sync of the owner's local copy; (b) immutable `.iynkz` snapshot keyed by `stateHash`; (c) git-like repository | (b); the snapshot form is API_CONTRACTS ADR-0817 | The owner need not be online; a stale view until they share again; Compare covers diffs |
 | ADR-0823 | Attribution through existing provenance fields | How remixes keep credit | (a) a new `lineage` field; (b) `provenance.origin.fork`, `actors`, `contributors` | (b) | No schema change; the chain is followed only through reachable shares |
 | ADR-0824 | Leaderboard counts personal bests per subject | How to reward building | (a) points and streaks; (b) a total per person; (c) per-subject personal bests per track | (c) | No engagement mechanics; weaker motivation for some (accepted) |
 | ADR-0825 | Build inputs in `ext["iynk.build"]`; outputs derived | Where budget, prices and measurements live | (a) new `domains.build`; (b) `ext`; (c) a sidecar file | (b) now, (a) later | No schema change now; a migration to `domains.build` later (O-6) |
@@ -1067,8 +1067,7 @@ Not checked: whether the file list in section 4 compiles after deletion (needs `
 |---|---|---|---|
 | 1 | Pairing, enrolment and token model differs in three places; routes are `/v1/...`; R-077 public list | Applied, with one correction | Read API_CONTRACTS 5.1 to 5.3, 7 and `openapi.yaml`. Rewrote 3.1 (entities: identity ids derived from the key, `pairings` instead of `offers`, `buddies` rows in both directions), 3.2 (enrolment by operator one-time code, `POST /api/v1/auth/challenges`, signed challenge, `POST /api/v1/identities`, 12-hour bearer through `POST /api/v1/auth/tokens`; pairing through `POST /api/v1/pairings`, `peek`, `redeem`; typed code `XXXX-XXXXXX` with a public channel; state diagram without `pending`) and 3.12 (all routes renamed to the contract names under `/api/v1`; lobby socket replaces `GET /v1/presence`; `/scores` and `/leaderboards` replace `/boards`; `/pairings` replaces `/buddies/offers`). 3.12 now has an exact public-route table with each rate bucket. Also updated CD-1, 3.5 intro, 3.11, 3.13, 3.14, CM-01, CM-03, CM-05, CM-30, the risk row and ADR-0800 so nothing still describes the old model. The correction: the issue asked that enrolment and the share-link read be "the only" routes without a bearer. That cannot hold, because sign-in itself (`/auth/challenges`, `/auth/tokens`), `GET /server`, `/healthz`, `/readyz`, `/openapi.json` and pairing `peek` and `redeem` must be callable before a token exists (API_CONTRACTS 7 marks them `none` or `optional token`). The table lists the real set and says why each is public, so R-077 can cite it. PRD R-077 itself still names a shorter list and `POST /v1/identities`; its owner should copy the table in 3.12 |
 | 1b | Creator-accept step | Dropped to match the contract | API_CONTRACTS 5.3 makes one `redeem` create the pair and has no accept route. I removed the accept step and the `pending` state and kept Remove as the undo. This is a weaker guard than before; recorded as O-11 |
-| 2 | Challenge model conflict (`meta.kind` and an attestation record versus EDUCATION `ChallengeResult`) | Applied | Read EDUCATION 8.1 and 8.3, ADR-0804 there, and PROJECT_DATA_MODEL 5.13 (`guide.kind` has `challenge`; `meta.kind` also has `challenge`, so both exist). 3.9 now uses `guide.kind = 'challenge'` as the marker, replaces the attestation field list with the `ChallengeResult` v1 type wrapped in `{attestationId, challengeShareId, runner, reportedAt, result}`, and replaces "Nobody re-runs it" with the sender re-running the original tests locally (EDUCATION 8.3); the server only checks the envelope and that `challenge.stateHash` equals the share's `stateHash`. The `built` and `solved` tracks in 3.10 now read the same record; `lap` and `diagnosis` use `PUT /api/v1/scores/{key}`. Dropped `checksPassed`, `checksTotal`, `simulatorBuild` and `replayHash`, which `ChallengeResult` does not have |
-| - | Not changed, noticed | Flagged | The ADR ids 0800 to 0807 in section 14 collide with API_CONTRACTS (ADR-0800 to 0809) and EDUCATION (ADR-0804 is challenge verification there, leaderboard here). The orchestrator should renumber one range. Share record fields in 3.5 still differ from the contract `Share` (O-11). The word "device" is kept in unchanged sections and is defined in 3.1 as the identity of one browser |
+| 2 | Challenge model conflict (`meta.kind` and an attestation record versus EDUCATION `ChallengeResult`) | Applied | Read EDUCATION 8.1 and 8.3, ADR-0834 there, and PROJECT_DATA_MODEL 5.13 (`guide.kind` has `challenge`; `meta.kind` also has `challenge`, so both exist). 3.9 now uses `guide.kind = 'challenge'` as the marker, replaces the attestation field list with the `ChallengeResult` v1 type wrapped in `{attestationId, challengeShareId, runner, reportedAt, result}`, and replaces "Nobody re-runs it" with the sender re-running the original tests locally (EDUCATION 8.3); the server only checks the envelope and that `challenge.stateHash` equals the share's `stateHash`. The `built` and `solved` tracks in 3.10 now read the same record; `lap` and `diagnosis` use `PUT /api/v1/scores/{key}`. Dropped `checksPassed`, `checksTotal`, `simulatorBuild` and `replayHash`, which `ChallengeResult` does not have |
 
 ### Second review pass (route and id consistency)
 
@@ -1077,5 +1076,37 @@ Not checked: whether the file list in section 4 compiles after deletion (needs `
 | 1 | Routes and rows that are not in `openapi.yaml`, the server schema or API_CONTRACTS: `/buddies/offers`, `/buddies/pairs/{id}/accept`, `/attestations`, `/boards/{track}/{subject}`, `/presence`, `/blocks`, `/devices/me`, table `board_rows`; two spellings of accept | Applied. By the time of this pass the earlier fix had already replaced offers, accept, boards, presence and devices/me with the contract names; this pass checked every route in the file against `schemas/openapi.yaml` and finished the rest | Read `schemas/openapi.yaml` paths, API_CONTRACTS section 7 and BACKEND_ARCHITECTURE 6.4 and 7.2. Mapping: offers and accept to `POST /v1/pairings`, `POST /v1/pairings/peek`, `POST /v1/pairings/redeem` (no accept step exists in the contract); boards to `PUT /v1/scores/{key}`, `DELETE /v1/scores/{key}`, `GET /v1/leaderboards/{key}`; presence to the lobby socket (`ServerInfo.wsUrl`), no HTTP route; devices/me to `GET` and `PATCH /v1/identities/me` (the visibility setting is `showOnline`, not `presence`); `board_rows` removed in favour of the `scores` table. Base path changed from `/api/v1` to `/v1` in the whole file, as `openapi.yaml` `servers` and API_CONTRACTS 3.1 say |
 | 1a | Attestations: add to the contract or delete | Deleted from this file. Adding them would mean editing `openapi.yaml`, API_CONTRACTS and the SQLite schema, which are outside this file | 3.1, 3.9, 3.10, 3.12, 3.13, CM-18, CM-31, and the build table no longer mention an attestation route or table. A pass is `PUT /v1/scores/solved.{shareId}` (`ScoreSubmit`: `value` = hints, `unit: "count"`, `better: "lower"`, `note` at most 140 characters), read with `GET /v1/leaderboards/solved.{shareId}`. The full `ChallengeResult` is a `.iynkresult.json` file or rides on the buddies-audience share of the submission, which EDUCATION 8.3 allows. `built` is computed by the author's browser from those rows and submitted as `built.{projectId}`. Cost: the author sees a hint count and a note, not the whole `ChallengeResult`, unless the runner sends the file |
 | 1b | Blocks: add to the contract or delete | Deleted from the server surface; kept as a browser feature | No `/blocks` route and no server block state. 3.1, 3.3, 3.11 and CM-30 now say block = remove + revoke the blocker's open pairings + a browser block list that auto-removes and auto-kicks. 3.11 states the weaker guarantee (client-enforced) and O-11 says what to add to the contract if a server block is wanted |
-| 2 | Section 14 ADR ids collide (ADR-0800 to 0807 vs STUDIO_EDITOR 0800 to 0808 and API_CONTRACTS 0810 to 0819) | Applied | Checked `04_ARCHITECTURE/ADR/` (0800 to 0808 exist) and grepped the product and architecture documents for 0820 to 0899 (unused). Renumbered ADR-0800 to 0807 to ADR-0820 to 0827 in the header, section 14 and the reference in 8.9. References to "ADR-0804" that mean EDUCATION's challenge ADR, and to ADR-0801 in API_CONTRACTS, are other documents' ids and were left. EDUCATION.md also claims 0800 to 0809 (its section 15) and still collides with STUDIO_EDITOR; its owner must renumber, which this pass cannot do |
 | 3 | Pairing PROPOSAL rows in the 3.2 table (`Uses`, `Limits`) | Not changed | They are labelled PROPOSAL values, not routes or tables |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-03 | Store is "SQLite only; Postgres is a later could (R-083, D-019)" in the profiles-table row, the store paragraph in 3.1, the 4.3 migration row, the 4.4 edit row and CQ-8 (now closed). |
+| RC-06 | Audit retention cites the ADR-0505 rule (payloads for the latest 20,000 operations; checkpoints summarise older history). |
+| RC-13 | Share expiry in 3.5 and the limits table: default 30 days for link and buddies audiences; none or up to 365 days by the owner; operator maximum `IYNK_SHARE_TTL_DAYS`. |
+| RC-14 | `IYNK_ENROLLMENT` is `IYNK_ENROL` in 3.2 and the route notes. Only the rename was applied. RC-14 also drops the `invite` and `open` values and says a pairing never enrols; the 3.2 sentence about enrolling by pairing in `invite` mode (`registration` field) was deleted in the second pass. |
+| RC-15 | `iynk-server enrol`. |
+| RC-18 | Pairing code alphabet is Crockford base32; the 31-symbol string is deleted. Lines 82 and 114 only show the `XXXX-XXXXXX` shape and needed no change. |
+| RC-22 | Lobby socket is `wss://host/ws` (two places: 3.12 intro and the lobby row). |
+| RC-33 | Placeholder licence is `LicenseRef-iynk-pending`. |
+| RC-34 | The `ext["iynk.build"]` sketch type uses `schemaVersion: "1.1"` (project document); domain data keeps 1.0. |
+| RC-61 | "ADR-0804" becomes ADR-0834 in EDUCATION 8.3 (trust row and `ChallengeResult` comment). ADR-0822 cites ADR-0817 for the snapshot form. The note about 0800 to 0807 collisions is deleted. Range 0820 to 0829 kept. History rows in the review log that mention ADR-0804 are history and were left. |
+| RC-65 | 3.10 now says one opt-in for the leaderboard; the visibility row for board rows follows. CD-5 (line 32) did not contain "Opt in per track", so it is unchanged. |
+| RC-69 | Section 7: COLLAB-1 is store, enrolment, key, bearer token, pairing (F-198, F-199, F-005, F-206) plus buddy list and presence; COLLAB-2 is relay authority (F-118, F-119). |
+| RC-71 | 3.13 limits: live rooms 20, stored rooms 100, members 8, spectators 8 (BACKEND defaults). |
+| RS-04, RS-05, RS-17 (via RS-03) | F-161 build guide: still no compile verdict; local `arduino-cli` timings and GPL-3.0 noted; export is a sketch folder and flashing guide; compile route stays reversible. |
+| RS-15 | Imported code-bearing parts stay disabled until a Worker-kill prototype passes (agent task, Components phase). |
+| RS-09 | Already cited (header, baton row, ADR-0104). No change needed: server-ordered op log, baton-only source, no Yjs. Real-network reconnect time is UNKNOWN and is work for Amar. |
+| Not applicable | RS-01, RS-03 (speed), RS-06, RS-08, RS-12, RS-13 and DP-01 do not touch this file. No wording here makes Studio wait for interviews, a pilot or Fault Lab (grep found none). |
+
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-61 | Review log row 2: ADR-0804 now ADR-0834. The old 0800 to 0807 collision row was removed. |
+| RC-14 | Deleted the 3.2 sentence on enrolling by pairing. Pairing diagram: `registration?` removed and the reply is just buddy. Route table: redeem needs a bearer token of an enrolled identity and a pairing never enrols. Log row updated. |
+| RC-65 | 3.10 says Q-9 is closed (laps first). CQ-3 stays as a For Amar question, only about later tracks. |
+| RC-24 | Share routes are `POST /v1/shares`, `GET /v1/shares`, `DELETE /v1/shares/{shareId}`; the fork route was dropped, the fork is made locally. |
+| RC-69 | No change: section 7 order already matches. |

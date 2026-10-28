@@ -716,7 +716,7 @@
     {
       "id": "overtemperature_cutout",
       "name": {"en": "Overtemperature cut-out on a stalled motor"},
-      "cause_id": "motor.stalled",
+      "cause_id": "motor-stall",
       "symptom_ids": ["motor.stutters", "heatsink.hot"],
       "when": [{"measure": "junction_temperature", "target": "part", "op": ">", "threshold": {"rating": "tj_max", "pick": "max"}}],
       "effect": {
@@ -743,7 +743,7 @@
     {
       "id": "reversed_supply_burn",
       "name": {"en": "Burned by a reversed supply"},
-      "cause_id": "l298n.reversed-supply",
+      "cause_id": "reverse-polarity",
       "symptom_ids": ["module.dead", "regulator.hot"],
       "when": [{"measure": "pin_voltage_reverse", "target": "VS", "op": ">", "threshold": {"literal": {"unit": "V", "value": 1.4}}}],
       "effect": {
@@ -762,7 +762,7 @@
     {
       "id": "supply_too_high",
       "name": {"en": "Regulator and capacitor over-voltage"},
-      "cause_id": "l298n.supply-too-high",
+      "cause_id": "x-l298n.supply-too-high",
       "symptom_ids": ["regulator.hot", "controller.dead"],
       "when": [{"measure": "pin_voltage", "target": "VS", "op": ">", "threshold": {"rating": "vs_module_max", "pick": "max"}}],
       "effect": {
@@ -781,7 +781,7 @@
     {
       "id": "supply_too_low",
       "name": {"en": "Logic starved by a low supply"},
-      "cause_id": "l298n.supply-too-low",
+      "cause_id": "x-l298n.supply-too-low",
       "symptom_ids": ["motors.dead", "logic.brownout"],
       "when": [{"measure": "pin_voltage", "target": "VS", "op": "<", "threshold": {"rating": "vs_min_for_logic", "pick": "value"}}],
       "effect": {
@@ -802,7 +802,7 @@
       "kind": "reversed_supply",
       "target": {"rail": "VS"},
       "legacy_id": "reverse-polarity:bench",
-      "cause_id": "l298n.reversed-supply",
+      "cause_id": "reverse-polarity",
       "symptom_ids": ["module.dead", "regulator.hot"],
       "description": {"en": "Connect the battery the wrong way round."}
     },
@@ -811,7 +811,7 @@
       "kind": "overload",
       "target": {"pins": ["OUT1", "OUT2", "OUT3", "OUT4"]},
       "legacy_id": "stall",
-      "cause_id": "motor.stalled",
+      "cause_id": "motor-stall",
       "symptom_ids": ["motor.stutters", "heatsink.hot"],
       "description": {"en": "Block the motors so they stall."}
     },
@@ -820,7 +820,7 @@
       "kind": "cold_joint",
       "target": {"pins": ["OUT1", "OUT2"]},
       "legacy_id": "cold:J2",
-      "cause_id": "connection.cold-joint",
+      "cause_id": "x-connection.cold-joint",
       "symptom_ids": ["motor.intermittent"],
       "description": {"en": "A cracked joint on the motor A terminal."}
     },
@@ -829,7 +829,7 @@
       "kind": "option_removed",
       "target": {"parameter": "ena_jumper"},
       "legacy_id": "missing:JPA",
-      "cause_id": "l298n.enable-floating",
+      "cause_id": "floating-input",
       "symptom_ids": ["motor.dead-no-enable"],
       "description": {"en": "Pull the ENA cap and leave ENA unconnected."}
     },
@@ -838,7 +838,7 @@
       "kind": "option_removed",
       "target": {"parameter": "reg_jumper"},
       "legacy_id": "missing:JP5",
-      "cause_id": "l298n.regulator-jumper-removed",
+      "cause_id": "x-l298n.regulator-jumper-removed",
       "symptom_ids": ["logic.no-5v"],
       "description": {"en": "Pull the 5V-EN cap, so the +5V pin has no output."}
     },
@@ -848,7 +848,7 @@
       "target": {"rail": "VS"},
       "value": {"unit": "V", "value": 6},
       "legacy_id": "wrong-voltage:bench:6",
-      "cause_id": "l298n.supply-too-low",
+      "cause_id": "x-l298n.supply-too-low",
       "symptom_ids": ["motors.dead", "logic.brownout"],
       "description": {"en": "Power the module from 6 V, as four AA cells would."}
     },
@@ -858,7 +858,7 @@
       "target": {"rail": "VS"},
       "value": {"unit": "V", "value": 36},
       "legacy_id": "wrong-voltage:bench:36",
-      "cause_id": "l298n.supply-too-high",
+      "cause_id": "x-l298n.supply-too-high",
       "symptom_ids": ["regulator.hot", "controller.dead"],
       "description": {"en": "Power the module from 36 V."}
     }

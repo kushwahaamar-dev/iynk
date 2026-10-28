@@ -24,7 +24,7 @@ Fidelity claims live in UI strings, README text and lesson copy. Nothing stops a
 
 ## Decision
 
-One registry of entries (section 16.2): id, version, kind, tier, layers, `implements`, `mocked`, assumptions, `evidenceRange`, source citations, test ids. Labels, the panel and the CI oracle suite read it. The build fails if the asserted tier exceeds the computed tier, if a part or engine in the 38 converted projects has no entry, or if banned words appear (16.3, SA-17). Nothing prints a tier that is not in the registry.
+One registry of entries (section 16.2): id, version, kind, tier, layers, `implements`, `mocked`, assumptions, `operatingRange`, source citations, test ids. Labels, the panel and the CI oracle suite read it. The build fails if the asserted tier exceeds the computed tier, if a part or engine in the 38 converted projects has no entry, or if banned words appear (16.3, SA-17). Nothing prints a tier that is not in the registry.
 
 ## Technical justification
 
@@ -57,3 +57,9 @@ SIM-2 first entries (16.5); SIM-7 complete.
 ## Known limitations
 
 Many entries have no reference data yet; the entry says so rather than inventing a tolerance.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-55 | The registry entry field `evidenceRange` is now `operatingRange` (Decision, line 27), matching `FidelityEntry.operatingRange` in SIMULATION_ARCHITECTURE 16.2. `evidenceRange` belongs to `FailureModel` and is not used on the entry. |

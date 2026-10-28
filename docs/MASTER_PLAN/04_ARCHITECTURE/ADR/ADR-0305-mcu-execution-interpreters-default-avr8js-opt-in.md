@@ -1,7 +1,7 @@
 # ADR-0305: MCU execution: interpreters by default, avr8js as an opt-in firmware mode
 
 Status: proposed, 2026-10-27. Author: simulation architecture seat.
-Upstream: RS-03 PASS on desktop; RS-06 FAIL on the CPU clause; RS-12; `TECHNICAL_RESEARCH.md` D1. Spec: SIMULATION_ARCHITECTURE.md sections 4.2, 8.1 to 8.4.
+Upstream: RS-03 (08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md) correctness PASS, overall INCONCLUSIVE (desktop speed only, no device run); RS-06 (08_RESEARCH_SPIKES/RS-06-rp2040js-micropython/REPORT.md) pass clause not met, 0.54x to 0.79x, fail clause not triggered; RS-12; `TECHNICAL_RESEARCH.md` D1. Spec: SIMULATION_ARCHITECTURE.md sections 4.2, 8.1 to 8.4.
 Downstream: ADR-0013 (compile); ADR-0307; SA-01, SA-14, SA-15; F-039, F-040, F-048, F-055; R-102, R-106.
 
 ## Problem
@@ -22,7 +22,7 @@ The TypeScript interpreters run beginner sketches and lessons well, but they are
 | A. Emulators only | Rejected: no engine for most boards; compile needed for every click |
 | B. Interpreters only | Rejected: no real timers, ISRs or libraries; no oracle for the cost table |
 | C. Interpreters by default (T1); avr8js opt-in for Uno and Nano (T3); rp2040js test oracle only | Chosen |
-| D. rp2040js for Pico by default | Rejected: 0.54 to 0.79 times real time on an M4 Pro (RS-06) |
+| D. rp2040js for Pico by default | Rejected: pass clause not met, 0.54x to 0.79x real time on an M4 Pro at 100 percent of one core (RS-06, stock loop, idle-skip not tested) |
 
 ## Decision
 
@@ -34,7 +34,7 @@ RS-03: serial text equal on 80 of 80 lines and PWM duty within 0.4 points agains
 
 ## Performance data
 
-RS-03: about 100 million AVR cycles per wall second on one M4 Pro core; main-thread throttle proxy 1.6 to 1.8 times at 4x and 1.1 to 1.2 at 6x. Device speed on a phone is INCONCLUSIVE (no run). RS-06: rp2040js 0.13 to 0.19 times under throttle.
+RS-03: about 100 million AVR cycles per wall second on one M4 Pro core; main-thread throttle proxy 1.6 to 1.8 times at 4x and 1.1 to 1.2 at 6x. The 6.1 to 7.5 times desktop figure is not a device result. Against the 3 times pass line, the throttled 1.7 times at 4x and 1.1 times at 6x read as likely not met on low-end devices (the independent check agrees); phone and Chromebook were not tested, so it is INCONCLUSIVE. Only three Uno lessons were compared. RS-06: rp2040js 0.13 to 0.19 times under throttle.
 
 ## Cost implications
 
@@ -50,7 +50,7 @@ A hex or ELF import is untrusted input: size, section, DWARF and parse-time caps
 
 ## Reversibility
 
-Reverse if a Chromebook run is below 1 times real time: avr8js becomes desktop only, the interpreter remains the default everywhere.
+Reverse if a Chromebook run is below 1 times real time (a device run is work for Amar, Q-2; the Studio build does not wait for it): avr8js becomes desktop only, the interpreter remains the default everywhere.
 
 ## Migration plan
 
@@ -59,3 +59,14 @@ SIM-0 wraps the interpreters; SIM-6 adds avr8js, hex import, the differential su
 ## Known limitations
 
 avr8js state serialisation is unknown (6.7). Behaviour of `Servo`, `tone`, `pulseIn`, interrupts and I2C against the interpreter was not tested by RS-03.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-51 | Upstream line: RS-06 "FAIL" replaced by "pass clause not met, 0.54x to 0.79x, fail clause not triggered". Option D row uses the same wording and range. |
+| RS-03 | Upstream line leads with INCONCLUSIVE overall, correctness PASS. Performance data states that the desktop 6.1 to 7.5 times figure is not a device pass and that the throttled result is below the 3 times line. Decision unchanged: interpreters default, avr8js opt-in Firmware mode (R-102) and differential oracle. |
+| RS-06 | Scope noted: stock loop, idle-skip not tested. rp2040js stays an offline oracle (REF-7), not a user mode. |
+| RS-12 | Upstream citation kept; no change to the decision (TypeScript Verilog stays live). |
+| Reversibility | Device run assigned to Amar (Q-2); the Studio build does not wait for it (D-014). |
+| RS-01, RS-08, RS-09, RS-13, DP-01 | Checked: no mention in this file, nothing to change. |

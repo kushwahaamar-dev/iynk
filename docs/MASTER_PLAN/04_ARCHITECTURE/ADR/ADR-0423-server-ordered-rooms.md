@@ -26,7 +26,7 @@ The relay orders opaque actions and keeps them in memory; it cannot validate, de
 ## Decision
 
 1. The server loads a room from the latest checkpoint plus the tail, applies validated ops with the shared `apply`, commits them in a group commit per event-loop turn (256 ops or 4 MiB per transaction), then acks.
-2. Snapshot and retention numbers are those of ADR-0505 only (checkpoint every 500 ops or 10 minutes with activity; keep 8 plus named; envelope payloads for the latest 20,000 ops, then NULL; resume tail window 2,000). This ADR states none of its own.
+2. Snapshot and retention numbers are those of ADR-0505 only (checkpoint every 500 ops or 10 minutes with activity; keep 8 plus named; envelope payloads for the latest 20,000 ops, then NULL; resume sends a tail only within 1,000 ops and 200 KB gzipped, else snapshot plus tail (REALTIME 11.4)). This ADR states none of its own.
 3. Members are authenticated devices (REALTIME 4.4), not client-chosen peer ids. Host is a database fact (`rooms.host_actor`). The baton is one holder per room and gates all `source.*` ops. Chat `kind` is set by the server.
 4. The server sends `check{seq,chain}` every 100 ops or 30 s of activity (REALTIME 8.2); a mismatch is answered with a snapshot.
 5. The dedup record is the persisted `submissions` table (last 8 per member), written in the commit transaction.
@@ -59,7 +59,7 @@ Closes R1 to R9: private room ids with membership or invite, one answer for miss
 
 ## Reversibility
 
-Medium. The room logic sits behind `RoomCore` and the store behind the `Store` port. Reverse if hash mismatches between peers appear in practice (class B hashes diverge): stream frames from the host as the simulation architecture says (ADR-0312).
+Medium. The room logic sits behind `RoomCore` and the store behind the `ServerStore` port. Reverse if hash mismatches between peers appear in practice (class B hashes diverge): stream frames from the host as the simulation architecture says (ADR-0312).
 
 ## Migration plan
 
@@ -68,3 +68,11 @@ REALTIME 18 slices S1 to S8, in this file's slices BE-1 and BE-2: authority on t
 ## Known limitations
 
 Net ops, batches, `component.swap` and overlapping concurrent `source.edit` are not covered by RS-09; concurrent text edits converge but can lose intent (PROJECT_DATA_MODEL 7.4). Single process, single writer. Reconnect under 2 s is measured on loopback only. With `IYNK_STORE_SYNC=normal` an acknowledged op can be lost on power failure and the epoch break of REALTIME 11.5 applies.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-04 | Decision 2 no longer lists a resume tail window of 2,000. ADR-0505 owns the checkpoint and retention numbers only. |
+| RC-06 | Decision 2 now states the reconnect rule: a tail only within 1,000 ops and 200 KB gzipped, else snapshot plus tail (REALTIME 11.4; ADR-0500 line 32). |
+| RC-02 | Reversibility: "the `Store` port" is now "the `ServerStore` port". |

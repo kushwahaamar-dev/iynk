@@ -12,7 +12,7 @@ Fault outcomes are scripted today (for example the flight faults), so they canno
 
 1. D-010: one record `{cause_id, symptom_id, evidence, hint_level}`.
 2. A fault must be an operation in the project history (reviewable, undoable).
-3. The 79 catalogue circuits give no false alarms.
+3. Every file in `tests/fixtures/fault-corpus/clean/` gives no false alarms.
 
 ## Considered options
 
@@ -31,7 +31,7 @@ One record shape lets the editor, the AI partner and the learning flow share evi
 
 ## Performance data
 
-Target for generic rules: zero false alarms on the 79 catalogue circuits and 18 of 20 deliberate faults found (F-029 line). Not yet measured.
+Target for generic rules: zero false alarms on every file in `tests/fixtures/fault-corpus/clean/` and at least 18 of the 20 files in `broken/` caught, with at least 8 distinct rules (F-029 line; corpus owned by EDUCATION 6.6, not yet created). Not yet measured.
 
 ## Cost implications
 
@@ -56,3 +56,9 @@ SIM-8.
 ## Known limitations
 
 Degradation has a model only for the flight battery at the first release; thermal derating waits for the solver (F-219).
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-48 | Constraint 3 and the performance target now cite the `tests/fixtures/fault-corpus/` directories (`clean/`, `broken/`) instead of "79 catalogue circuits" and "18 of 20". Gate: zero false alarms on `clean/`, at least 18 of 20 in `broken/`, at least 8 distinct rules. |

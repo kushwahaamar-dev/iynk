@@ -33,7 +33,7 @@ $0; no server execution
 
 ## Licensing
 
-`provenance.licence` required on every part (R-138); the dialog shows it; `third_party_content` flags D-017 items
+`provenance.license` required on every part (R-138); the dialog shows it; `third_party_content` flags D-017 items
 
 ## Security implications
 
@@ -50,3 +50,7 @@ Build after F-101; code packs only after ADR-0206 resolves
 ## Known limitations
 
 Trust is the person's judgement of a buddy; no revocation list
+
+## Reconcile, final nits (2026-10-27)
+
+- RC-33: the property name `provenance.licence` is now `provenance.license` (line 36).

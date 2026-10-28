@@ -598,7 +598,7 @@
         "base": 141,
         "op": {
           "fault": {
-            "cause_id": "i2c.sda-scl-swapped",
+            "cause_id": "swapped-pins",
             "enabled": false,
             "id": "flt_swap",
             "kind": "wrong-connection",
@@ -876,7 +876,7 @@
     },
     "faults": [
       {
-        "cause_id": "i2c.sda-scl-swapped",
+        "cause_id": "swapped-pins",
         "enabled": false,
         "id": "flt_swap",
         "kind": "wrong-connection",

@@ -1,7 +1,7 @@
 # ADR-0700: Robot physics runs on Rapier, one engine for planar and 3D robots
 
 Status: proposed, 2026-10-27, for the ROBOT gate (D-014). Author: robotics architecture seat.
-Upstream: BRIEF 11.1; D-007, D-011, D-013, D-015; RS-13 (PASS on determinism and speed, size undecided); ADR-0308; R-165, R-170, BUD-13, BUD-14, DET-2. Downstream: F-061, F-213, F-214, F-186. Spec: `04_ARCHITECTURE/ROBOTICS_ARCHITECTURE.md` sections 4.4, 6.2, 16, 17.
+Upstream: BRIEF 11.1; D-007, D-011, D-013, D-015; RS-13 (PASS on determinism and speed, size undecided; independent check agrees with caveats), RC-52, RC-53; ADR-0308; R-165, R-170, BUD-13, BUD-14, DET-2. Downstream: F-061, F-213, F-214, F-186. Spec: `04_ARCHITECTURE/ROBOTICS_ARCHITECTURE.md` sections 4.4, 6.2, 16, 17.
 
 ## Problem
 
@@ -22,7 +22,7 @@ ADR-0308 chose Rapier behind a `PhysicsBackend` interface and left open whether 
 
 ## Decision
 
-Rapier (`@dimforge/rapier3d-deterministic-compat` 0.21.0 as measured) in the SimWorker, behind `PhysicsBackend`. Rules that are part of the decision: the scene is built in canonical id order; sleeping is off; friction and restitution combine rules and the solver iteration count are set explicitly and recorded; motor torque is applied as `applyTorqueImpulse(tau * dt)` and `addTorque` is banned; `length_scale` (1 or 10) lives in the adapter and the replay record; the exact WASM sha256 is recorded in every replay; one dummy step runs at load.
+Rapier deterministic build 0.21.0 (`@dimforge/rapier3d-deterministic-compat`), used as the split build (WASM file plus glue, about 0.88 MB brotli), never the single-file compat `rapier.mjs` (1.20 MB brotli, over the HYPOTHESIS budget). It runs in the SimWorker, behind `PhysicsBackend`. RS-13 hashed the single-file compat form, so determinism of the split artifact is not yet shown in browsers (RC-52): the first R0 task re-runs the RS-13 hash script on the split WASM bytes in Chromium and WebKit (RA-01) before any scene depends on it. Jolt (0.61 MB brotli split) replaces Rapier only if RA-01 fails. Rules that are part of the decision: the scene is built in canonical id order; sleeping is off; friction and restitution combine rules and the solver iteration count are set explicitly and recorded; motor torque is applied as `applyTorqueImpulse(tau * dt)` and `addTorque` is banned; `length_scale` (1 or 10) lives in the adapter and the replay record; the exact WASM sha256 is recorded in every replay; one dummy step runs at load.
 
 ## Technical justification
 
@@ -31,9 +31,17 @@ Rapier (`@dimforge/rapier3d-deterministic-compat` 0.21.0 as measured) in the Sim
 - `dbg.mjs`: `addTorque` each step gave 3.70 times the analytic speed; `applyTorqueImpulse` gave 0.002 percent error.
 - `sa16.mjs`: four-wheel robot, 10 s: lateral drift 0.5 mm (0.013 percent) at scale 1.
 
+## Rooms and hash class
+
+RS-13 ran on one CPU (Apple M4 Pro, arm64); x86-64 and Firefox are untested (RA-02). Until RA-02 and SA-12 pass, rooms compare the class D hash for physics, not class B (RC-53, ADR-0303). Local single-player replay stays class B. Nothing in Studio, collaboration or fidelity waits for this; it applies at the robotics phase only (D-014).
+
+## What would change this
+
+A failed RA-01 on the split build, or a hash mismatch on x86-64 or Firefox, moves the default to Jolt behind the same interface. A real wire budget replacing the self-proposed one (1.0 MB brotli, HYPOTHESIS) could reopen the single-file question; for a self-hosted app (D-015) the size leg matters less than determinism.
+
 ## Cost
 
-Wire size: split build about 0.88 MB brotli; single-file compat 1.20 MB (RS-13). Engineering: 2 to 4 person-weeks for line-follower and four-wheel scenes with hashing (TECHNICAL_RESEARCH, ESTIMATED).
+Wire size: split build about 0.88 MB brotli, 3.45 MB raw; single-file compat 1.20 MB brotli, 4.37 MB raw (RS-13 report, `08_RESEARCH_SPIKES/RS-13-physics-determinism/REPORT.md`, size table, VERIFIED by its prototype, sizes not re-run by the checker). Step time excludes state readback (checker). Engineering: 2 to 4 person-weeks for line-follower and four-wheel scenes with hashing (TECHNICAL_RESEARCH, ESTIMATED).
 
 ## Licensing
 
@@ -49,8 +57,18 @@ High. `PhysicsBackend` hides the engine; the backend name and version are in eve
 
 ## Migration plan
 
-R0 closes the open items (RA-01 on the shipped artifact, RA-03, RA-04, RA-05, RA-06, RA-21, RA-07 first version), then R1.
+R0 closes the open items (RA-01 on the shipped split artifact, RA-03, RA-04, RA-05, RA-06, RA-21, RA-07 first version), then R1.
 
 ## Known limitations
 
 Determinism measured on arm64 only; Firefox, x86-64 and phones untested. Snapshot and restore untested (RA-08). CCD cost unknown. The first-step stall (24 to 27 ms, 157 ms at 6x) is handled by a dummy step. Package maintenance risk (RK-2).
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| Item 1 (line 8) | Read as stated: it already matches the RS-13 independent check, so the Problem text is unchanged. Status line stays "proposed, for the ROBOT gate (D-014)". |
+| RC-52 | Decision now names the split build and states that RS-13 hashed the single-file compat build; RA-01 on the split WASM is the gate. Jolt only if RA-01 fails. |
+| RC-53 | New "Rooms and hash class" section: class D for rooms until RA-02 and SA-12 pass. |
+| RS-13 | Upstream line notes the check. Cost cites the size table (split 0.88, single-file 1.20 MB brotli) and the readback caveat. New "What would change this" section. Budget stays HYPOTHESIS. |
+| D-014 / D-015 | Phase wording: applies at the robotics phase only; Studio does not wait on it. |

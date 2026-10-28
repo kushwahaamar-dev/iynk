@@ -20,7 +20,7 @@ Nothing a person builds survives a reload today. D-015 wants projects to live in
 
 | Option | Summary | Verdict |
 |---|---|---|
-| A. IndexedDB working copy + `.iynk` JSON file + `.iynkz` container + optional server copy | Layered | Chosen |
+| A. IndexedDB working copy + `.iynk` JSON file + `.iynkz` container (shares and rooms are the only server copies, ADR-0426) | Layered | Chosen |
 | B. `localStorage` only | What exists | Rejected: about 5 MB limit (EXTERNAL), synchronous API on the main thread, one blob, no assets, no transactions |
 | C. Origin Private File System (OPFS) as primary | Real files, fast | Rejected as primary: hidden from the user, not portable, Safari support differs (EXTERNAL); may be added for large assets |
 | D. File System Access only | Real files | Rejected: Chromium only |
@@ -29,10 +29,10 @@ Nothing a person builds survives a reload today. D-015 wants projects to live in
 
 ## Decision
 
-1. IndexedDB database `iynk` with stores `projects`, `index`, `trash`, `backups` as in R-035, plus `assets` (sha256 to blob), `revisions`, `journal` (key `projectId`: uncommitted code-editor text edits, cleared on commit), `progress`, `proposals`, `keys` (AI and search provider keys only), `identity` (the non-extractable ECDSA P-256 device key pair, one per server origin; the access token is never stored), `server` (url, deviceId, actor, displayName, expiresAt, buddy cache; no secret), `events` and `errors` (opt-in local ring buffers) and the AI stores `ai_threads`, `ai_log`, `ai_usage`, `ai_memo`, `ai_debug` (AI_ARCHITECTURE 12.1; the same database, not a second one). The list is SYSTEM_ARCHITECTURE 8.1. The `index` row also holds `archived`, a library-only flag outside the document and the state hash (PROJECT_DATA_MODEL 12.1). Two-slot writes; the `index` row updates in the same transaction; each save compares `revision` and `hash` so a second tab cannot overwrite silently. Ask for persistent storage once and show the answer. Provider keys live only in `keys` and the device private key only in `identity`; neither is exported, and each has its own delete action.
+1. IndexedDB database `iynk` with stores `projects`, `index`, `trash`, `backups` as in R-035, plus `assets` (sha256 to blob), `revisions`, `journal` (key `projectId`: uncommitted code-editor text edits, cleared on commit), `progress`, `proposals`, `keys` (AI and search provider keys only), `identity` (the non-extractable ECDSA P-256 device key pair, one per server origin; the access token is never stored), `server` (url, deviceId, actor, displayName, expiresAt, buddy cache; no secret), `events` (opt-in local ring buffer, cap 5,000 rows, oldest dropped first) and `errors` (opt-in local ring buffer) and the AI stores `ai_threads`, `ai_log`, `ai_usage`, `ai_memo`, `ai_debug` (AI_ARCHITECTURE 12.1; the same database, not a second one). The list is SYSTEM_ARCHITECTURE 8.1. The `index` row also holds `archived`, a boolean (library only) outside the document and the state hash (PROJECT_DATA_MODEL 12.1). Two-slot writes; the `index` row updates in the same transaction; each save compares `revision` and `hash` so a second tab cannot overwrite silently. Ask for persistent storage once and show the answer. Provider keys live only in `keys` and the device private key only in `identity`; neither is exported, and each has its own delete action.
 2. `.iynk`: the R-037 envelope `{format: "iynk.file", version: 1, hash, project}` in pretty form. `.iynkz`: a zip with `project.iynk`, `assets/<sha256>`, `definitions/`, `history/`, `manifest.json`, written deterministically (sorted entries, fixed timestamp, no extra fields). Identity is the state hash, not the zip bytes.
 3. Save in place with File System Access where it exists; download and upload elsewhere. A quiet chip says "not saved to a file" after 10 minutes of editing (R-037).
-4. With the self-hosted server, the library syncs copies (COLLAB); the server is never required.
+4. The library is never synced. The self-hosted server holds only shares (ADR-0426) and rooms (COLLAB); it is never required, and it stores no other project copy (RC-24).
 5. A "local data export and wipe" action exports everything the app holds as files (F-168).
 
 ## Technical justification
@@ -48,7 +48,7 @@ Serialisation cost is VERIFIED (3.4 ms canonicalise at 500 components, 16.5 ms a
 
 ## Cost implications
 
-No hosting cost. Storage lives on the person's machine. Server copies use the self-hosted server's disk: a 500-part project is about 36 KB gzipped (VERIFIED), so 1,000 projects are about 36 MB before history.
+No hosting cost. Storage lives on the person's machine. Shares and rooms use the self-hosted server's disk: a 500-part snapshot is about 36 KB gzipped (VERIFIED), so 1,000 shares are about 36 MB.
 
 ## Licensing
 
@@ -68,12 +68,25 @@ High. The file formats are documented; the IndexedDB layout is behind a store mo
 2. Add projects, the library page and the trash.
 3. Add `.iynk` save and open, then `.iynkz`.
 4. One-time import of `iynk:v1` progress (PROJECT_DATA_MODEL 11.6); keep the old key for one release.
-5. Server sync in COLLAB.
+5. Shares and rooms in COLLAB (no library sync).
 
 ## Known limitations
 
 - If the browser evicts IndexedDB and there is no file copy, the project is gone; the chip and the library mark exist to prevent this, they do not remove the risk.
 - Firefox and Safari cannot save in place; each save is a download.
 - The zip writer is deterministic only for one library version; do not hash containers.
-- No cross-device sync without the optional server.
+- No cross-device sync. Move a project between machines with a `.iynk` or `.iynkz` file.
 - The 128 MiB container cap is a chosen default with no measurement behind it.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-09 | Decision 1: the `index` row's `archived` is now stated as a boolean, library only, outside the document and the state hash. The file already named the field as a flag; only the type was added. |
+| RC-10 | Decision 1: the `events` store is now a ring buffer with a cap of 5,000 rows, oldest dropped first (about 1.25 MB at 250 bytes per row, ESTIMATED). `errors` stays an opt-in ring buffer with no cap set here. |
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-24 | Options table row A: "optional server copy" replaced with shares and rooms as the only server copies. Decision 4: the library-sync claim deleted. Same contradiction fixed in Cost implications, Migration plan step 5 and Known limitations (cross-device sync now says to use files). Consistent with ADR-0426 and D-015. |

@@ -74,7 +74,7 @@ flowchart LR
     WS[WebSocket endpoint /ws] --- CORE[RoomCore: apply, order, validate, dedup, chain]
     HTTP[HTTP API: devices, buddies, rooms, invites] --- CORE
     CORE --- DB[(SQLite file: log, checkpoints, ACL, audit)]
-    CORE --- ASSETS[(assets/ by sha256)]
+    CORE --- BLOBS[(blobs table in the same SQLite file)]
   end
   RC1 <-- wss, gzip frames --> WS
   RC2 <-- wss, gzip frames --> WS
@@ -179,12 +179,12 @@ stateDiagram-v2
 ### 5.2 Creating a room (R3)
 
 ```
-POST /rooms   Authorization: Bearer <device token>      (base /api/v1, as in openapi.yaml)
-{ "project": <document at revision r, without history>, "title": "Blink with Mina", "settings": { "codeMode": "baton", "runControl": "editors" } }
-201 { "room": "rm_7k3q...", "epoch": "a1b2c3d4", "seq": 0 }
+POST /rooms   Authorization: Bearer <device token>      (base /v1, as in openapi.yaml)
+{ "title": "Blink with Mina", "project": <document at revision r, without history>, "settings": { "codeMode": "baton", "runControl": "editors" } }
+201 { "id": "rm_7k3q...", "epoch": "a1b2c3d4", "seq": 0, ... }   (the Room object)
 ```
 
-- The body definition is `RoomCreate` in `schemas/openapi.yaml` (`title` required; exactly one of `projectId` or `project`; optional `settings`). The example above is one valid instance. No extra field is needed: `RoomSettings` there already carries `codeMode` and `runControl` (VERIFIED, openapi.yaml `components.schemas.RoomSettings`). All routes in this file are relative to the base `{origin}/api/v1`.
+- The body definition is `RoomCreate` in `schemas/openapi.yaml` (`title` required; `project` required; optional `settings`; the reply is the `Room` object with `id`, `epoch`, `seq`). The example above is one valid instance. No extra field is needed: `RoomSettings` there already carries `codeMode` and `runControl` (VERIFIED, openapi.yaml `components.schemas.RoomSettings`). All routes in this file are relative to the base `/v1`.
 - A room id is `rm_` plus 16 random base32 characters (80 bits). It is an address, not a secret: knowing it grants nothing (section 5.4).
 - The document is validated by passes V1 to V5 (PROJECT_DATA_MODEL 9.1) and the limits of 9.4 before it is stored. Over the document limit (5,242,880 bytes canonical) the answer is `quota`.
 - The server stores it as checkpoint 0 and sets `seq = project.revision`. The creating device becomes owner, host and `room.creator`.
@@ -193,7 +193,7 @@ POST /rooms   Authorization: Bearer <device token>      (base /api/v1, as in ope
 
 ### 5.3 Who can reach the server at all
 
-Registration of a device is the F-005 call. On a friends server it must not be open to the internet by default: a public URL would let strangers store data and open sockets (the same reasoning as F-004 for AI routes). Default: `IYNK_ENROL=invite`. The operator runs `iynk-server enrol` (prints a one-time code, valid 24 hours, single use) and gives it to a friend; the friend's browser sends it with its public key to register. `IYNK_ENROL=closed` stops all new enrolment (existing devices keep working). There is no open mode, on a private network or elsewhere (SYSTEM ADR-0007, BACKEND 6.3, R-007): open registration would bring back R3 (junk rooms from enrolled strangers) and storage abuse. This adds a gate to R-077's "first visit gets a token" (Objection O-1).
+Registration of a device is the F-005 call. On a friends server it must not be open to the internet by default: a public URL would let strangers store data and open sockets (the same reasoning as F-004 for AI routes). Default: `IYNK_ENROL=code`. The operator runs `iynk-server enrol` (prints a one-time code, valid 24 hours, single use) and gives it to a friend; the friend's browser sends it with its public key to register. `IYNK_ENROL=closed` stops all new enrolment (existing devices keep working). There is no open mode, on a private network or elsewhere (SYSTEM ADR-0007, BACKEND 6.3, R-007): open registration would bring back R3 (junk rooms from enrolled strangers) and storage abuse. This adds a gate to R-077's "first visit gets a token" (Objection O-1).
 
 ### 5.4 Invites are capabilities
 
@@ -249,7 +249,7 @@ Enforced by `RoomCore` before `apply` for ops, and in the command handler for co
 | Graph ops (`board.*`, `component.*`, `net.*`, `view.*`, `wire.*`, `junction.*`, `label.*`, `mech.*`, `param.*`, `test.*`, `asset.*`, `dep.*`, `guide.*`, `domain.*`, `meta.*`) | yes | yes | no | no |
 | `sim.*`, `runtime.*`, `input.*`, `script.*`, `fault.*`, `instrument.*` ops | yes | yes | no | no |
 | `source.edit`, `source.add`, `source.remove`, `source.rename` | baton holder (or any editor when `codeMode` is `open`) | same | no | no |
-| `license.set`, `access.grant`, `access.revoke` | yes | no | no | no |
+| `license.set`, `access.grant`, `access.revoke`, `access.set`, `actor.set`, `actor.remove` | yes | no | no | no |
 | Run requests (start, pause, resume, stop, reset, step, speed, input) | per `runControl` (6.4) | per `runControl` | no | no |
 | Kick, lock, mute, close, reassign baton or runner, change settings | host only | no | no | no |
 | Pass host | host | no | no | no |
@@ -437,7 +437,7 @@ Rules, all from RS-09 and PROJECT_DATA_MODEL 7.3 and 7.4:
 5. The client sends one submission at a time, as RS-09 did. The server tolerates up to 4 unacknowledged submissions per socket and answers more with `rate_limited`.
 6. `inverse` is computed by the server against the pre-state and returned only to the author. Undo is per author, last in first out, in memory, and an inverse that no longer applies is dropped (RS-09 limits restated: undoing a move after someone else moved the same part puts it back at the old position; no cross-author redo).
 7. Coalescing is a client duty: a drag sends one `view.place` on release; a slider sends `component.set` on release; live drag position is ephemeral (`PresencePatch.focus` plus `cursors`). Without it a client is capped near 1 / RTT submissions per second (about 10 per second at 100 ms).
-8. Assets: an op that names an asset (`asset.add`) is accepted only after the blob was uploaded with `PUT /rooms/{roomId}/assets/{sha256}` (this route is not yet in openapi.yaml and must be added there) (checks size 16,777,216 bytes, hash, MIME allow-list, quota). Op frames never carry binary.
+8. Assets: an op that names an asset (`asset.add`) is accepted only after the blob was uploaded with `PUT /assets/{sha256}?room=rm_...` (openapi `putAsset`) (checks size 16,777,216 bytes, hash, MIME allow-list, quota). Op frames never carry binary.
 
 ### 8.2 The chain and divergence checks (R-090)
 
@@ -494,7 +494,7 @@ Presence is for people, not for state: it never changes the document, is not rep
 
 ### 11.1 What the server keeps
 
-One SQLite database file per server (`node:sqlite`, built into Node 24; the repo already requires Node 24, `server/realtime/package.json` `engines`; its stability flag is EXTERNAL and must be checked at build, with `better-sqlite3` (MIT) as the named replacement behind the same `RoomStore` interface). Tables, in plain terms:
+One SQLite database file per server (`node:sqlite`, built into Node 24; the repo already requires Node 24, `server/realtime/package.json` `engines`; its stability flag is EXTERNAL and must be checked at build, with `better-sqlite3` (MIT) as the named replacement behind the same `ServerStore` interface). Tables, in plain terms:
 
 | Table | Columns | Notes |
 |---|---|---|
@@ -507,11 +507,11 @@ One SQLite database file per server (`node:sqlite`, built into Node 24; the repo
 | `events` | `room`, `n`, `at`, `kind`, `actor`, `data` | The audit trail (section 15) |
 | `devices`, `pairs` | owned by F-005 and F-206 | Same file, same transactions as invite redemption |
 
-Large blobs (assets) are files named by SHA-256 under `data/assets/`, referenced by `asset.add` ops; a room's assets are deleted with the room unless another room or a share link uses the hash. One data directory contains the database, the WAL files, `assets/` and the server's signing secret file: back up by stopping the server and copying the directory, or while running with `VACUUM INTO` (EXTERNAL SQLite feature). This answers R-078's "one data directory to back up".
+Large blobs (assets) are rows in the `blobs` table of `iynk.db` (keyed by SHA-256), referenced by `asset.add` ops; a room's assets are deleted with the room unless another room or a share link uses the hash. The data directory holds `iynk.db`, `iynk.db-wal`, `iynk.db-shm` and `backups/` only, with no signing secret. Back up by stopping the server and copying the directory, or while running with `VACUUM INTO` (EXTERNAL SQLite feature), which holds everything. `backups/` keeps `pre-<version>-<ts>.db` (last 3) and `iynk-<ts>.db` from `iynk-server backup` (last 7, PROPOSAL); see BACKEND 7.3. This answers R-078's "one data directory to back up".
 
-Why SQLite and not append-only files or Postgres: the ACL, invite redemption, the op append and the audit event must commit together or not at all (a redeemed invite without its ACL row is a stranded friend); R-078 asks for durability across restart in one directory; Postgres is optional (F-165) and its setup is the thing D-015 wants to avoid for a friends server. Append-only files give none of the atomicity. Cost: commit latency and ops throughput on a small VPS disk are UNKNOWN, so RT-1 measures them (section 21). The reversibility is cheap because everything goes through `RoomStore`.
+Why SQLite and not append-only files or Postgres: the ACL, invite redemption, the op append and the audit event must commit together or not at all (a redeemed invite without its ACL row is a stranded friend); R-078 asks for durability across restart in one directory; Postgres is optional (F-165) and its setup is the thing D-015 wants to avoid for a friends server. Append-only files give none of the atomicity. Cost: commit latency and ops throughput on a small VPS disk are UNKNOWN, so RT-1 measures them (section 21). The reversibility is cheap because everything goes through `ServerStore`.
 
-Size (ESTIMATED from RS-09: 929 KB for 15,492 ops, about 60 bytes per op as JSON, and 14 KB for a state snapshot): 20,000 retained ops is about 1.2 MB per room. Defaults: keep envelope payloads for the latest 20,000 ops per room, then null `env` of the oldest, keep summary columns; keep 8 checkpoints. The resume tail window is 2,000 ops (R-083).
+Size (ESTIMATED from RS-09: 929 KB for 15,492 ops, about 60 bytes per op as JSON, and 14 KB for a state snapshot): 20,000 retained ops is about 1.2 MB per room. Defaults: keep envelope payloads for the latest 20,000 ops per room, then null `env` of the oldest, keep summary columns; keep 8 checkpoints. The server sends a resume tail only when the gap is at most 1,000 ops and 200 KB gzipped; otherwise it sends the latest snapshot plus the tail since it. Payloads are kept for 20,000 ops.
 
 ### 11.2 Durability
 
@@ -599,7 +599,7 @@ What this does not do: it does not merge two people's concurrent long sessions s
 
 ### 12.3 Forks
 
-A fork is a new project id with `meta.origin = {room, project, revision, chain}` (F-088). Forks happen when:
+A fork is a new project id with `provenance.origin = {kind: "fork", project, revision, stateHash}` (project.schema.json Provenance; F-088). The schema has no room or chain member, so the source room id and chain hash are not stored in the project file; the server keeps them in the room record for the fork. Forks happen when:
 
 | Trigger | What is forked | Who keeps the original id |
 |---|---|---|
@@ -665,7 +665,7 @@ Why this is correct (argument, not measurement):
 
 1. Mirrors only simulate up to the latest `run.tick` they have received, and the runner publishes a tick only for a time it has already simulated. So a mirror's time never exceeds the runner's time at the moment of the last tick.
 2. The runner stamps every input at a time strictly greater than any time it has already published (its own next yield time plus 1 ms), and sends the `run.ev` before any tick at or beyond the stamp. The server forwards in arrival order over one TCP stream per member, so every mirror receives the event before it can reach the stamp.
-3. All members apply the events in the same total order `(tNs, rseq)`, so the same inputs reach the deterministic engines at the same virtual times. The engines are deterministic by SIMULATION_ARCHITECTURE 6: class B for digital, MCU and serial; class N for analog and flight within a tolerance; class B for Rapier on the same build.
+3. All members apply the events in the same total order `(tNs, rseq)`, so the same inputs reach the deterministic engines at the same virtual times. The engines are deterministic by SIMULATION_ARCHITECTURE 6: class B for digital, MCU and serial; class N for analog and flight within a tolerance; class D for physics and flight until RA-02, SA-12 and DET-2 pass on Firefox and x86-64 (ADR-0303).
 
 Cost: a mirror shows the run about one network delay plus up to 100 ms behind the runner (HYPOTHESIS, no measurement), and a member's own button press takes effect after the request reaches the runner and the event returns: about two network round trips through the server (ESTIMATED; the pressing member's widget is drawn pressed at once and the circuit reacts when the event arrives). RT-2 measures both on two real devices.
 
@@ -797,7 +797,7 @@ Values already in the code are marked VERIFIED with the line; the rest are PROPO
 | Heartbeat / dead peer | 15 s / 45 s | `config.js:12-13` VERIFIED |
 | Backpressure: lossy frames stop / socket cut | 256 KiB / 4 MiB queued | `config.js:33` and neighbour VERIFIED |
 | Room creation | 6 per minute, 30 per hour per device | R-075 (6 per minute) / PROPOSAL |
-| Stored rooms per device / per server; live rooms | 10 / 100; 50 | PROPOSAL |
+| Stored rooms per device / per server; live rooms | 10 / 100; 20 (50 after RA-08) | PROPOSAL |
 | Active invites per room; token tries per device | 20; 5 per hour | PROPOSAL |
 | Run log entries per run | 50,000 | ESTIMATED memory bound |
 | Asset upload | 16,777,216 bytes each, 256 per document | PROJECT_DATA_MODEL 9.4 |
@@ -838,7 +838,7 @@ The suite is a script that plays a hostile client against a fresh server in CI. 
 
 ### 17.1 Process model
 
-One Node process (`server/`) with these modules: `http` (REST for devices, buddies, rooms, invites, shares, assets), `ws` (rooms and lobby), `RoomCore`, `RoomStore` (SQLite), `limits`, `admin` (CLI: `enrol`, `devices`, `rooms`, `revoke`, `backup`). Single process, single writer, no clustering and no external queue: a friends-sized group (8 editors and 8 spectators per room, tens of rooms) is far below what one core does (RS-09: 52,000 to 57,700 ops/s in the core). Scaling out would need sticky routing by room id; it is not planned (UNKNOWN need).
+One Node process (`server/`) with these modules: `http` (REST for devices, buddies, rooms, invites, shares, assets), `ws` (rooms and lobby), `RoomCore`, `ServerStore` (SQLite), `limits`, `admin` (CLI: `enrol`, `devices`, `rooms`, `revoke`, `backup`). Single process, single writer, no clustering and no external queue: a friends-sized group (8 editors and 8 spectators per room, tens of rooms) is far below what one core does (RS-09: 52,000 to 57,700 ops/s in the core). Scaling out would need sticky routing by room id; it is not planned (UNKNOWN need).
 
 ### 17.2 Configuration
 
@@ -849,7 +849,7 @@ Environment variables (R-078's list, `IYNK_` prefix; the v1 names `REALTIME_ALLO
 | `IYNK_DATA_DIR` | `/data` | The one directory to back up |
 | `IYNK_ALLOWED_ORIGINS` | none (required) | Exact origins of the app; `*` refuses to start |
 | `IYNK_PUBLIC_URL` | none (required) | Becomes `aud` in the handshake and the base of invite links. Device tokens are random and stored hashed, so there is no signing secret (BACKEND 13.1 must list this variable) |
-| `IYNK_ENROL` | `invite` | `invite` or `closed` (5.3) |
+| `IYNK_ENROL` | `code` | `code` or `closed` (5.3) |
 | `IYNK_STORE_SYNC` | `full` | SQLite `synchronous`, `full` or `normal` (11.2) |
 | `IYNK_TRUST_PROXY` | `0` | Read the address from the last `X-Forwarded-For` entry, as `relay.js` `clientIp` does |
 | `IYNK_MAX_LIVE_ROOMS`, `IYNK_MAX_STORED_ROOMS`, `IYNK_MAX_MEMBERS`, `IYNK_MAX_SPECTATORS`, `IYNK_MAX_PROJECT_BYTES` | 20, 100, 8, 8, 5242880 | Section 16 |
@@ -878,7 +878,7 @@ Order inside COLLAB follows F-119 first, as FEATURE_PRIORITIZATION requires. Eac
 |---|---|---|---|
 | S1 Authority on the v1 relay | Close R4, R3, R6, R7, R8 on the existing relay: server-issued ids with resume secret, explicit host, baton enforced, `kind` set by the server, chat bucket, creation by an authenticated call. A stop-gap that keeps the 39 tests green | `relay.js`, `room.js`, `protocol.js`, `config.js`, a new hostile test | R-097 rows R3, R4, R6, R7, R8 pass; 39 tests still pass or are replaced one for one |
 | S2 Device identity and enrolment | Device keys, registration, the signature handshake, token and revoke | server `devices`, `src/lib/realtime/identity.ts`, handshake in `relay.js`, tests | RA-05 |
-| S3 Store and `RoomStore` | SQLite file, rooms, members, invites, events; restart test | `store.js`, `rooms-http.js`, `relay.js`, tests | RA-06 |
+| S3 Store and `ServerStore` | SQLite file, rooms, members, invites, events; restart test | `store.js`, `rooms-http.js`, `relay.js`, tests | RA-06 |
 | S4 `RoomCore` and the op path | `submit`/`commit`/`reject`, dedup, inverse, chain, checkpoints, tail and snapshot resume, gzip frames | `room-core.js`, `protocol.js`, `store.js`, test harness, property test | RA-01 to RA-04 |
 | S5 Client `RoomClient` | Optimistic client over the shared `apply`, reconnect, pending queue, rebase report | `room-client.ts`, `ws-transport.ts`, Studio store hook, tests | RA-02, RA-07 |
 | S6 Presence, cursors, chat, roles in the UI | Members list, cursors in mm, baton UI, host controls, invite dialog | `src/components/realtime/*`, `RoomBar` | RA-10, RA-11 |
@@ -916,7 +916,7 @@ Each is Given/When/Then in short form with a number. "Gate" says which phase gat
 | RA-09 | Real network | On a home network and through a delaying proxy (100 ms RTT, 1 percent loss, 5 Mbit/s): drop and restore the link 20 times with a 500-part project; reconnect to `ready` p95 under 2 s; on a phone and on a 4x throttled laptop (D-011). Cold join under 3 s | BUD-10, RB-4, RB-5 |
 | RA-10 | Client cost | Commit application under 2 ms p95 at 500 parts on desktop and under 8 ms at 4x throttle; room code adds under 20 KB gzip | RB-10, BUD-05 |
 | RA-11 | Presence traffic | 8 members moving cursors: outbound under 25 KB/s per room; a member alone gets no cursor frames; spectators send none | RB-8 |
-| RA-12 | Permission matrix | A generated test calls every op kind in `project.schema.json` and every command as owner, editor, commenter, viewer and a non-member and compares with the table of 6.2 | R-075, R6 |
+| RA-12 | Permission matrix | A generated test calls every op kind in `project.schema.json` and every command as owner, editor, commenter, viewer and a non-member and compares with the table of 6.2, including `actor.set` (owner or system accepted; editor, commenter, viewer and non-member get `permission`) | R-075, R6 |
 | RA-13 | Two-typist trial | Two people type in one source file in `open` mode for 10 minutes; they report lost or misplaced text. More than two reports each triggers the text-CRDT decision of 8.4; otherwise `open` stays an option | F-123 |
 | RA-14 | Run lockstep determinism | Runner and two mirrors (Chromium and WebKit) run a scripted blink and a button-driven sketch; a non-runner presses the button 50 times at random times; at every 1,000 ms of simulated time `hb` is equal on all three; with analog circuits `hd` is equal | R-090, DET-2, section 13.2 |
 | RA-15 | Run edge cases | Runner disconnects: all pause at the same `tNs`; new runner continues; late join catches up; a sim-affecting edit halts all at the same `seq`; detach and rejoin; an engine-version mismatch goes to the frame fallback with the label | 13.5 to 13.7 |
@@ -931,7 +931,7 @@ Each is Given/When/Then in short form with a number. "Gate" says which phase gat
 | RS-09 | PASS for convergence; reconnect PASS by CPU on loopback, under 2 s on slow links only with gzip or snapshot (independent check) | Adopted as the model. Its three caveats become RA-01, RA-03, RA-09 |
 | RS-20 (Yjs offline merge) | Not run; row 20 says run only if multi-user offline is required | Not required by D-013. Trigger rule in 8.4 |
 | RS-10 (Vercel WebSocket limits) | Irrelevant: nothing depends on Vercel (D-015) | Not used |
-| RT-1 (proposed) store spike | PENDING. Question: does `node:sqlite` in WAL mode give COMMIT p99 under 10 ms at 20 ops per second per room across 20 rooms on a small VPS disk, a checkpoint stall under 100 ms, and a safe crash recovery? Method: run the RS-09 server core over the store with the `ws-bench.js` clients, kill -9 at random. Exit: p99 under 10 ms and zero lost acked ops after 50 kills. Decision rule: if it fails, switch the store to `better-sqlite3` behind `RoomStore`; if that fails, append-only segment files with a separate small SQLite for ACL | ADR-0505 marks the choice "PENDING RT-1" for performance numbers; the choice of SQLite stands unless RT-1 falsifies it |
+| RT-1 (proposed) store spike | PENDING. Question: does `node:sqlite` in WAL mode give COMMIT p99 under 10 ms at 20 ops per second per room across 20 rooms on a small VPS disk, a checkpoint stall under 100 ms, and a safe crash recovery? Method: run the RS-09 server core over the store with the `ws-bench.js` clients, kill -9 at random. Exit: p99 under 10 ms and zero lost acked ops after 50 kills. Decision rule: if it fails, switch the store to `better-sqlite3` behind `ServerStore`; if that fails, append-only segment files with a separate small SQLite for ACL | ADR-0505 marks the choice "PENDING RT-1" for performance numbers; the choice of SQLite stands unless RT-1 falsifies it |
 | RT-2 (proposed) lockstep spike | PENDING. Question: with a runner on one device and mirrors on two others over a real network, how far behind do mirrors run and how long does a remote button press take? Method: Uno blink and a button sketch, runner on a laptop, mirrors on a phone and a Chromebook, through a delaying proxy. Exit (PROPOSAL until RT-2 measures lag; the numbers are RB-9, not measurements): mirror lag under 400 ms and input latency under 600 ms at 100 ms RTT; hashes equal for 10 minutes. Decision rule: if the exit fails, widen the tick to 200 ms and accept a larger lag; if hashes diverge, rooms use frame fallback for that engine class | ADR-0506 marks cross-machine behaviour "PENDING RT-2, DET-2, SA-12" |
 | RT-3 (proposed) browser primitives | PENDING. Question: do WebCrypto ECDSA P-256 with non-extractable keys, `DecompressionStream("gzip")` with counted reads and IndexedDB key storage work on Chromium, WebKit and Firefox, including private windows where storage can be blocked? Exit: all three pass. If key storage is blocked, the app says rooms need a normal window | ADR-0502, ADR-0501 |
 | RS-01, RS-03, RS-13 and DET-2 / SA-12 | Device numbers INCONCLUSIVE; physics hash identical in Node, Chromium and WebKit on one Apple-silicon machine, Firefox and x86-64 not tested | Run mirroring for physics and flight compares class D hashes only until SA-12 and DET-2 pass; avr8js catch-up cost is a stated number |
@@ -958,8 +958,8 @@ I built to D-013 to D-017 and to the contract documents. These are objections to
 
 | # | Against | Objection | Evidence | What this file does |
 |---|---|---|---|---|
-| O-1 | R-077 (device token on first visit) | Open registration on a public URL lets strangers store data and open sockets. F-004 already argues that a public URL must not mean a free endpoint | SECURITY_BASELINE: 23 of 23 routes unauthenticated; R3 reproduced with one process | Enrolment by a one-time code (`IYNK_ENROL=invite`) or none (`closed`) (5.3); no open mode. Q-R4 resolved as code |
-| O-2 | PROJECT_DATA_MODEL 5.1 and 7.2 | No op can add an entry to `actors[]`; `access.grant` has only `actor` and `role` (schema `$defs/Op`, kind `access.grant`). A room cannot put a buddy's name or `keyThumbprint` into the document | `project.schema.json` `access.grant` properties: `k`, `actor`, `role` | Propose `actor.set {actor: {id, name, keyThumbprint?}}` as an owner-or-system op in opSchema 1.1. Until then the server keeps names in `members` and the document shows ids only. Until opSchema 1.1 exists, `actor.set` is not listed in 6.2 or tested in RA-12; names and colours live in the `members` table (ACL) and are sent in `Welcome.members` |
+| O-1 | R-077 (device token on first visit) | Open registration on a public URL lets strangers store data and open sockets. F-004 already argues that a public URL must not mean a free endpoint | SECURITY_BASELINE: 23 of 23 routes unauthenticated; R3 reproduced with one process | Enrolment by a one-time code (`IYNK_ENROL=code`) or none (`closed`) (5.3); no open mode. Q-R4 resolved as code |
+| O-2 | PROJECT_DATA_MODEL 5.1 and 7.2 | No op can add an entry to `actors[]`; `access.grant` has only `actor` and `role` (schema `$defs/Op`, kind `access.grant`). A room cannot put a buddy's name or `keyThumbprint` into the document | `project.schema.json` `access.grant` properties: `k`, `actor`, `role` | CLOSED (RC-35). `actor.set {actor: {id, name, keyThumbprint?}}` exists in opSchema 1.1 as an owner-or-system op. The server writes it with `access.grant` as one batch on invite redeem. It is listed in 6.2 and tested in RA-12. Names and colours also go out in `Welcome.members` |
 | O-3 | R-079 and F-198 (one command setup) | The device key needs a secure browser context, so a friend-LAN server over plain HTTP will not work | WebCrypto `crypto.subtle` is secure-context only (EXTERNAL, recheck) | The guide must include a domain with Caddy or `tls internal`; RA-16 tests both |
 | O-4 | SIMULATION_ARCHITECTURE 17.4 | "Each peer simulates locally from the same ordered project operations and the same replay log" gives no way to agree on the virtual time of a human input; two browsers diverge at the first press. It also says "the host's hash is the reference" | Section 13.2 argument; the engines take inputs at virtual times (6.7 `InputEntry.at`) | Runner-clocked lockstep (13). The runner defaults to the host, so 17.4's host reference holds in the default case. Suggest SIM adopt section 13 as the room clause |
 | O-5 | R-094 and R-075 (baton) | The old baton is a UI keyboard token that any peer can set (`room.ts:589-597`). R-075 lets only the holder, or the host after the holder leaves, change it | VERIFIED code; R6 | The baton gates `source.*` ops on the server and is granted by holder or host, taken by the host at any time (6.2), with a 30-second hold after a disconnect. A mild widening of R-075 |
@@ -1001,7 +1001,35 @@ I built to D-013 to D-017 and to the contract documents. These are objections to
 
 | # | Issue | What was done |
 |---|---|---|
-| 1 | `/api/...` routes differ from openapi.yaml | Applied. Every route now uses the openapi path under base `{origin}/api/v1`: `POST /rooms`, `POST /rooms/{roomId}/invites`, `POST /room-invites/redeem`, `PUT /rooms/{roomId}/assets/{sha256}`, `GET /rooms/{roomId}/events` (sections 5.1, 5.2, 5.4, 8.1, 15.2). 5.2 says `RoomCreate` in openapi.yaml defines the body. No extra field needs adding: `RoomSettings` already has `codeMode` and `runControl` (checked). Still to do outside this file: add the room asset PUT route to openapi.yaml, and update DG-07 in SYSTEM_DIAGRAMS. Note openapi `servers` says `{origin}/v1` while API_CONTRACTS says `{origin}/api/v1`; I followed the task and API_CONTRACTS, and that mismatch needs fixing in openapi.yaml. |
-| 2 | Open enrolment, names, defaults, signing secret | Applied. `open` removed from 5.3, 17.2, O-1; variable `IYNK_ENROL` = `invite` or `closed`, command `iynk-server enrol`; Q-R4 resolved as code. `IYNK_MAX_LIVE_ROOMS` default 20 (5.2, 17.2). `IYNK_SIGNING_SECRET` removed; `IYNK_PUBLIC_URL` kept and flagged for BACKEND 13.1. Still to do outside this file: API_CONTRACTS 4 and its variable table (`IYNK_ENROLLMENT`, `open`, `IYNK_SIGNING_SECRET` for cursors) and SYSTEM_DIAGRAMS line 775 still use the old names. |
-| 3 | `actor.set`, `synchronous` | Applied. `actor.set` removed from 6.2 and RA-12 (RA-12 now covers kinds in `project.schema.json`); O-2 states names and colours live in the members table and go out in `Welcome.members`. 11.2 now says `synchronous = FULL` by default (`IYNK_STORE_SYNC`), epoch break with `normal`; RA-03 crash test runs in both modes; `IYNK_STORE_SYNC` added to 17.2. |
+| 1 | `/api/...` routes differ from openapi.yaml | Applied. Every route now uses the openapi path under base `{origin}/v1` (corrected by RC-21; the first pass wrote `{origin}/api/v1`): `POST /rooms`, `POST /rooms/{roomId}/invites`, `POST /room-invites/redeem`, `PUT /rooms/{roomId}/assets/{sha256}`, `GET /rooms/{roomId}/events` (sections 5.1, 5.2, 5.4, 8.1, 15.2). 5.2 says `RoomCreate` in openapi.yaml defines the body. No extra field needs adding: `RoomSettings` already has `codeMode` and `runControl` (checked). Still to do outside this file: add the room asset PUT route to openapi.yaml, and update DG-07 in SYSTEM_DIAGRAMS. Superseded by RC-21: the base is `{origin}/v1`, matching openapi `servers`. |
+| 2 | Open enrolment, names, defaults, signing secret | Applied. `open` removed from 5.3, 17.2, O-1; variable `IYNK_ENROL` = `code` or `closed` (RC-14), command `iynk-server enrol`; Q-R4 resolved as code. `IYNK_MAX_LIVE_ROOMS` default 20 (5.2, 17.2). `IYNK_SIGNING_SECRET` removed; `IYNK_PUBLIC_URL` kept and flagged for BACKEND 13.1. Still to do outside this file: API_CONTRACTS 4 and its variable table (the old name, `open`, `IYNK_SIGNING_SECRET` for cursors) and SYSTEM_DIAGRAMS line 775 still use the old names. |
+| 3 | `actor.set`, `synchronous` | Superseded by RC-35. `actor.set` was removed from 6.2 and RA-12 here, and is now back in both (RA-12 now covers kinds in `project.schema.json`); O-2 states names and colours live in the members table and go out in `Welcome.members`. 11.2 now says `synchronous = FULL` by default (`IYNK_STORE_SYNC`), epoch break with `normal`; RA-03 crash test runs in both modes; `IYNK_STORE_SYNC` added to 17.2. |
 | 4 | Spike wording | Applied. 8.3 reads 36 runs (30 + 6), about 10,900 generated and about 6,000 accepted ops per run. 13.5 reads 0.54 to 0.79x real time (pass clause not met, no feature missing). RB-9 and the RT-2 exit are marked PROPOSAL until RT-2 measures lag. |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Source: RECONCILIATION.md. Each row says what changed in this file.
+
+| Id | Change |
+|---|---|
+| RC-02 | `RoomStore` replaced by `ServerStore` in 11.1, 11.1 rationale, 17.1, 18 (S3) and 21 (RT-1). Room tables are part of `ServerStore`. |
+| RC-06 | 11.1: the 2,000-op resume window is deleted. The tail is sent only for a gap of at most 1,000 ops and 200 KB gzipped, else latest snapshot plus tail; payloads kept for 20,000 ops. |
+| RC-07 | 11.1: assets are rows in the `blobs` table of `iynk.db`. The data directory holds `iynk.db`, `-wal`, `-shm` and `backups/` only. No signing secret. |
+| RC-08 | 11.1: backups keep 3 pre-migration files and 7 `iynk-server backup` files; points to BACKEND 7.3. |
+| RC-14 | 5.3, 17.2 env table, O-1: `IYNK_ENROL` is `code` (default) or `closed`. The one `IYNK_ENROLLMENT` mention (review row 2) now says "the old name". |
+| RC-21 | 5.2: base is `/v1` (both places). Review row 1 is kept as history. |
+| RC-25 | 5.2: createRoom body `{title, project, settings?}`; the reply is the `Room` object with `id`, `epoch`, `seq`. `projectId` dropped. |
+| RC-26 | 8.1 rule 8: `PUT /assets/{sha256}?room=rm_...` (openapi `putAsset`). |
+| RC-35 | O-2 closed. `actor.set` (with `access.set` and `actor.remove`, same authority) added to 6.2 and to RA-12. Review row 3 marked superseded. |
+| RC-53 | 13.2: class D for physics and flight until RA-02, SA-12 and DET-2 pass on Firefox and x86-64 (ADR-0303). |
+
+No spike ids apply to this file in this pass. Review row 1 still names `/api/v1` and the old asset route as history of that earlier fix (superseded by RC-21).
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-07 | Section 2 diagram: the separate `assets/ by sha256` store is now a `blobs table in the same SQLite file` node. |
+| RC-40 | 12.3: fork origin is `provenance.origin = {kind: "fork", project, revision, stateHash}`. Room id and chain hash are kept in the server room record, not in the project. |
+| RC-71 | Limits table: live rooms read "20 (50 after RA-08)", matching 5.2, 17.2 and BACKEND. The "500 rooms per IP" line for the old relay is unchanged (marked EXTEND). |
+| RC-21 | Review row 1 now says `{origin}/v1` and notes the correction; its "mismatch needs fixing" sentence is replaced by "superseded by RC-21". The history note after the spike table says superseded. |

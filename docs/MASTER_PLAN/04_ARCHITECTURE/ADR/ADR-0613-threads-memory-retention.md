@@ -19,7 +19,7 @@ Conversations live in a module-level Map and vanish on reload (audit D11). BRIEF
 |---|---|
 | A. Memory only | Rejected as the only option (kept as `session`) |
 | B. Per-project store with retention values | Chosen |
-| C. Cross-project memory | Deferred (F-115, LATER) |
+| C. Cross-project memory | Deferred (F-115, LONG-TERM RESEARCH) |
 
 ## Decision
 
@@ -48,3 +48,9 @@ Stores can be dropped without affecting projects.
 ## Known limitations
 
 No sync between devices. Summaries can be wrong; they are class L.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-72 | Line 22: "Deferred (F-115, LATER)" became "Deferred (F-115, LONG-TERM RESEARCH)", the Feature Prioritization class name. AI_ARCHITECTURE.md line 1097 ("Later" row) is a phase column label, not a class, so it was left alone. "12 benches" does not occur in this file (VERIFIED by grep), so nothing changed for it. |

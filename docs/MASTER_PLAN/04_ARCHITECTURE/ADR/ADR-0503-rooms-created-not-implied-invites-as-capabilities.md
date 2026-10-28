@@ -17,7 +17,7 @@ A join to an unknown six-character code creates a room (R3: one IP fills all 500
 
 | Option | Verdict |
 |---|---|
-| A. Authenticated `POST /api/rooms`; membership list; invite tokens of 128 bits redeemed over HTTP; one answer for missing and forbidden | Chosen |
+| A. Authenticated `POST /v1/rooms`; membership list; invite tokens of 128 bits redeemed over HTTP; one answer for missing and forbidden | Chosen |
 | B. Keep short codes, add rate limits | Rejected: 29.7 bits stays guessable by a patient attacker, and R2 stays |
 | C. Per-room password | Rejected: shared secrets leak and cannot be revoked per person |
 | D. Join approval by the host for each stranger | Kept as a lock option, not the model |
@@ -57,3 +57,9 @@ S1 stop-gap on the v1 relay; S3 final. The `probe.ts` hidden-peer roster read is
 ## Known limitations
 
 Direct invites need the lobby socket; a buddy offline sees the invite on next connection (stored for its TTL). Enrollment adds setup steps (Objection O-1).
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-21 | Option A in the options table: `POST /api/rooms` changed to `POST /v1/rooms`. |

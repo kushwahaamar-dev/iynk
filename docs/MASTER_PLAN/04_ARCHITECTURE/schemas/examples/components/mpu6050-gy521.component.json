@@ -593,7 +593,7 @@
     {
       "id": "supply_too_high",
       "name": {"en": "Regulator over-voltage"},
-      "cause_id": "mpu6050.supply-too-high",
+      "cause_id": "x-mpu6050.supply-too-high",
       "symptom_ids": ["sensor.dead", "regulator.hot"],
       "when": [{"measure": "pin_voltage", "target": "VCC", "op": ">", "threshold": {"rating": "vcc_abs_max", "pick": "max"}}],
       "effect": {"state": "burnt", "latched": true, "recovers_when": "the board is replaced"},
@@ -607,7 +607,7 @@
     {
       "id": "reversed_supply_burn",
       "name": {"en": "Reversed supply"},
-      "cause_id": "mpu6050.reversed-supply",
+      "cause_id": "reverse-polarity",
       "symptom_ids": ["sensor.dead", "regulator.hot"],
       "when": [{"measure": "pin_voltage_reverse", "target": "VCC", "op": ">", "threshold": {"literal": {"unit": "V", "value": 0.7}}}],
       "effect": {"state": "burnt", "latched": true, "recovers_when": "the board is replaced"},
@@ -621,7 +621,7 @@
     {
       "id": "five_volt_on_logic_pin",
       "name": {"en": "5 V on a 3.3 V logic pin"},
-      "cause_id": "mpu6050.5v-on-logic-pin",
+      "cause_id": "x-mpu6050.5v-on-logic-pin",
       "symptom_ids": ["i2c.odd-currents", "sensor.latent-damage"],
       "when": [{"measure": "pin_voltage", "target": "AD0", "op": ">", "threshold": {"rating": "logic_input_abs_max", "pick": "max"}}],
       "effect": {
@@ -645,7 +645,7 @@
       "kind": "cold_joint",
       "target": {"pins": ["SDA"]},
       "legacy_id": "cold:H1.4",
-      "cause_id": "connection.cold-joint",
+      "cause_id": "x-connection.cold-joint",
       "symptom_ids": ["i2c.no-ack"],
       "description": {"en": "A cracked joint on the SDA header pin."}
     },
@@ -654,7 +654,7 @@
       "kind": "option_removed",
       "target": {"parameter": "no_ad0_pulldown"},
       "legacy_id": "missing:R6",
-      "cause_id": "mpu6050.ad0-floating",
+      "cause_id": "floating-input",
       "symptom_ids": ["i2c.wrong-address"],
       "description": {"en": "Leave out the AD0 pull-down, so the address moves to 0x69 in the model."}
     },
@@ -663,7 +663,7 @@
       "kind": "option_removed",
       "target": {"parameter": "no_cpout_cap"},
       "legacy_id": "missing:C14",
-      "cause_id": "mpu6050.no-charge-pump-cap",
+      "cause_id": "x-mpu6050.no-charge-pump-cap",
       "symptom_ids": ["gyro.noisy"],
       "description": {"en": "Leave out the 2.2 nF CPOUT capacitor, so the gyro output is noisy."}
     },
@@ -672,7 +672,7 @@
       "kind": "short_pins",
       "target": {"pins": ["VCC", "GND"]},
       "legacy_id": "short:3V3:GND",
-      "cause_id": "mpu6050.rail-short",
+      "cause_id": "supply-shorted-to-ground",
       "symptom_ids": ["sensor.dead"],
       "description": {"en": "Short the 3.3 V rail to ground."}
     }

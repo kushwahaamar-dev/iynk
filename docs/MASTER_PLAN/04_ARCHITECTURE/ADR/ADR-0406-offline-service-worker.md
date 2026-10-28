@@ -25,7 +25,7 @@ R-040 asks for home, library, editor and a run to work offline after one online 
 ## Decision
 
 1. Precache of the shell for `/en`, `/en/studio`, `/en/settings`, boot script, CSS and the sim and project workers, under 1.5 MB gzip (ESTIMATED).
-2. Cache-first for `/_next/static/*`; network-first with 3 s timeout for navigations; figures stale-while-revalidate with a 200 MB cap; engines by `loadEngine`; never cache `/api/v1/*` or sockets.
+2. Cache-first for `/_next/static/*`; network-first with 3 s timeout for navigations; figures stale-while-revalidate with a 200 MB cap; engines by `loadEngine`; never cache `/v1/*` or sockets.
 3. `BUILD_ID` from `generateBuildId` names the cache; a new worker waits and the page shows an update banner.
 4. Whether Next RSC requests can be served from the cache is UNKNOWN; the fallback is a hard navigation answered from cached HTML (FA-09).
 
@@ -47,7 +47,7 @@ No dependency. Workbox (MIT, EXTERNAL) was considered and not adopted.
 
 ## Security implications
 
-Scope `/`, served `no-cache` with its own CSP (`default-src 'self'; script-src 'self'`, Next PWA guide). It caches only same-origin GETs and never anything under `/api/v1/*`, so tokens and project data from a server are not stored. A bug here can serve a stale or wrong page to every visit until the worker is replaced, which is why updates wait and the worker can be removed (below).
+Scope `/`, served `no-cache` with its own CSP (`default-src 'self'; script-src 'self'`, Next PWA guide). It caches only same-origin GETs and never anything under `/v1/*`, so tokens and project data from a server are not stored. A bug here can serve a stale or wrong page to every visit until the worker is replaced, which is why updates wait and the worker can be removed (below).
 
 ## Reversibility
 
@@ -63,3 +63,9 @@ New in the first release; no existing worker. Caches are named by build id, and 
 - Client-side navigation offline may need a hard navigation (FA-09).
 - Browsers may evict caches for sites they consider unused; the eviction policy differs by browser (EXTERNAL, HYPOTHESIS that Safari is the strictest), which is why the person is nudged to keep a file copy.
 - Offline cannot run an engine that was never downloaded; the UI says so.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-21 | Decision line 28 and the scope paragraph (line 50): the cache bypass is `/v1/*` (was `/api/v1/*`), matching the HTTP base path decided in RECONCILIATION.md. |

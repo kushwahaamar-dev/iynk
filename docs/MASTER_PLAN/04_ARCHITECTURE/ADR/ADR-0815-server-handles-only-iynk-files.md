@@ -1,4 +1,4 @@
-# ADR-0815: The server imports and exports only .iynk and .iynkz; other formats convert in the browser
+# ADR-0815: The server does not import or export projects; all formats convert in the browser
 
 Status: proposed, 2026-10-27. Author: API contracts design seat.
 Refines: ADR-0109 (import and export with loss reports). Upstream: R-037, PROJECT_DATA_MODEL 12.2 and 13. Downstream: AC-API-13, F-090, F-091. Spec: API_CONTRACTS sections 7 Data, 8.4.
@@ -16,13 +16,13 @@ Third-party formats (`.ino`, KiCad netlists, SPICE, Wokwi diagrams) each need a 
 
 | Option | Verdict |
 |---|---|
-| A. Server accepts only `.iynk` and `.iynkz`; converters run in the browser | Chosen |
+| A. The server imports and exports nothing; `.iynk`, `.iynkz` and all converters run in the browser | Chosen |
 | B. Server-side converters | Rejected: attack surface and licence on the shared process |
 | C. A converter microservice | Rejected: extra moving part with the same exposure |
 
 ## Decision
 
-`POST /projects/import` takes the vendor media types only; `GET /projects/{id}/export?format=` returns the same. All other conversions return a project document and a loss report in the browser, then optionally `POST /projects`.
+Import and export of vendor media types run locally in the browser (ProjectWorker), with no server route. The server accepts a `.iynk` body only inside `POST /shares` and `POST /rooms`. All other conversions return a project document and a loss report in the browser, then the project is saved locally.
 
 ## Technical justification
 
@@ -46,7 +46,7 @@ Container caps are enforced while streaming (134,217,728 bytes total, 1,000 entr
 
 ## Reversibility
 
-High. A converter could move server-side later behind the same endpoint.
+High. A converter could move server-side later behind a new endpoint.
 
 ## Migration plan
 
@@ -55,3 +55,15 @@ None.
 ## Known limitations
 
 A person without a browser cannot convert through the API alone.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-24 | Decision section: removed the struck routes `POST /projects/import` and `GET /projects/{id}/export`. Import and export now run locally in the browser (ProjectWorker); the server accepts a `.iynk` body only inside `POST /shares` and `POST /rooms`. |
+
+## Reconcile, final nits (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-24 | Title and option A now match API_CONTRACTS 8.4: the server does not import or export projects, and `.iynk` and `.iynkz` open and save in the browser like every other format. The old wording said the server handled `.iynk`. The "endpoint" in Reversibility is now "a new endpoint", since no import or export route exists. The file name keeps its old slug so links still work. |

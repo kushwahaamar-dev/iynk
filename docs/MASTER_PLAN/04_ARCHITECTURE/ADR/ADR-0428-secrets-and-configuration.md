@@ -63,4 +63,10 @@ BE-0 rewrites `.env.example` and deletes the Vercel and Vultr scripts; BE-1 adds
 
 ## Known limitations
 
-About thirty variables; most operators set five. `IYNK_ENROLLMENT` takes `code`, `invite` or `open` here because REALTIME 5.3 and API_CONTRACTS 5.2 define it that way; the `open` value is for private networks and logs a warning.
+About thirty variables; most operators set five. `IYNK_ENROL` takes `code` (default) or `closed` as decided in RECONCILIATION.md RC-14. There is no `open` or `invite` value; a pairing never enrols.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-14 | Known limitations (line 66): `IYNK_ENROLLMENT` with `code`, `invite`, `open` replaced by `IYNK_ENROL` with `code` (default) or `closed`. The now-false sentence about `open` and logging a warning was reworded to match RC-14. |

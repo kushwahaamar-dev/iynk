@@ -299,7 +299,7 @@
     {
       "id": "overcurrent_burn",
       "name": {"en": "Burned out by too much current"},
-      "cause_id": "led.no-series-resistor",
+      "cause_id": "led-no-series-resistor",
       "symptom_ids": ["led.dark", "led.flash-then-dark"],
       "when": [
         {
@@ -333,7 +333,7 @@
       "id": "reversed",
       "kind": "reversed_part",
       "target": {"pins": ["A", "K"]},
-      "cause_id": "led.reversed",
+      "cause_id": "led-reversed",
       "symptom_ids": ["led.dark"],
       "description": {"en": "Fit the LED the wrong way round."},
       "hints": [
@@ -345,7 +345,7 @@
       "id": "no_return",
       "kind": "open_pin",
       "target": {"pins": ["K"]},
-      "cause_id": "led.open-return",
+      "cause_id": "x-led.open-return",
       "symptom_ids": ["led.dark"],
       "description": {"en": "The cathode leg is not connected to ground."}
     }

@@ -40,16 +40,16 @@ Rule: where two ADRs cover one decision, the detail ADR wins and this table row 
 | ADR-0001 | A modular monolith in the existing repository. One module map (section 5.2) with a one-way dependency matrix, enforced by lint and by a test that fails on a forbidden import. Six families are "portable" (no DOM, no React, no Node built-ins): `core`, `protocol`, `project`, `parts`, `sim`, `export`, so the browser, the workers and the server run the same code. | none; ADR-0400 (FRONTEND layers) must use the 5.2 names | A2: 28 type-only imports from `src/lib` into `@/components` (VERIFIED, TECHNICAL_DEBT); D1 to D5 | Decided |
 | ADR-0002 | Local-first: the browser holds the only copy that matters (IndexedDB plus project files). Every server feature is optional and is discovered by a capability probe, not by a hosted status route. | none | D-015, R-012, K-LOCAL | Decided |
 | ADR-0003 | The optional server is one plain Node process in `server/`, not Next route handlers. In B0 and CORE the existing routes stay in Next, closed by R-007; at the start of COLLAB they move into `server/` and `src/app/api` is deleted. Handlers keep the Fetch `Request` to `Response` signature so they can move back. | ADR-0420 (process shape) | D-015, R-078, R-007; 23 open routes today (SECURITY_BASELINE section 1) | Decided |
-| ADR-0004 | Server store: SQLite (`node:sqlite`, one file, WAL) behind a `ServerStore` port. No Postgres, Timescale, Redis, queue or object store. Default `IYNK_STORE_SYNC=full`, ack after COMMIT. The tables are listed in section 8.3; the normative schema is BACKEND 6.4 and 7.2. Group commit is a PROPOSAL. | ADR-0505 (store contents), ADR-0422 (interface) | Section 8.4 measurement; R-083, R-078 | Decided; durability cost UNKNOWN until AX-05 on Linux; Postgres adapter is a should |
+| ADR-0004 | Server store: SQLite (`node:sqlite`, one file, WAL) behind a `ServerStore` port. SQLite only in the build; no Redis, queue or object store. Postgres is a could: a later adapter behind `ServerStore`. Default `IYNK_STORE_SYNC=full`, ack after COMMIT. The tables are listed in section 8.3; the normative schema is BACKEND 6.4 and 7.2. Group commit is a PROPOSAL. | ADR-0505 (store contents; ADR-0422 is history only) | Section 8.4 measurement; R-083, R-078 | Decided; durability cost UNKNOWN until AX-05 on Linux; Postgres adapter is a could |
 | ADR-0005 | Execution placement and worker topology: one `SimWorker` per run (the check job is a message to it), one `ProjectWorker` per tab for validation, hashing, IndexedDB and zip (lives as long as the tab), one `AiWorker` (provider client, key access), optional `AnalysisWorker` and `HdlWorker`; the main thread owns the live document and the pixels; nothing runs on a serverless function. | none; FRONTEND 8.2 must match this row | SIMULATION_ARCHITECTURE section 17; BUD-08; RS-03, RS-08, RS-12, RS-13 | Decided; device speeds UNKNOWN |
 | ADR-0006 | Packaging: one `compose.yaml` runs `web` (Next standalone), `server` and a Caddy front on one origin, with Caddy also serving the precompressed engine files; the no-server mode is `web` alone or a static export if experiment AX-01 passes. | none | R-005, R-079, Next docs on `standalone` and static export | Decided; static export PENDING AX-01 |
-| ADR-0007 | Identity: a device key pair made in the browser (ECDSA P-256), the server stores the public key; a 12 hour opaque access token from a signed challenge; sockets authenticate by signature; buddy pairing, invite capabilities and an operator command line. No accounts, email or password. Enrolment is gated by an operator-issued code. | ADR-0421 (enrolment, pairing, tables) and ADR-0502 (socket signature); the token form follows API_CONTRACTS ADR-0801 | R-075 to R-080; F-206; REALTIME 4.2; SECURITY_BASELINE R1 to R9 | Decided; BACKEND 6.2 still describes an HMAC token (open item, section 9.2) |
-| ADR-0008 | AI access: a provider adapter with two transports, `direct` (browser to provider) and `relay` (through the user's own server; a server-held key is a relay mode, not a third transport). Keys live in the browser, never in a project, export, room or log. The AI changes a project only by the `propose_ops` tool, which makes a reviewable proposal. | ADR-0425 (keys and transports), ADR-0600 (AI in the browser) | R-010, R-153 to R-159, A10, D5 | Decided; provider choice PENDING RS-11; CORS UNKNOWN |
+| ADR-0007 | Identity: a device key pair made in the browser (ECDSA P-256), the server stores the public key; a 12 hour opaque access token from a signed challenge; sockets authenticate by signature; buddy pairing, invite capabilities and an operator command line. No accounts, email or password. Enrolment is gated by an operator-issued code. | ADR-0811 (sign-in, token form) and ADR-0502 (socket signature); ADR-0421 is history only | R-075 to R-080; F-206; REALTIME 4.2; SECURITY_BASELINE R1 to R9 | Decided; the token is opaque (BACKEND already uses it) |
+| ADR-0008 | AI access: a provider adapter with two transports, `direct` (browser to provider) and `relay` (through the user's own server; a server-held key is a relay mode, not a third transport). Keys live in the browser, never in a project, export, room or log. The AI changes a project only by the `propose_ops` tool, which makes a reviewable proposal. | ADR-0425 (keys and transports), ADR-0600 (AI in the browser) | R-010, R-153 to R-159, A10, D5 | Decided; the model is a setting on the user's own key (RS-11 never ran); CORS UNKNOWN |
 | ADR-0009 | Search and other external services use the same key rule; calls go through the user's server because provider keys travel in query strings; MCP is key-gated and limited to stateless tools and server-held copies. | none | R-011, F-167; SECURITY_BASELINE M1 | Decided |
 | ADR-0010 | Observability for a self-hoster: JSON lines on stdout, `/healthz`, Prometheus text on a separate loopback listener, a local error log in the browser. No third-party error or analytics service. | ADR-0429 | R-009, R-098, F-016 | Decided |
 | ADR-0011 | Background work: in-process timers over SQLite state, idempotent, no queue and no cron dependency. Job list in section 6.15. | none | single process (R-078) | Decided |
 | ADR-0012 | Offline application shell: a service worker with a build-time precache manifest and an explicit update prompt; engines are cached on first use. | ADR-0406 | R-040, F-094 | Decided: hand-written worker |
-| ADR-0013 | Compile service deployment shape: off by default; options are browser WASM or an isolated container; the rule is taken from RS-04/05/17. | ADR-0427, ADR-0306 | ADR-0306 in SIMULATION_ARCHITECTURE | PENDING RS-04, RS-05, RS-17 |
+| ADR-0013 | Compile service deployment shape: off by default; options are browser WASM or an isolated container; for the build: hex import is the floor and always works; an isolated container (option A1, limits 1 GiB, 1 CPU, 30 s) is the one compile option built, switched on by `IYNK_COMPILE_ENABLE=1`; browser WASM (option B) is not built. RS-04, RS-05 and RS-17 never ran; RS-03 measured local `arduino-cli` compiles (1.17 to 1.40 s cold, 0.33 to 0.56 s warm on a laptop, `docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md`). | ADR-0427, ADR-0306 | ADR-0306 in SIMULATION_ARCHITECTURE | Decided for the build, reversible behind `CompileService`. Changes if a local timing task on the Linux image misses 30 s, or if Amar's licence reading (RS-17, For Amar) says no |
 | ADR-0014 | Repository layout and the portable-code toolchain: Node 24 runs the server directly from TypeScript, shared modules use relative imports with `.ts` extensions, one extra `tsconfig` checks the portable subset, Node subpath imports reach shared folders from `server/`. | ADR-0430 (shared code and build) | Verified in section 5.4 | Decided |
 
 ## 2. Objections
@@ -63,7 +63,7 @@ The decisions are binding and this file follows them. These are the places where
 5. **ADR-0106 listed the IndexedDB stores but not the crash journal, the device identity, the local event log, the error log, the server connection profile or the AI stores.** FRONTEND's `Repository.journal`, ADR-0007, F-024, F-016 and AI_ARCHITECTURE need them. Section 8.1 lists all of them in the one database `iynk` (stores 10 to 19), and ADR-0106 decision item 1 and ADR-0613 decision item 1 were amended to match (review fix 3).
 6. **MCP (F-167) cannot read projects that live only in a browser.** The MCP server runs on the user's server; IndexedDB is in the tab. So MCP tools are limited to the catalogue, fact sheets, stateless checks on a document passed in, and projects the server holds (shares, room snapshots). A tab-to-MCP bridge is a HYPOTHESIS and LATER. F-167's "lets the user's own AI tools work with their projects" is true only for those cases; the feature text should say it.
 7. **The relay package declares `"license": "MIT"`** (`server/realtime/package.json:6`, VERIFIED) while D-017 says no licence is chosen. B0 must change it to the placeholder text, or R-015's "no licence granted yet" is false for the one package that already says otherwise.
-8. **Group commit changes what "durable" means for an ack, and the numbers do not yet say what it costs.** RS-09 measured the op log in memory (section 8.4 repeats the caveat). The macOS store benchmark does not establish fsync durability: the flat-file `fsync` row (246 per second) and the SQLite `synchronous=FULL` row (16,472 per second) differ by 67 times and the cause is probably a different flush call (HYPOTHESIS). The cost of FULL against NORMAL is UNKNOWN until AX-05 runs on the Linux target. Group commit (one transaction per event-loop turn) stays a PROPOSAL justified by fewer transactions, not by a throughput cap. Whatever is chosen, an ack is sent after the commit, so R-089 should read "acknowledged after the commit", not "after the append". Cross-file rule (second review, issue 7): the default is `IYNK_STORE_SYNC=full`; with `normal` the server may lose acknowledged ops on power loss and must use the epoch break of REALTIME 11.5. BACKEND 7.3, ADR-0422 and ADR-0505 name `normal` as their baseline and must adopt `full` as the default or state the epoch break (open item S-5, section 8.3). If AX-05 on Linux shows `full` misses the pass line, flipping the default is one line here and in section 8.3.
+8. **Group commit changes what "durable" means for an ack, and the numbers do not yet say what it costs.** RS-09 measured the op log in memory (section 8.4 repeats the caveat). The macOS store benchmark does not establish fsync durability: the flat-file `fsync` row (246 per second) and the SQLite `synchronous=FULL` row (16,472 per second) differ by 67 times and the cause is probably a different flush call (HYPOTHESIS). The cost of FULL against NORMAL is UNKNOWN until AX-05 runs on the Linux target. Group commit (one transaction per event-loop turn) stays a PROPOSAL justified by fewer transactions, not by a throughput cap. Whatever is chosen, an ack is sent after the commit, so R-089 should read "acknowledged after the commit", not "after the append". Cross-file rule (second review, issue 7): the default is `IYNK_STORE_SYNC=full`; with `normal` the server may lose acknowledged ops on power loss and must use the epoch break of REALTIME 11.5. BACKEND 7.3 and ADR-0505 name `normal` as their baseline and must adopt `full` as the default or state the epoch break (open item S-5, section 8.3). If AX-05 on Linux shows `full` misses the pass line, flipping the default is one line here and in section 8.3.
 
 ## 3. System context
 
@@ -147,7 +147,7 @@ flowchart TB
   B1 -->|"https://iynk.example"| C
   B2 --> C
   C -->|"/ and /_next"| W
-  C -->|"/v1, /ws and /healthz"| S
+  C -->|"/v1, /ws, /healthz and /readyz"| S
   C -->|"/engines (precompressed)"| E
   S --- V
   S -.->|"job in, hex out"| K
@@ -160,7 +160,7 @@ flowchart TB
 | `web` | `node:24.x-alpine`, Next `output: "standalone"` | 3000 | none | 512 MB | Stateless. Open tabs keep working (the shell is cached, section 12.3) |
 | `server` | `node:24.x-alpine`, runs TypeScript directly (ADR-0014) | 8787 (API and WebSocket), 127.0.0.1:9464 (metrics, `IYNK_METRICS_ADDR`) | the SQLite file | 512 MB | Rooms with unexpired invites are restored from the store; members reconnect and resume from their last acknowledged sequence number (R-078, R-087) |
 | `caddy` | `caddy:2.11.7-alpine` (already pinned in `deploy/realtime/compose.yaml`) | 80, 443 | certificates in a volume; the engine files are a read-only mount at `/srv/engines` | default | Certificates persist in the volume |
-| `compile` (optional) | to be chosen by ADR-0013 | none | none | PROPOSAL 512 MB, 1 CPU | Stateless; jobs time out |
+| `compile` (optional) | to be chosen by ADR-0013 | none | none | 1 GiB, 1 CPU, 30 s (ADR-0013) | Stateless; jobs time out |
 
 Facts the existing deployment already satisfies and the new one must keep (SECURITY_BASELINE R12, VERIFIED by reading `deploy/realtime/Dockerfile` and `compose.yaml`): non-root `node` user, read-only root filesystem, `cap_drop: [ALL]`, `no-new-privileges`, memory limit, log rotation (`max-size 10m`, `max-file 3`), HEALTHCHECK against `/healthz`.
 
@@ -311,18 +311,23 @@ Each subsection states: owns, interface, depends on, deployment, failure behavio
 
 Owns: the Next.js App Router pages under `src/app/[lang]/**`, the shell (`src/components/shell`, 24 files), the six-language interface (`src/i18n`), settings and theme (`src/lib/settings`), sound.
 
-Interface: URL structure `/{lang}/...`. From the start of COLLAB no `src/app/api/**` route file exists (ADR-0003; until then the remaining routes are closed by R-007); `src/app/[lang]/passport`, `verify` and the `together` lobby extras are deleted in B0 (D-016). Capabilities come from `src/server-client/capabilities.ts`:
+Interface: URL structure `/{lang}/...`. From the start of COLLAB no `src/app/api/**` route file exists (ADR-0003; until then the remaining routes are closed by R-007); `src/app/[lang]/passport`, `verify` the Planner and Buddies components under `together` and the story and night pages are deleted in B0; the `/together` page shell stays with the rooms entry hidden behind the off flag (RC-68, D-016). Capabilities come from `src/server-client/capabilities.ts`:
 
 ```ts
-// mapped from openapi getServerInfo (GET /v1/server). No version string and no counts: BACKEND 5.3 (version oracle).
+// mapped from openapi ServerInfo (GET /v1/server). `software` is { name: 'iynk-server' } only: no version, no commit (RC-23; BACKEND 5.3 version oracle).
 export interface ServerCapabilities {
-  protocol: 2;                       // room socket protocol major (REALTIME 7.2)
+  software: { name: 'iynk-server' };
   apiVersions: number[];             // HTTP majors served, for example [1]
+  schemas: { project: string[]; opSchema: string };
   features: {
-    rooms: boolean; shares: boolean; buddies: boolean;
-    aiRelay: boolean; searchProxy: boolean; mcp: boolean; compile: boolean;
+    identities: boolean; buddies: boolean; shares: boolean; rooms: boolean; assets: boolean;
+    aiRelay: boolean; searchProxy: boolean; compile: boolean; tools: boolean;
   };
-  limits: { maxMembersPerRoom: number; maxProjectBytes: number; shareTtlDays: number };
+  limits: {
+    documentBytes: number; assetBytes: number; assetsPerProject: number;
+    storageBytesPerIdentity: number; buddiesPerIdentity: number; peersPerRoom: number;
+    sharesPerProject: number; opEnvelopeBytes: number;
+  };
 }
 export type ServerState =
   | { kind: 'none' }                                 // no URL configured: mode A
@@ -399,7 +404,7 @@ export interface CompileService {
 }
 ```
 
-Decision per RS: the TypeScript interpreters stay the default (T1); avr8js is an opt-in mode (RS-03 PASS on desktop, speed INCONCLUSIVE on devices); rp2040js is a CI oracle only (RS-06: Pass clause not met on speed (0.54 to 0.79x real time on an Apple M4 Pro) and CPU (about 100 percent of a core); Fail clause not triggered; blink, ADC, LittleFS and I2C all work; verdict is for the stock loop, idle-skip untested); Yosys and DigitalJS are an on-request inspect mode (RS-12 PASS, 662 to 725 MB renderer memory). Compile placement is ADR-0013 (PENDING).
+Decision per RS: the TypeScript interpreters stay the default (T1); avr8js is an opt-in mode (RS-03 PASS on desktop, speed INCONCLUSIVE on devices); rp2040js is a CI oracle only (RS-06: Pass clause not met on speed (0.54 to 0.79x real time on an Apple M4 Pro) and CPU (about 100 percent of a core); Fail clause not triggered; blink, ADC, LittleFS and I2C all work; verdict is for the stock loop, idle-skip untested); Yosys and DigitalJS are an on-request inspect mode (RS-12 PASS, 662 to 725 MB renderer memory). Compile placement is ADR-0013 (decided for the build: container option or hex import; see that row).
 
 Deployment: interpreters and avr8js in the `SimWorker`; Yosys in the `HdlWorker`, refused when `navigator.deviceMemory` is 4 or lower where the browser reports it (BUD-11). Compile: not on the web host and never on a serverless function.
 
@@ -413,7 +418,7 @@ Owns: the pure netlist solver (extracted from `figures/engine/bench-solve.js`), 
 
 Interface: SIMULATION_ARCHITECTURE section 7 (`solve(net) -> {volts, currents, states, converged, residual}`). The solver reads the netlist derived from `nets` in the project document, not breadboard hole names (P1 of the data model; A5).
 
-Decision per RS: RS-08(a): linear solve PASS (20 of 20 within 2 percent in matched mode, where ngspice is given the solver's own piecewise-linear models, worst 0.26 percent); device-model fidelity against ngspice exponential models FAIL (10 of 20 within 2 percent, 6 off by more than 10 percent); not a clean PASS; transient not run. D-007 label for T1 circuits: "What it models: solver fidelity (DC, piecewise-linear device models); not modelled yet: device-curve accuracy against SPICE exponential models"; never "validated". So: extraction in `pwl` mode now (SIM-1), transient backend PENDING RS-08(b) and RS-07, ngspice as an oracle and an on-demand "analyse" button in the `AnalysisWorker` (20.3 MB JS, 5.7 MB gzip, dossier TESTED).
+Decision per RS: RS-08(a): linear solve PASS (20 of 20 within 2 percent in matched mode, where ngspice is given the solver's own piecewise-linear models, worst 0.26 percent); device-model fidelity against ngspice exponential models FAIL (10 of 20 within 2 percent, 6 off by more than 10 percent); not a clean PASS; transient not run. D-007 label for T1 circuits: "What it models: solver fidelity (DC, piecewise-linear device models); not modelled yet: device-curve accuracy against SPICE exponential models"; never "validated". So: extraction in `pwl` mode now (SIM-1), transient added to the in-house engine behind `AnalogBackend` (RS-08(b) not run, RS-07 never ran; a Fidelity-phase task checks both and may change the live backend), ngspice as an oracle and an on-demand "analyse" button in the `AnalysisWorker` (20.3 MB JS, 5.7 MB gzip, dossier TESTED).
 
 Deployment: `SimWorker` for the live solve (0.04 to 0.09 ms on the largest of 79 catalogue circuits, MEASURED); `AnalysisWorker` on request.
 
@@ -425,7 +430,7 @@ Verdict: replace for user circuits, preserve and freeze for the catalogue figure
 
 Owns: the Rapier backend behind `PhysicsBackend` (Jolt as the named fallback), motor and sensor coupling, the existing arcade flight model, a later 6-DoF model.
 
-Decision per RS: RS-13 PASS (identical snapshot hash after 10,000 steps in Node, Chromium and WebKit; mean step 0.07 to 0.09 ms at 20 bodies, 0.44 to 0.54 ms at 6x throttle; Rapier split build about 0.88 MB brotli). One architecture-level consequence: the physics engine version is pinned in every replay record, and Rapier and Jolt do not give the same trajectories, so switching engines invalidates recorded replays (RS-13 caveat). Flight: split `sim.ts` by craft class, keep the model as the labelled "flight game" (T1); 6-DoF is PENDING RS-14.
+Decision per RS: RS-13 PASS on the hash (identical snapshot hash at all 10 checkpoints in Node, Chromium and WebKit, measured on the single-file compat build and on one CPU architecture; the independent check confirmed all hashes across 9 runs per engine; the split build was hashed in Node only; mean step 0.07 to 0.09 ms at 20 bodies, 0.44 to 0.54 ms at 6x throttle). Size is a separate result: the Rapier split build is about 0.88 MB brotli, and the single-file build is 1.20 MB, over the 1.0 MB self-proposed budget, so only the split build ships. Chromium, WebKit, Firefox and x86-64 hashes for the split build are open (ROB RA-01, RA-02). One architecture-level consequence: the physics engine version is pinned in every replay record, and Rapier and Jolt do not give the same trajectories, so switching engines invalidates recorded replays (RS-13 caveat). Flight: split `sim.ts` by craft class, keep the model as the labelled "flight game" (T1); 6-DoF is not built: RS-14 never ran, and the drone phase decides it with an offline PX4 SIH comparison (ADR-0309). Until then the model stays the labelled flight game.
 
 Deployment: `SimWorker`; the engine WASM loads only on pages that need it (BUD-14: at most 1.0 MB over the wire, 4 MB raw).
 
@@ -439,17 +444,17 @@ Owns: context building, the tool registry, the proposal builder, provider adapte
 
 Interfaces: AI_ARCHITECTURE 9.1 (`ModelAdapter`) and 7.1 to 7.2 (the `propose_ops` tool, `ProposalRecord`, the schema `Proposal`). The profile field is `via: 'direct' | 'relay' | 'auto'` (AI_ARCHITECTURE 9.1, ADR-0600); transport values are `direct` | `relay`; a server-held key is a relay mode, not a third transport. This file defines no AI type.
 
-The provider client runs in the `AiWorker` (ADR-0005), the only code that reads the `keys` store, so UI components and figure code never hold a key. The two transports: `direct` (the worker calls the provider with the key in the request header) and `relay` (the worker calls `POST /v1/ai/relay`, operation `aiRelay`, ADR-0612; the key travels in the `x-iynk-provider-key` header over TLS, is used for that call and discarded; with no key header and an operator key configured, the relay uses the operator's key within the caller's daily cap). A provider's adapter declares its API origin and whether browser-direct is allowed; whether each candidate allows it is UNKNOWN until experiment AX-02 (a CORS preflight against each adapter from a page origin). The Content Security Policy `connect-src` lists the shipped adapters' origins and the server origin; a custom endpoint (a local model on `http://localhost:11434`) needs the operator to add it to `IYNK_CONNECT_ORIGINS` (section 7.4).
+The provider client runs in the `AiWorker` (ADR-0005), the only code that reads the `keys` store, so UI components and figure code never hold a key. The two transports: `direct` (the worker calls the provider with the key in the request header) and `relay` (the worker calls `POST /v1/ai/relay`, operation `aiRelay`, ADR-0612; the key travels in the `X-Iynk-Provider-Key` header over TLS, is used for that call and discarded; with no key header and an operator key configured, the relay uses the operator's key within the caller's daily cap). A provider's adapter declares its API origin and whether browser-direct is allowed; whether each candidate allows it is UNKNOWN until experiment AX-02 (a CORS preflight against each adapter from a page origin). The Content Security Policy `connect-src` lists the shipped adapters' origins and the server origin; a custom endpoint (a local model on `http://localhost:11434`) needs the operator to add it to `IYNK_CONNECT_ORIGINS` (section 7.4).
 
 Keys: IndexedDB store `keys` (a `ProviderProfile` and the key, section 8.1; ADR-0106), never copied into a project, `.iynk` file, room, share, log line or event. An export runs a secret-shape scan (PROJECT_DATA_MODEL 13). A key is stored unencrypted in the origin's storage; any script on the origin can read it, which is why the CSP in section 7.4 forbids inline script and third-party script. An optional passphrase wrap with WebCrypto is a HYPOTHESIS owned by F-193.
 
 Safe editing: the model sees a fenced, read-only snapshot at revision N and may call read-only tools. It changes nothing itself: its one way to propose a change is the `propose_ops` tool call (class `propose`), which the client stores as a `ProposalRecord`. The client dry-runs the ops on a copy (`apply` plus validation V2 to V5 plus limit checks), renders a diff card, and applies on Accept as one batch with `author.kind = 'ai'` and `author.proposal` set. A proposal whose base revision is stale is re-validated against current state and refused with "the project changed since this suggestion" if any op no longer applies (TECHNICAL_DEBT D5 defect). The sequence is in section 11.1.
 
-Server relay: exists only if the operator enables it (`IYNK_AI_ENABLE=1`, BACKEND 13.1); holds no key unless the operator also sets `IYNK_AI_KEY_<PROVIDER>`; counts requests and tokens per day in `usage` (section 8.3); honours `IYNK_DISABLE_AI=1` (R-008).
+Server relay: exists only if the operator enables it (`IYNK_AI_ENABLE=1`, BACKEND 13.1); holds no key unless the operator also sets `IYNK_AI_KEY_<PROVIDER>`; counts requests and tokens per day in `usage` (section 8.3); is off unless `IYNK_AI_ENABLE=1` (R-008; RC-28 removes the DISABLE variables).
 
 Failure behaviour: no key shows "not set up" with the steps (R-010); a provider error or CORS block shows the provider's status and which transport failed; an aborted stream leaves the project untouched because nothing applied.
 
-Verdict: replace the transport (today a Next route calls Meta, with Gemini as fallback, on the operator's keys: `src/lib/server/ai/provider.ts`), extend the tools (`src/lib/ai/tools.ts`). The provider families are those of AI_ARCHITECTURE 9.1 (`anthropic`, `openai-compat`); the OpenAI-compatible family also reaches local model servers (HYPOTHESIS: tested by AX-02 and the conformance run). Model choice is PENDING RS-11.
+Verdict: replace the transport (today a Next route calls Meta, with Gemini as fallback, on the operator's keys: `src/lib/server/ai/provider.ts`), extend the tools (`src/lib/ai/tools.ts`). The provider families are those of AI_ARCHITECTURE 9.1 (`anthropic`, `openai-compat`); the OpenAI-compatible family also reaches local model servers (HYPOTHESIS: tested by AX-02 and the conformance run). Model choice is a user setting, not a code choice (RS-11 never ran; see section 18).
 
 ### 6.9 Project persistence (local)
 
@@ -523,7 +528,7 @@ Verdict: extend the relay, replace the action layer. Reason: realtime inventory:
 
 Owns: part and price search, nearby places, events, videos; the BOM query builder.
 
-Interface: openapi operations `searchWeb`, `searchVideos`, `searchNearby`, `searchEvents` (`GET /v1/search/{web|videos|nearby|events}`) and `searchOffers` (`POST /v1/search/offers`) on the user's server, key in the `x-iynk-search-key` header (BACKEND 10.3 must add this name beside `x-iynk-provider-key`), input validated at the edge (the existing schemas in `src/lib/search/schema.ts` are reused). Result normalisation and ranking (`src/lib/server/search/{normalize,rank,lru}.ts`) are portable and stay shared.
+Interface: openapi operations `searchWeb`, `searchVideos`, `searchNearby`, `searchEvents` (`GET /v1/search/{web|videos|nearby|events}`) and `searchOffers` (`POST /v1/search/offers`) on the user's server, key in the `X-Iynk-Provider-Key` header, the same header as the AI relay, input validated at the edge (the existing schemas in `src/lib/search/schema.ts` are reused). Result normalisation and ranking (`src/lib/server/search/{normalize,rank,lru}.ts`) are portable and stay shared.
 
 Why through the server: SerpApi takes the key as a query parameter, so a browser call would put the key in a URL that proxies and the browser history can record (EXTERNAL for the SerpApi convention; the repo's client is `src/lib/server/search/serpapi.ts`). The server builds the URL, never logs it, and discards the key after the call. Without a server, search says "needs a server" (R-012); direct browser search is not planned. AI search tools (`search_datasheet`, `find_parts`) call the server search routes; without a server they report not set up.
 
@@ -555,7 +560,7 @@ Verdict: extend, then convert. `Check`, `WorldModel`, `CodeTemplate`, `FailureMo
 
 Owns: logs, health, metrics on the server; a local error log and a local event log in the browser. Decision and fields: ADR-0010 (detail ADR-0429) and section 13. Nothing leaves the machine by default (R-009).
 
-Interface: JSON lines on stdout; `GET /healthz` and `GET /readyz` (`getHealth`, `getReadiness`); Prometheus text with `iynk_*` metric names on the separate listener `IYNK_METRICS_ADDR` (BACKEND 13.5, section 13.2 here); browser stores `errors` and `events` (section 8.1).
+Interface: JSON lines on stdout; `GET /healthz` and `GET /readyz` (`getHealth`, `getReadiness`; root paths for the container and proxy, also served at `/v1/healthz` and `/v1/readyz`, which openapi lists); Prometheus text with `iynk_*` metric names on the separate listener `IYNK_METRICS_ADDR` (BACKEND 13.5, section 13.2 here); browser stores `errors` and `events` (section 8.1).
 
 Deployment: the server process (the metrics listener is a second port in the same process); the browser for the local logs. No collector or agent is shipped.
 
@@ -571,9 +576,9 @@ Deployment: timers in the one `server` process. A job never starts while its pre
 
 | Job | Trigger | Idempotency | On failure |
 |---|---|---|---|
-| `expire` | every 60 s | deletes rows whose `expires_at` is past (pairing offers, enrolment codes, invites, sessions, idempotency keys, cache rows, closed rooms older than 30 days, shares); a second run finds nothing more to delete | the exception is caught and logged at `warn` with the job name and error code; the transaction rolls back; the next tick retries; expired rows are already refused by lookups, so nothing stays usable |
-| `compact` | when a room passes 1,000 ops beyond its last checkpoint (checked after each checkpoint) | sets `env` to NULL on ops older than the retention window and keeps the summary columns (REALTIME 11.1); a repeat does nothing | rolled back; the room keeps all ops; disk grows until the next trigger |
-| `checkpoint` | every 5 minutes and on shutdown | `PRAGMA wal_checkpoint(PASSIVE)`; safe to repeat. Room document checkpoints (REALTIME 11.1) are triggered by op count and time with activity, not by this job | logged; the WAL file grows until the next tick; a failure at shutdown is logged and the server exits anyway |
+| `expire` | every 60 s | deletes rows whose `expires_at` is past (pairing offers, enrolment codes, invites, idempotency keys, cache rows, closed rooms older than 30 days, shares); deletes sessions 7 days after `expires_at` or `revoked_at` (expired sessions are refused at once by lookup); a second run finds nothing more to delete | the exception is caught and logged at `warn` with the job name and error code; the transaction rolls back; the next tick retries; expired rows are already refused by lookups, so nothing stays usable |
+| `compact` | applies ADR-0505: checkpoint every 500 ops or 10 minutes with activity, keep 8 plus named, set `env` to NULL beyond the latest 20,000 ops | sets `env` to NULL on ops older than the retention window and keeps the summary columns (REALTIME 11.1); a repeat does nothing | rolled back; the room keeps all ops; disk grows until the next trigger |
+| `checkpoint` | every 5 minutes, and `TRUNCATE` once at shutdown | every 5 minutes `PRAGMA wal_checkpoint(PASSIVE)`; `TRUNCATE` once at shutdown; safe to repeat. Room document checkpoints (REALTIME 11.1) are triggered by op count and time with activity, not by this job | logged; the WAL file grows until the next tick; a failure at shutdown is logged and the server exits anyway |
 | `sweep` | every 1 hour | removes stored assets that no room, share or open upload references and whose upload is older than 24 hours (a reference count by SHA-256); a repeat finds none | logged; retried next hour; only disk is affected |
 | `usage-prune` | every 24 hours | deletes `usage` rows older than 90 days | logged; retried next day |
 
@@ -630,7 +635,7 @@ All timings below are UNKNOWN unless a measurement is cited; the budget column i
 | Room op validation, ordering, commit | no | no | yes | server | live room state in memory, up to one document (5 MiB bare limit) per live room; 20 live rooms by default (REALTIME 17.2); checked by AR-23 | ops ordered per room; design load 400 ops per second aggregate (section 8.4) | the server is the ordering authority (R-089); it runs `apply` from `src/project`, so it executes data, never code |
 | Search normalise and rank | no | no | yes | server | the LRU cap (set in config) | per-identity rate limit (API_CONTRACTS buckets) | the key stays on the server for the call (section 6.11) |
 | Catalogue part search | yes | no | no | main | descriptor summaries only; UNKNOWN | 1 | in-memory token filter over descriptor summaries; revisit when the library passes 500 parts (HYPOTHESIS) |
-| Sketch compile | no | no | isolated process, or browser WASM | ADR-0013 | PROPOSAL 512 MB, 1 CPU (section 4.2) | 1 job per device, 6 per minute (PROPOSAL) | PENDING RS-04, RS-05, RS-17 |
+| Sketch compile | no | no | hex import; optional ADR-0013 container | ADR-0013 | 1 GiB, 1 CPU, 30 s (ADR-0013) | 1 job per device, 6 per minute (PROPOSAL); a friend's server runs one job at a time and needs no pool | Build option is the ADR-0013 container, off by default; RS-04/05/17 never ran, so the 30 s limit is checked by a local timing task in the build, not by a hosted-scale spike |
 | Check re-run on the server (F-132) | no | no | not built | none | n/a | n/a | OOS: friends are trusted (D-013); `F-075` is LATER |
 | GPU compute | no | no | no | none | n/a | n/a | no workload needs it; WebGPU is off by default in Firefox desktop through version 161 (EXTERNAL, TECHNICAL_RESEARCH) |
 | Serverless functions | no | no | no | none | n/a | n/a | nothing depends on a hosted function (D-015, F-202) |
@@ -640,7 +645,7 @@ Infrastructure cost: one machine the operator already owns; sizing 1 vCPU and 1 
 ### 7.2 Security reasoning
 
 1. **A Worker is a performance boundary, not a confidentiality boundary, for first-party code.** `SimWorker`, `ProjectWorker`, `AiWorker`, `AnalysisWorker` and `HdlWorker` run code that ships in the repository from the same origin, so they can read the same IndexedDB. What they give is a place to stop a runaway (terminate after 2 s grace, BUD-12) and a main thread that stays responsive. They do not protect the keys store from first-party code that is compromised; the protection for keys is the CSP in 7.4 and the absence of third-party script. The `AiWorker` is the only first-party module that reads keys, so a bug in UI code cannot leak one by accident; it is not a barrier against injected script.
-2. **User-authored code never runs in the page.** A person's sketch is data for an interpreter or an emulator inside the `SimWorker`; those engines have caps on heap, statements, cycles and output (ADR-0311, R-018). A code-bearing custom part (F-102) is the one case that needs a real boundary, and it is PENDING RS-15 (opaque-origin iframe plus Worker plus a capability API). Until RS-15 passes, custom parts are data only (ADR-0206).
+2. **User-authored code never runs in the page.** A person's sketch is data for an interpreter or an emulator inside the `SimWorker`; those engines have caps on heap, statements, cycles and output (ADR-0311, R-018). A code-bearing custom part (F-102) is the one case that needs a real boundary, and RS-15 never ran (opaque-origin iframe plus Worker plus a capability API). Until a Worker-kill prototype passes, custom parts are data only (ADR-0206).
 3. **User-supplied art never enters the page as markup.** Custom SVG is sanitised or rendered through an `<img>` element, where scripts do not run (PROJECT_DATA_MODEL 13). The existing figure iframes are first-party and stay same-origin until their bridge moves to a source-window and nonce check, which the opaque-origin sandbox needs (`event.origin` is `"null"` for a sandboxed frame without `allow-same-origin`, EXTERNAL). D2's separate-origin proposal does not fit a one-origin self-hosted install; the sandbox attribute is the replacement and is mandatory only when third-party art or code renders (AR-14).
 4. **The server runs data, not code.** Operations, snapshots and imports are JSON validated by `src/project`; nothing from a client is evaluated. The only server component that executes foreign input is the compile service, which is why it is its own container with no network and no secrets (ADR-0013).
 5. **Resource limits are per workload.** Worker kill after 2 s; per-socket token bucket of 60 frames per second and the 64 KB frame cap, 512 KB snapshot cap (existing, `server/realtime/src/config.js:6-8`, VERIFIED) raised for gzipped snapshots as the data model requires; per-route rate limits; a store size cap (`IYNK_STORAGE_LIMIT_MB`, BACKEND 13.1).
@@ -669,22 +674,22 @@ This table is the single browser policy. FRONTEND_ARCHITECTURE 9.1 copies it. Th
 
 ### 8.1 In the browser
 
-IndexedDB database `iynk` (ADR-0106), the only browser database. Stores 1 to 9 are from that ADR; 10 to 12 are proposed here (Objection 5); 13 to 17 are the AI stores of AI_ARCHITECTURE 12.1, 5.6, 10.4 and 12.4; 18 and 19 (`journal`, `identity`) are the review-fix additions below. The AI stores sit in this database and not in a second one named `iynk-ai`, so one delete path, one `versionchange` upgrade and cross-store transactions work (ADR-0106 amended). ADR-0613 decision item 1 had said `iynk-ai`; it is amended to match AI_ARCHITECTURE, which already names database `iynk`.
+IndexedDB database `iynk` (ADR-0106), the only browser database. The list is ADR-0106; this table adds only keys and values; 13 to 17 are the AI stores of AI_ARCHITECTURE 12.1, 5.6, 10.4 and 12.4; 18 and 19 (`journal`, `identity`) are the review-fix additions below. The AI stores sit in this database and not in a second one named `iynk-ai`, so one delete path, one `versionchange` upgrade and cross-store transactions work (ADR-0106 amended). ADR-0613 decision item 1 had said `iynk-ai`; it is amended to match AI_ARCHITECTURE, which already names database `iynk`.
 
 | # | Store | Key | Value | Notes |
 |---|---|---|---|---|
 | 1 | `projects` | project id | `{doc, hash, writtenAt}` | two-slot write; the working copy |
-| 2 | `index` | project id | `{name, updatedAt, hash, board, size, hasFileCopy}` | updated in the same transaction as `projects` |
+| 2 | `index` | project id | `{name, updatedAt, hash, board, size, hasFileCopy, archived}`; `archived` is a boolean (PDM 12.1) | updated in the same transaction as `projects` |
 | 3 | `trash` | project id | `{doc, deletedAt}` | restore window |
-| 4 | `backups` | `projectId:n` | `{doc, hash, at}` | rolling, count set in settings |
+| 4 | `backups` | `projectId:n` | `{doc, hash, at}` | pre-migration copies kept 30 days (PDM M6); other backups: count set in settings |
 | 5 | `assets` | sha256 | Blob | binaries referenced by documents |
 | 6 | `revisions` | `projectId:revision` | snapshot | checkpoints for history and compare (F-093) |
 | 7 | `progress` | key | completion and quiz state | replaces `localStorage` `iynk:v1` |
 | 8 | `proposals` | proposal id | `ProposalRecord` (AI_ARCHITECTURE 7.2: the schema `Proposal` plus state, steps, dry-run report) | AI proposals awaiting or holding a decision |
 | 9 | `keys` | provider id | `{providerProfile, key, addedAt, lastUsedAt}` | AI and search provider keys only, with their `ProviderProfile` (family, baseUrl, models, caps, lastConformance; AI_ARCHITECTURE 9.1); never exported. The device private key is not here (store 19) |
-| 10 | `events` (proposed) | autoincrement | `{ts, kind, data}` | opt-in local learning events (F-024, F-006); read and wiped in settings; ring buffer, cap PROPOSAL 5,000 rows |
-| 11 | `errors` (proposed) | autoincrement | `{ts, where, message, stack?}` | local error log (F-016); ring buffer, cap PROPOSAL 200 rows or 256 KB; keys and project text scrubbed before writing |
-| 12 | `server` (proposed) | server origin | `{url, deviceId, actor, displayName, expiresAt, buddyCache[], lastProbe}` | the connection to one server and nothing secret: its address, the ids derived from the key, when the in-memory access token expires (so the app can sign again early), and the buddy cache that powers the offline buddy list (R-080). Holds no key and no token |
+| 10 | `events` | autoincrement | `{ts, kind, data}` | opt-in local learning events (F-024, F-006); read and wiped in settings; ring buffer, cap PROPOSAL 5,000 rows |
+| 11 | `errors` | autoincrement | `{ts, where, message, stack?}` | local error log (F-016); ring buffer, cap PROPOSAL 200 rows or 256 KB; keys and project text scrubbed before writing |
+| 12 | `server` | server origin | `{url, deviceId, actor, displayName, expiresAt, buddyCache[], lastProbe}` | the connection to one server and nothing secret: its address, the ids derived from the key, when the in-memory access token expires (so the app can sign again early), and the buddy cache that powers the offline buddy list (R-080). Holds no key and no token |
 | 13 | `ai_threads` (AI) | thread id, indexed by project id | thread record with summary (AI_ARCHITECTURE 5.6) | 90 days since last use or 200 threads per project (PROPOSAL) |
 | 14 | `ai_log` (AI) | row id | `AiLogRow` (AI_ARCHITECTURE 12.1); no prompt or answer text | 90 days or 20,000 rows (PROPOSAL) |
 | 15 | `ai_usage` (AI) | `provider:day` | request, token and cost counters per provider per day | the local meter (BACKEND 10.4 says it lives in `progress`; it lives here) |
@@ -712,23 +717,23 @@ Not used in the browser: OPFS as the primary store (hidden from the user, ADR-01
 | Project snapshots | `revisions` store in the browser; `checkpoints` table on the server | resume and compare |
 | Event logs | the document's own `history.ops` (checkpointed at 1,000 ops, PROJECT_DATA_MODEL 7) in the browser; `ops` table on the server for rooms | one op log shape everywhere (ADR-0104) |
 | SQLite (server) | the one server store | section 8.4 |
-| PostgreSQL | not required. Optional adapter behind `ServerStore` (F-165 is `should`) | no friends-sized load needs a database server; one extra service to back up and patch |
+| PostgreSQL | a could: a later adapter behind `ServerStore`, not built, not planned in any phase | no friends-sized load needs a database server; one extra service to back up and patch |
 | TimescaleDB, Tiger Data | not required. The `events` hypertable, the 30-day retention and the columnstore policy (`db/migrations/0001_events.sql`) exist only for the public counter and leaderboard, both deleted (F-006, D-016) | the only consumer of time-series data is gone |
-| Object storage | not used. Assets are content-addressed by SHA-256 inside the one data directory (BACKEND 7.2 `blobs` rows; REALTIME 11.1 says files under `data/assets/`, BACKEND owner decides) with a size cap | one data directory to back up (R-078) |
+| Object storage | not used. Assets are content-addressed by SHA-256 inside the one data directory (assets are `blobs` rows, BACKEND 7.2) with a size cap | one data directory to back up (R-078) |
 | Ephemeral caches | in-process LRU (`src/lib/server/search/lru.ts`), plus the `kv_cache` table for search results that must survive a restart | single process |
 | Queues | none. Jobs are timers over table state (ADR-0011) | no workload needs one |
 | Search indexing | none on the server. Client-side token filter over descriptor summaries | catalogue size is small today (29 parts, 12 boards) |
 
 ### 8.3 On the server: the SQLite tables
 
-One file `data/iynk.db`, opened by the single server process with `PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;`. **Cross-file rule (second review, issue 7): the default is `IYNK_STORE_SYNC=full`, and `ack` is sent after the transaction that holds the op returns from COMMIT.** With `full`, an acknowledged op survives a process crash and, subject to the disk honouring flushes, a power loss. With `normal` (a documented operator option) a process crash still loses no acknowledged op, but in WAL mode a power loss or kernel crash can lose the last few acknowledged commits without corrupting the file (EXTERNAL, SQLite documentation); the server must then use the epoch break of REALTIME 11.5, which clients already handle. The measured numbers do not decide the default: they come from a macOS flush, and the cost of `full` against `normal` is UNKNOWN until AX-05 runs on the Linux target (section 8.4). The default flips to `normal` in one line only if AX-05 shows `full` misses the pass line. BACKEND 7.3, REALTIME 11.2, ADR-0422 and ADR-0505 say `NORMAL` is their baseline and BACKEND 7.3 still claims ack-after-durable: they must adopt `full` as the default, or state the epoch break next to `normal` (open item S-5; an earlier pass over this file had set `NORMAL` and this pass reverses it on the evidence above). The version of the schema is the `schema_migrations` table (BACKEND 7.3), not `PRAGMA user_version`; migrations are numbered SQL files applied at start, one transaction each; a database newer than the code is refused.
+One file `data/iynk.db`, opened by the single server process with `PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;`. **Cross-file rule (second review, issue 7): the default is `IYNK_STORE_SYNC=full`, and `ack` is sent after the transaction that holds the op returns from COMMIT.** With `full`, an acknowledged op survives a process crash and, subject to the disk honouring flushes, a power loss. With `normal` (a documented operator option) a process crash still loses no acknowledged op, but in WAL mode a power loss or kernel crash can lose the last few acknowledged commits without corrupting the file (EXTERNAL, SQLite documentation); the server must then use the epoch break of REALTIME 11.5, which clients already handle. The measured numbers do not decide the default: they come from a macOS flush, and the cost of `full` against `normal` is UNKNOWN until AX-05 runs on the Linux target (section 8.4). The default flips to `normal` in one line only if AX-05 shows `full` misses the pass line. BACKEND 7.3, REALTIME 11.2 and ADR-0505 say `NORMAL` is their baseline and BACKEND 7.3 still claims ack-after-durable: they must adopt `full` as the default, or state the epoch break next to `normal` (open item S-5; an earlier pass over this file had set `NORMAL` and this pass reverses it on the evidence above). The version of the schema is the `schema_migrations` table (BACKEND 7.3), not `PRAGMA user_version`; migrations are numbered SQL files applied at start, one transaction each; a database newer than the code is refused.
 
 This file keeps a table list and each table's purpose. It does not carry the SQL. **The schema is BACKEND_ARCHITECTURE 6.4 and 7.2 plus REALTIME 11.1 (the room tables); one migration list** in `server/migrations/`. Where the two documents name a table differently, the name in the table below wins and BACKEND 7.2 adopts it: `members`, `ops`, `checkpoints` (REALTIME 11.1) replace BACKEND's `room_members`, `room_ops`, `room_snapshots`; `scores` is BACKEND's name and is the one leaderboard table.
 
 | Table | Purpose | Facts this file fixes |
 |---|---|---|
 | `devices` | one row per registered browser key | `id` TEXT `dev_` plus 26 lower-case base32 characters of the first 16 bytes of SHA-256(SPKI) (REALTIME 4.2); `public_jwk` TEXT; `thumbprint` TEXT UNIQUE (the value of `actors[].keyThumbprint`); `actor` (the `usr_` id derived from the same hash); `name`; `created_at`; `last_seen_at`; `revoked_at`. No token column |
-| `sessions` | access tokens | `token_hash` BLOB UNIQUE (SHA-256 of the 256-bit secret), `device_id`, `created_at`, `expires_at` (12 hours, API_CONTRACTS ADR-0801). Revoking a device deletes its sessions |
+| `sessions` | access tokens | `token_hash` BLOB UNIQUE (SHA-256 of the 256-bit secret), `device_id`, `created_at`, `expires_at` (12 hours, ADR-0811). Revoking a device deletes its sessions |
 | `challenges` | single-use sign-in nonces | purpose (`login` or `register`), nonce, audience, 60 second expiry |
 | `enrolments` | one-time codes issued by the operator command | hash only, 24 hours, used-by device |
 | `pairings`, `buddies` | pairing offers (typed code 10 minutes, link 24 hours by default, 5 wrong attempts) and the buddy pairs | hashes only; a pair is stored once with `a < b` |
@@ -747,11 +752,11 @@ This file keeps a table list and each table's purpose. It does not carry the SQL
 | `kv_cache` | search results that must survive a restart | `k`, `v`, `expires_at` |
 | `schema_migrations` | applied migrations | version, name, checksum |
 
-**Retention (one rule, ADR-0505).** A checkpoint every 500 ops or 10 minutes with activity; the latest 8 checkpoints are kept plus named ones; envelope payloads are kept for the latest 20,000 ops of a room and then set to NULL while the summary columns stay; the resume tail window is 2,000 ops (REALTIME 11.1). ADR-0011 (the `compact` job) and ADR-0423 refer to this rule and carry no numbers of their own. The older values (two snapshots and "revision minus 1,500" in ADR-0423; compaction at 1,000 ops in ADR-0011) are withdrawn. The 1,000-op checkpoint in 8.2 is the browser document's own `history.ops` (PROJECT_DATA_MODEL 7), a different log.
+**Retention (one rule, ADR-0505).** A checkpoint every 500 ops or 10 minutes with activity; the latest 8 checkpoints are kept plus named ones; envelope payloads are kept for the latest 20,000 ops of a room and then set to NULL while the summary columns stay; a resume sends a tail only if the gap is at most 1,000 ops and at most 200 KB gzipped, otherwise the latest snapshot plus tail. ADR-0011 (the `compact` job) and ADR-0423 refer to this rule and carry no numbers of their own. The older values (two snapshots and "revision minus 1,500" in ADR-0423; compaction at 1,000 ops in ADR-0011) are withdrawn. The 1,000-op checkpoint in 8.2 is the browser document's own `history.ops` (PROJECT_DATA_MODEL 7), a different log.
 
 **Attestations.** COMMUNITY 3.9 defines an `attestations` table and files it under LATER. It is not in the first migration. If COMMUNITY keeps it, it arrives as its own numbered migration and is added to BACKEND 7.2 then; COMMUNITY's `pairs` are the `buddies` table.
 
-**Open items for the BACKEND owner** (the table definitions are theirs): S-1, BACKEND 6.2 and 6.4 still describe the HMAC token and `epoch` of ADR-0421; they need `sessions` and `challenges` as listed above. S-3, BACKEND 7.2 has no `sessions`, `challenges`, `submissions`, `events`, `idempotency` or `kv_cache`, and names three room tables differently. S-4, REALTIME 11.1 `invites` against BACKEND `offers` (kind `room`): one table, decided by the BACKEND owner. S-5, the `synchronous` default (paragraph above).
+**Open items for the BACKEND owner** (the table definitions are theirs): S-3, BACKEND 7.2 has no `sessions`, `challenges`, `submissions`, `events`, `idempotency` or `kv_cache`, and names three room tables differently. S-4, REALTIME 11.1 `invites` against BACKEND `offers` (kind `room`): one table, decided by the BACKEND owner. S-5, the `synchronous` default (paragraph above).
 
 What the store holds and what it must not: devices (public keys), sessions (hashes), buddy pairs, rooms, invites (hashes only), ops, checkpoints, submissions, events, assets, shares, buddy scores, usage counters, cache. No chat text beyond the last 50 lines per room, which are kept in memory and not written (R-083, R-092), no email, no IP address, no free-text profile, no provider key. Access tokens, invite secrets, pairing codes and enrolment codes are stored only as SHA-256 hashes of values with at least 40 bits (pairing) to 256 bits (access token) of entropy. A public key is not a secret and is stored as sent.
 
@@ -781,7 +786,7 @@ Group commit is a PROPOSAL, justified by fewer transactions and one fan-out poin
 | SQLite via `node:sqlite` (built into Node 24; on Node 24.8.0 for macOS `process.versions.sqlite` says 3.50.4 and `select sqlite_version()` says 3.53.1, VERIFIED and reproduced again on 2026-10-27. AX-05 runs `node -e "const {DatabaseSync}=require('node:sqlite');console.log(process.version,new DatabaseSync(':memory:').prepare('select sqlite_version() v').get().v)"` on the pinned image, and that one value, not either number here, is recorded as the SQLite version) | **Chosen.** No native addon, so the Alpine image needs no build tools. API is synchronous, which is fine for tiny transactions and must never wrap a long read. The module printed an `ExperimentalWarning` on Node 24.8 (VERIFIED); its stability level is EXTERNAL and must be re-checked at B0 (AR-11) |
 | SQLite via `better-sqlite3` | Fallback if `node:sqlite` is withdrawn or changes; a native addon with prebuilt binaries for common platforms (EXTERNAL, not tested here). The `ServerStore` port isolates the choice |
 | Append-only log files plus snapshots in a directory | Rejected as the primary: re-implements transactions, indexes and compaction by hand. R-078 names "embedded SQLite file against append-only log files plus snapshots" as the open ADR; this is the answer |
-| PostgreSQL | Optional adapter later. Cost: a second service, a connection string, a backup job, and a version to upgrade, for a load one core serves. Already half-built (`src/lib/server/db/*`, `db/migrations/0001-0003`), but written for events, leaderboard and profiles that no longer exist |
+| PostgreSQL | Could: a later adapter behind `ServerStore`, not built, not planned in any phase. Cost: a second service, a connection string, a backup job, and a version to upgrade, for a load one core serves. Already half-built (`src/lib/server/db/*`, `db/migrations/0001-0003`), but written for events, leaderboard and profiles that no longer exist |
 | TimescaleDB / Tiger Data | Not required (section 8.2) |
 | Redis, a queue, object storage | Not needed (section 8.2) |
 
@@ -796,7 +801,7 @@ Reversibility: every server module talks to `ServerStore`, never to SQL directly
 | Invites | 24 hours by default (R-076) | `expire` job |
 | Rooms | 30 days after last activity unless pinned, or 30 days after close; an owner may reopen within that time (REALTIME 5.1) | `expire` job; cascades to ops and checkpoints |
 | Room ops and checkpoints | the ADR-0505 rule in 8.3: payloads for the latest 20,000 ops, 8 checkpoints plus named ones (a tail longer than the checkpoint interval; RS-09 found a harness error when it was shorter) | `compact` job (ADR-0011), which applies that rule and defines none of its own |
-| Shares | the expiry the owner chose, maximum `IYNK_SHARE_TTL_DAYS` (BACKEND 13.1) | `expire` job |
+| Shares | owner-chosen expiry, default 30 days, at most `IYNK_SHARE_TTL_DAYS` (default 365) | `expire` job |
 | Scores | until the buddy or the pair is removed | on removal |
 | Usage rows | 90 days | `usage-prune` job |
 | Unreferenced assets | 24 hours after upload | `sweep` job |
@@ -806,7 +811,7 @@ Reversibility: every server module talks to `ServerStore`, never to SQL directly
 
 The job list with triggers, idempotency and failure behaviour is section 6.15.
 
-Backup: `iynk-server backup` runs `VACUUM INTO 'backups/iynk-<ts>.db'` (a consistent copy without stopping the server, EXTERNAL SQLite behaviour; AR-12 proves it) and copies nothing else, because the data directory holds the database and nothing else. Restore: stop, replace `iynk.db`, delete `iynk.db-wal` and `iynk.db-shm`, start. The guide's drill (R-098) is: backup, wipe, restore, rooms and buddies are back, devices still authenticate.
+Backup: `iynk-server backup` runs `VACUUM INTO 'backups/iynk-<ts>.db'` (a consistent copy without stopping the server, EXTERNAL SQLite behaviour; AR-12 proves it) and copies nothing else, because the data directory holds the database and nothing else. The last 7 such files are kept; pre-migration backups keep the last 3. Restore: stop, replace `iynk.db`, delete `iynk.db-wal` and `iynk.db-shm`, start. The guide's drill (R-098) is: backup, wipe, restore, rooms and buddies are back, devices still authenticate.
 
 
 ## 9. The server's interface
@@ -827,7 +832,7 @@ This is the contract between the browser and the optional server. BRIEF 19.5 ask
 | Error schema | `{ "error": { "code": "snake_case", "message": "plain words", "detail"?: object } }` with the HTTP status. The shape already exists (`src/lib/server/http.ts:36`). Codes are stable; messages are not |
 | Rate limits | Keyed by device id, else by socket address. `X-Forwarded-For`, `x-real-ip` and `cf-connecting-ip` are read only when `IYNK_TRUST_PROXY` is above 0, the number of trusted proxies (BACKEND 13.1, R-008). A `429` carries `Retry-After`. Counters live in process memory and are documented as per process, which is the supported shape |
 | Pagination | `?limit=<1..100>&after=<opaque cursor>`; lists in this contract are short (a person's rooms, buddies, shares) |
-| Retries and idempotency | `POST` create routes accept `Idempotency-Key`, kept 24 hours in the `idempotency` table. The store key is SHA-256(`deviceId` \|\| method \|\| route template \|\| `Idempotency-Key`), and the SHA-256 of the request body is stored with it. A repeat with the same key and body returns the stored response. The same key with a different body returns `422 idempotency_key_reused`. A repeat from another device never matches, because the device id is in the key. A response that contains a secret (pairing code, share token, invite token, access token) is stored without the secret; the repeat returns `409 already_created` with the id of the object that was made, and the person makes a new one. Operations on the socket are idempotent by the submission's first `opId` (REALTIME 8.1 rule 4). Clients retry `GET` and idempotent `POST` with the backoff of REALTIME 11.6 |
+| Retries and idempotency | `POST` create routes accept `Idempotency-Key`, kept 24 hours in the `idempotency` table. The store key is SHA-256(`deviceId` \|\| method \|\| route template \|\| `Idempotency-Key`), and the SHA-256 of the request body is stored with it. A repeat with the same key and body returns the stored response. The same key with a different body returns `422 idempotency_key_reuse`. A repeat from another device never matches, because the device id is in the key. A response that contains a secret (pairing code, share token, invite token, access token) is stored without the secret; the repeat returns `409 already_created` with the id of the object that was made, and the person makes a new one. Operations on the socket are idempotent by the submission's first `opId` (REALTIME 8.1 rule 4). Clients retry `GET` and idempotent `POST` with the backoff of REALTIME 11.6 |
 | Logging | Structured; never the token, invite, pairing code, project text, chat text or provider key (R-078) |
 
 ### 9.2 Routes
@@ -836,16 +841,16 @@ Paths are relative to `/v1`. This table is a summary keyed by openapi `operation
 
 | operationId | Method and path | Auth | What this file fixes | Limit | Ids |
 |---|---|---|---|---|---|
-| `getHealth`, `getReadiness` | `GET /healthz`, `GET /readyz` | none | liveness and store check; body `{ok, draining}` only. No version and no uptime (BACKEND 5.3: a version oracle). The compose healthcheck uses `/healthz` | 60 per minute per address | R-098 |
-| `getServerInfo` | `GET /server` | none | the capability probe, mapped to `ServerCapabilities` (6.1); no room or device information, no server version string | 60 per minute per address | R-012 |
+| `getHealth`, `getReadiness` | `GET /healthz`, `GET /readyz` (root, for the container and proxy; the same handlers are also at `/v1/healthz` and `/v1/readyz`, the paths in openapi) | none | liveness and store check; body `{ok, draining}` only. No version and no uptime (BACKEND 5.3: a version oracle). The compose healthcheck uses `/healthz` | 60 per minute per address | R-098 |
+| `getServerInfo` | `GET /server` | none | the capability probe, mapped to `ServerCapabilities` (6.1) with the openapi `ServerInfo` names; no room or device information, `software` is the name only (RC-23) | 60 per minute per address | R-012 |
 | `createChallenge` | `POST /auth/challenges` | none | `purpose` `login` or `register`; valid 60 seconds, once | per address | R-077, F-206 |
 | `createAccessToken` | `POST /auth/tokens` | signature | `{challengeId, signature}` returns an opaque token valid 12 hours | per device | R-077 |
 | `revokeCurrentToken` | `DELETE /auth/tokens/current` | token | sign out this session | | R-077 |
 | `registerIdentity` | `POST /identities` | signed `register` challenge | body `{challengeId, signature, publicKey, displayName, enrollmentCode}` (SPKI public key; the review shorthand `{code, name, publicKey}`). Creates the device and its first session. The first device uses the operator's code | 10 per minute per address | R-077, ADR-0007 |
 | `getMyIdentity`, `updateMyIdentity` | `GET`, `PATCH /identities/me` | token | display name 1 to 24 characters, control and bidi characters stripped | 10 per minute | R-080 |
 | `requestDeletion`, `cancelDeletion` | `POST`, `DELETE /identities/me/deletion` | token | leave this server: revokes the device, removes buddy pairs and room seats. This is the only data deletion the server offers | 5 per minute | R-077 |
-| `createPairing` | `POST /pairings` | token | typed code (8-character Crockford base32, 40 bits) valid 10 minutes, and a link valid 24 hours by default; the secret is shown once | 6 per minute | R-076, R-080 |
-| `redeemPairing` | `POST /pairings/redeem` | none, or token | body `{pairing, registration?}`. With a bearer token it pairs the caller. With no token, `registration` (display name, public key and signed challenge, the same fields as `registerIdentity` minus the enrolment code) creates the device and the buddy pair in one transaction, so a new device holding only a pairing code can register. A wrong code gives one generic error; an offer is deleted after 5 wrong attempts | 10 per minute per address | R-076 |
+| `createPairing` | `POST /pairings` | token | typed code (`XXXX-XXXXXX`, 4-character channel plus 6-character secret, 30 bits) valid 10 minutes, and a link valid 24 hours by default; the secret is shown once | 6 per minute | R-076, R-080 |
+| `redeemPairing` | `POST /pairings/redeem` | token | body `{pairing}`. It pairs the caller, who holds a bearer token. A wrong code gives one generic error; an offer is deleted after 5 wrong attempts | 10 per minute per address | R-076 |
 | `listBuddies`, `removeBuddy` | `GET /buddies`, `DELETE /buddies/{identityId}` | token | removal closes shared rooms for the removed person | 60 per minute | R-080 |
 | `createRoom` | `POST /rooms` | token | from a project snapshot (at most `maxProjectBytes`); returns the room | 6 per minute per device | R-084, R-075 |
 | `listRooms`, `getRoom` | `GET /rooms`, `GET /rooms/{roomId}` | token | rooms I host or was invited to; never other people's rooms | 60 per minute | R-081 |
@@ -855,27 +860,27 @@ Paths are relative to `/v1`. This table is a summary keyed by openapi `operation
 | `createRoomInvite`, `revokeRoomInvite` | `POST /rooms/{roomId}/invites`, `DELETE /rooms/{roomId}/invites/{inviteId}` | host | a direct invite to a buddy, or a link token (128 bits, 24 hours by default); the token is shown once | 20 per minute | R-076 |
 | `redeemRoomInvite` | `POST /room-invites/redeem` | token | body `{room, token}`; one generic error for wrong, expired or revoked; 5 tries per identity per hour. Invites are redeemed here before the socket connects (REALTIME 5.4) | 5 tries per hour | R-076 |
 | `putAsset` | `PUT /assets/{sha256}?room=rm_...` | token; room editor when `room` is given | the `asset.add` op is accepted only after this upload (REALTIME 8.1 rule 8). The server checks size (at most 16,777,216 bytes), hash and the MIME allow-list. The review text sketched `PUT /rooms/{roomId}/assets/{sha256}`; openapi folds it into this one route | 30 per minute | R-075 |
-| `createShare`, `openShare`, `revokeShare` | `POST /projects/{projectId}/shares`, `GET /shares/{token}`, `DELETE /projects/{projectId}/shares/{shareId}` | token; the 128-bit token for reading | a share row has a `shr_` id for revoke, separate from the token hash that is the credential. Revoke is by id. The create path in openapi is project-scoped and depends on struck project sync: open item O-2 | create 20 per hour; read 60 per minute per address | R-095, F-089 |
+| `createShare`, `openShare`, `revokeShare` | `POST /shares`, `GET /shares/{token}`, `DELETE /shares/{shareId}` | token; the 128-bit token for reading | a share row has a `shr_` id for revoke, separate from the token hash that is the credential. Revoke is by id. The body of create holds the snapshot (RC-24) | create 20 per hour; read 60 per minute per address | R-095, F-089 |
 | `submitScore`, `getLeaderboard` | `PUT /scores/{key}`, `GET /leaderboards/{key}` | token | buddies-only board; no free text | 30 per minute | R-091 |
-| `aiRelay` | `POST /ai/relay` | token; `IYNK_AI_ENABLE=1` | forwards one provider call; user key in `x-iynk-provider-key`; usage counted; key discarded | per-device daily cap (`IYNK_AI_DAILY_REQUESTS`) | R-010, R-008 |
-| `searchWeb`, `searchVideos`, `searchNearby`, `searchEvents`, `searchOffers` | `GET /search/web`, `/search/videos`, `/search/nearby`, `/search/events`; `POST /search/offers` | token; `IYNK_SEARCH_ENABLE=1` | the user's search key in `x-iynk-search-key` | per-provider daily cap | R-011 |
-| `createCompileJob`, `getCompileJob` | `POST /compile/jobs`, `GET /compile/jobs/{jobId}` | token; compile enabled (default off) | ADR-0013; `501 compile_not_set_up` until it resolves | PROPOSAL 6 per minute, 1 concurrent per device | R-103, F-049 |
-| `mcpPost` | `POST /mcp` | MCP key issued by `iynk-server mcp-key` | Streamable HTTP, stateless, JSON answers | 60 per minute | F-167 |
+| `aiRelay` | `POST /ai/relay` | token; `IYNK_AI_ENABLE=1` | forwards one provider call; user key in `X-Iynk-Provider-Key`; usage counted; key discarded | per-device daily cap (`IYNK_AI_DAILY_REQUESTS`) | R-010, R-008 |
+| `searchWeb`, `searchVideos`, `searchNearby`, `searchEvents`, `searchOffers` | `GET /search/web`, `/search/videos`, `/search/nearby`, `/search/events`; `POST /search/offers` | token; `IYNK_SEARCH_ENABLE=1` | the user's search key in `X-Iynk-Provider-Key` | per-provider daily cap | R-011 |
+| `createCompileJob`, `getCompileJob` | `POST /compile/jobs`, `GET /compile/jobs/{jobId}` | token; `IYNK_COMPILE_ENABLE=1` (default off) | ADR-0013; `501 feature_disabled` when off or without a toolchain | PROPOSAL 6 per minute, 1 concurrent per device | R-103, F-049 |
+| `mcpPost` | `POST /v1/mcp` | MCP key issued by `iynk-server mcp-key` | Streamable HTTP, stateless, JSON answers | 60 per minute | F-167 |
 | (socket) | `WS /ws` | signature, not a bearer token | the room socket (9.3) | REALTIME 16.1 | R-082 |
 | (metrics) | `GET http://127.0.0.1:9464/metrics` | loopback listener only, not proxied | Prometheus text (13.2) | n/a | R-098, SECURITY_BASELINE R10 |
 
-Not served, by decision, and so not part of the contract: Projects (the browser holds them, D-015; project sync `/projects/*` is struck), Components (parts travel inside `.iynkz` files and shares; a part registry route is not served), Simulation runs (they run in the browser; no server endpoint), Import and export (local only, no server endpoint), Data export and deletion (device deletion only, `requestDeletion`), Classrooms, Billing, Telemetry, Community publishing, user profiles beyond a display name, any public listing.
+Not served, by decision, and so not part of the contract: Projects (the browser holds them, D-015; project sync `/projects/*` is struck), Components (parts travel inside `.iynkz` files and shares; a part registry route is not served), Simulation runs (they run in the browser; no server endpoint), Import and export (local only, no server endpoint), Data export and deletion (device deletion only, `requestDeletion`), Classrooms, Billing, Telemetry, Community publishing, user profiles beyond a display name, any public listing. RC-24 confirms each of these as closed.
 
-Struck from `schemas/openapi.yaml` and left as an open item for the API_CONTRACTS owner:
+Struck from `schemas/openapi.yaml`; RC-24 confirms each strike (O-1 to O-3 closed, O-4 already removed, O-5 and O-6 closed):
 
 | Item | Why | State |
 |---|---|---|
-| O-1 `/projects/*` (project sync: `listProjects`, `createProject`, `importProject`, `getProject`, `putDocument`, revisions, forks, access grants and the related share and trash operations) | BACKEND Objection 3 and section 10.3 here decided against server-side project sync; the browser holds the project (D-015). Rooms and shares carry the only server copies | still in openapi.yaml on 2026-10-27; to be removed or marked not-built |
-| O-2 `createShare` and `revokeShare` are project-scoped | with `/projects/*` struck, a share needs a body that carries the snapshot: `POST /shares` with the snapshot, and `DELETE /shares/{shareId}` | open; this file writes the operation ids and the `shr_` id rule only |
-| O-3 `/me/exports`, `/usage`, `/parts/{ref}/{version}` | no server data export beyond device deletion; usage is shown by the local meter; parts are not hosted | open |
+| O-1 `/projects/*` (project sync: `listProjects`, `createProject`, `importProject`, `getProject`, `putDocument`, revisions, forks, access grants and the related share and trash operations) | BACKEND Objection 3 and section 10.3 here decided against server-side project sync; the browser holds the project (D-015). Rooms and shares carry the only server copies | closed (RC-24): struck routes confirmed; the openapi owner removes them |
+| O-2 `createShare` and `revokeShare` are project-scoped | with `/projects/*` struck, a share needs a body that carries the snapshot: `POST /shares` with the snapshot, and `DELETE /shares/{shareId}` | closed (RC-24): `POST /v1/shares` with the snapshot in the body, `DELETE /v1/shares/{shareId}` |
+| O-3 `/me/exports`, `/usage`, `/parts/{ref}/{version}` | no server data export beyond device deletion; usage is shown by the local meter; parts are not hosted | closed (RC-24): struck routes confirmed |
 | O-4 `/admin/*` | SYSTEM 10.3 and BACKEND 5.1 exclude it | already removed by the openapi owner (review fix 3 in the file trailer, 2026-10-27); nothing to do |
-| O-5 `getServerInfo` returns `software.version` and `commit` | BACKEND 5.3 prints no version on a public route | open; this file's `ServerCapabilities` omits them and build info lives on the metrics listener only |
-| O-6 token form | BACKEND 6.2 and ADR-0421 describe an HMAC token with `kid` and `epoch`; API_CONTRACTS ADR-0801 and this file use an opaque hashed token | open for the BACKEND owner |
+| O-5 `getServerInfo` returns `software.version` and `commit` | BACKEND 5.3 prints no version on a public route | closed (RC-23): `software.version` is removed; build info lives on the metrics listener only |
+| O-6 token form | the token is opaque, 256 bit, SHA-256 stored, 12 hours (ADR-0811); BACKEND already uses it | closed (RC-17) |
 
 ### 9.3 The room socket
 
@@ -955,12 +960,14 @@ There is no admin HTTP API. Operator actions are commands run in the container, 
 
 | Command | Effect |
 |---|---|
-| `iynk-server enrol` | prints a one-time enrolment link `https://host/#enrol=<code>` and the typed 12-character form (to the terminal, not to the log stream). API_CONTRACTS sometimes writes `enroll`; the command is `enrol` |
+| `iynk-server init` | first-time setup: creates the data directory (mode 0700), checks the config, runs migrations, prints the first enrolment code and the URL; the device that redeems it becomes `owner` (BACKEND 13.4) |
+| `iynk-server enrol` | prints a one-time enrolment link `https://host/#enrol=<code>` and the typed 12-character form (to the terminal, not to the log stream); alias `enroll` |
 | `iynk-server devices`, `iynk-server revoke <id>` | list devices; revoke one (its tokens stop working, it leaves rooms and buddy lists, its sockets close with 4401) |
 | `iynk-server rooms`, `iynk-server close <room>` | list or close rooms |
 | `iynk-server mcp-key [--revoke]` | issue or revoke the MCP key |
 | `iynk-server backup`, `iynk-server restore <file>` | section 8.5 |
 | `iynk-server check-config` | parse the environment, print every unsafe or missing value, exit non-zero (R-078) |
+| `iynk-server compact`, `iynk-server diagnostics` | `compact` runs `VACUUM`; `diagnostics` prints the support report (BACKEND 13.4, 13.5) |
 
 ## 11. Sequences
 
@@ -974,7 +981,7 @@ The sequence is SYSTEM_DIAGRAMS DG-06 (single source). Invariants this file keep
 
 The sequence is SYSTEM_DIAGRAMS DG-07 (single source). In REALTIME protocol 2 terms it runs: the client redeems an invite over HTTP (`redeemRoomInvite`); opens `/ws`; receives `challenge`; sends `hello` with a signature and its `resume`; receives `welcome`, then a `snapshot` or `tail`, then `ready`; sends `submit` for each local edit after applying it optimistically; receives `commit` (the author's copy carries `ack`) or `reject`; receives `check` every 100 ops or 30 seconds and answers with `resync` when its chain differs. The author never chooses `seq`; the server assigns it and stamps the author from the authenticated member. The frame definitions are REALTIME 7.3.
 
-The server runs the same `apply` as the clients (ADR-0001), so there is one definition of a valid operation. Convergence is the property RS-09 tested: no divergence in 36 runs (30 main runs plus 6 snapshot-path runs in the independent check), each generating about 10,900 ops of which about 6,000 were accepted (PASS, in memory, on one machine). What this design adds that RS-09 did not build: authentication, durable commit, multi-room, rate limits and recovery after a restart (RS-09 caveats). Code text collaboration stays single-writer with a baton in the first release (R-094); simultaneous typing would add a text CRDT for source files only (RS-09 caveat; RS-20 PENDING).
+The server runs the same `apply` as the clients (ADR-0001), so there is one definition of a valid operation. Convergence is the property RS-09 tested: no divergence in 36 runs (30 main runs plus 6 snapshot-path runs in the independent check), each generating about 10,900 ops of which about 6,000 were accepted (PASS, in memory, on one machine). What this design adds that RS-09 did not build: authentication, durable commit, multi-room, rate limits and recovery after a restart (RS-09 caveats). Code text collaboration stays single-writer with a baton in the first release (R-094); simultaneous typing would add a text CRDT for source files only (RS-09 caveat; RS-20 never ran; only if Amar asks).
 
 ### 11.3 Save and export lifecycle (diagram 8)
 
@@ -1051,7 +1058,7 @@ volumes: { iynk-data: {}, caddy_data: {}, caddy_config: {} }
 ```
 # deploy/Caddyfile
 {$IYNK_DOMAIN} {
-	@server path /v1/* /ws /healthz
+	@server path /v1/* /ws /healthz /readyz
 	handle @server { reverse_proxy server:8787 }
 	handle_path /engines/* {
 		root * /srv/engines
@@ -1071,7 +1078,7 @@ volumes: { iynk-data: {}, caddy_data: {}, caddy_config: {} }
 }
 ```
 
-The matcher is `path /v1/* /ws /healthz`. The review text asked for `/api/v1/*` and `/mcp`; openapi serves its API at `/v1` and MCP at `/v1/mcp`, so neither the prefix `/api` nor a root `/mcp` is needed. `handle_path` strips the `/engines` prefix so files resolve under `/srv/engines`; engine paths carry their version (`<id>@<version>/`, FRONTEND 8.3), so a long immutable cache is safe. Next compresses with gzip only, which is why the Brotli files are served by Caddy and not by `web`.
+The matcher is `path /v1/* /ws /healthz /readyz`. The review text asked for `/api/v1/*` and `/mcp`; openapi serves its API at `/v1` and MCP at `/v1/mcp`, so neither the prefix `/api` nor a root `/mcp` is needed; there is no root `/mcp`. Root `/healthz` and `/readyz` are for the container check and the proxy and are not in openapi. `handle_path` strips the `/engines` prefix so files resolve under `/srv/engines`; engine paths carry their version (`<id>@<version>/`, FRONTEND 8.3), so a long immutable cache is safe. Next compresses with gzip only, which is why the Brotli files are served by Caddy and not by `web`.
 
 The metrics listener is not proxied (R10). The compile container, if enabled, is a fourth service defined by ADR-0013.
 
@@ -1255,7 +1262,7 @@ Follows TECHNICAL_DEBT Part D (gates, then client persistence and limiter, then 
 | X4 | CORE | `LocalProjectStore`, `ProjectWorker`, autosave, `.iynk`/`.iynkz`, library, offline shell | A11, B4-01 | R-035 to R-040; AR-01, AR-17, AR-18, AR-19 |
 | X5 | CORE | `SimWorker` host, protocol v1, interpreters from a document, caps and kill | D4 (L, first half) | R-041 to R-043; SA-01, SA-10, AR-15 |
 | X6 | CORE | netlist derivation; pure `solve` in `pwl` mode with a convergence flag | D2 (first half) | R-031, R-046; SA-02, SA-04 |
-| X7 | STUDIO | editor core and renderer interface; Uno first; then all boards | A4, A5 | STUDIO gate; BUD-01 to BUD-03 recorded |
+| X7 | STUDIO | editor core and renderer interface; Uno first; then all boards | A4, A5 | STUDIO phase gate (D-014): BUD-01 to BUD-03 recorded, then Amar's OK; no interview, pilot or Fault Lab wait |
 | X8 | COLLAB | create `server/` (`git mv server/realtime`); move `src/lib/server/{http,ratelimit,env,ai,search,mcp}`; delete `src/app/api`; SQLite store; devices; relay authority; op log from RS-09; compose and guide | D3 (L to XL), B5-01 to B5-11 | R-075 to R-079, R-083, R-097, R-098; AR-04 to AR-08, AR-12, AR-21 |
 | X9 | COLLAB | `src/collab` replaces the action layer; remove the two `dispatch` patches | D5 (L), B4-02 to B4-05 | R-084 to R-095 |
 | X10 | SIM | avr8js mode, debugger, buses as models, devices as data, Newton devices, registry | D4 (second half), A13 | SIM gate; SA-03 to SA-20 |
@@ -1311,11 +1318,11 @@ Each is a test with a pass condition. "Phase" is where it first applies.
 | Linux commit latency and the cost of `synchronous=FULL` against `NORMAL`, and `node:sqlite` stability | AX-05, AR-10, AR-11 (same test as REALTIME RT-1) |
 | `apply` cost per op | AR-09 |
 | IndexedDB eviction policy per browser | EXTERNAL; observe with `navigator.storage.persisted()` results over time |
-| Compile placement | PENDING RS-04, RS-05, RS-17 (ADR-0013) |
-| Transient solver backend | PENDING RS-08(b), RS-07 (ADR-0304) |
-| Model choice and prompt-cache behaviour | PENDING RS-11 |
-| Code-bearing custom parts | PENDING RS-15 (ADR-0206) |
-| 6-DoF flight model | PENDING RS-14 (ADR-0309) |
+| Compile placement | Decided for the build: hex import floor plus the isolated container, off by default (ADR-0013). RS-04/05/17 never ran. Settled for real by a local compile timing task on the Linux image (30 s limit) and, for the licence, Amar's reading of arduino-cli GPL-3.0 (RS-17, For Amar) |
+| Transient solver backend | Decided for the build: `AnalogBackend` interface with transient added to the in-house engine; ngspice WASM stays the oracle and the on-demand analyse button. RS-08(b) was NOT RUN and RS-07 never ran, so a Fidelity-phase task runs both checks and may change the live backend (ADR-0304; RS-08 report, `docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md`) |
+| Model choice and prompt-cache behaviour | No spike ran (RS-11). Decided for the build: the model is a setting on the user's own key, not a code choice; adapters are tested with recorded fixtures and the AR-20 safety test. Live answer quality and cache behaviour on a real key are For Amar |
+| Code-bearing custom parts | No spike ran (RS-15). Decided for the build: custom parts are data only (ADR-0206). Code mode waits for a Worker-kill prototype that an agent can build and test; no code mode before it passes |
+| 6-DoF flight model | No spike ran (RS-14). Decided for the build: the labelled flight game stays (T1). An offline PX4 SIH comparison in the drone phase decides whether 6-DoF is built (ADR-0309) |
 | Whether simultaneous code typing is wanted | RS-20; only if Amar asks |
 | Real network behaviour of the room socket (mobile sleep, proxies) | a test on a home network and on mobile data during the COLLAB gate (R-087) |
 | Spikes without a report when this was written | RS-02, RS-04, RS-05, RS-07, RS-10, RS-11, RS-14 to RS-20 had no `REPORT.md`. RS-10 (Vercel WebSocket cost) is moot under D-015 |
@@ -1403,7 +1410,7 @@ Another pass was editing this file at the same time (it wrote the table above an
 | 1 | [blocker] four HTTP contracts | Applied. Section 0 cites API_CONTRACTS.md and openapi.yaml. 9.1 opens with the rule "`schemas/openapi.yaml` is the only HTTP contract". 9.2 is now a summary table keyed by operationId. Struck or open items are listed in 9.2 (O-1 to O-6). Caddy matcher updated. Deviations, with evidence: (a) the base path is `/v1`, not `/api/v1`: the openapi `servers` entry reads `{origin}/v1` (checked 16:10), its owner recorded the change from `/api/v1` in the file's own review log, and BACKEND ADR-0420 and AI_ARCHITECTURE already use `/v1`; the rule says the openapi path wins. (b) The matcher is `path /v1/* /ws /healthz`; a root `/mcp` is not needed because openapi serves MCP at `/v1/mcp`. (c) `/admin/*` was already deleted from openapi.yaml by its owner (nothing to strike); `/projects/*` is still in the file and is listed as open item O-1. |
 | 2 | [blocker] identity contradicts F-206 | Applied. ADR-0007 row rewritten (key pair, 12 hour opaque token from a signed challenge, socket signature). 8.3 `devices` has `public_jwk`, `thumbprint` UNIQUE and the `dev_` plus 26 base32 id; `sessions` holds `token_hash` and the 12 hour expiry. 8.1 says `ops.author` and members store the `usr_` actor, never the device id. 10.2 was rewritten by the other pass to the same design and I kept it. Conflict: the issue asked for `privateKey` in store 12 `server`; the other pass moved it to a separate store 19 `identity` so that "Delete AI data", "Remove key" and "Leave this server" cannot delete each other's data. I kept store 19 (same property: a non-extractable `CryptoKey`, one per server origin). REALTIME 4.2 and API_CONTRACTS 5.1 say the key is in `keys`; both need to name store `identity`. |
 | 3 | [blocker] socket protocol differs | Applied. 9.3 and 9.4 point to REALTIME 7, 11.4 and 11.6 and keep six cross-file facts. The `invite?` field and 4100 to 4106 codes are gone. Issue 3 asked for a redrawn 11.2 and issue 22 asked for the diagram to be replaced by a link; these cannot both hold, so 11.2 links DG-07 (which already uses challenge, hello, welcome, ready, submit, commit, reject, check) and carries the same sequence as prose with REALTIME frame names. |
-| 4 | [high] idempotency keys | Applied in 9.1: store key = SHA-256(device id, method, route template, key), body hash stored, `422 idempotency_key_reused`, other devices never match, secrets not stored (`409 already_created`). I used a new `idempotency` table (8.3) instead of `kv_cache`, so the cache keeps its meaning. |
+| 4 | [high] idempotency keys | Applied in 9.1: store key = SHA-256(device id, method, route template, key), body hash stored, `422 idempotency_key_reuse`, other devices never match, secrets not stored (`409 already_created`). I used a new `idempotency` table (8.3) instead of `kv_cache`, so the cache keeps its meaning. |
 | 5 | [high] missing endpoints | Applied. Rows added for `createRoomInvite`, `redeemRoomInvite`, `reopenRoom`, `listRoomEvents`, `putAsset`, `redeemPairing` with registration, shares with a `shr_` id and revoke by id, `closeRoom` as close-keep-30-days. The "Not served" paragraph now lists Projects, Components, Simulation runs, Import and export, Data export and deletion, Classrooms, Billing, Telemetry, Community publishing. Deviations: `putAsset` is `PUT /assets/{sha256}?room=rm_...` as in openapi (the issue text sketched a room-scoped path; openapi says it is the unified form); `redeemPairing` takes `{pairing, registration?}` as in openapi, not `{code, name, publicKey?}`; `registerIdentity` takes `{challengeId, signature, publicKey, displayName, enrollmentCode}`. `createShare` is project-scoped in openapi and depends on struck project sync: O-2. |
 | 6 | [high] SQL schema conflicts | Applied together with the other pass: 8.3 is a table list ending in the single-normative-schema rule (BACKEND 6.4 and 7.2 plus REALTIME 11.1). Prefix is `rm_`. No `UNIQUE (room_id, op_id)`; `submissions` gives `ack.dup`. Tables named as REALTIME 11.1 names them (`members`, `ops`, `checkpoints`), not `room_*`. |
 | 7 | [high] durability and group commit | Applied. Objection 8, 8.4 and ADR-0004 no longer say "250 per second". They say macOS numbers do not establish fsync durability and FULL against NORMAL cost is UNKNOWN until AX-05 on Linux. Group commit is a PROPOSAL justified by fewer transactions. Cross-file rule added: default `IYNK_STORE_SYNC=full`; with `normal` use the epoch break of REALTIME 11.5. Conflict: the other pass had set the default to `NORMAL` (following its own review) in 8.3, Objection 8, the ADR-0004 row and ADR-0004; I reversed those four places because this issue states the rule explicitly and the numbers do not support `NORMAL` either; open item S-5 remains for BACKEND 7.3, REALTIME 11.2, ADR-0422 and ADR-0505, and whoever arbitrates should pick one rule for all. SQLite versions: I could not run the pinned image (no image is pinned yet and the Docker daemon is not running here). On Node 24.8.0 for macOS I reproduced the same two numbers (3.50.4 from `process.versions.sqlite`, 3.53.1 from `select sqlite_version()`), so 8.4 now says AX-05 runs the `node -e` line on the pinned image and records that one value. |
@@ -1417,10 +1424,64 @@ Another pass was editing this file at the same time (it wrote the table above an
 | 15 | [medium] browser policy | Applied. 7.4 is the single policy (`script-src 'self' 'wasm-unsafe-eval'`, `style-src 'self'; style-src-attr 'unsafe-inline'`, `base-uri 'none'`, serial in Permissions-Policy) with a "Set by" column. AX-04 is retired in favour of FA-05 and its fallback. Caddyfile adds Referrer-Policy, Permissions-Policy and `Cache-Control: no-store` on `/v1/*`. FRONTEND 9.1 must copy the table (it still has `style-src 'unsafe-inline'`, `base-uri 'self'`, no serial). I added one caveat the issue did not: figure iframes have their own header block and may need `style-src 'unsafe-inline'` if they inline style elements; FA-05 should load a figure to check. |
 | 16 | [high] Brotli delivery | Applied. Caddyfile serves `/engines/*` from `/srv/engines` with `precompressed br gzip`, and compose mounts `../public/engines` read-only into caddy. Used `handle_path` (strips the prefix) instead of `handle`, otherwise files resolve under `/srv/engines/engines`. 12.3 says mode A is gzip-only and RS-12's first-load numbers do not apply. |
 | 17 | [medium] worker topology | Applied. ADR-0005 row and ADR-0005 file, 7.1 and 7.2 add `AiWorker`; the check job is a `SimWorker` message; `ProjectWorker` lives for the tab and keeps hashing and IndexedDB (18.5 ms at 2,000 parts, PROJECT_DATA_MODEL 9.6). FRONTEND 8.2 must match. |
-| 18 | [medium] duplicate ADRs | Applied. Section 1 has a "Detail ADR" column and the rule. Rows: ADR-0004 to ADR-0505 and ADR-0422, ADR-0007 to ADR-0421 and ADR-0502 (token form from API_CONTRACTS ADR-0801, because ADR-0421 describes the HMAC token), ADR-0008 to ADR-0425 and ADR-0600, ADR-0010 to ADR-0429, ADR-0012 to ADR-0406 (Decided: hand-written). Contradicting text removed from ADR-0004, ADR-0005, ADR-0010 and ADR-0012 by me; ADR-0007, ADR-0008, ADR-0001, ADR-0011 and ADR-0014 were edited by the other pass. |
+| 18 | [medium] duplicate ADRs | Applied. Section 1 has a "Detail ADR" column and the rule. Rows: ADR-0004 to ADR-0505 and ADR-0422, ADR-0007 to ADR-0811 and ADR-0502 (token form from ADR-0811, because ADR-0421 describes the HMAC token and is history), ADR-0008 to ADR-0425 and ADR-0600, ADR-0010 to ADR-0429, ADR-0012 to ADR-0406 (Decided: hand-written). Contradicting text removed from ADR-0004, ADR-0005, ADR-0010 and ADR-0012 by me; ADR-0007, ADR-0008, ADR-0001, ADR-0011 and ADR-0014 were edited by the other pass. |
 | 19 | [medium] spike wording | Applied. 6.5 (RS-06), 6.6 (RS-08(a), plus the D-007 "solver fidelity" label), 11.2 (36 runs, 30 + 6, about 10,900 generated and about 6,000 accepted per run). ADR-0005 text on RS-06 corrected. |
 | 20 | [medium] failure behaviour and costs | Applied. 6.13, 6.14, 6.15 and 6.16 have failure behaviour; 6.15 has the job table (expire, compact, checkpoint, sweep, usage-prune); 7.1 has memory and concurrency columns and the infrastructure cost line (1 vCPU and 1 GB in total; RB-7 says 512 MB for the server alone); J-13 is in 19.1 with AR-05. |
-| 21 | [medium] search key | Applied. `x-iynk-provider-key` for AI and `x-iynk-search-key` for search in 6.8, 6.11 and 9.2; no direct browser search; AI search tools report "not set up" without a server. BACKEND 10.3 and AI_ARCHITECTURE 4.1 and DG-01 must follow. |
+| 21 | [medium] search key | Applied. `X-Iynk-Provider-Key` for AI and search (RC-27) in 6.8, 6.11 and 9.2; no direct browser search; AI search tools report "not set up" without a server. BACKEND 10.3 and AI_ARCHITECTURE 4.1 and DG-01 must follow. |
 | 22 | [medium] duplicated diagrams | Applied. The four Mermaid blocks in 11.1 to 11.4 are links to DG-06, DG-07, DG-08 and DG-10 with invariants kept. AR-24 now says "a rise of more than 10 percent over the last recorded value". DG-08 lacks the 5 second autosave maximum: open item for the diagrams owner. |
 
-Open items created or confirmed by this pass: O-1 to O-6 in 9.2; S-5 (durability default) in 8.3; FRONTEND 8.2 and 9.1 must match 17 and 15; BACKEND 10.3 must add `x-iynk-search-key`; REALTIME 4.2 and API_CONTRACTS 5.1 must name the `identity` store; BACKEND 13.1 must list `IYNK_PUBLIC_URL`, `IYNK_STORE_SYNC`, `IYNK_MAX_LIVE_ROOMS` and `IYNK_MAX_STORED_ROOMS`.
+Open items created or confirmed by this pass: O-1 to O-6 in 9.2; S-5 (durability default) in 8.3; FRONTEND 8.2 and 9.1 must match 17 and 15; REALTIME 4.2 and API_CONTRACTS 5.1 must name the `identity` store; BACKEND 13.1 must list `IYNK_PUBLIC_URL`, `IYNK_STORE_SYNC`, `IYNK_MAX_LIVE_ROOMS` and `IYNK_MAX_STORED_ROOMS`.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Source of the decisions: `RECONCILIATION.md` (RC ids) and the spike reports under `08_RESEARCH_SPIKES/` (RS ids). Line numbers in the task text matched the file before editing.
+
+| Id | Change |
+|---|---|
+| RC-02 | ADR-0004 row names ADR-0422 as history only. `ServerStore` kept. ADR-0422 dropped from the two lists of ADRs that "must adopt FULL" (section 8.3 and objection 8). Review-log rows 1392 and 1409 are history and still name it. |
+| RC-03 | Row ADR-0004: "SQLite only in the build; no Redis, queue or object store. Postgres is a could: a later adapter behind `ServerStore`." Status cell says "could". Section 8.2 phrase unchanged. |
+| RC-04 | 6.15 `compact` trigger now applies ADR-0505. |
+| RC-05 | 6.15 `checkpoint`: PASSIVE every 5 minutes, `TRUNCATE` once at shutdown. |
+| RC-07 | Section 8.2 object storage row and the `blobs` row: assets are `blobs` rows (BACKEND 7.2). The `data/assets/` remark is deleted. |
+| RC-08 | 8.5 Backup: last 7 kept, pre-migration last 3. |
+| RC-09 | 8.1 row 2 `index` has boolean `archived` (PDM 12.1). |
+| RC-12 | 8.1 row 4 `backups`: pre-migration copies 30 days, others by setting. |
+| RC-13 | 8.5 Shares row (default 30 days, at most `IYNK_SHARE_TTL_DAYS`, default 365). 6.15 `expire` row: sessions deleted 7 days after `expires_at` or `revoked_at`. |
+| RC-15 | 10.3: `enrol` row now says alias `enroll`; sentence about API writing `enroll` deleted. 10.3 adds `init`, `compact` and `diagnostics` to the existing `devices`, `revoke`, `backup`; I kept `rooms`, `close`, `mcp-key`, `restore` and `check-config` because BACKEND 13.4 lists the same full set. |
+| RC-17 | ADR-0007 row cites ADR-0811 and ADR-0502; S-1 deleted; O-6 closed; `sessions` row and review-log row cite ADR-0811. |
+| RC-18 | `createPairing` row: `XXXX-XXXXXX`, 4-character channel plus 6-character secret, 30 bits. |
+| RC-23 | 6.1 `ServerCapabilities` uses the openapi `ServerInfo` names (features, limits, `software` name only). 9.2 `getServerInfo` row updated. O-5 closed. The key `projects` is not listed because RC-24 removes it. |
+| RC-24 | "Not served" paragraph and O-1 to O-3 marked closed. Share routes are `POST /shares`, `DELETE /shares/{shareId}` in the table; the diagram already said `POST /v1/shares`. |
+| RC-27 | Header is `X-Iynk-Provider-Key` for AI and search (6.11, 9.2, review-log row 21). |
+| RC-28 | `aiRelay`, search and compile rows name `IYNK_AI_ENABLE`, `IYNK_SEARCH_ENABLE`, `IYNK_COMPILE_ENABLE`; compile off gives `501 feature_disabled`; `compile_not_set_up` deleted from 9.2. 6.8 no longer honours `IYNK_DISABLE_AI`. |
+| RC-29 | `idempotency_key_reuse` in 9.1 and the review log. |
+| RC-30 | Caddy matcher and the Caddyfile line add `/readyz`; diagram 150 updated; text says no root `/mcp`. |
+| RC-52 | Section 6.7 physics: hash result (single-file build, one CPU architecture, independent check) separated from the size result (split build about 0.88 MB brotli). |
+| RC-59 | `compile` rows in 4.2 and 7.1: 1 GiB, 1 CPU, 30 s (ADR-0013). `web` and `server` stay 512 MB. |
+| RC-61 | Section 8.3 `sessions` row and review-log row 18 cite ADR-0811 instead of ADR-0801. O-6 and the 9.2 note follow. |
+| RS-01 | Left as written (line 356 and 621 are current). |
+| RS-03 | Compile placement (ADR-0013 row, 7.1, section 18): hex import floor plus isolated container, off by default; browser WASM not built. Cites RS-03 local `arduino-cli` times and GPL-3.0. Reversible behind `CompileService`. RS-04, RS-05, RS-17 never ran. |
+| RS-08 | Line 416 text kept; the "PENDING" is replaced by "added to the in-house engine behind `AnalogBackend`"; section 18 row names the Fidelity-phase task for RS-08(b) and RS-07. |
+| RS-11 | AI model is a user setting; no pending spike. Live quality is For Amar. |
+| RS-14 | 6-DoF not built; offline PX4 SIH comparison in the drone phase decides. |
+| RS-15 | Custom parts data only until a Worker-kill prototype passes. |
+| RS-20 | "PENDING" replaced by "never ran; only if Amar asks". |
+| X7 | Gate is a phase gate (D-014) with BUD-01 to BUD-03 recorded. No wording in this file made Studio wait for interviews, a pilot or Fault Lab. |
+
+For Amar (person-only, not build tasks): the RS-17 licence reading for arduino-cli; phone and Chromebook runs for RS-01, RS-03, RS-12, RS-13; a real home-network reconnect test for rooms; live-model quality on a real key.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-04, RC-06, RC-12 | Retention paragraph (8.2): the 2,000-op resume tail window is removed; the one rule is a tail only if the gap is at most 1,000 ops and at most 200 KB gzipped, otherwise latest snapshot plus tail. Checkpoint values unchanged. |
+| RC-14 | `redeemPairing` (9.2): `registration?` field and the no-token registration sentence removed; auth is `token`. The review-log row stays as history. |
+| RC-59 | Sketch compile row: "isolated process, or browser WASM" replaced by "hex import; optional ADR-0013 container". |
+| RC-68 | Interface paragraph: the B0 deletion list names the Planner and Buddies components under `together` and the story and night pages; the `/together` shell stays with rooms hidden behind the off flag. |
+| RC-03 | PostgreSQL rows (two): now "Could: a later adapter behind `ServerStore`, not built, not planned in any phase". |
+| RC-09 | IndexedDB paragraph reworded to "The list is ADR-0106; this table adds only keys and values"; "(proposed)" dropped from stores 10 to 12. |
+| RC-30 | `mcpPost` path is `POST /v1/mcp`. Caddy matchers unchanged. |
+
+## Reconcile, final nits (2026-10-27)
+
+- Interface line (observability) and the `getHealth`, `getReadiness` row now say both paths exist: root for the container and proxy, `/v1` in openapi.

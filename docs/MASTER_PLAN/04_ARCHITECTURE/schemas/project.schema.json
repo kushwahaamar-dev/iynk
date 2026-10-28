@@ -570,6 +570,48 @@
         "header": {
           "type": "string",
           "maxLength": 16
+        },
+        "class": {
+          "enum": [
+            "power",
+            "ground",
+            "digital",
+            "analog",
+            "passive",
+            "bus",
+            "mechanical",
+            "nc"
+          ],
+          "description": "The coarse role of the pin. Same enum as component.schema.json pin.class; copied from the part pin so the snapshot can be derived (ADR-0107)."
+        },
+        "polarity": {
+          "enum": [
+            "anode",
+            "cathode",
+            "positive",
+            "negative"
+          ],
+          "description": "Same enum as component.schema.json pin.polarity."
+        },
+        "position": {
+          "type": "object",
+          "required": [
+            "x",
+            "y"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "description": "Millimetres in the part frame, as component.schema.json pin.position."
         }
       },
       "required": [
@@ -2472,7 +2514,11 @@
             "open-wire",
             "wrong-connection",
             "stuck-level",
-            "wrong-value"
+            "wrong-value",
+            "param",
+            "mount",
+            "sensor",
+            "swap-phase"
           ],
           "description": "Project fault kind. Mapping from a part's injectable_faults[].kind is in PROJECT_DATA_MODEL.md 5.11."
         },

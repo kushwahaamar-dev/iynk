@@ -29,7 +29,7 @@ Five rules shape the format.
    existing hand-inked figures stay as the premium art for core parts. (ADR-0204)
 5. **Custom parts come in two modes.** Beginner mode writes only declarative data and needs no sandbox. Advanced
    mode runs a deterministic model under a fixed API, inside a sandbox, with declared permissions and hard limits.
-   Which sandbox technology holds the code is **PENDING RS-15**; the API does not depend on the answer. (ADR-0206)
+   Advanced mode ships behind the `ModelHost` interface, off by default, with option F (data only) as the shipping state until the Components-phase Worker-kill prototype passes (RS-15 never ran; see 9.6). The API does not depend on the answer. (ADR-0206)
 
 What this pass produced and checked (all VERIFIED by running `schemas/tools/`, ajv 8.17.1 in strict mode):
 
@@ -273,9 +273,9 @@ today (`cold:J2`, `missing:JPA`, `wrong-voltage:bench:36`, `reverse-polarity:ben
 them working.
 
 Both blocks use `cause_id` and `symptom_ids` from the shared diagnosis record `{cause_id, symptom_id, evidence,
-hint_level}` (D-010). The part supplies the catalogue side (which causes and symptoms this part can produce, with hint
+hint_level}`. D-010 names `symptom_id` for a reported diagnosis; stored faults carry `symptom_ids[]` (parts: at least 1; projects: may be empty). The part supplies the catalogue side (which causes and symptoms this part can produce, with hint
 text). Evidence is produced at run time by the diagnosis layer, not stored in the part. Because they live in the
-descriptor, "faults on any circuit" (D-014) works for any placed part, not only for the 12 benches.
+descriptor, "faults on any circuit" (D-014) works for any placed part, not only for the 13 benches.
 
 What the first conversions found (VERIFIED against the code):
 
@@ -435,7 +435,7 @@ thing, one of them is the authored source and the other is generated, so nothing
 |---|---|---|---|
 | Fidelity registry (its section 16, ADR-0310): one `FidelityEntry` per model with `implements`, `mocked`, `unsupported`, `parameterSources`, `validation`, `operatingRange`, `knownFailureCases` | Hand-authored JSON under `sim/registry/entries/` | The descriptor's `simulation` block and `ratings` hold the same facts for a part | **The descriptor is the authored source for entries of kind `part-model`.** A build step writes `part-model:<id>@<major>` from it: `what_it_models` to `implements`, `mocked` to `mocked`, `not_modelled` to `unsupported`, `validity` to `operatingRange`, `known_gaps` to `knownFailureCases`, ratings to `parameterSources`. Entries for engines, runtimes, devices, buses, sensors, environment and rules stay hand-written. `validation` records (n, passed, worst error) are written by CI from `tests[]`; a descriptor never states a result. (ADR-0208) |
 | `ParameterSource.type` (datasheet, fit, measurement, assumption, numerical) | Five values | Three slots | `manufacturer` is `datasheet`; a `simulation` slot with `derived_from` is `fit`; a `simulation` slot without it is `assumption`; `measured` is `measurement`. `numerical` is for engine settings, not parts. The registry's T2 rule lets an `assumption` stand only for a secondary parameter, so a rating may carry `primary: true` |
-| Failure records (its 13.3): `FailureModel` with a safe-expression `trigger`, `window`, `outcome`, `derivation`, `referenceData`, `validRange`, `threshold` | Registry records | `failure_modes[]` | The descriptor is the authored form; the loader compiles it. `when` becomes the trigger text (for the LED: `peak(i(A)) > 2.5 * rating.forward_current_continuous`), `for` becomes `window`, `effect` becomes `outcome`, `derivation` and `source` become `derivation` and `referenceData`. Not in the descriptor yet: `threshold.distribution` (part spread; a later minor adds an optional `spread`), `assumptions[]` (carried in `derivation`). Missing in the registry record: `implemented_as`. Compiled records marked `scripted` show "scripted, not computed" in the panel (AC-CS-13); `not-implemented` ones are not compiled |
+| Failure records (its 13.3): `FailureModel` with a safe-expression `trigger`, `window`, `outcome`, `derivation`, `referenceData`, `threshold` | Registry records | `failure_modes[]` | The descriptor is the authored form; the loader compiles it. `when` becomes the trigger text (for the LED: `peak(i(A)) > 2.5 * rating.forward_current_continuous`), `for` becomes `window`, `effect` becomes `outcome`, `derivation` and `source` become `derivation` and `referenceData`. The descriptor has no `validRange`; the FailureModel lists only fields the descriptor has (`when`, `effect`, `derivation`, `basis`), and the range lives on the FidelityEntry as `operatingRange` (RC-55). Not in the descriptor yet: `threshold.distribution` (part spread; a later minor adds an optional `spread`), `assumptions[]` (carried in `derivation`). Missing in the registry record: `implemented_as`. Compiled records marked `scripted` show "scripted, not computed" in the panel (AC-CS-13); `not-implemented` ones are not compiled |
 | Units (its 5.1): SI base, field-name suffixes, time in integer ns, radians | Engines | Files hold base units plus `mm`, `deg`, `deg_per_s`, `g0` | The loader converts once, at the boundary, as its rule 1 says. Prefixed text such as `4k7` is for people typing in the UI and is parsed there; descriptor files stay prefix-free so they need no parser |
 | Tolerance (its 5.1 rule 2): `{nominal, tol, dist}` | Per value | `min`/`typ`/`max` on ratings; numeric parameters have none | Gap, section 10: add `tolerance` to numeric parameters |
 | Devices (its 9.2): `device:mpu6050@1` as data plus a registered behaviour | Device spec JSON with registers and `expr` | A `builtin` layer with that ref | The ref resolves in their device registry. The descriptor carries only parameters and sources. I add no register-map kind here, so the format is defined once, in their document |
@@ -554,7 +554,7 @@ position; imported part with a figure page; imported part with an HTML asset.
 | Palette index | one file with one row per part, loaded once | design rule |
 | Cold load of one descriptor and validation | under 5 ms on the reference laptop | ESTIMATED: the examples are 12 to 29 KB and Ajv compiles once; not measured. Measure in the first implementation |
 | Validation runs in the loader, not per frame | rule | design rule |
-| Extension step cost and memory | see 9.6 | PENDING RS-15 |
+| Extension step cost and memory | see 9.6 | Caps are the 9.6 limits; measured in the Components-phase Worker-kill prototype (RS-15 never ran, ESTIMATED until then) |
 
 Nothing in the descriptor adds per-frame work: the solver sees the same element objects it sees today.
 
@@ -754,7 +754,7 @@ Options (platform-options.md section 5; verdicts here are mine unless a label sa
 | E. Extism or WASM component model | Capability based, host timers | Host timers | Host limits | Likely | By construction | Extism on npm is `2.0.0-rc13` from 2025-05-14 [EXTERNAL]; WASI 0.3 status UNKNOWN. Not now |
 | F. No code parts, data only | n/a | n/a | n/a | n/a | n/a | Always available; this is the shipping state until the decision |
 
-**Decision: PENDING RS-15.** The register's exit condition for RS-15 (`TECHNICAL_RESEARCH.md` section 6, row 16) is: a
+**Decision (reframe fold-in, 2026-10-27): ship F, keep A, B, C swappable.** RS-15 never ran, so there is no red-team result. Under D-014 and D-015 the code author is Amar or a friend on a self-hosted app, which lowers the threat but not the need for a kill switch. Code parts stay off until a Worker-kill prototype in the Components phase passes the exit condition below plus the storage check. Studio does not wait for it. What would change this: a pass moves option A or B from off to opt-in; a fail on all options keeps F and cuts F-102. The register's exit condition for RS-15 (`TECHNICAL_RESEARCH.md` section 6, row 16) is: a
 red team of an infinite loop, a 2 GB allocation, a message flood and a `fetch` to the parent origin; pass means the
 host stays responsive, no cookie or storage access, and the worker is killed in under 2 s. The row says to run it only
 if code extensions are in scope. No `REPORT.md` exists yet (checked: the directories under `08_RESEARCH_SPIKES/` are
@@ -784,7 +784,7 @@ Limits (all PROPOSAL, none measured; the schema caps are the hard ceiling, the d
 | Limit | Default | Hard cap (schema) | Why |
 |---|---|---|---|
 | Guest memory | 8 MiB | 64 MiB | Enough for register maps and small buffers; an I2C OLED framebuffer is 1 KiB |
-| Work per step | 200,000 units | 100,000,000 | Unit defined by the chosen option (PENDING RS-15b) |
+| Work per step | 200,000 units | 100,000,000 | Unit defined by the chosen option (set by the Components-phase counting-engine prototype, RS-15b; not run) |
 | Wall time per step | 20 ms | 1,000 ms | Watchdog; at 60 Hz a step must leave the frame most of its 16.7 ms. Breach kills the worker |
 | Pending scheduled events | 1,024 | 4,096 | Stops a self-rescheduling loop |
 | Snapshot size | 64 KiB | 1 MiB | Replay and room-sync size |
@@ -924,7 +924,7 @@ runner, malware scanning, per-publisher quotas and a license audit. None of it i
 | Mechanical and aerodynamic data: inertia, friction, gear ratio, thrust and torque curves, prop maps, battery internal resistance and discharge curve | F-073, F-213, F-216, robotics and drone creation | **Done in schema 1.1 (section 4.18).** The block holds part data only; the flight model form still waits for RS-14, which changes no field here. The `mechanical` domain, `physical_*` channels and `builtin` refs are already in place |
 | Curves and tables (a motor's torque-speed line, a battery curve) | motors, batteries | A `tables` block of named monotone tables with units, referenced from parameters. Not added now: no example needs one |
 | Breadboard and board pin patterns | Breadboard, Uno | Generated by tooling (4.5) |
-| Board-specific data: memory map, peripherals, boot behaviour | R-072, 11 boards | `kind: board` uses the same blocks; MCU runtimes are `builtin` refs such as the interpreter or `avr8js` (RS-03 PASS for correctness, device half INCONCLUSIVE). RS-06 failed the real-time clause for `rp2040js`, so the Pico profile stays on the TypeScript MicroPython interpreter (PRD) |
+| Board-specific data: memory map, peripherals, boot behaviour | R-072, 11 boards | `kind: board` uses the same blocks; MCU runtimes are `builtin` refs such as the interpreter or `avr8js` (RS-03 PASS for correctness, device half INCONCLUSIVE). RS-06 pass clause not met (0.54x to 0.79x real time); fail clause not triggered, for `rp2040js`, so the Pico profile stays on the TypeScript MicroPython interpreter (PRD) |
 | Supersession and deprecation fields | long-lived libraries | Later minor |
 | Measured data import | bench measurements | `measured` slot and `bench-measurement` tests exist; a bench-report file format is not specified |
 
@@ -942,14 +942,14 @@ runner, malware scanning, per-publisher quotas and a license audit. None of it i
 | AC-CS-08 | Given a project containing an unknown part id, When it loads, Then the placeholder appears and saving keeps the part (R-028). |
 | AC-CS-09 | Given a person making a part in beginner mode, When they finish the seven steps, Then a valid descriptor is saved, the part can be placed and wired, and its panel says "set by you, not checked against a datasheet" (R-134). |
 | AC-CS-10 | Given an imported pack with a code part and "code parts" off, When imported, Then it is refused with that reason and the library is unchanged (R-137). |
-| AC-CS-11 | Given a hostile model (infinite loop, 2 GB allocation, call flood, `fetch`), When it runs, Then the app stays responsive, the part faults with a code, and no storage or network access occurred. Applies once RS-15 passes; **PENDING RS-15**. |
-| AC-CS-12 | Given any code part, When the same project and seed are run twice, Then the state hashes at every 100th step are equal (DET-1 style). **PENDING RS-15b** for the option. |
+| AC-CS-11 | Given a hostile model (infinite loop, 2 GB allocation, call flood, `fetch`), When it runs, Then the app stays responsive, the part faults with a code, and no storage or network access occurred. Applies once the Components-phase Worker-kill prototype passes (RS-15 never ran); until then code parts are off and the case is not run. |
+| AC-CS-12 | Given any code part, When the same project and seed are run twice, Then the state hashes at every 100th step are equal (DET-1 style). Checked by the Components-phase counting-engine prototype (RS-15b, not run); until then code parts are off. |
 | AC-CS-13 | Given a failure mode with `implemented_as: scripted`, When its panel is shown, Then the text says the cut-out is scripted and not computed. |
 | AC-CS-14 | Given any part whose rating has both a maker and a simulation slot that differ, When the panel opens, Then both are shown with their sources and the used slot is marked. |
 
 ## 12. Architecture decision records
 
-Each ADR is its own file in `ADR/` and follows the BRIEF §19.6 twelve-field template. IDs ADR-0200 to ADR-0208.
+Each ADR is its own file in `ADR/` and follows the ADR template (required fields in ADR/README rule 3). IDs ADR-0200 to ADR-0208.
 
 | ADR | Title | File |
 |---|---|---|
@@ -994,8 +994,8 @@ These do not change what is specified; the spec follows the decided direction.
 
 | Item | Status | What closes it |
 |---|---|---|
-| Container for code parts | **PENDING RS-15** (no REPORT.md) | Red team result, then 9.6 rule |
-| Work-unit definition, step cost, determinism of faults | **PENDING RS-15b** (proposed, not run) | Run it |
+| Container for code parts | Decided for now: option F (data only) ships; A, B, C stay swappable. RS-15 never ran (no REPORT.md) | Components-phase Worker-kill prototype, then the 9.6 rule |
+| Work-unit definition, step cost, determinism of faults | Counting engine is the default (HYPOTHESIS); RS-15b not run | Components-phase prototype |
 | Transient elements (capacitor, inductor, MOSFET, op amp) | **PENDING** SIM phase, RS-07, RS-08 part b | Solver spec |
 | License text for the repo | D-017, Amar decides later | Replace the placeholder, run the third-party content check |
 | Mechanics block for robot and drone parts | Added in 1.1 (section 4.18); RS-14 may add fields in a later minor | Section 10 |
@@ -1041,3 +1041,24 @@ unverified in the files through `reliability` and `confidence`).
 |---|---|---|
 | 1 | Open Studio requests: no `refdes_prefix`, caps too small for a breadboard, British spelling | Applied. `identity.refdes_prefix` (`^[A-Z]{1,4}$`, optional) added. `pins` maxItems 512 to 1024 and `groups` 128 to 256 in `component.schema.json`; mirrored in `project.schema.json` (`Interface.pins` 1024, `Interface.groups` 256, `InterfaceGroup.pins` 128 to 256). `licence` renamed `license` and `licence_scope` `license_scope` everywhere in this file, the schema (also `sources[].license`, `software...libraries[].license`, `visual.assets[].license`, model `license`), the three examples, `semantic.mjs` and `negative.mjs`. Checked: 1024 pins with 256 groups validates; 1025 pins and 257 groups are rejected. The prose in this file now says "license" throughout. Not changed: other architecture documents that use British "licence" in prose (they do not name schema fields) |
 | 2 | No `mechanics` block | Applied as section 4.18: optional top-level `mechanics` with `motor`, `servo`, `stepper`, `driver`, `encoder`, `wheel`, `prop`, `esc`, `battery`, `frame`, `fc`, `sensor` and `mass_g`. The review text named fields `kv, R, L, J, kt, ke, no_load_A`, `stall_torque_N_m`, `speed_rad_per_s`; I used the names the two consuming documents already fixed (`r_ohm`, `l_henry`, `j_kgm2`, `ke_vs_per_rad`, `i_noload_a`, `stall_torque_nm`, `speed_s_per_60deg`, and `prop` not `propeller`) so ROBOTICS 6.1 and DRONE 6.1 need no edits; `speed_rad_per_s` is kept as an optional derived field, and `kt` is not stored because kt equals ke in SI (ROBOTICS 6.1). The issue asked for `ct/cp table`; the drone document's `ct_vs_j` and `cp_vs_j` are used. Plain numbers with the unit in the field name are used instead of `quantity` objects, which is how both consuming documents define them. `schemas/examples/components/dc-gear-motor.component.json` added (generic hobby gear motor; numbers marked iynk assumptions, status `not-modelled-yet`). Eleven new mutation tests in `negative.mjs` (44 of 44 rejected); `semantic.mjs` now resolves `mechanics.*.source`. Not done: an ADR for the block (the 0200 range is open; ADR-0710 in the drone document carries the decision) and the cross-field consistency check (ke against kv), which belongs to the loader |
+
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-44 | Section 4 (diagnosis blocks): replaced "the D-010 record fields under the same names" wording with: D-010 names `symptom_id` for a reported diagnosis; stored faults carry `symptom_ids[]` (parts: at least 1; projects: may be empty). Per RECONCILIATION.md the registry text now matches PDM and the schema |
+| RC-55 | FailureModel mapping row: removed `validRange` from the field list and added the sentence that only `when`, `effect`, `derivation`, `basis` come from the descriptor. The FidelityEntry row keeps `operatingRange` (unchanged) |
+| RC-63 | Section 12: "BRIEF 19.6 twelve-field template" became "the ADR template (required fields in ADR/README rule 3)". The older review-fix table row that records the twelve fields is history and was left as written |
+| RC-72 | "12 benches" became "13 benches" |
+| RS-15 (never ran) | Principle 5, the 9.6 limits table row, the 9.6 decision, AC-CS-11 and the open-items row for the code-part container are no longer marked PENDING. Decision: option F (data only) is the shipping state; A, B, C stay swappable behind `ModelHost`; code parts are off until a Worker-kill prototype (infinite loop, 2 GB allocation, message flood, parent `fetch`, plus a storage-read case) passes in the Components phase. Studio does not wait for it. A pass makes A or B opt-in; a fail on all keeps F and cuts F-102. No spike number exists, so none is cited |
+| RS-15b (never ran) | Work-per-step row, AC-CS-12 and the open-items row now point to the Components-phase counting-engine prototype instead of PENDING. The counting engine stays the default (HYPOTHESIS) |
+| RS-07, RS-08 | The open-items row for transient elements (line 999) still says PENDING SIM phase; left as is because it already names the Fidelity phase and the RS-08 report (`08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md`: 20 of 20 matched models within 2 percent, 10 of 20 realistic models within 2 percent, part b not run) |
+| Skipped | Line 962 (ADR-0206 title) and its file name contain "pending-rs-15"; renaming an ADR file is outside this edit. Lines 573, 873 and 899 were already reframed. RS-01, 03, 06, 09, 12, 13 and DP-01 do not touch this file |
+
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-51 | Line 927 (board-specific data row): "RS-06 failed the real-time clause for `rp2040js`" became "RS-06 pass clause not met (0.54x to 0.79x real time); fail clause not triggered, for `rp2040js`". The Pico profile decision (TypeScript MicroPython interpreter) is unchanged. No "0.78x" string exists anywhere in the file (VERIFIED by grep) |

@@ -33,7 +33,7 @@ Writing five generic renderers once
 
 ## Licensing
 
-Colorfigures core is MIT (vendored, `figures/vendor/colorfigures/LICENSE`); art assets carry their own `licence` field
+Colorfigures core is MIT (vendored, `figures/vendor/colorfigures/LICENSE`); art assets carry their own `license` field
 
 ## Security implications
 
@@ -50,3 +50,7 @@ High: fallback and art are independent
 ## Known limitations
 
 Fallback looks generic by design; a future 3D look for custom parts is not planned
+
+## Reconcile, final nits (2026-10-27)
+
+- RC-33: the field name `licence` is now `license` (line 36).

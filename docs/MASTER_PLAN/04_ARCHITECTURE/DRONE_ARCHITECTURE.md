@@ -18,7 +18,7 @@ Upstream:
 | Contracts | `PROJECT_DATA_MODEL.md` (3, 4, 5.8, 5.11, 5.14, 7, 12.2), `schemas/project.schema.json`, `COMPONENT_SCHEMA.md` (4.6, 4.10, 10), `SIMULATION_ARCHITECTURE.md` (5.4 to 5.6, 6, 11, 12, 13, 17) | names, fields, clock, phases, the `FlightModel` interface |
 | Audit | `01_AUDIT/inventory/drone-calc-lab.md`, `flight.md`; `TECHNICAL_DEBT.md` A12, B3-03, B3-09 to B3-12, B3-18 | what exists |
 | Research | `02_RESEARCH/TECHNICAL_RESEARCH.md` D7 and spike table; `tech/platform-options.md` (flight rows); `tech/compliance-safety.md` 5 and 6; council `robotics-aero.md` (background) | options, safety sources |
-| Spikes | RS-13 (replay-related determinism, PASS for physics engines); RS-14 has no folder and no report: PENDING RS-14 | |
+| Spikes | RS-13 (replay-related determinism, PASS for physics engines); RS-14 never ran (no folder, no report). Under D-014 the build does not wait for it: the offline PX4 SIH comparison is a Drone-phase verification task (section 13.3) and the rigid model ships with the "not checked" label until it reports | |
 | Product | `03_PRODUCT/FEATURE_CATALOGUE.md` F-010, F-063 to F-075, F-156, F-209, F-216 to F-218; `PRODUCT_REQUIREMENTS.md` R-147, R-148, R-172 to R-180, R-024, BUD-13; `FEATURE_PRIORITIZATION.md` classes | ids |
 
 Downstream:
@@ -44,21 +44,21 @@ Evidence from my own runs (all in `/Users/amar/iynk-master-plan-scratch/design/r
 |---|---|---|---|
 | ADR-0710 | Drone parts are data in part descriptors (a `mechanics` block with keys `bldc`, `rotor`, `esc`, `battery`, `frame`, `fc`; `mechanics.motor` stays ROBOTICS's brushed-DC key, see 6.1). The 3 x 3 x 3 catalogue picks and the per-craft constants `k`, `pf`, `gPerW`, `flyFactor` stay only as the labelled `legacy-calc` model for the 13 migrated crafts. A craft has exactly one thrust source: `legacy-calc` or `parts`. | drone-calc-lab.md "Reusability" and defects 3, 4 | Decided |
 | ADR-0711 | Propulsion is a physical model with a closed-form motor and propeller solve, a battery with internal resistance and open-circuit curve, and a datasheet fit that produces an error band from its residuals. Every output carries tier T1 and the assumptions that produced it. | `prop.mjs`; R-173, R-FID-6 | Decided; the real error against hardware is UNKNOWN |
-| ADR-0712 | Two flight models behind the `FlightModel` interface of ADR-0309: `flight-game@1` (the existing model, preserved, labelled "tuned to feel") and `multirotor-rigid@1` (new: rotor ODE, 6-DoF rigid body, sensors, estimator, rate-loop controller). User builds can fly on either. | `quad.mjs`; flight.md | Decided; rigid-model validation PENDING RS-14 |
+| ADR-0712 | Two flight models behind the `FlightModel` interface of ADR-0309: `flight-game@1` (the existing model, preserved, labelled "tuned to feel") and `multirotor-rigid@1` (new: rotor ODE, 6-DoF rigid body, sensors, estimator, rate-loop controller). User builds can fly on either. | `quad.mjs`; flight.md | Decided; rigid-model comparison with PX4 SIH is a Drone-phase task (13.3); until it reports the label is "teaching model, not checked" |
 | ADR-0713 | The flight controller is iynk's own implementation of a cascaded angle/rate PID with a Betaflight-style mixer, written from public documentation, not copied from GPL firmware. CLI `set` commands bind to controller parameters instead of canned flight patches. | cli.ts patches; council Q13 | Decided; licence question open |
 | ADR-0714 | Faults and failures: every drone fault is an operation on the model or the environment and its effect falls out of the dynamics; no scripted rotation rates. Wind, noise and sensor failures are seeded and recorded in the replay. | flight.md "Faults" | Decided |
-| ADR-0715 | Real-firmware simulation: PX4 SIH is used first as an offline oracle for RS-14; a local bridge to PX4 or ArduPilot SITL on the user's machine is an optional later slice; nothing hosted (D-015). Decision rule below. | platform-options flight rows; D-015 | Decided as an option; PENDING RS-14 |
+| ADR-0715 | Real-firmware simulation: PX4 SIH is used first as an offline oracle for RS-14; a local bridge to PX4 or ArduPilot SITL on the user's machine is an optional later slice; nothing hosted (D-015). Decision rule below. | platform-options flight rows; D-015 | Decided as an option; S0 runs offline in the Drone phase and does not gate Studio or any earlier phase |
 | ADR-0716 | Safety and responsible use are data and tests: eight notice ids shown at fixed points, a written content rule with enforcement points (part kinds, modes, AI tools, templates, export headers), and banned-phrase checks. Simulation is never described as certification. | BRIEF 12.2; compliance-safety.md 5, 6 | Decided; the legal reading is UNKNOWN and needs a lawyer |
 
 ## 2. Objections
 
 The decisions are binding and this file follows them. These are places where evidence says a contract, a rule or a classification needs a change.
 
-1. **F-074 is classed LONG-TERM RESEARCH, but F-217 and F-218 need most of it.** F-217 plots "attitude, motor outputs, battery sag"; F-218 needs IMU and GPS noise and sensor failures. The current model has one lumped thrust and no sensors (flight.md, VERIFIED), so it has no motor outputs to plot and nothing to put noise on. The in-browser rigid model with sensors (this file's `multirotor-rigid@1`) is a prerequisite for both. Proposal: split F-074 into F-074a (TypeScript rigid model, rate loop, sensors; NEAR-TERM inside DRONE) and F-074b (PX4 or ArduPilot SITL; stays research, PENDING RS-14). Without the split the DRONE gate cannot be passed honestly.
+1. **F-074 is classed LONG-TERM RESEARCH, but F-217 and F-218 need most of it.** F-217 plots "attitude, motor outputs, battery sag"; F-218 needs IMU and GPS noise and sensor failures. The current model has one lumped thrust and no sensors (flight.md, VERIFIED), so it has no motor outputs to plot and nothing to put noise on. The in-browser rigid model with sensors (this file's `multirotor-rigid@1`) is a prerequisite for both. Proposal: split F-074 into F-074a (TypeScript rigid model, rate loop, sensors; NEAR-TERM inside DRONE) and F-074b (PX4 or ArduPilot SITL; stays research; the S0 oracle run is an offline Drone-phase task, 13.3). Without the split the DRONE gate cannot be passed honestly.
 2. **SIM_ARCH 11.2 models a rotor as a first-order lag with `tau_m` from `J_rotor, R, ke`.** A fixed time constant is wrong for a propeller load, where drag torque grows with the square of speed, so the response is faster at low speed than at high speed. The rotor equation `J_r dw/dt = tau_motor(w, V) - Q(w)` is cheap and integrates with the rest in RK4. Proposal: section 7.1 uses the ODE; the first-order lag with exact discretisation stays as the fallback for a part descriptor with no rotor inertia, labelled "assumed time constant".
 3. **SIM_ARCH 11.2 says `kT` is set so that full-throttle static thrust equals the calculator's per-motor thrust.** That is right for the 13 migrated crafts, where the calculator is the only thrust source, and wrong for user parts, where thrust comes from the propulsion model. If both sources exist for one craft the hover test ("hover throttle equals the calculator's value") can pass while the rigid model flies another thrust. Rule (ADR-0710): one thrust source per craft. For `legacy-calc` crafts the calculator sets `kT`. For `parts` crafts the propulsion model does.
 4. **`domain.set` replaces the whole domain.** Same problem as robotics Objection 2: two buddies tuning different PID values in one drone would overwrite each other. Use the proposed `domain.patch` (RFC 7396 merge patch) for all drone edits; `domain.set` for import and migration only.
-5. **COMPONENT_SCHEMA section 10 has no `mechanics` block.** It says one comes "once RS-13 and RS-14 fix the model forms". RS-13 has passed; RS-14 is pending but only affects the flight model, not the part data. Section 6.1 proposes the drone half of the block now. The part data needs a home before F-073 can start.
+5. **COMPONENT_SCHEMA section 10 has no `mechanics` block.** It says one comes "once RS-13 and RS-14 fix the model forms". RS-13 has passed; RS-14 never ran, but it only affects the flight model, not the part data. Section 6.1 proposes the drone half of the block now. The part data needs a home before F-073 can start.
 6. **R-180 says "final state hashes are equal" for flight replay in Chromium and WebKit.** A12 measured that display frames (`frameOf`) agree across Node, Chromium and WebKit but raw state differs after 1 step (WebKit) or 12 steps (Chromium) because `Math.sin`, `cos`, `atan2` and `exp` differ in the last bit (TECHNICAL_DEBT A12, VERIFIED, one arm64 machine). The rigid model uses `exp` (rotor discretisation) and quaternion normalisation. R-180 must name the hash class (ADR-0303): class B only after `dmath` passes SA-12; class N (tolerance) before.
 7. **R-174 says the whole range works with a user-built drone, "replay equals the original run".** Medal times (`parOf`, `registry.ts:~277`) are per course, with gold at 0.85 and bronze at 1.4 times the silver time, and silver tuned for the game model with a calibrated craft. A rigid-model lap is not comparable with a game-model lap. Rule: ghosts, bests and medals are keyed by `(course, model id)`. A user build flying the game model keeps the medals; the rigid model has bests only.
 8. **The existing crafts `swarm`, `delivery`, `agrihex`, `longrange`, `vtol` have not been checked against the content rule of R-024.** F-063 says PRESERVE with a "review against F-010" note. This file lists what each does and proposes handling (section 12.3), but the decision is Amar's, and the legal reading is UNKNOWN.
@@ -168,7 +168,7 @@ User journeys: J-03 (start from a blank drone or a template), J-06 (fault on the
 | Item | Rule |
 |---|---|
 | Body frame | the contract frame: +x forward, +y left, +z up (FLU), as the drone content already uses for motor positions (`MotorPos`, "+x nose, +y left", PDM 5.8). PX4 and ArduPilot use forward-right-down (FRD) with north-east-down (NED). Conversion for any exchange: `(x, y, z)_FRD = (x, -y, -z)`. Quaternion conversion is a fixed rotation by 180 degrees about x. It lives in one module and has a round-trip test |
-| Units | document: mm, degree, gram, plus the base units of PDM 4.1 (`kv` in rpm per volt is an exception, see 6.1); engine: SI |
+| Units | layout in mm; domain fields use the suffix rule of PDM 4.1 (`_m`, `_mps`, `_ns`, `_us`, `_rpm_per_v`); engine: SI |
 | Time | integer ns clock; flight step `1/step_hz` s, default 1 kHz (rigid) or 100 Hz (game) |
 
 ### 5.2 Where data lives
@@ -231,7 +231,7 @@ The 13 hand-inked figures cover only the 13 templates. A user build is drawn by 
 ```ts
 export interface DroneMechanics {
   bldc?: {                           // brushless motor; key owned by DRONE. `mechanics.motor` (brushed DC) is owned by ROBOTICS 6.1
-    kv_rpm_per_v: number;            // exception to "base units": rpm per volt is the hobby unit; ke = 60 / (2 pi kv) V s/rad is derived
+    kv_rpm_per_v: number;            // unit named by the `_rpm_per_v` suffix (PDM 4.1): rpm per volt is the hobby unit; ke = 60 / (2 pi kv) V s/rad is derived
     r_ohm: number; i0_a: number;     // winding resistance, no-load current at the reference voltage
     v_max: number; i_max_a: number; i_burst_a?: number;
     j_rotor_kgm2?: number;           // rotor + bell inertia
@@ -448,7 +448,7 @@ export interface DroneEnvironment {
   pressure_pa: number;                // default 101325 at sea level; density follows the ideal gas law  rho = p / (287.05 (T + 273.15))
   altitude_msl_m: number;             // field height; pressure falls with the standard-atmosphere law (EXTERNAL) when no pressure is given
   wind: { mean_mps: [number, number, number]; gust: { kind: 'none' | 'ou'; sigma_mps: number; tau_s: number }; discrete?: GustEvent[] };
-  sensorFailures: { at_ns: number; sensor: 'gyro'|'accel'|'baro'|'gps'|'rx'; mode: 'dropout'|'stuck'|'bias'|'noise-x10'; duration_ns?: number }[];  // up to 32; integer ns on the sim clock, like every other time
+  sensorFailures: { at_ns: number; sensor: 'gyro'|'accel'|'baro'|'gps'|'rx'; mode: 'dropout'|'stuck'|'bias'|'noise'; magnitude?: number; duration_ns?: number }[];  // up to 32; integer ns on the sim clock, like every other time
 }
 ```
 
@@ -475,12 +475,12 @@ Faults are operations on the model or the environment (SIM_ARCH 13.2) and are re
 
 | Fault (cause) | Operation | What the dynamics do |
 |---|---|---|
-| Motor out | `stuck` on a slot: `tau_motor = 0` | thrust of that rotor falls with its spin-down; on a quad the controller saturates and the craft tumbles; on a hex or octo it may hold altitude and drift in yaw, depending on the mixer (no fault-tolerant mixer in v1) |
-| Motor direction reversed (ESC phase swap) | `swap` on two motor phases | the rotor turns the other way; thrust follows `reverse_thrust_factor`; yaw torque flips sign; derived `props-swapped`-like symptom |
-| Propeller swapped (handedness) | `prop_spin != spin` | same as above through `ct` and the sign of `Q` |
-| Propeller damaged | `value` on `ct0` (factor) | thrust loss and imbalance, torque disturbance |
-| FC orientation wrong | `mech.set` on the FC mount yaw | the estimator's attitude frame differs from the motors' frame, so a roll command produces pitch (or reversed roll): positive feedback in the loop, flip on take-off (derived, DA-10) |
-| Gyro bias, noise, dropout | sensor failure schedule | drift or oscillation through the estimator and the D term |
+| Motor out | `param` on the slot: `tau_motor = 0` | thrust of that rotor falls with its spin-down; on a quad the controller saturates and the craft tumbles; on a hex or octo it may hold altitude and drift in yaw, depending on the mixer (no fault-tolerant mixer in v1) |
+| Motor direction reversed (ESC phase swap) | `swap-phase` on two motor phases | the rotor turns the other way; thrust follows `reverse_thrust_factor`; yaw torque flips sign; symptom derived by the `motor-direction-reversed` detector |
+| Propeller swapped (handedness) | `param` on the slot: `prop_spin != spin` (cause `props-swapped`, a row of SIM 13.4) | same as above through `ct` and the sign of `Q` |
+| Propeller damaged | `param` on `ct0` (factor) | thrust loss and imbalance, torque disturbance |
+| FC orientation wrong | `mount` on the FC (yaw) | the estimator's attitude frame differs from the motors' frame, so a roll command produces pitch (or reversed roll): positive feedback in the loop, flip on take-off (derived, DA-10) |
+| Gyro bias, noise, dropout | `sensor` fault (failure schedule) | drift or oscillation through the estimator and the D term |
 | GPS loss | sensor failure | position-hold modes fall back to attitude mode or trigger failsafe per `fcParams.failsafe` |
 | Receiver link loss | sensor failure `rx` | failsafe stage: `drop` (motors off) or `land` (descent at a set rate) |
 | Battery sag and depletion | battery state and `degrade` | voltage-limited thrust, throttle compensation, cut-off (existing 0.5 s rule) |
@@ -488,7 +488,7 @@ Faults are operations on the model or the environment (SIM_ARCH 13.2) and are re
 | Over-current, brown-out of the FC | electrical layer | FC reset: controller state lost for a reboot time (descriptor), craft uncontrolled during it |
 | Gusts | environment | disturbance torques and forces |
 
-Cause ids (proposed additions to SIM_ARCH 13.4; each has a detector): `hover-throttle-too-high`, `thrust-to-weight-low`, `esc-overcurrent`, `battery-overcurrent`, `prop-clash`, `cg-offset`, `motor-direction-wrong`, `props-swapped`, `fc-orientation-wrong`, `battery-sag-brownout`, `esc-desync`, `motor-out`, `controller-oscillation` (symptom detector: sustained rate error oscillation above a threshold in the trace), `gps-lost`, `link-lost`, `sensor-drift`. Evidence uses the `Evidence` record with `provenance`, `tier`, `modelIds`. The crash explanation card ("Here's why", `crash.ts:109` and `causeOf`, `crash.ts:56`) keeps its three-step hint ladder and gets its cause from the recorded fault state and trace (the largest contributing cause before the crash), not from a log-based guess alone.
+Cause ids: the only list is SIM_ARCH 13.4 (45 ids, closed, plus `x-` extension ids). The drone ids there are `hover-throttle-too-high`, `thrust-to-weight-low`, `esc-overcurrent`, `battery-overcurrent`, `prop-clash`, `cg-offset`, `motor-direction-reversed` (was `motor-direction-wrong`), `props-swapped`, `fc-orientation-wrong`, `battery-sag-reset` (was `battery-sag-brownout`), `esc-desync`, `motor-out`, `controller-oscillation`, `gps-lost`, `link-lost`, `sensor-drift`; SIM 13.4 owns each detector and this section adds none. Evidence uses the `Evidence` record with `provenance`, `tier`, `modelIds`. The crash explanation card ("Here's why", `crash.ts:109` and `causeOf`, `crash.ts:56`) keeps its three-step hint ladder and gets its cause from the recorded fault state and trace (the largest contributing cause before the crash), not from a log-based guess alone.
 
 Faults on the 13 legacy crafts keep the boolean flags of `CraftFaults` (`types.ts:25-33`) in `flight-game@1`.
 
@@ -496,7 +496,7 @@ Faults on the 13 legacy crafts keep the boolean flags of `CraftFaults` (`types.t
 
 ### 11.1 Replay
 
-A flight is the project document hash, the seed, the model id and version, the input log (stored as `InputEntry[]` of SIM_ARCH 6.7, see the mapping below; the game model's `{step, action}` form is the legacy format and is converted on load), and the engine versions. `ReplayRecord` of SIM_ARCH 6.7 gets `versions.models['multirotor-rigid'] = '1.0.0'` and `versions.dmath`. Checkpoints: a state hash every 1,000 ms of simulated time. Hash class: class N before `dmath` passes SA-12 (compare quaternion, position, rates with 1e-9 relative tolerance), class B after (Objection 6). Replay is re-simulation (flight.md, VERIFIED for the game model); ghosts, crash replay and the daily challenge read the same record.
+A flight is the project document hash, the seed, the model id and version, the input log (stored as `InputEntry[]` of SIM_ARCH 6.7, see the mapping below; the game model's `{step, action}` form is the legacy format and is converted on load), and the engine versions. `ReplayRecord` of SIM_ARCH 6.7 gets `versions.models['multirotor-rigid@1'] = '1.0.0'` and `versions.dmath`. Checkpoints: a state hash every 1,000 ms of simulated time. Hash class: class N before `dmath` passes SA-12 (compare quaternion, position, rates with 1e-9 relative tolerance), class B after (Objection 6). Replay is re-simulation (flight.md, VERIFIED for the game model); ghosts, crash replay and the daily challenge read the same record.
 
 **Input log mapping.** The stored form is `InputEntry {at: SimTime, seq, kind, target, value}` sorted by `(at, seq)` (SIM_ARCH 6.7). The game model's `{step, action}` (`sim.ts:1008`) maps as follows.
 
@@ -593,7 +593,7 @@ Review of the five flagged crafts (what exists; proposed handling; the decision 
 | `longrange` | range and efficiency flying | keep within the mission range cap; wording reviewed for regulatory claims (SN-6) |
 | `vtol` | tilt transition to wing flight | keep as a mechanics lesson; no payload or autonomy additions |
 
-## 13. SITL and real-firmware options (ADR-0715, PENDING RS-14)
+## 13. SITL and real-firmware options (ADR-0715; RS-14 not yet run)
 
 ### 13.1 Facts and recall
 
@@ -626,9 +626,9 @@ The same requirements apply to the rosbridge helper of ROBOTICS 11.3, which toda
 
 Risks of S1: it ties iynk to the message sets and version behaviour of software it does not control; lockstep over a WebSocket adds jitter that a deterministic replay cannot capture (S1 runs are tagged "not replayable"); the GPL firmware stays a separate process the user runs and iynk never links or bundles it (so no licence obligation arises from iynk's code; this reading is HYPOTHESIS and needs a lawyer if firmware is ever shipped together with iynk).
 
-### 13.3 Decision rule (PENDING RS-14)
+### 13.3 Decision rule (RS-14 never ran; S0 is a Drone-phase task)
 
-RS-14's exit condition (TECHNICAL_RESEARCH section 6): pass if the TypeScript model is within 15 percent of PX4 SIH on rise time and overshoot for 3 craft; RS-14b (SITL CPU under 50 percent of a shared vCPU) concerned hosted cost and no longer decides anything since S2 is excluded. No RS-14 report exists.
+RS-14's exit condition (TECHNICAL_RESEARCH section 6): pass if the TypeScript model is within 15 percent of PX4 SIH on rise time and overshoot for 3 craft; RS-14b (SITL CPU under 50 percent of a shared vCPU) concerned hosted cost and no longer decides anything since S2 is excluded. No RS-14 report exists (VERIFIED: `08_RESEARCH_SPIKES/` has no RS-14 folder; DP-01 is an author-run prototype and not a verdict). RS-14b concerned hosted cost, which D-015 removed. Decision: S0 (PX4 SIH on Amar's machine, scripted step inputs, 3 crafts) is built as an offline verification task in the Drone phase (D-014 order). It does not block Studio or any earlier phase. What would change it: a pass sets the label to the measured X; a fail sends the model back for investigation.
 
 - If RS-14 passes (within 15 percent on both metrics for 3 craft): the label of `multirotor-rigid@1` becomes "checked against a flight-controller simulation on 3 craft, within X percent" using the measured X, never "validated" (D-007). S1 stays optional.
 - If RS-14 fails on a metric: the model is investigated first (gains mapping, filter delays, motor response are the likely contributors; the prototype's untuned 26 percent overshoot shows the controller alone can move the result by more than the 15 percent threshold). The label stays "Rigid-body teaching model, not checked against flight-controller firmware". S1 is considered only if Amar wants real-firmware tuning.
@@ -677,7 +677,7 @@ Class: B bit-exact, N tolerance. "Baseline device" is chosen after the RS-01 fol
 | DA-18 | Given the five bench-flight tests on the quad5 build, When run headless, Then they finish in under 20 seconds on the baseline device and give identical numbers on ten runs | B | 11.4 |
 | DA-19 | Given a project with FC parameters, When exported as a CLI dump and re-imported through the emulator, Then the parameters are equal and every parameter without an exact mapping appears in the loss list | n/a | ADR-0713 |
 | DA-20 | Given a craft flown on the game model, When the fly tab opens, Then it says the model is tuned to feel and cannot teach PID tuning, and its ghosts and medals are separate from the rigid model's | n/a | Objection 7 |
-| DA-21 | PENDING RS-14: given 3 crafts, When the step response of `multirotor-rigid@1` is compared with PX4 SIH, Then rise time and overshoot are each within 15 percent; otherwise the label rule of 13.3 applies | N | R-177 |
+| DA-21 | Not yet run (RS-14); Drone-phase task: given 3 crafts, When the step response of `multirotor-rigid@1` is compared with PX4 SIH, Then rise time and overshoot are each within 15 percent; otherwise the label rule of 13.3 applies | N | R-177 |
 | DA-22 | Given the rigid model, controller, sensors and estimator, When run at 1 kHz and at 2 kHz (the top of the allowed range) at 6x throttle in a Worker, Then the mean step is under 50 microseconds at each rate; if 2 kHz misses, 2000 is removed from the allowed `step_hz` | N | Objection 10 |
 | DA-23 | Given a motor-out fault on a hex and on a quad, When flown ten times, Then each outcome (time airborne, tumble) repeats exactly, and the diagnosis names `motor-out` with the motor id and trace evidence. That a hex survives longer than a quad is a HYPOTHESIS: the comparison is printed from the measured runs, not asserted | B | 10 |
 | DA-24 | Given the generic craft figure, When drawn for each of the 13 layouts, Then props, arms and motor positions match the document mounts to 0.5 mm in the SVG coordinates | n/a | 5.5 |
@@ -728,7 +728,7 @@ D0 to D7: about 23 to 32 engineer-weeks, ESTIMATED. The audit's own estimates we
 | Fixed-wing, VTOL, tricopter, swarm | T1 (game) | as the game model | all of the above |
 | Safety checks (DB-C) | T1 | rules over computed quantities with stated thresholds | regulations and injury |
 
-Each row becomes a fidelity registry entry (ADR-0310). After RS-14 the label of `multirotor-rigid@1` is chosen by the rule in 13.3.
+Each row becomes a fidelity registry entry (ADR-0310). Until RS-14 reports the label is the "not checked" one; after it, the label of `multirotor-rigid@1` is chosen by the rule in 13.3.
 
 ## 19. Traceability
 
@@ -755,3 +755,19 @@ Each row becomes a fidelity registry entry (ADR-0310). After RS-14 the label of 
 | 4 | Input log vs replay contract | Applied | 11.1 stores `InputEntry[]` and has the mapping table (`at = step*10_000_000` for game, `step*(1e9/step_hz)` for rigid, `kind: 'control'`, `target: 'stick'|'switch'`). Legacy `{step, action}` logs convert on load; DA-07 gained the round-trip test |
 | 5 | "Cannot be forged" | Applied. Correct for a local-first project with a user-editable, unsigned document | Reworded in 3.3, 5.2 and 8.2: results are recomputed or stale on a hash change, are not tamper-proof, never a security gate, and arming rules are a learning aid |
 | 6 | S1 helper protection | Applied | 13.2 lists six requirements (loopback bind only, refuse `0.0.0.0`, per-session token, Origin check, size and rate limits, one client, Safari note); DA-25 tests them; D8 cites DA-25. The Safari and loopback-from-https behaviours are EXTERNAL recalled and marked verify. ROBOTICS 11.3 has the same gap: it needs the same rules, but I did not edit that file |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-42 | 5.2 units row now reads: layout in mm; domain fields use the suffix rule of PDM 4.1. The claim that the whole document is mm is removed. The `kv_rpm_per_v` comment (234) no longer calls it an exception. Line 451 already uses `at_ns` and `duration_ns`, so it needed no change |
+| RC-43 | Section 10 cause-id list replaced by a pointer to SIM 13.4. Renames: `motor-direction-wrong` to `motor-direction-reversed`, `battery-sag-brownout` to `battery-sag-reset`. `props-swapped` kept: it is a row in SIM 13.4 (checked, line 1457) |
+| RC-45 | Section 10 table: motor out and propeller swapped/damaged use `param`; FC orientation uses `mount`; gyro faults use `sensor`; direction reversal uses `swap-phase`. `value`, `stuck` and `mech.set` removed |
+| RC-54 | 11.1 key is now `versions.models['multirotor-rigid@1']` |
+| RS-14 | Never ran (no report). Every PENDING RS-14 mention (sources table, ADR-0712, ADR-0715, issue 1, item 5 of the open list, section 13 heading and 13.3, DA-21, closing line) now says it has not run. Decision: the offline PX4 SIH oracle (S0) is a Drone-phase verification task and gates nothing earlier; the label stays "teaching model, not checked" until it reports. `FlightModel` stays an interface, so the choice is reversible |
+| RS-13 | No change here: Rapier determinism applies at the Robotics phase, and the drone flight model is plain TypeScript |
+| Skipped | No wording found that makes Studio wait for interviews, a pilot or Fault Lab; no customer or market planning found. Other spikes (RS-01, 03, 06, 08, 09, 12) do not touch this file |
+
+## Reconcile, final nits (2026-10-27)
+
+- Section 9 `sensorFailures` mode list: `'noise-x10'` is now `'noise'` with an optional `magnitude` number, the form SIMULATION_ARCHITECTURE 13.2 uses (`noise` multiplies the noise sigma by `magnitude`, default 10).

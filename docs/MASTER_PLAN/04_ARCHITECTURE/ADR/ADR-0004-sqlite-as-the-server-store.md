@@ -14,7 +14,7 @@ The self-hosted server must keep devices, buddy pairs, rooms, an ordered op log,
 2. One file or directory to back up; backup without stopping the server (R-098).
 3. No second service for a friends-sized install to run, patch or secure.
 4. Single writer process is acceptable (ADR-0003).
-5. Must stay replaceable (F-165 asks for Postgres as a `should`).
+5. Must stay replaceable (F-165 is the SQLite file; Postgres is a could: a later adapter behind `ServerStore`).
 
 ## Considered options
 
@@ -23,7 +23,7 @@ The self-hosted server must keep devices, buddy pairs, rooms, an ordered op log,
 | A. SQLite through `node:sqlite` (built in) | One file, WAL, no addon | Chosen |
 | B. SQLite through `better-sqlite3` | Same engine, native addon | Fallback behind the port |
 | C. Append-only log files plus snapshot files | Hand-built storage | Rejected: re-implements transactions, indexes and compaction |
-| D. PostgreSQL | Server database | Optional adapter later (F-165): a second service for a load one core serves |
+| D. PostgreSQL | Server database | Postgres is a could: a later adapter behind `ServerStore`, not built, not planned in any phase (F-165 is the SQLite file). A second service for a load one core serves |
 | E. PostgreSQL with TimescaleDB | Existing code | Rejected: the only time-series consumer was deleted |
 | F. Redis or a queue for rooms | Fast ephemeral state | Rejected: rooms hold state in process memory; durability comes from SQLite |
 
@@ -64,7 +64,7 @@ Tokens, invites, pairing and enrolment codes are stored as SHA-256 hashes only. 
 
 ## Reversibility
 
-High. `ServerStore` is the seam; a Postgres adapter implements it (AR-11 keeps a second adapter's contract tests honest). Known one-way door: a single writer process.
+High. `ServerStore` is the seam. Postgres is a could: a later adapter behind `ServerStore`, which would implement it (AR-11 keeps a second adapter's contract tests honest). Known one-way door: a single writer process.
 
 ## Migration plan
 
@@ -73,3 +73,12 @@ X8 creates the store and its contract tests. The old `db/migrations`, `scripts/d
 ## Known limitations
 
 `node:sqlite` printed an `ExperimentalWarning` on Node 24.8 (VERIFIED); its stability level must be re-read at B0 (AR-11). The two version reports on Node 24.8.0 for macOS (`process.versions.sqlite` 3.50.4, `sqlite_version()` 3.53.1) disagree; AX-05 runs `node -e` on the pinned image and records the one `select sqlite_version()` value. The API is synchronous: transactions must stay small, and long reads must be paged. Linux durability numbers are UNKNOWN.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-03 | Constraint 5: "F-165 asks for Postgres as a `should`" replaced by "F-165 is the SQLite file; Postgres is a could: a later adapter behind `ServerStore`". |
+| RC-03 | Option D row: now says "Postgres is a could: a later adapter behind `ServerStore`", not built, not planned in any phase. |
+| RC-03 | Reversibility: now says "Postgres is a could: a later adapter behind `ServerStore`". |
+| Spikes | No spike changes this ADR. |

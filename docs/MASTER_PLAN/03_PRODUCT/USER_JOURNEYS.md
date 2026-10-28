@@ -1,6 +1,6 @@
 # iynk user journeys
 
-Written 2026-10-27 by the experience design seat. Status: draft for Amar's review. Scope: BRIEF section 18.1 (the twelve principal flows, J-01 to J-12), section 18.2 (progressive complexity), with J-13 (self-hosting) kept short because the catalogue added it, and J-14 (make a custom part), J-15 (build and drive an original robot), J-16 (design and fly a drone) and J-17 (debug and replay) added by the review of 2026-10-27 because D-014 names the custom component editor, robotics creation, drone creation, and the debugger and replay, and no flow covered them.
+Written 2026-10-27 by the experience design seat. Status: draft for Amar's review. Scope: BRIEF section 18.1 (the principal flows, J-01 to J-17), section 18.2 (progressive complexity); J-13 (self-hosting) is kept short because the catalogue added it, and J-14 (make a custom part), J-15 (build and drive an original robot), J-16 (design and fly a drone) and J-17 (debug and replay) added by the review of 2026-10-27 because D-014 names the custom component editor, robotics creation, drone creation, and the debugger and replay, and no flow covered them.
 
 Upstream: `BRIEF.md` section 18 (and 18.3 for accessibility), `00_EXECUTIVE/DECISION_REGISTER.md` (start with "Current decisions: the build reframe": D-013 to D-017, plus D-007, D-010, D-011), `03_PRODUCT/FEATURE_CATALOGUE.md` (F-ids; journey list in its section 5), `03_PRODUCT/PRODUCT_REQUIREMENTS.md` (R-ids; the journey table in its section 15), `03_PRODUCT/FEATURE_PRIORITIZATION.md` (classes and the Milestone 1 acceptance walk, section 7.2), `01_AUDIT/runs/BROWSER_WALK.md` (what the product does today), the contract documents `04_ARCHITECTURE/PROJECT_DATA_MODEL.md`, `schemas/project.schema.json`, `COMPONENT_SCHEMA.md`, `schemas/component.schema.json` and `SIMULATION_ARCHITECTURE.md`.
 
@@ -455,7 +455,7 @@ Library  /{lang}/projects
 | 2 | Type a name | type | Live counter 1 to 120 (`meta.title`). Create stays enabled while the name is valid |
 | 3 | Choose a board | arrows in the radio group | Uno first. Boards beyond the Uno sub-gate show "Limited, see What it models" when partly supported, or are disabled with text "Not in this build yet" before their gate (R-072). Choosing updates the template list to those that fit the board |
 | 4 | Choose a template | combobox | Blank: one `main.ino`, empty `setup()` and `loop()`. Others: converted catalogue items (R-139) |
-| 5 | Create | `Enter` in the dialog | A document is made: `format "iynk.project"`, `schemaVersion "1.0"`, `id prj_...`, `revision 0`, `boards[0]` = the chosen board with `firmware.entry = src_main`, one source, `simulation.seed` random but stored, `access.owners = [you]`, `license` placeholder (D-017). It is written to IndexedDB before the editor opens (M1 step 2). Opens in Studio (SH-01) |
+| 5 | Create | `Enter` in the dialog | A document is made: `format "iynk.project"`, `schemaVersion "1.1"`, `id prj_...`, `revision 0`, `boards[0]` = the chosen board with `firmware.entry = src_main`, one source, `simulation.seed` random but stored, `access.owners = [you]`, `license` placeholder (D-017). It is written to IndexedDB before the editor opens (M1 step 2). Opens in Studio (SH-01) |
 | 6 | Open from Library | Card is a link; `Enter` | Opens in under the BUD-09 time |
 | 7 | Rename, duplicate, archive, delete | Card menu `...` or `F2` rename, `Delete` | Delete moves to Trash with 30-day retention (R-038); Restore returns the exact document. Permanent delete asks for a typed confirmation of the title |
 
@@ -525,7 +525,7 @@ Place a part                                    Wire mode (keyboard)
 +-------------------------+                     +---------------------------------------+
 
 Rules check panel (Diagnostics tab)
- ! LED1 has no series resistor. Pins LED1.A, Uno.D13. Current would be about 113 mA, the LED allows 20 mA.   [Show on canvas]
+ ! LED1 has no series resistor. Pins LED1.A, Uno.D13. Current would be about {computed} mA (the solver's value for this circuit), the LED allows 20 mA.   [Show on canvas]
  ! Button B1 pin 2 floats when open. Use INPUT_PULLUP or add a resistor.                                    [Show on canvas]
  i R1 is not modelled yet. The rest of the circuit still runs.
 ```
@@ -587,7 +587,7 @@ Rules check panel (Diagnostics tab)
 | SC-J04-3 | Editor frame time, 500 parts and 1,000 wires | p95 under 20 ms desktop 1x (BUD-01); under 33 ms at 4x (BUD-02, known miss 34.1 ms); under 20 ms at DPR 2 (BUD-03) | Scheduled Playwright job | Budgets from RS-01, MEASURED |
 | SC-J04-4 | Error cases of R-073 | Each of the seven has a test and a localised message | e2e | PROPOSAL |
 | SC-J04-5 | Wrong-pin case | Code writes D12, LED is on D13: the message names both ("Your code uses D12; LED1 is on D13") instead of "not connected" (R-126, F-026) | e2e | PROPOSAL |
-| SC-J04-6 | Rules check on the 79 catalogue circuits | Zero false alarms; 18 of 20 deliberately broken circuits caught (F-029 target) | Unit | PROPOSAL |
+| SC-J04-6 | Rules check on the fault corpus | Zero false alarms on `tests/fixtures/fault-corpus/clean/`; at least 18 of the 20 files in `broken/` caught; at least 8 distinct rules (F-029 target, RC-48) | Unit | PROPOSAL |
 | SC-J04-7 | Touch: place and wire with one finger on a phone-sized viewport | Completes; no target under 24 px | Playwright touch | PROPOSAL, device run PENDING (RS-01 device half INCONCLUSIVE) |
 
 ---
@@ -656,7 +656,7 @@ stateDiagram-v2
 | 7 | Stop, Reset | `Ctrl/Cmd+.` (Stop), `Ctrl/Cmd+Shift+Enter` (Reset) | Stop freezes at the current virtual time; Reset returns the world to the document's initial state, same seed (DET-1) |
 | 8 | Set a breakpoint (SIM) | `Ctrl/Cmd+K` "Toggle breakpoint" on the cursor line; or click the gutter | Execution pauses with virtual time frozen; Variables shows locals and globals with types; Step over (`F10`), Step in (`F11`), Step out and Continue (`Ctrl/Cmd+Enter` resumes) (R-106, `SIMULATION_ARCHITECTURE.md` 8.7). The full debugging flow is J-17 in section 21 |
 | 9 | Speed | select, `[` `]` are lesson keys so speed uses the menu | 0.25x to 4x, or Max; if the device cannot keep up: "Running at 0.6 times real time on this device" (section 6.8.5) |
-| 10 | Switch engine (SIM) | Run bar menu "Engine" | Interpreter (T1, instant) or Firmware mode (T3: avr8js on a compiled hex). The tier chip changes. The compile step is PENDING RS-04 and RS-05, see 7.7 |
+| 10 | Switch engine (SIM) | Run bar menu "Engine" | Interpreter (T1, instant, the default) or Firmware mode (T3: avr8js in a Worker on a compiled hex, opt-in, R-102). The tier chip changes. The compile step is an open slot (ADR-0013, ADR-0427); see 7.7 |
 
 ### 7.4 Messages that must be specific (F-025, R-FID-3)
 
@@ -689,9 +689,11 @@ stateDiagram-v2
 - Run limits: 64 MiB logical heap, 1,000,000 elements per array, 400,000 statements per slice, 1 MiB serial per run (`SIMULATION_ARCHITECTURE.md` 8.8). A limit is reported, never silent.
 - Nothing in the code is evaluated as JavaScript. No `eval`, no dynamic import of user text.
 
-### 7.7 Compile paths (PENDING RS-04, RS-05, RS-17)
+### 7.7 Compile paths (open slot, ADR-0013 and ADR-0427)
 
-Options for Firmware mode: (A) arduino-cli on your own server in a locked container; (B) avr-gcc compiled to WASM in the browser. Decision rule from `TECHNICAL_RESEARCH.md` section 6: pass if click-to-running p95 is under 3 s warm and 8 s cold on a 4G-class link with no licence blocker; if the browser option fails the speed bar and the server option has no licence problem, choose the server and keep the interpreter as the default. arduino-cli is GPL-3.0 or commercial (R-103): running it on a server Amar controls for his friends and publishing the server source is a licence question RS-17 answers. Until then the Run bar offers only the interpreter, and the Engine menu item reads "Firmware mode (not available in this build)". The journey works end to end without it.
+Options for Firmware mode: (A) arduino-cli on your own server in a locked container; (B) avr-gcc compiled to WASM in the browser. Decision rule from `TECHNICAL_RESEARCH.md` section 6: pass if click-to-running p95 is under 3 s warm and 8 s cold on a 4G-class link with no licence blocker; if the browser option fails the speed bar and the server option has no licence problem, choose the server and keep the interpreter as the default. arduino-cli is GPL-3.0 or commercial (R-103): running it on a server Amar controls for his friends and publishing the server source is a licence question RS-17 answers. Until then the Run bar offers only the interpreter, and the Engine menu item reads "Firmware mode (not available in this build)". The journey works end to end without it, and ships with "import .hex" and the flashing guide (ADR-0427).
+
+What RS-03 gives (`08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md`, INCONCLUSIVE overall, checker: correctness reproduced, speed within 15 percent): a local arduino-cli compile took 1.17 to 1.40 s cold and 0.33 to 0.56 s warm on a fast laptop (MEASURED, not a sandbox VM), and arduino-cli is GPL-3.0. avr8js ran 6.1 to 7.5 times real time on a desktop but about 1.7 times at 4x CPU throttle and 1.1 times at 6x, below the 3x line; phones were not tested. So the interpreter stays the default and the offline path (ADR-0305), and Firmware mode stays opt-in behind the engine interface. The choice between a local arduino-cli on Amar's own machine and a browser avr-gcc stays open. The 4G-phone rule above assumes scale a self-hosted app does not have; an agent task times a local compile (RS-04 style). What would change it: a compile timing on the device Amar uses, or a GPL reading by Amar (For Amar, RS-17).
 
 ### 7.8 Accessibility (adds to 2.5)
 
@@ -784,8 +786,8 @@ The record written to the event log, unchanged from D-010: `{cause_id, symptom_i
 
 - A diagnosis must pick exactly one cause id from `DiagnoseSpec.options`, which has 4 to 6 entries with exactly one equal to `answer.cause_id`. There is no "Something else" option and no free-text answer; a person who cannot choose uses Give up. (A free-text note field would be a separate, ungraded control outside `options`; none is specified.)
 - Hint level 3 is checked by a content test: it must not contain the fix verb sequence of the fault's `fix` text (a schema test fails if a fault lacks `cause_id` or `symptom_id`, R-119).
-- Number consistency: any number in prose is generated from the model or checked against it (the 113 mA vs 115 mA mismatch becomes a test).
-- Generic fault rules (R-124) are limited to the rules in the cause table of `SIMULATION_ARCHITECTURE.md` 13.4; a rule that produces false alarms on the catalogue circuits is disabled until fixed (F-029 target: zero false alarms on 79 circuits).
+- Number consistency: any number in prose is generated from the model or checked against it (the banner shows the computed current; a test compares the prose value with the solver against the realistic model, RS-08).
+- Generic fault rules (R-124) are at least 8 rules drawn from the `SIMULATION_ARCHITECTURE.md` 13.4 detectors; a rule that produces false alarms on `tests/fixtures/fault-corpus/clean/` is disabled until fixed (F-029 target: zero false alarms on `clean/`, at least 18 of the 20 files in `broken/` caught).
 
 ### 8.5 Accessibility (adds to 2.5)
 
@@ -800,7 +802,7 @@ The record written to the event log, unchanged from D-010: `{cause_id, symptom_i
 | Id | Measure | Target | Method | Label |
 |---|---|---|---|---|
 | SC-J06-1 | Existing faults | All 250 keep working with the same text; 100 percent carry `cause_id` and `symptom_id` (R-119) | Schema test | PROPOSAL |
-| SC-J06-2 | Generic rules | Zero false alarms on 79 catalogue circuits, 18 of 20 deliberately broken circuits caught | Unit | PROPOSAL |
+| SC-J06-2 | Generic rules | Zero false alarms on `tests/fixtures/fault-corpus/clean/`, at least 18 of the 20 files in `broken/` caught, at least 8 distinct rules | Unit | PROPOSAL |
 | SC-J06-3 | Break it then Restore on a user circuit | Document hash equal after Restore | Unit | PROPOSAL |
 | SC-J06-4 | Diagnose-first on 10 faults | Each can be solved by a keyboard-only user using hints and the multimeter | Playwright keyboard script | PROPOSAL |
 | SC-J06-5 | Hint log | Every hint open writes one event with its level; level 3 never contains the fix text | Unit | PROPOSAL |
@@ -952,7 +954,7 @@ Receiving side: opening a link or file
 | 1 | Share | `Ctrl/Cmd+K` "Share" | Dialog. Before anything is produced a secret-shape scan runs over text and sources (patterns such as `sk-`, `AIza`, PEM headers, long hex); a hit shows "This text looks like a key: {file}:{line}. Remove it or share anyway." and does not write until chosen |
 | 2 | Download .iynk | `Enter` | The R-037 envelope `{format: "iynk.file", version: 1, hash, project}` in pretty form. File name `{slug}.iynk`. `exports[]` records the hash and losses |
 | 3 | Save to disk (Chromium) | `Ctrl/Cmd+S` | File System Access handle; the library marks "File copy"; later saves rewrite the same file. Elsewhere: download and upload (R-037) |
-| 4 | Copy link (server) | `Enter` | The client uploads the canonical document (no history by default) to the server, which validates it and stores an immutable, signed snapshot identified by its `stateHash` (COMMUNITY 3.5, ADR-0802). The server returns the token once; the app builds `https://<host>/s#<token>`. The token sits in the URL fragment, so it is not in the request line or a proxy log (API_CONTRACTS section on secrets in URLs); the page at `/s` reads the fragment and calls `GET /shares/{token}`. The server enforces its own ACL; `access.visibility` in the document is advisory. Revoke from Share, "Stop sharing" |
+| 4 | Copy link (server) | `Enter` | The client uploads the canonical document (no history by default) to the server, which validates it and stores an immutable, signed snapshot identified by its `stateHash` (COMMUNITY 3.5, ADR-0817). The server returns the token once; the app builds `https://<host>/s#<token>`. The token sits in the URL fragment, so it is not in the request line or a proxy log (API_CONTRACTS section on secrets in URLs); the page at `/s` reads the fragment and calls `GET /shares/{token}`. The server enforces its own ACL; `access.visibility` in the document is advisory. Revoke from Share, "Stop sharing" |
 | 5 | Small link | `Enter` | Offered only if gzip plus base64url of the canonical document without history is at most 8 KiB (PROPOSAL; measured gzip sizes are 2.3 KB for Uno blink, data model 12.1) |
 | 6 | Receiver opens | click link | A static page checks the payload without running anything, shows the summary, then `Open a copy`. The copy is a new project with a new id, `provenance.origin` naming the sender and the hash, and `license` as the sender set it (fork, F-088). Nothing runs until Run |
 | 7 | Edit the copy | n/a | The receiver's copy and the original diverge; the original is never changed by the receiver (unless they join a room, J-09) |
@@ -1287,7 +1289,7 @@ Build it   (tab in the dock, or Export > Build package)
 | 3 | BOM | buttons | Rows: refdes list, part id and version, value, package, quantity, manufacturer part number and datasheet link where known, `model fidelity`. Virtual parts (supplies, breadboards, instruments) are flagged `not-purchasable`. CSV and Markdown. Totals equal a hand count (data model 12.2) |
 | 4 | Prices | `Prices` | Catalogue prices with a date and a "not live" label, no network call (R-183). "Check live prices" needs your search key and is a button, never automatic; quota use is shown beforehand ("this check uses up to 12 searches") and the real error text is shown afterwards (R-184, F-194) |
 | 5 | Wire steps | `Enter` | A step list generated from the netlist: "Connect Uno D13 to resistor R1 pin 1 (row 12)", each step with its source (netlist, descriptor or note) (R-185). Hole names come from the breadboard view when the project has one; otherwise pin to pin |
-| 6 | Flash steps | `Enter` | For the board: Arduino IDE steps and command-line steps; hex download only when the compile path exists (PENDING RS-04). Honest banner at tier T1: "This sketch ran in iynk's interpreter. It may not compile as exported." (F-090) |
+| 6 | Flash steps | `Enter` | For the board: Arduino IDE steps and command-line steps; hex download only when the compile path exists (open slot, 7.7). Honest banner at tier T1: "This sketch ran in iynk's interpreter. It may not compile as exported." (F-090) |
 | 7 | Checklist | `Enter` | Power off while wiring; check polarity; check each current against the part's rating; first power-up with a current-limited supply where possible. Checkable items; state is local |
 | 8 | Safety notes | automatic | LiPo, charger, motors and anything mains-adjacent add the matching notes (storage, charging, current, no mains); a mains project is refused with an explanation (R-192) |
 | 9 | Diagrams | `Enter` | Schematic and wiring diagram as SVG and PDF (one view, one language), netlist as text and JSON (R-186). SVG has `<title>` and `<desc>`; the PDF is tagged where the tool allows (UNKNOWN which library) |
@@ -1338,7 +1340,7 @@ Short, because it is a prerequisite to J-08 and J-09 and has its own requirement
 
 | Step | What you do | What must be true |
 |---|---|---|
-| 1 | Read one document and run one command (a compose file) | The server starts, prints its URL and a setup token, works with its default file-backed store; Postgres is optional (R-083). Following only the document works on a clean VM (M1 step 9) |
+| 1 | Read one document and run one command (a compose file) | The server starts, prints its URL; `iynk-server init` prints the first enrolment code. The server needs only its SQLite file (R-083; Postgres is a later could). Following only the document works on a clean VM (M1 step 9) |
 | 2 | In the app, Settings, Server: paste the URL and the token | The browser gets a device token (hash stored on the server); wrong token gives 401 with no detail; status strip shows "Server: connected" |
 | 3 | Buddies, Add a buddy, copy the invite | Invite works once, expires, and reveals nothing on failure |
 | 4 | Your buddy opens the link in their browser and pairs | Their public key is stored with the pairing; revoke is one click |
@@ -1502,7 +1504,7 @@ None of these changes the direction decided in D-013 to D-017. Each asks the own
 | OBJ-9 | The brief's flow 10 (educator creating an assignment) is dropped by D-013 and replaced by authoring a lesson. Reviewers comparing against BRIEF 18.1 will see a gap; it is deliberate | D-013, `FEATURE_CATALOGUE.md` section 5 | None needed; recorded so it is not mistaken for an omission |
 | OBJ-10 | The theme default is unclear. The walk saw `data-theme="light"` in a browser that reported no dark preference, so whether the control follows an OS dark setting is UNKNOWN | `BROWSER_WALK.md` step 1 | Check `ThemeControl.tsx`; J-01 proposes Auto, Light, Dark |
 | OBJ-11 | RESOLVED by the review of 2026-10-27. Studio has its own keymap in `STUDIO_EDITOR.md` 6.11: `R` rotates, reset view moves to the View menu and the palette, views are `1` `2` `3`, Run is `Ctrl/Cmd+Enter` only. Lab pages keep today's `shortcuts.ts` | `STUDIO_EDITOR.md` 6.11 clash table | None; this file no longer lists keys |
-| OBJ-12 | J-14 to J-17 are not in the journey table of `PRODUCT_REQUIREMENTS.md` section 15 or in `FEATURE_CATALOGUE.md` section 5, and R-134 is tied only to J-11 there. Interface-level rows for them are in 16.4 but LV-7 lists J-01 to J-12 only | `COMPONENT_ECOSYSTEM.md` Objection 1; D-014 (custom component editor, debugger, replay) | The owners of those two files add the rows (J-14: R-134, R-138, R-029; J-17: R-106, R-107). LV-7 now includes J-14 to J-17 at Builder and Bench. Add also J-15: R-164 to R-167, R-169, R-170; J-16: R-172 to R-175, R-179 |
+| OBJ-12 (CLOSED by RC-70: the journey list is J-01 to J-17 everywhere; LV-7 already names J-14 to J-17) | J-14 to J-17 were not in the journey table of `PRODUCT_REQUIREMENTS.md` section 15 or in `FEATURE_CATALOGUE.md` section 5, and R-134 is tied only to J-11 there. Interface-level rows for them are in 16.4 but LV-7 lists J-01 to J-12 only | `COMPONENT_ECOSYSTEM.md` Objection 1; D-014 (custom component editor, debugger, replay) | The owners of those two files add the rows (J-14: R-134, R-138, R-029; J-17: R-106, R-107). LV-7 now includes J-14 to J-17 at Builder and Bench. Add also J-15: R-164 to R-167, R-169, R-170; J-16: R-172 to R-175, R-179 |
 
 ---
 
@@ -1511,13 +1513,13 @@ None of these changes the direction decided in D-013 to D-017. Each asks the own
 | Item | State | What the journeys do meanwhile |
 |---|---|---|
 | RS-16 keyboard and screen-reader pass on the editor | PENDING (no report) | J-04 specifies the R-058 text and a Connections table fallback. Decision rule in 2.4 |
-| RS-01 on phones and Chromebooks | INCONCLUSIVE (desktop PASS, devices not tested) | Phone criteria are written but marked PENDING; renderer sits behind an interface (R-053) so it can be swapped |
-| RS-04, RS-05, RS-17 compile path and licence | PENDING | Firmware mode is hidden behind "not available in this build"; the interpreter is the default path (7.7) |
+| RS-01 on phones and Chromebooks | INCONCLUSIVE (desktop PASS, devices not tested) | Phone criteria are written but marked PENDING; renderer sits behind an interface (R-053) so it can be swapped. RS-01 (checked): plain SVG misses p95 20 ms in fit (25.8 ms) and zoom (25.0 ms) on an M4 Pro; SVG with LOD and culling holds about 10 ms at 1x but 34.1 ms at 4x throttle. So the Studio canvas is built with LOD and culling from the start, no hand-drawn filter on it, drawn-element count as the budget. The device run is For Amar (Q-2) and Studio does not wait for it |
+| RS-04, RS-05, RS-17 compile path and licence | Never run; RS-03 gives local compile times (1.17 to 1.40 s cold, 0.33 to 0.56 s warm) and arduino-cli GPL-3.0 | Firmware mode is hidden behind "not available in this build"; the interpreter is the default path; import .hex and the flashing guide ship (7.7, ADR-0427). RS-05 assumes hosted scale and is dropped; the licence choice is For Amar |
 | RS-11 AI evaluation and provider choice; CORS to providers | PENDING; CORS UNKNOWN | Provider adapter with a server proxy path; SC-J07-3 target stays PROPOSAL |
-| RS-06 rp2040js | FAILED the CPU clause | MicroPython keeps the TypeScript interpreter; no journey depends on rp2040js |
-| RS-09 collaboration | PASS (localhost) | BUD-10 on a real network is UNKNOWN; SC-J09-1 asks Amar to measure it |
-| RS-08 (b) transient analysis, RS-07 ngspice | PENDING | Multimeter readings in J-06 are DC only until the solver exists (R-046) |
-| Pairing code length and invite lifetime | Not specified in F-206 or R-080 | Needs an ADR; this file only requires one generic error |
+| RS-06 rp2040js | Pass clause NOT MET, fail clause NOT TRIGGERED (stock loop, idle-skip untested; 0.54 to 0.79x real time, 0.13 to 0.19x throttled; checked) | Pico lessons keep the TypeScript MicroPython interpreter; rp2040js is an offline test oracle only; no journey depends on it |
+| RS-09 collaboration | PASS for convergence (40 runs, no divergence); PASS-by-CPU for reconnect (2.8 ms for 1,000 ops, 22 ms for 10,000; checked) | Server-ordered op log, snapshot-plus-tail or gzip needed for the 2 s budget on a 5 Mbit/s link (raw 1.4 MB is about 2.3 s, arithmetic). Real-network reconnect is UNKNOWN; SC-J09-1 asks Amar to measure it (For Amar) |
+| RS-08 (b) transient analysis, RS-07 ngspice | RS-08(a) mixed: linear and junction solve PASS (20 of 20 within 2 percent), realistic device models FAIL (10 of 20 within 2 percent; checked); (b) and RS-07 not run | Multimeter readings in J-06 are DC only until the Fidelity-phase transient task (R-046). No SPICE-level accuracy claim (R-FID-1) |
+| Pairing code length and invite lifetime | Not specified in F-206 or R-080 | Closed by ADR-0812: tokens are 128 random bits; a typed pairing code is `XXXX-XXXXXX` (4-character public channel, 6-character secret), 5 wrong secrets delete the code but not the link; expiry defaults to 24 hours and pairings last at most 7 days; a 12-character typed Crockford form (60 bits) exists for enrolment. This file still requires one generic error (missing, expired, used and revoked all answer one 404) |
 | Whether lessons open as Studio projects or as the preserved pages before parity | R-151 allows either | J-02 works in both; the URL must not break |
 | Interface-level names and the first-run level for a returning visitor | Open | Guided for a first visit; a stored choice after that |
 | Screen reader coverage | UNKNOWN (ACC-4, none tried) | A-11 asks for a recorded pass per release |
@@ -1527,8 +1529,8 @@ None of these changes the direction decided in D-013 to D-017. Each asks the own
 | Conformance count for a part with no code (J-14) | `COMPONENT_SCHEMA.md` 9.8 shows "passed 7 of 8" and does not say how T-02 and T-07 are reported for a data-only part | J-14 shows them as not applicable and counts "n of n applicable" (PROPOSAL) |
 | Replay record storage and size cap (J-17) | SA 6.7 defines the record, not where it is kept, or how big it may grow | J-17 proposes the local store with a 100,000-entry cap and a one-second flush |
 | Baseline device for robot and drone step budgets (J-15, J-16) | UNKNOWN (RS-01 follow-up) | Targets are written as budgets (RA-07, DA-22); no measured number is claimed |
-| Rigid-model drone fidelity label (J-16) | PENDING RS-14 (no report) | Game model is the default; the choice stays reversible behind `flight.model` (23.3) |
-| Robot cross-browser hash (J-15) | RS-13 PASS on one CPU architecture; Firefox and x86-64 untested | Rooms compare the class D hash until RA-02 passes there (ROBOTICS 17) |
+| Rigid-model drone fidelity label (J-16) | RS-14 never run; SITL optional and local | Game model is the default; the choice stays reversible behind `flight.model` (23.3) |
+| Robot cross-browser hash (J-15) | RS-13 PASS: identical hashes at 10 checkpoints in Node, Chromium and WebKit, 4x and 6x throttle; one CPU architecture, Firefox and x86-64 untested; Rapier split build only | Rooms compare the class D hash until RA-02 passes there (ROBOTICS 17) |
 
 Not planned here, per the decisions: any account system, classroom or teacher view, credential or wallet, public gallery or marketplace, paid tier, or telemetry beyond local events (D-013, D-016, R-009).
 
@@ -1591,7 +1593,7 @@ Entry points (`COMPONENT_ECOSYSTEM.md` 5.2): Add part in the palette; "Make a pa
 | 5 | Limits: supply range, pin voltage max, current max | Number fields with unit chips | Base units stored, prefixes shown. Min above max is refused. Typed values go in the simulation slot with confidence `low`. "This is from a datasheet" opens a source form (title, page, link, "Did you read the maker's own document?"); no source means no manufacturer slot (AC-CE-10) |
 | 6 | Behaviour: choose one of the four templates; for the truth table fill the rows | Radio group; table cells reachable with arrows | Up to 256 rows with inputs `0 1 x` and outputs `0 1 z`. A row listed twice, or over 256 rows, is refused. A part that needs memory gets the message "needs advanced mode or a built-in model" and the button "Save as not modelled yet", which still gives a placeable, wireable part with an honest label |
 | 7 | Look: size, colour, label, optional SVG or PNG | File input | Art with a script, `foreignObject`, an external reference or over the size cap is rejected with the reason; the fallback art is used (AC-CE-13). Skippable |
-| 8 | Licence and save: licence (default `LicenseRef-local-private`), authors, sources | Plain form | An unknown SPDX string is refused. `provenance.licence` is required (R-138). Same `id@version` with different bytes is refused with both hashes shown and "save as new version" offered |
+| 8 | Licence and save: licence (default `LicenseRef-local-private`), authors, sources | Plain form | An unknown SPDX string is refused. `provenance.license` is required (R-138). Same `id@version` with different bytes is refused with both hashes shown and "save as new version" offered |
 | 9 | Try it: type one worked example | Number fields | The example runs on the normal solver as a mini circuit and is written as the part's generated golden-trace test (AC-CE-09). A mismatch shows both numbers and keeps the part saved as a draft |
 | 10 | Checks run | `Enter` on "Run checks" | The harness runs T-01 to T-08. The table shows each row and the count. T-02 (permissions) and T-07 (hostile code) have nothing to test in a part with no code and are shown as not applicable. T-08 needs a reference test or the label `partly-modelled` with the gap stated, which a beginner part always has. PROPOSAL: `COMPONENT_SCHEMA.md` 9.8 gives the suite and the "passed n of 8" count but does not say how a no-code part is reported (section 19) |
 | 11 | Use in this project | Button | The part is added as `dep.set` (pins `{ref, version}` and the descriptor hash) and armed in the palette; place and wire as J-04. The project stays valid with the part pinned |
@@ -1961,7 +1963,7 @@ The thrust band and "you entered" come from the part descriptor's source and unc
 
 | Choice | State | What the journey does meanwhile |
 |---|---|---|
-| Rigid model fidelity label and whether PX4 or ArduPilot SITL is offered | PENDING RS-14 (no report). Rule: rise time and overshoot within 15 percent of PX4 SIH on 3 craft, SITL under 50 percent of one shared vCPU (R-177, DRONE 13.3) | The game model is the default and says it is tuned to feel. The rigid model is built behind the same `flight.model` field; if it misses the rule, its label says so and PID tuning is taught only as "model behaviour" |
+| Rigid model fidelity label and whether PX4 or ArduPilot SITL is offered | RS-14 was never run (no report). Rule: rise time and overshoot within 15 percent of PX4 SIH on 3 craft, SITL under 50 percent of one shared vCPU (R-177, DRONE 13.3). The agent-doable part is an offline PX4 SIH comparison; SITL is optional and local | The game model is the default and says it is tuned to feel. The rigid model is built behind the same `flight.model` field; if it misses the rule, its label says so and PID tuning is taught only as "model behaviour" |
 | Cross-browser replay hash for the rigid model | UNKNOWN beyond Chromium and WebKit (DA-07 names both) | Replay compares hashes and shows Diverged (as J-17) if they differ |
 | Baseline device for step time | UNKNOWN (RS-01 follow-up) | Targets are written as budgets (DA-22); no number is claimed measured |
 
@@ -2033,3 +2035,33 @@ The thrust band and "you entered" come from the part descriptor's source and unc
 | 3 | J-06 contradicts EDUCATION 6.4 and 6.9 | Applied. Step 5 now says a wrong pick appends a `diagnose.answer` event (`correct: false`) and evidence is only what the learner pinned. "Something else" removed from the mock and from validation; the list is `DiagnoseSpec.options` (4 to 6, exactly one answer) and a person who cannot choose uses Give up. Added the lock: for built-wrong items editing and Repair are disabled until a correct pick (step 6, a Locked state, a bar in the mock). One part of the issue text I read differently: it says Repair is allowed before a pick, but EDUCATION 6.3 allows edits only in Fixing, so Repair is also locked until a correct pick; Restore and Give up stay available. Step 2 now says switching to Cause visible equals Give up (outcome `revealed`). Own-mistake cards (step 9) open in Cause visible mode so editing stays on; that reading is marked PROPOSAL. Added SC-J06-8 to SC-J06-10 | `EDUCATION.md` 6.2 to 6.5, 6.9 |
 | 4 | No journey for a custom part, debugger and replay, or crash recovery | Applied. Added section 20 (J-14 Make and use a custom part) and section 21 (J-17 Debug a run and replay it), placed after section 19 so existing section numbers keep their meaning. J-14: screens, 13 steps, states, validation, accessibility, SC-J14-1 to SC-J14-10 (beginner AND gate in at most 45 Playwright actions, a PROPOSAL from a hand count of about 35, T-01 to T-08 table with T-02 and T-07 shown as not applicable for a no-code part, also marked PROPOSAL). J-17: breakpoint, step over and in with the 6.11 keys, Variables, recording, replay equal to the original by serial text, pin trace and checkpoint hashes (R-107), refusal when the document hash differs, divergence state, worker crash (SH-08) and tab-crash recovery, SC-J17-1 to SC-J17-11. Updated the flow diagram, 1.3 verdicts, 16.4, LV-7, section 17, section 19, contents and Links. Not edited, as the issue says: `PRODUCT_REQUIREMENTS.md` section 15 and `FEATURE_CATALOGUE.md` section 5 (OBJ-12 asks their owners to add J-14 and J-17) | `COMPONENT_ECOSYSTEM.md` 5.2 to 5.6, 10 (Objection 1), AC-CE-08 to AC-CE-13; `COMPONENT_SCHEMA.md` 9.8; `SIMULATION_ARCHITECTURE.md` 6.7, 8.7, 14.5, 15.1; `PRODUCT_REQUIREMENTS.md` R-106, R-107, R-134, R-138 |
 | 5 | BRIEF 30 and D-014 need journeys for original robot and drone creation; `COMPONENT_ECOSYSTEM.md` line 633 asks for J-14 "Make a part" and it dangles | Applied, with one numbering conflict resolved. J-14 already existed (section 20, added by fix 4), so the dangling reference is closed and J-14 is unchanged. The earlier fix had used J-15 for "Debug a run and replay it", which collides with the requested J-15 robot. To follow the requested ids I renamed the debug journey to J-17 everywhere in this file (its success ids are now SC-J17-1 to SC-J17-11, section 21 keeps its number so cross-references to 21.x hold) and added section 22 = J-15 Build and drive an original robot (template, mechanics, wiring, code, arena, checker, faults, `domain.patch` with a buddy, replay, export; SC-J15-1 to SC-J15-11) and section 23 = J-16 Design and fly a drone (parts, endurance and design checks, bench checks, parameters, first-flight notices, fly, crash replay, traces, comparison, buddy tuning, export; SC-J16-1 to SC-J16-11). Each has screens, interaction steps, states, validation, accessibility and success criteria in the J-03 to J-12 form. Updated the header, contents, 1.3 verdicts, the flow diagram, 16.4, LV-7, section 17 coverage, OBJ-12, section 19 and Links. Sections 22 and 23 follow section 21 so that earlier section numbers stay valid; the ids are therefore not in order in the contents (21 = J-17, 22 = J-15, 23 = J-16). Robot and drone journeys use the rules and acceptance ids of the two architecture files (RB, RA, DB-C, DA, SN); every numeric target is either an architecture test or marked PROPOSAL or ESTIMATED; RS-14 is marked PENDING with the options and rule; no `PRODUCT_REQUIREMENTS.md` or `FEATURE_CATALOGUE.md` edit. Check for other files: no file outside this one cites J-15 or J-17 (grep of `docs/MASTER_PLAN`), so the rename breaks no reference | `BRIEF.md` 18; D-014; `COMPONENT_ECOSYSTEM.md` 5.2, 10 (Objection 1), line 633; `ROBOTICS_ARCHITECTURE.md` 3, 4.3 to 4.5, 6.3, 8, 13 to 15, 17 to 19; `DRONE_ARCHITECTURE.md` 4, 5.3, 6.4, 8.1, 8.2, 11, 12, 15; `FEATURE_CATALOGUE.md` 3.6, 3.7; `PRODUCT_REQUIREMENTS.md` R-164 to R-179; `08_RESEARCH_SPIKES/RS-13-physics-determinism/REPORT.md` (PASS); RS-14 has no report |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Changes made from `04_ARCHITECTURE/RECONCILIATION.md` and the spike reports. Each was checked against the file first.
+
+| Id | Where | Change |
+|---|---|---|
+| RC-03 | M1 table row 1 (J-13) | "Postgres is optional" became "the server needs only its SQLite file (R-083; Postgres is a later could)" |
+| RC-15 | M1 table row 1 (J-13) | "a setup token" became "`iynk-server init` prints the first enrolment code" |
+| RC-34 | J-03 step 5 | New project `schemaVersion "1.1"` |
+| RC-47 | Rules panel mock-up, 8.4 | Fixed "113 mA" replaced by the computed current; consistency test compares prose with the solver against the realistic model (RS-08) |
+| RC-48 | SC-J04-6, SC-J06-2, 8.4 generic rules | Corpus named as `tests/fixtures/fault-corpus/` (`clean/`, `broken/`), at least 18 of 20 caught, at least 8 rules drawn from SIM 13.4 detectors |
+| RC-61 | J-08 share step | ADR-0802 became ADR-0817. No README-section-5 remark about line 932 exists, so nothing was deleted |
+| RC-70 | Line 3, OBJ-12 | Scope reads J-01 to J-17. OBJ-12 marked closed. LV-7 already lists J-14 to J-17, so it was left as is |
+| RS-03, RS-04, RS-05, RS-17 | 7.7 heading and text, step 10 of 7.x, J-10 flash step, open-items table | PENDING replaced by "open slot" (ADR-0013, ADR-0427). Interpreter default, Firmware mode opt-in in a Worker (ADR-0305), import .hex ships. Local compile 1.17 to 1.40 s cold, 0.33 to 0.56 s warm, GPL-3.0 cited from the RS-03 report. Licence choice is For Amar |
+| RS-01 | Open-items table | LOD and culling from the start, no canvas filter, device run For Amar (Q-2) |
+| RS-06 | Open-items table | Wording follows the checked report: pass clause not met, fail clause not triggered; oracle only |
+| RS-08 | Open-items table | Part (a) mixed, part (b) not run; no SPICE-level claim |
+| RS-09 | Open-items table | Convergence PASS, reconnect PASS-by-CPU, snapshot-plus-tail or gzip needed on slow links; real-network time is For Amar (SC-J09-1) |
+| RS-13 | Open-items table | PASS on one CPU architecture, split Rapier build only. Line 1784 text already said this and was left |
+| RS-14 | J-16 open items (two places) | Never run. Game model default, SITL optional and local, offline PX4 SIH comparison is an agent task |
+| D-013 | SC intro | Already says no pilots. Left as is |
+| Skipped | "Studio waits for interviews, pilot or Fault Lab" | No such wording found in this file |
+
+For Amar: licence reading for arduino-cli (RS-17), device run for the editor canvas (Q-2), real-network reconnect time (SC-J09-1), screen-reader pass (RS-16, Q-13).
+
+## Reconcile, final nits (2026-10-27)
+
+- Open-items table, pairing code length and invite lifetime: now states the values ADR-0812 fixes and cites it.
+- J-14 step 8: field name `provenance.licence` changed to `provenance.license` (RC-33). Prose spelling "licence" left as is.

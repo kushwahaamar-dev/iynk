@@ -96,7 +96,7 @@ flowchart TB
     WEB["web<br/>serves the app and /config.json<br/>no state"]
     SRV["iynk server<br/>HTTP API + WebSocket<br/>RoomCore, enrolment, buddies, invites<br/>AI and search proxy modules"]
     SQL[("SQLite file<br/>log, checkpoints, ACL, audit<br/>assets by sha256")]
-    CMP["compile process, optional<br/>no network, no secrets<br/>PENDING RS-04, RS-05, RS-17"]
+    CMP["compile process, optional<br/>no network, no secrets<br/>local arduino-cli, off by default<br/>1.17 to 1.40 s cold, 0.33 to 0.56 s warm (RS-03)"]
   end
   DISK[("Disk files<br/>.iynk .iynkz folder export")]
   PROV["AI and search providers<br/>user's own keys"]
@@ -111,7 +111,7 @@ flowchart TB
   UI --- SWK
   UI -->|"https: app files, /config.json"| CADDY
   CADDY --> WEB
-  CADDY -->|"/api/v1, /ws, /healthz, /mcp"| SRV
+  CADDY -->|"/v1, /ws, /healthz, /readyz"| SRV
   UI <-->|"wss: gzip frames"| CADDY
   SRV --- SQL
   SRV -.->|"job in, hex out"| CMP
@@ -133,7 +133,7 @@ There is no mode where the app calls a service owned by Amar (F-202, D-015). The
 
 | State | Owner | Lost if | Recovery |
 |---|---|---|---|
-| Working copy of every project | IndexedDB `projects` (browser) | The browser evicts storage | The file copy the person saved (`.iynk`), or the server copy of a shared project |
+| Working copy of every project | IndexedDB `projects` (browser) | The browser evicts storage | The file copy the person saved (`.iynk`), or a share snapshot on the server |
 | Keys (AI, search) | IndexedDB `keys` | Site data cleared | Re-enter. Keys are never in a project, export or room |
 | Room log and checkpoints | SQLite on the server | Disk loss | Each member's last saved copy; the operator's backup of the data directory |
 | Simulation state | SimWorker memory | Tab closes | Re-run from the project, seed and input log (replay) |
@@ -338,7 +338,7 @@ erDiagram
   HISTORY ||--o{ OP_ENVELOPE : "ops, tail max 1000"
   PROJECT {
     string id "prj_"
-    string schemaVersion "1.0"
+    string schemaVersion "1.1"
     int revision "ops since genesis"
   }
   BOARD {
@@ -421,7 +421,7 @@ flowchart TB
   classify["Classify nets: digital or analog<br/>load diagnostics, model ids"]
   compile{"Source language?"}
   interp["Interpreter path T1<br/>ProgramImage kind source"]
-  hexpath["Compiled path T3<br/>ProgramImage kind hex<br/>compile service PENDING RS-04"]
+  hexpath["Compiled path T3<br/>ProgramImage kind hex<br/>optional local compile process, RS-03 timings"]
   subgraph SimWorker["SimWorker (one per open run)"]
     orch["Orchestrator<br/>SimTime integer ns, event queue<br/>order: at, phase, rank, seq"]
     p0["P0 Inputs<br/>replay log, buttons, faults, serial"]
@@ -490,15 +490,15 @@ sequenceDiagram
 | Cooperative cancel plus kill | Every slice checks budgets (heap, statements, cycles, output). The host kills the worker 2 s after a cancel request and recreates it from the document | ADR-0311, 17.2 |
 | Running behind real time is a state | `speed.behindReal` travels in every frame and the UI shows it | 6.8 |
 | No silent stubs | An unmodelled call returns a named "not modelled yet" diagnostic and `provenance: 'not-modelled'` | ADR-0307, 14.1 |
-| Rooms | Each peer simulates locally from the same ordered ops, seed and runner-stamped input log. No frames are streamed. Class B hashes compared every 1,000 ms of simulated time | 17.4 |
+| Rooms | Each peer simulates locally from the same ordered ops, seed and runner-stamped input log. No frames are streamed. Class B hashes compared every 1,000 ms of simulated time for digital, MCU and serial; physics, flight and analog compare class D until RA-02, SA-12 and DET-2 pass | 17.4 |
 
 ### 5.3 Today versus target
 
 | Item | Today | Target | Disposition |
 |---|---|---|---|
 | Clock | `VirtualClock`, microsecond float, `(at, seq)` ordering (`src/lib/interp/clock.ts`) | Integer ns plus phases | Extend |
-| Analog | DC nodal solver with globals, silent non-convergence (`figures/engine/bench-solve.js`) | Pure module, convergence flag, then transient (PENDING RS-08 part b, RS-07) | Replace input path, freeze old for figures |
-| Firmware | Three TypeScript interpreters, flat cost per statement (`profiles.ts:87-202`) | Same by default (T1), avr8js opt-in (T3, RS-03 PASS on desktop, device speed INCONCLUSIVE) | Extend |
+| Analog | DC nodal solver with globals, silent non-convergence (`figures/engine/bench-solve.js`) | Pure module, convergence flag, then transient in the in-house engine behind `AnalogBackend`; ngspice WASM is the on-demand oracle. Live transient accuracy is unmeasured (RS-08 part b and RS-07 never ran) | Replace input path, freeze old for figures |
+| Firmware | Three TypeScript interpreters, flat cost per statement (`profiles.ts:87-202`) | Same by default (T1), avr8js opt-in "Firmware mode" in a Worker (T3). RS-03 INCONCLUSIVE overall: correctness PASS, desktop 6.1 to 7.5x, throttled about 1.7x at 4x and 1.1x at 6x | Extend |
 | Where it runs | Main thread (`boardlab/engine.ts:164`); checks in a Worker | SimWorker | Extend |
 | Replay | Flight only (`sim.ts:1008`) | `ReplayRecord` for circuits and firmware | Extend |
 
@@ -614,13 +614,13 @@ sequenceDiagram
   participant S as iynk server (RoomCore)
   participant DB as SQLite
   participant B as Browser B (buddy)
-  A->>S: POST /api/v1/rooms {project at revision r, settings} (device token)
+  A->>S: POST /v1/rooms {project at revision r, settings} (device token)
   S->>S: validate V1 to V5 and limits
   S->>DB: checkpoint 0, seq = r, ACL (A is owner and host)
-  S-->>A: 201 {room, epoch, seq}
-  A->>S: POST /api/v1/rooms/:id/invites {buddy B, role editor}
+  S-->>A: 201 Room {id, epoch, seq}
+  A->>S: POST /v1/rooms/:id/invites {buddy B, role editor}
   S-->>B: lobby frame invite {room, from, title, role}
-  B->>S: POST /api/v1/room-invites/redeem {room, token}
+  B->>S: POST /v1/room-invites/redeem {room, token}
   S->>DB: ACL insert, access.grant op (author kind system)
   Note over A,B: WebSocket handshake for each, challenge then hello with ECDSA signature
   B->>S: hello {device, room, sig, resume}
@@ -649,7 +649,7 @@ sequenceDiagram
     B->>S: hello {resume.seq}
     S-->>B: tail since seq if retained, else last checkpoint plus tail (gzip)
   end
-  Note over A,B: Simulation: runner A stamps inputs, B runs the same ops and seed locally. Peers compare class B hashes every 1,000 ms of simulated time. On a mismatch B switches its display to the runner's run.frame, so runner frames are the fallback display (REALTIME 13.6).
+  Note over A,B: Simulation: runner A stamps inputs, B runs the same ops and seed locally. Peers compare class B hashes every 1,000 ms of simulated time for digital, MCU and serial; physics, flight and analog compare class D until RA-02, SA-12 and DET-2 pass. On a mismatch B switches its display to the runner's run.frame, so runner frames are the fallback display (REALTIME 13.6).
 ```
 
 ### 7.1 Facts the sequence relies on
@@ -673,7 +673,7 @@ PENDING: durability and throughput of the SQLite store (RT-1), cross-machine sim
 
 ```mermaid
 stateDiagram-v2
-  [*] --> open: POST /api/v1/rooms
+  [*] --> open: POST /v1/rooms
   open --> locked: host locks
   locked --> open: host unlocks
   open --> idle: last member leaves
@@ -713,13 +713,13 @@ flowchart TB
   apply -->|"reject code"| keep["State unchanged<br/>message shown"]
   apply -->|"ok"| state["New state, revision + 1<br/>inverse kept for undo"]
   state --> ui["UI repaints"]
-  state -->|"debounce, PROPOSAL 1,000 ms after last op, or 5 s max"| pw["ProjectWorker<br/>canonical JSON, state hash"]
+  state -->|"debounce 500 ms after the last commit, 5 s max"| pw["ProjectWorker<br/>canonical JSON, state hash"]
   pw --> slot["IndexedDB two-slot write<br/>new record first, then replace old<br/>index row in same transaction"]
   slot -->|"revision and hash compared first"| tab{"Another tab<br/>wrote newer?"}
   tab -->|"yes"| conflict["Do not overwrite<br/>offer reload or fork"]
   tab -->|"no"| saved["Saved locally"]
   saved -->|"every 500 ops or 10 min"| cp["Checkpoint in history<br/>snapshot in revisions store"]
-  saved -->|"1,000 ops in tail"| compact["Compact: checkpoint, drop oldest ops,<br/>advance baseRevision and baseChain"]
+  saved -->|"compaction when `history.ops` passes 1,000"| compact["Compact: checkpoint, drop oldest ops,<br/>advance baseRevision and baseChain"]
   saved -->|"person chooses Save file"| fileout
   subgraph fileout["Save as file"]
     iynk[".iynk<br/>envelope {format, version, hash, project}<br/>pretty form"]
@@ -773,7 +773,7 @@ stateDiagram-v2
 | Op envelope | at most 64 KiB serialised | 7.1 |
 | History | tail of at most 1,000 ops, at most 256 checkpoints | 5.15 |
 | Secrets | export runs a secret-shape scan (`sk-`, `AIza`, PEM headers, long hex) and warns before writing. The `keys` store is outside every export path | 13 |
-| Hash | Same content gives the same bytes and hash. Hash excludes `history`, `exports` and `meta.updatedAt` | 6.4 |
+| Hash | Same content gives the same bytes and hash. Hash excludes `history`, `exports`, `meta.updatedAt` and `revision` | 6.4 |
 | Round trips | Only `.iynk`, `.iynkz` and replay logs promise a round trip. Every other format is HYPOTHESIS until its acceptance test passes | 12.2 |
 
 ### 8.4 Formats the converters write
@@ -806,7 +806,7 @@ flowchart TB
     keys2["AI and search keys<br/>IndexedDB keys, never exported"]
   end
   subgraph Enroll["Getting onto a server"]
-    code["Operator runs iynk-server enrol<br/>one-time code, 24 h, single use<br/>IYNK_ENROL=invite default, closed stops it"]
+    code["Operator runs iynk-server enrol<br/>one-time code, 24 h, single use<br/>IYNK_ENROL=code default, closed stops enrolment"]
     reg["POST device registration<br/>public key + code"]
     tok["Device token<br/>stored by hash on the server<br/>authorises HTTP calls"]
     devrow["Device row<br/>dev_ id = base32 of SHA-256(SPKI)"]
@@ -876,7 +876,7 @@ Roles are the document's four values. Host, baton holder and runner are room pro
 | Invites | 128-bit capability in the URL fragment, one use for editor, five for viewer, 24 h default, at most 7 days and 20 uses. Only the SHA-256 is stored | REALTIME 5.4 |
 | Bans | By device id, in the room ACL. A new random id does not help | REALTIME 4.4 rule 4 |
 | Auth failures | 5 per minute per address, then 5 minutes refused (PROPOSAL) | REALTIME 4.4 rule 5 |
-| Server reach | Registration needs an enrolment code from `iynk-server enrol` or a pairing offer (`IYNK_ENROL=invite`, default; `closed` stops all new enrolment; there is no open mode). A public URL cannot store data for strangers | REALTIME 5.3 and SYSTEM_ARCHITECTURE ADR-0007 (adds a gate to R-077, Objection O-1 there) |
+| Server reach | Registration needs an enrolment code from `iynk-server enrol` (`IYNK_ENROL=code`, default; `closed` stops all new enrolment; there is no open or invite mode, and a pairing never enrols). A public URL cannot store data for strangers | REALTIME 5.3 and SYSTEM_ARCHITECTURE ADR-0007 (adds a gate to R-077, Objection O-1 there) |
 | Local only | With no server there are no devices, no rooms and no enforcement. That is not a gap, it is the single-user case | REALTIME 4.4 last line |
 | Lobby | Delivers only things about paired buddies. No directory, search or listing of strangers (D-016). The buddies-only leaderboard is a REST read | REALTIME 5.5 |
 
@@ -887,7 +887,7 @@ Roles are the document's four values. Host, baton holder and runner are room pro
 | Peer id | Client chosen, trusted (R4) | Derived from device key |
 | Room codes | Six characters, 29.7 bits (R1); join creates a room (R3) | Capability invites; authenticated creation |
 | Roles | Not enforced (R6) | Table above in `RoomCore` |
-| Server routes | Several unauthenticated direct-to-model routes | Every route needs the server token or a device signature (F-004) |
+| Server routes | Several unauthenticated direct-to-model routes | Every route needs IYNK_SERVER_TOKEN in B0 (BACKEND 13.1, deleted later), then the device bearer token from the collaboration phase (ADR-0007, D-018) or a buddy signature (F-004) |
 | Wallet identity | Solana wallet and passport | Removed (D-016, F-195) |
 
 Features: F-004, F-005, F-119, F-120, F-121, F-206, F-138, F-140. Requirements: R-077, R-080, R-081, R-094, R-097. ADRs: ADR-0502, ADR-0503, ADR-0504, ADR-0510, ADR-0612. Journey: J-13.
@@ -1042,12 +1042,12 @@ The decisions are binding and the diagrams follow them. These are places where t
 
 | # | Issue | What I did | Evidence |
 |---|---|---|---|
-| 1a | DG-02 Caddy edge `/api and /ws` | Changed to `/api/v1, /ws, /healthz, /mcp`. Added the `/config.json` fetch from `web`, and an `AiWorker` node with the dashed direct edge to the providers (the old main-thread edge is removed) | SYSTEM_ARCHITECTURE Caddyfile (`/v1/* /healthz /mcp`), FRONTEND_ARCHITECTURE 173 and 212, BACKEND_ARCHITECTURE 434 |
-| 1b | DG-07 paths | `POST /api/v1/rooms`, `POST /api/v1/rooms/:id/invites`, `POST /api/v1/room-invites/redeem`; room state diagram edge updated too | REALTIME_ARCHITECTURE 187 and 1004, API_CONTRACTS 589 to 598 |
+| 1a | DG-02 Caddy edge `/api and /ws` | Changed to `/api/v1, /ws, /healthz, /mcp` (superseded by RC-21 and RC-30, see the fold-in below). Added the `/config.json` fetch from `web`, and an `AiWorker` node with the dashed direct edge to the providers (the old main-thread edge is removed) | SYSTEM_ARCHITECTURE Caddyfile (`/v1/* /healthz /mcp`), FRONTEND_ARCHITECTURE 173 and 212, BACKEND_ARCHITECTURE 434 |
+| 1b | DG-07 paths | `POST /v1/rooms`, `POST /v1/rooms/:id/invites`, `POST /v1/room-invites/redeem`; room state diagram edge updated too | REALTIME_ARCHITECTURE 187 and 1004, API_CONTRACTS 589 to 598 |
 | 1c | DG-01 app to search provider | Removed the dashed edge; the server edge is labelled as the only route. Table row says so | SYSTEM_ARCHITECTURE 6.11 (line 536) |
-| 1d | DG-09 enrolment | `IYNK_ENROL=invite default, closed stops it` and `iynk-server enrol`; 9.2 row rewritten (no open mode) | REALTIME_ARCHITECTURE 196, BACKEND_ARCHITECTURE 238 and 501 |
+| 1d | DG-09 enrolment | `IYNK_ENROL=code default, closed stops enrolment` (was `invite`, RC-14) and `iynk-server enrol`; 9.2 row rewritten (no open mode) | REALTIME_ARCHITECTURE 196, BACKEND_ARCHITECTURE 238 and 501 |
 | 1e | DG-07 mismatch note | Now says runner `run.frame` is the fallback display; the PENDING paragraph cites REALTIME 13.6 | REALTIME_ARCHITECTURE 699 to 706 |
-| 1f | DG-08 autosave | Debounce edge reads `1,000 ms after last op, or 5 s max` | SYSTEM_ARCHITECTURE 1024 |
+| 1f | DG-08 autosave | Debounce edge reads `500 ms after the last commit, 5 s max` (was 1,000 ms, RC-11) | SYSTEM_ARCHITECTURE 1024 |
 | 1g | Re-run section 12 | Done, 16 of 16 render | Section 12 |
 | 2a | DG-03 regeneration | Edge list now produced by `gen_dg03.py` (in the scratch folder named in section 3, not committed per the no-commit rule) from the SYSTEM 5.3 table: 48 edges, including the ones the old picture dropped (core to ai, parts to ai, core to local, core to collab, core to studio, core to export, core to content, sim-host to studio, and the optional server edges). Cell qualifiers listed in a table | SYSTEM_ARCHITECTURE 184 to 203 |
 | 2b | Protocol module | Added as a dashed node from FRONTEND 4.1. I did not make it solid because SYSTEM 5.2 and 5.3 still have no `protocol` row; Objection 6 and open item 1 say what SYSTEM must add | FRONTEND_ARCHITECTURE 105 |
@@ -1055,7 +1055,41 @@ The decisions are binding and the diagrams follow them. These are places where t
 | 2d | Upstream line | Added FRONTEND, BACKEND, SYSTEM_ARCHITECTURE, API_CONTRACTS | Header |
 | 2e | RS-09 source | Now `36 reproduced runs (30+6), about 10,900 generated ops each` | RS-09 REPORT lines 45 to 46 and 152 |
 
-Two things I did not resolve, because they are not mine:
+Open items from the review (the second, on `IYNK_ENROLLMENT`, is closed by RC-14 and its line is deleted):
 
-1. The base path is not settled across the cluster. REALTIME_ARCHITECTURE and this review say `{origin}/api/v1`; API_CONTRACTS 62, SYSTEM_ARCHITECTURE (Caddyfile `/v1/*`, `POST /v1/devices`) and `openapi.yaml` servers say `{origin}/v1`. I followed the issue (`/api/v1`). Whichever wins, the DG-02 Caddy edge and the three DG-07 paths change together.
-2. API_CONTRACTS 303, 345 and 863 still use `IYNK_ENROLLMENT` with modes `code, invite, open` and `iynk-server enroll`. DG-09 follows REALTIME and BACKEND (`IYNK_ENROL`, `enrol`, no open mode). API_CONTRACTS needs the same edit.
+1. Resolved by RC-21: the base path is `/v1`. The fold-in below applies it.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Source: RECONCILIATION.md rows and the spike reports under `08_RESEARCH_SPIKES/`.
+
+| Id | Change | Where |
+|---|---|---|
+| RC-11 | Autosave edge reads "debounce 500 ms after the last commit, 5 s max". Review log row 1f updated | DG-08 |
+| RC-12 | Checkpoint edge kept at 500 ops or 10 min. Compaction edge now "when `history.ops` passes 1,000" | DG-08 |
+| RC-14 | `IYNK_ENROL=code` default, `closed` stops enrolment. DG-09 box and section 9.2 row fixed. Review log row 1d updated. The `IYNK_ENROLLMENT` note is deleted | DG-09, review log |
+| RC-21 | `/api/v1` becomes `/v1` in the Caddy edge, three DG-07 sequence calls and the room state diagram edge. Review log row 1a notes it. Open item 1 is resolved. Row 1b keeps its old text but its paths now read `/v1` too | DG-02, DG-07 |
+| RC-24 | No edge or table in this file names `/projects`, `/me/exports`, `/usage` or `/parts` (checked with grep). No share edge exists either, so there was nothing to change to `POST /v1/shares`. Skipped | none |
+| RC-30 | Root `/mcp` removed from the Caddy edge. The root list is `/v1, /ws, /healthz, /readyz`; the last two serve the container check and proxy and are not in openapi. MCP is `/v1/mcp`, covered by `/v1` | DG-02 |
+| RC-31 | Hash exclusion list now includes `revision` | section 8.3 limits table |
+| RC-34 | New project `schemaVersion` is "1.1" in the data model ER diagram | DG-04 |
+| RS-03 | Firmware row no longer says PASS. INCONCLUSIVE overall: correctness PASS (80 of 80 serial lines, duty within 0.4 points, period within 0.14 ms), desktop 6.1 to 7.5x real time, throttled about 1.7x at 4x and 1.1x at 6x, below the 3x line. Decision: TypeScript interpreters stay default and offline; avr8js is an opt-in "Firmware mode" in a Worker behind an engine interface. Would change if a phone or Chromebook run (For Amar) reaches 3x. Report: `08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md` | section 5.3 table |
+| RS-03, RS-04, RS-05, RS-17 | Compile boxes (DG-02 and the DG-05 build path) no longer say PENDING. Decision: an optional local arduino-cli process, off by default, no network, no secrets, run as a separate executable and never linked. Measured 1.17 to 1.40 s cold and 0.33 to 0.56 s warm on an M4 Pro (RS-03 REPORT, compile times). Not decided: sandbox cost and isolation (RS-05 never ran, and a self-hosted app has no scale to price) and whether arduino-cli GPL-3.0 needs more than separate-process use (RS-17 never ran; the licence call is For Amar). Reversible: interpreters are the default path, so removing compile loses no lesson | DG-02, DG-05 |
+| RS-08 | Analog row: in-house MNA core as a pure module with a convergence flag, then transient added in the same engine behind `AnalogBackend`. ngspice WASM is the on-demand oracle. Device-model fidelity failed (10 of 20 within 2 percent, worst C16 229.6 percent), so Newton devices are added and no SPICE-level accuracy is claimed. Part (b) transient accuracy and RS-07 never ran; they become a Fidelity-phase task. Report: `08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md` | section 5.3 table |
+
+Spike results folded in as context, with no diagram change needed here: RS-01 (SVG scene with level of detail and culling behind a Renderer interface; the device run is For Amar, Q-2), RS-06 (Pico stays on the TypeScript MicroPython interpreter), RS-09 (server-ordered op log), RS-12 (Yosys and DigitalJS as a lazy opt-in desktop Inspect mode), RS-13 (Rapier behind `PhysicsBackend`, Robotics phase only). DP-01 is an author-run prototype and is not cited as a spike verdict. RS-07, RS-11, RS-14, RS-15, RS-16, RS-18 and RS-20 have no result and stay PENDING until their phase.
+
+Wait wording: grep found no text in this file that makes Studio wait for interviews, a pilot or Fault Lab, so nothing was replaced for the D-014 order.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-25 | Create-room reply is now `201 Room {id, epoch, seq}` (sequence diagram), matching the `Room` object. |
+| RC-53 | Both class B hash statements (rooms table row and the simulation note) now say the 1,000 ms compare applies to digital, MCU and serial; physics, flight and analog compare class D until RA-02, SA-12 and DET-2 pass (REALTIME 668/701, ADR-0303). |
+| RC-24 | Working-copy row now reads "or a share snapshot on the server". The log line saying no project edges exist was already correct and is unchanged. |
+
+
+## Reconcile, final nits (2026-10-27)
+
+- Server routes row in the before and after table (about line 890): "the server token or a device signature" now names IYNK_SERVER_TOKEN in B0 (BACKEND 13.1, deleted later), then the device bearer token from the collaboration phase (ADR-0007, D-018) or a buddy signature. No setup token (RC-15, RC-16).

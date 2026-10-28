@@ -29,7 +29,7 @@ There is no project object. Work is scattered: `iynk:v1` in `localStorage` holds
 
 ## Decision
 
-A project is one JSON document, `format: "iynk.project"`, `schemaVersion: "1.0"`. Its shape is defined by `project.schema.json` (draft 2020-12); TypeScript types are generated from that file. The document is complete without a server. The same file defines the op, proposal, replay-log and file-envelope shapes as `$defs`. Part descriptors, robotics data and drone data are referenced or carried as opaque envelopes, not redefined.
+A project is one JSON document, `format: "iynk.project"`, `schemaVersion: "1.1"`. Its shape is defined by `project.schema.json` (draft 2020-12); TypeScript types are generated from that file. The document is complete without a server. The same file defines the op, proposal, replay-log and file-envelope shapes as `$defs`. Part descriptors, robotics data and drone data are referenced or carried as opaque envelopes, not redefined.
 
 ## Technical justification
 
@@ -78,3 +78,9 @@ Medium to high. All mutation goes through one `apply` function (ADR-0104), so th
 - Every save rewrites the whole document (3.4 ms of serialisation at 500 parts; IndexedDB write time not measured, UNKNOWN).
 - A reader needs the schema version it was written for; a newer file is refused, not partly opened (ADR-0105).
 - The schema file is large (64 KB minified, 79 definitions); its standalone validator is 925 KB of source, 55 KB brotli (ADR-0110).
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-34 | Line 32: a new project is `schemaVersion: "1.1"` (was `"1.0"`), matching `project.schema.json` and `opSchema` 1.1. Domain data keeps its own `schemaVersion "1.0"`. |

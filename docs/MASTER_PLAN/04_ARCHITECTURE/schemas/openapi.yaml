@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: iynk self-hosted server API
   version: 1.0.0-draft.1
-  summary: Optional server for buddies, pairing, rooms, shared projects, share links, assets, a thin AI relay and a search proxy.
+  summary: Optional server for buddies, pairing, rooms, share links, assets, a thin AI relay and a search proxy.
   description: |-
     Specification written 2026-10-27 for D-013 to D-017. Companion: `API_CONTRACTS.md`, which holds the rules this file cannot say (auth flow, error registry, rate-limit table, retries, route migration, acceptance tests).
 
@@ -29,24 +29,18 @@ tags:
 - name: Identities
   description: 'A person on this server: a public key and a display name. No email, no password (F-206).'
 - name: Pairings
-  description: Links and typed codes that make two people buddies, optionally with a project role (F-206, F-138, F-122).
+  description: Links and typed codes that make two people buddies (F-206, F-138, F-122).
 - name: Buddies
   description: The paired list. Live presence is on the lobby socket, not here (F-138).
 - name: Leaderboards
   description: Scores shown only among buddies (F-140, D-016).
-- name: Projects
-  description: Server copy of a project document, revisions, forks, access and trash (F-092, F-199, F-165).
 - name: Shares
   description: Share links (F-089).
 - name: Assets
   description: Content-addressed binary files (F-201).
-- name: Parts
-  description: Content-addressed custom part definitions that projects pin (F-101, F-220).
 - name: Rooms
   description: Create, list, close and invite to rooms. The socket, host commands and ops are in REALTIME_ARCHITECTURE (F-116, F-119, F-120, F-121,
     F-122).
-- name: Data
-  description: Import, export, account export and account deletion (F-168, F-090, F-091).
 - name: AI
   description: Optional relay for providers that block browser calls (F-193, ADR-0612).
 - name: Search
@@ -54,7 +48,7 @@ tags:
 - name: Tools
   description: MCP and REST tools for the user's own AI tools (F-167).
 - name: Compile
-  description: PENDING RS-04 and RS-05. Sketch compile service (F-049).
+  description: 'Opt-in sketch compile service (F-049, `IYNK_COMPILE_ENABLE`, default 0). Answers 501 `feature_disabled` until the Fidelity phase builds it.'
 security:
 - accessToken: []
 paths:
@@ -443,8 +437,8 @@ paths:
       - Identities
       operationId: registerIdentity
       summary: Register this browser's key
-      description: 'Enrolment. With `enrollment: code` (default) the body needs an `enrollmentCode` the operator made with `iynk-server enroll`
-        on the host: one use, 24 hours. With `invite` or `open` see the server info. The challenge proves the caller holds the private
+      description: 'Enrolment. With `enrollment: code` (default) the body needs an `enrollmentCode` the operator made with `iynk-server enrol`
+        on the host: one use, 24 hours. With `enrollment: closed` no new device can register. A pairing never enrols (RC-14). The challenge proves the caller holds the private
         key. A new identity gets an access token at once. A wrong, used or expired code is a plain 401 `unauthorized`. This is the gate R-077
         lacks (Objection O-2): a stranger who finds the URL cannot register.'
       security: []
@@ -549,8 +543,8 @@ paths:
       operationId: requestDeletion
       summary: Delete my identity and its data
       description: 'Schedules deletion after the operator''s grace period (default 24 hours, 0 means now). What goes: the identity, sessions,
-        API tokens, pairings, scores, share links, invites, and the projects chosen by `projects`. Server copies only: the person''s local projects
-        are untouched. Run an account export first.'
+        API tokens, pairings, scores, share links and invites. Server copies only: the person''s local projects
+        are untouched.'
       security:
       - accessToken: []
       parameters:
@@ -615,7 +609,7 @@ paths:
       operationId: createPairing
       summary: Make a pairing link and code
       description: Returns a link token (128 bits, 24 hours by default) and a typed code (10 minutes at most, deleted after 5 wrong secrets, R-076).
-        Optionally also grants a role on one of the caller's projects when redeemed. Token and code are shown once. At most 20 open pairings per
+        Token and code are shown once. At most 20 open pairings per
         identity.
       security:
       - accessToken: []
@@ -771,12 +765,11 @@ paths:
       - Pairings
       operationId: redeemPairing
       summary: Accept a link or typed code
-      description: 'Signed in: pairs the caller with the creator and applies the pairing''s `grant`. Not signed in: the body carries `registration`,
-        which enrols the key first (only when `enrollment` is `invite` or `open`). Both sides'' lobby sockets get a `buddy` frame. Pairing with
-        oneself, or twice, is 409 `already_paired`; a grant is still applied. Atomic: nothing is created if any step fails. A typed code with
+      description: 'Pairs the caller (an enrolled identity) with the creator. A pairing never enrols a new
+        device (RC-14); register first with `registerIdentity`. Both sides'' lobby sockets get a `buddy` frame. Pairing with
+        oneself, or twice, is 409 `already_paired`. Atomic: nothing is created if any step fails. A typed code with
         the right channel and a wrong secret counts toward that code''s 5 attempts.'
       security:
-      - {}
       - accessToken: []
       parameters:
       - $ref: '#/components/parameters/IdempotencyKey'
@@ -934,7 +927,7 @@ paths:
       - Buddies
       operationId: removeBuddy
       summary: Remove a buddy
-      description: 'Both sides drop the pairing. The server also removes grants each side gave the other, closes any share with `audience: buddies`
+      description: 'Both sides drop the pairing. The server also closes any share with `audience: buddies`
         they could open, and removes each from rooms the other hosts (R-080). Their own copies and forks stay with them. Idempotent.'
       security:
       - accessToken: []
@@ -961,8 +954,8 @@ paths:
       - Leaderboards
       operationId: submitScore
       summary: Submit my best for a board
-      description: Keeps the better of the stored and the submitted value, so retries and lower values are harmless. `key` names a course or lesson
-        set, for example `drone.course.canyon-run`.
+      description: Keeps the better of the stored and the submitted value, so retries and lower values are harmless. `key` names a board track and
+        subject, for example `lap.drone.canyon-run`; lesson counts are not posted.
       security:
       - accessToken: []
       parameters:
@@ -1053,749 +1046,16 @@ paths:
       x-iynk-features:
       - F-140
       x-iynk-rate-limit: read
-  /projects:
-    get:
-      tags:
-      - Projects
-      operationId: listProjects
-      summary: Projects on this server that I can see
-      description: Mine and shared with me. Sorted by `updatedAt` descending, ties by id. Trashed projects appear only with `trashed=true`.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/Limit'
-      - $ref: '#/components/parameters/Cursor'
-      - name: scope
-        in: query
-        schema:
-          enum:
-          - all
-          - mine
-          - shared
-          default: all
-      - name: kind
-        in: query
-        schema:
-          enum:
-          - project
-          - template
-          - lesson
-          - challenge
-          - bench
-          - craft
-      - name: q
-        in: query
-        description: Title prefix, case-insensitive, at most 80 characters.
-        schema:
-          type: string
-          maxLength: 80
-      - name: trashed
-        in: query
-        schema:
-          type: boolean
-          default: false
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ProjectRecord'
-                  nextCursor:
-                    type:
-                    - string
-                    - 'null'
-                    description: Opaque. Null on the last page. Pass it as `cursor` to get the next page.
-                    maxLength: 256
-                additionalProperties: false
-                required:
-                - items
-                - nextCursor
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      - F-199
-      x-iynk-rate-limit: read
-    post:
-      tags:
-      - Projects
-      operationId: createProject
-      summary: Put a new project on the server
-      description: Validates the document (V2 to V5) and stores it at its revision. With `keepId` the id is kept so a local project and its server
-        copy are the same project. Returns what is still missing (assets, part definitions). The caller becomes the owner; `document.access` is
-        replaced by the server's ACL.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectCreate'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DocumentSaved'
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
-            Location:
-              schema:
-                type: string
-              description: '`/v1/projects/{id}`'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMedia'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      - F-199
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-  /projects/import:
-    post:
-      tags:
-      - Data
-      operationId: importProject
-      summary: Import a .iynk or .iynkz file
-      description: 'Server import reads only the two native formats: `application/vnd.iynk.project+json` (the `.iynk` file envelope) and `application/vnd.iynk.container+zip`
-        (`.iynkz`). Every other format (.ino, KiCad, SPICE, Wokwi) is converted in the browser by the converters of ADR-0109 and arrives as a
-        project document; the server never parses third-party formats. Zip rules: PROJECT_DATA_MODEL 12.1 (1,000 entries, 16 MiB per entry, 128
-        MiB total, ratio 100 to 1, no path escape). A hash mismatch inside the file is a warning, not a refusal (R-037).'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: true
-        content:
-          application/vnd.iynk.project+json:
-            schema:
-              $ref: project.schema.json#/$defs/FileEnvelope
-          application/vnd.iynk.container+zip:
-            schema:
-              type: string
-              format: binary
-      responses:
-        '201':
-          description: Imported
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImportResult'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMedia'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-091
-      - F-201
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-      x-iynk-phase: CORE
-  /projects/{projectId}:
-    get:
-      tags:
-      - Projects
-      operationId: getProject
-      summary: Project record
-      description: Metadata only; the document is a separate call.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProjectRecord'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      x-iynk-rate-limit: read
-    delete:
-      tags:
-      - Projects
-      operationId: trashProject
-      summary: Move to trash, or delete for good
-      description: 'Owner only. Default: trash for 30 days (`trashRetentionDays`), then purge. `purge=true` deletes now, with its revisions, share
-        links, and the assets nothing else references. A room open on the project is closed first. Idempotent.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - name: purge
-        in: query
-        schema:
-          type: boolean
-          default: false
-      responses:
-        '204':
-          description: Trashed or deleted
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      - F-168
-      x-iynk-rate-limit: project.write
-  /projects/{projectId}/restore:
-    post:
-      tags:
-      - Projects
-      operationId: restoreProject
-      summary: Restore from trash
-      description: Owner only.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IdempotencyKey'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProjectRecord'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-  /projects/{projectId}/document:
-    get:
-      tags:
-      - Projects
-      operationId: getDocument
-      summary: Read the document
-      description: Needs a role of viewer or better. `ETag` is the state hash in quotes; `If-None-Match` gets 304. The response is gzip when asked.
-        While a room is open this returns the room's authoritative document at its current `seq`.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IfNoneMatch'
-      responses:
-        '200':
-          description: The document
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProjectDocument'
-        '304':
-          description: Not modified
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      - F-199
-      x-iynk-rate-limit: read
-    put:
-      tags:
-      - Projects
-      operationId: putDocument
-      summary: Save a whole document
-      description: 'Optimistic concurrency: `If-Match` must carry the state hash the client last read; a first upload to an existing id is a create.
-        A hash mismatch is 412 `stale_document`: the client downloads, decides (keep theirs as a new project with `POST /projects`, or take the
-        server''s), and tries again. Offline merging is not done here; two people editing together use a room (op log, ADR-0104). Refused with
-        409 `room_open` while a room is open. Needs editor or owner. Accepts `Content-Encoding: gzip`; the decompressed canonical size is capped
-        at 5,242,880 bytes (V4), checked while streaming.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IfMatch'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectDocument'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DocumentSaved'
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '412':
-          $ref: '#/components/responses/PreconditionFailed'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMedia'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '428':
-          $ref: '#/components/responses/PreconditionRequired'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-092
-      - F-199
-      - F-087
-      x-iynk-rate-limit: project.write
-  /projects/{projectId}/revisions:
-    get:
-      tags:
-      - Projects
-      operationId: listRevisions
-      summary: Saved revisions
-      description: The server keeps the last 50 saves or 30 days, whichever is more (PROPOSAL). Newest first.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/Limit'
-      - $ref: '#/components/parameters/Cursor'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/RevisionRecord'
-                  nextCursor:
-                    type:
-                    - string
-                    - 'null'
-                    description: Opaque. Null on the last page. Pass it as `cursor` to get the next page.
-                    maxLength: 256
-                additionalProperties: false
-                required:
-                - items
-                - nextCursor
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-093
-      x-iynk-rate-limit: read
-  /projects/{projectId}/revisions/{revision}:
-    get:
-      tags:
-      - Projects
-      operationId: getRevision
-      summary: One saved revision
-      description: 410 `revision_unavailable` when trimmed.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - name: revision
-        in: path
-        required: true
-        schema:
-          type: integer
-          minimum: 0
-      responses:
-        '200':
-          description: The document at that revision
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProjectDocument'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '410':
-          $ref: '#/components/responses/Gone'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-093
-      x-iynk-rate-limit: read
-  /projects/{projectId}/forks:
-    post:
-      tags:
-      - Projects
-      operationId: forkProject
-      summary: Fork into my own project
-      description: 'Viewer or better, unless the project is read through a share that sets `allowFork: false`. Makes a new project id; `provenance`
-        records the origin. Assets and part definitions are referenced, not copied.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ForkCreate'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DocumentSaved'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '410':
-          $ref: '#/components/responses/Gone'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-088
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-  /projects/{projectId}/export:
-    get:
-      tags:
-      - Data
-      operationId: exportProject
-      summary: Download .iynk or .iynkz
-      description: '`format=iynk` returns the file envelope; `format=iynkz` returns the container with assets, part definitions and history. Deterministic
-        bytes (PROJECT_DATA_MODEL 12.1). Viewer or better.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - name: format
-        in: query
-        required: true
-        schema:
-          enum:
-          - iynk
-          - iynkz
-      responses:
-        '200':
-          description: File
-          headers:
-            Content-Disposition:
-              schema:
-                type: string
-          content:
-            application/vnd.iynk.project+json:
-              schema:
-                $ref: project.schema.json#/$defs/FileEnvelope
-            application/vnd.iynk.container+zip:
-              schema:
-                type: string
-                format: binary
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-090
-      - F-201
-      x-iynk-rate-limit: export
-  /projects/{projectId}/access:
-    get:
-      tags:
-      - Projects
-      operationId: getAccess
-      summary: Owners, visibility and grants
-      description: Any role may read the list of people; a link reader cannot.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessState'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-121
-      x-iynk-rate-limit: read
-    patch:
-      tags:
-      - Projects
-      operationId: patchAccess
-      summary: Change visibility or owners
-      description: 'Owner only. PENDING Objection O-1: there is no `access.set` op to mirror a change into the document, so until one exists the
-        server answers 501 `feature_disabled` with `details[0].path` `/pending/O-1`. Grants are not affected (`putGrant`).'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccessPatch'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessState'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '501':
-          $ref: '#/components/responses/FeatureDisabled'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-121
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-      x-iynk-phase: pending O-1
-  /projects/{projectId}/access/grants/{identityId}:
-    put:
-      tags:
-      - Projects
-      operationId: putGrant
-      summary: Give a buddy a role
-      description: 'Owner only. The target must be the caller''s buddy (422 `not_a_buddy`). Applies the `access.grant` op to the stored document,
-        so the mirror in the document and the server ACL cannot differ, and bumps the revision. Idempotent: the same role again changes nothing.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IdentityId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GrantPut'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProjectGrant'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-121
-      - F-122
-      x-iynk-rate-limit: project.write
-    delete:
-      tags:
-      - Projects
-      operationId: deleteGrant
-      summary: Take a role away
-      description: Owner only, or a person removing themselves. The last owner cannot be removed (409 `last_owner`). Applies `access.revoke`;
-        removes the person from an open room. Idempotent.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/IdentityId'
-      responses:
-        '204':
-          description: Removed
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-121
-      x-iynk-rate-limit: project.write
-  /projects/{projectId}/shares:
+  /shares:
     get:
       tags:
       - Shares
       operationId: listShares
-      summary: Share links of a project
-      description: Owner or editor. Tokens are never returned again.
+      summary: My share links
+      description: Share links made by the caller. Tokens are never returned again.
       security:
       - accessToken: []
       parameters:
-      - $ref: '#/components/parameters/ProjectId'
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Cursor'
       responses:
@@ -1840,12 +1100,12 @@ paths:
       - Shares
       operationId: createShare
       summary: Make a share link
-      description: Owner only. At most 20 live links per project. Freezes the current revision; to share newer work, make a new link. The token
+      description: Any enrolled identity. The body carries the snapshot (an inline `.iynk` document); the server stores it as given after validation
+        (ADR-0426) and keeps no project of its own (RC-24). At most 20 live links per identity. To share newer work, make a new link. The token
         is shown once.
       security:
       - accessToken: []
       parameters:
-      - $ref: '#/components/parameters/ProjectId'
       - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
@@ -1880,39 +1140,9 @@ paths:
           $ref: '#/components/responses/Unexpected'
       x-iynk-features:
       - F-089
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-  /projects/{projectId}/shares/{shareId}:
-    delete:
-      tags:
-      - Shares
-      operationId: revokeShare
-      summary: Revoke a share link
-      description: Takes effect at once. Idempotent.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ProjectId'
-      - $ref: '#/components/parameters/ShareId'
-      responses:
-        '204':
-          description: Revoked
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-089
       x-iynk-rate-limit: write
-  /shares/{token}:
+      x-iynk-idempotent: Idempotency-Key
+  /shares/{shareRef}:
     get:
       tags:
       - Shares
@@ -1920,7 +1150,7 @@ paths:
       summary: Open a shared project
       description: 'The token is the credential, so no `Authorization` header is needed for audience `link`; for audience `buddies` the caller
         must be signed in and a buddy of the owner, or the answer is 404 (not 403, so a link does not confirm itself). Expired, revoked and unknown
-        tokens all answer 404. Read-only snapshot; editing needs a fork or a project grant. Response `Cache-Control: no-store` and `Referrer-Policy:
+        tokens all answer 404. Read-only snapshot; to edit it, keep the document as a local project (the server has no project library, RC-24). Response `Cache-Control: no-store` and `Referrer-Policy:
         no-referrer`.'
       security:
       - {}
@@ -1947,32 +1177,19 @@ paths:
       x-iynk-features:
       - F-089
       x-iynk-rate-limit: share.read
-  /shares/{token}/fork:
-    post:
+    delete:
       tags:
       - Shares
-      operationId: forkShare
-      summary: Copy a shared project into my library
-      description: Needs a signed-in identity. Refused with 403 `fork_not_allowed` when the share says so. A person without an identity can instead
-        keep the document from `openShare` as a local project; no server call is needed.
+      operationId: revokeShare
+      summary: Revoke a share link
+      description: Owner only. `shareRef` is the public share id (`shr_...`), not the link token. Takes effect at once. Idempotent.
       security:
       - accessToken: []
       parameters:
-      - $ref: '#/components/parameters/ShareToken'
-      - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ForkCreate'
+      - $ref: '#/components/parameters/ShareId'
       responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DocumentSaved'
+        '204':
+          description: Revoked
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1987,10 +1204,8 @@ paths:
           $ref: '#/components/responses/Unexpected'
       x-iynk-features:
       - F-089
-      - F-088
-      x-iynk-rate-limit: project.write
-      x-iynk-idempotent: Idempotency-Key
-  /shares/{token}/assets/{sha256}:
+      x-iynk-rate-limit: write
+  /shares/{shareRef}/assets/{sha256}:
     get:
       tags:
       - Shares
@@ -2135,7 +1350,7 @@ paths:
       - Assets
       operationId: getAsset
       summary: Download an asset
-      description: 'Needs read access to a project that lists this hash. Served with `Cache-Control: private, max-age=31536000, immutable`, `X-Content-Type-Options:
+      description: 'Needs read access to a room whose document lists this hash, or a share token that lists it (the server stores no projects, RC-24). Served with `Cache-Control: private, max-age=31536000, immutable`, `X-Content-Type-Options:
         nosniff` and `ETag: "{sha256}"`. Supports `Range`.'
       security:
       - accessToken: []
@@ -2197,102 +1412,6 @@ paths:
       x-iynk-features:
       - F-201
       x-iynk-rate-limit: read
-  /parts/{ref}/{version}:
-    put:
-      tags:
-      - Parts
-      operationId: putPart
-      summary: Upload a custom part definition
-      description: 'For `embedded` and `library` parts a project pins (`dependencies.components[].digest`). The body is validated against `component.schema.json`
-        with `provenance.origin` forced to `imported-pack`, so the full conditional rules for non-core parts run (no `visual.breadboard.figure` page, no `text/html` asset;
-        COMPONENT_SCHEMA 4.13 and 4.14, ADR-0204). `id` and `version` must equal the path; the digest is computed server side from the canonical bytes.
-        Refused with 422 `invalid_document` and `details[].code` `S-15` when the id is in the `core` namespace or the descriptor claims `provenance.origin: core`
-        (only the app bundle ships core parts; nobody uploads one). Refused with 422 `figure_not_allowed` when `visual.breadboard.figure` points at an HTML page or any
-        `visual.assets[].media_type` is `text/html`. The same id and version with different bytes is 409 `conflict`. A descriptor with code-bearing `software`
-        is stored as data only; whether any client runs it is PENDING RS-15. Built-in parts are never uploaded.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/PartRef'
-      - $ref: '#/components/parameters/PartVersion'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PartDefinition'
-      responses:
-        '201':
-          description: Stored
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PartRecord'
-        '200':
-          description: Already stored
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PartRecord'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMedia'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-101
-      - F-220
-      x-iynk-rate-limit: asset.write
-      x-iynk-phase: PARTS
-    get:
-      tags:
-      - Parts
-      operationId: getPart
-      summary: Download a part definition
-      description: Allowed for the uploader and for anyone who can read a project that pins this ref, version and digest.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/PartRef'
-      - $ref: '#/components/parameters/PartVersion'
-      responses:
-        '200':
-          description: The descriptor
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PartDefinition'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-101
-      - F-220
-      x-iynk-rate-limit: read
-      x-iynk-phase: PARTS
   /rooms:
     get:
       tags:
@@ -2350,11 +1469,11 @@ paths:
       tags:
       - Rooms
       operationId: createRoom
-      summary: Open a room on a project
-      description: 'Authenticated, never by joining (closes R3). Send `projectId` of a project on this server, or the `project` document itself,
-        which is validated (V2 to V5) and stored as checkpoint 0 (R-084). The caller becomes owner and host. Limits (REALTIME_ARCHITECTURE 5.2,
+      summary: Open a room on a document
+      description: 'Authenticated, never by joining (closes R3). Send the `project` document inline (the server has no project library, RC-24);
+        it is validated (V2 to V5) and stored as checkpoint 0 (R-084). The caller becomes owner and host. Limits (REALTIME_ARCHITECTURE 5.2,
         PROPOSAL): 6 creations per minute and 30 per hour per identity, 10 stored rooms per identity, 100 per server; over any of them 429 `rate_limited`
-        or 409 `quota`. One live room per project (409 `room_open`, the room id in `details`). Replaces the implicit create-on-join of `server/realtime/src/relay.js`.'
+        or 409 `quota`. Replaces the implicit create-on-join of `server/realtime/src/relay.js`.'
       security:
       - accessToken: []
       parameters:
@@ -2757,157 +1876,6 @@ paths:
       - F-116
       x-iynk-rate-limit: room.invite.redeem
       x-iynk-idempotent: Idempotency-Key
-  /me/exports:
-    post:
-      tags:
-      - Data
-      operationId: createAccountExport
-      summary: Export everything the server holds about me
-      description: 'Builds a zip: `manifest.json`, `identity.json`, `buddies.json`, `scores.json`, `shares.json` (no tokens; only hashes exist),
-        and `projects/{prj_id}.iynkz` for each owned project, each a valid container that `importProject` accepts. One export at a time; the file
-        is kept 24 hours. Emits `export.ready`.'
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountExportCreate'
-      responses:
-        '202':
-          description: Accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountExport'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-168
-      x-iynk-rate-limit: export
-      x-iynk-idempotent: Idempotency-Key
-    get:
-      tags:
-      - Data
-      operationId: listAccountExports
-      summary: My account exports
-      description: ''
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/Limit'
-      - $ref: '#/components/parameters/Cursor'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AccountExport'
-                  nextCursor:
-                    type:
-                    - string
-                    - 'null'
-                    description: Opaque. Null on the last page. Pass it as `cursor` to get the next page.
-                    maxLength: 256
-                additionalProperties: false
-                required:
-                - items
-                - nextCursor
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-168
-      x-iynk-rate-limit: read
-  /me/exports/{exportId}:
-    get:
-      tags:
-      - Data
-      operationId: getAccountExport
-      summary: Export status
-      description: ''
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ExportId'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountExport'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-168
-      x-iynk-rate-limit: read
-  /me/exports/{exportId}/download:
-    get:
-      tags:
-      - Data
-      operationId: downloadAccountExport
-      summary: Download the export
-      description: 409 `not_ready` until status is `ready`; 410 after expiry. Supports `Range`.
-      security:
-      - accessToken: []
-      parameters:
-      - $ref: '#/components/parameters/ExportId'
-      responses:
-        '200':
-          description: Zip
-          content:
-            application/zip:
-              schema:
-                type: string
-                format: binary
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '410':
-          $ref: '#/components/responses/Gone'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-168
-      x-iynk-rate-limit: export
   /ai/relay:
     post:
       tags:
@@ -2919,7 +1887,7 @@ paths:
         else the operator''s server key for the family, within the caller''s daily cap kept in the store (the client shows "using the host''s
         key"); (3) else 422 `provider_key_missing`. Target: `profile.baseUrl` host must be on the allowlist; private, loopback and link-local
         addresses are refused unless the operator allows them, checked after DNS; no redirects. Request at most 1 MiB; response streamed as the
-        provider sends it (SSE or JSON); 120 seconds overall. Logs: route, status, byte counts, duration and target host only. `IYNK_DISABLE_AI=1`
+        provider sends it (SSE or JSON); 120 seconds overall. Logs: route, status, byte counts, duration and target host only. `IYNK_AI_ENABLE` off (default 0)
         answers 501 `feature_disabled`. Replaces the server chat loop at `POST /api/ai/chat`.'
       security:
       - accessToken: []
@@ -2966,34 +1934,6 @@ paths:
       - F-003
       x-iynk-rate-limit: ai.relay
       x-iynk-phase: B0 (relay ships with F-193)
-  /usage:
-    get:
-      tags:
-      - AI
-      operationId: getUsage
-      summary: My usage today
-      description: The server's counters for the caller (relay calls on a server key, searches on a server key). The browser's own ledger of tokens
-        and money is separate (AI_ARCHITECTURE section 11).
-      security:
-      - accessToken: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Usage'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '426':
-          $ref: '#/components/responses/UpgradeRequired'
-        default:
-          $ref: '#/components/responses/Unexpected'
-      x-iynk-features:
-      - F-003
-      x-iynk-rate-limit: read
   /search/web:
     get:
       tags:
@@ -3416,12 +2356,15 @@ paths:
       tags:
       - Compile
       operationId: createCompileJob
-      summary: Compile a sketch (PENDING RS-04 and RS-05)
-      description: 'Options: (A) arduino-cli in a locked container on the operator''s own machine; (B) avr-gcc as WASM in the browser, no server
-        call at all. Decision rule from TECHNICAL_RESEARCH section 6: pass when p95 click-to-running is under 3 s warm and 8 s cold on a 4G phone
-        with no licence blocker; fail when either path is over 15 s cold or a licence blocks it. Until RS-04 has a Verdict this endpoint exists
-        only in the contract and `features.compile` is false. The job is keyed by the SHA-256 of the canonical input, so the same sources return
-        the same job (cache).'
+      summary: Compile a sketch (opt-in, 501 until built)
+      description: 'Decided for the self-hosted build (RC-28, RC-59): an operator who sets `IYNK_COMPILE_ENABLE=1` runs arduino-cli in a locked
+        container with no network (1 GiB, 1 CPU, 30 s; ADR-0013). Off by default. Until the Fidelity phase builds it the route answers 501 `feature_disabled`
+        and `features.compile` is false. Basis: RS-03 REPORT (08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md) measured arduino-cli 1.5.1 on one
+        laptop at 1.17 to 1.40 s cold and 0.33 to 0.56 s warm for three Uno sketches (VERIFIED by its independent check, within 10 to 20 percent).
+        arduino-cli is GPL-3.0; RS-17 never ran, so licence handling is UNKNOWN and is a task for Amar. RS-04 and RS-05 never ran and their 4G-phone
+        rule assumes scale this app does not have. What would change this: a local timing task in the Fidelity phase over more boards, or a licence
+        finding that rules out shipping arduino-cli in the compose file, which would leave browser avr-gcc WASM (no server call) as the other option.
+        The job is keyed by the SHA-256 of the canonical input, so the same sources return the same job (cache).'
       security:
       - accessToken: []
       parameters:
@@ -3459,8 +2402,8 @@ paths:
       - F-049
       x-iynk-rate-limit: compile
       x-iynk-idempotent: Idempotency-Key
-      x-iynk-phase: SIM, PENDING RS-04
-      x-iynk-status: pending RS-04
+      x-iynk-phase: SIM
+      x-iynk-status: not built; 501 feature_disabled until the Fidelity phase
   /compile/jobs/{jobId}:
     get:
       tags:
@@ -3494,8 +2437,8 @@ paths:
       x-iynk-features:
       - F-049
       x-iynk-rate-limit: read
-      x-iynk-phase: SIM, PENDING RS-04
-      x-iynk-status: pending RS-04
+      x-iynk-phase: SIM
+      x-iynk-status: not built; 501 feature_disabled until the Fidelity phase
 components:
   securitySchemes:
     accessToken:
@@ -3516,19 +2459,6 @@ components:
       schema:
         type: string
         pattern: ^[A-Za-z0-9_-]{16,64}$
-    IfMatch:
-      name: If-Match
-      in: header
-      required: true
-      description: 'The state hash last read, in quotes: `"3f5a..."`. Missing: 428 `precondition_required`. Different from the stored one: 412
-        `stale_document`.'
-      schema:
-        type: string
-    IfNoneMatch:
-      name: If-None-Match
-      in: header
-      schema:
-        type: string
     Limit:
       name: limit
       in: query
@@ -3544,14 +2474,6 @@ components:
       schema:
         type: string
         maxLength: 256
-    ProjectId:
-      name: projectId
-      in: path
-      required: true
-      schema:
-        type: string
-        pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-        maxLength: 72
     RoomId:
       name: roomId
       in: path
@@ -3601,7 +2523,8 @@ components:
         pattern: ^pat_[a-z0-9][a-z0-9_-]{0,63}$
         maxLength: 72
     ShareId:
-      name: shareId
+      name: shareRef
+      description: The public share id (`shr_...`). Used by `revokeShare`. The path template is shared with `openShare`, so the parameter has one name.
       in: path
       required: true
       schema:
@@ -3609,20 +2532,13 @@ components:
         pattern: ^shr_[a-z0-9][a-z0-9_-]{0,63}$
         maxLength: 72
     ShareToken:
-      name: token
+      name: shareRef
+      description: The link token (22 base64url characters). Used by `openShare` and `getSharedAsset`.
       in: path
       required: true
       schema:
         type: string
         pattern: ^[A-Za-z0-9_-]{22}$
-    ExportId:
-      name: exportId
-      in: path
-      required: true
-      schema:
-        type: string
-        pattern: ^exp_[a-z0-9][a-z0-9_-]{0,63}$
-        maxLength: 72
     JobId:
       name: jobId
       in: path
@@ -3637,18 +2553,6 @@ components:
       required: true
       schema:
         $ref: project.schema.json#/$defs/Sha256
-    PartRef:
-      name: ref
-      in: path
-      required: true
-      schema:
-        $ref: project.schema.json#/$defs/DefRefName
-    PartVersion:
-      name: version
-      in: path
-      required: true
-      schema:
-        $ref: project.schema.json#/$defs/SemVer
     ScoreKey:
       name: key
       in: path
@@ -3675,10 +2579,6 @@ components:
       schema:
         type: integer
         minimum: 1
-    ETag:
-      description: The state hash in quotes.
-      schema:
-        type: string
     RateLimitLimit:
       description: Requests allowed in the window of the bucket that answered.
       schema:
@@ -3734,7 +2634,7 @@ components:
           $ref: '#/components/headers/RequestId'
     Conflict:
       description: '`already_exists`, `already_paired`, `room_open`, `last_owner`, `idempotency_in_progress`, `not_ready`, `score_key_mismatch`,
-        `quota`, `room_state`, `revision_regression`.'
+        `quota`, `room_state`.'
       content:
         application/json:
           schema:
@@ -3743,27 +2643,7 @@ components:
         X-Request-Id:
           $ref: '#/components/headers/RequestId'
     Gone:
-      description: '`gone`, `revision_unavailable`, `room_closed`, `export_expired`. The thing existed and will not come back.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-      headers:
-        X-Request-Id:
-          $ref: '#/components/headers/RequestId'
-    PreconditionFailed:
-      description: '`stale_document`. `If-Match` does not equal the stored state hash.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-      headers:
-        X-Request-Id:
-          $ref: '#/components/headers/RequestId'
-        ETag:
-          $ref: '#/components/headers/ETag'
-    PreconditionRequired:
-      description: '`precondition_required`. Send `If-Match`.'
+      description: '`gone`, `room_closed`. The thing existed and will not come back.'
       content:
         application/json:
           schema:
@@ -3962,16 +2842,10 @@ components:
           properties:
             name:
               const: iynk-server
-            version:
-              type: string
-              pattern: ^\d+\.\d+\.\d+
-            commit:
-              type: string
-              maxLength: 40
           additionalProperties: false
           required:
           - name
-          - version
+          description: Name only. The version and build id are not on the unauthenticated probe (RC-23); the build id is in `/metrics`.
         apiVersions:
           type: array
           items:
@@ -4009,11 +2883,9 @@ components:
         enrollment:
           enum:
           - code
-          - invite
-          - open
-          description: 'Who may register an identity. `code` (default): a one-time enrollment code from the operator. `invite`: also a pairing
-            invite from an existing buddy. `open`: anyone who can reach the server (private networks only). Mirrors `IYNK_ENROLLMENT` (REALTIME_ARCHITECTURE
-            5.3).'
+          - closed
+          description: 'Who may register an identity. `code` (default): every new device redeems a one-time enrolment code from the operator. `closed`:
+            no new devices. A pairing never enrols; it links two enrolled identities as buddies. Mirrors `IYNK_ENROL` (REALTIME_ARCHITECTURE 5.3).'
         features:
           type: object
           properties:
@@ -4021,9 +2893,6 @@ components:
               type: boolean
             buddies:
               type: boolean
-            projects:
-              type: boolean
-              description: Server copy and sync of projects.
             shares:
               type: boolean
             rooms:
@@ -4044,7 +2913,6 @@ components:
           required:
           - identities
           - buddies
-          - projects
           - shares
           - rooms
           - assets
@@ -4339,7 +3207,7 @@ components:
           pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
           maxLength: 72
           description: 'The actor id: `usr_` plus the first 10 bytes of SHA-256(SPKI) in lower-case base32 (16 characters). Anyone can recompute
-            it from `keyThumbprint`''s key; it is the value in `actors[].id` and `access.grants[].actor` of projects on this server (REALTIME_ARCHITECTURE
+            it from `keyThumbprint`''s key; it is the value in `actors[].id` of documents and in room membership (REALTIME_ARCHITECTURE
             4.2).'
         deviceId:
           type: string
@@ -4470,21 +3338,9 @@ components:
         confirm:
           type: string
           description: Must equal `delete {displayName}` exactly, so a stray call cannot delete an identity.
-        projects:
-          enum:
-          - delete
-          - transfer
-          description: What happens to projects this identity owns. Projects with another owner are never deleted; this identity is just removed
-            from them.
-        transferTo:
-          type: string
-          pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-          description: 'Required with `transfer`: a buddy who holds an editor grant. All owned projects move to this identity.'
       additionalProperties: false
       required:
       - confirm
-      - projects
     DeletionStatus:
       type: object
       properties:
@@ -4514,24 +3370,6 @@ components:
           maximum: 604800
           default: 86400
           description: 'Lifetime of the link (R-076: 24 hours by default). The typed code lives for 600 seconds or this value, whichever is shorter.'
-        grant:
-          type: object
-          properties:
-            projectId:
-              type: string
-              pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-              maxLength: 72
-            role:
-              enum:
-              - editor
-              - commenter
-              - viewer
-          additionalProperties: false
-          required:
-          - projectId
-          - role
-          description: Optional. On redemption the new buddy is also granted this role on the project. The creator must own the project. `owner`
-            cannot be granted by a pairing.
       additionalProperties: false
       description: Pairing makes two people buddies (R-080). A room needs its own invite (`createRoomInvite`).
     Pairing:
@@ -4570,24 +3408,6 @@ components:
           - type: string
             pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
             maxLength: 72
-          - type: 'null'
-        grant:
-          oneOf:
-          - type: object
-            properties:
-              projectId:
-                type: string
-                pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-                maxLength: 72
-              role:
-                enum:
-                - editor
-                - commenter
-                - viewer
-            additionalProperties: false
-            required:
-            - projectId
-            - role
           - type: 'null'
       additionalProperties: false
       required:
@@ -4661,50 +3481,28 @@ components:
           - displayName
         expiresAt:
           $ref: project.schema.json#/$defs/Timestamp
-        hasProjectGrant:
-          type: boolean
-        projectTitle:
-          type: string
-          maxLength: 120
-        enrollmentOpen:
-          type: boolean
-          description: True when a caller with no identity could register by redeeming (`enrollment` is `invite` or `open`).
       additionalProperties: false
       required:
       - from
       - expiresAt
-      - hasProjectGrant
-      - enrollmentOpen
       description: What the person sees before accepting. Reveals no id and no key.
     PairingRedeem:
       type: object
       properties:
         pairing:
           $ref: '#/components/schemas/PairingRef'
-        registration:
-          $ref: '#/components/schemas/IdentityRegister'
       additionalProperties: false
       required:
       - pairing
-      description: '`registration` is sent only by a caller who has no identity yet, and only when `enrollment` is `invite` or `open`. It registers
-        and pairs in one call (then `enrollmentCode` inside it is not needed).'
+      description: Sent by an enrolled caller. A pairing never enrols a device (RC-14).
     PairingRedeemed:
       type: object
       properties:
         buddy:
           $ref: '#/components/schemas/Buddy'
-        identity:
-          $ref: '#/components/schemas/Identity'
-        accessToken:
-          $ref: '#/components/schemas/AccessToken'
-        grant:
-          oneOf:
-          - $ref: '#/components/schemas/ProjectGrant'
-          - type: 'null'
       additionalProperties: false
       required:
       - buddy
-      description: '`identity` and `accessToken` are present only when the call registered a new identity.'
     Buddy:
       type: object
       properties:
@@ -4866,286 +3664,17 @@ components:
       - better
       - rows
       description: 'Only the caller and the caller''s buddies appear. At most 65 rows: a buddy list is capped at 64.'
-    ProjectRecord:
-      type: object
-      properties:
-        id:
-          type: string
-          pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-        title:
-          type: string
-          maxLength: 120
-        kind:
-          enum:
-          - project
-          - template
-          - lesson
-          - challenge
-          - bench
-          - craft
-        revision:
-          type: integer
-          minimum: 0
-        stateHash:
-          $ref: project.schema.json#/$defs/Sha256
-        schemaVersion:
-          type: string
-          pattern: ^\d+\.\d+$
-        owners:
-          type: array
-          items:
-            type: string
-            pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-            maxLength: 72
-          minItems: 1
-          maxItems: 8
-        role:
-          $ref: project.schema.json#/$defs/Role
-          description: The caller's role.
-        visibility:
-          enum:
-          - private
-          - buddies
-          - link
-        sizeBytes:
-          type: integer
-          description: Canonical document bytes.
-        assetBytes:
-          type: integer
-        createdAt:
-          $ref: project.schema.json#/$defs/Timestamp
-        updatedAt:
-          $ref: project.schema.json#/$defs/Timestamp
-        trashedAt:
-          oneOf:
-          - $ref: project.schema.json#/$defs/Timestamp
-          - type: 'null'
-        roomId:
-          oneOf:
-          - type: string
-            pattern: ^rm_[a-z0-9][a-z0-9_-]{0,63}$
-            maxLength: 72
-          - type: 'null'
-        forkOf:
-          oneOf:
-          - type: object
-            properties:
-              projectId:
-                type: string
-                pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-                maxLength: 72
-              revision:
-                type: integer
-            additionalProperties: false
-            required:
-            - projectId
-            - revision
-          - type: 'null'
-        thumbnailSha256:
-          oneOf:
-          - $ref: project.schema.json#/$defs/Sha256
-          - type: 'null'
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - kind
-      - revision
-      - stateHash
-      - schemaVersion
-      - owners
-      - role
-      - visibility
-      - sizeBytes
-      - createdAt
-      - updatedAt
-      description: Server-side index row. Every field except `role`, `trashedAt`, `roomId` and `visibility` is derived from the stored document.
     ProjectDocument:
       $ref: project.schema.json
       description: 'A project document exactly as `project.schema.json` defines it. The server validates passes V2 to V5 (PROJECT_DATA_MODEL 9.1)
         and never rewrites a valid document, with one exception: `access` (see API_CONTRACTS 6.3).'
-    ProjectCreate:
-      type: object
-      properties:
-        document:
-          $ref: '#/components/schemas/ProjectDocument'
-        keepId:
-          type: boolean
-          default: false
-          description: 'Keep `document.id`. Allowed when no project has that id on this server (a first upload of a local project). Otherwise
-            the server answers `already_exists`; use `forks` or send `keepId: false` to get a new id.'
-      additionalProperties: false
-      required:
-      - document
-    DocumentSaved:
-      type: object
-      properties:
-        project:
-          $ref: '#/components/schemas/ProjectRecord'
-        warnings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Diagnostic'
-          description: Non-fatal diagnostics, including `access_overwritten`.
-        missingAssets:
-          type: array
-          items:
-            $ref: project.schema.json#/$defs/Sha256
-          description: Assets the document lists that the server does not hold yet. Upload them with `PUT /assets/{sha256}`.
-        missingDefinitions:
-          type: array
-          items:
-            type: object
-            properties:
-              ref:
-                type: string
-              version:
-                type: string
-              digest:
-                $ref: project.schema.json#/$defs/Digest
-            additionalProperties: false
-            required:
-            - ref
-            - version
-            - digest
-          description: Embedded or library part definitions pinned by the document and not stored yet. Upload them with `PUT /parts/{ref}/{version}`.
-      additionalProperties: false
-      required:
-      - project
-      - warnings
-      - missingAssets
-      - missingDefinitions
-    RevisionRecord:
-      type: object
-      properties:
-        revision:
-          type: integer
-          minimum: 0
-        stateHash:
-          $ref: project.schema.json#/$defs/Sha256
-        savedAt:
-          $ref: project.schema.json#/$defs/Timestamp
-        savedBy:
-          type: string
-          pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-        source:
-          enum:
-          - put
-          - room
-          - fork
-          - import
-          - restore
-        sizeBytes:
-          type: integer
-      additionalProperties: false
-      required:
-      - revision
-      - stateHash
-      - savedAt
-      - savedBy
-      - source
-      - sizeBytes
-    ProjectGrant:
-      type: object
-      properties:
-        projectId:
-          type: string
-          pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-        identityId:
-          type: string
-          pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-        role:
-          $ref: project.schema.json#/$defs/Role
-        grantedAt:
-          $ref: project.schema.json#/$defs/Timestamp
-        grantedBy:
-          type: string
-          pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-      additionalProperties: false
-      required:
-      - projectId
-      - identityId
-      - role
-      - grantedAt
-    GrantPut:
-      type: object
-      properties:
-        role:
-          enum:
-          - editor
-          - commenter
-          - viewer
-      additionalProperties: false
-      required:
-      - role
-      description: Ownership changes go through `PATCH /projects/{projectId}/access`.
-    AccessState:
-      type: object
-      properties:
-        visibility:
-          enum:
-          - private
-          - buddies
-          - link
-        owners:
-          type: array
-          items:
-            type: string
-            pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-            maxLength: 72
-        grants:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProjectGrant'
-        revision:
-          type: integer
-          description: Document revision after the `access.*` ops that mirror this state.
-      additionalProperties: false
-      required:
-      - visibility
-      - owners
-      - grants
-      - revision
-    AccessPatch:
-      type: object
-      properties:
-        visibility:
-          enum:
-          - private
-          - buddies
-          - link
-        addOwner:
-          type: string
-          pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-        removeOwner:
-          type: string
-          pattern: ^usr_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-      additionalProperties: false
-      description: 'Owner only. PENDING Objection O-1: the op vocabulary has `access.grant` and `access.revoke` but no op that sets `visibility`
-        or owners, so this endpoint cannot be mirrored into the document until `access.set` exists.'
-      minProperties: 1
-      x-iynk-status: pending-schema-change
-    ForkCreate:
-      type: object
-      properties:
-        title:
-          type: string
-          maxLength: 120
-        atRevision:
-          type: integer
-          minimum: 0
-          description: 'Default: current. Must be a revision the server retains; otherwise `revision_unavailable`.'
-      additionalProperties: false
     ShareCreate:
       type: object
       properties:
+        snapshot:
+          $ref: '#/components/schemas/ProjectDocument'
+          description: The project as a `.iynk` document. History may be omitted; the server strips it. The server keeps no other copy of the project
+            (RC-24).
         audience:
           enum:
           - link
@@ -5164,7 +3693,9 @@ components:
           type: string
           maxLength: 60
       additionalProperties: false
-      description: 'Always an immutable snapshot of the current revision, read-only: viewers can run it and fork it, not edit it (R-095). Live
+      required:
+      - snapshot
+      description: 'Always an immutable snapshot of the document in the body, read-only: viewers can run it and fork it, not edit it (R-095). Live
         and commenter shares are not in v1; adding them later is additive.'
     Share:
       type: object
@@ -5173,17 +3704,13 @@ components:
           type: string
           pattern: ^shr_[a-z0-9][a-z0-9_-]{0,63}$
           maxLength: 72
-        projectId:
-          type: string
-          pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
         audience:
           enum:
           - link
           - buddies
         revision:
           type: integer
-          description: The frozen revision.
+          description: The `revision` of the snapshot, as it was in the document.
         stateHash:
           $ref: project.schema.json#/$defs/Sha256
         allowFork:
@@ -5210,7 +3737,6 @@ components:
       additionalProperties: false
       required:
       - id
-      - projectId
       - audience
       - revision
       - stateHash
@@ -5365,34 +3891,6 @@ components:
       - bytes
       - mediaType
       - createdAt
-    PartDefinition:
-      $ref: component.schema.json
-      description: A part descriptor exactly as `component.schema.json` defines it. Stored as data; the server never executes anything it contains.
-    PartRecord:
-      type: object
-      properties:
-        ref:
-          type: string
-        version:
-          type: string
-        digest:
-          $ref: project.schema.json#/$defs/Digest
-        bytes:
-          type: integer
-        origin:
-          enum:
-          - library
-          - embedded
-        createdAt:
-          $ref: project.schema.json#/$defs/Timestamp
-      additionalProperties: false
-      required:
-      - ref
-      - version
-      - digest
-      - bytes
-      - origin
-      - createdAt
     RoomSettings:
       type: object
       properties:
@@ -5427,15 +3925,10 @@ components:
     RoomCreate:
       type: object
       properties:
-        projectId:
-          type: string
-          pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-          description: A project already stored on this server. Send this or `project`.
         project:
           $ref: '#/components/schemas/ProjectDocument'
-          description: A document at revision r, history may be omitted. The server stores it as checkpoint 0 and as a new project owned by the
-            caller (R-084).
+          description: An inline `.iynk` document at revision r, history may be omitted. The server stores it as checkpoint 0 of the room (R-084,
+            RC-25). The server has no project library.
         title:
           type: string
           minLength: 1
@@ -5445,12 +3938,7 @@ components:
       additionalProperties: false
       required:
       - title
-      description: Exactly one of `projectId` or `project`.
-      oneOf:
-      - required:
-        - projectId
-      - required:
-        - project
+      - project
     Room:
       type: object
       properties:
@@ -5459,10 +3947,6 @@ components:
           pattern: ^rm_[a-z0-9][a-z0-9_-]{0,63}$
           maxLength: 72
           description: '`rm_` plus 16 random base32 characters. An address, not a secret: knowing it grants nothing (REALTIME_ARCHITECTURE 5.2).'
-        projectId:
-          type: string
-          pattern: ^prj_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
         title:
           type: string
         hostId:
@@ -5527,7 +4011,6 @@ components:
       additionalProperties: false
       required:
       - id
-      - projectId
       - title
       - hostId
       - status
@@ -5568,7 +4051,7 @@ components:
             type: integer
             minimum: 1
             maximum: 20
-            default: 1
+            description: When absent the server sets 1 for editor and 5 for viewer. Maximum 20.
           ttlSeconds:
             type: integer
             minimum: 300
@@ -5696,90 +4179,6 @@ components:
       - seq
       - at
       - kind
-    ImportResult:
-      type: object
-      properties:
-        project:
-          $ref: '#/components/schemas/ProjectRecord'
-        loss:
-          type: array
-          items:
-            $ref: project.schema.json#/$defs/LossItem
-        warnings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Diagnostic'
-      additionalProperties: false
-      required:
-      - project
-      - loss
-      - warnings
-    AccountExportCreate:
-      type: object
-      properties:
-        include:
-          type: array
-          items:
-            enum:
-            - identity
-            - buddies
-            - projects
-            - assets
-            - scores
-            - shares
-          uniqueItems: true
-          description: 'Default: all six.'
-      additionalProperties: false
-    AccountExport:
-      type: object
-      properties:
-        id:
-          type: string
-          pattern: ^exp_[a-z0-9][a-z0-9_-]{0,63}$
-          maxLength: 72
-        status:
-          enum:
-          - queued
-          - running
-          - ready
-          - failed
-          - expired
-        createdAt:
-          $ref: project.schema.json#/$defs/Timestamp
-        readyAt:
-          oneOf:
-          - $ref: project.schema.json#/$defs/Timestamp
-          - type: 'null'
-        expiresAt:
-          $ref: project.schema.json#/$defs/Timestamp
-        bytes:
-          type:
-          - integer
-          - 'null'
-        include:
-          type: array
-          items:
-            type: string
-        error:
-          oneOf:
-          - type: object
-            properties:
-              code:
-                type: string
-              message:
-                type: string
-            additionalProperties: false
-            required:
-            - code
-            - message
-          - type: 'null'
-      additionalProperties: false
-      required:
-      - id
-      - status
-      - createdAt
-      - expiresAt
-      - include
     AiRelayRequest:
       type: object
       properties:
@@ -5815,63 +4214,6 @@ components:
       - body
       description: 'ADR-0612. A relay, not a prompt server: no prompts, no tool loop, no caching. The loop and prompts run in the browser (AI_ARCHITECTURE
         9.3).'
-    Usage:
-      type: object
-      properties:
-        day:
-          type: string
-          format: date
-        ai:
-          type: object
-          properties:
-            relayCalls:
-              type: integer
-            usingServerKey:
-              type: boolean
-            dailyCapCalls:
-              type:
-              - integer
-              - 'null'
-            dailyCapTokens:
-              type:
-              - integer
-              - 'null'
-          additionalProperties: false
-          required:
-          - relayCalls
-          - usingServerKey
-        search:
-          type: object
-          properties:
-            calls:
-              type: integer
-            dailyCap:
-              type:
-              - integer
-              - 'null'
-          additionalProperties: false
-          required:
-          - calls
-        killSwitch:
-          type: object
-          properties:
-            ai:
-              type: boolean
-            search:
-              type: boolean
-          additionalProperties: false
-          required:
-          - ai
-          - search
-      additionalProperties: false
-      required:
-      - day
-      - ai
-      - search
-      - killSwitch
-      description: The caller's own counters since 00:00 UTC, kept in the server store so a restart cannot reset them (R-008). Only calls that
-        spent a server-held key count against a cap. The browser keeps its own ledger of spend (AI_ARCHITECTURE section 11); this is the server's
-        view.
     SearchWebResponse:
       type: object
       properties:
@@ -6226,8 +4568,8 @@ components:
       required:
       - board
       - files
-      description: PENDING RS-04 and RS-05. Limits are the data model's source limits (20 files, 262,144 bytes each).
-      x-iynk-status: pending RS-04
+      description: Limits are the data model's source limits (20 files, 262,144 bytes each) and the service limits of RC-59 (1 MiB output).
+      x-iynk-status: not built; 501 feature_disabled until the Fidelity phase
     CompileJob:
       type: object
       properties:
@@ -6300,7 +4642,7 @@ components:
       - status
       - createdAt
       - inputSha256
-      x-iynk-status: pending RS-04
+      x-iynk-status: not built; 501 feature_disabled until the Fidelity phase
 x-iynk-rate-limit-buckets:
   note: Defaults. Operator-tunable. In-memory, one process (F-003). The 'existing' column is the limit in src/app/api today (SECURITY_BASELINE
     section 3, VERIFIED); every other number is a PROPOSAL.
@@ -6313,14 +4655,12 @@ x-iynk-rate-limit-buckets:
     pairing.guess: 10/min/IP, 100/h/IP, plus 5 wrong secrets per typed code
     read: 300/min/identity
     write: 120/min/identity
-    project.write: 60/min/identity
     asset.write: 60/min/identity, 512 MiB/h/identity
     share.read: 120/min/IP
     room.write: 30/min/identity
     room.create: 6/min and 30/h per identity, 6/min/IP (REALTIME 5.2)
     room.invite.redeem: 5 failures/h/identity (REALTIME 5.4)
     room.read: 60/min/identity
-    export: 6/h/identity
     ai.relay: '20/min/identity (existing chat: 20/min/IP)'
     search.web: 15/min/identity (existing 15)
     search.offers: 20/min/identity (existing 20)
@@ -6343,14 +4683,15 @@ x-iynk-rate-limit-buckets:
 #    - All seven /admin/* operations (adminOverview, adminSetSwitches, createEnrollmentCode, listEnrollmentCodes, revokeEnrollmentCode,
 #      adminListIdentities, adminDeleteIdentity), the Admin tag, the serverToken scheme, the EnrollmentCodeId parameter, the schemas AdminOverview,
 #      AdminSwitches, AdminSwitchesResult, EnrollmentCodeCreate, EnrollmentCode, EnrollmentCodeCreated, AdminIdentity and the `admin` rate bucket
-#      were deleted. Operator actions stay CLI (`iynk-server enroll`, `revoke`), per ADR-0007 and SYSTEM_ARCHITECTURE 10.3. registerIdentity text updated.
+#      were deleted. Operator actions stay CLI (`iynk-server enrol`, `revoke`), per ADR-0007 and SYSTEM_ARCHITECTURE 10.3. registerIdentity text updated.
 #    - /health renamed /healthz (operationId getHealth kept); /readyz added (getReadiness). `/server` stays as the capability probe
 #      (getServerInfo). BACKEND_ARCHITECTURE and SYSTEM_ARCHITECTURE now call it `GET /v1/server` (formerly `/v1/capabilities`); FRONTEND_ARCHITECTURE
 #      section 5.1 and ADR-0002 updated to match, as the same name was used there.
 #    - /compile/jobs kept. ADR-0427 and BACKEND_ARCHITECTURE (route table, section 12) changed from `POST /v1/compile` to `POST /v1/compile/jobs`.
 #    - API_CONTRACTS.md: Admin table, `X-Iynk-Server-Token`, `IYNK_SERVER_TOKEN`, the server-token secret row, the `admin` bucket and the admin
 #      note removed or rewritten; counts updated to 64 paths, 84 operations, 77 schemas.
+#      B0 interim gate is outside this contract (BACKEND 13.1).
+#    - RC-24 (build-plan reconcile): /projects*, /parts/*, /me/exports*, /usage and forkShare removed; shares are POST /shares and /shares/{shareRef}.
+#      Counts now 46 paths, 60 operations, 62 schemas (checked by script).
 #    - headAsset row: NOT applied because it was already present (API_CONTRACTS section 7, Assets table). The table had 90 rows and the old yaml 90
 #      operations; the reviewer's 89 was a miscount. I added the missing getReadiness row; yaml and table now both hold 84 operations, checked by script.
-# Open follow-ups for other owners: IYNK_SERVER_TOKEN and "operator token" wording in ADR-0007 (SYSTEM_ARCHITECTURE line 40) and the setup-token
-# model in BACKEND_ARCHITECTURE section 5 are not reconciled with API_CONTRACTS enrollment codes; I did not edit them.

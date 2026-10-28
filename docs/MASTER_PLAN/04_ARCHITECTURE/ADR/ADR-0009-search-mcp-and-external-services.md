@@ -27,7 +27,7 @@ Search (SerpApi) and MCP are server routes on the operator's key with CORS `*` o
 
 ## Decision
 
-`POST /v1/search/{kind}` with `X-Search-Key`, enabled by `IYNK_SEARCH_PROXY=1`; results cached in `kv_cache` with a TTL; the per-day counter is in `usage`, so a restart does not reset the cap. Fan-out defaults to one engine. 429 and `quota_exhausted` stay distinct. MCP at `POST /mcp` with a key from `iynk-server mcp-key`; tools: `search_catalog`, `get_item`, `drone_calc`, `price_parts` (uses the caller's search key), `validate_project` (a document passed in), and read tools over server-held shares and room snapshots. `plan_build_night` and `get_passport` are deleted (D-016); `create_room` becomes invite-based or is dropped.
+GET for web, videos, nearby, events and POST /v1/search/offers, key in `X-Iynk-Provider-Key`, enabled by `IYNK_SEARCH_ENABLE=1`; results cached in `kv_cache` with a TTL; the per-day counter is in `usage`, so a restart does not reset the cap. Fan-out defaults to one engine. 429 and `quota_exhausted` stay distinct. MCP at `/v1/mcp` with a key from `iynk-server mcp-key`; tools: `search_catalog`, `get_item`, `drone_calc`, `price_parts` (uses the caller's search key), `validate_project` (a document passed in), and read tools over server-held shares and room snapshots. `plan_build_night` and `get_passport` are deleted (D-016); `create_room` becomes invite-based or is dropped.
 
 ## Technical justification
 
@@ -60,3 +60,10 @@ B0: route closed or keyed (R-007), `quota_exhausted` mapping fixed. COLLAB: move
 ## Known limitations
 
 No search without a server (until AX-02 shows a provider that allows it). MCP cannot read browser-only projects.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-27 | Decision: search routes are GET for web, videos, nearby, events and POST /v1/search/offers; key header is `X-Iynk-Provider-Key` (was `X-Search-Key`); MCP path is `/v1/mcp` (was `POST /mcp`). |
+| RC-28 | Decision: switch is `IYNK_SEARCH_ENABLE=1` (was `IYNK_SEARCH_PROXY=1`). |

@@ -1,6 +1,8 @@
-# ADR-0422: One SQLite file behind a Store interface with forward-only migrations
+# ADR-0422: One SQLite file behind a ServerStore interface with forward-only migrations
 
 Status: superseded by ADR-0004 (2026-10-27, review fix). Read ADR-0004 for the live decision; this file is kept for the record. Author: frontend and backend architecture seat.
+
+Do not cite this record as live. The store is owned by ADR-0004; interface name is `ServerStore`.
 Upstream: R-078 (asks for this ADR), R-083, F-165, B5-04, B7-05, K-SELF. Downstream: F-199, F-165. Spec: BACKEND_ARCHITECTURE sections 7 and 14.
 
 ## Problem
@@ -21,12 +23,12 @@ Rooms, devices, invites, shares and usage must survive a restart; the operator h
 | A. `node:sqlite` | Built in; `backup()` exported; prints ExperimentalWarning in 24.8 | **Chosen** |
 | B. `better-sqlite3` | Native addon | Fallback |
 | C. Log files plus snapshots |  | Rejected |
-| D. Postgres |  | Later implementation of the same interface |
+| D. Postgres |  | Could: a later adapter behind ServerStore, not built, not planned in any phase (R-083, D-019) |
 
 ## Decision
 
-1. `Store` is the only importer of `node:sqlite`; contract tests run on SQLite and a memory implementation.
-2. WAL, `synchronous=NORMAL`, `foreign_keys=ON`.
+1. `ServerStore` is the only importer of `node:sqlite`; contract tests run on SQLite and a memory implementation.
+2. WAL, `synchronous=FULL` (ADR-0004; withdrawn here, record is superseded), `foreign_keys=ON`.
 3. Forward-only SQL migrations with checksums; refuse a newer database; `backup()` before each migration; keep 3.
 4. Delete `db/migrations/0001` to `0003` and the `postgres` dependency.
 
@@ -46,7 +48,7 @@ Rooms, devices, invites, shares and usage must survive a restart; the operator h
 |---|---|---|
 | 1 | ADR-0422 duplicates ADR-0004 and ADR-0505 with different settings (synchronous, interface name, migration mechanism) | Applied to this file: status changed to "superseded by ADR-0004". The decision above is no longer authoritative. I did not edit ADR-0004, ADR-0505 or the other ADRs (outside my output file; each has its own editor). |
 
-Evidence read: ADR-0004 decides `synchronous=FULL` by default (`IYNK_STORE_SYNC=normal` allowed), `ServerStore`, migrations by `PRAGMA user_version`, group commit at `setImmediate`, with a measured bench (FULL 16,472 single-op commits per second, flat file with fsync 246 per second). ADR-0505 decides `RoomStore` and `synchronous=NORMAL`. This file only repeats the choice of `node:sqlite` and adds the Store name, checksummed migrations and backup-before-migrate.
+Evidence read: ADR-0004 decides `synchronous=FULL` by default (`IYNK_STORE_SYNC=normal` allowed), `ServerStore`, migrations by `PRAGMA user_version`, group commit at `setImmediate`, with a measured bench (FULL 16,472 single-op commits per second, flat file with fsync 246 per second). ADR-0505 decides `RoomStore` and `synchronous=NORMAL`. This file only repeats the choice of `node:sqlite` and adds the `Store` name (now `ServerStore`), checksummed migrations and backup-before-migrate.
 
 ### Merge instructions for the ADR-0004 editor
 
@@ -73,3 +75,17 @@ ADR-0420 to ADR-0003, ADR-0423 to ADR-0500, ADR-0429 to ADR-0010, ADR-0430 to AD
 |---|---|
 | 5 [high] Durability stated incorrectly | BACKEND_ARCHITECTURE 7.3 and 8.1 now use `synchronous=FULL` with `IYNK_STORE_SYNC=normal` as an operator option, one transaction per event-loop turn (256 ops or 4 MiB), and the persisted `submissions` table. The `NORMAL` line in the Decision above is withdrawn with the rest of this record. |
 | 11 [medium] Eight required headings missing, plus licence and AX-05 for this ADR | Not applied as headings: this record is superseded by ADR-0004, which carries all twelve. The two facts the issue asked for are given here for the ADR-0004 editor and are in BACKEND_ARCHITECTURE 7.1: licences (SQLite public domain; `node:sqlite` ships in Node.js, MIT; `better-sqlite3` MIT; EXTERNAL, not re-checked) and Linux benchmark status (experiment AX-05, also AR-10 and RT-1, is open; the only commit numbers are from macOS; ADR-0004's Known limitations say "Linux durability numbers are UNKNOWN" but do not name AX-05). |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-01 | Decision item 2: `synchronous=NORMAL` replaced by `synchronous=FULL` (ADR-0004; withdrawn here, record is superseded). The review-fix history above still mentions NORMAL as the withdrawn value and is left as written. |
+| RC-02 | Added "Do not cite this record as live" line under the status line. Interface name `Store` replaced by `ServerStore` in the title and Decision item 1. In the historical review notes, `Store` is kept only where it quotes the old name (ADR-0004 vs ADR-0505 merge table), and one line now notes the rename. |
+| Spikes | None applied; no spike id was named for this file. |
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-03 | Option D (Postgres) verdict changed from "Later implementation of the same interface" to "Could: a later adapter behind ServerStore, not built, not planned in any phase (R-083, D-019)". |

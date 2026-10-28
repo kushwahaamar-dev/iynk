@@ -1081,7 +1081,7 @@
   },
   "id": "prj_robot-line-follower",
   "license": {
-    "spdx": "LicenseRef-iynk-unspecified"
+    "spdx": "LicenseRef-iynk-pending"
   },
   "mechanical": {
     "bodies": [
@@ -1807,12 +1807,12 @@
     }
   },
   "revision": 0,
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "simulation": {
     "duration_ms": 30000,
     "faults": [
       {
-        "cause_id": "logic-brownout-from-motors",
+        "cause_id": "battery-sag-reset",
         "enabled": false,
         "id": "flt_brownout",
         "kind": "brownout",

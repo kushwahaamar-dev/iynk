@@ -9,10 +9,10 @@ Evidence labels: VERIFIED, DOCUMENTED, EXTERNAL, ESTIMATED, HYPOTHESIS, UNKNOWN,
 ## 1. Result in one page
 
 - **221 features scored or classified.** 184 are kept and scored. 8 are REMOVED (D-016) and 29 are OUT OF SCOPE (D-013); neither group is scored.
-- **Class counts (kept rows):** REQUIRED FOUNDATION 34, CORE WORKFLOW 28, NEAR-TERM 81, LATER 29, LONG-TERM RESEARCH 12.
+- **Class counts (kept rows):** REQUIRED FOUNDATION 34, CORE WORKFLOW 28, NEAR-TERM 81, LATER 31, LONG-TERM RESEARCH 10.
 - **Milestone 1, the smallest coherent Studio, is 51 features** (section 7). It lets Amar start a project from scratch, place an Uno and parts, wire them, write code, run it with serial output, save, close, reopen, and open the same project with a buddy. It cuts across four build phases and needs one explicit exception to the catalogue's dependency list (F-047 without F-045).
 - **Sensitivity (section 8):** moving any one weight by 20 percent changes at most 9 of 184 classes, and moving the whole benefit or cost side by 20 percent changes at most 13. 168 rows never change in any of those 22 scenarios. Every change is between NEAR-TERM and LATER; no REQUIRED FOUNDATION, CORE WORKFLOW or LONG-TERM RESEARCH row moves.
-- **Spike state used here:** RS-01 INCONCLUSIVE (no phone or Chromebook), RS-03 PASS for correctness and desktop speed (devices INCONCLUSIVE), RS-09 PASS with caveats (the catalogue still lists it PENDING; folded in here). RS-06, RS-08, RS-12 and RS-13 have source or data but no REPORT.md and no Verdict: those choices are marked PENDING RS-xx (section 6.2).
+- **Spike state used here:** RS-01 INCONCLUSIVE (no phone or Chromebook), RS-03 PASS for correctness and desktop speed (devices INCONCLUSIVE), RS-09 PASS with caveats. RS-06 pass clause not met (Pico stays on the TypeScript interpreter; rp2040js is an oracle only), RS-08 mixed (linear solve passes, realistic device models fail 10 of 20, transient not run), RS-12 PASS on desktop only (Inspect mode), RS-13 PASS on determinism (split build, one CPU architecture). Seven spikes have a REPORT.md; RC-50 in `04_ARCHITECTURE/RECONCILIATION.md` fixes this state. Section 6.2 has the rows.
 - **Seven objections** are in section 10. The two that change the work most: two cycles in the catalogue's "Depends on" column (F-004 with F-199, F-073 with F-216), and Milestone 1 crossing the phase gates that D-014 says stop for Amar's OK.
 
 ## 2. Method
@@ -56,7 +56,7 @@ Each kept row also carries a **role**, my judgement of what the row is to the pr
 
 | Role | Meaning |
 |---|---|
-| B | Baseline obligation set by a binding decision (D-005 security fixes, D-015 local-first, D-016 removal, D-017 publish gates) or by a decided ADR that a foundation feature needs (F-165, ADR-0422, under F-199). Class does not depend on the score. |
+| B | Baseline obligation set by a binding decision (D-005 security fixes, D-015 local-first, D-016 removal, D-017 publish gates) or by a decided ADR that a foundation feature needs (F-165, ADR-0004, under F-199). Class does not depend on the score. |
 | G | Gate: other features or a phase exit cannot proceed without it. |
 | W | A step of the workflow chain. A hole here leaves the lab unable to do a step. |
 | I | Improvement to a step that already works in some form. |
@@ -81,8 +81,8 @@ The floor and the 1 to 2 cut for Fe were fixed before the final sensitivity run.
 | REQUIRED FOUNDATION | Other features or a publish gate cannot proceed without it. Build before the things it carries. | 34 |
 | CORE WORKFLOW | A step of the workflow the lab must do end to end. Build in its D-014 phase. | 28 |
 | NEAR-TERM | Worth building; improves a step. Build in its D-014 phase after the rows above. | 81 |
-| LATER | In the catalogue, but below the floor or waiting for a stated trigger. Not scheduled; revisit at the next phase stop. | 29 |
-| LONG-TERM RESEARCH | Feasibility is unproven (Fe 1 or 2) or waits on a pending spike. It keeps a phase, but the phase plan must not depend on it. | 12 |
+| LATER | In the catalogue, but below the floor or waiting for a stated trigger. Not scheduled; revisit at the next phase stop. | 31 |
+| LONG-TERM RESEARCH | Feasibility is unproven (Fe 1 or 2) or waits on a pending spike. It keeps a phase, but the phase plan must not depend on it. | 10 |
 | REMOVED | Deleted in B0 (D-016); git history keeps it. Not scored. | 8 |
 | OUT OF SCOPE | Shelved by D-013; row kept so ids stay stable. Not scored. | 29 |
 
@@ -116,15 +116,15 @@ Note the catalogue's own caveats: F-019 is listed under Faults but its type is d
 | Project core | 21 | 12 | 2 | 7 | 0 | 0 |
 | Studio editor | 14 | 0 | 4 | 5 | 4 | 1 |
 | Collaboration | 19 | 6 | 5 | 3 | 4 | 1 |
-| Fidelity | 21 | 1 | 4 | 10 | 2 | 4 |
+| Fidelity | 21 | 1 | 4 | 10 | 3 | 3 |
 | Faults | 13 | 1 | 5 | 6 | 1 | 0 |
 | Components | 7 | 0 | 1 | 4 | 1 | 1 |
 | Labs moved in | 23 | 0 | 3 | 15 | 5 | 0 |
 | AI partner | 11 | 0 | 0 | 7 | 3 | 1 |
-| Robotics | 6 | 0 | 0 | 3 | 1 | 2 |
+| Robotics | 6 | 0 | 0 | 3 | 2 | 1 |
 | Drones | 12 | 0 | 0 | 8 | 3 | 1 |
 | Export and build | 13 | 0 | 3 | 5 | 4 | 1 |
-| **Total** | **184** | **34** | **28** | **81** | **29** | **12** |
+| **Total** | **184** | **34** | **28** | **81** | **31** | **10** |
 
 ### 3.1 Order inside each phase
 
@@ -132,13 +132,13 @@ Features sorted by S, highest first, with the class code (F foundation, W workfl
 
 **B0 foundation.** F-003 F 3.99 M1, F-174 W 3.89 M1, F-006 F 3.88 M1, F-001 F 3.85 M1, F-193 F 3.78 M1, F-004 F 3.72 M1, F-195 F 3.72 M1, F-009 F 3.70 M1, F-012 F 3.56 M1, F-180 F 3.52 M1, F-014 N 3.47, F-196 F 3.45 M1, F-007 F 3.40 M1, F-204 N 3.39 M1, F-166 N 3.37 M1, F-015 N 3.35, F-002 F 3.34 M1, F-205 N 3.27, F-202 F 3.24 M1, F-008 N 3.22, F-010 N 3.22, F-194 N 3.08, F-016 L 2.95, F-197 F 2.68.
 
-**Project core.** F-078 F 4.63 M1, F-038 F 4.60 M1, F-203 F 4.33 M1, F-097 F 4.28 M1, F-044 F 4.26 M1, F-087 W 4.25 M1, F-076 F 4.16 M1, F-200 F 4.15 M1, F-047 F 4.11 M1, F-045 F 3.99, F-077 F 3.95 M1, F-083 F 3.91 M1, F-092 W 3.89 M1, F-186 N 3.65, F-201 F 3.48 M1, F-088 N 3.44, F-039 N 3.34, F-040 N 3.24, F-168 N 3.17, F-175 N 3.17 M1, F-094 N 3.15.
+**Project core.** F-078 F 4.63 M1, F-038 F 4.60 M1, F-203 F 4.33 M1, F-097 F 4.28 M1, F-044 F 4.26 M1, F-087 W 4.25 M1, F-076 F 4.16 M1, F-200 F 4.15 M1, F-047 F 4.11 M1, F-045 F 4.06, F-077 F 3.95 M1, F-083 F 3.91 M1, F-092 W 3.89 M1, F-186 N 3.65, F-201 F 3.48 M1, F-088 N 3.44, F-039 N 3.34, F-040 N 3.24, F-168 N 3.17, F-175 N 3.17 M1, F-094 N 3.15.
 
 **Studio editor.** F-084 N 3.57, F-171 N 3.41, F-081 W 3.29 M1, F-082 W 3.21 M1, F-221 N 3.21, F-079 W 3.15 M1, F-176 N 3.15, F-080 W 3.12 M1, F-093 N 3.07, F-177 L 2.73, F-178 L 2.57, F-085 L 2.49, F-179 L 2.22, F-086 R 1.85.
 
 **Collaboration.** F-119 F 3.87 M1, F-199 F 3.79 M1, F-118 F 3.73 M1, F-005 F 3.66 M1, F-116 W 3.57 M1, F-206 F 3.57 M1, F-198 W 3.49 M1, F-117 N 3.39, F-121 W 3.29 M1, F-138 W 3.21, F-120 N 3.17, F-089 W 3.17 M1, F-122 N 3.09 M1, F-165 F 2.92, F-140 L 2.72, F-143 L 2.55, F-144 L 2.53, F-108 L 2.15, F-123 R 1.94.
 
-**Fidelity.** F-041 F 4.51 M1, F-207 W 3.91 M1, F-011 W 3.87 M1, F-043 W 3.84, F-053 N 3.80, F-025 W 3.79 M1, F-042 N 3.79, F-209 N 3.74, F-182 N 3.55, F-185 N 3.47, F-208 N 3.30, F-048 N 3.16, F-055 N 3.12, F-051 N 3.09, F-054 N 3.02, F-049 R 2.91, F-184 L 2.85, F-163 L 2.74, F-046 R 2.55, F-219 R 2.39, F-050 R 2.16.
+**Fidelity.** F-041 F 4.51 M1, F-207 W 3.91 M1, F-011 W 3.87 M1, F-043 W 3.84, F-053 N 3.80, F-025 W 3.79 M1, F-042 N 3.79, F-209 N 3.74, F-182 N 3.55, F-185 N 3.47, F-208 N 3.30, F-048 N 3.16, F-055 N 3.12, F-051 N 3.09, F-054 N 3.02, F-049 R 2.91, F-184 L 2.85, F-163 L 2.74, F-046 R 2.55, F-219 R 2.39, F-050 L 2.25.
 
 **Faults.** F-017 W 4.25, F-019 F 4.13, F-018 W 3.78, F-029 W 3.70, F-020 N 3.45, F-028 W 3.42, F-024 N 3.41, F-026 W 3.28, F-030 N 3.20, F-183 N 3.16, F-056 N 3.03, F-022 N 3.01, F-021 L 2.95.
 
@@ -148,7 +148,7 @@ Features sorted by S, highest first, with the class code (F foundation, W workfl
 
 **AI partner.** F-112 N 3.58, F-109 N 3.24, F-105 N 3.22, F-106 N 3.21, F-110 N 3.14, F-113 N 3.09, F-111 N 3.04, F-107 L 2.65, F-167 L 2.57, F-114 L 2.55, F-115 R 1.70.
 
-**Robotics.** F-213 N 3.18, F-060 N 3.10, F-214 N 3.10, F-215 L 2.83, F-061 R 2.60, F-062 R 1.72.
+**Robotics.** F-213 N 3.18, F-060 N 3.10, F-214 N 3.10, F-215 L 2.83, F-061 L 2.77, F-062 R 1.72.
 
 **Drones.** F-068 N 4.00, F-069 N 3.67, F-216 N 3.45, F-073 N 3.43, F-070 N 3.22, F-072 N 3.10, F-071 N 3.05, F-217 N 3.05, F-218 L 2.81, F-156 L 2.71, F-074 R 2.48, F-075 L 2.23.
 
@@ -204,12 +204,12 @@ One row per catalogue feature. Columns: **Phase** (D-014), **V Fd Fe Ac Sp Ef Dc
 | F-042 | DC nodal circuit solver and simulated damage | Fidelity | 3 | 3 | 5 | 3 | 5 | 5 | 5 | 2 | 5 | 3.79 | I | NEAR-TERM | L |  | Frozen |
 | F-043 | Honest solver and "not modelled yet" states | Fidelity | 5 | 1 | 4 | 5 | 5 | 3 | 4 | 4 | 5 | 3.84 | W | CORE WORKFLOW | M |  | D-007: |
 | F-044 | Run limits and Worker execution | Project core | 5 | 5 | 4 | 2 | 5 | 3 | 4 | 4 | 5 | 4.26 | G | REQUIRED FOUNDATION | L | M1 | Run |
-| F-045 | Pure data-driven DC solver for netlists | Project core | 5 | 5 | 3 | 5 | 5 | 2 | 2 | 3 | 3 | 3.99 | G | REQUIRED FOUNDATION | H |  | PENDING |
+| F-045 | Pure data-driven DC solver for netlists | Project core | 5 | 5 | 3 | 5 | 5 | 2 | 3 | 3 | 3 | 4.06 | G | REQUIRED FOUNDATION | M |  | RS-08(a): linear solve 20 of 20 within 2 percent; realistic devices 10 of 20, so Newton devices are added (ADR-0304). Dc 2 to 3 (no pending spike; ngspice is an oracle only). Fe stays 3 (devices not built). Unc H to M |
 | F-046 | Transient analysis and ngspice option | Fidelity | 4 | 1 | 2 | 5 | 4 | 1 | 1 | 2 | 2 | 2.55 | I | LONG-TERM RESEARCH | H |  | PENDING |
 | F-047 | Simulation orchestrator | Project core | 5 | 5 | 3 | 4 | 5 | 2 | 4 | 3 | 4 | 4.11 | G | REQUIRED FOUNDATION | M | M1 | Headless |
 | F-048 | Real compiled firmware mode (avr8js) | Fidelity | 4 | 1 | 4 | 5 | 4 | 3 | 3 | 3 | 2 | 3.16 | I | NEAR-TERM | M |  | RS-03 |
 | F-049 | Sketch compile service | Fidelity | 4 | 2 | 2 | 5 | 2 | 2 | 1 | 2 | 5 | 2.91 | I | LONG-TERM RESEARCH | H |  | PENDING |
-| F-050 | Other real-engine options | Fidelity | 3 | 1 | 2 | 4 | 4 | 1 | 1 | 1 | 2 | 2.16 | I | LONG-TERM RESEARCH | H |  | PENDING |
+| F-050 | Other real-engine options | Fidelity | 3 | 1 | 3 | 4 | 4 | 1 | 2 | 1 | 1 | 2.25 | I | LATER | M |  | RS-06: oracle only, Pico half closed. RS-12: PASS desktop, Inspect mode only. Fe 2 to 3, Dc 1 to 2, Pf 2 to 1 (662 to 725 MB, about 10.7 MB download). Class LONG-TERM RESEARCH to LATER by rule 2 |
 | F-051 | Snapshots, pause, step, replay and speed control for circuits | Fidelity | 4 | 1 | 3 | 4 | 5 | 2 | 4 | 3 | 3 | 3.09 | I | NEAR-TERM | M |  | Pause, |
 | F-052 | Live status and current draw | Labs moved in | 3 | 1 | 5 | 3 | 5 | 5 | 5 | 4 | 5 | 3.57 | I | NEAR-TERM | L |  | Current-draw |
 | F-053 | Virtual multimeter | Fidelity | 4 | 2 | 4 | 4 | 5 | 4 | 4 | 4 | 5 | 3.80 | I | NEAR-TERM | M |  | Meter |
@@ -220,7 +220,7 @@ One row per catalogue feature. Columns: **Phase** (D-014), **V Fd Fe Ac Sp Ef Dc
 | F-058 | 106 bench faults with Repair | Labs moved in | 3 | 1 | 5 | 2 | 5 | 4 | 5 | 3 | 4 | 3.22 | I | NEAR-TERM | L |  | 106 |
 | F-059 | Raspberry Pi 5 ROS 2 concept bench | Labs moved in | 2 | 1 | 5 | 1 | 5 | 4 | 5 | 3 | 5 | 2.98 | I | LATER | L |  | Concept |
 | F-060 | Robot project slice (first robotics project) | Robotics | 4 | 2 | 3 | 3 | 5 | 2 | 3 | 3 | 3 | 3.10 | I | NEAR-TERM | M |  | First |
-| F-061 | Rigid-body physics, arms and legged robots | Robotics | 4 | 1 | 2 | 4 | 5 | 1 | 2 | 2 | 2 | 2.60 | I | LONG-TERM RESEARCH | H |  | PENDING |
+| F-061 | Rigid-body physics, arms and legged robots | Robotics | 4 | 1 | 3 | 4 | 5 | 1 | 3 | 2 | 2 | 2.77 | I | LATER | M |  | RS-13 PASS: same hash in 3 runtimes, 0.07 to 0.09 ms at 20 bodies. Fe 2 to 3, Dc 2 to 3. One CPU architecture only (RA-02 open). Re-read the class at the Robotics phase |
 | F-062 | URDF import and a real ROS 2 bridge | Robotics | 2 | 1 | 1 | 2 | 4 | 1 | 1 | 1 | 3 | 1.72 | I | LONG-TERM RESEARCH | H |  | rclpy |
 | F-063 | 13 drone configurations | Labs moved in | 3 | 1 | 5 | 2 | 5 | 4 | 5 | 3 | 4 | 3.22 | I | NEAR-TERM | L |  | 13 |
 | F-064 | Drone calculator | Labs moved in | 4 | 4 | 5 | 3 | 5 | 5 | 5 | 4 | 5 | 4.33 | I | NEAR-TERM | L |  | Calculator |
@@ -336,7 +336,7 @@ One row per catalogue feature. Columns: **Phase** (D-014), **V Fd Fe Ac Sp Ef Dc
 | F-174 | Project home page | B0 foundation | 5 | 2 | 5 | 1 | 5 | 4 | 5 | 4 | 5 | 3.89 | W | CORE WORKFLOW | L | M1 | Project |
 | F-175 | First run | Project core | 3 | 1 | 4 | 1 | 5 | 4 | 5 | 4 | 5 | 3.17 | I | NEAR-TERM | L | M1 | First |
 | F-176 | Theme, sound and settings | Studio editor | 2 | 1 | 5 | 1 | 5 | 5 | 5 | 4 | 5 | 3.15 | I | NEAR-TERM | L |  | Theme, |
-| F-177 | WCAG 2.2 AA for lessons, diagnosis and editor | Studio editor | 3 | 1 | 3 | 1 | 5 | 2 | 4 | 3 | 5 | 2.73 | I | LATER | M |  | axe |
+| F-177 | WCAG 2.2 AA for lessons, diagnosis and editor | Studio editor | 3 | 1 | 3 | 1 | 5 | 2 | 4 | 3 | 5 | 2.73 | I | LATER | M |  | Split (RC-67): the core (axe zero serious and critical; keyboard path for place, wire, edit, run; outline pane) is in the Studio phase gate and starts with RS-16. Phone layout and the full pass stay LATER |
 | F-178 | Phone layout | Studio editor | 3 | 1 | 3 | 1 | 5 | 2 | 4 | 3 | 3 | 2.57 | I | LATER | M |  | Phone |
 | F-179 | Right-to-left languages | Studio editor | 1 | 1 | 3 | 1 | 5 | 2 | 4 | 2 | 5 | 2.22 | I | LATER | M |  | Right-to-left |
 | F-180 | Unit and e2e suites | B0 foundation | 4 | 1 | 5 | 1 | 5 | 5 | 5 | 3 | 5 | 3.52 | G | REQUIRED FOUNDATION | L | M1 | 13 |
@@ -435,18 +435,18 @@ F-200 and F-076 carry the most features because the catalogue's spine puts the s
 
 ### 6.2 Features waiting on a spike
 
-State read on 2026-10-27 from `08_RESEARCH_SPIKES/*/REPORT.md`. A spike with no REPORT.md or no Verdict is PENDING; I did not read its raw data to guess a result. Rows are scored on the decision rule (`02_RESEARCH/TECHNICAL_RESEARCH.md` section 6, as copied in catalogue section 4.3) and carry uncertainty H or M.
+State read on 2026-10-27 from `08_RESEARCH_SPIKES/*/REPORT.md`. A spike with no REPORT.md or no Verdict is PENDING; I did not read its raw data to guess a result. Seven spikes have a report: RS-01, 03, 06, 08, 09, 12, 13. Rows are scored on the decision rule (`02_RESEARCH/TECHNICAL_RESEARCH.md` section 6, as copied in catalogue section 4.3) and carry uncertainty H or M.
 
 | Spike | State | Features | Decision rule | What this document does until then |
 |---|---|---|---|---|
 | RS-01 editor rendering | Verdict INCONCLUSIVE: desktop only; plain SVG p95 25 ms in fit and zoom, level-of-detail SVG about 10 ms at 1x; no phone or Chromebook | F-079, F-081, F-082, F-178 | p95 under 20 ms at 500 parts and 1,000 wires on a phone and a Chromebook | F-079 scored Fe 3, Pf 2, uncertainty H. Renderer behind an interface and level of detail from the start. F-178 (phone layout) is LATER until the device run. |
 | RS-03 avr8js | Verdict PASS for correctness and desktop speed (80 of 80 serial lines equal); INCONCLUSIVE on phone and Chromebook | F-048 | equal serial output, PWM within 2 percent, 3x real time or better | F-048 NEAR-TERM, uncertainty M. The interpreter stays the default engine. |
 | RS-09 op log | Verdict PASS with caveats: 40 randomised runs of about 10,900 ops, no divergence; text intent only roughly kept; undo per author; memory-only server | F-083, F-121, F-123 | no divergence after 10,000 ops, reconnect under 2 s | Folded in (the catalogue still shows PENDING). F-083 and F-121 scored Fe 4. M1 uses the baton for code (F-122). F-123 stays LONG-TERM RESEARCH: a text CRDT for code files only, if simultaneous typing is wanted. |
-| RS-08 MNA vs ngspice | PENDING: `data/` exists, no REPORT.md, no Verdict | F-045, F-046, F-029, F-042 | (a) within 2 percent of ngspice on 18 of 20 circuits; (b) RC, RLC, buck within 1 percent and under 16 ms per frame | F-045 is role G with Fe 3 and uncertainty H. M1 does not depend on it (section 7.4). Fallback if it fails: ngspice-WASM behind the same netlist interface. |
-| RS-06 rp2040js | PENDING: source only | F-050 | all four MicroPython tasks work, CPU under 60 percent of a core | F-050 LONG-TERM RESEARCH. |
-| RS-12 Yosys WASM | PENDING: source only | F-050 | 90 percent of Verilog lessons elaborate, first load under 15 s | F-050 as above. |
-| RS-13 physics | PENDING: source only | F-061 | identical hash after 10,000 steps on two browsers, under 1 ms at 20 bodies | F-061 LONG-TERM RESEARCH; F-060 (first robot) is scoped to what needs no rigid-body engine. |
-| RS-04, 05, 07, 11, 14, 15, 16, 17, 18, 20 | PENDING: no folder or no report | F-049, F-046, F-111, F-074, F-102, F-080, F-050, F-123 | per catalogue 4.3 | Rows scored with uncertainty H or M. F-080 keyboard path waits on RS-16; the pointer and touch path does not. |
+| RS-08 MNA vs ngspice | Mixed, not a clean PASS (`08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md`, checker rejected the first PASS). Part (a): linear solve and junction iteration PASS, 20 of 20 within 2 percent against matched models (worst 0.26 percent), 0 of 320 mismatches on 60 random networks. Device models against realistic SPICE cards FAIL, 10 of 20 within 2 percent, 6 off by more than 10 percent. Part (b) transient: NOT RUN, INCONCLUSIVE. No MOSFET or buck model | F-045, F-046, F-029, F-042 | (a) within 2 percent of ngspice on 18 of 20 circuits; (b) RC, RLC, buck within 1 percent and under 16 ms per frame | Keep and extract the MNA core as a pure module with a convergence flag and add Newton devices (ADR-0304); ngspice WASM is the oracle and an on-demand analyse button; no claim of SPICE-level device accuracy (R-FID-1). F-045 rescored in the matrix (S 3.99 to 4.06). The live transient backend stays open: RS-07 and RS-08(b) never ran, so a Fidelity-phase task runs them. M1 does not depend on any of it (section 7.4). |
+| RS-06 rp2040js | Pass clause NOT MET, fail clause NOT TRIGGERED (`08_RESEARCH_SPIKES/RS-06-rp2040js-micropython/REPORT.md`). Boot, blink, ADC, filesystem and I2C work; 0.54 to 0.79x real time on one core at 100 percent (M4 Pro), 0.13 to 0.19x under throttle. PWM, UART, PIO, Pico W, RP2350, Worker and idle-skip not tested. Checker agreed | F-050 | all four MicroPython tasks work, CPU under 60 percent of a core | Pico lessons stay on the TypeScript MicroPython interpreter. rp2040js is an offline test oracle only, not a user mode (ADR-0305). The Pico half of F-050 is closed. An idle-skip experiment is a later option, not a blocker. |
+| RS-12 Yosys WASM | PASS on the stated exit condition, desktop only (`08_RESEARCH_SPIKES/RS-12-yosys-wasm/REPORT.md`). 10 of 10 shipped Verilog lessons elaborate with zero warnings; first load under 15 s only above about 8 Mbps (2.3 s at 50 Mbps, 20.7 s at 5 Mbps with 6x throttle); 662 to 725 MB renderer memory, 10 to 15 percent headroom; 65 to 250x slower than the TypeScript Verilog interpreter. Student code and SystemVerilog not tested. Checker agreed | F-050 | 90 percent of Verilog lessons elaborate, first load under 15 s | The TypeScript Verilog simulator stays the live path. Yosys plus DigitalJS is a lazy, opt-in, desktop-first Inspect mode behind Brotli (about 10.7 MB), not in the lesson bundle, gated on a `navigator.deviceMemory` check (ADR-0315, R-110). It supports inspecting the circuit, not live simulation. The Verilog half of F-050 is decided. |
+| RS-13 physics | PASS on determinism (`08_RESEARCH_SPIKES/RS-13-physics-determinism/REPORT.md`). Rapier and Jolt gave the identical snapshot hash at all 10 checkpoints in Node, Chromium and WebKit, and under 4x and 6x throttle; 0.07 to 0.09 ms per step at 20 bodies (0.44 to 0.54 ms at 6x). Size budget is a self-set HYPOTHESIS: Jolt split 0.61 MB, Rapier split about 0.88 MB, Rapier single-file 1.20 MB (over). One CPU architecture only; x86-64, Firefox, phones and stacking scenes not tested. Checker agreed | F-061 | identical hash after 10,000 steps on two browsers, under 1 ms at 20 bodies | Rapier behind a `PhysicsBackend` interface, lazy-loaded in a Worker, split build only; Jolt is the fallback (ADR-0308, ADR-0700). The cross-CPU hash check (RA-02) is still open; rooms compare the class D hash until it passes. F-060 no longer needs scoping around the spike; re-read the F-061 class when the Robotics phase starts. F-061 rescored (below). |
+| RS-04, 05, 07, 11, 14, 15, 16, 17, 18, 20 | PENDING: no folder or no report | F-049, F-046, F-111, F-074, F-102, F-080, F-050, F-123 | per catalogue 4.3 | Rows scored with uncertainty H or M. RS-16 is the first task of the accessibility core slice in the Studio phase (RC-67); the keyboard path of F-080 follows it, the pointer and touch path does not wait. |
 
 ### 6.3 Where the class differs from the catalogue's stance
 
@@ -466,7 +466,7 @@ The catalogue puts every kept row in a phase and marks some LATER. This list is 
 | F-154 | Live part prices (user's own search key) | scheduled in Export and build | LATER | 2.58 | Needs the user own search key; catalogue prices (F-155) cover the need. |
 | F-156 | Budget optimiser | scheduled in Drones | LATER | 2.71 | Budget optimiser follows the drone calculator; low value for Amar. |
 | F-167 | MCP server and OpenAPI REST (key-gated) | scheduled in AI partner | LATER | 2.57 | MCP and OpenAPI: Sp 2 (route surface) and V 2; only after F-004 and F-193. |
-| F-177 | WCAG 2.2 AA for lessons, diagnosis and editor | scheduled in Studio editor | LATER | 2.73 | Below the floor on effort; RS-16 pending. Pointer and touch targets are built to 2.5.8 anyway through F-080. |
+| F-177 | WCAG 2.2 AA for lessons, diagnosis and editor | scheduled in Studio editor (core in the gate) | LATER (rest) | 2.73 | Split (RC-67). The core is in the Studio phase gate: axe zero serious and critical, a keyboard path for place, wire, edit and run, and the outline pane; RS-16 is the first task of that slice. Phone layout (F-178) and the full WCAG 2.2 AA pass stay LATER (S 2.73, below the floor on effort). Pointer and touch targets are built to 2.5.8 anyway through F-080. |
 | F-178 | Phone layout | scheduled in Studio editor | LATER | 2.57 | Waits on the RS-01 device run. |
 | F-212 | Compatible-substitution suggestions | scheduled in Export and build | LATER | 2.61 | Substitution suggestions depend on F-097 and a part library worth searching. |
 | F-215 | Robot templates | scheduled in Robotics | LATER | 2.83 | Robot templates follow the builder (F-213). |
@@ -497,7 +497,7 @@ Each step is a test in the e2e suite (F-180). "Target" numbers are targets set h
 | Step | What Amar does | What must be true to pass | Features | Error case that must be handled |
 |---|---|---|---|---|
 | 1 | Opens the app with no server, no AI key, no search key | Home lists projects and a New project button. The browser makes no request outside the app origin. | F-174, F-012, F-092, F-006 | IndexedDB unavailable: a banner says projects will not be kept and offers file save (F-201). |
-| 2 | New project, board Uno | A document is created with `schemaVersion`, board `uno`, empty `parts` and `wires`, one file `main.ino`. It is in the library at once. | F-076, F-097, F-200 | A document with a newer `schemaVersion` is refused with a message and offered back as a raw file; it is never half-opened. |
+| 2 | New project, board Uno | A document is created with `schemaVersion`, one board (`uno`, breadboard view `vw_bb`, schematic view `vw_sch`), empty `components` and `nets`, one entry in `sources` (`main.ino`), and a `simulation` block with its seed (`simulation.seed`). Names follow `04_ARCHITECTURE/schemas/project.schema.json` (RC-66). It is in the library at once. | F-076, F-097, F-200 | A document with a newer `schemaVersion` is refused with a message and offered back as a raw file; it is never half-opened. |
 | 3 | Places an LED, a resistor and a push button from the palette | Parts appear with pins; inspector shows value and pin names. Frame time stays within the RS-01 rule (p95 under 20 ms at 500 parts and 1,000 wires) measured on desktop Chromium; phone and Chromebook numbers are recorded when devices exist. | F-079, F-082, F-096, F-097 | Dropping a part outside the board area snaps it back; unknown part id in a document loads as a placeholder labelled "unknown part". |
 | 4 | Wires Uno pin 13 to the LED through the resistor, button to pin 2 and ground | The netlist (F-078) lists exactly the connections drawn. Deleting a part deletes its wires; no wire ends on nothing. | F-080, F-081, F-078, F-083 | A wire from a pin to itself, or to an empty point, is refused with a reason. Undo restores part and wires together. |
 | 5 | Writes a Blink sketch that prints to Serial | Editor shows errors as markers with line and message. | F-034, F-025 | An unsupported `#include` gives a named message; it must not run silently (interpreter defect, catalogue section 6). |
@@ -517,7 +517,7 @@ Class here is the class from the matrix. NEAR-TERM rows appear in M1 only where 
 | F-001 | CI on every push | REQUIRED FOUNDATION | B0 foundation | CI on push: typecheck, eslint, unit tests, secret scan. | Figure rebuild diff and dependency scan can follow. |
 | F-002 | Security headers and CSP | REQUIRED FOUNDATION | B0 foundation | Headers, CSP, no powered-by header; CSP checked against the figure iframes. | Per-operator origin list UI. |
 | F-003 | Local usage meter, rate limits and kill switch | REQUIRED FOUNDATION | B0 foundation | In-memory rate limits on the routes the M1 server exposes. | Per-provider usage meter (no AI in M1). |
-| F-004 | Closed or keyed server routes | REQUIRED FOUNDATION | B0 foundation | Close every route the M1 server does not need; remaining routes need the server token. | Keyed AI and search routes (no AI in M1). |
+| F-004 | Closed or keyed server routes | REQUIRED FOUNDATION | B0 foundation | Close every route the M1 server does not need; remaining routes need IYNK_SERVER_TOKEN in B0 (BACKEND 13.1, deleted later) and the device bearer token from the collaboration phase (ADR-0007, D-018). | Keyed AI and search routes (no AI in M1). |
 | F-005 | Anonymous device token on the server | REQUIRED FOUNDATION | Collaboration | Signed device token, hash stored on the server. | - |
 | F-006 | Telemetry removed or opt-in, events stay local | REQUIRED FOUNDATION | B0 foundation | Telemetry off by default (storage.ts:38 flips to false); public counter deleted. | Opt-in local event viewer. |
 | F-007 | Licence placeholder and content provenance record | REQUIRED FOUNDATION | B0 foundation | LICENSE-PENDING.md and a provenance file listing content copied from the three third-party sites with its check status (D-017). | Final licence choice; rewrite of flagged content. |
@@ -530,14 +530,14 @@ Class here is the class from the matrix. NEAR-TERM rows appear in M1 only where 
 | F-041 | Virtual clock, World and device models | REQUIRED FOUNDATION | Fidelity | Virtual clock, World and the existing I2C devices bound to pins through the netlist. | Protocol models beyond today (F-208). |
 | F-044 | Run limits and Worker execution | REQUIRED FOUNDATION | Project core | Run limits: instruction budget, memory cap, time cap; worker killed on breach. | - |
 | F-047 | Simulation orchestrator | REQUIRED FOUNDATION | Project core | Digital slice: pin levels and PWM duty flow through the netlist to part states; solver hook returns "not modelled yet". | Analog solve (F-045), transient (F-046). |
-| F-076 | Canonical project document | REQUIRED FOUNDATION | Project core | Document with schemaVersion, parts, wires, files, board, settings; open string ids; JSON. | Lessons, checks and fault rules as document sections. |
+| F-076 | Canonical project document | REQUIRED FOUNDATION | Project core | Document with `schemaVersion`, `boards`, `components`, `nets`, `views`, `sources`, `simulation`; open string ids; JSON (`schemas/project.schema.json`). | Lessons, checks and fault rules as document sections. |
 | F-077 | Catalogue-to-project converter | REQUIRED FOUNDATION | Project core | Convert the Uno catalogue items to documents; used as regression corpus for F-078 and F-047. | Non-Uno boards, benches and craft (LABS). |
 | F-078 | Netlist derived from connectivity | REQUIRED FOUNDATION | Project core | Netlist computed from parts, pins and wires only; same netlist for every view. | Electrical rules (F-028). |
 | F-079 | Editor canvas | CORE WORKFLOW | Studio editor | SVG canvas behind a renderer interface, level of detail from the start; pan, zoom, select. | Canvas or hybrid renderer (RS-01 device run). |
-| F-080 | Wiring with pointer, touch and keyboard | CORE WORKFLOW | Studio editor | Pointer and touch wiring; keyboard path as soon as RS-16 reports. | Full WCAG 2.2 AA pass (F-177). |
+| F-080 | Wiring with pointer, touch and keyboard | CORE WORKFLOW | Studio editor | Pointer and touch wiring; keyboard path in the Studio gate accessibility core (F-177 core), after RS-16, its first task. | Full WCAG 2.2 AA pass (F-177). |
 | F-081 | Breadboard, schematic and board views with overlays | CORE WORKFLOW | Studio editor | Breadboard view with the netlist overlay. | Schematic and board views (post-M1 in STUDIO). |
 | F-082 | Inspector, palette, multiselect and copy-paste | CORE WORKFLOW | Studio editor | Palette, inspector for pin and value, multiselect, copy and paste. | - |
-| F-083 | Revision-safe operation log with undo and redo | REQUIRED FOUNDATION | Project core | Operation log with undo and redo for parts, wires, files; revision numbers; server-ordered when in a room. | Redo across authors; history browser (F-093). |
+| F-083 | Revision-safe operation log with undo and redo | REQUIRED FOUNDATION | Project core | Operation log with undo and redo for components, nets and sources; revision numbers; server-ordered when in a room. | Redo across authors; history browser (F-093). |
 | F-087 | Autosave of edited code and parameters | CORE WORKFLOW | Project core | Autosave of code and layout on every committed operation. | - |
 | F-089 | Share link and share file | CORE WORKFLOW | Collaboration | Share a project by room invite or by .iynk file. | Public gallery (not planned). |
 | F-092 | Local project library and housekeeping | CORE WORKFLOW | Project core | List, open, rename, duplicate, delete, restore from a local trash. | Archive, search, tags. |
@@ -557,7 +557,7 @@ Class here is the class from the matrix. NEAR-TERM rows appear in M1 only where 
 | F-195 | Remove the hackathon extras | REQUIRED FOUNDATION | B0 foundation | Delete Build Stories, Build Night, Solana program, wallet, mint, faucet, passport. | - |
 | F-196 | Open-source repository basics | REQUIRED FOUNDATION | B0 foundation | README, CONTRIBUTING, setup steps, LICENSE-PENDING.md. | Full developer documentation (F-205). |
 | F-198 | Self-hosting guide and one-command setup | CORE WORKFLOW | Collaboration | One documented setup (container or single command) and an upgrade note. | - |
-| F-199 | Self-hostable server | REQUIRED FOUNDATION | Collaboration | One server process: relay, device tokens, buddy pairing, share links; SQLite file store (the M1 slice of F-165, ADR-0422). | The Postgres adapter, AI and search routes. |
+| F-199 | Self-hostable server | REQUIRED FOUNDATION | Collaboration | One server process: relay, device tokens, buddy pairing, share links; SQLite file store behind `ServerStore` (the M1 slice of F-165, ADR-0004). | AI and search routes. Postgres is a could, a later adapter behind `ServerStore`, not in any phase. |
 | F-200 | Local project store (IndexedDB) | REQUIRED FOUNDATION | Project core | Autosave to IndexedDB, library index, schema migration hook. | Local data export and wipe (F-168). |
 | F-201 | Project files on disk | REQUIRED FOUNDATION | Project core | Save to and open from a .iynk file; File System Access where it exists, download and upload elsewhere; warn when no file copy exists. | Folder-per-project layout. |
 | F-202 | Remove the Vercel dependency | REQUIRED FOUNDATION | B0 foundation | Remove Vercel config, scripts and env names. | - |
@@ -570,8 +570,8 @@ Class here is the class from the matrix. NEAR-TERM rows appear in M1 only where 
 
 - **Every step in 7.2 is covered, and every feature in 7.3 serves a step.** There is no editor without a document, no run without a worker and limits, no reopen without a store and a file, no buddy without a server, pairing and relay authority.
 - **Dependency check.** I took the catalogue's "Depends on" column plus the spine edges in section 2.2 and followed every prerequisite of the 51 features. The prerequisites outside the set are: F-045. F-045 (the netlist solver) is the one deliberate exception, see below.
-- **The exception: F-047 without F-045.** The catalogue lists F-045 as a prerequisite of the orchestrator F-047. M1 uses a digital slice of F-047: pin levels and PWM duty move through the netlist to part states, and the existing World model drives sensors and I2C devices (`src/lib/interp/world.ts`, `src/lib/interp/devices.ts`). The first parts (LED, resistor, push button, buzzer, potentiometer as a knob) need no continuous solve. This keeps the pending RS-08 off the critical path. Cost: no analog divider, no brown-out, no wrong-resistor fault in M1. The solver hook exists and returns "not modelled yet". HYPOTHESIS that this slice is enough for a useful first Studio; test: build the ten starter projects from F-077 on it and see how many need a solve. If RS-08(a) passes, F-045 is the next addition, not a rewrite.
-- **Nothing in M1 waits on a pending spike.** F-079 relies on RS-01 (INCONCLUSIVE) but is built to degrade: level of detail and a renderer interface, with desktop numbers as the exit test. F-080's keyboard path waits on RS-16; pointer and touch do not. F-121 stands on RS-09, which passed.
+- **The exception: F-047 without F-045.** The catalogue lists F-045 as a prerequisite of the orchestrator F-047. M1 uses a digital slice of F-047: pin levels and PWM duty move through the netlist to part states, and the existing World model drives sensors and I2C devices (`src/lib/interp/world.ts`, `src/lib/interp/devices.ts`). The first parts (LED, resistor, push button, buzzer, potentiometer as a knob) need no continuous solve. This keeps RS-08 (mixed result, transient not run) off the critical path. Cost: no analog divider, no brown-out, no wrong-resistor fault in M1. The solver hook exists and returns "not modelled yet". HYPOTHESIS that this slice is enough for a useful first Studio; test: build the ten starter projects from F-077 on it and see how many need a solve. RS-08(a) has reported (linear PASS, realistic devices FAIL), so F-045 is the next addition after the Studio gate, with Newton devices (ADR-0304), not a rewrite.
+- **Nothing in M1 waits on a pending spike.** F-079 relies on RS-01 (INCONCLUSIVE) but is built to degrade: level of detail and a renderer interface, with desktop numbers as the exit test. F-080's keyboard path is built after RS-16, the first task of the accessibility core in the Studio gate; pointer and touch do not wait. F-121 stands on RS-09, which passed.
 - **It preserves working code.** The interpreter, clock, world, code editor, figures, relay and test suites are reused (BRIEF 3.5). The three things replaced are storage for projects (`localStorage` key `iynk:v1` keeps settings only), the circuit model for user circuits (the netlist), and the bench context for any later AI.
 - **It builds its own regression corpus.** F-077 turns the Uno catalogue items into documents; the netlist and orchestrator are checked against them from the first day, which is the only comparison available for the replaced solver path (catalogue objection 3).
 - **It makes the open-source baseline true.** Security headers, closed routes, rate limits, telemetry off, the extras removed and Vercel gone (F-002, F-003, F-004, F-006, F-195, F-202) are in M1 because the buddy server is the first thing exposed to the internet.
@@ -618,7 +618,7 @@ flowchart LR
 
 | Missing in M1 | Where it comes | First feature |
 |---|---|---|
-| Analog behaviour (dividers, wrong resistor, brown-out) | Project core or Fidelity once RS-08(a) reports | F-045, F-042, F-043 |
+| Analog behaviour (dividers, wrong resistor, brown-out) | Project core (F-045, in-house MNA with Newton devices, ADR-0304); transient in Fidelity (RS-07 and RS-08(b) never ran) | F-045, F-042, F-043 |
 | Faults on a drawn circuit, hints, diagnosis record in use | Faults | F-028, F-029, F-018 |
 | Boards other than the Uno, existing lessons, benches, craft | Studio editor (all boards) and Labs moved in | F-104, F-031 to F-036 |
 | Real compiled firmware, compile service | Fidelity | F-048, F-049 |
@@ -626,14 +626,14 @@ flowchart LR
 | Breakpoints, multimeter, scope, replay | Fidelity | F-055, F-053, F-054, F-051 |
 | AI partner | AI partner | F-105, F-109, F-110 |
 | Room chat, voice, buddy leaderboard | Collaboration (later rows) | F-117, F-108, F-140 |
-| Phone layout, full accessibility pass | Studio editor, after RS-01 devices and RS-16 | F-178, F-177 |
+| Phone layout, full accessibility pass beyond the core | Studio editor, after RS-01 devices. The accessibility core (axe zero serious and critical, keyboard path, outline pane) is in the Studio gate and starts with RS-16 | F-178, F-177 (rest) |
 | Persistence of rooms across a server restart | Collaboration | F-118 follow-up |
 
 ### 7.6 Build order inside M1
 
 1. **M1-a, baseline:** F-195, F-202, F-001, F-180, F-006, F-009, F-196, F-012, F-166, F-193, F-002, F-003, F-004, F-007, F-204. Stop for Amar's OK (B0 gate).
 2. **M1-b, core:** F-200, F-076, F-097, F-078, F-077, F-083, F-203, F-044, F-038, F-041, F-047, F-087, F-092, F-201, F-174, F-175. Stop for OK (Project core gate). Acceptance: steps 1, 2, 6 to 8 of 7.2 run headless in the test suite before any editor exists.
-3. **M1-c, editor and run:** F-096, F-079, F-082, F-080, F-081, F-034, F-025, F-207, F-011, F-098. Stop for OK (Studio gate). Acceptance: steps 3 to 8 by hand in a browser.
+3. **M1-c, editor and run:** F-096, F-079, F-082, F-080, F-081, F-034, F-025, F-207, F-011, F-098. Stop for OK (Studio gate). Acceptance: steps 3 to 8 by hand in a browser, plus the F-177 core (axe zero serious and critical, keyboard path for place, wire, edit and run, outline pane); RS-16 is its first task. Nothing in this gate waits on interviews, a pilot or a device run.
 4. **M1-d, buddy:** F-198, F-199, F-005, F-206, F-118, F-119, F-116, F-121, F-122, F-089. Stop for OK (Collaboration gate). Acceptance: steps 9 to 11.
 
 The order obeys D-014 for B0, core, editor and collaboration. The seven rows out of strict phase order are F-041, F-207, F-025 and F-011 (Fidelity), F-096 and F-098 (Components) and F-034 (Labs moved in); F-041 lands in M1-b with the interpreter it belongs to, the rest in M1-c, and each is a small slice or an existing component.
@@ -729,7 +729,7 @@ Reading: rows with role B, G and W keep their class unless they fall under the f
 
 ### 8.4 What would change the plan
 
-- If RS-08(a) fails, F-045 stays a foundation but its Fe drops to 2 and its class becomes a decision on ngspice-WASM (F-046 then moves from research toward foundation). M1 is unaffected (section 7.4).
+- RS-08(a) reported: the linear half passed and the realistic-device half failed (10 of 20). F-045 stays a foundation with Fe 3, not 2, because ADR-0304 keeps the MNA core and adds Newton devices; ngspice WASM is the oracle, not the engine. What would change it: if Newton devices still miss 2 percent on the realistic cards, or RS-08(b) transient fails, F-045's Fe drops to 2 and the engine choice moves to ngspice WASM (F-046 then moves toward foundation). M1 is unaffected (section 7.4).
 - If the RS-01 device run fails, F-079 keeps its class (it is the editor) but the renderer ADR changes and F-178 and F-177 move later.
 - If Amar wants simultaneous typing in the code editor, F-123 leaves LONG-TERM RESEARCH and the baton in F-122 stops being enough.
 
@@ -743,7 +743,7 @@ From the catalogue (section 6, itself from the CTO memo `00_EXECUTIVE/council/ct
 | Clock, World, devices | Preserve, extend | F-041 F, F-208 N | Existing lesson checks pass; SPI no longer returns 0 silently |
 | Generic content types (`Check`, `WorldModel`, `CodeTemplate`, `FailureMode`) | Preserve, move to a neutral core | F-033 W, F-017 W, F-019 F, F-221 N | Board Lab runs unchanged on the new types |
 | Closed lesson registry | Replace for user content, keep for catalogue | F-076 F, F-077 F, F-031 N | All 38 catalogue items convert and open (F-077) |
-| Circuit solver `figures/engine/bench-solve.js` | Freeze for catalogue figures, replace for user circuits | F-042 N, F-043 W, F-045 F | Within 2 percent of ngspice on 18 of 20 circuits (RS-08, PENDING) |
+| Circuit solver `figures/engine/bench-solve.js` | Freeze for catalogue figures, replace for user circuits | F-042 N, F-043 W, F-045 F | Within 2 percent of ngspice on 18 of 20 circuits. RS-08(a): 20 of 20 matched models; 10 of 20 realistic device cards (`08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md`); transient not run |
 | Figure engine and figures | Preserve as visual library, not the builder canvas | F-037 N, F-096 N, F-014 N | Idle CPU reduced (PERFORMANCE_BASELINE) |
 | Figure bridge protocol | Extend | F-037 N, F-018 W | Versioned, origin-checked messages kept |
 | Progress storage `iynk:v1` | Replace for projects; keep for settings | F-200 F, F-201 F, F-087 W, F-036 N | Reload keeps every edit (walk 14) |
@@ -775,7 +775,7 @@ The decisions bind this document. These are places where the decided direction m
 |---|---|
 | Upstream | `BRIEF.md` section 25 (adapted: market, money and retention criteria removed by D-013), sections 3.5, 7 to 18; `00_EXECUTIVE/DECISION_REGISTER.md` D-005, D-007, D-010 to D-017; `03_PRODUCT/FEATURE_CATALOGUE.md` (all rows, section 4.3, section 6, section 7); `01_AUDIT/TECHNICAL_DEBT.md` A1 to A13, D1 to D5; `01_AUDIT/SECURITY_BASELINE.md`; `01_AUDIT/PERFORMANCE_BASELINE.md`; `02_RESEARCH/TECHNICAL_RESEARCH.md` section 6; `08_RESEARCH_SPIKES/RS-01`, `RS-03`, `RS-09` reports. |
 | Downstream | Roadmap and phase plan (order inside phases: section 3.1; M1 cut line: section 7); Studio, simulation and collaboration specifications (cite F-ids); atomic task list (BRIEF 27). Requirement ids (R-nnn) and ADR ids are assigned elsewhere; this file defines none. |
-| ADRs asked for | Renderer behind an interface (F-079); SQLite store behind the Store interface (F-199, F-165; ADR-0422, decided); share-link and share-file encoding (F-089); the M1 cut line itself (objection 2). |
+| ADRs asked for | Renderer behind an interface (F-079); SQLite store behind `ServerStore` (F-199, F-165; ADR-0004, decided); share-link and share-file encoding (F-089); the M1 cut line itself (objection 2). |
 
 ### Open items for Amar
 
@@ -787,8 +787,8 @@ The decisions bind this document. These are places where the decided direction m
 
 ## Change log
 
-- 2026-10-27: first version. 221 features, nine criteria, six rules, Milestone 1 of 47 features, weight and noise sensitivity.
-- Adjustments made after the first scoring pass, so a reader can see what moved: F-184 V 3 to 2 (a validation programme is only worth running once the engines it validates are settled; RS-08 and RS-03 devices pending); F-106 V 4 to 5 (no AI operation ships without a review surface); F-055 V 4 to 5 (D-014 names the debugger); F-054 Fe 3 to 4 (the run trace already records edges). Role B set on F-002, F-004, F-006, F-007, F-009, F-012, F-195, F-196, F-197, F-202 (binding decisions D-005, D-015, D-016, D-017). The Fd edges F-004 on F-199, F-064 on F-007 and F-216 on F-073 were removed (section 2.2).
+- 2026-10-27: first version. 221 features, nine criteria, six rules, Milestone 1 of 47 features (later 51, see section 7.2), weight and noise sensitivity.
+- Adjustments made after the first scoring pass, so a reader can see what moved: F-184 V 3 to 2 (a validation programme is only worth running once the engines it validates are settled; RS-08 reported mixed and RS-03 phone and Chromebook runs not done); F-106 V 4 to 5 (no AI operation ships without a review surface); F-055 V 4 to 5 (D-014 names the debugger); F-054 Fe 3 to 4 (the run trace already records edges). Role B set on F-002, F-004, F-006, F-007, F-009, F-012, F-195, F-196, F-197, F-202 (binding decisions D-005, D-015, D-016, D-017). The Fd edges F-004 on F-199, F-064 on F-007 and F-216 on F-073 were removed (section 2.2).
 
 ## Review fixes (2026-10-27)
 
@@ -800,8 +800,8 @@ The decisions bind this document. These are places where the decided direction m
 | F-166 | R-012 | Set M1 | It is the status route behind the F-012 flags that M1 already ships (`src/app/api/status/route.ts`, `src/lib/features.ts`, PRESERVE). Slice added in 7.3. |
 | F-204 | R-019 | Set M1 | R-019 asks for the BUD-04 to BUD-07 baselines in M1. Slice limited to those four budgets. |
 | F-175 | R-050 | Set M1 | F-174 is already M1 and R-050 covers first run; the slice is "land on a starter project from F-077 and run it". |
-| F-016 | R-009 | Not set | LATER, S 2.95, below the floor (see its row in the LATER list). R-009 is M1 through its primary feature F-006. The PRD should name only F-006 as the M1 feature. |
-| F-052 | R-064 | Not set | Current draw and brown-out need the DC solver, which M1 leaves out (section 7.4). R-064 is M1 through F-044 (run controls). The PRD should drop F-052 from the M1 tag. |
+| F-016 | R-009 | Not set | LATER, S 2.95, below the floor (see its row in the LATER list). R-009 is M1 through its primary feature F-006. Applied (RC-64): the PRD names only F-006 as the M1 feature (R-009 has no M1 tag). |
+| F-052 | R-064 | Not set | Current draw and brown-out need the DC solver, which M1 leaves out (section 7.4). R-064 is M1 through F-044 (run controls). Applied (RC-64): the PRD no longer tags R-064 M1. |
 
 Recount, from the matrix M1 column: 51 of 184 (was 47). By phase: B0 foundation 16 (was 13), Project core 14 (was 13), Studio editor 4, Collaboration 10, pulled forward 7. PRESERVE or EXTEND rows 23 (F-166 added). Updated: summary bullet, 7.1 count line, the phase lists in section 3, the 7.3 table (four rows added), 7.4 dependency count, 7.6 build order (F-007, F-166, F-204 in M1-a; F-175 in M1-b), section 9 phase-gate count, change log. No prerequisite is missing: F-175 needs F-174 (M1); F-166 needs F-012 (M1); F-007 and F-204 have none outside B0.
 
@@ -813,12 +813,53 @@ The other direction (matrix M1, PRD requirement not tagged): the PRD tags attach
 
 | Item | Action | Evidence |
 |---|---|---|
-| F-165 title | Re-titled "Server store (SQLite file)" in the matrix and removed the Postgres wording everywhere | `FEATURE_CATALOGUE.md` F-165 row; `04_ARCHITECTURE/BACKEND_ARCHITECTURE.md` ADR-0422 (SQLite through `node:sqlite` behind a `Store` interface; Postgres a later adapter) |
+| F-165 title | Re-titled "Server store (SQLite file)" in the matrix. Postgres is a could, a later adapter behind `ServerStore`, not in any phase (RC-03) | `FEATURE_CATALOGUE.md` F-165 row; `04_ARCHITECTURE/ADR/ADR-0004-sqlite-as-the-server-store.md` (ADR-0422 is history only, RC-02) |
 | F-165 class | Set role B and class REQUIRED FOUNDATION, phase Collaboration (it is the store F-199 needs). Role B text in 2.3 extended to cover a decided ADR that a foundation feature needs. Rows 33 to 34 (foundation) and 30 to 29 (later) in the summary, the 2.3 table, the section 3 table and the 8.3 table | rule 1 of 2.3 |
 | Section 6.3 | Removed the F-165 row (its class now matches the catalogue's stance) | |
 | Section 8 | F-165 removed from the stress list (15 to 14 rows), the floor-move list (5 to 4 classes), the changed-class table and the noise list; the claim that the stress run is the only way into REQUIRED FOUNDATION is replaced. Rows that change at least once 17 to 16; never change 167 to 168 | Role B rows do not react to weights, the floor or Fd |
 | Objection 5 | Removed (Postgres versus file store). Objections 6 to 8 renumbered 5 to 7; "Eight" became "Seven" in section 1; the open item for F-197 points to objection 5 | |
-| F-199 row in 7.3 | "file-backed store" replaced by "SQLite file store (the M1 slice of F-165, ADR-0422)"; the ADR line in section 11 names ADR-0422 as decided | |
+| F-199 row in 7.3 | "file-backed store" replaced by "SQLite file store (the M1 slice of F-165, ADR-0004)"; the ADR line in section 11 names ADR-0004 as decided | |
 | Phase names | One-line code-to-name mapping added under section 3 | catalogue phase codes (section 4 table) |
 
 Not changed: F-165 keeps its M1 column empty and the M1 count stays 51, because its M1 slice (the single SQLite file) ships inside F-199, which is already M1. If the catalogue owner wants the slice counted separately, F-165 becomes M1 and the count 52. The noise and weight tables were computed before this change; I adjusted them by removing F-165 and did not re-run the 2000 trials.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Sources: `04_ARCHITECTURE/RECONCILIATION.md` (RC rows) and `08_RESEARCH_SPIKES/*/REPORT.md`. Labels: VERIFIED for what I read in the reports, ESTIMATED for the rescores.
+
+| Id | Change | Where |
+|---|---|---|
+| RC-02 | `ADR-0422` as live authority replaced by `ADR-0004` and `ServerStore`; ADR-0422 is history only | role B row (2.3), F-199 row, section 11 ADR line, section 12 log rows |
+| RC-03 | Postgres is a could, a later adapter behind `ServerStore`, not in any phase. The claim that the wording was removed everywhere is deleted | F-199 row, F-165 log row |
+| RC-50 | "no REPORT.md / PENDING" removed for RS-06, RS-08, RS-12, RS-13 and replaced by their verdicts; seven reports exist | summary spike line, 6.2 table |
+| RC-50 rescore | F-045 Dc 2 to 3, S 3.99 to 4.06, Unc M (class unchanged). F-050 Fe 2 to 3, Dc 1 to 2, Pf 2 to 1, S 2.16 to 2.25, class LONG-TERM RESEARCH to LATER. F-061 Fe 2 to 3, Dc 2 to 3, S 2.60 to 2.77, class LONG-TERM RESEARCH to LATER | matrix, 3.1 order lists |
+| RC-50 counts | LATER 29 to 31, LONG-TERM RESEARCH 12 to 10. Fidelity row 2/4 to 3/3, Robotics row 1/2 to 2/1, total row, 2.3 table, summary | summary, 2.3, section 3 table |
+| RC-66 | `parts`, `wires`, `files`, `board`, `settings` replaced by `boards`, `components`, `nets`, `views`, `sources`, `simulation` | 7.2 step 2, F-076 row, F-083 row |
+| RC-67 | F-177 split: core in the Studio phase gate (axe, keyboard path, outline pane), phone layout and full pass LATER, RS-16 first task of the slice | F-177 row, 6.3, F-080 row, 7.4, 7.5, M1-c |
+| RS-08 | Verdict and ADR-0304 consequence; sensitivity note on F-045 reconciled with ADR-0304 (what would change it stated); 7.5 analog row; section 9 solver row; adjustment note | 6.2, section 8.4, 7.5, 9, 10 |
+| RS-06, RS-12 | F-050 closed: Pico on the TypeScript interpreter, rp2040js an oracle, Yosys a lazy desktop Inspect mode | 6.2 |
+| RS-13 | F-060 no longer scoped around the spike; F-061 class to be re-read in the Robotics phase; RA-02 open | 6.2 |
+| RS-01, RS-03, RS-09 | Already folded in; left as they are | 6.2 |
+
+Not applied, with reasons:
+
+- RC-66 for the F-097 and F-200 rows: neither row uses the old names (checked). Step 2 and F-076 carried them.
+- Place 9 (line 636, "Stop for OK (Studio gate)"): correct as D-014's gate. I only added that nothing in the gate waits on interviews, a pilot or a device run. Line 7 ("No user has been interviewed") already fits D-013.
+- Noise table in 8.3: not re-run after the two class changes; its Rows column for LATER (29) and LONG-TERM RESEARCH (12) is the earlier count. HYPOTHESIS that the stability result is unchanged, because both rows moved by rule 2 and not by score.
+- Not rescored: F-046 (RS-07 and RS-08(b) never ran), F-049, F-102, F-074, F-111 (their spikes have no result).
+
+For Amar (not agent tasks): the device run for RS-01, the RS-16 screen-reader pass (Q-13), and checking simulated faults on a real board.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-64 | Rows F-016/R-009 and F-052/R-064 now read "Applied (RC-64)"; the PRD was checked and complies (R-009 and R-064 untagged; R-017, R-030, R-061, R-090, R-098, R-FID-5 carry M1). Change log entry "Milestone 1 of 47" now notes "later 51". |
+| RC-50 / RS-09 | Removed the stale "catalogue still lists it PENDING" note from the spike-state bullet; the catalogue (row for RS-09) already records the PASS verdict. |
+
+Skipped: the recount paragraph's "I did not edit the PRD" sentence, left as a historical note.
+
+
+## Reconcile, final nits (2026-10-27)
+
+- F-004 row (about line 520): "remaining routes need the server token" now names IYNK_SERVER_TOKEN for B0 (BACKEND 13.1, deleted later) and the device bearer token from the collaboration phase (ADR-0007, D-018). No setup token (RC-15, RC-16).

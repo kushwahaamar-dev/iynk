@@ -19,18 +19,20 @@ threshold I chose is marked PROPOSAL.
 | # | Question | Decision | Where |
 |---|---|---|---|
 | 1 | One universal workspace or specialised editors? | One Studio workspace. The schematic, breadboard, board and mat views are lenses over the same document and the same operations. Code, serial, instruments and the guide are docks in the same shell. Domain tools (mechanical, drone design) plug into the shell as tool packs, not as separate apps | 2, ADR-0800 |
-| 2 | What does the canvas draw with? | SVG DOM, a thin custom scene core in plain TypeScript behind a `Renderer` interface, with level of detail and culling from the first commit. No xyflow. The choice of SVG over Canvas stays open until the RS-01 device run | 5, ADR-0801 |
+| 2 | What does the canvas draw with? | SVG DOM, a thin custom scene core in plain TypeScript behind a `Renderer` interface, with level of detail and culling from the first commit. No xyflow. The RS-01 check says only LOD is a plausible pass on real devices, so LOD and culling are not optional; Canvas stays a swap behind `Renderer`, and the Studio build does not wait for the device run (For Amar, Q-2) | 5, ADR-0801 |
 | 3 | What does a gesture produce? | One batch of PDM ops, computed by a pure tool function. Tools never touch the document directly. A wire is a net operation plus a drawing; a breadboard leg is a placement plus the net change its strip implies | 6, ADR-0802 |
 | 4 | What may be refused? | Only what has no physical meaning (a pin to itself, a mechanical pin on a net, a hole that does not exist). Everything electrical that is merely wrong is allowed and flagged by the shared static rules, so a person can build the broken circuit on purpose | 7, ADR-0803 |
 | 5 | Where do unplaced parts go? | Schematic: auto-placed by a deterministic layout that is computed, not stored, until the first manual edit freezes it. Breadboard: a parts tray, never a hidden position | 6.4, ADR-0804 |
 | 6 | Undo? | Per author, last in first out, in memory, from the inverse the apply function returns. Two scopes: canvas (all ops except text) and code editor (CodeMirror history, written as forward `source.edit` ops) | 11, ADR-0805 |
 | 7 | Lifecycle | Library in IndexedDB, files on disk, one writer tab per project, fork-on-open for templates and lessons, archive and 30-day trash, share as a copy or as a room | 4, ADR-0806 |
-| 8 | Keyboard and screen readers | An outline pane is the accessible twin of the canvas. Every canvas action has a list-based keyboard path that emits the same ops. Final test waits on RS-16 | 12, ADR-0807 |
+| 8 | Keyboard and screen readers | An outline pane is the accessible twin of the canvas. Every canvas action has a list-based keyboard path that emits the same ops. The build does not wait for RS-16 (never run): the path is built in the Studio phase and gated by a keyboard-only Playwright spec; the screen-reader pass is For Amar (Q-13) | 12, ADR-0807 |
 | 9 | Editing while a run is on | A change that can alter the circuit or the code marks the run stale and offers Restart. Layout-only changes do not | 11.4, ADR-0808 |
 | 10 | Lessons | Every lesson, board tour, bench and craft is a converted project (PDM section 11). Opening one forks it; the old isometric figure stays as a read-only lens until a Studio view replaces it | 13 |
 
-Status of the evidence this file leans on: RS-01 is INCONCLUSIVE (no phone or Chromebook), RS-09 PASS, RS-16 (keyboard wiring) has
-no report, RS-04 (compile) has no report. Where a decision waits, the text says PENDING and gives the rule.
+Status of the evidence this file leans on: RS-01 is INCONCLUSIVE (no phone or Chromebook; the device run is For Amar, Q-2, `docs/device-results.md`, and the
+Studio build does not wait for it), RS-09 PASS, RS-16 (keyboard wiring) has no report and is replaced by a built path plus an automated gate (12.2), RS-04
+(compile) has no report and becomes a local compile timing task in the build plan (RS-03 measured arduino-cli at 1.17 to 1.40 s cold and 0.33 to 0.56 s warm;
+arduino-cli is GPL-3.0). Build order follows D-014; nothing here waits for interviews, a pilot or Fault Lab.
 
 ## 1. Scope, upstream and downstream
 
@@ -186,21 +188,21 @@ Every operation lists what it writes. "Store" means IndexedDB (ADR-0106). "Doc" 
 
 | Operation (BRIEF 8.1) | Trigger | Effect | Errors and edge cases | Features, requirements |
 |---|---|---|---|---|
-| Create blank | Home or Ctrl/Cmd+N: choose a board (Uno R3 first, then the other 11, R-072) | New `prj_` ULID id; document with `format`, `schemaVersion 1.0`, `meta {title "Untitled", kind "project", locale}`, one board (`brd_`), a breadboard `cmp_` and views `vw_bb` and `vw_sch`, one source `main.ino` (or `.py`, `.v` by board language), `provenance.origin {blank}`, `license {LicenseRef-iynk-unspecified}`, `actors` with the local person. Written to Store at once | IndexedDB unavailable: banner "projects will not be kept", Save to file offered (PRD 7.2 step 1). Unknown board id: refuse with the list of boards | F-076, F-092, R-050 |
+| Create blank | Home or Ctrl/Cmd+N: choose a board (Uno R3 first, then the other 11, R-072) | New `prj_` ULID id; document with `format`, `schemaVersion 1.1`, `meta {title "Untitled", kind "project", locale}`, one board (`brd_`), a breadboard `cmp_` and views `vw_bb` and `vw_sch`, one source `main.ino` (or `.py`, `.v` by board language), `provenance.origin {blank}`, `license {LicenseRef-iynk-pending}`, `actors` with the local person. Written to Store at once | IndexedDB unavailable: banner "projects will not be kept", Save to file offered (PRD 7.2 step 1). Unknown board id: refuse with the list of boards | F-076, F-092, R-050 |
 | Create from template | New, Template tab | Fork of a template project (4.3) | Template needs a part version not in the registry: opens with the pinned interface and generic art, warns | F-084, R-056 |
 | Create by import | Open file, drop a file, Import sketch | Converter returns `{project, loss[]}`; the loss list is shown before saving; `provenance.origin {import}` | Refuse a newer `schemaVersion` (PDM 10) and offer the raw file back; refuse a file over the size limits before parsing; V3 failure opens read-only with errors (recovery open, PDM 9.3) | F-091, R-037 |
 | Duplicate | Library menu, Ctrl/Cmd+D in the library | A fork with `origin fork` (4.3) and the title "<title> copy" | None | F-088 |
 | Rename | Click the title; library menu | `meta.set {title}` op (1 to 120 characters). The library `index` row updates in the same transaction | Empty or over-long title: inline error, no op | F-092 |
 | Edit | Canvas, inspector, code | Ops (section 6) | Rejected op: state unchanged, one-line reason, last good state kept (RS-09 invariant, PDM 7.2 reject codes) | F-079 to F-083 |
 | Save | Automatic; Ctrl/Cmd+S saves a file copy | Store write after each committed batch (4.4); Ctrl/Cmd+S writes the `.iynk` or `.iynkz` | Quota: warning chip "autosave failed", keep last good copy, offer file save (R-073) | F-087, F-200, F-201 |
-| Version | History pane: Name this version; automatic ones | Checkpoint (PDM 5.15): kind `named` or `auto`; snapshot bytes in Store `revisions` | At most 256 checkpoints in the document header; local retention 50 named plus automatic ones (PROPOSAL, PRD R-066) | F-093, R-066 |
+| Version | History pane: Name this version; automatic ones | Checkpoint (PDM 5.15): kind `named` or `auto`; snapshot bytes in Store `revisions` | At most 256 checkpoints (PDM limits), in the document header and in the local client store | F-093, R-066 |
 | Compare | History pane: pick two | Structural diff of the two snapshots by id: parts added or removed, nets whose member sets differ, wires, file text diff | A restored snapshot whose `stateHash` does not match its checkpoint is refused | F-093 |
 | Restore version | History pane | Not a rollback of history: a batch with `author.kind "user"` that moves the document to the snapshot's state (computed as a structural diff turned into ops), so undo and rooms keep working | Large diffs may exceed the 64 KiB op cap: split into batches (one revision per batch); a room needs the host's OK | F-093 |
 | Fork | Project menu: Fork | New `prj_` id, `revision` 0, new genesis chain, `history` empty plus one named checkpoint "Forked from ...", `provenance.origin {fork {project, revision, stateHash}}`, `license` kept (PDM 5.17), forker added to `actors` and `access.owners`; original author stays in `contributors` | Forking a project whose `provenance.thirdParty` has `unchecked` items copies them (the publish gate counts them later) | F-088, R-039 |
 | Share | Project menu: Share | Two choices, 4.5 | Server unreachable: file only | F-089, F-121 |
 | Export | Project menu: Export | The formats of PDM 12.2, each showing its loss list before writing (4.6) | Secret-shaped strings in text: warn before writing (PDM 13) | F-090, F-160, F-210, F-211 |
 | Import | Home, drop, Project menu: Import into this project (sources, parts) | Adds source files or a part pack through ops (`source.add`, `dep.set`, `asset.add`) | Path rules V3-PATH; zip-slip refusal (PDM 13) | F-091, F-220 |
-| Archive | Library menu | Library `index` row `archived: true` (a library-only flag, outside the document; PROPOSAL, a MINOR extension of ADR-0106's index) | Archived projects are hidden from the default list and excluded from search; not synced | F-092 |
+| Archive | Library menu | Library `index` row `archived: true` (a library-only flag, outside the document; boolean on the index row, PDM 12.1, ADR-0106) | Archived projects are hidden from the default list and excluded from search; not synced | F-092 |
 | Delete | Library menu | Moves the record to Store `trash` with `trashedAt`; 30 days (F-092). Rooms the project hosts are closed first | Deleting the project that is open in another tab: that tab turns read-only | F-092 |
 | Restore | Trash | Back to `projects` and `index` | Id clash cannot happen (ids are never reused) | F-092 |
 | Publish to a community catalogue | Not planned | OOS (F-095); sharing with buddies replaces it (F-089, F-143) | | |
@@ -227,7 +229,7 @@ Opening a template or a lesson never edits it. The Studio creates a fork with th
 
 | Topic | Rule |
 |---|---|
-| When | After each committed batch, debounced: write when 1 s has passed with no new batch or 5 s since the last write, whichever is first (PROPOSAL). A reload or `pagehide` flushes |
+| When | After each committed batch, debounced: save 500 ms after the last commit, at most 5 s after the first unsaved commit, on `visibilitychange` hidden and on `pagehide` (RC-11) |
 | Cost | The write runs off the interaction path (a task in a worker or an idle callback) and must not drop a frame; budget BUD-08: p95 under 50 ms at 500 parts and 1,000 wires (PROPOSAL, to be measured) |
 | How | PDM 12.1: two-slot write (new record written before the old is replaced), `index` row in the same transaction, `revision` and `hash` compared first |
 | Journal | Edited text is also journalled per keystroke burst (300 ms) so a crash between autosaves loses at most that burst (extends F-087, DOCUMENTED today as `iynk:v1` progress only) |
@@ -369,7 +371,7 @@ only LOD is a plausible candidate. So the Studio is built on three rules, each f
    elements in view (PROPOSAL; the harness in section 14.2 sweeps 5,000, 10,000, 20,000 and 47,000 to find the knee on each
    machine and replaces this number with a measured one).
 2. **Level of detail from the first commit.** The level is chosen from the part's on-screen size `s = k * max(w_mm, h_mm)` with 15
-   percent hysteresis so a part does not flicker at the threshold. Thresholds are PROPOSAL, starting from RS-01's switch point (its
+   percent hysteresis so a part does not flicker at the threshold. Thresholds are HYPOTHESIS until RS-01 runs on devices, starting from RS-01's switch point (its
    parts were 50 world units wide and swapped at zoom 0.7, so about 35 px).
 
    | Level | On-screen size | Drawn |
@@ -412,21 +414,18 @@ The breadboard geometry already exists as data: `figures/engine/bench-bb.js:8-19
 full (63 columns, 165.1 by 54.5 mm) and mini (17 columns) breadboards, the row offsets (rows `a` to `j`), the 2.54 mm pitch and the
 rail names `T+`, `T-`, `B-`, `B+` (VERIFIED). Those four are display labels from the figure code. They are not valid descriptor ids:
 `localId` is `^[A-Za-z][A-Za-z0-9_]{0,31}$` (`component.schema.json`), so `+` and `-` cannot appear in a strip group id, a pin id or a
-hole name that must be tied to one. **Rail naming (PROPOSAL; CS 4.5 has no rail rule yet, and there is no "C-LEG" mapping in the
-documents, so this file defines one for CS to adopt):**
+hole name that must be tied to one. **Rail naming (PDM rule C-LEG, 3.4, VERIFIED over the 27 figure parts):**
 
 | Figure label | Strip group id (`groups[]`) | Hole name | Example leg or wire end |
 |---|---|---|---|
-| `T+` | `RAIL_TP` | `RTP<k>` | `"legs": {"A": "RTP7"}`, `{"kind": "hole", "surface": ..., "hole": "RTP7"}` |
-| `T-` | `RAIL_TN` | `RTN<k>` | `RTN12` |
-| `B+` | `RAIL_BP` | `RBP<k>` | `RBP3` |
-| `B-` | `RAIL_BN` | `RBN<k>` | `RBN30` |
+| `T+` | `RAIL_TP` | `RAIL_TP<n>` | `"legs": {"A": "RAIL_TP7"}`, `{"kind": "hole", "surface": ..., "hole": "RAIL_TP7"}` |
+| `T-` | `RAIL_TN` | `RAIL_TN<n>` | `RAIL_TN12` |
+| `B+` | `RAIL_BP` | `RAIL_BP<n>` | `RAIL_BP3` |
+| `B-` | `RAIL_BN` | `RAIL_BN<n>` | `RAIL_BN30` |
 
-`<k>` counts the rail's holes from 1 along the rail (the figure's `railCols` list, in order), not the column number, so a rail break
-cannot shift names. A full breadboard has up to 52 holes per rail (`floor(63 * 5 / 6)`, `bench-bb.js`), so a name is at most 6 characters, inside the schema's 16. Each rail is
+`<n>` is the legacy hole number from the figure (PDM 3.4: rail hole `T+12` becomes `RAIL_TP12`), so a name never depends on a rail break. A full breadboard has up to 52 holes per rail (`floor(63 * 5 / 6)`, `bench-bb.js`), so a name is at most 9 characters (`RAIL_TP52`), inside the schema's 16. Each rail is
 one strip, or two strips on a split rail; the descriptor decides, and V3-HOLE (a hole name must exist on the surface) and B2 treat
-rail holes exactly like column holes. The UI shows `+` and `-` from the group's `label` text, never from the id. Until CS 4.5 adopts
-this rule, the generator that writes the breadboard descriptor is the only place the four names are produced, and a test asserts
+rail holes exactly like column holes. The UI shows `+` and `-` from the group's `label` text, never from the id. The generator that writes the breadboard descriptor is the only place the four names are produced (it applies C-LEG), and a test asserts
 that every hole name in the descriptor matches `localId`. The breadboard descriptor is generated from these numbers (CS 4.5, "produced by a
 pattern in the generator"); the Studio reads holes and strips from the descriptor, never from constants.
 
@@ -521,10 +520,20 @@ document by the helper functions named in section 6.6.
 | Lock | `component.set {id, set: {locked: true}}` |
 | Bring to front, send back | `view.place` with a new `layer` (-8 to 8) |
 
-**Refdes assignment.** The next free `<prefix><n>` across boards and components. The prefix comes from `visual.schematic.symbol`
-(`resistor` R, `led` LED, `diode` D, `capacitor` C, `inductor` L, `switch` SW, `transistor-npn` Q, `motor` M, `ic-box` U,
-`module-box` U), `BB` for surfaces, `U` for boards. The descriptor has no refdes-prefix field (CS 4.4 to 4.13, VERIFIED by search),
-so this table is a PROPOSAL until the part spec adds one (Objection O-S3 asks for it).
+**Refdes assignment.** The next free `<prefix><n>` across boards and components. The prefix is `identity.refdes_prefix` when the
+descriptor has it. When absent, the editor derives it from `category` with a keyed table, not from the schematic symbol (RECONCILIATION RC-39):
+the table below keys on `category` (the enum in `component.schema.json`). `BB` for surfaces, `U` for boards. The enum is coarse, so
+discrete parts (resistor, LED, diode, capacitor, switch, transistor) are expected to set `identity.refdes_prefix` and do not rely on this fallback.
+
+| `category` | Fallback prefix (PROPOSAL) |
+|---|---|
+| `microcontroller`, `dev-board`, `fpga`, `display`, `communication`, `sensor`, `motor-driver`, `power`, `robotics`, `drone` | `U` |
+| `passive` | `R` (a capacitor or inductor sets its own prefix `C` or `L`) |
+| `semiconductor` | `D` (a transistor sets `Q`) |
+| `actuator` | `M` |
+| `mechanical` | `ME` |
+| `instrument` | `INS` |
+| `virtual` | `V` |
 
 **Unplaced parts and auto layout (ADR-0804).** A component exists in the document once; it has a placement per view only where
 someone placed it.
@@ -849,7 +858,7 @@ by the names in PRD R-061 and the catalogue's Board Bench vocabulary (HYPOTHESIS
 
 ### 8.5 Mechanical and 3D (seam only)
 
-`mechanical` (frames, bodies, joints, mounts) is edited by a tool pack in the ROBOT phase; F-086 is LATER because WebGPU is off in
+`mechanical` (frames, bodies, joints, mounts) is edited by a tool pack in the ROBOT phase; F-086 is LONG-TERM RESEARCH because WebGPU is off in
 Firefox (TECHNICAL_RESEARCH F8, quoted in PRD 8.1). The shell reserves a lens slot of kind `mechanical3d` that reads
 `mechanical` and `views[kind=mat]`. It uses the same selection, undo, inspector and run client. Nothing about this lens may leak into
 the 2D renderer interface.
@@ -875,7 +884,7 @@ Follows the selection. Every field has a text label, a keyboard path and `aria-d
 | One wire | Net (name, class; links to select net), colour (ten swatches with names, not colour alone), route (reset), from and to as text, length in mm, "delete connection / delete drawing" |
 | One net (from the nets list) | Name, class (`signal power ground analog`), members as refdes.pin, wires per view, air wires, problems on it |
 | Several | Common fields only; mixed values show "Mixed" |
-| Nothing | The project: title, description, tags, board list, `simulation.seed` and `duration_ms`, license (`LicenseRef-iynk-unspecified` until D-017), third-party item count |
+| Nothing | The project: title, description, tags, board list, `simulation.seed` and `duration_ms`, license (`LicenseRef-iynk-pending` until D-017), third-party item count |
 
 **Value entry.** Numbers are parsed with `parseQuantity(text, dimension)` of SA 5.1 (`330`, `330R`, `0.33k`, `4k7`, `2R2`, the micro
 sign) and written in base units in the document (`ohms: 330`, CS 4.2 "base units only"); the field shows a unit-prefixed display
@@ -1049,7 +1058,7 @@ message, SA 17.2).
 | Zoom | Pinch about the midpoint; double-tap fit; no 300 ms delay (the viewport meta and `touch-action` handle it) |
 | What is not a goal | Heavy editing on a phone (R-071); view, run and light edits (move a part, change a value, edit code) must work |
 
-### 12.2 Keyboard-only and screen reader (ADR-0807, PENDING RS-16)
+### 12.2 Keyboard-only and screen reader (ADR-0807, decided without RS-16)
 
 | Task | Path |
 |---|---|
@@ -1062,13 +1071,15 @@ message, SA 17.2).
 
 Colour is never the only cue (the table in 10.2). Contrast: 4.5:1 for text and 3:1 for graphical objects in both themes. Focus is
 never hidden under a toolbar (WCAG 2.4.11). `prefers-reduced-motion` and the in-app setting stop the flow dots, smooth zoom and glow
-(R-069). The test for ACC-2 (keyboard walk) and ACC-4 (one recorded screen-reader pass) is the gate in R-070; the final criterion
-for the pointer-free path waits for RS-16, and until it reports the path above is a proposal.
+(R-069). The test for ACC-2 (keyboard walk) and ACC-4 (one recorded screen-reader pass) is the gate in R-070. RS-16 has no report (RS-16 never ran), so the
+Studio phase builds the path above now and does not wait. The agent-checkable gate is a keyboard-only Playwright spec for STU-15 plus an automated
+accessibility scan of the outline pane. Reversible: the path emits the same ops as the pointer, so changing it later changes no data. What would
+change it: a screen-reader pass by Amar (For Amar, Q-13) finding the outline order or announcements unusable. That pass is a person task, not a build task.
 
 ### 12.3 Language
 
 Every string is a key with arguments in the six languages (R-068). Net names, refdes and code are never translated. Part names
-come from the descriptor's `text` object (`{i18n_key?, en, <lang>?}`, `en` required; CS 4.2). Direction is left to right only (right-to-left is LATER).
+come from the descriptor's `text` object (`{i18n_key?, en, <lang>?}`, `en` required; CS 4.2). Direction is left to right only (right-to-left is LONG-TERM RESEARCH).
 
 ## 13. Lessons become templates; figures are reused or replaced
 
@@ -1194,10 +1205,10 @@ files per step in the build agents' working agreement, by being small. Each slic
 | ST-4 | Code dock, serial, Run, overlays (pin level, part state), Problems from V3, static and code | SimWorker (CORE), static rules |
 | ST-5 | Lifecycle: library, templates, fork-on-open, history, export and import of `.iynk` | Converter (F-077) |
 | ST-6 | Schematic view, board view, copy and paste across projects, align, groups (after O-S1) | |
-| ST-7 | Keyboard path and outline pane (after RS-16), accessibility gate | RS-16 |
+| ST-7 | Keyboard path and outline pane, keyboard-only Playwright gate (screen-reader pass is For Amar, Q-13) | none; RS-16 never ran and nothing waits for it |
 | ST-8 | The other 11 boards, one by one (R-072 order), starter template each | Board descriptors |
 
-M1 (PRD 7.2 steps 3 to 8) is met after ST-5 for the Uno.
+M1 (PRD 7.2 steps 3 to 8) is met after ST-5 for the Uno. The Studio gate also includes ST-7, the F-177 core: axe zero serious and critical, the keyboard path, and the outline pane.
 
 ## 17. Acceptance criteria
 
@@ -1219,7 +1230,7 @@ Each is a test. IDs are local to this file (STU-nn) so they cannot collide with 
 | STU-12 | Given a copy of three parts with two internal wires and one wire to an outside part, When I paste, Then new ids are assigned, the two internal wires and their nets exist, the outside wire does not, and one undo removes it all | R-055 |
 | STU-13 | Given the same document opened in the schematic view twice, Then `autoLayout` gives identical positions; after my first move, all current positions are written in the same batch | 6.4 |
 | STU-14 | Given a value `4k7` typed in the inspector, Then `component.set` writes `ohms: 4700`; `0` or text is refused with the limits shown | R-055 |
-| STU-15 | Given a keyboard only, When I add a resistor, wire it to D13 and edit its value, Then the same ops result as with a pointer and the live region announces each step | R-058 (PENDING RS-16) |
+| STU-15 | Given a keyboard only, When I add a resistor, wire it to D13 and edit its value, Then the same ops result as with a pointer and the live region announces each step | R-058 (Playwright keyboard-only spec; RS-16 never ran) |
 | STU-16 | Given a 360 by 640 viewport, Then there is no horizontal page scroll, canvas, code and serial are tabs, and tap-tap wiring works | R-071 |
 | STU-17 | Given Run, When I change a resistor value, Then the run is marked stale and Restart is offered; when I move a part, it is not | 11.4 |
 | STU-18 | Given a project with an injected, hidden fault, When Problems opens, Then it shows the symptom only at hint level 0 and reveals the cause only at level 3 | D-010 |
@@ -1238,7 +1249,7 @@ Each is a test. IDs are local to this file (STU-nn) so they cannot collide with 
 | STU-31 | Given a lesson fork whose checks name pins of the Uno, When I delete the Uno, Then a preview card lists each test and check that will change, Delete anyway commits one batch (`test.set` for each affected test, then `board.remove`) with no `referenced_by` rejection, the document passes V3, and one Undo restores the Uno and every check | 6.4, PDM 7.2 |
 | STU-32 | Given `project.schema.json`, When `opClass.test.ts` enumerates `$defs/Op`, Then every op kind has exactly one class in 11.4 and the test fails on an unclassified, duplicated or unknown kind | 11.4 |
 | STU-33 | Given a lesson fork, Then `provenance.origin` is one `fork {project, revision, stateHash}` object, validates against the schema, and following `project` reaches the lesson whose origin is `migration {catalogue}` | 4.3 |
-| STU-34 | Given the breadboard descriptor, Then every strip group id, pin id and hole name (rail holes `RTP<k>`, `RTN<k>`, `RBP<k>`, `RBN<k>` included) matches `localId`, and a leg in `RTP7` and a wire end at `RTN12` pass V3-HOLE | 5.5 |
+| STU-34 | Given the breadboard descriptor, Then every strip group id, pin id and hole name (rail holes `RAIL_TP<n>`, `RAIL_TN<n>`, `RAIL_BP<n>`, `RAIL_BN<n>` included) matches `localId`, and a leg in `RAIL_TP7` and a wire end at `RAIL_TN12` pass V3-HOLE | 5.5 |
 
 ## 18. Risks
 
@@ -1247,7 +1258,7 @@ Each is a test. IDs are local to this file (STU-nn) so they cannot collide with 
 | Full-art SVG misses the budget on real devices (RS-01 independent check) | High on low-end devices (HYPOTHESIS from proxies) | LOD, art budget, adaptive art, gesture mode; decision rule of R-053; Canvas stays swappable |
 | Isometric extracted art looks wrong in a top-down view | Medium | Fallback art is the default; redraw a few core parts top-down; decided after the first side-by-side review |
 | The net-first tool layer is more code than a wire-first editor | Certain | It is the point (audit A5). The helpers are pure and property tested against an oracle |
-| Pointer-free wiring does not meet WCAG 2.5.7 | Medium | RS-16; the outline-based path is already a full alternative |
+| Pointer-free wiring does not meet WCAG 2.5.7 | Medium | The outline-based path is already a full alternative; RS-16 never ran, so the screen-reader pass is For Amar (Q-13) |
 | The mouse-or-trackpad heuristic misfires | Medium | A setting overrides it |
 | A very large breadboard exceeds the descriptor limits | Certain for the full-size board | Objection O-S7 |
 | Auto-layout surprises people | Low | Freeze on first edit, "auto" marker, Arrange command |
@@ -1262,11 +1273,11 @@ requests to the contract owners, with evidence. None blocks the work: each has a
 |---|---|---|---|---|
 | O-S1 | PDM | There is no entity for grouping (BRIEF 8.2 lists "Grouping"; F-082 includes it) | `views[]` fields in PDM 5.7 have `placements`, `wires`, `junctions`, `labels` only; prefix table 3.2 has no `grp` | Interim ViewState selection sets; request `views[].groups[]` (`grp_`, `members[]`, `name?`) and ops `group.set`, `group.remove` as MINOR 1.1 |
 | O-S2 | PDM | The op vocabulary has no `wire.set`, so changing a wire's colour is remove plus add; `wire.route` with an empty array is undefined | PDM 7.2 wire row: `wire.add / wire.route / wire.remove` only; the schema defines `route_mm` as an array of up to 256 | Colour change as remove plus add with the same id in one batch; empty route array means "auto" and is stored as absent. Please confirm or add `wire.set` |
-| O-S3 | CS | No refdes prefix in the descriptor, so the editor derives it from `visual.schematic.symbol` | CS 4.4 to 4.13 and `component.schema.json` contain no such field (searched) | The symbol-to-prefix table in 6.4. Request an optional `refdes_prefix` |
+| O-S3 | CS | Refdes prefix source | RECONCILIATION RC-39: field `identity.refdes_prefix?` exists; the fallback derives from `category` | Read `identity.refdes_prefix`; when absent use the category-keyed table in 6.4. Resolved by RC-39 |
 | O-S4 | SA | The `frame` snapshot is defined only by reference to `world.ts`; the Studio needs net voltages, pin states, branch currents and part states keyed by document ids, plus the rule that no current is drawn on a wire the solver cannot attribute | SA 17.2 `Snapshot`; SA 5.2 `SimNetlist` parts and nets carry ids; `SolveResult.branch` is keyed by element id (SA `SolveResult`, line 607) | Overlays specified against `ProbeSpec` kinds `voltage`, `current`, `pin`, `state` (SA 14.1). Request a typed `Snapshot` that includes them |
 | O-S5 | PRD | R-058 says arrow keys move a ghost "in 1 mm steps"; a 1 mm step cannot land a leg on a 2.54 mm hole | PRD R-058; breadboard pitch 2.54 mm (`bench-bb.js`) | Arrow keys move one grid step (1 mm only when snapping is off) |
 | O-S6 | PDM | View kinds `board` and `mat` are listed but not defined | PDM 2.1 and 5.7 | Read as pin map and 2D bench placement (8.3, 8.4); please state it |
-| O-S7 | CS | A full-size breadboard cannot be a single descriptor: pins are capped at 512 and groups at 128; the full board has 63 columns by 10 rows plus four rails of about 52 holes, about 838 holes, and 63 by 2 strips plus 4 rails, 130 strips | `component.schema.json:17` (`maxItems: 512`) and `:18` (`maxItems: 128`); `bench-bb.js:8-19` (full: `cols: 63`, `railCols` is `floor(cols*5/6)` per rail, VERIFIED by reading, count computed not run) | Ship half and mini first (400 and about 170 holes). Request caps of 1,024 pins and 256 groups (MINOR) or chain two halves |
+| O-S7 | CS | CLOSED by RC-38: pins are capped at 1,024 and groups at 256. Before RC-38, a full-size breadboard could not be a single descriptor (caps were 512 and 128); the full board has 63 columns by 10 rows plus four rails of about 52 holes, about 838 holes, and 63 by 2 strips plus 4 rails, 130 strips | `component.schema.json:17-18` (now `maxItems: 1024` and `256`; project.schema.json InterfaceGroup 256); `bench-bb.js:8-19` (full: `cols: 63`, `railCols` is `floor(cols*5/6)` per rail, VERIFIED by reading, count computed not run) | None needed; the full board (about 838 holes, 130 strips) fits the new caps. Half and mini still ship first (400 and about 170 holes) |
 | O-S8 | PDM | The pinned interface in `dependencies` has no pin positions, `class`, `logic_family` or strips, but the editor needs pin positions for hit targets and strips for the breadboard rule | `schemas/examples/uno-blink-d12.project.json`: `core.led-5mm` interface pins have only `id`, `designator`, `type`; `core.breadboard-half` interface has `pins: []` and no `groups` | The editor loads the full pinned descriptor (`{ref, version}`) from the registry; if it is missing, wiring by pin is possible but the fallback art has no positions and breadboard strips are unknown, so the part is placed free and flagged. Request that the pinned interface carry `position`, `class` and `groups` so a project is self-sufficient (also needed for a friend's project that uses a part you do not have) |
 | O-S9 | PDM, PRD | R-057 names an `addWire` op and R-055 a `setProp` op; PDM maps them to batches | PDM 7.2 mapping table | Specified as batches; STU criteria use PDM's names |
 | O-S10 | PDM | A converted lesson fork cannot keep both the catalogue origin and the fork origin: `provenance.origin` is a `oneOf` with one kind | `project.schema.json` `Provenance.origin` | The fork stores `origin fork {project, ...}`; the catalogue id is read by following `project`. Optional request: `fork.of` carrying the catalogue `{lab, id}` |
@@ -1281,7 +1292,7 @@ requests to the contract owners, with evidence. None blocks the work: each has a
 | Q-S4 | Library sync conflict rule between devices | Not decided: on divergence offer "keep both" (a fork). COLLAB decides | COLLAB |
 | Q-S5 | Does an unplaced component in the breadboard tray need an explicit "removed from view" state? | No; the tray lists it until placed or deleted | Studio |
 | Q-S6 | Trackpad versus mouse wheel heuristic good enough? | Setting overrides | Test on Amar's devices |
-| Q-S7 | Do we need a 3D view of the breadboard (a pretty render) at all? | No (LATER with F-086) | Amar |
+| Q-S7 | Do we need a 3D view of the breadboard (a pretty render) at all? | No (LONG-TERM RESEARCH with F-086) | Amar |
 | Q-S8 | Firefox support level | UNKNOWN; tested in Chromium and WebKit first | Amar |
 
 ## 21. Architecture decision records
@@ -1297,7 +1308,7 @@ This file owns ADR-0800 to ADR-0809. Each decision below is a full 12-field reco
 | [ADR-0804](../04_ARCHITECTURE/ADR/ADR-0804-unplaced-parts-tray-and-computed-layout.md) | Unplaced parts: tray in breadboard view, computed auto layout in other views, frozen on first manual edit | Store auto layout at view creation; hide unplaced parts | Decided |
 | [ADR-0805](../04_ARCHITECTURE/ADR/ADR-0805-per-author-undo-two-scopes.md) | Undo: per author, in memory, from `apply` inverses; two scopes (canvas, code); code undo is written as forward ops | One global stack; persistent undo | Decided |
 | [ADR-0806](../04_ARCHITECTURE/ADR/ADR-0806-project-lifecycle-fork-on-open-and-tab-lock.md) | Lifecycle: IndexedDB library plus files, one writer tab by Web Lock, fork-on-open for templates and lessons, archive and 30-day trash, share as a copy or a room | Edit templates in place; last-writer-wins across tabs | Decided; Web Locks coverage HYPOTHESIS |
-| [ADR-0807](../04_ARCHITECTURE/ADR/ADR-0807-outline-pane-as-accessible-twin.md) | An outline pane is the accessible twin of the canvas; every canvas action has a list-based keyboard path emitting the same ops | Spatial arrow-key navigation of the canvas only | Proposed; final test PENDING RS-16 |
+| [ADR-0807](../04_ARCHITECTURE/ADR/ADR-0807-outline-pane-as-accessible-twin.md) | An outline pane is the accessible twin of the canvas; every canvas action has a list-based keyboard path emitting the same ops | Spatial arrow-key navigation of the canvas only | Proposed; built now, screen-reader pass For Amar (Q-13) |
 | [ADR-0808](../04_ARCHITECTURE/ADR/ADR-0808-edits-during-a-run-op-classes.md) | Edits during a run: class the op; circuit and program changes mark the run stale; layout changes do not | Hot patch every change; stop the run on any edit | Decided for the first Studio phase |
 
 ## 22. Traceability
@@ -1311,7 +1322,7 @@ This file owns ADR-0800 to ADR-0809. Each decision below is a full 12-field reco
 | PDM | Fields: `id`, `revision`, `meta`, `actors`, `access`, `boards`, `components`, `nets`, `views`, `placements`, `legs`, `wires`, `junctions`, `labels`, `sources`, `simulation`, `tests`, `guide`, `history`, `provenance`, `license`, `ext`; rules N1 to N10, W1 to W8, B1 to B6; ops in 7.2; batches 7.3; undo 7.4; proposals 7.5; V3 in 9.2; limits 9.4; conversion 11; storage 12; security 13 |
 | CS | Pins and types 4.5; groups and connectors 4.5; ratings 4.6; visual 4.13; ADR-0204; mapping 5 |
 | SA | Quantities 5.1; netlist 5.2; static rules 13.4; probes 14; worker protocol 17.2; hint level |
-| Spikes | RS-01 (5.4, 14.2, ADR-0801), RS-09 (11), RS-03 (what a run shows), RS-16 and RS-04 (PENDING) |
+| Spikes | RS-01 (5.4, 14.2, ADR-0801), RS-09 (11), RS-03 (what a run shows), RS-16 and RS-04 (never run; see the fold-in section) |
 | Audit | A5 (net-first), D5 (one change path), X3 (figure iframe), P1 (idle CPU), BROWSER_WALK step 13 (phone) |
 | Features | F-076 to F-094, F-221, F-097, F-101, F-207, F-034, F-038, F-053 to F-055, F-084, F-116, F-121, F-122, F-133, F-171, F-177, F-178, F-204 |
 | Requirements | R-034, R-037 to R-039, R-053 to R-074 |
@@ -1325,7 +1336,41 @@ This file owns ADR-0800 to ADR-0809. Each decision below is a full 12-field reco
 | 1 | 4.3 said a lesson fork keeps the catalogue origin and adds `fork` | Applied. 4.3 item 1 now says the fork sets one `origin fork {project, revision, stateHash}`; the catalogue lab and id are read by following `project` to the lesson. "Adds fork" is gone. Optional `fork.of` request added as O-S10. Test STU-33 |
 | 2 | 11.4 op classes missed `mech.*`, `domain.set`, `asset.*` and listed `group.*` | Applied. Read `$defs/Op` (55 kinds, checked by script: none missing, none twice, none unknown). Each kind is listed once; `mech.*` and `domain.set` change the circuit, `asset.*` is layout only; `group.*` removed and `actor.*` stated as not existing. Refinement predicates for `component.set`, `board.set` stated. CI test STU-32 `opClass.test.ts` fails on an unclassified kind |
 | 3 | Delete ignored `referenced_by` | Applied. 6.4 delete row now builds one atomic batch of `test.set` (naming checks removed or re-aimed) plus the remove, with a preview card; 6.10 points to it. Criterion STU-31 (delete the Uno from a lesson fork) |
-| 4 | Rail names invalid, "hidden" cosmetic, 12.3 pointed at PDM 5.13 | Applied with one correction. 5.5 defines `RAIL_TP/TN/BP/BN` strip groups and `RTP<k>` style hole names matching `localId`. The reviewer cited a "C-LEG mapping (RAIL_TP...)"; no such mapping exists in the documents (searched COMPONENT_SCHEMA, PDM, examples), so 5.5 defines it as a PROPOSAL for CS 4.5 to adopt. Hole names in the schema are free strings up to 16 characters, so the real constraint is the strip group id and pin ids, which is what the rule fixes. 4.3 item 4 says hidden is a UI convention and solutions live only in the template. 12.3 now points to CS 4.2. Test STU-34 |
+| 4 | Rail names invalid, "hidden" cosmetic, 12.3 pointed at PDM 5.13 | Applied. 5.5 defines `RAIL_TP/TN/BP/BN` strip groups and `RAIL_TP<n>` style hole names (PDM rule C-LEG, 3.4; `n` is the legacy hole number) matching `localId`. Hole names in the schema are free strings up to 16 characters, so the real constraint is the strip group id and pin ids, which is what the rule fixes. 4.3 item 4 says hidden is a UI convention and solutions live only in the template. 12.3 now points to CS 4.2. Test STU-34 |
 | 5 | ADRs 0800 to 0808 were table rows | Applied. Nine full 12-field files `ADR-0800` to `ADR-0808` written in `04_ARCHITECTURE/ADR/`; the table is now an index with links. Range 0800 to 0809 stays here; API_CONTRACTS must move (not edited by me) |
 | 6 | Keyboard maps contradicted across STUDIO_EDITOR 6.11, USER_JOURNEYS 2.4 and UX_DESIGN_SYSTEM 10.4 | Applied. Read all three. 6.11 is now stated as the single canonical Studio keymap with a Scope column and one row per key. Added Ctrl/Cmd+K, Ctrl/Cmd+/, F6 and Shift+F6, `[` and `]` (guide only), Ctrl/Cmd+Shift+. (latest proposal), Enter, Ctrl+Alt+L, Esc then Tab, Shift+Delete, Shift+Arrows. Space is pan only when the canvas is focused and no button part is focused, otherwise it presses the button part; Run is Ctrl/Cmd+Enter only. Board Lab pages keep their legacy map (stated). A clash table lists eight resolutions. One consequence I had to decide: USER_JOURNEYS "1 to 0 jump to step" collides with views 1/2/3, so Studio uses `[`/`]`. Not edited by me: USER_JOURNEYS 2.4 (rows 161-181, and steps citing Space or `Ctrl+.` as Stop at lines 280, 650, 655) and UX 10.4 (rows Space, Ctrl+Enter, Ctrl+., arrows, plus DS-27 `Ctrl+.`) must be aligned by their owners; ACC-2 tests follow 6.11 only |
 | 7 | 4.6 said the server is not a key proxy | Applied. The AI row now reads: own key direct from the browser, or through the optional relay of their own server; the server never stores the key. Used the contract's route `POST /v1/ai/relay` (API_CONTRACTS line 619, base `{origin}/v1`, ADR-0612), not `/api/v1/ai/relay` as the issue wrote; the base path in the contract has no `/api`. The PRD R-010 storage and CSP `connect-src` change belongs to the PRD owner and I did not edit it (proposed text: key in IndexedDB store `keys`, excluded from export, share and backup; CSP `connect-src` allow-list of the chosen provider and the server origin only) |
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Changes made in this pass. Source for each RC id: `04_ARCHITECTURE/RECONCILIATION.md`.
+
+| Id | Change | Where |
+|---|---|---|
+| RC-12 | Local retention is "at most 256 checkpoints (PDM limits)"; the 50-named proposal is gone | 4.3 Version row |
+| RC-33 | `LicenseRef-iynk-unspecified` became `LicenseRef-iynk-pending` | 4.2 Create blank; 9.1 Inspector (share table) |
+| RC-34 | New projects are `schemaVersion 1.1` | 4.2 Create blank |
+| RC-36 | Rail holes are `RAIL_TP<n>`, `RAIL_TN<n>`, `RAIL_BP<n>`, `RAIL_BN<n>`, `n` the legacy hole number (PDM rule C-LEG, 3.4). `RTP<k>` and "no C-LEG mapping" deleted | 5.5, STU-34, review fix 4 |
+| RC-39 | The editor reads `identity.refdes_prefix`; when absent it derives the prefix from `category` with a keyed table (PROPOSAL, since the enum is coarse). "No refdes-prefix field" deleted; O-S3 marked resolved | 6.4, O-S3 |
+| RC-61 | Checked: "owns ADR-0800 to ADR-0809 (ADR-0809 free)" already stands and no `0900` wording exists. No change | header table, section 20 |
+| RC-72 | F-086 and F-115 "LATER" became "LONG-TERM RESEARCH" where this file names them (F-086 in 8.5 and Q-S7). Line 728 "remapping is not planned (LATER)" and the right-to-left note are not F-086 or F-115 and were left; F-115 is not named in this file | 8.5, Q-S7 |
+| RS-01 | INCONCLUSIVE. Kept SVG scene core behind `Renderer` with LOD and culling from the first commit, no canvas filter, element count as the budget (`08_RESEARCH_SPIKES/RS-01-editor-rendering/REPORT.md`: plain SVG 25.8 ms fit and 25.0 ms zoom at 1x, over the 20 ms p95 line; LOD zoom 34.1 ms at 4x and 58 ms at 6x). The check says only LOD is a plausible pass on real devices. The device run is For Amar (Q-2, `docs/device-results.md`); the build does not wait | header, decision 2 |
+| RS-09 | Unchanged: server-ordered op log, PASS for convergence. Reconnect over a slow link is UNKNOWN and is For Amar | section 11 |
+| RS-03 | Unchanged here. Studio shows what a run shows; avr8js is an opt-in Firmware mode (R-102), not a Studio dependency. arduino-cli compile times (1.17 to 1.40 s cold) cited for the RS-04 timing task | header evidence status |
+| RS-16 | Three PENDING mentions (decision 8, section 12.2 heading and closing paragraph, STU-15, ST-7, risk row, ADR-0807 row) replaced. RS-16 never ran. The outline pane and list-based keyboard path are built in the Studio phase and gated by a keyboard-only Playwright spec for STU-15 plus an automated scan. They are reversible because they emit the same ops as the pointer. The screen-reader pass is For Amar (Q-13) | 12.2, ST-7, STU-15, risks |
+| RS-04 | Never run. Becomes an agent task: a local arduino-cli compile timing. The "4G phone" rule assumes scale this app does not have | header evidence status |
+| RS-06, RS-08, RS-12, RS-13, DP-01 | Reviewed. Nothing in this file depends on them; no change. DP-01 is not cited as a verdict | n/a |
+| Wording | Nothing here waits for interviews, a pilot or Fault Lab. Line 814 uses "fault lab" as a name for a feature (a wrong-column mistake), not as a gate; left as is. Build order follows D-014 | 1, 13 |
+
+Not changed: RC-61 (already correct), F-115 (not named), RS-06 / RS-08 / RS-12 / RS-13 (no dependency).
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change | Where |
+|---|---|---|
+| RC-67 | Decision for this file: no RS-16. RS-16 never ran and nothing waits for it; ST-7 builds the keyboard path and outline pane, gated by a keyboard-only Playwright spec (ADR-0807, UX_DESIGN_SYSTEM line 36 agree). Lines 28, 33, 1074, 1208, 1233, 1261, 1360 already said so and are unchanged. Added to the M1 line: the Studio gate includes ST-7, the F-177 core (axe zero serious and critical, keyboard path, outline pane). Not editable here: FEATURE_PRIORITIZATION lines 449, 469, 537, 574, 629, 636 and RC-67 (line 838) still say "RS-16 first task"; their owner must rewrite them to "no RS-16; ST-7 builds the path and a Playwright keyboard gate" | 14, M1 line |
+| RC-11 | Save "When" cell: 500 ms after the last commit, at most 5 s after the first unsaved commit, on `visibilitychange` hidden and on `pagehide`. The 300 ms journal burst line was correct and is unchanged | 4 Save row |
+| RC-38 | O-S7 marked closed; caps are 1,024 pins and 256 groups (component.schema.json:17-18); the "request caps" default dropped | O-S7 |
+| RC-09 | Archive row: "boolean on the index row (PDM 12.1, ADR-0106)" replaces the PROPOSAL wording | Archive row |
+| RC-57 | Level-of-detail thresholds are HYPOTHESIS until RS-01 runs on devices | 5.4 |
+| RC-36, RC-39 | Checked, no leftover (RAIL_TP<n> only; 6.4 keys on category, O-S3 resolved). No change | n/a |

@@ -526,7 +526,7 @@
   },
   "id": "prj_drone-quad",
   "license": {
-    "spdx": "LicenseRef-iynk-unspecified"
+    "spdx": "LicenseRef-iynk-pending"
   },
   "mechanical": {
     "bodies": [
@@ -1259,12 +1259,12 @@
     }
   },
   "revision": 0,
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "simulation": {
     "duration_ms": 30000,
     "faults": [
       {
-        "cause_id": "motor-direction-wrong",
+        "cause_id": "motor-direction-reversed",
         "enabled": false,
         "id": "flt_motor2_dir",
         "kind": "reversed-part",
@@ -1290,7 +1290,7 @@
         }
       },
       {
-        "cause_id": "battery-sag-brownout",
+        "cause_id": "battery-sag-reset",
         "enabled": false,
         "id": "flt_sag",
         "kind": "brownout",

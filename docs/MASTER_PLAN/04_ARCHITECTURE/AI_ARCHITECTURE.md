@@ -1,6 +1,6 @@
 # AI architecture: the lab partner
 
-Status: specification for the build, written 2026-10-27 for BRIEF section 13. Author role: AI architecture team. Output of one workflow step; a later pass folds in spike results that were still running (RS-11 has no folder yet).
+Status: specification for the build, written 2026-10-27 for BRIEF section 13. Author role: AI architecture team. Output of one workflow step; spike results and reconciliation are folded in at the end of this file (RS-11 never ran; see the last section).
 ADR range used: ADR-0600 to ADR-0613 (files in `04_ARCHITECTURE/ADR/`).
 
 ## 0. How to read this file
@@ -34,11 +34,11 @@ Downstream: features F-003, F-105 to F-115, F-167, F-193 (and F-107, F-108 as dr
 | ADR-0604 | Injection defence assumes the model is fully compromised. Control is by capability gating, taint tracking, per-request random fences, output rendering rules and a test harness with a compromised-model stub. | SECURITY_BASELINE A1 to A4, X5; R-159 | Decided |
 | ADR-0605 | The five modes are enforced by what the model is given and what it may call, not only by the prompt. A hint ladder equal to the Diagnosis `hint_level` governs disclosure. | BRIEF 13.4; D-010; R-160 | Decided |
 | ADR-0606 | One adapter interface with a capability descriptor. Families: Anthropic Messages, OpenAI-compatible chat (covers OpenAI, Gemini compat, Groq, Together, Fireworks, OpenRouter, Ollama, llama.cpp, LM Studio). Local models are first-class, with a tool-less degrade path. | existing `provider.ts` is OpenAI-compatible; D-015 | Decided |
-| ADR-0607 | Routing is data: tiers `fast`, `standard`, `strong` mapped by the user to model ids, escalation rules, an explicit user-chosen fallback list. Defaults come from the evaluation run. | R-153; RS-11 | Decided; defaults PENDING RS-11 |
-| ADR-0608 | Cache-friendly layout: stable prefix first, volatile tail last, canonical bytes, no timestamps in the prefix. A local memo for read-tool results and datasheet lookups. | platform-options 7.2 (caching cuts cost 3x to 5x) | Decided; hit-rate target PENDING RS-11 |
+| ADR-0607 | Routing is data: tiers `fast`, `standard`, `strong` mapped by the user to model ids, escalation rules, an explicit user-chosen fallback list. Defaults come from the evaluation run. | R-153; RS-11 | Decided; defaults come from a local evaluation run (build task AI-3), not from a spike |
+| ADR-0608 | Cache-friendly layout: stable prefix first, volatile tail last, canonical bytes, no timestamps in the prefix. A local memo for read-tool results and datasheet lookups. | platform-options 7.2 (caching cuts cost 3x to 5x) | Decided; hit-rate target 80 percent, measured by the evaluation run per model |
 | ADR-0609 | A local usage ledger with a daily cap, a monthly cap and a per-session cap, set by the user, checked before every call with a worst-case estimate. Editable price table with an as-of date. | R-008, R-154; audit D8, D10 | Decided |
 | ADR-0610 | Local observability: one row per model call, no content by default; an "AI activity" panel; opt-in content capture that expires. A "show what the partner sees" preview for every turn. | audit D10; BRIEF 13.5 | Decided |
-| ADR-0611 | Two suites are CI gates: an adversarial suite (deterministic, compromised-model stub) and an evaluation set (50 conversations, rubric). Live-model runs use the user's own key and are informational. | BRIEF 13.5; F-111; R-153, R-159 | Decided; rubric thresholds PENDING RS-11 |
+| ADR-0611 | Two suites are CI gates: an adversarial suite (deterministic, compromised-model stub) and an evaluation set (50 conversations, rubric). Live-model runs use the user's own key and are informational. | BRIEF 13.5; F-111; R-153, R-159 | Decided; rubric thresholds are set by the first recorded evaluation run |
 | ADR-0612 | The relay: stateless, with host allowlist, private-address block (per-host opt-in list), size and time limits, no body logging, and no use without a device bearer token. B0 to COLLAB: a temporary Next route gated by `IYNK_SERVER_TOKEN`; from COLLAB: `POST /v1/ai/relay` in `server/src/modules/ai` (openapi `aiRelay`). | SECURITY_BASELINE C1, C4; F-004 | Decided |
 | ADR-0613 | Conversations, attempts and the learner digest are stored locally per project under a retention setting (`session`, `project`, `forever`). They are outside every export unless the person opts in. | BRIEF 13.1 "prior attempts within retention"; F-115 | Decided |
 
@@ -272,7 +272,7 @@ Retention (setting `ai.retention`, default `project`):
 | `project` | `ai_threads` store, keyed by project id, 90 days since last use or 200 threads per project, whichever bites first (PROPOSAL) | records for this project only | gone |
 | `forever` | same store, no age limit | records for this project only | gone |
 
-The digest is never built across projects. Cross-project memory (F-115) is LATER and stays on the device.
+The digest is never built across projects. Cross-project memory (F-115) is LONG-TERM RESEARCH and stays on the device.
 
 ### 5.7 Budget and eviction
 
@@ -581,7 +581,7 @@ The level rises only by a person's action: the buttons "Another hint" and "Show 
 | Hidden checks (`checks[].visibility = "hidden"`): match strings, thresholds, pins | always; the pack says "2 hidden checks exist" | the pack builder drops them; `try_ops` and test results report a hidden check only as pass or fail inside the aggregate count |
 | Quiz `answer` and `why` (`guide.quiz.questions[]`) | `socratic`, `beginner`, and in any mode until the question is answered | dropped from `guide` |
 | `guide.hints` above the current ladder level | `socratic`, `beginner` | dropped |
-| The cause of a diagnose-first fault (R-120): `fault.cause`, `fault.note`, the fault's detector output | while `Diagnosis.hint_level < 3` for that fault | `get_diagnostics` and the pack list the symptom and the evidence the person has opened; the cause is omitted. The faults feature exposes the open diagnose-first sessions; the AI host only reads them (interface owned by the faults spec; open question Q3) |
+| The cause of a diagnose-first fault (R-120): `fault.cause_id`, `fault.note`, the fault's detector output | while `Diagnosis.hint_level < 3` for that fault | `get_diagnostics` and the pack list the symptom and the evidence the person has opened; the cause is omitted. The faults feature exposes the open diagnose-first sessions; the AI host only reads them (interface owned by the faults spec; open question Q3) |
 | Reference solutions | there is no solution field in the project schema, so none is in the pack; if an authored lesson later ships one, it goes under the same exclusion | |
 
 The honest limit: a diagnose-first fault is hidden from the model but not from the netlist it can read. A model that reads the netlist can often find the swapped pin itself; the ladder governs what it says, not what it can deduce. For a person who wants the fault truly unseen, the setting **Partner blind to injected faults** removes fault-injected ops from the pack by replaying the op log without ops authored by `system` kind (`fault.set` is the only such op today; the Break-it action writes it, PROJECT_DATA_MODEL 5.11). HYPOTHESIS: this is rarely needed; tested by one evaluation row.
@@ -681,12 +681,12 @@ interface ProviderProfile {
 
 | Property | Rule |
 |---|---|
-| Request | `{profile: {family, baseUrl}, path: "chat" \| "models", body}` and the key in the `x-iynk-provider-key` header, all over TLS (the client refuses to send a key to a non-TLS relay that is not on localhost) |
+| Request | `{profile: {family, baseUrl}, path: "chat" \| "models", body}` and the key in the `X-Iynk-Provider-Key` header, all over TLS (the client refuses to send a key to a non-TLS relay that is not on localhost) |
 | Auth | Device bearer token (F-199, R-077; before COLLAB, `IYNK_SERVER_TOKEN`). There is no session concept. No anonymous use. The relay's own per-session limit is a safety net (R-008 style, in memory, documented as such) |
 | Target | `baseUrl` host must be on the allowlist (the presets, plus hosts the operator adds in config). Private, loopback, link-local (including `169.254.169.254`), unique-local and multicast addresses are refused unless that exact host is named in `IYNK_AI_ALLOW_PRIVATE` (a comma list of exact hosts, never a global switch), and the resolved address is checked after DNS, not just the name (SSRF) |
 | Limits | request body at most 256 KiB; response streamed with a hard cap of 8 MiB; total time 120 s (the old `maxDuration`); no redirects followed. Same numbers as BACKEND 10.3 |
 | Logging | route, status, byte counts, duration, target host. Never the body, the key, or provider error text beyond its status |
-| Kill | `IYNK_DISABLE_AI=1` returns a clear "turned off by the operator" state (R-008) |
+| Kill | `IYNK_AI_ENABLE` unset or `0` means off: the relay answers 501 `feature_disabled` and the capability probe reports `aiRelay` false (R-008) |
 
 ### 9.4 Conformance run
 
@@ -716,7 +716,7 @@ D-015 asks for "at least one local-model option if feasible". It is feasible wit
 | The browser needs permission to call a local server from another origin | The settings page shows the one setting the server needs (for Ollama, its allowed-origins variable; EXTERNAL) and the conformance run tells the person whether C1 passed. If it fails, the self-hosted relay on the same machine can reach `127.0.0.1` when the operator names that host in `IYNK_AI_ALLOW_PRIVATE`. |
 | Small models handle tools badly | `tools` is detected by C4 and C7. Below native, the Compact profile and the tool-less path of 6.6 apply. Quality is a HYPOTHESIS; test: run the 50-conversation set's explain and grounding rows (22 of 50) in the Compact profile on the person's own hardware and compare with their cloud model; "usable" is at least 70 percent of the cloud model's rubric score on those rows (PROPOSAL). |
 
-`privacy: "local"` shows a "stays on this device" chip, skips the ledger's money cap (price 0) but keeps a per-session token cap (500,000, PROPOSAL) to stop a loop from heating a laptop. A browser-resident model through WebGPU (F-115, LATER) fits as a third adapter family `webgpu` with the same interface; no design change is needed, and the catalogue notes Firefox desktop has WebGPU off by default.
+`privacy: "local"` shows a "stays on this device" chip, skips the ledger's money cap (price 0) but keeps a per-session token cap (500,000, PROPOSAL) to stop a loop from heating a laptop. A browser-resident model through WebGPU (F-115, LONG-TERM RESEARCH) fits as a third adapter family `webgpu` with the same interface; no design change is needed, and the catalogue notes Firefox desktop has WebGPU off by default.
 
 ## 10. Routing, fallback and caching (ADR-0607, ADR-0608)
 
@@ -732,7 +732,7 @@ D-015 asks for "at least one local-model option if feasible". It is feasible wit
 | Translation of an explanation | `fast` | uses the placeholder masking of `translate.ts` |
 | Conformance, evaluation | the profile under test | |
 
-The person maps `fast`, `standard`, `strong` to a (profile, model) each in `ai-routes.json` (stored locally, editable, also writable by the evaluation run: R-153 "writes defaults to a local file"). One model may fill all three tiers. Defaults: none are shipped by name, because model ids drift (audit D14: `muse-spark-1.1` returned intermittent 404s while `1.3` worked). The first-run flow lists the models the key can reach (C1) and asks for one; the evaluation run later proposes a tier map. **PENDING RS-11** for the rule that picks defaults: the cheapest model with at least 90 percent of the top rubric score on the 50-conversation set, with at least 80 percent of prefix tokens read from cache over 100 sessions.
+The person maps `fast`, `standard`, `strong` to a (profile, model) each in `ai-routes.json` (stored locally, editable, also writable by the evaluation run: R-153 "writes defaults to a local file"). One model may fill all three tiers. Defaults: none are shipped by name, because model ids drift (audit D14: `muse-spark-1.1` returned intermittent 404s while `1.3` worked). The first-run flow lists the models the key can reach (C1) and asks for one; the evaluation run later proposes a tier map. The rule that picks defaults (decided, run as the AI-3 evaluation task; no spike is awaited): the cheapest model with at least 90 percent of the top rubric score on the 50-conversation set, with at least 80 percent of prefix tokens read from cache over 100 sessions.
 
 ### 10.2 Escalation and fallback
 
@@ -752,7 +752,7 @@ Order of the request, least to most volatile, which is also the cache order:
 
 Rules that keep the prefix byte-stable: canonical serialisation (5.3); the header is `#iynk-context v1 mode=<mode>` and holds no nonce, revision or hash, so the prefix is identical between requests; the nonce, revision and hash appear only on the `[VOLATILE]` line after breakpoint 3 (the nonce for tool-result fences is per round and also appears only after breakpoint 3); no clocks; sets sorted. The `[VOLATILE]` line carries them. An edit changes the digest and so invalidates breakpoint 2 and 3 from that point; this is accepted (cache loss on edit is the price of grounding). Anthropic: 3 of the 4 allowed breakpoints used, 5-minute lifetime by default (write at 1.25 times the input price, read at the cached rate: platform-options 7.1); a pause longer than 5 minutes costs one re-write, shown in the log. OpenAI-compatible: no markers, rely on prefix identity.
 
-Expected effect (ESTIMATED, section 11.3): caching cuts cost about 3 to 6 times in the two modelled sessions. The target is at least 80 percent of prefix tokens read from cache (the RS-11 line), measured per model by the evaluation run and shown in the activity panel as `cacheReadTokens / inTokens`.
+Expected effect (ESTIMATED, section 11.3): caching cuts cost about 3 to 6 times in the two modelled sessions. The target is at least 80 percent of prefix tokens read from cache (the evaluation-run line; RS-11 never ran), measured per model by the evaluation run and shown in the activity panel as `cacheReadTokens / inTokens`.
 
 ### 10.4 Local memo and compaction
 
@@ -800,7 +800,7 @@ Rounds are charged one by one; the per-message limit stops a loop. If three cons
 
 **Limits of the cap** (Objection 7): per browser profile, not per key. The page tells the person to set a limit at the provider as the real backstop.
 
-**Kill switches:** the person's "AI off" toggle (F-012), and `IYNK_DISABLE_AI=1` on the self-hosted server for the relay (R-008).
+**Kill switches:** the person's "AI off" toggle (F-012), and `IYNK_AI_ENABLE` unset or `0` on the self-hosted server turns the relay off: 501 `feature_disabled`, probe key `aiRelay` false (R-008).
 
 ### 11.3 Estimated cost of a session
 
@@ -811,7 +811,7 @@ Assumptions (all ESTIMATED, none measured):
 - 12 user turns; each turn is 2 model calls (one read tool call, then the answer), so 24 calls.
 - Scenario A (grounded Q&A and debugging, no proposals): stable prefix 6,500 tokens (rules 1,400, read tools 2,200, digest 2,900); each user message adds 450 tokens (message plus volatile state); each tool result adds 900; the first call outputs 90 tokens, the answer 450.
 - Scenario B (same, plus 3 proposals): prefix 8,200 (adds the `core` op schemas, 1,700); three of the answers carry an extra 1,800 output tokens for the ops.
-- History accumulates (inputs and outputs) and is cached. "Cache 80%" means 80 percent of the cacheable prefix is read from cache (the RS-11 target); "cache 100%" is the best case; "no cache" is the floor.
+- History accumulates (inputs and outputs) and is cached. "Cache 80%" means 80 percent of the cacheable prefix is read from cache (the evaluation-run target; RS-11 never ran); "cache 100%" is the best case; "no cache" is the floor.
 - No reasoning tokens beyond the output figures. Tool rounds beyond the first per turn are not modelled.
 
 | Model | A no cache | A cache 80% | A cache 100% | B no cache | B cache 80% | B cache 100% |
@@ -835,7 +835,7 @@ USD per session. Totals for scenario A: 428,160 input tokens read or billed and 
 - At 40 sessions a month (a heavy personal use, ASSUMPTION): Haiku 5.5 about USD 0.7, routed about USD 3.4, Sonnet 5.5 about USD 12, Opus 5.5 about USD 24 (scenario A, cache 80%). Against the default monthly cap of USD 10, Haiku and the routed set-up fit; Sonnet alone (about USD 12) and Opus (about USD 24) would be stopped partway through the month, which is the intended behaviour.
 - Running the 50-conversation evaluation set (4 turns each, scenario B prefix): Haiku 5.5 about USD 0.21, Sonnet 5.5 about USD 3.9, Gemini 3.5 Flash-Lite about USD 0.73, gpt-oss-120B about USD 0.30 (cache 80%); about 2.5 to 3 times more with no cache. One full run on Sonnet 5.5 is the most expensive part of the evaluation, which is why the harness shows the estimate first and respects the cap.
 
-These are price estimates only. Quality per model for hardware tutoring has not been tested (RS-11 PENDING), so no model is recommended here.
+These are price estimates only. Quality per model for hardware tutoring has not been tested (RS-11 never ran, and the model is the person's own key), so no model is recommended here.
 
 ## 12. Observability (ADR-0610)
 
@@ -876,7 +876,7 @@ A panel in settings ("AI activity"), reading the log:
 | Figure | Definition | Why |
 |---|---|---|
 | Spend today, this month, per model | sum of `costUSD` | the cap, visibly |
-| Cache read ratio | `cacheReadTokens / inTokens` per model | RS-11 target, 80 percent |
+| Cache read ratio | `cacheReadTokens / inTokens` per model | evaluation-run target, 80 percent (RS-11 never ran) |
 | Calls per message and per round | from `round` | finds loops |
 | Time to first token, p50, p95 | `firstTokenMs` | feel |
 | Proposal outcomes | accepted, partial, rejected, stale, invalid per 20 proposals; retries per proposal | whether suggestions are useful and valid |
@@ -914,7 +914,7 @@ The secret-shape scan of the data model (section 13: `sk-`, `AIza`, PEM headers,
 
 ### 13.3 Retention and deletion
 
-Retention values and what they keep are in 5.6. **Delete AI data** (settings) clears `ai_threads`, `ai_log`, `ai_memo`, `ai_debug` and `proposals` for one project or for all, and never touches keys; **Remove key** deletes a key without touching data. Neither is part of any export. A `.iynk` or `.iynkz` never contains threads, logs, proposals or keys. An opt-in export setting "Include AI notes" writes the thread summaries as a markdown asset (`role: "doc"`), never raw chat.
+Retention values and what they keep are in 5.6. **Delete AI data** (settings) clears `ai_threads`, `ai_log`, `ai_memo`, `ai_debug`, `proposals` and `ai_usage` for one project or for all, and never touches keys; **Remove key** deletes a key without touching data. Neither is part of any export. A `.iynk` or `.iynkz` never contains threads, logs, proposals or keys. An opt-in export setting "Include AI notes" writes the thread summaries as a markdown asset (`role: "doc"`), never raw chat.
 
 ### 13.4 Prior attempts and minors
 
@@ -1025,7 +1025,7 @@ So that none waits for the AI phase by accident: the loader checks and the secre
 
 ## 15. Evaluation set (F-111, R-153; ADR-0611)
 
-Purpose: make the partner's quality and cost measurable, and choose defaults. **PENDING RS-11** for the numbers; this section fixes the design.
+Purpose: make the partner's quality and cost measurable, and choose defaults. The numbers come from the first run of this evaluation on the person's own key (build task AI-3); RS-11 never ran and nothing waits for it. This section fixes the design.
 
 50 conversations, each a fixture project (`.iynk`), 3 to 6 scripted user turns, expected facts, forbidden facts, and optionally expected tool calls:
 
@@ -1038,7 +1038,7 @@ Purpose: make the partner's quality and cost measurable, and choose defaults. **
 | Safety | 6 | LiPo, mains, current limits, props off, shorts (R-024 content rule) |
 | Language | 4 | answer language, code and units untouched |
 
-Scoring, per conversation 0 to 4 on: grounded correctness; reference validity (automatic: every `[[ref]]` resolves); mode compliance (automatic where possible); safety wording; brevity. Automatic checks decide where they can; a judge model (the person's `strong` tier) scores the rest, flagged as HYPOTHESIS for judge reliability, with 10 conversations scored by hand to compare. Output: `ai-eval-report.json` (rubric scores, cache read ratio per model, cost, proposal validity rate) and `ai-defaults.json` (a tier map by the RS-11 rule: cheapest model with at least 90 percent of the top score and at least 80 percent cache reads). The run shows its estimated cost first (11.3: USD 0.2 to 4 for the set on Haiku 5.5 to Sonnet 5.5) and obeys the cap. The set is a CI gate in one direction only: a prompt, tool or model-default change must not lose points on the safety, mode and injection-adjacent rows against the last recorded run; it needs the person's key, so it runs on demand and before a release, not in public CI.
+Scoring, per conversation 0 to 4 on: grounded correctness; reference validity (automatic: every `[[ref]]` resolves); mode compliance (automatic where possible); safety wording; brevity. Automatic checks decide where they can; a judge model (the person's `strong` tier) scores the rest, flagged as HYPOTHESIS for judge reliability, with 10 conversations scored by hand to compare. Output: `ai-eval-report.json` (rubric scores, cache read ratio per model, cost, proposal validity rate) and `ai-defaults.json` (a tier map by the rule in 10.1: cheapest model with at least 90 percent of the top score and at least 80 percent cache reads). The run shows its estimated cost first (11.3: USD 0.2 to 4 for the set on Haiku 5.5 to Sonnet 5.5) and obeys the cap. The set is a CI gate in one direction only: a prompt, tool or model-default change must not lose points on the safety, mode and injection-adjacent rows against the last recorded run; it needs the person's key, so it runs on demand and before a release, not in public CI.
 
 ## 16. Errors and limits
 
@@ -1125,7 +1125,7 @@ AI-0: AI-AC-01, 02 (keys part), 23. AI-1a: AI-AC-02, 14, 15, 16 (stub providers 
 | AI-AC-19 | Given the relay, then it refuses unlisted hosts, private addresses (after DNS), oversized bodies and unauthenticated callers, and its logs hold no body or key | ADR-0612 |
 | AI-AC-20 | Given model output with a link not in `seenUrls`, an image, and HTML, then none is clickable or rendered | X5 |
 | AI-AC-21 | Given the preview and the sent request, then the pack hashes are equal | BRIEF 13.5 |
-| AI-AC-22 | Given retention `session`, then no `ai_*` store of database `iynk` holds anything after reload; given `project`, Delete AI data removes it | BRIEF 13.1 |
+| AI-AC-22 | Given retention `session`, then no `ai_*` store of database `iynk` holds anything after reload; given `project`, Delete AI data removes `ai_threads`, `ai_log`, `ai_memo`, `ai_debug`, `proposals` and `ai_usage` and leaves `keys` | BRIEF 13.1; RC-09 |
 | AI-AC-23 | Given AI off or offline, then every editor and simulator feature works | F-012, D-015 |
 | AI-AC-24 | Given a pack build and serialisation, then no task over 50 ms on the main thread at 1x on the RS-01 scene (PROPOSAL) | D-011 |
 
@@ -1167,7 +1167,7 @@ Requirements: R-153 (9.4, 15), R-154 (9.2, 11), R-155 (6), R-156 (5), R-157 (7.4
 
 | # | Question | Owner | How it closes |
 |---|---|---|---|
-| Q1 | RS-11: which model per tier; is 80 percent cache reading reached | RS-11 | Run the evaluation set (section 15). PENDING: no `08_RESEARCH_SPIKES/RS-11` folder existed when this was written |
+| Q1 | Which model per tier; is 80 percent cache reading reached | RS-11 | Run the evaluation set (section 15). RS-11 never ran. Routing is a configuration table (ADR-0425, ADR-0606), so this is a build and eval task in AI-3, not a wait |
 | Q2 | Which providers accept browser calls | conformance run | Run C1 for each preset with Amar's keys; update presets |
 | Q3 | The interface by which the faults feature exposes open diagnose-first sessions and `requestHint(fault_id)` | faults spec (F-017, F-018) | Name and signature agreed at AI-3; until then the pack omits fault causes whenever a fault is enabled by a `system` op |
 | Q4 | Add `author.model` to `OpEnvelope` and `promptVersion`, `contextHash` to `Proposal` (Objection 1) | data model | minor bump `opSchema 1.1` before AI-2 |
@@ -1190,3 +1190,27 @@ What was not done: no live model was called in this pass; no provider documentat
 | 4 | AI-0 scope and tool classes | Applied. AI-0 is keys store, settings and moving the existing partner onto the OpenAI-compatible adapter. Anthropic adapter, conformance, ledger and relay move to a new first AI-1 step, named AI-1a so the later AI-1 context work keeps its id; gates in 17.2 split accordingly. The relay may come from the gated Next route earlier only if F-193 is needed earlier. ADR-0602 now says five classes. |
 
 Not changed here, for the owners of those files: API_CONTRACTS lines 262 and 790 still say 1 MiB and `IYNK_AI_RELAY_ALLOW_PRIVATE=1`, and SYSTEM_DIAGRAMS DG-06 (line 481, 564) still says the AI host holds the adapter and the proxy needs a "signed-in device". They should follow this file and BACKEND 10.3.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Sources: `04_ARCHITECTURE/RECONCILIATION.md` and the reports under `08_RESEARCH_SPIKES/`. Labels as in the header.
+
+| Id | Change | Where |
+|---|---|---|
+| RC-09 | Delete AI data now clears `ai_threads`, `ai_log`, `ai_memo`, `ai_debug`, `proposals` and `ai_usage`. It still leaves `keys` alone. AI-AC-22 lists the same stores. | 13.3, AI-AC-22 |
+| RC-72 | F-086 does not occur in this file, so nothing changed for it. F-115 "LATER" became "LONG-TERM RESEARCH" (the Feature Prioritization class name). | 5.6 text on digest memory, 9.5 text on the `webgpu` adapter |
+| RS-11 | Never ran; no folder exists. The seven PENDING marks (ADR-0607, ADR-0608, ADR-0611, 10.1, 11.5 note, 15 intro, Q1) and the header note were replaced. Decision: the model is the person's own key (ADR-0425, ADR-0606), so tier defaults come from the 10.1 rule (cheapest model with at least 90 percent of the top rubric score and at least 80 percent cache reads) run as build task AI-3 on the person's key. Nothing waits for it. Cache and rubric figures remain targets (HYPOTHESIS) until that run records them. What would change it: a recorded run where no model meets both lines, then the tier map stays user-set and no default ships. | ADR table, 10.1, 11.5, 15, 16 |
+| RS-01 | Figures in AI-AC-04 use the 500-part scene. RS-01 is INCONCLUSIVE (no phone tested; plain SVG misses p95 20 ms; LOD holds about 10 ms at 1x). No AI text depends on the renderer, so no change. Any AI-AC budget stated for the canvas is a target, not a measured result. | AI-AC-04 (no edit) |
+| RS-03, RS-06, RS-08, RS-09, RS-12, RS-13, DP-01 | Reviewed. None changes the partner design. RS-09: `propose_ops` already applies through the op envelope; the server-ordered op log with a returned inverse (RS-09 PASS for convergence) is compatible and needs no edit. RS-08: the simulation read tools must report the solver convergence flag and must not claim SPICE-level device accuracy; this is already the stance of `[[sim:...]]` references labelled as simulated. RS-13 applies only at the Robotics phase. DP-01 is not a spike verdict and is not cited. | no edit |
+| Pricing and child-safety | Line 20 already marks those council parts as shelved; the D-013 row in the decisions table already excludes customers, pricing and classrooms. Left as is. | 1, 17 |
+| Interview, pilot, Fault Lab wording | Searched the file; no sentence makes Studio wait for interviews, a pilot or Fault Lab. Nothing to replace. | none |
+
+Skipped: the instruction to update "five" RS-11 mentions. The file had seven PENDING marks plus the header note, and all were updated.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change | Line |
+|---|---|---|
+| RC-28 | Relay kill switch: `IYNK_DISABLE_AI=1` replaced by `IYNK_AI_ENABLE` unset or `0` = off, answer 501 `feature_disabled`, probe key `aiRelay` false (relay table Kill row and the Kill switches paragraph) | 689, 803 |
+| RC-44 | `fault.cause` renamed `fault.cause_id` in the diagnose-first withholding row | 584 |
+| RC-27 | Relay key header written `X-Iynk-Provider-Key`. Routes and methods were already consistent, no edit | 684 |

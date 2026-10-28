@@ -245,7 +245,7 @@ edit(project) = substanceHash(project) != plan.starterSubstanceHash
                     AND op.kind is source.edit, component.* or net.*
 ```
 
-`plan.starterSubstanceHash` is computed by the converter and stored in the plan next to `starterTokensSha256`; `start checkpoint` is the checkpoint the guided project writes when it is opened (`provenance.origin = template`). Both clauses are needed: the op clause rejects a hash change that came from a remote actor, a restore or a import; the hash clause rejects ops that cancel out (edit then undo) and whitespace or comment-only `source.edit` ops. Parameter-only changes (5.1 item 2) count through the hash clause plus the `param.set` op kind, which is added to the op list above for that case. A lesson whose starter already equals its reference solution (all 71 today, 2.2) gets no exemption: it fails `edit` until the learner makes a real change.
+`plan.starterSubstanceHash` is computed by the converter and stored in the plan next to `starterTokensSha256`; `start checkpoint` is the checkpoint the guided project writes when it is opened (`provenance.origin` kind `fork`). Both clauses are needed: the op clause rejects a hash change that came from a remote actor, a restore or a import; the hash clause rejects ops that cancel out (edit then undo) and whitespace or comment-only `source.edit` ops. Parameter-only changes (5.1 item 2) count through the hash clause plus the `param.set` op kind, which is added to the op list above for that case. A lesson whose starter already equals its reference solution (all 71 today, 2.2) gets no exemption: it fails `edit` until the learner makes a real change.
 
 **Acceptance test A15** (fixtures stored under `tests/fixtures/edu-solutions/<lessonId>.ops.json`, produced by the converter and reviewed by hand): for each of the 71 converted lessons, (a) replaying zero ops gives `edit = false`; (b) replaying the stored ops gives `edit = true` and `checks = true`. A lesson whose checks cannot be passed by any small valid change (so the converter cannot find a variant) is listed in `tests/fixtures/edu-solutions/NEEDS-AUTHOR.txt` and fails CI until a fixture is written by hand; how many that is, is UNKNOWN until the converter runs. Where the plan has a goal test (5.3), the stored ops must also pass it, and the zero-op replay must fail it.
 
@@ -286,7 +286,7 @@ A **fault** is a cause (an open wire, a reversed LED). A **failure** is what the
 | | Built wrong | Injected |
 |---|---|---|
 | What is broken | The circuit or code itself (LED with no resistor, code drives D12 while the LED is on D13, missing ground) | A fault the model injects into a working circuit (cold joint, brown-out from a motor, reversed supply) |
-| Where the cause lives | In the document: it is not a `Fault`; the answer says which rule found it | In `simulation.faults[]` as an enabled `Fault {id, cause, kind, target, params, enabled: true}` |
+| Where the cause lives | In the document: it is not a `Fault`; the answer says which rule found it | In `simulation.faults[]` as an enabled `Fault {id, cause_id, symptom_ids, kind, target, params, enabled: true}` |
 | How the symptom is produced | The normal run of the broken design | The solver or legacy figure applies the fault at P0 (`SIMULATION_ARCHITECTURE.md` 13.2) |
 | The fix | An edit that makes the base tests pass again | A remedy choice, then Repair disables the fault; the symptom clears on the next run |
 | Needs a real edit | Yes, by construction | No; the remedy choice is the action |
@@ -344,7 +344,7 @@ Honest label: the panel says "hidden in the app, not encrypted" in the item's in
 
 ### 6.6 From the 250 catalogue faults to items
 
-Mapping from `FailureKind` to the cause registry (`SIMULATION_ARCHITECTURE.md` 13.4 lists 18 ids; ids not in that list are requested in Objection 1 and use the `x-` prefix the registry allows until accepted):
+Mapping from `FailureKind` to the cause registry (`SIMULATION_ARCHITECTURE.md` 13.4: the registry has 45 ids, 18 of them the electrical core; the corpus derives from the electrical ones; ids not in that list are requested in Objection 1 and use the `x-` prefix the registry allows until accepted):
 
 | Catalogue kind (board / bench count) | Registry cause id | Status |
 |---|---|---|
@@ -362,7 +362,7 @@ Mapping from `FailureKind` to the cause registry (`SIMULATION_ARCHITECTURE.md` 1
 | config (0 / 7) | `x-wrong-config` | new |
 | thermal (0 / 4) | `x-thermal-shutdown` | new, not modelled yet |
 
-The trigger field decides ambiguous kinds; the converter writes `cause` on each materialised `Fault` and a schema test fails a fault with no `cause` (R-119). Each `FailureMode` becomes: `Fault` (cause, kind, target from `trigger`, `params` from `effect`), the symptom text as `symptom.text`, `explanation` and `fix` as `explanation` and the correct remedy. Board failures live in the **board part descriptor** (`failure_modes`, `injectable_faults`, data model 11.3), so a lesson project does not carry them; an item project materialises one fault from the descriptor. Bench faults go to `simulation.faults` plus `domains.robotics.data.faultRules` until descriptors own them (data model 11.3).
+The trigger field decides ambiguous kinds; the converter writes `cause_id` and `symptom_ids` on each materialised `Fault` and a schema test fails a fault with no `cause_id` (R-119). Each `FailureMode` becomes: `Fault` (cause_id, symptom_ids, kind, target from `trigger`, `params` from `effect`), the symptom text as `symptom.text`, `explanation` and `fix` as `explanation` and the correct remedy. Board failures live in the **board part descriptor** (`failure_modes`, `injectable_faults`, data model 11.3), so a lesson project does not carry them; an item project materialises one fault from the descriptor. Bench faults go to `simulation.faults` plus `domains.robotics.data.faultRules` until descriptors own them (data model 11.3).
 
 **Symptom variants are required work.** The catalogue `symptom` text often names the faulted part. Example (VERIFIED, `src/i18n/content/en/boards/uno-r3.json`, `failures.reverse-vin.symptom`): "the regulator near the jack gets hot. The capacitor beside it may bulge or smell", where the regulator and the capacitor are the parts that failed. A leak lint (6.8) rejects it; the reviewed item rewrites it as observations ("nothing runs; one component near the jack is too hot to touch").
 
@@ -371,7 +371,7 @@ The trigger field decides ambiguous kinds; the converter writes `cause` on each 
 **The fault-rule corpus (target of F-029, SC-J06-2).** The rules of R-124 are tested against one directory, `tests/fixtures/fault-corpus/`, with a `MANIFEST.json` that lists every file:
 
 - `clean/`: every converted Uno circuit that is meant to work (all Uno R3 and Uno R4 lessons and their reference solutions plus the Uno-based tour steps with a netlist). Each is a project with no injected fault. The count is whatever `scripts/convert-content.mjs` emits and is written into `MANIFEST.json` as `cleanCount`. The "79 catalogue circuits" in F-029 and `SIMULATION_ARCHITECTURE.md` 13.4 is ESTIMATED: it does not follow from the counts in 2.1 (38 items, 71 lessons, 31 tasks, 13 benches) and its derivation is UNKNOWN. Treat 79 as a placeholder until the converter output exists, then replace it with `cleanCount`.
-- `broken/`: 20 projects, each a `clean/` circuit with one op applied, each listing `expectedCauseId` and the `rule` that should catch it. Registry ids (`SIMULATION_ARCHITECTURE.md` 13.4) minus `bus-device-not-modelled` (a limit, not a fault) and `motor-stall` (no motor in the Uno corpus) give 16 files; four second variants of the most common user mistakes bring it to 20:
+- `broken/`: 20 projects, each a `clean/` circuit with one op applied, each listing `expectedCauseId` and the `rule` that should catch it. Electrical registry ids (`SIMULATION_ARCHITECTURE.md` 13.4: 45 ids, 18 of them the electrical core) minus `bus-device-not-modelled` (a limit, not a fault) and `motor-stall` (no motor in the Uno corpus) give 16 files; four second variants of the most common user mistakes bring it to 20:
 
 | # | expectedCauseId | # | expectedCauseId |
 |---|---|---|---|
@@ -603,7 +603,7 @@ The gallery (F-084) groups by `guide.level` (`intro`, `io`, `input`, `analog`, `
 
 ### 11.1 Stores
 
-ADR-0106 already lists the IndexedDB database `iynk` with a `progress` store. This file defines its record. Events go to the local event log of R-009 and R-122 (view and clear in settings); no new store is invented here.
+ADR-0106 already lists the IndexedDB database `iynk` with a `progress` store. This file defines its record. Events go to the local event log of R-009 and R-122 (view and clear in settings), held in the `events` store; no new store is invented here.
 
 ### 11.2 Records
 
@@ -611,7 +611,7 @@ ADR-0106 already lists the IndexedDB database `iynk` with a `progress` store. Th
 interface LearnerRecord {                       // key: project id (prj_...); one per local project that has a plan
   v: 1;
   projectId: string;
-  templateId?: string;                          // provenance.origin.template of a fork of a lesson
+  templateId?: string;                          // the lesson this project was forked from; kept here, not in provenance
   startedAt: string;                            // ISO 8601, wall clock (progress is not simulation)
   steps: Record<string, { doneAt: string; by: 'gate' | 'manual' }>;      // key: step index as a string
   lastRun?: { at: string; tier: Tier; tests: Record<string, Record<string, boolean>> };  // testId -> checkId -> ok
@@ -651,7 +651,7 @@ Rules: the completion is a local record only, no badge, no credential (R-143, F-
 | `bench.check` | `{projectId, powered, matched, note?}` | EXPORT | note stays local |
 | `review.offer` | `{projectId, family}` | queue offers an item | |
 
-Each event has `id` (random), `at` (ISO), `kind`, payload. Cap 20,000 events or the oldest dropped first (ESTIMATED: about 5 MB at 250 bytes each, to be measured); view, export and clear in settings (F-168). No project name, room code or buddy name is stamped on an event (R-009 forbids the room code).
+Each event has `id` (random), `at` (ISO), `kind`, payload. Cap 5,000 rows in the `events` store, oldest dropped first (ESTIMATED: about 1.25 MB at 250 bytes each, to be measured); view, export and clear in settings (F-168). No project name, room code or buddy name is stamped on an event (R-009 forbids the room code).
 
 ### 11.4 Importing the old progress (R-143)
 
@@ -784,7 +784,7 @@ Dependencies that are easy to miss: F-019's record type is needed in CORE becaus
 
 ## 15. Decisions (ADRs) and how they were reached
 
-ADR range for this file: ADR-0830 to ADR-0835. Taken elsewhere: STUDIO_EDITOR 0800 to 0808, API_CONTRACTS 0810 to 0819, COMMUNITY 0820 to 0827, UX_DESIGN_SYSTEM 0850 to 0857.
+ADR range for this file: ADR-0830 to ADR-0835. Taken elsewhere: STUDIO 0800 to 0809, API 0810 to 0819, COMMUNITY 0820 to 0829, UX 0850 to 0859.
 
 | ADR | Decision | Alternatives rejected | Reason |
 |---|---|---|---|
@@ -893,9 +893,9 @@ Failure paths: detector missing for the cause (item not offered); unrevealed ans
 ## 21. Objections
 
 **Objection 1: the diagnosis record and the cause registry.**
-(a) `PRODUCT_REQUIREMENTS.md` (diagnosis block above R-118) defines `Evidence { kind: "pin"|"net"|"measurement"|"serial"|"state", ref, t, value }`; `SIMULATION_ARCHITECTURE.md` 13.4 defines `Evidence { kind: 'pin-level'|'net-voltage'|'branch-current'|'serial-line'|'state'|'timeline', ref, at, value, unit?, provenance, tier, modelIds }`. The two disagree. I followed the simulation file (richer, carries provenance). One of the two documents must be changed.
+(a) `PRODUCT_REQUIREMENTS.md` (diagnosis block above R-118) defines `Evidence { kind: "pin"|"net"|"measurement"|"serial"|"state", ref, t, value }`; `SIMULATION_ARCHITECTURE.md` 13.4 defines `Evidence { kind: 'pin-level'|'net-voltage'|'branch-current'|'serial-line'|'state'|'timeline', ref, at, value, unit?, provenance, tier, modelIds }`. Closed by RC-49: the PRD now uses the simulation file shape (richer, carries provenance), so the two agree.
 (b) R-120 says a wrong pick is recorded "as evidence". A wrong pick is an event about the learner, not evidence about the circuit; I record it as the `diagnose.answer` event and keep `evidence[]` to what the learner measured. If the requirement stands, an `Evidence.kind: 'pick'` is needed.
-(c) The first-release registry has 18 cause ids; the catalogue's 12 `FailureKind`s need about 8 more (6.6). They are `x-` ids until accepted.
+(c) The registry has 45 ids, 18 of them the electrical core, and the corpus derives from the electrical ones; the catalogue's 12 `FailureKind`s need about 8 more (6.6). They are `x-` ids until accepted.
 (d) Learning needs `confusableWith` and a display name per cause. Evidence: without them distractors cannot be generated (6.7).
 
 **Objection 2: the schema cannot hold a guided plan.** `Guide.steps` has no ids and `Check` has no static kinds, so step completion that depends on a wire or a part has no home. I put the plan in `ext` (ADR-0830) so the 1.0 contract is not touched. Recommendation: after STUDIO, promote `x-iynk-guided` to `Guide.plan`, and add `connected`, `part-present`, `param-in-range` to `Check` as schema 1.1 (ADR-0105 says how). Cost of waiting: older readers ignore the plan and show a plain lesson.
@@ -928,7 +928,7 @@ Failure paths: detector missing for the cause (item not offered); unrevealed ans
 | 13 Security | 20 | D-005 | SECURITY_BASELINE | F-112 | R-018, R-159 |
 | 14 Sequence | | D-014 | | catalogue 4.1 | |
 
-Spike dependencies: RS-03 (avr8js differential: PASS on this machine) supports the claim that firmware-mode verdicts can be compared with the interpreter's on three lessons, no more. RS-06 FAILED the real-time clause for rp2040js, so Pico lesson checks stay on the TypeScript interpreter. RS-12 (Yosys) leaves Verilog checks on the TypeScript 2-state simulator (ADR-0315). RS-09 PASS supports shared rooms for capstones. None of the spikes tests anything about learning; no claim here depends on a PENDING spike except the solver-backed predicates (`node-voltage`, `supply-current`), which are marked as available only after SIM.
+Spike dependencies: RS-03 (avr8js differential: PASS on this machine) supports the claim that firmware-mode verdicts can be compared with the interpreter's on three lessons, no more. RS-06: the pass clause (CPU under 60 percent of a core) was not met for rp2040js, at 0.54x to 0.79x real time (VERIFIED in RS-06); the fail clause was not triggered. So Pico lesson checks stay on the TypeScript interpreter. RS-12 (Yosys) leaves Verilog checks on the TypeScript 2-state simulator (ADR-0315). RS-09 PASS supports shared rooms for capstones. None of the spikes tests anything about learning; no claim here depends on a PENDING spike except the solver-backed predicates (`node-voltage`, `supply-current`), which are marked as available only after SIM.
 
 Evidence files written for this document (scratch, not committed): `/Users/amar/iynk-master-plan-scratch/design/education/` was created for this task; the counts in section 2 and 12 were produced by short Python scripts over the emitted catalogue JSON and the English content files, and can be re-run from the commands in section 2.1 and 12.1.
 
@@ -937,7 +937,32 @@ Evidence files written for this document (scratch, not committed): `/Users/amar/
 ## Review fixes (2026-10-27)
 
 1. Leaderboard and standing contradictions. Applied in this file: the "Buddies-only standing" row of 8.4 no longer sends lesson counts, challenge counts or a `clean` ratio; it points to the four tracks of `COMMUNITY.md` 3.10 and states that nothing else is sent (CD-5). Evidence: `COMMUNITY.md` 3.10 forbids totals, counts and streaks. Not done here because I may only edit this file: the `diagnosis` track value in `COMMUNITY.md` 3.10 (line 326, "lowest `hint_level`", four possible values, nearly all rows tie) must be changed by its owner to time-to-first-correct-pick in ms (lower is better), which is recorded in the diagnosis session alongside the D-010 record, or the track dropped. `PRODUCT_REQUIREMENTS.md` R-091 and the catalogue (laps only) are consistent with 3.10 once the later tracks ship, so I changed nothing there.
-2. Untestable fault-rule targets. Applied in 6.6 and in the FAULTS row of section 14: the corpus is `tests/fixtures/fault-corpus/` with `clean/` (count from the converter, `cleanCount`) and `broken/` (20 files, expected `cause_id` listed, derived from the 18 registry ids of `SIMULATION_ARCHITECTURE.md` 13.4). The 79 figure is marked ESTIMATED with derivation UNKNOWN (it does not follow from 2.1). Still to do by the owners of the other files: `FEATURE_CATALOGUE.md` F-029, `USER_JOURNEYS.md` SC-J04-6 and SC-J06-2 and the line in `SIMULATION_ARCHITECTURE.md` 13.4 should cite this directory instead of "79" and "20 deliberately broken circuits", and `PRODUCT_REQUIREMENTS.md` R-124's gate may add the 18 of 20 clause. I did not edit them.
+2. Untestable fault-rule targets. Applied in 6.6 and in the FAULTS row of section 14: the corpus is `tests/fixtures/fault-corpus/` with `clean/` (count from the converter, `cleanCount`) and `broken/` (20 files, expected `cause_id` listed, derived from the electrical ids of `SIMULATION_ARCHITECTURE.md` 13.4: the registry has 45 ids, 18 of them the electrical core). The 79 figure is marked ESTIMATED with derivation UNKNOWN (it does not follow from 2.1). Still to do by the owners of the other files: `FEATURE_CATALOGUE.md` F-029, `USER_JOURNEYS.md` SC-J04-6 and SC-J06-2 and the line in `SIMULATION_ARCHITECTURE.md` 13.4 should cite this directory instead of "79" and "20 deliberately broken circuits", and `PRODUCT_REQUIREMENTS.md` R-124's gate may add the 18 of 20 clause. I did not edit them.
 3. Edit gate testability. Applied in 5.2 (algorithm using a substance hash and the local actor's qualifying ops since the start checkpoint), 5.5 (pointer) and a new acceptance A15 in section 17 with fixtures in `tests/fixtures/edu-solutions/`. Decision on the issue's open question: lessons whose starter equals the solution are not exempt; they fail `edit` on zero ops by design, and each gets a stored minimal-change fixture. I used a substance hash (sources normalised through `codeOnly`, 5.1) rather than the plain `stateHash`, because the plain hash changes on a whitespace edit, which 5.1 says must not count. This keeps ADR-0831 intact: the starters are still not rewritten; only fixtures are added.
 
 4. ADR collision. Confirmed: STUDIO_EDITOR uses ADR-0800 to 0808 and API_CONTRACTS uses ADR-0810 to 0819. The suggested ADR-0820 to 0825 would collide again, because COMMUNITY.md line 4 and its table (lines 1025 to 1032) were renumbered to ADR-0820 to 0827 on the same day. I therefore did not use 0820 to 0825. I used ADR-0830 to ADR-0835 (free; the other files hold 0800 to 0827 and 0850 to 0857). Updated: header line 6, section 8.3 title (now ADR-0834), the line 120 reference (ADR-0830), the decision table rows, Objection 2 (ADR-0830), review fix 3 (ADR-0831), and replaced the note that claimed ADR-0800 to 0809 was free with the list of ranges taken. Mapping: 0800 to 0830, 0801 to 0831, 0802 to 0832, 0803 to 0833, 0804 to 0834, 0805 to 0835. Not changed: the earlier "Review fixes" entries are kept as written apart from the renumbered id.
+
+
+## Reconcile and spike fold-in (2026-10-27)
+
+Source: `04_ARCHITECTURE/RECONCILIATION.md`. Each row was checked against the file first.
+
+| Id | Change |
+|---|---|
+| RC-10 | 11.3: cap is 5,000 rows in the `events` store, oldest dropped first (ESTIMATED about 1.25 MB). 11.1 now names the `events` store. |
+| RC-40 | Start checkpoint (5.2) says `provenance.origin` kind `fork`. In `LearnerRecord`, `templateId` stays but its comment no longer points at `provenance.origin.template`; the lesson id lives in the progress store. |
+| RC-43 | 6.5 mapping line, 6.6 broken/ list, Objection 1(c) and review fix 2 now say: the registry has 45 ids, 18 of them the electrical core; the corpus derives from the electrical ones. The "at least 18 of 20" gate is unchanged (it counts files, not ids). |
+| RC-44 | Fault row in the comparison table is `Fault {id, cause_id, symptom_ids, kind, target, params, enabled: true}`. |
+| RC-61 | Section 15 keeps ADR-0830 to 0839 (header range text updated) and lists the taken ranges: STUDIO 0800-0809, API 0810-0819, COMMUNITY 0820-0829, UX 0850-0859. |
+| RS-03, RS-06, RS-12 | No change. The spike dependency note near line 931 is current, and lines 8 and 48 are already reframed. |
+| Other spikes | No place in this file was pending on them. |
+
+Skipped or adjusted: the header line 6 and decision table still say ADR-0830 to 0835 because only those six are used; the range 0830 to 0839 is reserved for this file. The task said 11.3 sits at line 654 and 6.6 at 373 to 387; both matched. Line 606 did not name the `events` store, so that was added.
+
+## Reconcile, second pass (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-49 | Objection (a) near line 896 no longer says the PRD and simulation `Evidence` shapes disagree. It is marked closed, since the PRD now uses the SIM 13.4 shape. |
+| RC-44 | Line 365: the converter writes `cause_id` and `symptom_ids` on each materialised `Fault`; the schema test fails a fault with no `cause_id`; the `Fault (...)` field list uses `cause_id, symptom_ids`. |
+| RC-51 | Spike dependency note near line 931: RS-06 wording is now neutral (pass clause not met at 0.54x to 0.79x real time, fail clause not triggered). Pico checks still use the TypeScript interpreter. |

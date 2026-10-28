@@ -23,7 +23,7 @@ The current relay logs JSON but proxies `/metrics` to the public. A self-hoster 
 ## Decision
 
 1. Logs: one JSON object per line with the route template, status, ms and short hashes.
-2. `/healthz` (`{ ok, draining, store }`) and `/readyz` are public and minimal; `/metrics` is on `IYNK_METRICS_ADDR` (loopback).
+2. `/healthz` (`{ ok, draining, store }`) and `/readyz` are public and minimal; `/metrics` is on `IYNK_METRICS_ADDR` (loopback). The unauthenticated probe (`GET /v1/server`, the openapi `ServerInfo`) returns `software.name` (`iynk-server`) and no version string or commit; the build id is exposed in `/metrics` only (RC-23).
 3. All instrumentation goes through three functions (`obs.count`, `obs.time`, `obs.gauge`) so an exporter can be added without touching call sites.
 4. `iynk-server diagnostics` writes a redacted tarball.
 
@@ -50,7 +50,7 @@ No dependency is added; the text exposition format is written by hand. If a metr
 
 ## Security implications
 
-The redaction rule and the canary test (BA-09) keep tokens, provider keys, document text and chat out of logs, labels and the diagnostics bundle. Addresses appear only in `warn` lines about abuse, as a /64 hash. Health answers carry no version, uptime or counts, so a stranger learns nothing from them. `/metrics` is loopback only; the Caddy file does not proxy it.
+The redaction rule and the canary test (BA-09) keep tokens, provider keys, document text and chat out of logs, labels and the diagnostics bundle. Addresses appear only in `warn` lines about abuse, as a /64 hash. Health answers carry no version, uptime or counts, so a stranger learns nothing from them. The same holds for the server probe: a version string would tell a stranger which known bugs apply, so the build id is only in `/metrics`, which is loopback only (RC-23). `/metrics` is loopback only; the Caddy file does not proxy it.
 
 ## Reversibility
 
@@ -63,3 +63,9 @@ BE-1 adds logs, health and the three functions; BE-3 adds metrics and `diagnosti
 ## Known limitations
 
 No alerts, traces or log shipping. SYSTEM_ARCHITECTURE describes the metrics response as JSON where this file says Prometheus text; the two are to be aligned. Event-loop lag is a proxy for the synchronous store cost, not a direct measure of it.
+
+## Reconcile and spike fold-in (2026-10-27)
+
+| Id | Change |
+|---|---|
+| RC-23 | Decision item 2 and Security implications now state that the unauthenticated probe returns no version string or commit, and that the build id is in `/metrics` only. |
