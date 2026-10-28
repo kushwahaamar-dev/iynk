@@ -4,7 +4,7 @@ import { DELETE, GET, OPTIONS, POST } from "@/app/api/mcp/route";
 
 vi.mock("@/lib/server/env", () => ({
   env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, image: false, voice: false, search: false, solana: false, db: false, realtime: false, gemini: false },
+  features: { ai: false, image: false, voice: false, search: false, db: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 
@@ -45,10 +45,10 @@ describe("legacy era (initialize handshake)", () => {
     expect(await res.text()).toBe("");
   });
 
-  it("lists the seven H10 tools with schemas and read-only annotations", async () => {
+  it("lists the five tools with schemas and read-only annotations", async () => {
     const body = await (await post({ jsonrpc: "2.0", id: 3, method: "tools/list" }, { "mcp-protocol-version": "2025-11-25" })).json();
     const tools = body.result.tools as { name: string; inputSchema: { type: string }; outputSchema: object; annotations: { readOnlyHint: boolean } }[];
-    expect(tools.map((t) => t.name)).toEqual(["search_catalog", "get_item", "drone_calc", "price_parts", "plan_build_night", "create_room", "get_passport"]);
+    expect(tools.map((t) => t.name)).toEqual(["search_catalog", "get_item", "drone_calc", "price_parts", "create_room"]);
     for (const tool of tools) {
       expect(tool.inputSchema.type).toBe("object");
       expect(tool.outputSchema).toBeTypeOf("object");

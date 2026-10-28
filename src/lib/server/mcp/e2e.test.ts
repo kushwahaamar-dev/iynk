@@ -8,7 +8,7 @@ import { DELETE, GET, POST } from "@/app/api/mcp/route";
 
 vi.mock("@/lib/server/env", () => ({
   env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, image: false, voice: false, search: false, solana: false, db: false, realtime: true, gemini: false },
+  features: { ai: false, image: false, voice: false, search: false, db: false, realtime: true, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 vi.mock("@/content/index.generated", async () => {
@@ -36,7 +36,7 @@ afterEach(async () => {
 });
 
 async function connect() {
-  client = new Client({ name: "iynk-e2e", version: "1.0.0" });
+  client = new Client({ name: "iynk-e2e", version: "1.1.0" });
   const transport = new StreamableHTTPClientTransport(new URL("https://iynk.test/api/mcp"), { fetch: routeHandler });
   await client.connect(transport);
   return client;
@@ -45,16 +45,16 @@ async function connect() {
 describe("SDK client against /api/mcp", () => {
   it("initializes and reads the server's identity and instructions", async () => {
     const c = await connect();
-    expect(c.getServerVersion()).toMatchObject({ name: "iynk", title: "iynk", version: "1.0.0" });
+    expect(c.getServerVersion()).toMatchObject({ name: "iynk", title: "iynk", version: "1.1.0" });
     expect(c.getServerCapabilities()).toMatchObject({ tools: { listChanged: false } });
-    expect(c.getInstructions()).toMatch(/plan_build_night/);
+    expect(c.getInstructions()).toMatch(/create_room/);
     await expect(c.ping()).resolves.toEqual({});
     expect(seen.filter((m) => m === "POST").length).toBeGreaterThanOrEqual(3);
   });
 
-  it("lists all seven tools", async () => {
+  it("lists the five tools", async () => {
     const { tools } = await (await connect()).listTools();
-    expect(tools.map((t) => t.name)).toEqual(["search_catalog", "get_item", "drone_calc", "price_parts", "plan_build_night", "create_room", "get_passport"]);
+    expect(tools.map((t) => t.name)).toEqual(["search_catalog", "get_item", "drone_calc", "price_parts", "create_room"]);
     expect(tools.find((t) => t.name === "drone_calc")?.inputSchema.required).toEqual(["drone"]);
   });
 
@@ -85,11 +85,8 @@ describe("SDK client against /api/mcp", () => {
 
   it("hands tool failures back as isError results the model can read", async () => {
     const c = await connect();
-    const plan = await c.callTool({
-      name: "plan_build_night",
-      arguments: { participants: [{ name: "Ana", lang: "es", level: "new", wants: "fly" }] },
-    });
-    expect(plan.isError).toBe(true);
-    expect(plan.content).toEqual([{ type: "text", text: expect.stringMatching(/not set up on this deployment/) }]);
+    const out = await c.callTool({ name: "create_room", arguments: { lab: "drone" } });
+    expect(out.isError).toBe(true);
+    expect(out.content).toEqual([{ type: "text", text: expect.stringMatching(/both lab and id/) }]);
   });
 });

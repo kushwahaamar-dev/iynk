@@ -5,7 +5,7 @@ import { OPTIONS as TOOL_OPTIONS, POST as TOOL_POST } from "@/app/api/mcp/tools/
 
 vi.mock("@/lib/server/env", () => ({
   env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, image: false, voice: false, search: false, solana: false, db: false, realtime: false, gemini: false },
+  features: { ai: false, image: false, voice: false, search: false, db: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 
@@ -34,9 +34,7 @@ describe("GET /api/openapi.json", () => {
       "/api/mcp/tools/get_item",
       "/api/mcp/tools/drone_calc",
       "/api/mcp/tools/price_parts",
-      "/api/mcp/tools/plan_build_night",
       "/api/mcp/tools/create_room",
-      "/api/mcp/tools/get_passport",
     ]);
     for (const [path, { post }] of ops) {
       expect(path.endsWith(post.operationId)).toBe(true);
@@ -72,6 +70,10 @@ describe("POST /api/mcp/tools/<name>", () => {
     const unknown = await callTool("launch_rocket", {});
     expect(unknown.status).toBe(404);
     expect((await unknown.json()).error.code).toBe("unknown_tool");
+
+    for (const gone of [["get", "passport"], ["plan", "build", "night"]]) {
+      expect((await callTool(gone.join("_"), {})).status).toBe(404);
+    }
   });
 
   it("refuses non-JSON bodies and answers preflight", async () => {

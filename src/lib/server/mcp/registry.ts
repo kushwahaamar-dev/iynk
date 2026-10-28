@@ -31,7 +31,7 @@ export type Tool<I extends z.ZodType = z.ZodType, O extends z.ZodType = z.ZodTyp
   description: string;
   input: I;
   output: O;
-  /** Talks to a service outside iynk (SerpApi, Meta's model API, Solana devnet). */
+  /** Talks to a service outside iynk (SerpApi, Meta's model API). */
   openWorld: boolean;
   /** Same input, same answer (no model sampling, no fresh ids, no live prices). */
   idempotent: boolean;

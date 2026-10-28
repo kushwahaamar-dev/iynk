@@ -24,7 +24,7 @@ export function openApiDocument(siteUrl: string) {
           "403": errorResponse("A browser called from a host iynk does not serve."),
           "404": errorResponse("The item (or the tool) does not exist."),
           "429": errorResponse("Rate limited; retry after the Retry-After header's seconds."),
-          "502": errorResponse("An upstream service (SerpApi, Meta, Solana) failed."),
+          "502": errorResponse("An upstream service (SerpApi, Meta) failed."),
           "503": errorResponse("The feature is not set up on this deployment (error code not_configured)."),
         },
       };

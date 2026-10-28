@@ -1,16 +1,14 @@
 // @vitest-environment node
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { z } from "zod";
 import { runTool, type Tool, type ToolContext, type ToolOutcome } from "./registry";
 import { getItem, searchCatalog } from "./tools/catalog";
 import { droneCalc } from "./tools/drone";
 import { priceParts } from "./tools/market";
-import { getPassport } from "./tools/passport";
-import { createRoom, planBuildNight } from "./tools/together";
+import { createRoom } from "./tools/together";
 
-const flags = vi.hoisted(() => ({ ai: true, image: true, voice: true, search: true, solana: true, db: false, realtime: true, gemini: false }));
+const flags = vi.hoisted(() => ({ ai: true, image: true, voice: true, search: true, db: false, realtime: true, gemini: false }));
 const offers = vi.hoisted(() => vi.fn());
-const solana = vi.hoisted(() => ({ context: { connection: {}, programId: "program" } as object | null, credentialsOf: vi.fn() }));
 
 vi.mock("@/lib/server/env", () => ({ env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" }, features: flags }));
 
@@ -46,34 +44,18 @@ vi.mock("@/lib/server/search/serpapi", () => {
   return { offers, SearchError };
 });
 
-vi.mock("@/lib/server/solana/context", () => ({ readContext: () => solana.context }));
-vi.mock("@/lib/solana/reads", () => ({ credentialsOf: solana.credentialsOf }));
-
 const ctx: ToolContext = { siteUrl: "https://iynk.test" };
-const fetchMock = vi.fn<typeof fetch>();
 
 beforeEach(() => {
-  Object.assign(flags, { ai: true, search: true, solana: true, realtime: true });
-  fetchMock.mockReset();
+  Object.assign(flags, { ai: true, search: true, realtime: true });
   offers.mockReset();
-  solana.context = { connection: {}, programId: "program" };
-  solana.credentialsOf.mockReset();
-  vi.stubGlobal("fetch", fetchMock);
 });
-
-afterEach(() => vi.unstubAllGlobals());
 
 /** The result of a call that must succeed, typed by the tool's output schema. */
 function dataOf<T extends Tool>(_tool: T, out: ToolOutcome): z.output<T["output"]> {
   if (!out.ok) throw new Error(`${out.code}: ${out.message}`);
   return out.data as z.output<T["output"]>;
 }
-
-const reply = (status: number, body: unknown) =>
-  new Response(typeof body === "string" ? body : JSON.stringify(body), {
-    status,
-    headers: { "content-type": typeof body === "string" ? "text/html" : "application/json" },
-  });
 
 describe("search_catalog", () => {
   it("finds items by tag, chip and title words, best match first", async () => {
@@ -222,47 +204,6 @@ describe("price_parts", () => {
   });
 });
 
-describe("plan_build_night", () => {
-  const participants = [
-    { name: "Ana", lang: "es", level: "new", wants: "fly something" },
-    { name: "Sam", lang: "en", level: "lots", wants: "tune PIDs" },
-  ];
-  const plan = {
-    title: "Drone night",
-    item: { lab: "drone", id: "quad5" },
-    why: "Both of you get to fly.",
-    roles: [{ name: "Ana", role: "pilot", firstTask: "Fly the gate run" }],
-    steps: ["Build", "Fly"],
-  };
-
-  it("asks the plan route and links the planned item", async () => {
-    fetchMock.mockResolvedValue(reply(200, plan));
-    const out = await runTool(planBuildNight, { participants, locale: "es" }, ctx);
-    expect(out).toMatchObject({ ok: true, data: { ...plan, url: "https://iynk.test/es/drones/quad5" } });
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(String(url)).toBe("https://iynk.test/api/ai/plan");
-    expect(JSON.parse(String(init?.body))).toEqual({ locale: "es", participants });
-  });
-
-  it("refuses a plan for an item iynk does not have", async () => {
-    fetchMock.mockResolvedValue(reply(200, { ...plan, item: { lab: "drone", id: "blimp" } }));
-    expect(await runTool(planBuildNight, { participants }, ctx)).toMatchObject({ ok: false, code: "upstream" });
-  });
-
-  it("reports the route's 503 and 429 as not set up and busy", async () => {
-    fetchMock.mockResolvedValueOnce(reply(503, { error: { code: "not_configured", message: "AI is not set up on this deployment." } }));
-    expect(await runTool(planBuildNight, { participants }, ctx)).toMatchObject({ ok: false, code: "not_configured" });
-    fetchMock.mockResolvedValueOnce(reply(429, { error: { code: "rate_limited", message: "slow down" } }));
-    expect(await runTool(planBuildNight, { participants }, ctx)).toMatchObject({ ok: false, code: "rate_limited" });
-  });
-
-  it("does not call out when the AI feature is off", async () => {
-    flags.ai = false;
-    expect(await runTool(planBuildNight, { participants }, ctx)).toMatchObject({ ok: false, code: "not_configured" });
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-});
-
 describe("create_room", () => {
   it("makes a fresh room link on the asked item", async () => {
     const out = await runTool(createRoom, { lab: "drone", id: "quad5", locale: "hi" }, ctx);
@@ -281,53 +222,5 @@ describe("create_room", () => {
   it("is not set up without the realtime relay", async () => {
     flags.realtime = false;
     expect(await runTool(createRoom, {}, ctx)).toMatchObject({ ok: false, code: "not_configured" });
-  });
-});
-
-describe("get_passport", () => {
-  const learner = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
-  const credential = {
-    address: "Cred1111111111111111111111111111111111111111",
-    learner,
-    skillHash: "ab",
-    skillId: "drone:quad5:safety",
-    replayHash: "cd",
-    score: 100,
-    issuedAt: 1_793_000_000,
-    issuer: "Issuer11111111111111111111111111111111111111",
-  };
-
-  it("lists the learner's credentials with Explorer and verify links", async () => {
-    solana.credentialsOf.mockResolvedValue([credential]);
-    const out = await runTool(getPassport, { learner, locale: "fr" }, ctx);
-    expect(dataOf(getPassport, out)).toEqual({
-      learner,
-      cluster: "devnet",
-      count: 1,
-      credentials: [
-        {
-          skillId: "drone:quad5:safety",
-          score: 100,
-          issuedAt: new Date(1_793_000_000_000).toISOString(),
-          replayHash: "cd",
-          address: credential.address,
-          explorerUrl: `https://explorer.solana.com/address/${credential.address}?cluster=devnet`,
-        },
-      ],
-      verifyUrl: `https://iynk.test/fr/verify?learner=${learner}`,
-    });
-    expect(String(solana.credentialsOf.mock.calls[0][2])).toBe(learner);
-  });
-
-  it("rejects something that is not a wallet address", async () => {
-    expect(await runTool(getPassport, { learner: "not-an-address" }, ctx)).toMatchObject({ ok: false, code: "bad_input" });
-  });
-
-  it("is not set up without the program, and reports RPC failures as upstream", async () => {
-    solana.context = null;
-    expect(await runTool(getPassport, { learner }, ctx)).toMatchObject({ ok: false, code: "not_configured" });
-    solana.context = { connection: {}, programId: "program" };
-    solana.credentialsOf.mockRejectedValue(new Error("429 Too Many Requests"));
-    expect(await runTool(getPassport, { learner }, ctx)).toMatchObject({ ok: false, code: "upstream", message: expect.not.stringContaining("429") });
   });
 });
