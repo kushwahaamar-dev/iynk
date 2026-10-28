@@ -5,6 +5,11 @@
   "engines": {
     "node": "24.x"
   },
+  "imports": {
+    "#core/*": "./src/core/*.ts",
+    "#protocol/*": "./src/protocol/*.ts",
+    "#project/*": "./src/project/*.ts"
+  },
   "scripts": {
     "content": "node -e \"const f='scripts/gen-content-index.mjs';if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f],{stdio:'inherit'});else console.log('skipped: '+f+' is not written yet')\"",
     "content:check": "node scripts/gen-content-index.mjs --check",
@@ -16,7 +21,8 @@
     "lint": "eslint . --quiet",
     "typegen": "next typegen",
     "pretypecheck": "npm run content",
-    "typecheck": "next typegen && tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit && tsc -p tsconfig.portable.json",
+    "typecheck:portable": "tsc -p tsconfig.portable.json",
     "pretest": "npm run content",
     "test": "vitest run",
     "e2e": "playwright test",

@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": []
+  },
+  "include": [
+    "src/core",
+    "src/protocol",
+    "src/project",
+    "src/parts",
+    "src/sim",
+    "src/export",
+    "server"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.testing.ts",
+    "src/parts/browser/**",
+    "**/node_modules"
+  ]
+}
