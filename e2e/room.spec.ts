@@ -1,4 +1,5 @@
-import { expect, test, type BrowserContext, type Page } from "@playwright/test";
+import type { BrowserContext, Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
 import robotics from "../src/i18n/messages/en/robotics.json";
 import together from "../src/i18n/messages/en/together.json";

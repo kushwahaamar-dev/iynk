@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import dronelab from "../src/i18n/messages/en/dronelab.json";
 import flight from "../src/i18n/messages/en/flight.json";
 

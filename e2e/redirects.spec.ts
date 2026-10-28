@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import { LANG_COOKIE } from "../src/i18n/config";
 
 // A section link without a language (said in the pitch, shared in a chat) finds one the way "/" does.

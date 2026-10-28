@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import { LANG_COOKIE, LOCALES, htmlLang } from "../src/i18n/config";
 import common from "../src/i18n/messages/en/common.json";
 import commonFr from "../src/i18n/messages/fr/common.json";
@@ -75,6 +76,12 @@ test("the skip link is the first stop and lands on the main content", async ({ p
   await expect(skip).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.locator("main#main-en")).toBeFocused();
+});
+
+test("a page that calls out fails the test", async ({ page }) => {
+  test.fail();
+  await page.goto("/");
+  await page.evaluate(() => fetch("https://example.com").catch(() => null));
 });
 
 test.describe("the / redirect", () => {

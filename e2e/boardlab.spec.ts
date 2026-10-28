@@ -1,7 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import { LOCALES, htmlLang } from "../src/i18n/config";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
 import common from "../src/i18n/messages/en/common.json";

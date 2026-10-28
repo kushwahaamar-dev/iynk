@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import shell from "../src/i18n/messages/en/shell.json";
 import { dockCopy, expectTabs, LAB_PAGES, openDock, watchErrors } from "./dock-shared";
 
