@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { BoardWorkspace } from "@/components/boardlab/BoardWorkspace";
 import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
+import { PageSkeleton } from "@/components/ui";
 import { BOARD_IDS } from "@/content/ids";
 import { AVAILABLE } from "@/content/index.generated";
 import { isLocale } from "@/i18n/config";
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function BoardPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="workspace" />}>
       <Board params={params} />
     </Suspense>
   );
