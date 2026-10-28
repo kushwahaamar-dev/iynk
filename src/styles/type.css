@@ -70,12 +70,12 @@ html:lang(zh-Hans) body {
 }
 
 @layer components {
-  .kicker, .ink-kicker {
+  .kicker, .kicker {
     @apply text-xs font-semibold text-muted;
   }
 
   /* A field or meter label: may hold a unit ("500 mA"), so never uppercase. */
-  .field-label, .ink-label {
+  .field-label, .field-label {
     @apply text-xs font-semibold text-muted;
   }
 

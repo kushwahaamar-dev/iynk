@@ -35,8 +35,8 @@ export const eyebrow = typeClass.eyebrow;
 const display = cx(typeClass.display, "[overflow-wrap:anywhere]");
 export const sectionTitle = typeClass.title;
 
-/** Form fields on these pages: the lab's ink-field with a hover edge. */
-export const field = "ink-field w-full motion-fade hover:border-muted";
+/** Form fields on these pages: the lab's input-field with a hover edge. */
+export const field = "input-field w-full motion-fade hover:border-muted";
 export const area = cx(field, "min-h-20 py-3 pe-4 text-base leading-normal");
 
 export function actionClass(kind: "primary" | "secondary" = "secondary", size?: "md" | "sm", className?: string) {

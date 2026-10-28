@@ -15,7 +15,7 @@ export function HeroFigure({ label }: { label: string }) {
           controls={false}
           hideChrome={HERO_CHROME}
           fill
-          className="[&_.ink-plate]:rounded-xl"
+          className="[&_.plate]:rounded-xl"
           poster={<HeroArt className="h-full w-auto max-w-full object-contain p-4 sm:p-8" />}
         />
       </div>

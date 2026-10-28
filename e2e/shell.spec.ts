@@ -174,7 +174,7 @@ test("an unknown URL is a real 404 inside the localized layout", async ({ page }
   await expect(page.getByRole("heading", { level: 1, name: commonZh.notFound.title })).toBeVisible();
   await expect(page).toHaveTitle(new RegExp(commonZh.notFound.metaTitle));
   await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
-  await expect(page.locator("header:visible")).toHaveCount(1);
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator("footer:visible")).toHaveCount(1);
 });
 

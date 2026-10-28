@@ -16,7 +16,7 @@ function blockBody(selector: string): string {
   return css.slice(open, close);
 }
 
-const light = declarations(blockBody(":root,\n.ink-plate"));
+const light = declarations(blockBody(":root,\n.plate"));
 const root = declarations(blockBody(":root"));
 const dark = { ...light, ...declarations(blockBody(':root[data-theme="dark"]')) };
 const darkMedia = { ...light, ...declarations(blockBody(':root:not([data-theme="light"])')) };

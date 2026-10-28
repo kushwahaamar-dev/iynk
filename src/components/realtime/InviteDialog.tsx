@@ -36,7 +36,7 @@ export function QrCode({ text, label, t }: { text: string; label: string; t: Tog
   const value = qr.text === text ? qr.value : null;
   if (value === "error") return <p className="text-sm text-bad">{t("bar.qrError")}</p>;
   return (
-    <div className="ink-plate mx-auto w-full max-w-60 p-3">
+    <div className="plate mx-auto w-full max-w-60 p-3">
       {value ? (
         <svg role="img" aria-label={label} viewBox={`-2 -2 ${value.size + 4} ${value.size + 4}`} className="block aspect-square w-full text-ink-fixed" shapeRendering="crispEdges">
           <path d={value.path} fill="currentColor" />

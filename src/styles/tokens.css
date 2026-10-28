@@ -118,7 +118,7 @@
 /* Paper plates reuse the light token set, so whatever sits on one (labels,
    steppers, code, buttons) draws as it would on a light page. */
 :root,
-.ink-plate {
+.plate {
   color-scheme: light;
   --paper: #f2efe7;
   --alt: #ece7da;

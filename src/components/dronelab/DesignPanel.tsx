@@ -96,13 +96,13 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
       </div>
 
       <section aria-labelledby={`${base}-results`}>
-        <h3 id={`${base}-results`} className="ink-kicker">
+        <h3 id={`${base}-results`} className="kicker">
           {t("design.results")}
         </h3>
         <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3" aria-live="polite" data-testid="design-tiles">
           {tiles.map((tile) => (
             <div key={tile.id} className="min-w-0 rounded-xl border border-rule bg-surface px-3 py-2" data-tile={tile.id}>
-              <dt className="ink-label hyphens-auto">{tile.label}</dt>
+              <dt className="field-label hyphens-auto">{tile.label}</dt>
               <dd className="tabular whitespace-nowrap text-lg font-semibold leading-tight">{tile.value}</dd>
             </div>
           ))}
@@ -110,7 +110,7 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
       </section>
 
       <section aria-labelledby={`${base}-checks`} className="space-y-2">
-        <h3 id={`${base}-checks`} className="ink-kicker">
+        <h3 id={`${base}-checks`} className="kicker">
           {t("design.checksTitle")}
         </h3>
         {verdictLines.map((key) => {
@@ -141,7 +141,7 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
       </section>
 
       <section aria-labelledby={`${base}-cost`}>
-        <h3 id={`${base}-cost`} className="ink-kicker">
+        <h3 id={`${base}-cost`} className="kicker">
           {t("design.cost.title")}
         </h3>
         <table className="mt-2 w-full border-collapse text-sm">

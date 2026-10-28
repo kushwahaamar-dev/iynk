@@ -35,7 +35,7 @@ export function FieldMessage({ id, error, hint }: MessageProps) {
 }
 
 const control =
-  "ink-field w-full max-w-full motion-fade hover:border-muted aria-invalid:border-bad " +
+  "input-field w-full max-w-full motion-fade hover:border-muted aria-invalid:border-bad " +
   "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-rule read-only:text-muted read-only:hover:border-rule";
 
 function useField(id: string | undefined, { error, hint }: Pick<FieldProps, "error" | "hint">) {

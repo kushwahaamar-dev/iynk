@@ -524,7 +524,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
           {overview ? <p className="mt-3 max-w-[68ch] leading-relaxed">{overview}</p> : null}
           {bench.sources.length > 0 ? (
             <section aria-labelledby={ids.sources} className="mt-6">
-              <h3 id={ids.sources} className="ink-kicker">
+              <h3 id={ids.sources} className="kicker">
                 {t("bench.sources")}
               </h3>
               <ul className="mt-1 flex flex-col text-sm">

@@ -33,7 +33,6 @@ html:root {
 @layer components {
   /* A paper plate: figures, schematics and inked art sit on it. It keeps light
      paper and dark ink in both themes; in dark mode the paper is dimmed. */
-  .ink-plate,
   .plate {
     background-color: var(--plate-bg);
     color: var(--ink);
@@ -47,7 +46,7 @@ html:root {
     color: var(--on-color);
     --muted: var(--on-color);
   }
-  .ink-field {
+  .input-field {
     min-height: 44px;
     font: inherit;
     font-family: var(--font-body);
@@ -59,7 +58,7 @@ html:root {
     border-radius: var(--radius-lg, 0.5rem);
     padding: 8px 12px;
   }
-  select.ink-field {
+  select.input-field {
     appearance: none;
     padding-inline-end: 40px;
     cursor: pointer;

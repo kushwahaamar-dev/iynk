@@ -29,8 +29,8 @@ describe("layout layer", () => {
   });
 
   it("draws the field without a background image", () => {
-    expect(block(".ink-field")).not.toContain("background-image");
-    expect(block("select.ink-field")).not.toContain("background-image");
+    expect(block(".input-field")).not.toContain("background-image");
+    expect(block("select.input-field")).not.toContain("background-image");
   });
 
   it("rings focus with 2px and no halo", () => {
@@ -41,8 +41,8 @@ describe("layout layer", () => {
     expect(css).not.toContain("--halo");
   });
 
-  it("publishes the new names next to the old ones", () => {
-    expect(css).toContain(".ink-plate,\n  .plate {");
+  it("publishes the plate and prose classes", () => {
+    expect(css).toContain(".plate {");
     expect(css).toContain(".prose {");
   });
 });
