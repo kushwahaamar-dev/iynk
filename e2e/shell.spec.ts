@@ -38,7 +38,9 @@ async function openSettings(page: Page, label = shell.settings.label) {
 }
 
 // The theme options whose words don't fit their pill, or that the row hides by scrolling.
-function cutThemeOptions(page: Page) {
+async function cutThemeOptions(page: Page) {
+  // The settings load the first time the popover or the drawer opens.
+  await expect(page.locator('[role="dialog"] [role="radiogroup"]:visible')).toBeVisible();
   return page.evaluate(() => {
     const group = [...document.querySelectorAll('[role="dialog"] [role="radiogroup"]')].find((g) => (g as HTMLElement).offsetParent !== null);
     if (!group) return ["no theme control"];

@@ -1,13 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
-import { CommandMenu, type CommandGroup } from "@/components/ui/CommandMenu";
+import type { CommandGroup } from "@/components/ui/CommandMenu";
 import type { IconName } from "@/components/ui/icons";
 import { LANG_COOKIE, LOCALES, LOCALE_NAMES, localizedPath, type Locale } from "@/i18n/config";
 import { setSetting, useSettings, type ThemeSetting } from "@/lib/settings";
-import { silence, startSound } from "@/lib/sound";
 import { NAV, showNavEntry, type NavId } from "./nav";
 
 export const OPEN_COMMAND_EVENT = "iynk:open-command";
@@ -33,6 +33,8 @@ const PAGE_ICONS: Record<NavId, IconName> = {
   about: "info",
 };
 
+const CommandMenu = dynamic(() => import("@/components/ui/CommandMenu").then((m) => m.CommandMenu));
+
 const THEMES: readonly ThemeSetting[] = ["system", "light", "dark"];
 
 /** Ctrl+K deletes to the end of the line in CodeMirror on a Mac, so the shortcut leaves it alone there. */
@@ -48,6 +50,8 @@ export function CommandMenuHost({ lang, labels }: { lang: Locale; labels: Comman
   const pathname = usePathname() ?? `/${lang}`;
   const { sound, reduceMotion } = useSettings();
   const [open, setOpen] = useState(false);
+  const [wasOpened, setWasOpened] = useState(false);
+  if (open && !wasOpened) setWasOpened(true);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -92,8 +96,7 @@ export function CommandMenuHost({ lang, labels }: { lang: Locale; labels: Comman
           onSelect: () => {
             setSetting("sound", !sound);
             // Choosing the item is the gesture the browser needs before it lets a page make sound.
-            if (sound) silence();
-            else startSound();
+            void import("@/lib/sound").then((audio) => (sound ? audio.silence() : audio.startSound()));
           },
         },
         {
@@ -130,5 +133,6 @@ export function CommandMenuHost({ lang, labels }: { lang: Locale; labels: Comman
     },
   ];
 
+  if (!wasOpened) return null;
   return <CommandMenu open={open} onClose={() => setOpen(false)} label={labels.title} placeholder={labels.placeholder} emptyLabel={labels.empty} groups={groups} />;
 }

@@ -23,29 +23,30 @@ const inEnglish = (ui: React.ReactNode) =>
     </I18nProvider>,
   );
 
-test("the Keys and usage button opens the keys dialog", () => {
+test("the Keys and usage button opens the keys dialog", async () => {
   inEnglish(<SettingsMenu lang="en" labels={labels} />);
   expect(screen.queryByRole("dialog", { name: keys.title })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: keys.open, hidden: true }));
-  expect(screen.getByRole("dialog", { name: keys.title })).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: labels.settings, hidden: true }));
+  fireEvent.click(await screen.findByRole("button", { name: keys.open, hidden: true }));
+  expect(await screen.findByRole("dialog", { name: keys.title })).toBeTruthy();
 });
 
-test("the open event opens the dialog with no popover in sight, and Escape closes it", () => {
+test("the open event opens the dialog with no popover in sight, and Escape closes it", async () => {
   inEnglish(<SettingsMenu lang="en" labels={labels} />);
   act(() => {
     window.dispatchEvent(new CustomEvent(OPEN_KEYS_EVENT));
   });
-  const dialog = screen.getByRole("dialog", { name: keys.title });
+  const dialog = await screen.findByRole("dialog", { name: keys.title });
   fireEvent.keyDown(dialog, { key: "Escape" });
   expect(screen.queryByRole("dialog", { name: keys.title })).toBeNull();
 });
 
-test("the same button in a drawer dispatches the event the menu listens for", () => {
+test("the same button in a drawer dispatches the event the menu listens for", async () => {
   let heard = 0;
   const count = () => heard++;
   window.addEventListener(OPEN_KEYS_EVENT, count);
   inEnglish(<SettingsPanel lang="en" labels={labels} />);
-  fireEvent.click(screen.getByRole("button", { name: keys.open, hidden: true }));
+  fireEvent.click(await screen.findByRole("button", { name: keys.open, hidden: true }));
   window.removeEventListener(OPEN_KEYS_EVENT, count);
   expect(heard).toBe(1);
 });
