@@ -83,7 +83,8 @@ run_step() {
     relay) npm test --prefix server/legacy ;;
     server) npm ci --prefix server && npm run server:typecheck && npm test --prefix server ;;
     build) npm run build ;;
-    e2e) E2E_SKIP_BUILD=1 npx playwright test ;;
+    # The e2e build bakes the harness's connect origins (random ports) into the CSP, so it builds its own copy.
+    e2e) npx playwright test ;;
     secrets) node scripts/secret-scan.mjs --history ;;
     audit) npm audit --omit=dev --audit-level=high ;;
   esac
