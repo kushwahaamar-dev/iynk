@@ -185,5 +185,48 @@
   "route": {
     "loading": "Studio wird geladen",
     "noscript": "Das Studio braucht JavaScript. Schalte es ein und lade die Seite neu."
+  },
+  "topBar": {
+    "label": "Projektleiste",
+    "name": "Projektname",
+    "save": {
+      "saved": "Gespeichert",
+      "saving": "Speichert",
+      "unsaved": "Ungespeicherte Änderungen",
+      "failed": "Automatisches Speichern fehlgeschlagen",
+      "readOnly": "Nur lesen"
+    },
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "run": "Starten",
+    "stop": "Stopp",
+    "reset": "Zurücksetzen"
+  },
+  "layout": {
+    "regions": {
+      "top": "Obere Leiste",
+      "left": "Bauteile und Dateien",
+      "canvas": "Zeichenfläche",
+      "right": "Inspektor und Prüfungen",
+      "dock": "Code und Seriell"
+    },
+    "tabs": {
+      "palette": "Palette",
+      "files": "Dateien",
+      "outline": "Gliederung",
+      "inspector": "Inspektor",
+      "problems": "Probleme",
+      "models": "Modelle",
+      "code": "Code",
+      "serial": "Seriell"
+    },
+    "separator": "Größe des unteren Bereichs ändern",
+    "narrow": "Das Layout für Handys kommt später; Ansehen und Starten funktionieren",
+    "open": "{name} öffnen",
+    "close": "Bereich schließen",
+    "boundary": {
+      "failed": "{name} funktioniert nicht mehr. Dein Projekt ist unverändert.",
+      "reload": "{name} neu laden"
+    }
   }
 }

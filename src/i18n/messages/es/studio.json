@@ -185,5 +185,48 @@
   "route": {
     "loading": "Cargando el Studio",
     "noscript": "El Studio necesita JavaScript. Actívalo y recarga la página."
+  },
+  "topBar": {
+    "label": "Barra del proyecto",
+    "name": "Nombre del proyecto",
+    "save": {
+      "saved": "Guardado",
+      "saving": "Guardando",
+      "unsaved": "Cambios sin guardar",
+      "failed": "Falló el guardado automático",
+      "readOnly": "Solo lectura"
+    },
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "run": "Ejecutar",
+    "stop": "Detener",
+    "reset": "Reiniciar"
+  },
+  "layout": {
+    "regions": {
+      "top": "Barra superior",
+      "left": "Piezas y archivos",
+      "canvas": "Área del lienzo",
+      "right": "Inspector y revisiones",
+      "dock": "Código y serie"
+    },
+    "tabs": {
+      "palette": "Paleta",
+      "files": "Archivos",
+      "outline": "Esquema",
+      "inspector": "Inspector",
+      "problems": "Problemas",
+      "models": "Modelos",
+      "code": "Código",
+      "serial": "Serie"
+    },
+    "separator": "Cambiar el tamaño del panel inferior",
+    "narrow": "El diseño para teléfono llegará más tarde; ver y ejecutar funcionan",
+    "open": "Abrir {name}",
+    "close": "Cerrar el panel",
+    "boundary": {
+      "failed": "{name} dejó de funcionar. Tu proyecto no ha cambiado.",
+      "reload": "Recargar {name}"
+    }
   }
 }

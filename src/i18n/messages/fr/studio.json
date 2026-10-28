@@ -185,5 +185,48 @@
   "route": {
     "loading": "Chargement du Studio",
     "noscript": "Le Studio a besoin de JavaScript. Activez-le et rechargez la page."
+  },
+  "topBar": {
+    "label": "Barre du projet",
+    "name": "Nom du projet",
+    "save": {
+      "saved": "Enregistré",
+      "saving": "Enregistrement",
+      "unsaved": "Modifications non enregistrées",
+      "failed": "Échec de l'enregistrement automatique",
+      "readOnly": "Lecture seule"
+    },
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "run": "Lancer",
+    "stop": "Arrêter",
+    "reset": "Réinitialiser"
+  },
+  "layout": {
+    "regions": {
+      "top": "Barre supérieure",
+      "left": "Composants et fichiers",
+      "canvas": "Zone de dessin",
+      "right": "Inspecteur et vérifications",
+      "dock": "Code et série"
+    },
+    "tabs": {
+      "palette": "Palette",
+      "files": "Fichiers",
+      "outline": "Plan",
+      "inspector": "Inspecteur",
+      "problems": "Problèmes",
+      "models": "Modèles",
+      "code": "Code",
+      "serial": "Série"
+    },
+    "separator": "Redimensionner le panneau du bas",
+    "narrow": "La disposition pour téléphone viendra plus tard ; voir et lancer fonctionnent",
+    "open": "Ouvrir {name}",
+    "close": "Fermer le panneau",
+    "boundary": {
+      "failed": "{name} ne fonctionne plus. Ton projet n'a pas changé.",
+      "reload": "Recharger {name}"
+    }
   }
 }

@@ -185,5 +185,48 @@
   "route": {
     "loading": "Loading the Studio",
     "noscript": "The Studio needs JavaScript. Turn it on and reload the page."
+  },
+  "topBar": {
+    "label": "Project bar",
+    "name": "Project name",
+    "save": {
+      "saved": "Saved",
+      "saving": "Saving",
+      "unsaved": "Unsaved changes",
+      "failed": "Autosave failed",
+      "readOnly": "Read only"
+    },
+    "undo": "Undo",
+    "redo": "Redo",
+    "run": "Run",
+    "stop": "Stop",
+    "reset": "Reset"
+  },
+  "layout": {
+    "regions": {
+      "top": "Top bar",
+      "left": "Parts and files",
+      "canvas": "Canvas area",
+      "right": "Inspector and checks",
+      "dock": "Code and serial"
+    },
+    "tabs": {
+      "palette": "Palette",
+      "files": "Files",
+      "outline": "Outline",
+      "inspector": "Inspector",
+      "problems": "Problems",
+      "models": "Models",
+      "code": "Code",
+      "serial": "Serial"
+    },
+    "separator": "Resize the bottom panel",
+    "narrow": "Phone layout comes later; view and run work",
+    "open": "Open {name}",
+    "close": "Close panel",
+    "boundary": {
+      "failed": "{name} stopped working. Your project is unchanged.",
+      "reload": "Reload {name}"
+    }
   }
 }
