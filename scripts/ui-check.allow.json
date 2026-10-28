@@ -1,0 +1,80 @@
+[
+  {
+    "file": "src/components/boardlab/WireInPanel.tsx",
+    "code": "R16",
+    "pattern": ".",
+    "reason": "Wire colours are data: each colour names a real jumper wire."
+  },
+  {
+    "file": "src/components/dronelab/WiringPanel.tsx",
+    "code": "R16",
+    "pattern": ".",
+    "reason": "Wire colours are data: each colour names a real motor lead."
+  },
+  {
+    "file": "src/components/flight/FlightRange.tsx",
+    "code": "R16",
+    "pattern": ".",
+    "reason": "Ghost lines on the flight chart are data colours."
+  },
+  {
+    "file": "src/lib/realtime/identity.ts",
+    "code": "R16",
+    "pattern": ".",
+    "reason": "Peer colours are data: each peer picks one."
+  },
+  {
+    "file": "src/styles/tokens.css",
+    "code": "R16",
+    "pattern": "^--plate-bg:",
+    "reason": "The figure plate keeps its own background in dark mode so drawings stay readable."
+  },
+  {
+    "file": "src/components/home/hero.css",
+    "code": "R11",
+    "pattern": ".",
+    "reason": "The hero headline is the one place a text gradient is allowed."
+  },
+  {
+    "file": "src/components/ui/Tabs.tsx",
+    "code": "R17",
+    "pattern": ".",
+    "reason": "Passive measure of the overflow edge; nothing animates on scroll."
+  },
+  {
+    "file": "src/components/ui/Popover.tsx",
+    "code": "R17",
+    "pattern": ".",
+    "reason": "Passive measure to close or reposition; nothing animates on scroll."
+  },
+  {
+    "file": "src/components/shell/Logo.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The logo is a drawing, not an icon."
+  },
+  {
+    "file": "src/components/realtime/PeerAvatar.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The avatar is a drawing, not an icon."
+  },
+  {
+    "file": "src/components/realtime/PresenceCursors.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The cursor arrow is a drawing, not an icon."
+  },
+  {
+    "file": "src/components/home/",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "Home page art is drawn inline."
+  },
+  {
+    "file": "src/i18n/messages/en/",
+    "code": "R14",
+    "pattern": "^(?:wi-fi|usb-\\w+|micro-usb|mini-usb)$",
+    "reason": "Standard product and standard names written with a hyphen."
+  }
+]
