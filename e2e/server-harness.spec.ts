@@ -1,13 +1,10 @@
 import type { BrowserContext, Page } from "@playwright/test";
 import { expect, test } from "./support/no-egress";
-import { distinctAddress, newEnrolmentCode, serverUrl, stopServer } from "./server-harness";
+import { distinctAddress, newEnrolmentCode, serverUrl } from "./server-harness";
 import { toBase64Url } from "../src/protocol/identity";
 import { makeDeviceKey } from "../server/test/keys";
 
 const ENROLMENTS = 5;
-
-// The last test kills the server for the rest of the run, so it must not overlap the others.
-test.describe.configure({ mode: "serial" });
 
 async function openPage(context: BrowserContext): Promise<Page> {
   const page = await context.newPage();
@@ -80,19 +77,4 @@ test("two contexts each enrol five times in a minute without a 429", async ({ br
 
   expect(statuses).toEqual([Array(ENROLMENTS).fill(201), Array(ENROLMENTS).fill(201)]);
   await Promise.all(contexts.map((context) => context.close()));
-});
-
-test("after stopServer the next fetch fails and the page does not throw", async ({ browser }) => {
-  const context = await browser.newContext();
-  await distinctAddress(context);
-  const page = await openPage(context);
-  const errors: string[] = [];
-  page.on("pageerror", (error) => errors.push(error.message));
-
-  stopServer();
-  const reached = await page.evaluate((url) => fetch(`${url}/v1/server`).then(() => true, () => false), serverUrl());
-
-  expect(reached).toBe(false);
-  expect(errors).toEqual([]);
-  await context.close();
 });

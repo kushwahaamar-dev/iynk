@@ -22,6 +22,12 @@ export function serverEnv(): Record<string, string> {
   };
 }
 
+// What the web build lists in IYNK_CONNECT_ORIGINS, so its CSP names the e2e server and the dead port.
+export function connectOrigins(): string[] {
+  const { E2E_SERVER_PORT, E2E_DEAD_PORT } = process.env;
+  return [`http://localhost:${E2E_SERVER_PORT}`, `http://localhost:${E2E_DEAD_PORT}`];
+}
+
 export function serverUrl(): string {
   return `http://localhost:${process.env.E2E_SERVER_PORT}`;
 }

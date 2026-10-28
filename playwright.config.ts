@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defineConfig, devices } from "@playwright/test";
-import { serverEnv } from "./e2e/server-harness";
+import { connectOrigins, serverEnv } from "./e2e/server-harness";
 
 // Random ports per run, shared with the workers through the environment
 // (they load this file again). Many agents test on this machine at once.
@@ -26,7 +26,6 @@ for (const name of ["E2E_PORT", "E2E_SERVER_PORT", "E2E_DEAD_PORT"]) {
 }
 const port = Number(process.env.E2E_PORT);
 const serverPort = Number(process.env.E2E_SERVER_PORT);
-const deadPort = Number(process.env.E2E_DEAD_PORT);
 
 // The server's data lives in a throwaway directory; only the process that
 // made it removes it.
@@ -67,8 +66,15 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: { baseURL: `http://localhost:${port}`, trace: "on-first-retry" },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /.*\.phone\.spec\.ts/ },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /.*\.(phone|server-stop)\.spec\.ts|buddies\.spec\.ts/ },
     { name: "phone", use: { ...devices["Pixel 7"] }, testMatch: /.*\.phone\.spec\.ts/ },
+    // Its last test kills the one e2e server, so it runs after everything else has finished.
+    {
+      name: "server-stop",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: /buddies\.spec\.ts/,
+      dependencies: ["chromium", "phone"],
+    },
   ],
   // Test the production build: dev mode compiles on demand and behaves differently.
   webServer: [
@@ -88,7 +94,7 @@ export default defineConfig({
         NEXT_DIST_DIR: distDir,
         ...Object.fromEntries(BLANK.map((name) => [name, ""])),
         IYNK_SERVER_URL: `http://localhost:${serverPort}`,
-        IYNK_CONNECT_ORIGINS: `http://localhost:${serverPort},http://localhost:${deadPort}`,
+        IYNK_CONNECT_ORIGINS: connectOrigins().join(","),
       },
       reuseExistingServer: false,
       timeout: 600_000,

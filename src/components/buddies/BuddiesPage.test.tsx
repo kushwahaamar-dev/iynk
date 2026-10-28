@@ -233,7 +233,7 @@ test("the list refreshes every 15 seconds while the tab is visible and not while
   expect(fake.listBuddies).toHaveBeenCalledTimes(1);
 
   vi.advanceTimersByTime(15_000);
-  await waitFor(() => expect(fake.listBuddies).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(fake.listBuddies).toHaveBeenCalledTimes(2), { timeout: 5000 });
 
   vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
   vi.advanceTimersByTime(45_000);

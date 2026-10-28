@@ -2,12 +2,12 @@ import AxeBuilder from "@axe-core/playwright";
 import type { Browser, BrowserContext, Page } from "@playwright/test";
 import { expect, test } from "./support/no-egress";
 import together from "../src/i18n/messages/en/together.json" with { type: "json" };
-import { distinctAddress, firstOwnerCode, newEnrolmentCode, stopServer } from "./server-harness";
+import { distinctAddress, firstOwnerCode, newEnrolmentCode, serverUrl, stopServer } from "./server-harness";
 
 const b = together.buddies;
 const PHONE = { width: 360, height: 800 };
 
-// The tests share the people they create, and the last one stops the server.
+// The tests share the people they create, and the last one stops the server (the config runs this file last).
 test.describe.configure({ mode: "serial" });
 
 type Person = { context: BrowserContext; page: Page; throws: string[]; status429: string[] };
@@ -141,6 +141,8 @@ test("CM-04: someone enrolled but not paired sees an empty list", async ({ brows
 
 test("with the server stopped the saved list shows as offline and nothing throws", async () => {
   stopServer();
+  const reached = await amar.page.evaluate((url) => fetch(`${url}/v1/server`).then(() => true, () => false), serverUrl());
+  expect(reached).toBe(false);
   await amar.page.reload();
 
   await expect(buddies(amar.page).getByRole("list").getByText("Kai", { exact: true })).toBeVisible();

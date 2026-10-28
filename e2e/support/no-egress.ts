@@ -3,11 +3,20 @@
 // naming each origin (never the path or query). Fix the page that calls out;
 // do not allow-list the host.
 import { test as base, expect } from "@playwright/test";
+import { distinctAddress } from "../server-harness";
 
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
 const isLoopback = (hostname: string) => LOOPBACK.has(hostname);
 
-export const test = base.extend<{ noEgress: void }>({
+export const test = base.extend<{ noEgress: void; ownAddress: void }>({
+  // Every page probes the e2e server; behind one shared address the probes of a whole run would hit its rate limit.
+  ownAddress: [
+    async ({ context }, use) => {
+      await distinctAddress(context);
+      await use();
+    },
+    { auto: true },
+  ],
   noEgress: [
     async ({ context }, use) => {
       const blocked: string[] = [];
