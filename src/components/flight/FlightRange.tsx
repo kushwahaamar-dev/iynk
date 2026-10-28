@@ -103,6 +103,8 @@ function loadPad(): PadMapping {
 function useFitSteps(max: number, on: boolean) {
   const ref = useRef<HTMLDivElement>(null);
   const [steps, setSteps] = useState(0);
+  // a width change must render even when steps is already 0, or a row that now overflows is never measured
+  const [, setWidth] = useState(0);
   useLayoutEffect(() => {
     const el = ref.current;
     if (on && el && el.scrollWidth > el.clientWidth && steps < max) setSteps(steps + 1);
@@ -110,11 +112,12 @@ function useFitSteps(max: number, on: boolean) {
   useEffect(() => {
     const el = ref.current;
     if (!el || !on || typeof ResizeObserver === "undefined") return;
-    let width = el.clientWidth;
+    let seen = el.clientWidth;
     const observer = new ResizeObserver(() => {
-      if (el.clientWidth === width) return;
-      width = el.clientWidth;
+      if (el.clientWidth === seen) return;
+      seen = el.clientWidth;
       setSteps(0);
+      setWidth(seen);
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -189,7 +192,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   const coarse = useSyncExternalStore(subscribeCoarse, isCoarse, () => false);
   // on a laptop the cockpit row and the telemetry each stay one row: the row turns Reset, FPV and Wind into icons,
   // the telemetry leaves out DROP_ORDER's numbers one by one (a phone has its own layout for both)
-  const [rowRef, rowSteps] = useFitSteps(1, !coarse);
+  const [rowRef, rowSteps] = useFitSteps(2, !coarse);
   const [stripRef, drop] = useFitSteps(DROP_ORDER.length, !coarse);
   const icons = coarse || rowSteps > 0;
   // the panel that shows the mapping starts closed, so the server's default never meets the saved one on screen
@@ -656,7 +659,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     >
       <div ref={rowRef} className="flex shrink-0 items-center gap-2 overflow-x-auto [scrollbar-width:none]">
         {/* the select takes the room the buttons leave (on a laptop at least 9 rem) and a long mode ends in an ellipsis */}
-        <div className={coarse ? "min-w-0 flex-1" : "min-w-36 max-w-64"}>
+        <div className={coarse || rowSteps > 1 ? "min-w-0 flex-1" : "min-w-36 max-w-64"}>
           <Select label={dict.mode} hideLabel value={snap.mode} onChange={(e) => act({ type: "mode", mode: e.target.value })} className="truncate">
             {modes.map((m) => (
               <option key={m.id} value={m.id}>
