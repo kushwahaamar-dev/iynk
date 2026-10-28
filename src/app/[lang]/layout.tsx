@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SiteFooter, SiteHeader } from "@/components/shell";
@@ -7,6 +7,7 @@ import { I18nProvider } from "@/i18n/client";
 import { LOCALES, htmlLang, isLocale } from "@/i18n/config";
 import { siteUrl } from "@/i18n/seo";
 import { getMessages, getT } from "@/i18n/server";
+import { PAPER_DARK, PAPER_LIGHT } from "@/lib/theme-colors";
 import { SettingsBootScript, SettingsSync } from "@/lib/settings/theme";
 import "../globals.css";
 
@@ -24,6 +25,14 @@ export const ensureStatic = "navigation";
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
 }
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: PAPER_LIGHT },
+    { media: "(prefers-color-scheme: dark)", color: PAPER_DARK },
+  ],
+  colorScheme: "light dark",
+};
 
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
