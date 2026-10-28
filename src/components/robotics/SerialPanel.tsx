@@ -44,7 +44,7 @@ export function SerialPanel({ kind, lines, onClear, open, onOpenChange, height, 
           aria-label={heading}
           tabIndex={0}
           data-serial
-          className="h-full overflow-y-auto px-3 py-2 pe-20 font-ui text-xs leading-relaxed text-console-accent outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus)"
+          className="h-full overflow-y-auto px-3 py-2 pe-20 font-mono text-xs leading-relaxed text-console-accent outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus)"
         >
           {lines.length === 0 ? (
             <p className="text-console-muted">{t("serial.empty")}</p>

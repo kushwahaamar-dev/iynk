@@ -303,7 +303,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
       kicker={
         <>
           {t("bench.kicker", { n: String(bench.fig).padStart(2, "0") })}
-          {sub ? <span className="font-body font-semibold normal-case tracking-normal"> · {sub}</span> : null}
+          {sub ? <span className="font-semibold normal-case tracking-normal"> · {sub}</span> : null}
         </>
       }
       title={tx(bench.title)}
@@ -325,7 +325,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
             <Link
               href={`/${locale}/boards/${bench.board}`}
               aria-label={t("bench.boardLink", { board })}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-full px-2.5 font-body text-sm font-semibold text-muted no-underline hover:bg-sunken hover:text-ink max-md:hidden [@media(pointer:coarse)]:min-h-11"
+              className="inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-muted no-underline hover:bg-sunken hover:text-ink max-md:hidden [@media(pointer:coarse)]:min-h-11"
             >
               <Icon name="board" size={18} />
               <span className="max-w-[12rem] truncate">{board}</span>
@@ -381,10 +381,10 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
           )}
         >
           {selected ? (
-            <div className="rounded-ink-sm border-[1.5px] border-line bg-surface/95 px-3 py-2 shadow-ink-sm">
+            <div className="rounded-lg bg-surface/95 px-3 py-2 shadow-md">
               <p className="text-sm font-semibold leading-snug">
                 <span className="sr-only">{t("bench.selected")}: </span>
-                <span className="tabular font-ui">{selected.id}</span> · {tx(selected.name)}
+                <span className="tabular font-mono">{selected.id}</span> · {tx(selected.name)}
               </p>
               <p className="mt-0.5 line-clamp-3 text-xs leading-snug text-muted">{tx(selected.what)}</p>
             </div>
@@ -404,7 +404,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
           {current ? (
             <div
               key={current.seq}
-              className="flex max-w-[40rem] animate-ink-rise items-center gap-3 rounded-ink-sm border-[1.5px] border-line bg-surface px-3.5 py-2 text-sm font-semibold leading-snug shadow-ink"
+              className="flex max-w-[40rem] animate-rise-in items-center gap-3 rounded-lg bg-surface px-4 py-2 text-sm font-semibold leading-snug shadow-md"
             >
               <span className="min-w-0 flex-1">{noticeText(current.notice, setup, t, tx)}</span>
               {current.notice.kind === "quiz-ready" ? (
@@ -417,7 +417,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
                   {t("quiz.open")}
                 </Button>
               ) : null}
-              <IconButton size="sm" icon="close" label={t("keys.close")} tooltipSide="top" className="-me-1.5 shrink-0" onClick={() => setNoticeGone(current.seq)} />
+              <IconButton size="sm" icon="close" label={t("keys.close")} tooltipSide="top" className="-me-2 shrink-0" onClick={() => setNoticeGone(current.seq)} />
             </div>
           ) : null}
         </div>
@@ -530,7 +530,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
               <ul className="mt-1 flex flex-col text-sm">
                 {bench.sources.map((source) => (
                   <li key={source.url}>
-                    <a href={source.url} rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1.5 [@media(pointer:coarse)]:min-h-11">
+                    <a href={source.url} rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-2 [@media(pointer:coarse)]:min-h-11">
                       {source.title}
                       <Icon name="external" size={14} className="shrink-0 text-muted" />
                     </a>
