@@ -99,5 +99,65 @@
     "savedToFile": "已将 {name} 存到文件",
     "imported": "已从文件打开 {name}",
     "importedForked": "已从文件将 {name} 作为新项目打开"
+  },
+  "diag": {
+    "title": "诊断",
+    "lede": "对模拟器和项目 worker 的检查，在此浏览器中运行。每个结果都在原处更新。",
+    "noWorker": "此浏览器无法启动 worker，因此这些检查已关闭。",
+    "running": "运行中",
+    "failed": "失败。{message}",
+    "frameGap": "最近 5 秒内最长的帧间隔",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "模拟器",
+      "project": "项目 worker",
+      "data": "浏览器数据"
+    },
+    "run": {
+      "sample": "运行示例",
+      "ten": "运行十次",
+      "stall": "卡住 worker",
+      "killSim": "终止模拟 worker",
+      "killProject": "终止项目 worker",
+      "lessons": "检查 5 节课",
+      "exportAll": "导出全部数据",
+      "wipe": "清除全部数据"
+    },
+    "probe": {
+      "list-repeat": "列表重复检测",
+      "bytearray-loop": "bytearray 循环检测",
+      "c-array": "C 数组检测",
+      "string-double": "字符串加倍检测",
+      "endless-loop": "死循环检测"
+    },
+    "save": {
+      "label": "选择要计时的项目",
+      "hint": "对所选文件计时 30 次保存。"
+    },
+    "wipe": {
+      "label": "输入 {phrase} 以清除 iynk 在此浏览器中存储的一切"
+    },
+    "result": {
+      "sample": "LED 变化 {edges} 次，亮了 {onMs} ms。轨迹哈希 {hash}。{serial}。",
+      "noSerial": "没有串口输出",
+      "serial": "串口：{text}",
+      "limit": "触及限制：{message}。",
+      "noLimit": "未触及限制。",
+      "equal": "{of} 次中 {equal} 次相同",
+      "equalFirstDiff": "{of} 次中 {equal} 次相同。第一处差异：{diff}",
+      "probeLimit": "{ms} ms 后因限制结束。{message}。",
+      "probeRunLength": "{ms} ms 后在运行时长处结束。",
+      "probeKilled": "worker 在 {ms} ms 内被终止并重启。{message}。",
+      "answers": "worker 仍能响应。",
+      "silent": "worker 没有响应。",
+      "stall": "worker 在 {killed} ms 后被终止，{restarted} ms 后恢复响应。最长帧间隔 {gap} ms。",
+      "kill": "{ms} ms 内恢复。之前的哈希 {before}，之后 {after}。{same}。",
+      "sameHash": "哈希相同",
+      "otherHash": "哈希不同",
+      "saveSpeed": "{samples} 次保存：p50 {p50} ms，p95 {p95} ms。",
+      "exported": "已导出 {size} 字节。",
+      "wiped": "已清除 {stores} 个存储和 {keys} 个浏览器键。",
+      "wipeErrors": "部分存储无法清除：{errors}"
+    }
   }
 }

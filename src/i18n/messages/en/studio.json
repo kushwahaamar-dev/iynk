@@ -99,5 +99,65 @@
     "savedToFile": "Saved {name} to file",
     "imported": "Opened {name} from file",
     "importedForked": "Opened {name} from file as a new project"
+  },
+  "diag": {
+    "title": "Diagnostics",
+    "lede": "Checks for the simulator and the project worker, run in this browser. Each result updates in place.",
+    "noWorker": "This browser cannot start workers, so these checks are off.",
+    "running": "Running",
+    "failed": "Failed. {message}",
+    "frameGap": "Longest frame gap in the last 5 seconds",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "Simulator",
+      "project": "Project worker",
+      "data": "Browser data"
+    },
+    "run": {
+      "sample": "Run sample",
+      "ten": "Run ten times",
+      "stall": "Stall the worker",
+      "killSim": "Kill the sim worker",
+      "killProject": "Kill the project worker",
+      "lessons": "Check 5 lessons",
+      "exportAll": "Export all data",
+      "wipe": "Wipe all data"
+    },
+    "probe": {
+      "list-repeat": "List repeat probe",
+      "bytearray-loop": "Bytearray loop probe",
+      "c-array": "C array probe",
+      "string-double": "String doubling probe",
+      "endless-loop": "Endless loop probe"
+    },
+    "save": {
+      "label": "Pick a project to time",
+      "hint": "Times 30 saves of the picked file."
+    },
+    "wipe": {
+      "label": "Type {phrase} to wipe everything iynk stores in this browser"
+    },
+    "result": {
+      "sample": "{edges} LED changes, on for {onMs} ms. Trace hash {hash}. {serial}.",
+      "noSerial": "No serial output",
+      "serial": "Serial: {text}",
+      "limit": "Limit hit: {message}.",
+      "noLimit": "No limit hit.",
+      "equal": "{equal} of {of} equal",
+      "equalFirstDiff": "{equal} of {of} equal. First difference: {diff}",
+      "probeLimit": "Ended at a limit in {ms} ms. {message}.",
+      "probeRunLength": "Ended at the run length in {ms} ms.",
+      "probeKilled": "Worker killed and restarted in {ms} ms. {message}.",
+      "answers": "Worker still answers.",
+      "silent": "Worker does not answer.",
+      "stall": "Worker killed after {killed} ms and answering again after {restarted} ms. Longest frame gap {gap} ms.",
+      "kill": "Recovered in {ms} ms. Hash before {before}, after {after}. {same}.",
+      "sameHash": "The hashes are equal",
+      "otherHash": "The hashes differ",
+      "saveSpeed": "p50 {p50} ms, p95 {p95} ms over {samples} saves.",
+      "exported": "Exported {size} bytes.",
+      "wiped": "Wiped {stores} stores and {keys} browser keys.",
+      "wipeErrors": "Some storage could not be wiped: {errors}"
+    }
   }
 }

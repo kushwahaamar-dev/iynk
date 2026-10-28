@@ -99,5 +99,65 @@
     "savedToFile": "Se guardó {name} en un archivo",
     "imported": "Se abrió {name} desde un archivo",
     "importedForked": "Se abrió {name} desde un archivo como proyecto nuevo"
+  },
+  "diag": {
+    "title": "Diagnóstico",
+    "lede": "Comprobaciones del simulador y del worker del proyecto, ejecutadas en este navegador. Cada resultado se actualiza en su sitio.",
+    "noWorker": "Este navegador no puede iniciar workers, así que estas comprobaciones están desactivadas.",
+    "running": "En marcha",
+    "failed": "Ha fallado. {message}",
+    "frameGap": "Mayor hueco entre fotogramas en los últimos 5 segundos",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "Simulador",
+      "project": "Worker del proyecto",
+      "data": "Datos del navegador"
+    },
+    "run": {
+      "sample": "Ejecutar ejemplo",
+      "ten": "Ejecutar diez veces",
+      "stall": "Bloquear el worker",
+      "killSim": "Terminar el worker del simulador",
+      "killProject": "Terminar el worker del proyecto",
+      "lessons": "Comprobar 5 lecciones",
+      "exportAll": "Exportar todos los datos",
+      "wipe": "Borrar todos los datos"
+    },
+    "probe": {
+      "list-repeat": "Prueba de repetición de lista",
+      "bytearray-loop": "Prueba de bucle con bytearray",
+      "c-array": "Prueba de array en C",
+      "string-double": "Prueba de duplicar texto",
+      "endless-loop": "Prueba de bucle infinito"
+    },
+    "save": {
+      "label": "Elige un proyecto para medir",
+      "hint": "Mide 30 guardados del archivo elegido."
+    },
+    "wipe": {
+      "label": "Escribe {phrase} para borrar todo lo que iynk guarda en este navegador"
+    },
+    "result": {
+      "sample": "{edges} cambios del LED, encendido {onMs} ms. Hash de traza {hash}. {serial}.",
+      "noSerial": "Sin salida serie",
+      "serial": "Serie: {text}",
+      "limit": "Límite alcanzado: {message}.",
+      "noLimit": "Ningún límite alcanzado.",
+      "equal": "{equal} de {of} iguales",
+      "equalFirstDiff": "{equal} de {of} iguales. Primera diferencia: {diff}",
+      "probeLimit": "Terminó en un límite en {ms} ms. {message}.",
+      "probeRunLength": "Terminó al final de la ejecución en {ms} ms.",
+      "probeKilled": "Worker terminado y reiniciado en {ms} ms. {message}.",
+      "answers": "El worker sigue respondiendo.",
+      "silent": "El worker no responde.",
+      "stall": "Worker terminado tras {killed} ms y de nuevo operativo tras {restarted} ms. Mayor hueco entre fotogramas {gap} ms.",
+      "kill": "Recuperado en {ms} ms. Hash antes {before}, después {after}. {same}.",
+      "sameHash": "Los hashes son iguales",
+      "otherHash": "Los hashes son distintos",
+      "saveSpeed": "p50 {p50} ms, p95 {p95} ms en {samples} guardados.",
+      "exported": "Se exportaron {size} bytes.",
+      "wiped": "Se borraron {stores} almacenes y {keys} claves del navegador.",
+      "wipeErrors": "No se pudo borrar parte del almacenamiento: {errors}"
+    }
   }
 }

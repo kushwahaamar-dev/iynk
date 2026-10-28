@@ -99,5 +99,65 @@
     "savedToFile": "{name} enregistré dans un fichier",
     "imported": "{name} ouvert depuis un fichier",
     "importedForked": "{name} ouvert depuis un fichier comme nouveau projet"
+  },
+  "diag": {
+    "title": "Diagnostic",
+    "lede": "Vérifications du simulateur et du worker du projet, exécutées dans ce navigateur. Chaque résultat se met à jour sur place.",
+    "noWorker": "Ce navigateur ne peut pas démarrer de workers, ces vérifications sont donc désactivées.",
+    "running": "En cours",
+    "failed": "Échec. {message}",
+    "frameGap": "Plus long écart entre images sur les 5 dernières secondes",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "Simulateur",
+      "project": "Worker du projet",
+      "data": "Données du navigateur"
+    },
+    "run": {
+      "sample": "Lancer l'exemple",
+      "ten": "Lancer dix fois",
+      "stall": "Bloquer le worker",
+      "killSim": "Arrêter le worker du simulateur",
+      "killProject": "Arrêter le worker du projet",
+      "lessons": "Vérifier 5 leçons",
+      "exportAll": "Exporter toutes les données",
+      "wipe": "Effacer toutes les données"
+    },
+    "probe": {
+      "list-repeat": "Test de répétition de liste",
+      "bytearray-loop": "Test de boucle bytearray",
+      "c-array": "Test de tableau C",
+      "string-double": "Test de doublement de chaîne",
+      "endless-loop": "Test de boucle infinie"
+    },
+    "save": {
+      "label": "Choisir un projet à mesurer",
+      "hint": "Mesure 30 enregistrements du fichier choisi."
+    },
+    "wipe": {
+      "label": "Saisissez {phrase} pour effacer tout ce qu'iynk stocke dans ce navigateur"
+    },
+    "result": {
+      "sample": "{edges} changements de la LED, allumée {onMs} ms. Empreinte de la trace {hash}. {serial}.",
+      "noSerial": "Aucune sortie série",
+      "serial": "Série : {text}",
+      "limit": "Limite atteinte : {message}.",
+      "noLimit": "Aucune limite atteinte.",
+      "equal": "{equal} sur {of} identiques",
+      "equalFirstDiff": "{equal} sur {of} identiques. Première différence : {diff}",
+      "probeLimit": "Arrêté à une limite en {ms} ms. {message}.",
+      "probeRunLength": "Arrêté à la fin de l'exécution en {ms} ms.",
+      "probeKilled": "Worker arrêté et redémarré en {ms} ms. {message}.",
+      "answers": "Le worker répond toujours.",
+      "silent": "Le worker ne répond pas.",
+      "stall": "Worker arrêté après {killed} ms et de nouveau disponible après {restarted} ms. Plus long écart entre images {gap} ms.",
+      "kill": "Rétabli en {ms} ms. Empreinte avant {before}, après {after}. {same}.",
+      "sameHash": "Les empreintes sont identiques",
+      "otherHash": "Les empreintes diffèrent",
+      "saveSpeed": "p50 {p50} ms, p95 {p95} ms sur {samples} enregistrements.",
+      "exported": "{size} octets exportés.",
+      "wiped": "{stores} stockages et {keys} clés du navigateur effacés.",
+      "wipeErrors": "Une partie du stockage n'a pas pu être effacée : {errors}"
+    }
   }
 }

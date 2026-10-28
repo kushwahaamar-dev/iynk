@@ -99,5 +99,65 @@
     "savedToFile": "{name} in Datei gesichert",
     "imported": "{name} aus Datei geöffnet",
     "importedForked": "{name} aus Datei als neues Projekt geöffnet"
+  },
+  "diag": {
+    "title": "Diagnose",
+    "lede": "Prüfungen für den Simulator und den Projekt-Worker, ausgeführt in diesem Browser. Jedes Ergebnis wird an Ort und Stelle aktualisiert.",
+    "noWorker": "Dieser Browser kann keine Worker starten, deshalb sind diese Prüfungen aus.",
+    "running": "Läuft",
+    "failed": "Fehlgeschlagen. {message}",
+    "frameGap": "Längste Frame-Lücke in den letzten 5 Sekunden",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "Simulator",
+      "project": "Projekt-Worker",
+      "data": "Browserdaten"
+    },
+    "run": {
+      "sample": "Beispiel starten",
+      "ten": "Zehnmal starten",
+      "stall": "Worker anhalten",
+      "killSim": "Sim-Worker beenden",
+      "killProject": "Projekt-Worker beenden",
+      "lessons": "5 Lektionen prüfen",
+      "exportAll": "Alle Daten exportieren",
+      "wipe": "Alle Daten löschen"
+    },
+    "probe": {
+      "list-repeat": "Test Listenwiederholung",
+      "bytearray-loop": "Test Bytearray-Schleife",
+      "c-array": "Test C-Array",
+      "string-double": "Test Textverdopplung",
+      "endless-loop": "Test Endlosschleife"
+    },
+    "save": {
+      "label": "Projekt zum Messen wählen",
+      "hint": "Misst 30 Speichervorgänge der gewählten Datei."
+    },
+    "wipe": {
+      "label": "Tippe {phrase}, um alles zu löschen, was iynk in diesem Browser speichert"
+    },
+    "result": {
+      "sample": "{edges} LED-Wechsel, {onMs} ms an. Trace-Hash {hash}. {serial}.",
+      "noSerial": "Keine serielle Ausgabe",
+      "serial": "Seriell: {text}",
+      "limit": "Grenze erreicht: {message}.",
+      "noLimit": "Keine Grenze erreicht.",
+      "equal": "{equal} von {of} gleich",
+      "equalFirstDiff": "{equal} von {of} gleich. Erster Unterschied: {diff}",
+      "probeLimit": "Nach {ms} ms an einer Grenze beendet. {message}.",
+      "probeRunLength": "Nach {ms} ms an der Lauflänge beendet.",
+      "probeKilled": "Worker nach {ms} ms beendet und neu gestartet. {message}.",
+      "answers": "Der Worker antwortet noch.",
+      "silent": "Der Worker antwortet nicht.",
+      "stall": "Worker nach {killed} ms beendet und nach {restarted} ms wieder erreichbar. Längste Frame-Lücke {gap} ms.",
+      "kill": "Nach {ms} ms wiederhergestellt. Hash vorher {before}, nachher {after}. {same}.",
+      "sameHash": "Die Hashes sind gleich",
+      "otherHash": "Die Hashes unterscheiden sich",
+      "saveSpeed": "p50 {p50} ms, p95 {p95} ms bei {samples} Speichervorgängen.",
+      "exported": "{size} Bytes exportiert.",
+      "wiped": "{stores} Speicher und {keys} Browser-Schlüssel gelöscht.",
+      "wipeErrors": "Ein Teil des Speichers ließ sich nicht löschen: {errors}"
+    }
   }
 }
