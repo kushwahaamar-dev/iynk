@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import type { LabKind, LabStore } from "@/components/dock/types";
-import { PresenceCursors } from "@/components/realtime";
+import { PresenceCursors } from "@/components/realtime/PresenceCursors";
 import { RoomProvider } from "@/lib/realtime";
 
 const RegisterContext = createContext<((store: LabStore) => () => void) | null>(null);

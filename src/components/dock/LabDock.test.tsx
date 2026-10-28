@@ -25,6 +25,21 @@ vi.mock("@/lib/features", () => ({
   reloadFeatures: () => undefined,
 }));
 
+const loaded = vi.hoisted(() => ({ partner: 0, together: 0, real: 0 }));
+
+vi.mock("@/components/ai/PartnerPanel", async (original) => {
+  loaded.partner++;
+  return original();
+});
+vi.mock("@/components/realtime/TogetherPanel", async (original) => {
+  loaded.together++;
+  return original();
+});
+vi.mock("@/components/search/RealBuildPanel", async (original) => {
+  loaded.real++;
+  return original();
+});
+
 import { I18nProvider } from "@/i18n/client";
 import { LabDock } from "./LabDock";
 import { LabRoom } from "./LabRoom";
@@ -87,6 +102,21 @@ afterEach(() => {
 });
 
 describe("LabDock", () => {
+  // The module registry lives for the whole file, so this has to run before any test that opens another tab.
+  test("fetches a panel's code only when its tab is first on screen", async () => {
+    renderDock();
+    expect(loaded).toEqual({ partner: 0, together: 0, real: 0 });
+
+    openDrawer();
+    await waitFor(() => expect(loaded.together).toBe(1));
+    expect(loaded.partner).toBe(0);
+    expect(loaded.real).toBe(0);
+
+    fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
+    await waitFor(() => expect(loaded.real).toBe(1));
+    expect(loaded.partner).toBe(0);
+  });
+
   test("is a closed Lab tools button until pressed, then a drawer with Partner, Together and Real", async () => {
     renderDock();
     const trigger = screen.getByRole("button", { name: dock.open });

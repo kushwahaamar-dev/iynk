@@ -1,13 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { PartnerPanel } from "@/components/ai";
 import type { LabDockProps, LabKind } from "@/components/dock/types";
-import { HardwareTwinPanel } from "@/components/hw/HardwareTwinPanel";
-import { TogetherPanel, setPointing, usePointing } from "@/components/realtime";
-import { NearbyPanel, RealBuildPanel, VideoHelp } from "@/components/search";
-import { useSearchAvailability } from "@/components/search/shared";
+import { setPointing, usePointing } from "@/components/realtime/pointing";
+import { PanelSkeleton, useSearchAvailability } from "@/components/search/shared";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
 import { DOCK_TAB_EVENT } from "@/lib/ai/run-tools";
@@ -60,6 +58,14 @@ function roomInAddress() {
   const raw = new URLSearchParams(window.location.search).get(ROOM_PARAM);
   return isRoomId(raw ? normalizeRoomId(raw) : "");
 }
+
+const loading = () => <PanelSkeleton />;
+const PartnerPanel = dynamic(() => import("@/components/ai/PartnerPanel").then((m) => m.PartnerPanel), { loading });
+const TogetherPanel = dynamic(() => import("@/components/realtime/TogetherPanel").then((m) => m.TogetherPanel), { loading });
+const HardwareTwinPanel = dynamic(() => import("@/components/hw/HardwareTwinPanel").then((m) => m.HardwareTwinPanel), { loading });
+const RealBuildPanel = dynamic(() => import("@/components/search/RealBuildPanel").then((m) => m.RealBuildPanel), { loading });
+const NearbyPanel = dynamic(() => import("@/components/search/NearbyPanel").then((m) => m.NearbyPanel), { loading });
+const VideoHelp = dynamic(() => import("@/components/search/VideoHelp").then((m) => m.VideoHelp), { loading });
 
 function RealTab(lab: LabDockProps) {
   const search = useSearchAvailability();
@@ -116,6 +122,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const [tab, setTab] = useState<DockTab | null>(null);
   const [open, setOpen] = useState(false);
   const [dismissedRoom, setDismissedRoom] = useState(false);
+  const [visited, setVisited] = useState<readonly DockTab[]>([]);
   const inRoom = together ? together.roomId !== null : addressRoom;
   const shown = DOCK_TABS.filter((id) => tabShown(id, features));
   const preferred = firstWorkingTab(lab, features);
@@ -125,6 +132,8 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   // On a phone the sheet covers the figure, so it steps aside while you point and comes back after.
   const pointing = usePointing();
   const isOpen = (open || roomOpened) && !(phone && pointing);
+  // A panel's code is fetched the first time its tab is on screen, then it stays mounted like before.
+  if (isOpen && !visited.includes(selected)) setVisited([...visited, selected]);
 
   function choose(id: DockTab) {
     setTab(id);
@@ -203,7 +212,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const tabs = shown.map((id) => ({
     id,
     label: t(TAB_LABEL[id]),
-    content: <TabBody {...props} tab={id} />,
+    content: visited.includes(id) ? <TabBody {...props} tab={id} /> : null,
   }));
 
   const tabList = (

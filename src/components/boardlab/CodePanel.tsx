@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
@@ -9,9 +10,20 @@ import type { ParamChip } from "@/content/schema";
 import { canRun } from "@/lib/boardlab/engine";
 import type { BoardLabStore } from "@/lib/boardlab/store";
 import { chipCode, copyText } from "@/lib/boardlab/template";
-import { CodeEditor } from "./CodeEditor";
 import { useText } from "./text";
 import { useLab } from "./useLab";
+
+function EditorSkeleton() {
+  return (
+    <div aria-busy="true" className="boardlab-code min-h-48 space-y-2 p-3" data-testid="code-editor-loading">
+      <div className="h-4 w-2/5 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
+      <div className="h-4 w-3/5 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
+      <div className="h-4 w-1/3 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
+    </div>
+  );
+}
+
+const CodeEditor = dynamic(() => import("./CodeEditor").then((m) => m.CodeEditor), { ssr: false, loading: () => <EditorSkeleton /> });
 
 type Props = {
   store: BoardLabStore;
