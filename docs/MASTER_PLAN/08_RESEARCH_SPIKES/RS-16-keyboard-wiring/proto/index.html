@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RS-16 keyboard wiring prototype</title>
+<style>
+  body { font: 16px/1.4 system-ui, sans-serif; margin: 0; background: #fff; color: #111; }
+  main { display: grid; grid-template-columns: 240px 1fr 260px; gap: 16px; padding: 16px; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
+  input, button, [role="option"], [role="listitem"] button { min-height: 32px; min-width: 32px; font: inherit; }
+  input { width: 100%; box-sizing: border-box; padding: 4px 8px; border: 1px solid #555; }
+  ul { list-style: none; margin: 8px 0 0; padding: 0; }
+  [role="option"] { display: flex; align-items: center; padding: 4px 8px; border: 1px solid transparent; }
+  [role="option"][aria-selected="true"] { border-color: #111; background: #eef; }
+  .part { display: block; width: 100%; text-align: left; padding: 4px 8px; margin-bottom: 4px; }
+  .part[aria-pressed="true"] { border: 2px solid #111; }
+  dialog { padding: 16px; width: 320px; }
+  dialog button { display: block; width: 100%; text-align: left; min-height: 44px; margin-top: 4px; }
+  #live { position: absolute; left: -9999px; }
+  #log { margin-top: 16px; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <section aria-labelledby="h-palette">
+    <h2 id="h-palette">Parts</h2>
+    <label for="search">Search parts (press /)</label>
+    <input id="search" type="text" autocomplete="off" role="combobox" aria-expanded="true" aria-controls="palette" aria-autocomplete="list">
+    <ul id="palette" role="listbox" aria-label="Part list"></ul>
+  </section>
+  <section aria-labelledby="h-canvas">
+    <h2 id="h-canvas">Circuit</h2>
+    <div id="parts" role="group" aria-label="Parts on the board"></div>
+    <div id="wires" aria-label="Wires" role="list"></div>
+  </section>
+  <section aria-labelledby="h-inspector">
+    <h2 id="h-inspector">Inspector</h2>
+    <p id="selected">Nothing selected</p>
+    <label for="value">Value</label>
+    <input id="value" type="text" autocomplete="off" disabled>
+  </section>
+</main>
+<dialog id="picker" aria-labelledby="picker-title">
+  <h2 id="picker-title"></h2>
+  <label for="pick-search">Find a pin</label>
+  <input id="pick-search" type="text" autocomplete="off">
+  <div id="pick-list" role="group" aria-label="Pins"></div>
+</dialog>
+<div id="live" role="status" aria-live="polite"></div>
+<p id="log"></p>
+<script src="proto.js"></script>
+</body>
+</html>
