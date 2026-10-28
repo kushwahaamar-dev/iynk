@@ -4,6 +4,7 @@ import type { LabStore } from "@/components/dock/types";
 import type { DesignPick, DroneContent, DroneDesign } from "@/content/schema";
 import common from "@/i18n/messages/en/common.json";
 import { I18nProvider } from "@/i18n/client";
+import { removeAllKeys, setKey } from "@/lib/keys/store";
 import type { Offer, PartOffers } from "@/lib/search/types";
 
 const design: DroneDesign = {
@@ -81,8 +82,16 @@ const renderPanel = (props: Parameters<typeof RealBuildPanel>[0]) =>
     </I18nProvider>,
   );
 
-beforeEach(() => vi.stubGlobal("fetch", server({})));
-afterEach(() => vi.unstubAllGlobals());
+beforeEach(() => {
+  localStorage.clear();
+  setKey("search", "iynk-canary-SEARCH-0001-do-not-use");
+  vi.stubGlobal("fetch", server({}));
+});
+afterEach(() => {
+  removeAllKeys();
+  localStorage.clear();
+  vi.unstubAllGlobals();
+});
 
 describe("RealBuildPanel", () => {
   it("prices a robotics bench and adds up the cheapest total", async () => {

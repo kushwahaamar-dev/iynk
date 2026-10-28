@@ -83,6 +83,7 @@
     "bad_input": "No se pudo enviar. Prueba con una pregunta más corta.",
     "upstream": "Esta vez el compañero no respondió. Inténtalo de nuevo.",
     "offline": "Estás sin conexión. El laboratorio sigue funcionando; el compañero necesita conexión.",
+    "no_key": "Añade tu clave de IA en los ajustes para usar al compañero de laboratorio.",
     "aborted": "Detenido."
   },
   "status": {

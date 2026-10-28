@@ -1,22 +1,25 @@
 // Browser-side calls to /api/search/*. Every failure becomes one of a few
 // codes the panels have words for; nothing upstream is shown raw.
 
+import { withSearchAuth } from "@/lib/keys/headers";
 import { track } from "@/lib/telemetry";
 import type { EventsInput, NearbyInput, OffersInput, VideosInput } from "./schema";
 import type { EventsResponse, NearbyResponse, OffersResponse, VideosResponse } from "./types";
 
-export type FailCode = "not_configured" | "rate_limited" | "failed";
+export type FailCode = "no_key" | "not_configured" | "rate_limited" | "failed";
 
 export type Result<T> = { ok: true; data: T } | { ok: false; code: FailCode };
 
 async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<Result<T>> {
+  const headers = withSearchAuth({ "content-type": "application/json", accept: "application/json" });
+  if (!headers) return { ok: false, code: "no_key" };
   // which engine was asked, never what was searched for
   track("search.call", { engine: path.slice(path.lastIndexOf("/") + 1) });
   let res: Response;
   try {
     res = await fetch(path, {
       method: "POST",
-      headers: { "content-type": "application/json", accept: "application/json" },
+      headers,
       body: JSON.stringify(body),
       signal,
     });
@@ -35,7 +38,10 @@ async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promi
     .json()
     .then((b: { error?: { code?: string } }) => b.error?.code)
     .catch(() => undefined);
-  if (res.status === 503 && code === "not_configured") return { ok: false, code: "not_configured" };
+  if (res.status === 422 || code === "key_required") return { ok: false, code: "no_key" };
+  if (res.status === 501 || code === "feature_disabled" || (res.status === 503 && code === "not_configured")) {
+    return { ok: false, code: "not_configured" };
+  }
   if (res.status === 429) return { ok: false, code: "rate_limited" };
   return { ok: false, code: "failed" };
 }

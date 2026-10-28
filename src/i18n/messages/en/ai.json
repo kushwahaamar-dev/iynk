@@ -83,6 +83,7 @@
     "bad_input": "That couldn’t be sent. Try a shorter question.",
     "upstream": "The partner didn’t answer this time. Try again.",
     "offline": "You’re offline. The lab still works; the partner needs a connection.",
+    "no_key": "Add your AI key in settings to use the lab partner.",
     "aborted": "Stopped."
   },
   "status": {

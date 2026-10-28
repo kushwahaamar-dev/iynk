@@ -83,6 +83,7 @@
     "bad_input": "Impossible d’envoyer ce message. Essaie une question plus courte.",
     "upstream": "Le partenaire n’a pas répondu cette fois. Réessaie.",
     "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+    "no_key": "Ajoutez votre clé d’IA dans les réglages pour utiliser le partenaire de labo.",
     "aborted": "Arrêté."
   },
   "status": {

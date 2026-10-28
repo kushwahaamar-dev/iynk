@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { VoiceButton } from "@/components/realtime/VoiceButton";
 import type { TogetherT } from "@/components/realtime/messages";
+import { removeAllKeys, setKey } from "@/lib/keys/store";
 import { transcribe } from "./client";
 import { startRecording } from "./recorder";
 
@@ -66,7 +67,14 @@ function installRecording() {
   });
 }
 
+beforeEach(() => {
+  localStorage.clear();
+  setKey("ai", "iynk-canary-KEY-0001-do-not-use");
+});
+
 afterEach(() => {
+  removeAllKeys();
+  localStorage.clear();
   vi.unstubAllGlobals();
   Reflect.deleteProperty(navigator, "mediaDevices");
 });

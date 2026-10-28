@@ -3,6 +3,7 @@
 // the server caches by hash as well.
 
 import type { Locale } from "@/i18n/config";
+import { withAiAuth } from "@/lib/keys/headers";
 import { track } from "@/lib/telemetry";
 import type { ChatMsg } from "./types";
 
@@ -27,17 +28,20 @@ export function needsTranslation(msg: ChatMsg, to: Locale): boolean {
 type TranslateResult = { ok: true; texts: string[] } | { ok: false; code: string };
 
 export async function translateTexts(texts: string[], to: Locale, from: Locale, signal?: AbortSignal): Promise<TranslateResult> {
+  const headers = withAiAuth({ "content-type": "application/json" });
+  if (!headers) return { ok: false, code: "no_key" };
   track("ai.call", { kind: "translate" });
   try {
     const res = await fetch("/api/ai/translate", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers,
       body: JSON.stringify({ texts, to, from }),
       signal,
     });
     if (!res.ok) {
       const body = (await res.json().catch(() => null)) as { error?: { code?: string } } | null;
-      return { ok: false, code: body?.error?.code ?? `http_${res.status}` };
+      const code = res.status === 422 || body?.error?.code === "key_required" ? "no_key" : body?.error?.code;
+      return { ok: false, code: code ?? `http_${res.status}` };
     }
     const body = (await res.json()) as { texts?: unknown };
     if (!Array.isArray(body.texts) || body.texts.length !== texts.length) return { ok: false, code: "bad_response" };

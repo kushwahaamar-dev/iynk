@@ -9,10 +9,11 @@ import type {
   ChatRequest,
   TranscribeResponse,
 } from "./protocol";
+import { withAiAuth } from "@/lib/keys/headers";
 import { track } from "@/lib/telemetry";
 import { blobToVoiceWav, VoiceWavError } from "./voice-wav";
 
-export type AiErrorCode = "not_configured" | "rate_limited" | "bad_input" | "upstream" | "offline" | "aborted";
+export type AiErrorCode = "no_key" | "not_configured" | "rate_limited" | "bad_input" | "upstream" | "offline" | "aborted";
 
 export class AiError extends Error {
   readonly code: AiErrorCode;
@@ -28,7 +29,10 @@ export class AiError extends Error {
 
 /** Maps an HTTP status and the server's `error.code` to what the UI shows. */
 export function errorCode(status: number, serverCode?: string): AiErrorCode {
-  if (serverCode === "not_configured" || status === 503) return "not_configured";
+  if (serverCode === "key_required" || status === 422) return "no_key";
+  if (serverCode === "not_configured" || serverCode === "feature_disabled" || status === 503 || status === 501) {
+    return "not_configured";
+  }
   if (serverCode === "rate_limited" || status === 429) return "rate_limited";
   if (status >= 400 && status < 500) return "bad_input";
   return "upstream";
@@ -171,6 +175,8 @@ export const CHAT_IDLE_MS = 30_000;
  * `error` events are yielded, not thrown, so the caller keeps any partial text.
  */
 export async function* streamChat(request: ChatRequest, options: CallOptions = {}): AsyncGenerator<ChatEvent> {
+  const headers = withAiAuth({ "content-type": "application/json", accept: "text/event-stream" });
+  if (!headers) throw new AiError("no_key");
   const doFetch = options.fetch ?? fetch;
   const controller = new AbortController();
   const outer = options.signal;
@@ -194,7 +200,7 @@ export async function* streamChat(request: ChatRequest, options: CallOptions = {
     try {
       res = await doFetch("/api/ai/chat", {
         method: "POST",
-        headers: { "content-type": "application/json", accept: "text/event-stream" },
+        headers,
         body: JSON.stringify(request),
         signal: controller.signal,
       });
@@ -223,6 +229,8 @@ export async function* streamChat(request: ChatRequest, options: CallOptions = {
 export const MAX_AUDIO_BYTES = 4 * 1024 * 1024;
 
 export async function transcribe(audio: Blob, lang: Locale, options: CallOptions = {}): Promise<TranscribeResponse> {
+  const headers = withAiAuth();
+  if (!headers) throw new AiError("no_key");
   if (audio.size > MAX_AUDIO_BYTES) throw new AiError("bad_input");
   let wav: Blob;
   try {
@@ -242,7 +250,7 @@ export async function transcribe(audio: Blob, lang: Locale, options: CallOptions
   track("ai.call", { kind: "transcribe" });
   let res: Response;
   try {
-    res = await doFetch("/api/ai/transcribe", { method: "POST", body: form, signal });
+    res = await doFetch("/api/ai/transcribe", { method: "POST", headers, body: form, signal });
   } catch (error) {
     throw toAiError(error, options.signal);
   }

@@ -83,6 +83,7 @@
     "bad_input": "Das konnte nicht gesendet werden. Versuche eine kürzere Frage.",
     "upstream": "Der Partner hat diesmal nicht geantwortet. Versuche es erneut.",
     "offline": "Du bist offline. Das Labor funktioniert weiter; der Partner braucht eine Verbindung.",
+    "no_key": "Trage deinen KI-Schlüssel in den Einstellungen ein, um den Laborpartner zu nutzen.",
     "aborted": "Gestoppt."
   },
   "status": {

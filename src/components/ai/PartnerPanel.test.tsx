@@ -4,6 +4,7 @@ import type { LabStore } from "@/components/dock/types";
 import type { FigureHandle } from "@/components/figure/protocol";
 import common from "@/i18n/messages/en/common.json";
 import { initialState } from "@/lib/boardlab/store";
+import { removeAllKeys, setKey } from "@/lib/keys/store";
 
 const encoder = new TextEncoder();
 
@@ -69,9 +70,13 @@ const FULL = { ai: true, voice: true, search: true, db: false, realtime: false, 
 
 beforeEach(() => {
   Element.prototype.scrollTo ??= () => {};
+  localStorage.clear();
+  setKey("ai", "iynk-canary-KEY-0001-do-not-use");
 });
 
 afterEach(() => {
+  removeAllKeys();
+  localStorage.clear();
   vi.unstubAllGlobals();
 });
 
