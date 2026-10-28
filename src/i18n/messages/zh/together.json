@@ -175,5 +175,69 @@
       "unavailable": "这个浏览器无法打开房间。",
       "found": "找到了。正在打开房间…"
     }
+  },
+  "buddies": {
+    "title": "好友",
+    "needsServer": {
+      "title": "好友功能需要服务器",
+      "body": "好友保存在由你或朋友运行的 iynk 服务器上。没有服务器时,这个页面没有内容可显示,iynk 的其他功能照常使用。",
+      "guide": "如何运行服务器"
+    },
+    "insecure": {
+      "title": "此页面需要安全连接",
+      "body": "浏览器只在 https 页面或 localhost 上创建设备密钥。请通过 https 打开 iynk 后再试。"
+    },
+    "empty": {
+      "title": "还没有好友",
+      "add": "与好友配对",
+      "enter": "输入配对码"
+    },
+    "list": {
+      "online": "在线",
+      "offline": "离线",
+      "asOf": "上次在线 {time}",
+      "inRoom": "在房间 {code}",
+      "rename": "重命名",
+      "remove": "移除好友",
+      "block": "屏蔽",
+      "removeConfirm": "要把 {name} 从好友中移除吗?之后可以重新配对。",
+      "blockConfirm": "要屏蔽 {name} 吗?对方会被移除,且无法再与你配对。"
+    },
+    "enrol": {
+      "title": "加入此服务器",
+      "code": "注册码",
+      "name": "你的名字",
+      "submit": "加入",
+      "closed": "此服务器目前不接受新成员。",
+      "wrongCode": "这个码无效。请检查,或向运行服务器的人要一个新的。",
+      "help": "运行服务器的人会给你一个码。它只能用一次。"
+    },
+    "pair": {
+      "title": "与好友配对",
+      "code": "配对码",
+      "link": "配对链接",
+      "qr": "配对链接的二维码",
+      "copy": "复制链接",
+      "copied": "链接已复制",
+      "expires": "{time} 过期",
+      "cancel": "取消配对",
+      "enterCode": "输入配对码",
+      "enterLabel": "好友给你的码或链接",
+      "peekFrom": "{name} 想与你配对。",
+      "accept": "接受",
+      "wrong": "这个码无效。请检查后重试。",
+      "tooMany": "尝试次数过多。请等一分钟后重试。",
+      "already": "你们已经是好友了。",
+      "full": "你们其中一人已达到好友数量上限。"
+    },
+    "joined": "你已以 {name} 的身份加入服务器。",
+    "unknown": {
+      "title": "这里不认识此服务器",
+      "body": "此浏览器没有该服务器的密钥。请先用注册码加入。"
+    },
+    "unreachable": "无法连接服务器。请确认它在运行,然后重试。",
+    "errors": {
+      "generic": "出了点问题。请重试。"
+    }
   }
 }

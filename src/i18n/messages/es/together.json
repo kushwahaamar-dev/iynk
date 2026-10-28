@@ -175,5 +175,69 @@
       "unavailable": "Este navegador no puede abrir salas.",
       "found": "La encontramos. Abriendo la sala…"
     }
+  },
+  "buddies": {
+    "title": "Amigos",
+    "needsServer": {
+      "title": "Los amigos necesitan un servidor",
+      "body": "Los amigos viven en un servidor de iynk que gestionas tú o un amigo. Sin uno, esta página no tiene nada que mostrar y el resto de iynk funciona igual.",
+      "guide": "Cómo montar un servidor"
+    },
+    "insecure": {
+      "title": "Esta página necesita una conexión segura",
+      "body": "Tu navegador solo crea claves de dispositivo en páginas https o en localhost. Abre iynk por https y vuelve a intentarlo."
+    },
+    "empty": {
+      "title": "Aún no tienes amigos",
+      "add": "Emparejar con un amigo",
+      "enter": "Introducir un código"
+    },
+    "list": {
+      "online": "En línea",
+      "offline": "Desconectado",
+      "asOf": "Visto por última vez {time}",
+      "inRoom": "En la sala {code}",
+      "rename": "Renombrar",
+      "remove": "Quitar amigo",
+      "block": "Bloquear",
+      "removeConfirm": "¿Quitar a {name} de tus amigos? Podéis emparejaros de nuevo más tarde.",
+      "blockConfirm": "¿Bloquear a {name}? Se le quita de tus amigos y no podrá emparejarse contigo otra vez."
+    },
+    "enrol": {
+      "title": "Unirte a este servidor",
+      "code": "Código de inscripción",
+      "name": "Tu nombre",
+      "submit": "Unirme",
+      "closed": "Este servidor no acepta gente nueva ahora mismo.",
+      "wrongCode": "Ese código no funcionó. Compruébalo o pide uno nuevo a quien gestiona el servidor.",
+      "help": "Quien gestiona el servidor te da un código. Solo sirve una vez."
+    },
+    "pair": {
+      "title": "Emparejar con un amigo",
+      "code": "Código de emparejamiento",
+      "link": "Enlace de emparejamiento",
+      "qr": "Código QR del enlace de emparejamiento",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "expires": "Caduca {time}",
+      "cancel": "Cancelar emparejamiento",
+      "enterCode": "Introduce un código de emparejamiento",
+      "enterLabel": "Código o enlace de tu amigo",
+      "peekFrom": "{name} quiere emparejarse contigo.",
+      "accept": "Aceptar",
+      "wrong": "Ese código no funcionó. Compruébalo e inténtalo de nuevo.",
+      "tooMany": "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
+      "already": "Ya sois amigos.",
+      "full": "Uno de vosotros ha llegado al límite de amigos."
+    },
+    "joined": "Te uniste al servidor como {name}.",
+    "unknown": {
+      "title": "Este servidor no se conoce aquí",
+      "body": "Este navegador no tiene clave para ese servidor. Únete antes con un código de inscripción."
+    },
+    "unreachable": "No se puede llegar al servidor. Comprueba que está en marcha e inténtalo de nuevo.",
+    "errors": {
+      "generic": "Algo salió mal. Inténtalo de nuevo."
+    }
   }
 }
