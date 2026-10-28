@@ -28,9 +28,13 @@
     "label": "Settings"
   },
   "footer": {
-    "privacy": "No accounts. Your progress stays in this browser. The labs send anonymous usage counts, which you can turn off in Settings.",
-    "figures": "Figures drawn with Colorfigures by April Zhu (MIT licence).",
-    "pages": "Site pages"
+    "privacy": "No accounts, no ads, no analytics. Your progress and settings stay in this browser.",
+    "figures": "Drawn with Colorfigures",
+    "pages": "Site pages",
+    "privacyLink": "Privacy",
+    "licenceLink": "Licence status",
+    "sourceLink": "Source code",
+    "licence": "Licence: not chosen yet. Figures: MIT, by April Zhu."
   },
   "ui": {
     "close": "Close",
@@ -129,7 +133,7 @@
     "how": {
       "figures": "Each figure is a self-contained page drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
       "code": "Sketches run in a simulator in your browser on a virtual clock: an Arduino C++ subset with the right integer widths for each chip, a MicroPython subset, and a Verilog subset for the two FPGA boards.",
-      "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. When this deployment has a database, the labs send anonymous usage counts (a lesson passed, a step built, a fault tried, a lap time) for the live counters and leaderboards, with a random id for this browser and never your name or your code. Turn off “Share anonymous usage counts” in Settings (the gear in the header) to stop them."
+      "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. iynk keeps a local log of what happens in the labs. It stays in this browser, and you can read, copy or clear it under Keys and usage. Nothing is sent to us."
     },
     "originalsTitle": "The three originals",
     "originalsLede": "iynk was inspired by three teaching sites. It is a separate project with its own code.",
@@ -176,5 +180,23 @@
     },
     "keys": "Keys and usage",
     "hint": "{key} opens this menu"
+  },
+  "privacy": {
+    "metaTitle": "Privacy",
+    "metaDescription": "What iynk stores in your browser, what it sends and what it never does.",
+    "title": "Privacy",
+    "lede": "iynk has no accounts, no ads and no analytics. This is a short note on what the app stores and sends. It is not legal advice.",
+    "stays": {
+      "title": "What stays in your browser",
+      "text": "Your progress and settings are saved in this browser's local storage under iynk:v1. The language you pick is remembered in a cookie named iynk-lang. If you add an AI or search key, it is kept under iynk:keys:v1. A local log of what happens in the labs is kept under iynk:log:v1. You can read, copy or clear it under Keys and usage."
+    },
+    "leaves": {
+      "title": "What leaves your browser",
+      "text": "Nothing, unless you use a room or add a key. A room sends your name, cursor and chat messages, including the text of a voice message, to the room relay. A key you add is sent to your own iynk server with each AI or search call, and a voice recording is sent there to be transcribed. The server does not store the key."
+    },
+    "never": {
+      "title": "What we do not do",
+      "text": "There are no accounts, no ads and no analytics. The usage counts are a local log in your browser. You can read it and clear it at any time."
+    }
   }
 }

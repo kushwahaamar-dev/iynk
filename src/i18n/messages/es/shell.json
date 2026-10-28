@@ -28,9 +28,13 @@
     "label": "Ajustes"
   },
   "footer": {
-    "privacy": "Sin cuentas. Tu progreso se queda en este navegador. Los laboratorios envían recuentos de uso anónimos, que puedes desactivar en Ajustes.",
-    "figures": "Figuras dibujadas con Colorfigures, de April Zhu (licencia MIT).",
-    "pages": "Páginas del sitio"
+    "privacy": "Sin cuentas, sin anuncios, sin analítica. Tu progreso y tus ajustes se quedan en este navegador.",
+    "figures": "Dibujado con Colorfigures",
+    "pages": "Páginas del sitio",
+    "privacyLink": "Privacidad",
+    "licenceLink": "Estado de la licencia",
+    "sourceLink": "Código fuente",
+    "licence": "Licencia: aún sin elegir. Figuras: MIT, de April Zhu."
   },
   "ui": {
     "close": "Cerrar",
@@ -129,7 +133,7 @@
     "how": {
       "figures": "Cada figura es una página autónoma dibujada con el motor Colorfigures: cuerpos 3D reales en franjas planas de luz, medio tono y sombra, con contornos a tinta. La página habla con la figura a través de un pequeño puente de mensajes, así que pulsar un botón en la lección mueve la pieza en la figura, y al revés.",
       "code": "Los programas se ejecutan en un simulador dentro de tu navegador, con un reloj virtual: un subconjunto de Arduino C++ con el ancho de enteros correcto para cada chip, un subconjunto de MicroPython y un subconjunto de Verilog para las dos placas FPGA.",
-      "privacy": "El progreso y los ajustes se guardan en el almacenamiento local de este navegador. No hay cuentas. Cuando este despliegue tiene una base de datos, los laboratorios envían recuentos de uso anónimos (una lección superada, un paso montado, un fallo probado, un tiempo de vuelta) para los contadores en directo y las clasificaciones, con un identificador aleatorio de este navegador y nunca tu nombre ni tu código. Desactiva «Compartir recuentos de uso anónimos» en Ajustes (el engranaje de la cabecera) para detenerlos."
+      "privacy": "El progreso y los ajustes se guardan en el almacenamiento local de este navegador. No hay cuentas. iynk guarda un registro local de lo que pasa en los laboratorios. Se queda en este navegador, y puedes leerlo, copiarlo o borrarlo en Claves y uso. No se nos envía nada."
     },
     "originalsTitle": "Los tres originales",
     "originalsLede": "iynk se inspiró en tres webs didácticas. Es un proyecto aparte, con su propio código.",
@@ -176,5 +180,23 @@
     },
     "keys": "Claves y uso",
     "hint": "{key} abre este menú"
+  },
+  "privacy": {
+    "metaTitle": "Privacidad",
+    "metaDescription": "Qué guarda iynk en tu navegador, qué envía y qué nunca hace.",
+    "title": "Privacidad",
+    "lede": "iynk no tiene cuentas, anuncios ni analítica. Esta es una nota breve sobre lo que la app guarda y envía. No es asesoramiento legal.",
+    "stays": {
+      "title": "Lo que se queda en tu navegador",
+      "text": "Tu progreso y tus ajustes se guardan en el almacenamiento local de este navegador, bajo iynk:v1. El idioma que eliges se recuerda en una cookie llamada iynk-lang. Si añades una clave de IA o de búsqueda, se guarda bajo iynk:keys:v1. Un registro local de lo que pasa en los laboratorios se guarda bajo iynk:log:v1. Puedes leerlo, copiarlo o borrarlo en Claves y uso."
+    },
+    "leaves": {
+      "title": "Lo que sale de tu navegador",
+      "text": "Nada, salvo que uses una sala o añadas una clave. Una sala envía tu nombre, tu cursor y tus mensajes de chat, incluido el texto de un mensaje de voz, al relé de la sala. Una clave que añadas se envía a tu propio servidor de iynk con cada llamada de IA o de búsqueda, y una grabación de voz se envía allí para transcribirla. El servidor no guarda la clave."
+    },
+    "never": {
+      "title": "Lo que no hacemos",
+      "text": "No hay cuentas, anuncios ni analítica. Los recuentos de uso son un registro local en tu navegador. Puedes leerlo y borrarlo cuando quieras."
+    }
   }
 }

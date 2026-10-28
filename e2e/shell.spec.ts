@@ -342,3 +342,18 @@ test.describe("the nav bar in German at 1024 px", () => {
     expect(new Set(tops).size).toBe(1);
   });
 });
+
+test("the footer opens the privacy page, which passes axe", async ({ page }) => {
+  await page.goto("/en");
+  await page.locator("footer:visible").getByRole("link", { name: shell.footer.privacyLink }).click();
+  await expect(page).toHaveURL(/\/en\/privacy$/);
+  await expect(page.getByRole("heading", { level: 1, name: shell.privacy.title })).toBeVisible();
+  await expectNoAxeViolations(page);
+});
+
+test("the Hindi privacy page renders in Devanagari", async ({ page }) => {
+  await page.goto("/hi/privacy");
+  await expect(page.locator("html")).toHaveAttribute("lang", "hi");
+  const heading = page.getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText(/[ऀ-ॿ]/);
+});
