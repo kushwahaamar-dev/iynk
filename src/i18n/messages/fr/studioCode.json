@@ -17,5 +17,40 @@
   "marker": {
     "error": "Erreur, ligne {line}, colonne {col} :",
     "warning": "Avertissement, ligne {line}, colonne {col} :"
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} n'est pas une bibliothèque que iynk sait simuler."
+    },
+    "limit": {
+      "statements": "Le code a fait trop d'étapes sans finir un tour. Cherche une boucle qui ne s'arrête jamais.",
+      "operations": "Une expression a demandé trop d'opérations. Vérifie les nombres qu'elle utilise.",
+      "memory": "Le code a utilisé plus de mémoire que le simulateur n'en permet.",
+      "time": "L'exécution a duré trop longtemps et a été arrêtée."
+    },
+    "static": {
+      "short-circuit": "L'alimentation et la masse sont reliées directement, sans rien entre elles. {count} broches se rejoignent sur cette connexion.",
+      "output-contention": "Des sorties qui pilotent la même connexion se battent entre elles. {count} broches s'y rejoignent."
+    },
+    "run": {
+      "noModel": "{part} n'a pas encore de modèle dans le simulateur, donc il ne fait rien pendant une exécution."
+    }
+  },
+  "problems": {
+    "title": "Problèmes",
+    "empty": "Aucun problème trouvé.",
+    "emptyHint": "Les erreurs du code et du câblage apparaissent ici.",
+    "count": {
+      "one": "1 problème",
+      "other": "{count} problèmes"
+    },
+    "line": "Ligne {line}",
+    "severity": {
+      "error": "Erreur",
+      "warning": "Avertissement",
+      "note": "Note"
+    },
+    "hint": "Piste : {hint}",
+    "jump": "Aller au problème"
   }
 }

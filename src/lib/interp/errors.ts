@@ -6,6 +6,12 @@ export interface SourcePos {
 
 export type ErrorKind = 'syntax' | 'compile' | 'runtime' | 'unsupported' | 'limit';
 
+/** A stable identifier for an error the Studio words itself, with the values its text needs. */
+export interface ErrorInfo {
+  code: string;
+  args?: Record<string, string | number>;
+}
+
 /**
  * A friendly, positioned error. `message` is written for a learner
  * ("'ledPin' was not declared"), `hint` says what to try next.
@@ -15,14 +21,18 @@ export class InterpError extends Error {
   readonly line: number;
   readonly col: number;
   readonly hint?: string;
+  readonly code?: string;
+  readonly args?: Record<string, string | number>;
 
-  constructor(kind: ErrorKind, message: string, pos?: SourcePos | null, hint?: string) {
+  constructor(kind: ErrorKind, message: string, pos?: SourcePos | null, hint?: string, info?: ErrorInfo) {
     super(message);
     this.name = 'InterpError';
     this.kind = kind;
     this.line = pos?.line ?? 0;
     this.col = pos?.col ?? 0;
     this.hint = hint;
+    this.code = info?.code;
+    this.args = info?.args;
   }
 
   /** "3:14 error: 'x' was not declared" style text for the serial monitor or a log. */
@@ -33,7 +43,7 @@ export class InterpError extends Error {
   }
 
   toJSON(): Diagnostic {
-    return { kind: this.kind, message: this.message, line: this.line, col: this.col, hint: this.hint };
+    return { kind: this.kind, message: this.message, line: this.line, col: this.col, hint: this.hint, code: this.code, args: this.args };
   }
 }
 
@@ -44,6 +54,8 @@ export interface Diagnostic {
   line: number;
   col: number;
   hint?: string;
+  code?: string;
+  args?: Record<string, string | number>;
 }
 
 export function syntaxError(message: string, pos: SourcePos, hint?: string): InterpError {

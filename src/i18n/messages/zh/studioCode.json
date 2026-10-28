@@ -17,5 +17,40 @@
   "marker": {
     "error": "错误，第 {line} 行，第 {col} 列：",
     "warning": "警告，第 {line} 行，第 {col} 列："
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} 不是 iynk 能模拟的库。"
+    },
+    "limit": {
+      "statements": "代码执行了太多步骤，却没有完成一轮。请找找有没有永远不会结束的循环。",
+      "operations": "有一个表达式需要的运算太多。请检查它用到的数字。",
+      "memory": "代码用掉的内存超过了模拟器允许的上限。",
+      "time": "这次运行用时太长，已被停止。"
+    },
+    "static": {
+      "short-circuit": "电源和地直接相连，中间没有任何元件。这个连接上汇合了 {count} 个引脚。",
+      "output-contention": "驱动同一个连接的输出会互相对抗。这个连接上汇合了 {count} 个引脚。"
+    },
+    "run": {
+      "noModel": "{part} 还没有模拟器模型，所以运行时它什么也不做。"
+    }
+  },
+  "problems": {
+    "title": "问题",
+    "empty": "没有发现问题。",
+    "emptyHint": "代码和接线中的错误会显示在这里。",
+    "count": {
+      "one": "1 个问题",
+      "other": "{count} 个问题"
+    },
+    "line": "第 {line} 行",
+    "severity": {
+      "error": "错误",
+      "warning": "警告",
+      "note": "提示"
+    },
+    "hint": "提示：{hint}",
+    "jump": "跳到问题"
   }
 }

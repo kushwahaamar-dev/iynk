@@ -17,5 +17,40 @@
   "marker": {
     "error": "Fehler, Zeile {line}, Spalte {col}:",
     "warning": "Warnung, Zeile {line}, Spalte {col}:"
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} ist keine Bibliothek, die iynk simulieren kann."
+    },
+    "limit": {
+      "statements": "Der Code hat zu viele Schritte gemacht, ohne einen Durchlauf zu beenden. Suche nach einer Schleife, die nie endet.",
+      "operations": "Ein Ausdruck brauchte zu viele Rechenschritte. Prüfe die Zahlen, mit denen er arbeitet.",
+      "memory": "Der Code hat mehr Speicher gebraucht, als der Simulator erlaubt.",
+      "time": "Der Lauf hat zu lange gedauert und wurde gestoppt."
+    },
+    "static": {
+      "short-circuit": "Plus und Masse sind direkt verbunden, ohne etwas dazwischen. {count} Pins treffen sich an dieser Verbindung.",
+      "output-contention": "Ausgänge, die dieselbe Verbindung treiben, arbeiten gegeneinander. {count} Pins treffen sich dort."
+    },
+    "run": {
+      "noModel": "{part} hat noch kein Simulatormodell und tut während eines Laufs nichts."
+    }
+  },
+  "problems": {
+    "title": "Probleme",
+    "empty": "Keine Probleme gefunden.",
+    "emptyHint": "Fehler im Code und in der Verdrahtung erscheinen hier.",
+    "count": {
+      "one": "1 Problem",
+      "other": "{count} Probleme"
+    },
+    "line": "Zeile {line}",
+    "severity": {
+      "error": "Fehler",
+      "warning": "Warnung",
+      "note": "Hinweis"
+    },
+    "hint": "Tipp: {hint}",
+    "jump": "Zum Problem springen"
   }
 }

@@ -145,9 +145,32 @@ export interface CompiledSketch {
   unit: Unit;
 }
 
+/** Headers of the Arduino core and the C library that need no simulated library behind them. */
+const KNOWN_BUILTIN_HEADERS = ['Arduino.h', 'stdint.h', 'stdlib.h', 'string.h', 'math.h', 'stdio.h', 'avr/pgmspace.h', 'avr/io.h'];
+
+const LIBRARY_HEADERS: readonly string[] = [
+  ...new Set([...Object.values(LIBS).flatMap((l) => l.headers), ...Object.values(GLOBAL_OBJECTS).flatMap((g) => g.headers ?? [])]),
+].sort();
+
+export const ALLOWED_HEADERS: ReadonlySet<string> = new Set([...LIBRARY_HEADERS, ...KNOWN_BUILTIN_HEADERS]);
+
+function checkIncludes(unit: Unit): void {
+  for (const { name, line } of unit.includes) {
+    if (ALLOWED_HEADERS.has(name)) continue;
+    throw new InterpError(
+      'unsupported',
+      `'${name}' is not a library the iynk simulator can run`,
+      { line, col: 1 },
+      `supported libraries: ${LIBRARY_HEADERS.join(', ')}`,
+      { code: 'include.unknown', args: { name } },
+    );
+  }
+}
+
 /** Parse and type-check a sketch for the world's board. Throws InterpError. */
 export function compileSketch(source: string, world: World): CompiledSketch {
   const unit = parseSketch(source, Object.keys(LIBS));
+  checkIncludes(unit);
   const includes = new Set(unit.includes.map((i) => i.name));
   const rt = new ArduinoRt(world, includes);
   new Compiler(rt, unit).run();

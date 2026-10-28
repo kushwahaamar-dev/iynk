@@ -364,3 +364,38 @@ describe('array size cap', () => {
     expect(errors).toEqual([]);
   });
 });
+
+describe('unknown includes', () => {
+  const body = 'void setup() {}\nvoid loop() {}';
+
+  it('names the header, its line and a code, and the run does not start', () => {
+    const source = `#include <Servo.h>\n#include <Foo.h>\n${body}`;
+    const [d, ...rest] = check({ board: 'uno-r3', source });
+    expect(rest).toEqual([]);
+    expect(d).toMatchObject({ kind: 'unsupported', line: 2, col: 1, code: 'include.unknown', args: { name: 'Foo.h' } });
+    expect(d.hint).toContain('Servo.h');
+    const { errors, run } = boot(source);
+    expect(errors).toHaveLength(1);
+    expect(run.status.state).not.toBe('running');
+  });
+
+  it('treats angle brackets and quotes alike', () => {
+    expect(check({ board: 'uno-r3', source: `#include "local.h"\n${body}` })[0]).toMatchObject({ code: 'include.unknown', args: { name: 'local.h' } });
+    expect(check({ board: 'uno-r3', source: `#include "Servo.h"\n${body}` })).toEqual([]);
+  });
+
+  it('is case sensitive and refuses paths that climb out', () => {
+    for (const name of ['servo.h', '../Servo.h', '/usr/Servo.h']) {
+      expect(check({ board: 'uno-r3', source: `#include <${name}>\n${body}` })[0]).toMatchObject({ code: 'include.unknown', args: { name } });
+    }
+  });
+
+  it('lets core and library headers through, quoted or not', () => {
+    const source = `#include <Arduino.h>\n#include <avr/pgmspace.h>\n#include "WiFiS3.h"\n#include "Arduino_LED_Matrix.h"\n#include <Wire.h>\n${body}`;
+    expect(check({ board: 'uno-r4', source })).toEqual([]);
+  });
+
+  it('ignores an include in a comment', () => {
+    expect(check({ board: 'uno-r3', source: `// #include <Foo.h>\n${body}` })).toEqual([]);
+  });
+});
