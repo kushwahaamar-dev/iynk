@@ -1,3 +1,4 @@
+import { buildCsp, buildFigureCsp } from "../src/lib/csp";
 import { expect, test } from "./support/no-egress";
 
 const PAGES = ["/en", "/en/about", "/en/boards/uno-r3/blink", "/en/does-not-exist"];
@@ -7,11 +8,11 @@ const EXPECTED = {
   "x-content-type-options": "nosniff",
   "referrer-policy": "strict-origin-when-cross-origin",
   "permissions-policy": "camera=(), microphone=(self), geolocation=(self), serial=(self), usb=(), payment=()",
-  "content-security-policy": "frame-ancestors 'self'",
+  "content-security-policy": buildCsp({ dev: false, connectOrigins: [] }),
 };
 
-function expectSecurityHeaders(headers: Record<string, string>) {
-  expect(headers).toMatchObject(EXPECTED);
+function expectSecurityHeaders(headers: Record<string, string>, csp = EXPECTED["content-security-policy"]) {
+  expect(headers).toMatchObject({ ...EXPECTED, "content-security-policy": csp });
   expect(headers["x-powered-by"]).toBeUndefined();
 }
 
@@ -19,7 +20,7 @@ test.describe("security headers", () => {
   for (const path of [...PAGES, ...OTHERS]) {
     test(`${path} carries them`, async ({ request }) => {
       const response = await request.get(path);
-      expectSecurityHeaders(response.headers());
+      expectSecurityHeaders(response.headers(), path.startsWith("/figures/") ? buildFigureCsp() : undefined);
     });
   }
 

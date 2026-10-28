@@ -85,7 +85,8 @@ test("the skip link is the first stop and lands on the main content", async ({ p
 
 test("a page that calls out fails the test", async ({ page }) => {
   test.fail();
-  await page.goto("/");
+  // A blank page has no CSP; on the app's own pages connect-src would stop the request before it left.
+  await page.goto("about:blank");
   await page.evaluate(() => fetch("https://example.com").catch(() => null));
 });
 

@@ -1,13 +1,19 @@
 import type { NextConfig } from "next";
+import { buildCsp, buildFigureCsp, parseOrigins } from "./src/lib/csp";
 import { DEFAULT_LOCALE, LANG_COOKIE, LOCALES, acceptLanguagePattern } from "./src/i18n/config";
 
+const rawOrigins = process.env.IYNK_CONNECT_ORIGINS ?? "";
+const connectOrigins = parseOrigins(rawOrigins);
+if (connectOrigins.length < rawOrigins.split(",").filter((origin) => origin.trim()).length) {
+  console.warn("IYNK_CONNECT_ORIGINS: ignored entries that are not a bare http, https, ws or wss origin");
+}
+
 // No camera or USB use anywhere: microphone, location and Web Serial are the hardware the app asks for.
-// B1 replaces the frame-ancestors-only policy with the full CSP.
 const SECURITY_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(self), serial=(self), usb=(), payment=()" },
-  { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+  { key: "Content-Security-Policy", value: buildCsp({ dev: process.env.NODE_ENV !== "production", connectOrigins }) },
 ];
 
 const nextConfig: NextConfig = {
@@ -36,7 +42,7 @@ const nextConfig: NextConfig = {
         source: "/figures/:path*",
         headers: [
           { key: "Cache-Control", value: "public, max-age=300, must-revalidate" },
-          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "Content-Security-Policy", value: buildFigureCsp() },
           { key: "X-Content-Type-Options", value: "nosniff" },
         ],
       },
