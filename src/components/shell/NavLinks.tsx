@@ -59,7 +59,7 @@ export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
               aria-current={active ? "page" : undefined}
               onClick={onNavigate}
               className={cx(
-                "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold no-underline motion-fade",
+                "nav-link flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold no-underline motion-fade",
                 active ? "bg-hover text-ink" : "text-muted hover:bg-hover hover:text-ink",
               )}
             >

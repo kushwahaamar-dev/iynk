@@ -16,6 +16,11 @@ html:lang(zh-Hans) body {
 :is(h1, h2, h3, h4):lang(zh-Hans) {
   font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
+/* Devanagari ink sits high in its line box: the floating bar's labels get 2 px moved from below to above. */
+.nav-link:lang(hi) {
+  padding-top: calc(0.5rem + 2px);
+  padding-bottom: calc(0.5rem - 2px);
+}
 /* Letter-spaced mono reads badly in Devanagari and Han: those labels take the body face. */
 .font-ui:not(code, pre, kbd, .tabular):is(:lang(hi), :lang(zh-Hans)) {
   font-family: var(--font-body);

@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { IconButton } from "./IconButton";
-import { Tooltip } from "./Tooltip";
+import { focusQuietly, Tooltip } from "./Tooltip";
 
 function pointer(coarse: boolean) {
   vi.stubGlobal("matchMedia", (query: string) => ({
@@ -43,6 +43,16 @@ describe("tooltips", () => {
     fireEvent.pointerEnter(button, { pointerType: "mouse" });
     act(() => vi.advanceTimersByTime(1000));
     expect(screen.getByRole("tooltip").textContent).toBe("Close menu");
+  });
+
+  it("stay shut when the code moves focus, and show again on the next keyboard focus", () => {
+    render(<IconButton icon="close" label="Close menu" />);
+    const button = screen.getByRole("button", { name: "Close menu" });
+    act(() => focusQuietly(button));
+    expect(screen.queryByRole("tooltip")).toBeNull();
+    act(() => button.blur());
+    keyboardFocus(button);
+    expect(screen.getByRole("tooltip")).toBeTruthy();
   });
 
   it("never show on a coarse pointer, even when a menu moves focus to its close button", () => {

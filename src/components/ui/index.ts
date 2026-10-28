@@ -1,4 +1,4 @@
-export { Button, ButtonLink, buttonClass, type ButtonSize, type ButtonVariant } from "./Button";
+export { Button, ButtonGroup, ButtonLink, buttonClass, type ButtonSize, type ButtonVariant } from "./Button";
 export { Callout, type CalloutTone } from "./Callout";
 export { Chip, type ChipTone } from "./Chip";
 export { CodeBlock } from "./CodeBlock";

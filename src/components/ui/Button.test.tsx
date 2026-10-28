@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Button, ButtonLink, buttonClass, type ButtonSize } from "./Button";
+import { Button, ButtonGroup, ButtonLink, buttonClass, type ButtonSize } from "./Button";
 
 const classes = (element: HTMLElement) => element.className.split(/\s+/);
 
@@ -58,5 +58,15 @@ describe("Button", () => {
     const dropped: ButtonSize = "lg";
     expect(sizes).toHaveLength(2);
     expect(dropped).toBe("lg");
+  });
+
+  it("steps the radius down inside a button group", () => {
+    render(
+      <ButtonGroup label="View">
+        <Button aria-pressed>Exploded</Button>
+      </ButtonGroup>,
+    );
+    expect(screen.getByRole("group", { name: "View" }).hasAttribute("data-button-group")).toBe(true);
+    expect(classes(screen.getByRole("button"))).toContain("in-data-[button-group]:rounded-md");
   });
 });

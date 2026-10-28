@@ -14,8 +14,20 @@ function coarsePointer() {
   return typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches === true;
 }
 
+let quietFocus = false;
+
+/** Moves focus without opening the focused element's tip: for focus the code moves, as when a dialog opens. */
+export function focusQuietly(element: HTMLElement) {
+  quietFocus = true;
+  try {
+    element.focus();
+  } finally {
+    quietFocus = false;
+  }
+}
+
 /**
- * When a tip shows: after a short hover with a mouse or pen, at once on keyboard focus, never on a coarse
+ * When a tip shows: after a short hover with a mouse or pen, at once on keyboard focus (not on focus the code moves), never on a coarse
  * pointer. Escape, leaving, a press or blur hides it. Spread the handlers on the element the tip belongs to.
  */
 export function useTip() {
@@ -47,7 +59,7 @@ export function useTip() {
     },
     onPointerLeave: hide,
     onFocus: (event: FocusEvent<Element>) => {
-      if (!coarsePointer() && (event.target as Element).matches(":focus-visible")) setOpen(true);
+      if (!quietFocus && !coarsePointer() && (event.target as Element).matches(":focus-visible")) setOpen(true);
     },
     onBlur: hide,
   };

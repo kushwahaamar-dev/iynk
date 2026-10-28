@@ -3,10 +3,11 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import { Logo } from "@/components/shell/Logo";
 import { LOCALES, LOCALE_NAMES } from "@/i18n/config";
+import { SettingsBootScript } from "@/lib/settings/theme";
 import "./globals.css";
 
 // No language is known here: the copy is English and each language is named in its own words.
-// The page bypasses the layouts, so it follows the system colour scheme; the saved theme is not readable.
+// The page bypasses the layouts, so it reads the saved theme with the same boot script the language layout uses.
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
@@ -16,7 +17,10 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en" className={sans.variable}>
+    <html lang="en" className={sans.variable} suppressHydrationWarning>
+      <head>
+        <SettingsBootScript />
+      </head>
       <body className="flex min-h-dvh items-center justify-center px-4 py-12">
         <main className="w-full max-w-md rounded-2xl bg-sunken p-8 text-center">
           <Logo height={28} className="mx-auto text-ink" />

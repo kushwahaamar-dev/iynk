@@ -13,6 +13,11 @@ describe("type tokens", () => {
     expect(typeCss).not.toMatch(/font-accent|accent-serif/);
   });
 
+  it("Devanagari nav labels are lifted into place only in the floating bar", () => {
+    expect(typeCss).toMatch(/\.nav-link:lang\(hi\)\s*\{[^}]*padding-top: calc\(0\.5rem \+ 2px\)/);
+    expect(read("src/components/shell/NavLinks.tsx")).toContain('"nav-link flex');
+  });
+
   it("the layout loads Geist, Geist Mono and Noto Sans Devanagari only", () => {
     const layout = read("src/app/[lang]/layout.tsx");
     const imported = layout.match(/import \{([^}]*)\} from "next\/font\/google"/)?.[1].split(",").map((name) => name.trim());

@@ -24,9 +24,18 @@ type TabsProps = {
   /** Fill the parent's height: the list stays put and each panel scrolls (workspace rails). */
   fill?: boolean;
   listClassName?: string;
-  /** Under sm, lay the tabs out as a three-column grid whose labels may wrap, instead of a strip that cuts the last ones. */
+  /** Under sm, lay the tabs out in rows of up to three that each fill the width, labels wrapping, instead of a strip that cuts the last ones. */
   phoneGrid?: boolean;
 };
+
+// A six-column grid lets every row fill the width whatever its count: rows of three take 2 columns a tab, rows of two take 3, a lone tab 6.
+const PHONE_SPAN = { 1: "max-sm:col-span-6", 2: "max-sm:col-span-3", 3: "max-sm:col-span-2" } as const;
+
+function phoneSpan(index: number, count: number) {
+  const perRow = count === 4 ? 2 : Math.min(count, 3);
+  const inRow = Math.min(perRow, count - (index - (index % perRow)));
+  return PHONE_SPAN[inRow as keyof typeof PHONE_SPAN];
+}
 
 /**
  * WAI-ARIA tabs with automatic activation: Left/Right (and Up/Down) move and
@@ -104,11 +113,11 @@ export function Tabs({ label, tabs, value, defaultValue, onChange, className, pa
           "data-[overflow=end]:[mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]",
           "data-[overflow=start]:[mask-image:linear-gradient(to_left,#000_calc(100%-2.5rem),transparent)]",
           "data-[overflow=both]:[mask-image:linear-gradient(to_right,transparent,#000_2.5rem,#000_calc(100%-2.5rem),transparent)]",
-          phoneGrid && "max-sm:grid max-sm:grid-cols-3 max-sm:gap-0",
+          phoneGrid && "max-sm:grid max-sm:grid-cols-6 max-sm:gap-0",
           listClassName,
         )}
       >
-        {tabs.map((tab) => {
+        {tabs.map((tab, index) => {
           const active = tab.id === selected;
           return (
             <button
@@ -128,6 +137,7 @@ export function Tabs({ label, tabs, value, defaultValue, onChange, className, pa
                 "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:origin-center after:scale-x-0 after:bg-ink after:motion-move aria-selected:after:scale-x-100",
                 // The strip scrolls sideways and would clip a ring drawn outside the tab.
                 "focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-(--focus) focus-visible:shadow-none",
+                phoneGrid && phoneSpan(index, tabs.length),
                 phoneGrid && "max-sm:whitespace-normal max-sm:px-2 max-sm:text-center max-sm:leading-tight",
                 active ? "text-ink" : "text-muted hover:bg-hover hover:text-ink",
               )}
