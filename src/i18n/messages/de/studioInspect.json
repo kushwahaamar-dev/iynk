@@ -1,1 +1,92 @@
-{}
+{
+  "title": "Inspektor",
+  "empty": {
+    "title": "Nichts ausgewählt",
+    "hint": "Klicke auf ein Bauteil in der Zeichenfläche, um Werte, Pins und Position zu sehen."
+  },
+  "many": {
+    "one": "Ein Element ausgewählt",
+    "other": "{count} Elemente ausgewählt"
+  },
+  "sections": {
+    "identity": "Identität",
+    "values": "Werte",
+    "pins": "Pins",
+    "position": "Position und Drehung",
+    "model": "Modell",
+    "nets": "Netze"
+  },
+  "identity": {
+    "refdes": "Bezeichner",
+    "label": "Beschriftung",
+    "refdesInvalid": "Beginne mit einem Buchstaben, dann Buchstaben und Ziffern, höchstens 16 Zeichen.",
+    "refdesTaken": "{refdes} wird schon von einem anderen Bauteil verwendet."
+  },
+  "values": {
+    "none": "Dieses Bauteil hat keine einstellbaren Werte.",
+    "bound": "Von einem Projektparameter bestimmt.",
+    "default": "Standard: {value}"
+  },
+  "value": {
+    "empty": "Gib einen Wert ein.",
+    "nan": "Das ist keine Zahl. Probiere 330, 4k7 oder 0.33k.",
+    "range": "Nimm einen Wert von {min} bis {max}.",
+    "unit": "Diese Einheit passt hier nicht. Dieser Wert ist in {unit}."
+  },
+  "units": {
+    "ohm": "Ohm",
+    "farad": "Farad",
+    "volt": "Volt",
+    "amp": "Ampere",
+    "hertz": "Hertz",
+    "second": "Sekunden",
+    "none": "eine einfache Zahl"
+  },
+  "pins": {
+    "unconnected": "Nicht verbunden",
+    "inNet": "Im Netz {name}",
+    "showAll": "Alle anzeigen",
+    "showLess": "Weniger anzeigen"
+  },
+  "position": {
+    "x": "X in mm",
+    "y": "Y in mm",
+    "rotation": "Drehung",
+    "degrees": "{deg} Grad",
+    "invalid": "Nimm eine Zahl von {min} bis {max}.",
+    "notPlaced": "Dieses Bauteil ist in der aktuellen Ansicht nicht platziert."
+  },
+  "nets": {
+    "none": "Noch keine Netze. Zeichne einen Draht zwischen zwei Pins, um eines anzulegen.",
+    "unnamed": "Netz {number}",
+    "pins": {
+      "one": "1 Pin",
+      "other": "{count} Pins"
+    },
+    "focus": "{name} auf der Zeichenfläche hervorheben"
+  },
+  "select": {
+    "refuse": {
+      "last-board": "Das einzige Board des Projekts lässt sich nicht löschen.",
+      "read-only": "Dieses Projekt ist schreibgeschützt geöffnet und kann hier nicht geändert werden."
+    },
+    "deleted": {
+      "one": "Ein Element gelöscht. Rückgängig holt es zurück.",
+      "other": "{count} Elemente gelöscht. Rückgängig holt sie zurück."
+    },
+    "copied": {
+      "one": "Ein Bauteil kopiert.",
+      "other": "{count} Bauteile kopiert."
+    },
+    "copy": {
+      "nothing": "Wähle mindestens ein Bauteil zum Kopieren aus."
+    },
+    "paste": {
+      "nothing": "Nichts zum Einfügen. Kopiere zuerst etwas."
+    },
+    "pasted": {
+      "one": "Ein Bauteil eingefügt.",
+      "other": "{count} Bauteile eingefügt."
+    }
+  }
+}

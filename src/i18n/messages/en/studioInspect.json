@@ -1,1 +1,92 @@
-{}
+{
+  "title": "Inspector",
+  "empty": {
+    "title": "Nothing selected",
+    "hint": "Click a part on the canvas to see its values, pins and position."
+  },
+  "many": {
+    "one": "One item selected",
+    "other": "{count} items selected"
+  },
+  "sections": {
+    "identity": "Identity",
+    "values": "Values",
+    "pins": "Pins",
+    "position": "Position and turn",
+    "model": "Model",
+    "nets": "Nets"
+  },
+  "identity": {
+    "refdes": "Reference",
+    "label": "Label",
+    "refdesInvalid": "Start with a letter, then letters and digits, up to 16 characters.",
+    "refdesTaken": "{refdes} is already used by another part."
+  },
+  "values": {
+    "none": "This part has no values to set.",
+    "bound": "Set by a project parameter.",
+    "default": "Default: {value}"
+  },
+  "value": {
+    "empty": "Type a value.",
+    "nan": "That is not a number. Try 330, 4k7 or 0.33k.",
+    "range": "Use a value from {min} to {max}.",
+    "unit": "That unit does not fit here. This value is in {unit}."
+  },
+  "units": {
+    "ohm": "ohms",
+    "farad": "farads",
+    "volt": "volts",
+    "amp": "amps",
+    "hertz": "hertz",
+    "second": "seconds",
+    "none": "a plain number"
+  },
+  "pins": {
+    "unconnected": "Not connected",
+    "inNet": "In net {name}",
+    "showAll": "Show all",
+    "showLess": "Show fewer"
+  },
+  "position": {
+    "x": "X in mm",
+    "y": "Y in mm",
+    "rotation": "Turn",
+    "degrees": "{deg} degrees",
+    "invalid": "Use a number from {min} to {max}.",
+    "notPlaced": "This part is not on the current view."
+  },
+  "nets": {
+    "none": "No nets yet. Draw a wire between two pins to make one.",
+    "unnamed": "Net {number}",
+    "pins": {
+      "one": "1 pin",
+      "other": "{count} pins"
+    },
+    "focus": "Highlight {name} on the canvas"
+  },
+  "select": {
+    "refuse": {
+      "last-board": "The only board in the project cannot be deleted.",
+      "read-only": "This project is open read only, so it cannot be changed here."
+    },
+    "deleted": {
+      "one": "One item deleted. Undo brings it back.",
+      "other": "{count} items deleted. Undo brings them back."
+    },
+    "copied": {
+      "one": "One part copied.",
+      "other": "{count} parts copied."
+    },
+    "copy": {
+      "nothing": "Select at least one part to copy."
+    },
+    "paste": {
+      "nothing": "Nothing to paste. Copy something first."
+    },
+    "pasted": {
+      "one": "One part pasted.",
+      "other": "{count} parts pasted."
+    }
+  }
+}

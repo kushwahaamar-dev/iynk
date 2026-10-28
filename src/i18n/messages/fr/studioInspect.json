@@ -1,1 +1,92 @@
-{}
+{
+  "title": "Inspecteur",
+  "empty": {
+    "title": "Rien n'est sélectionné",
+    "hint": "Cliquez sur une pièce du plan de travail pour voir ses valeurs, ses broches et sa position."
+  },
+  "many": {
+    "one": "Un élément sélectionné",
+    "other": "{count} éléments sélectionnés"
+  },
+  "sections": {
+    "identity": "Identité",
+    "values": "Valeurs",
+    "pins": "Broches",
+    "position": "Position et rotation",
+    "model": "Modèle",
+    "nets": "Réseaux"
+  },
+  "identity": {
+    "refdes": "Repère",
+    "label": "Étiquette",
+    "refdesInvalid": "Commencez par une lettre, puis des lettres et des chiffres, 16 caractères au plus.",
+    "refdesTaken": "{refdes} est déjà utilisé par une autre pièce."
+  },
+  "values": {
+    "none": "Cette pièce n'a aucune valeur à régler.",
+    "bound": "Fixé par un paramètre du projet.",
+    "default": "Par défaut : {value}"
+  },
+  "value": {
+    "empty": "Saisissez une valeur.",
+    "nan": "Ce n'est pas un nombre. Essayez 330, 4k7 ou 0.33k.",
+    "range": "Utilisez une valeur de {min} à {max}.",
+    "unit": "Cette unité ne convient pas ici. Cette valeur est en {unit}."
+  },
+  "units": {
+    "ohm": "ohms",
+    "farad": "farads",
+    "volt": "volts",
+    "amp": "ampères",
+    "hertz": "hertz",
+    "second": "secondes",
+    "none": "un nombre simple"
+  },
+  "pins": {
+    "unconnected": "Non connectée",
+    "inNet": "Dans le réseau {name}",
+    "showAll": "Tout afficher",
+    "showLess": "Afficher moins"
+  },
+  "position": {
+    "x": "X en mm",
+    "y": "Y en mm",
+    "rotation": "Rotation",
+    "degrees": "{deg} degrés",
+    "invalid": "Utilisez un nombre de {min} à {max}.",
+    "notPlaced": "Cette pièce n'est pas dans la vue actuelle."
+  },
+  "nets": {
+    "none": "Aucun réseau pour l'instant. Tracez un fil entre deux broches pour en créer un.",
+    "unnamed": "Réseau {number}",
+    "pins": {
+      "one": "1 broche",
+      "other": "{count} broches"
+    },
+    "focus": "Surligner {name} sur le plan"
+  },
+  "select": {
+    "refuse": {
+      "last-board": "La seule carte du projet ne peut pas être supprimée.",
+      "read-only": "Ce projet est ouvert en lecture seule, il ne peut donc pas être modifié ici."
+    },
+    "deleted": {
+      "one": "Un élément supprimé. Annuler le rétablit.",
+      "other": "{count} éléments supprimés. Annuler les rétablit."
+    },
+    "copied": {
+      "one": "Une pièce copiée.",
+      "other": "{count} pièces copiées."
+    },
+    "copy": {
+      "nothing": "Sélectionnez au moins une pièce à copier."
+    },
+    "paste": {
+      "nothing": "Rien à coller. Copiez d'abord quelque chose."
+    },
+    "pasted": {
+      "one": "Une pièce collée.",
+      "other": "{count} pièces collées."
+    }
+  }
+}

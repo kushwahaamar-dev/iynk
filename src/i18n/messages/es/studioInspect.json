@@ -1,1 +1,92 @@
-{}
+{
+  "title": "Inspector",
+  "empty": {
+    "title": "Nada seleccionado",
+    "hint": "Haz clic en una pieza del lienzo para ver sus valores, patillas y posición."
+  },
+  "many": {
+    "one": "Un elemento seleccionado",
+    "other": "{count} elementos seleccionados"
+  },
+  "sections": {
+    "identity": "Identidad",
+    "values": "Valores",
+    "pins": "Patillas",
+    "position": "Posición y giro",
+    "model": "Modelo",
+    "nets": "Redes"
+  },
+  "identity": {
+    "refdes": "Referencia",
+    "label": "Etiqueta",
+    "refdesInvalid": "Empieza con una letra y sigue con letras y dígitos, hasta 16 caracteres.",
+    "refdesTaken": "{refdes} ya lo usa otra pieza."
+  },
+  "values": {
+    "none": "Esta pieza no tiene valores que ajustar.",
+    "bound": "Lo fija un parámetro del proyecto.",
+    "default": "Predeterminado: {value}"
+  },
+  "value": {
+    "empty": "Escribe un valor.",
+    "nan": "Eso no es un número. Prueba 330, 4k7 o 0.33k.",
+    "range": "Usa un valor de {min} a {max}.",
+    "unit": "Esa unidad no encaja aquí. Este valor va en {unit}."
+  },
+  "units": {
+    "ohm": "ohmios",
+    "farad": "faradios",
+    "volt": "voltios",
+    "amp": "amperios",
+    "hertz": "hercios",
+    "second": "segundos",
+    "none": "un número simple"
+  },
+  "pins": {
+    "unconnected": "Sin conectar",
+    "inNet": "En la red {name}",
+    "showAll": "Mostrar todo",
+    "showLess": "Mostrar menos"
+  },
+  "position": {
+    "x": "X en mm",
+    "y": "Y en mm",
+    "rotation": "Giro",
+    "degrees": "{deg} grados",
+    "invalid": "Usa un número de {min} a {max}.",
+    "notPlaced": "Esta pieza no está en la vista actual."
+  },
+  "nets": {
+    "none": "Aún no hay redes. Dibuja un cable entre dos patillas para crear una.",
+    "unnamed": "Red {number}",
+    "pins": {
+      "one": "1 patilla",
+      "other": "{count} patillas"
+    },
+    "focus": "Resaltar {name} en el lienzo"
+  },
+  "select": {
+    "refuse": {
+      "last-board": "No se puede borrar la única placa del proyecto.",
+      "read-only": "Este proyecto está abierto solo para lectura, así que no se puede cambiar aquí."
+    },
+    "deleted": {
+      "one": "Un elemento borrado. Deshacer lo devuelve.",
+      "other": "{count} elementos borrados. Deshacer los devuelve."
+    },
+    "copied": {
+      "one": "Una pieza copiada.",
+      "other": "{count} piezas copiadas."
+    },
+    "copy": {
+      "nothing": "Selecciona al menos una pieza para copiar."
+    },
+    "paste": {
+      "nothing": "No hay nada que pegar. Copia algo primero."
+    },
+    "pasted": {
+      "one": "Una pieza pegada.",
+      "other": "{count} piezas pegadas."
+    }
+  }
+}
