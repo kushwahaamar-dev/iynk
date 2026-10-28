@@ -1,1 +1,59 @@
-{}
+{
+  "bar": {
+    "label": "Ausführungssteuerung",
+    "run": "Starten",
+    "restart": "Neu starten",
+    "stop": "Stopp",
+    "reset": "Zurücksetzen",
+    "time": "Simulierte Zeit",
+    "behind": "Läuft langsamer als in Echtzeit",
+    "stale": "Das Projekt wurde nach dem Start dieses Laufs geändert. Starte neu, um die Änderung zu nutzen."
+  },
+  "phase": {
+    "idle": "Bereit",
+    "starting": "Startet",
+    "running": "Läuft",
+    "stopped": "Gestoppt",
+    "done": "Beendet",
+    "error": "Start nicht möglich",
+    "limit": "An einer Grenze gestoppt",
+    "killed": "Simulator neu gestartet"
+  },
+  "limit": {
+    "statements": "Der Code hat zu viele Schritte ausgeführt, ohne einen Durchlauf zu beenden. Suche eine Schleife ohne Ende.",
+    "operations": "Ein Ausdruck brauchte zu viele Operationen. Prüfe die Zahlen, mit denen er rechnet.",
+    "memory": "Der Code hat mehr Speicher gebraucht, als der Simulator erlaubt.",
+    "time": "Der Lauf dauerte zu lange und wurde gestoppt."
+  },
+  "killed": "Der Simulator hat nicht mehr geantwortet und wurde neu gestartet. Dein Projekt ist unverändert.",
+  "noDetail": "Der Code konnte nicht gestartet werden.",
+  "problems": {
+    "one": "1 Problem",
+    "other": "{count} Probleme"
+  },
+  "serial": {
+    "title": "Serielle Ausgabe",
+    "lines": "Serielle Zeilen",
+    "empty": "Noch nichts ausgegeben. Starte das Projekt, um zu sehen, was der Code sendet.",
+    "clear": "Leeren",
+    "copy": "Kopieren",
+    "copied": "In die Zwischenablage kopiert",
+    "copyFailed": "Der Browser hat das Kopieren nicht erlaubt.",
+    "input": "Zu sendender Text",
+    "placeholder": "Zeile eingeben und Enter drücken",
+    "send": "Senden",
+    "dropped": {
+      "one": "1 ältere Zeile verworfen",
+      "other": "{count} ältere Zeilen verworfen"
+    },
+    "newLines": {
+      "one": "1 neue Zeile",
+      "other": "{count} neue Zeilen"
+    }
+  },
+  "commands": {
+    "run": "Projekt starten",
+    "stop": "Lauf stoppen",
+    "reset": "Lauf zurücksetzen"
+  }
+}

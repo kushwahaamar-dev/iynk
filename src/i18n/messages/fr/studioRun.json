@@ -1,1 +1,59 @@
-{}
+{
+  "bar": {
+    "label": "Commandes d'exécution",
+    "run": "Lancer",
+    "restart": "Relancer",
+    "stop": "Arrêter",
+    "reset": "Réinitialiser",
+    "time": "Temps simulé",
+    "behind": "Plus lent que le temps réel",
+    "stale": "Le projet a changé après le début de cette exécution. Relancez pour appliquer le changement."
+  },
+  "phase": {
+    "idle": "Prêt",
+    "starting": "Démarrage",
+    "running": "En cours",
+    "stopped": "Arrêté",
+    "done": "Terminé",
+    "error": "Exécution impossible",
+    "limit": "Arrêté par une limite",
+    "killed": "Simulateur relancé"
+  },
+  "limit": {
+    "statements": "Le code a exécuté trop d'étapes sans finir un tour. Cherchez une boucle sans fin.",
+    "operations": "Une expression a demandé trop d'opérations. Vérifiez les nombres qu'elle utilise.",
+    "memory": "Le code a utilisé plus de mémoire que le simulateur n'en permet.",
+    "time": "L'exécution a duré trop longtemps et a été arrêtée."
+  },
+  "killed": "Le simulateur ne répondait plus et a été relancé. Votre projet est inchangé.",
+  "noDetail": "Le code n'a pas pu démarrer.",
+  "problems": {
+    "one": "1 problème",
+    "other": "{count} problèmes"
+  },
+  "serial": {
+    "title": "Sortie série",
+    "lines": "Lignes série",
+    "empty": "Rien n'a encore été affiché. Lancez le projet pour voir ce que le code envoie.",
+    "clear": "Effacer",
+    "copy": "Copier",
+    "copied": "Copié dans le presse-papiers",
+    "copyFailed": "Le navigateur n'a pas autorisé la copie.",
+    "input": "Texte à envoyer",
+    "placeholder": "Saisissez une ligne et appuyez sur Entrée",
+    "send": "Envoyer",
+    "dropped": {
+      "one": "1 ancienne ligne supprimée",
+      "other": "{count} anciennes lignes supprimées"
+    },
+    "newLines": {
+      "one": "1 nouvelle ligne",
+      "other": "{count} nouvelles lignes"
+    }
+  },
+  "commands": {
+    "run": "Lancer le projet",
+    "stop": "Arrêter l'exécution",
+    "reset": "Réinitialiser l'exécution"
+  }
+}

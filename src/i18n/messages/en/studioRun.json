@@ -1,1 +1,59 @@
-{}
+{
+  "bar": {
+    "label": "Run controls",
+    "run": "Run",
+    "restart": "Restart",
+    "stop": "Stop",
+    "reset": "Reset",
+    "time": "Simulated time",
+    "behind": "Running slower than real time",
+    "stale": "The project changed after this run started. Restart to use the change."
+  },
+  "phase": {
+    "idle": "Ready",
+    "starting": "Starting",
+    "running": "Running",
+    "stopped": "Stopped",
+    "done": "Finished",
+    "error": "Could not run",
+    "limit": "Stopped at a limit",
+    "killed": "Simulator restarted"
+  },
+  "limit": {
+    "statements": "The code ran too many steps without finishing a pass. Look for a loop that never ends.",
+    "operations": "One expression needed too many operations. Check the numbers it works on.",
+    "memory": "The code used more memory than the simulator allows.",
+    "time": "The run took too long and was stopped."
+  },
+  "killed": "The simulator stopped answering, so it was restarted. Your project is unchanged.",
+  "noDetail": "The code could not be started.",
+  "problems": {
+    "one": "1 problem",
+    "other": "{count} problems"
+  },
+  "serial": {
+    "title": "Serial output",
+    "lines": "Serial lines",
+    "empty": "Nothing printed yet. Run the project to see what the code sends.",
+    "clear": "Clear",
+    "copy": "Copy",
+    "copied": "Copied to the clipboard",
+    "copyFailed": "The browser did not allow copying.",
+    "input": "Text to send",
+    "placeholder": "Type a line and press Enter",
+    "send": "Send",
+    "dropped": {
+      "one": "1 older line dropped",
+      "other": "{count} older lines dropped"
+    },
+    "newLines": {
+      "one": "1 new line",
+      "other": "{count} new lines"
+    }
+  },
+  "commands": {
+    "run": "Run the project",
+    "stop": "Stop the run",
+    "reset": "Reset the run"
+  }
+}
