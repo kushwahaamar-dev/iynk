@@ -4,11 +4,15 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ServerConfig } from "./config.ts";
 import type { Deps } from "./deps.ts";
-import type { RouteDef } from "./http/classes.ts";
+import { authRoutes } from "./http/auth.ts";
+import type { Authed, RouteDef } from "./http/classes.ts";
 import { healthRoutes } from "./http/health.ts";
+import { identityRoutes } from "./http/identities.ts";
 import { createLimiter, type Limiter } from "./http/limits.ts";
 import { createRouter } from "./http/router.ts";
 import { serverInfoRoutes } from "./http/server-info.ts";
+import { createChallengeStore, type ChallengeStore } from "./identity/challenge.ts";
+import { touchSession, verifyToken } from "./identity/tokens.ts";
 import { createLogger, type Logger } from "./ops/log.ts";
 import type { ServerStore } from "./store/port.ts";
 import { openStore } from "./store/sqlite.ts";
@@ -39,8 +43,8 @@ function serverVersion(): string {
   return manifest.version;
 }
 
-export function allRoutes(ctx: RouteDeps): RouteDef[] {
-  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx)];
+export function allRoutes(ctx: RouteDeps & { challenges: ChallengeStore }): RouteDef[] {
+  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx)];
 }
 
 export function createApp(config: ServerConfig, deps: Deps, opts: { store?: ServerStore; log?: Logger } = {}): App {
@@ -61,8 +65,22 @@ export function createApp(config: ServerConfig, deps: Deps, opts: { store?: Serv
   let draining = false;
   let closed = false;
 
-  const routes = allRoutes({ config, store, deps, log, limiter, app: { draining: () => draining } });
-  const handler = createRouter({ routes, config, deps, log, limiter, authenticate: () => null });
+  const challenges = createChallengeStore(deps, config.audience);
+
+  const authenticate = (token: string): Authed | null => {
+    const { authed, touch } = store.read((tx) => verifyToken(tx, deps, token));
+    if (authed && touch) {
+      try {
+        store.transaction((tx) => touchSession(tx, deps, authed.sessionId));
+      } catch {
+        // a busy store never fails the request
+      }
+    }
+    return authed;
+  };
+
+  const routes = allRoutes({ config, store, deps, log, limiter, challenges, app: { draining: () => draining } });
+  const handler = createRouter({ routes, config, deps, log, limiter, authenticate });
 
   return {
     handler,
