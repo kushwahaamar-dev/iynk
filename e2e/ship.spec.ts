@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "./support/no-egress";
 import { waitForAnimations } from "./support/settled";
 import { LOCALES } from "../src/i18n/config";
+import common from "../src/i18n/messages/en/common.json";
 
 async function seriousViolations(page: import("@playwright/test").Page) {
   const results = await new AxeBuilder({ page }).analyze();
@@ -37,7 +38,6 @@ test("an unknown page with no language is the global 404 with the six languages"
   expect(await seriousViolations(page)).toEqual([]);
 });
 
-import common from "../src/i18n/messages/en/common.json";
 
 test("robots.txt points at the sitemap", async ({ request }) => {
   const response = await request.get("/robots.txt");
