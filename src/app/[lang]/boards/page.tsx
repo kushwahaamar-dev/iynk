@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BoardProgress } from "@/components/boardlab/BoardProgress";
 import { CatalogueCard, CatalogueGrid, CatalogueHead, CataloguePage, SpecLine, TagLine } from "@/components/catalogue/Catalogue";
+import { PageSkeleton } from "@/components/ui";
 import { htmlLang, isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { getMessages, getT } from "@/i18n/server";
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function BoardsPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="list" />}>
       <Boards params={params} />
     </Suspense>
   );
@@ -51,7 +52,7 @@ async function Boards({ params }: Pick<Props, "params">) {
         countText={t("index.count", { count: boards.length })}
         numberLocale={htmlLang(lang)}
       />
-      <div className="mt-[clamp(48px,6vw,96px)]">
+      <div className="mt-12 md:mt-24">
         <CatalogueGrid testId="board-grid">
           {boards.map(({ id, board, meta, tc }, i) => {
             const mcu = board.mcu;

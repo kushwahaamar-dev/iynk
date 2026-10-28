@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CatalogueCard, CatalogueGrid, CatalogueGroup, CatalogueHead, CataloguePage, TagLine } from "@/components/catalogue/Catalogue";
 import { BenchProgress } from "@/components/robotics/BenchProgress";
+import { PageSkeleton } from "@/components/ui";
 import { ROBOTICS, ROBOTICS_IDS, type RoboticsId } from "@/content/ids";
 import { htmlLang, isLocale, type Locale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function RoboticsIndexPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="list" />}>
       <RoboticsIndex params={params} />
     </Suspense>
   );
@@ -67,7 +68,7 @@ async function RoboticsIndex({ params }: Pick<Props, "params">) {
         numberLocale={htmlLang(lang)}
       />
 
-      <div className="mt-[clamp(48px,6vw,96px)]">
+      <div className="mt-12 md:mt-24">
         {benchesByMonth().map(({ month, ids }) => {
           const { kicker, title } = monthParts(t(`index.months.m${month}`));
           const monthKeys = ids.flatMap((id) => {
@@ -99,7 +100,7 @@ async function RoboticsIndex({ params }: Pick<Props, "params">) {
                       href={keys ? `/${lang}/robotics/${id}` : undefined}
                       openLabel={t("index.open", { name })}
                       sub={t(`benches.${id}.teaches`)}
-                      specs={<p className="font-ui text-xs leading-5">{board ? t("index.onMat", { board }) : t("index.ownSupply")}</p>}
+                      specs={<p className="text-xs leading-5">{board ? t("index.onMat", { board }) : t("index.ownSupply")}</p>}
                       tags={<TagLine label={t("index.tagsLabel")} items={meta.tags.map((tag) => t(`tags.${tag as TagKey}`))} />}
                       progress={
                         keys ? (
