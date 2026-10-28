@@ -96,4 +96,10 @@ describe('extractBench', () => {
     expect(Object.keys((await extractBench('transistor-switch')).circuits)).toHaveLength(5);
     expect((await extractBench('esp32-s3-build')).variant).toBeTypeOf('string');
   });
+
+  it('names the default circuit and the legs of the figure parts a bench defines', async () => {
+    expect((await extractBench('transistor-switch')).circuit).toBe('bench');
+    expect((await extractBench('l298n')).circuit).toBeNull();
+    expect((await extractBench('pca9685')).partLegs['pca-arm']).toContain('SIG0');
+  });
 });

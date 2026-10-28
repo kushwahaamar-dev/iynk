@@ -137,7 +137,7 @@ export async function extractBoardHeaders(boardId) {
 }
 
 export async function extractBench(id) {
-  const { defs, withVariant } = loadRegistry();
+  const { defs, parts, withVariant } = loadRegistry();
   const def = registered('bench', id);
   const reg = def.board ? defs.board[def.board] || defs.module[def.board] : null;
   if (def.board && !reg) throw new Error(`bench ${id}: no figure for its board "${def.board}"`);
@@ -150,7 +150,9 @@ export async function extractBench(id) {
 
   const periph = def.periph || [];
   const periphHeaders = {};
+  const partLegs = {};
   for (const item of periph) {
+    if (item.part && parts[item.part]) partLegs[item.part] = parts[item.part].legs || [];
     const board = item.board && (defs.board[item.board] || defs.module[item.board]);
     if (board) periphHeaders[item.id] = headersOf(withVariant(board, item.variant || board.variant));
   }
@@ -162,9 +164,11 @@ export async function extractBench(id) {
     periph: periph.map(({ id: periphId, board, part, variant }) => ({ id: periphId, board, part, variant })),
     wires: (def.wires || []).map(({ from, to, color }) => ({ from, to, color })),
     pinMap: def.pinMap || {},
+    circuit: def.circuit ?? null,
     circuits,
     headers: base ? headersOf(base) : [],
     periphHeaders,
+    partLegs,
   });
 }
 
