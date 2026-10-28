@@ -235,9 +235,8 @@ test("About opens with its title, not a kicker that repeats it", async ({ page }
 });
 
 test("without the AI service, the Together lede doesn't promise translated chat", async ({ page }) => {
-  // The test server has no AI key, so the lobby says the AI tools aren't set up.
+  // The test server has no AI key, so the lobby lede leaves out the translated-chat promise.
   await page.goto("/en/together");
-  await expect(page.getByText(together.lobby.aiOff)).toBeVisible();
   await expect(page.getByText(together.lobby.ledePlain)).toBeVisible();
   await expect(page.getByText(together.lobby.lede)).toHaveCount(0);
 });

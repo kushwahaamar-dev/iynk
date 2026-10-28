@@ -1,17 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { useTogetherT, type TogetherT } from "@/components/realtime/messages";
-import { Action, Note, eyebrow, quietField, sectionTitle } from "@/components/editorial/Editorial";
+import { Action, eyebrow, quietField, sectionTitle } from "@/components/editorial/Editorial";
 import { Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
 import { createRoom, parseRoomInput, probeRoom, roomLink, type ProbeResult } from "@/lib/realtime";
 import { roomPath } from "./api";
-import { Buddies } from "./Buddies";
 import type { LobbyItem } from "./strings";
 
 const LABS: LabKind[] = ["board", "robotics", "drone"];
@@ -139,37 +138,25 @@ export function LobbyLede({ className }: { className?: string }) {
   return <p className={className}>{t(useAiOff() ? "lobby.ledePlain" : "lobby.lede")}</p>;
 }
 
-/** The /together lobby: start or join a room and Build Buddies. */
+/** The /together lobby: start or join a room. */
 export function Lobby({ items }: { items: LobbyItem[] }) {
   const t = useTogetherT()!;
-  const titles = useMemo(() => new Map(items.map((item) => [`${item.lab}:${item.id}`, item.title])), [items]);
-  // Both tools below need the AI service: without it they are one line, not two cards that say "not set up".
-  const aiOff = useAiOff();
 
   return (
-    <>
-      {/* grid-cols-1 keeps the one phone column at the page width; an implicit column grows to the widest select option. */}
-      <div className="mt-[clamp(72px,10vw,160px)] grid grid-cols-1 border-t border-rule md:grid-cols-2">
-        <section aria-labelledby="together-start" className="flex flex-col gap-6 pt-6 pb-10 sm:pt-8 md:pe-[clamp(24px,4vw,64px)]">
-          <RoomHead id="together-start" index="01" title={t("lobby.create.title")} hint={t("lobby.create.hint")} />
-          <StartRoom items={items} t={t} />
-        </section>
-        <section
-          aria-labelledby="together-join"
-          className="flex flex-col gap-6 border-t border-rule pt-6 pb-10 sm:pt-8 md:border-t-0 md:border-s md:ps-[clamp(24px,4vw,64px)]"
-        >
-          <RoomHead id="together-join" index="02" title={t("lobby.join.title")} hint={t("lobby.join.hint")} />
-          <JoinRoom t={t} />
-        </section>
-      </div>
-      {aiOff ? (
-        <div className="mt-10">
-          <Note>{t("lobby.aiOff")}</Note>
-        </div>
-      ) : (
-        <Buddies t={t} titles={titles} index="03" />
-      )}
-    </>
+    // grid-cols-1 keeps the one phone column at the page width; an implicit column grows to the widest select option.
+    <div className="mt-[clamp(72px,10vw,160px)] grid grid-cols-1 border-t border-rule md:grid-cols-2">
+      <section aria-labelledby="together-start" className="flex flex-col gap-6 pt-6 pb-10 sm:pt-8 md:pe-[clamp(24px,4vw,64px)]">
+        <RoomHead id="together-start" index="01" title={t("lobby.create.title")} hint={t("lobby.create.hint")} />
+        <StartRoom items={items} t={t} />
+      </section>
+      <section
+        aria-labelledby="together-join"
+        className="flex flex-col gap-6 border-t border-rule pt-6 pb-10 sm:pt-8 md:border-t-0 md:border-s md:ps-[clamp(24px,4vw,64px)]"
+      >
+        <RoomHead id="together-join" index="02" title={t("lobby.join.title")} hint={t("lobby.join.hint")} />
+        <JoinRoom t={t} />
+      </section>
+    </div>
   );
 }
 

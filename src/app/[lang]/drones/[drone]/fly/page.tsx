@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getDataMessages } from "@/components/data";
 import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
 import { loadCraft } from "@/components/dronelab/data";
@@ -45,12 +44,11 @@ export default function FlyPage({ params }: Props) {
 async function Fly({ params }: Pick<Props, "params">) {
   const { lang, drone } = await params;
   if (!isLocale(lang)) notFound();
-  const [craft, messages, flight, pool, data] = await Promise.all([
+  const [craft, messages, flight, pool] = await Promise.all([
     loadCraft(lang, drone),
     getMessages(lang, "dronelab"),
     getMessages(lang, "flight"),
     challengePool(lang),
-    getDataMessages(lang),
   ]);
   if (!craft) notFound();
   return (
@@ -62,7 +60,6 @@ async function Fly({ params }: Pick<Props, "params">) {
         messages={messages}
         flight={flight}
         pool={pool}
-        board={data.leaderboard}
         notice={<UntranslatedNotice lang={lang} textLang={craft.textLang} variant="chip" />}
       />
     </LabRoom>

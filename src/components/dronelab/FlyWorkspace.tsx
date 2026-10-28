@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useState, useSyncExternalStore, type ReactNode } from "react";
 import type { DroneContent } from "@/content/schema";
-import { Leaderboard, type DataMessages } from "@/components/data";
 import { LabDock } from "@/components/dock/LabDock";
 import type { FigureHandle } from "@/components/figure";
 import { BreakIt } from "@/components/flight/BreakIt";
-import { challengeWords, DailyChallengeCard, type ChallengeEntry } from "@/components/flight/DailyChallenge";
+import { DailyChallengeCard, type ChallengeEntry } from "@/components/flight/DailyChallenge";
 import { FlightRange } from "@/components/flight/FlightRange";
 import { useRoomGhosts } from "@/components/flight/room-ghosts";
 import { SoundToggle } from "@/components/settings";
@@ -17,7 +16,6 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { StatStrip } from "@/components/ui/Stat";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
-import { createTranslator } from "@/i18n/translate";
 import { calc } from "@/lib/drone/calc";
 import { designInput } from "@/lib/drone/design";
 import { canArm, droneProgressKeys, type ArmRule } from "@/lib/dronelab/bench";
@@ -30,7 +28,6 @@ import { progressKey } from "@/lib/progress/keys";
 import { markDone, recordBest } from "@/lib/progress/progress";
 import { useRoom, withRoom } from "@/lib/realtime";
 import { playSound } from "@/lib/sound";
-import { track } from "@/lib/telemetry";
 import { CraftProgress } from "./CraftProgress";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { contentT, droneLabT, formatNumber, type ContentT, type DroneLabMessages, type DroneLabT } from "./text";
@@ -43,7 +40,6 @@ type Props = {
   flight: Messages["flight"];
   /** Every craft that flies, for the daily challenge. */
   pool: ChallengeEntry[];
-  board: DataMessages["leaderboard"];
   /** The untranslated chip, from the server page. */
   notice?: ReactNode;
 };
@@ -51,14 +47,11 @@ type Props = {
 const noSubscribe = () => () => {};
 const readSearch = () => window.location.search;
 const noSearch = () => "";
-/** The leaderboard takes 1 s to 1 h (the ingest's bounds). */
-const onBoard = (ms: number) => ms >= 1000 && ms <= 3_600_000;
 
-export function FlyWorkspace({ lang, content, text, messages, flight, pool, board, notice }: Props) {
+export function FlyWorkspace({ lang, content, text, messages, flight, pool, notice }: Props) {
   const room = useRoom();
   const t = useMemo(() => droneLabT(lang, messages), [lang, messages]);
   const ct = useMemo(() => contentT(lang, content.id, text), [lang, content.id, text]);
-  const ft = useMemo(() => createTranslator(lang, flight, "flight"), [lang, flight]);
   const [store] = useState(() => createFlyStore(content));
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const [figure, setFigure] = useState<FigureHandle | null>(null);
@@ -106,25 +99,18 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, boar
   }, [content, ct, course]);
 
   // every event has its sound (silent until sound is on); a finished lap, run or mission counts for the course
-  // flown, the autopilot demo's never does. Usage telemetry (while sharing is on) counts take-offs for the live
-  // counter and sends finished laps to the leaderboards, never one flown with something broken on purpose.
+  // flown, the autopilot demo's never does
   const onEvent = useCallback(
     (event: FlightEvent) => {
       for (const name of sfxFor(event) ?? []) playSound(name);
       if (!flightCourse) return;
-      if (event.type === "takeoff") track("flight.start", { craft: id, course: flightCourse.id });
       const done = finishOf(event);
       if (!done || done.demo) return;
       const key = progressKey.droneCourse(id, flightCourse.id);
       recordBest(key, done.time, "lower");
       markDone(key);
       if (broken) return;
-      const timeMs = Math.round(done.time * 1000);
-      if (onBoard(timeMs)) track("flight.lap", { course: `${id}-${flightCourse.id}`, timeMs });
-      if (challenge && challenge.course === flightCourse.id) {
-        if (onBoard(timeMs)) track("flight.lap", { course: challenge.board, timeMs });
-        if (saveChallengeBest(challenge.date, done.time)) bestSaved();
-      }
+      if (challenge && challenge.course === flightCourse.id && saveChallengeBest(challenge.date, done.time)) bestSaved();
     },
     [flightCourse, id, broken, challenge],
   );
@@ -202,16 +188,6 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, boar
         onStop={() => store.dispatch({ type: "challenge", challenge: null })}
         t={flight}
       />
-      {flightCourse && course ? (
-        <Leaderboard
-          key={challenge?.board ?? flightCourse.id}
-          course={challenge?.board ?? `${id}-${flightCourse.id}`}
-          courseLabel={
-            challenge ? ft("challenge.board", { course: challengeWords(pool, challenge).course, date: challenge.date }) : ct(course.title)
-          }
-          messages={board}
-        />
-      ) : null}
     </Panel>
   );
 
