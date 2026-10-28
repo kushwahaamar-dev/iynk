@@ -125,7 +125,10 @@
         "unreachableHint": "Si cette adresse est sur une autre origine, figure-t-elle dans IYNK_CONNECT_ORIGINS ?",
         "ready": "Connecté.",
         "needsEnrol": "Ce serveur demande un code d'inscription à la personne qui l'administre.",
-        "closed": "Ce serveur n'accepte pas de nouvelles personnes pour le moment."
+        "closed": "Ce serveur n'accepte pas de nouvelles personnes pour le moment.",
+        "checking": "Vérification de ce serveur.",
+        "insecure": "Les navigateurs n'autorisent la connexion qu'en https. Utilisez une adresse https ou localhost.",
+        "upgrade": "Ce serveur demande une version plus récente d'iynk. Mettez l'application à jour."
       },
       "enrolled": "Vous êtes connecté sur ce serveur.",
       "signOut": "Se déconnecter",
@@ -133,9 +136,11 @@
         "title": "Quitter ce serveur",
         "body": "Cela vous retire du serveur et supprime votre liste de contacts sur celui-ci. Vos projets restent dans ce navigateur.",
         "confirm": "Quitter le serveur",
-        "grace": "Vous avez {hours} heures pour changer d'avis."
+        "grace": "Vous avez {hours} heures pour changer d'avis.",
+        "cancel": "Garder mon compte"
       },
-      "guide": "Les contacts demandent un serveur. Le guide d'auto-hébergement explique comment en installer un."
+      "guide": "Les contacts demandent un serveur. Le guide d'auto-hébergement explique comment en installer un.",
+      "addressInvalid": "Saisissez une adresse comme https://iynk.example, sans chemin."
     }
   }
 }

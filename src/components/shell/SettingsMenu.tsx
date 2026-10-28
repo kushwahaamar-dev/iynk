@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { KeysDialog, OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
+import { ServerPanel } from "@/components/settings/ServerPanel";
 import { UsageToggle } from "@/components/settings/UsageToggle";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
@@ -43,6 +44,7 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
         <Toggle label={t("motion.label")} checked={reduceMotion} onChange={(on) => setSetting("reduceMotion", on)} className="py-1" />
         <UsageToggle className="pt-2" />
       </div>
+      <ServerPanel />
       <Button
         variant="secondary"
         size="sm"

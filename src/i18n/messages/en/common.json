@@ -125,7 +125,10 @@
         "unreachableHint": "If this address is on another origin, is it listed in IYNK_CONNECT_ORIGINS?",
         "ready": "Connected.",
         "needsEnrol": "This server needs an enrolment code from whoever runs it.",
-        "closed": "This server is not accepting new people right now."
+        "closed": "This server is not accepting new people right now.",
+        "checking": "Checking this server.",
+        "insecure": "Browsers only allow sign-in over https. Use an https address or localhost.",
+        "upgrade": "This server needs a newer version of iynk. Update the app."
       },
       "enrolled": "You are signed in on this server.",
       "signOut": "Sign out",
@@ -133,9 +136,11 @@
         "title": "Leave this server",
         "body": "This removes you from the server and deletes your buddy list there. Your projects stay in this browser.",
         "confirm": "Leave server",
-        "grace": "You have {hours} hours to change your mind."
+        "grace": "You have {hours} hours to change your mind.",
+        "cancel": "Keep my account"
       },
-      "guide": "Buddies need a server. The self-hosting guide shows how to run one."
+      "guide": "Buddies need a server. The self-hosting guide shows how to run one.",
+      "addressInvalid": "Enter an address like https://iynk.example, with no path."
     }
   }
 }

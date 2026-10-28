@@ -125,7 +125,10 @@
         "unreachableHint": "Si esta dirección está en otro origen, ¿figura en IYNK_CONNECT_ORIGINS?",
         "ready": "Conectado.",
         "needsEnrol": "Este servidor necesita un código de alta de quien lo administra.",
-        "closed": "Este servidor no acepta personas nuevas ahora mismo."
+        "closed": "Este servidor no acepta personas nuevas ahora mismo.",
+        "checking": "Comprobando este servidor.",
+        "insecure": "Los navegadores solo permiten iniciar sesión por https. Usa una dirección https o localhost.",
+        "upgrade": "Este servidor necesita una versión más reciente de iynk. Actualiza la app."
       },
       "enrolled": "Has iniciado sesión en este servidor.",
       "signOut": "Cerrar sesión",
@@ -133,9 +136,11 @@
         "title": "Salir de este servidor",
         "body": "Esto te quita del servidor y borra allí tu lista de amigos. Tus proyectos se quedan en este navegador.",
         "confirm": "Salir del servidor",
-        "grace": "Tienes {hours} horas para cambiar de idea."
+        "grace": "Tienes {hours} horas para cambiar de idea.",
+        "cancel": "Conservar mi cuenta"
       },
-      "guide": "Los amigos necesitan un servidor. La guía de autoalojamiento explica cómo montar uno."
+      "guide": "Los amigos necesitan un servidor. La guía de autoalojamiento explica cómo montar uno.",
+      "addressInvalid": "Escribe una dirección como https://iynk.example, sin ruta."
     }
   }
 }

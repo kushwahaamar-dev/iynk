@@ -1,6 +1,8 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./support/no-egress";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
+import common from "../src/i18n/messages/en/common.json";
+import shell from "../src/i18n/messages/en/shell.json";
 import { dockCopy, openDock } from "./dock-shared";
 
 const PAGES = [
@@ -55,4 +57,25 @@ test("a visitor with no keys and no server walks the app without a single failur
   await expect(dock.getByTestId("not-set-up").last()).toBeVisible();
 
   expect(trouble).toEqual([]);
+});
+
+test("with no server configured, Settings says the server is needed and nothing fails", async ({ page }) => {
+  const trouble = watchTrouble(page);
+  const consoleErrors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+
+  for (const path of ["/en", "/en/together"]) {
+    await page.goto(path);
+    await page.waitForLoadState("networkidle");
+    await page.getByRole("button", { name: shell.settings.label }).click();
+    const panel = page.getByRole("dialog", { name: shell.settings.label });
+    await expect(panel.getByText(common.client.server.status.off)).toBeVisible();
+    await expect(panel.getByRole("link", { name: common.client.server.guide })).toBeVisible();
+    await page.keyboard.press("Escape");
+  }
+
+  expect(trouble).toEqual([]);
+  expect(consoleErrors).toEqual([]);
 });
