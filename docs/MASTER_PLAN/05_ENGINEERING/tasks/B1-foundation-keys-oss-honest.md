@@ -722,6 +722,14 @@ Every package has the same four blocks: identity, intent, implementation, verifi
 
 ### T-B1-13. CSP and `/boot.js`
 
+**Decided 2026-10-28 (D-022, orchestrator; overrides this card where they differ).** S-B1-01 failed, so build fallback 1. `buildCsp` returns
+the D-022 directive list (`script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'`, `'unsafe-eval'` only when `dev`; `style-src 'self'
+'unsafe-inline'`; no `style-src-attr`; the other directives as below). `buildFigureCsp` returns the D-B1-3 figure policy, applied to
+`/figures/:path*` after the page rule. No `experimental.sri`, no `public/boot.js`: the theme boot script stays inline (drop the boot.js
+test and the no-cache rule). Set zod to jitless (`z.config({ jitless: true })`) in one module that loads before any schema runs in the
+browser, so `e2e/csp.spec.ts` sees 0 violations. The unit test asserts the D-022 string exactly and that `unsafe-eval` appears only in
+dev. Release blockers stay: any violation, any page error, a figure that stops working.
+
 | Block | Field | Value |
 |---|---|---|
 | Identity | id, subsystem, phase, priority | T-B1-13, security headers, B1, must |
@@ -1255,7 +1263,7 @@ Every package has the same four blocks: identity, intent, implementation, verifi
 | Key never leaks | Canary absent from responses, logs, ledger file, `iynk:v1`, copied bug report | T-B1-01, 05, 06, 27, 29 |
 | Per-key cap survives restart | `ledger.test.ts`, `serpapi.test.ts` | T-B1-06, T-B1-08 |
 | Perf baselines recorded | `budgets.json` committed; second run passes | T-B1-24 |
-| Idle CPU | under 5 percent on three pages, or recorded no-go and deferred to B12 | S-B1-02, T-B1-25 |
+| Idle CPU | under 5 percent on three pages, or recorded no-go and deferred to B12. **Result (orchestrator, 2026-10-28):** T-B1-25 is kept, not reverted: it took /en, the blink lesson and the uno-r3 bench from 62, 65 and 48 percent to 6.6 to 7.9 percent, and no figure test changed meaning. The last step under 5 percent moves to B12 (figure host rebuilt when the labs move in). | S-B1-02, T-B1-25 |
 | Editor on demand (the wallet chunk left with B0) | `node scripts/bundle-report.mjs` lesson route at least 150 KB gzip lower | T-B1-22 |
 | New reader reaches a running app | Clean-clone walk (agent) and Amar's own run | T-B1-15, T-B1-29, For Amar 4 |
 | Licence state is honest | `LICENSE-PENDING.md` present, no SPDX header, provenance check lists open rows | T-B1-17 |

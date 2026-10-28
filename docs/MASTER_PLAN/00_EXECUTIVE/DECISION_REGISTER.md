@@ -32,6 +32,7 @@ decision; they no longer steer the build.
 | D-019 | Server store: one SQLite file behind a `ServerStore` port (ADR-0004). Postgres is a could: a later adapter behind `ServerStore`, not built, not planned in any phase. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
 | D-020 | AI keys: the person's key lives in browser storage, or is sent per call through their own server's stateless relay. A key is never stored by the server and never enters a project, export, share, room, log or event. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
 | D-021 | Share links are off by default per project and, when made, are immutable read-only snapshots with an expiry that the owner can revoke. | Drafted by a review agent, adopted by the orchestrator; Amar may overrule |
+| D-022 | Page CSP keeps `'unsafe-inline'` for scripts and styles (spike S-B1-01 fallback 1); every other directive of ADR-0405 stays strict, figures keep their own policy (D-B1-3), zod runs jitless. A nonce policy is a later upgrade. | Decided by the orchestrator during the build (Amar asleep, full autonomy); Amar may overrule |
 
 How the earlier decisions stand now:
 
@@ -393,6 +394,24 @@ prerequisite of J-08 and J-09 (`03_PRODUCT/USER_JOURNEYS.md` section 15). The le
 COMMUNITY 3.10: tracks per kind of effort, personal bests once per subject, buddies who opted in, no combined score, no
 streak, no season.
 
+### D-022. Page Content Security Policy
+
+**Decision.** Every page route sends `default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'` (plus `'unsafe-eval'`
+in dev only)`; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; connect-src 'self'` plus the origins in `IYNK_CONNECT_ORIGINS`
+`; img-src 'self' data: blob:; font-src 'self'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'none';
+form-action 'self'`. `/figures/:path*` keeps the figure policy of D-B1-3. zod is set to `jitless` so its `new Function` probe raises no
+violation. No `experimental.sri` and no `/boot.js`: with inline scripts allowed they add build time and a request for no gain.
+
+**Why.** Spike S-B1-01 (`08_RESEARCH_SPIKES/FA-05-csp-hashes/REPORT.md`) failed the strict policy: Next emits 25 to 30 inline scripts per
+page (flight payload chunks that change per page and per build), so a hash list cannot come from `next.config.ts`, and React never
+hydrated. Of the three fallbacks, this one is the only one measured with 0 page errors, it keeps the static shell (D-011 low-end budgets),
+and the rest of the policy still holds: `connect-src` stops a page from sending a stored key (D-020) to another origin, `object-src`,
+`base-uri`, `form-action` and `frame-ancestors` stay closed. No page CSP (fallback 3) gives none of that. A `proxy.ts` nonce (fallback 2)
+makes every `/[lang]` page render per request and was not measured. R-006's "no `unsafe-inline` for scripts" is not met; the nonce
+upgrade stays an open item.
+**Evidence.** VERIFIED by the spike (section 5): 0 page errors on five pages, 0 violations in five figure frames, one zod eval probe.
+**Cited by.** B1 T-B1-13, ADR-0405, PRD R-006.
+
 ## ADR number ranges
 
 ADR ids are unique across the plan. Each document owns one range. No file is renamed (RC-61): the ranges follow what the owner documents and the files in `04_ARCHITECTURE/ADR/` already use. A reference such as "ADR-0834" must mean one record only. New documents take the next free block from 0860.
@@ -430,7 +449,8 @@ grants and the Solana layer is gone: D-013 and D-016 settled or shelved all of i
 | RS-11 (AI provider behaviour) | PENDING; the relay and browser-direct paths both stay (D-020) | Provider choice and fallback |
 | RS-14 to RS-19 | PENDING | A later pass folds them in |
 | RS-06 idle-skip test | Pico engine opt-in, desktop only | Decides whether MicroPython can reach real time |
-| D-018 to D-021 | As written above | Amar may overrule any of them |
+| D-018 to D-022 | As written above | Amar may overrule any of them |
+| Strict page CSP with a `proxy.ts` nonce (R-006) | D-022: `'unsafe-inline'` scripts, rest strict | Costs the static shell; measure before switching |
 | 10-fault real-board check (E4) | Not run | Gate for relying on the diagnosis claims (D-007) |
 
 ## Change log
