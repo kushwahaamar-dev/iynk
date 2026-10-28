@@ -52,8 +52,7 @@ Every item is a hand-inked 3D figure you can turn all the way round, see through
   that lesson, it asks them first, with a question that makes them explain it.
 - **Any language.** The whole app is in English, Spanish, French, German, Chinese and Hindi, down to the labels inside
   the figures. Room chat and voice messages (Muse Voice Transcribe) are translated into each reader's language.
-- **Build Night, Build Buddies, Build Stories.** Plan one project for a group with a role for each person, find people
-  whose skills complement yours, and turn a session into a short story with an illustrated cover (Muse Image).
+- **Build Buddies.** Find people whose skills complement yours.
 
 ### For real
 
@@ -61,25 +60,18 @@ Every item is a hand-inked 3D figure you can turn all the way round, see through
   a budget optimiser re-runs the drone maths on every battery, motor and prop combination at today's prices and picks
   the build that still flies within your budget. It also finds makerspaces, electronics shops and flying fields near
   you, and tutorials on YouTube.
-- **Proof of Build.** Pass a drone's bench safety checks and the server re-runs your exact run before an Anchor program
-  on Solana devnet writes a credential to your wallet. Anyone can verify it straight from the chain, and sponsors can
-  lock bounties that pay out in the same transaction.
-- **Leaderboards.** Laps and lesson passes land in Postgres with TimescaleDB (Tiger Data), where real-time continuous
-  aggregates drive the flight leaderboards.
-- **An MCP server.** AI assistants can search the catalogue, run the drone calculator, price parts, plan a build night
+- **An MCP server.** AI assistants can search the catalogue, run the drone calculator, price parts
   and open a room through `/api/mcp`.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-  B["Browser<br/>Next.js app, figures,<br/>interpreters, flight sim"] -->|"/api/ai, /api/search,<br/>/api/solana, /api/mcp"| V["Vercel functions"]
+  B["Browser<br/>Next.js app, figures,<br/>interpreters, flight sim"] -->|"/api/ai, /api/search,<br/>/api/mcp"| V["Vercel functions"]
   B <-->|WebSocket| R["Room relay<br/>Node + ws, Docker, Caddy"]
   V --> M["Meta Model API<br/>Muse Spark, Image, Voice"]
   V --> G["Gemini<br/>fallback"]
   V --> S["SerpApi"]
-  V --> T["Tiger Data<br/>Postgres + TimescaleDB"]
-  V --> SOL["Solana devnet<br/>iynk_passport"]
 ```
 
 - **Frontend:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS, CodeMirror. Figures are SVG drawn with
@@ -87,12 +79,9 @@ flowchart LR
   ([figures](docs/FIGURES.md), [bench engine](docs/FIGURES-BENCH.md), [drone engine](docs/FIGURES-DRONE.md)).
 - **Simulation:** interpreters for an Arduino C++ subset, MicroPython, Python and a Verilog subset; a circuit solver;
   a drone calculator; a flight model. All in the browser.
-- **Server:** Vercel functions for AI, search, data and Solana. API keys stay on the server, every call is
+- **Server:** Vercel functions for AI and search. API keys stay on the server, every call is
   rate-limited, and Gemini takes over when Meta is busy.
 - **Realtime:** a small Node WebSocket relay (`server/realtime`), run in Docker behind Caddy.
-- **Data:** Postgres with TimescaleDB (`db/migrations`): an events hypertable, continuous aggregates and opt-in buddy
-  profiles.
-- **Chain:** an Anchor program (`solana/programs/iynk_passport`), tested on a local validator.
 
 ## Run it locally
 
@@ -109,12 +98,10 @@ The labs, the figures, the interpreters and the flight sim work with no keys at 
 
 | Variable | Turns on |
 |---|---|
-| `META_API_KEY` | the lab partner, translation, voice, story covers, Build Night and Build Buddies matching |
+| `META_API_KEY` | the lab partner, translation, voice and Build Buddies matching |
 | `GEMINI_API_KEY` | the fallback model when Meta is busy |
 | `SERPAPI_KEY` | live prices, places, events, videos and datasheet answers |
-| `DATABASE_URL` | leaderboards and Build Buddies (run `node scripts/db-migrate.mjs` once) |
 | `NEXT_PUBLIC_REALTIME_URL` | rooms across devices (without it, rooms work between tabs of one browser) |
-| `SOLANA_ISSUER_KEYPAIR`, `NEXT_PUBLIC_SOLANA_PROGRAM_ID` | Proof of Build on devnet |
 
 Rooms across devices need the relay:
 
@@ -130,7 +117,6 @@ npm run typecheck   # TypeScript
 npm run lint        # ESLint
 npm test            # Vitest: about 2,800 unit tests, including every lesson's reference and starter code
 npm run e2e         # Playwright end-to-end tests with axe accessibility checks
-cd solana && npm test   # the Anchor program on a local validator
 ```
 
 ## Project layout
@@ -139,12 +125,10 @@ cd solana && npm test   # the Anchor program on a local validator
 src/app            pages and API routes (one page per lab item, in six languages)
 src/components     lab UIs, the dock (partner, rooms, parts), shell
 src/content        boards, benches and drones: lessons, steps, faults, checks
-src/lib            interpreters, circuit solver, drone calculator, flight model, realtime, AI, search, Solana
+src/lib            interpreters, circuit solver, drone calculator, flight model, realtime, AI, search
 src/i18n           messages and lesson prose in six languages
 figures            figure sources and engines (built into public/figures)
 server/realtime    the room relay
-solana             the Anchor program, its tests and deploy scripts
-db/migrations      the TimescaleDB schema
 e2e                Playwright tests
 docs/facts         sourced fact sheets for every board and drone
 ```
