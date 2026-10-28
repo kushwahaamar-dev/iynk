@@ -115,6 +115,27 @@
         "search": "Collez une clé de recherche dans Clés et utilisation.",
         "server": "Demandez à la personne qui gère ce serveur de l'activer."
       }
+    },
+    "server": {
+      "title": "Serveur",
+      "address": "Adresse du serveur",
+      "status": {
+        "off": "Cela nécessite un serveur. Aucun n'est configuré.",
+        "unreachable": "Impossible de joindre ce serveur.",
+        "unreachableHint": "Si cette adresse est sur une autre origine, figure-t-elle dans IYNK_CONNECT_ORIGINS ?",
+        "ready": "Connecté.",
+        "needsEnrol": "Ce serveur demande un code d'inscription à la personne qui l'administre.",
+        "closed": "Ce serveur n'accepte pas de nouvelles personnes pour le moment."
+      },
+      "enrolled": "Vous êtes connecté sur ce serveur.",
+      "signOut": "Se déconnecter",
+      "leave": {
+        "title": "Quitter ce serveur",
+        "body": "Cela vous retire du serveur et supprime votre liste de contacts sur celui-ci. Vos projets restent dans ce navigateur.",
+        "confirm": "Quitter le serveur",
+        "grace": "Vous avez {hours} heures pour changer d'avis."
+      },
+      "guide": "Les contacts demandent un serveur. Le guide d'auto-hébergement explique comment en installer un."
     }
   }
 }

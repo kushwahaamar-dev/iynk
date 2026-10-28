@@ -115,6 +115,27 @@
         "search": "Füge unter Schlüssel und Nutzung einen Suchschlüssel ein.",
         "server": "Bitte die Person, die diesen Server betreibt, es einzuschalten."
       }
+    },
+    "server": {
+      "title": "Server",
+      "address": "Serveradresse",
+      "status": {
+        "off": "Dafür braucht es einen Server. Es ist keiner eingerichtet.",
+        "unreachable": "Dieser Server ist nicht erreichbar.",
+        "unreachableHint": "Falls diese Adresse auf einem anderen Origin liegt: Steht sie in IYNK_CONNECT_ORIGINS?",
+        "ready": "Verbunden.",
+        "needsEnrol": "Dieser Server braucht einen Anmeldecode von der Person, die ihn betreibt.",
+        "closed": "Dieser Server nimmt gerade keine neuen Leute auf."
+      },
+      "enrolled": "Du bist auf diesem Server angemeldet.",
+      "signOut": "Abmelden",
+      "leave": {
+        "title": "Diesen Server verlassen",
+        "body": "Du wirst vom Server entfernt und deine Buddy-Liste dort wird gelöscht. Deine Projekte bleiben in diesem Browser.",
+        "confirm": "Server verlassen",
+        "grace": "Du hast {hours} Stunden Zeit, es dir anders zu überlegen."
+      },
+      "guide": "Buddys brauchen einen Server. Die Anleitung zum Selbsthosten zeigt, wie du einen betreibst."
     }
   }
 }

@@ -115,6 +115,27 @@
         "search": "Pega una clave de búsqueda en Claves y uso.",
         "server": "Pide a quien gestiona este servidor que lo active."
       }
+    },
+    "server": {
+      "title": "Servidor",
+      "address": "Dirección del servidor",
+      "status": {
+        "off": "Esto necesita un servidor. No hay ninguno configurado.",
+        "unreachable": "No se pudo conectar con este servidor.",
+        "unreachableHint": "Si esta dirección está en otro origen, ¿figura en IYNK_CONNECT_ORIGINS?",
+        "ready": "Conectado.",
+        "needsEnrol": "Este servidor necesita un código de alta de quien lo administra.",
+        "closed": "Este servidor no acepta personas nuevas ahora mismo."
+      },
+      "enrolled": "Has iniciado sesión en este servidor.",
+      "signOut": "Cerrar sesión",
+      "leave": {
+        "title": "Salir de este servidor",
+        "body": "Esto te quita del servidor y borra allí tu lista de amigos. Tus proyectos se quedan en este navegador.",
+        "confirm": "Salir del servidor",
+        "grace": "Tienes {hours} horas para cambiar de idea."
+      },
+      "guide": "Los amigos necesitan un servidor. La guía de autoalojamiento explica cómo montar uno."
     }
   }
 }
