@@ -35,7 +35,7 @@ export function StageDrawer({ title, summary, open, onOpenChange, height = 200, 
         className="flex min-h-10 w-full items-center gap-3 bg-sunken px-3 text-start text-sm font-semibold focus-visible:outline-offset-[-4px] [@media(pointer:coarse)]:min-h-11"
       >
         <span className="shrink-0">{title}</span>
-        <span className="min-w-0 flex-1 truncate font-ui text-xs text-muted">{summary}</span>
+        <span className="min-w-0 flex-1 truncate font-ui text-xs tabular-nums text-muted">{summary}</span>
         <Icon name="chevron-down" size={20} className={cx("shrink-0 motion-move", open && "rotate-180")} />
       </button>
       <div id={id} hidden={!open} className="overflow-y-auto border-t border-rule" style={{ height }}>

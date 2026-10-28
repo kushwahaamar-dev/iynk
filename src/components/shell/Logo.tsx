@@ -16,7 +16,7 @@ export function Logo({ height = 22, className }: { height?: number; className?: 
       className={className}
     >
       <path d={INK} fill="currentColor" />
-      <circle cx="66" cy="-655" r="64" fill="var(--accent, #ef6a4c)" />
+      <circle cx="66" cy="-655" r="64" fill="var(--accent)" />
     </svg>
   );
 }

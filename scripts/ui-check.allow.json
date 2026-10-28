@@ -82,5 +82,11 @@
     "code": "R9",
     "pattern": "^<svg$",
     "reason": "The QR code is drawn data, not an icon."
+  },
+  {
+    "file": "src/styles/tokens.css",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The film grain is a noise texture, not an icon."
   }
 ]

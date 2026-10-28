@@ -44,7 +44,7 @@ export function LocalLog() {
       {entries.length === 0 ? (
         <EmptyState icon="empty" title={t("log.empty")} className="rounded-lg bg-sunken py-4!" />
       ) : (
-        <ol className="max-h-48 overflow-y-auto rounded-lg bg-sunken p-3 font-mono text-xs" data-testid="local-log">
+        <ol className="max-h-48 overflow-y-auto rounded-lg bg-sunken p-3 font-mono text-xs tabular-nums" data-testid="local-log">
           {entries.map((entry, index) => (
             <li key={`${entry.t}-${index}`} className="break-words py-0.5">
               <time dateTime={new Date(entry.t).toISOString()} className="tabular-nums text-muted">
@@ -83,7 +83,7 @@ export function LocalLog() {
           readOnly
           rows={6}
           value={report}
-          className="font-mono text-xs"
+          className="font-mono text-xs tabular-nums"
         />
       ) : null}
     </section>
