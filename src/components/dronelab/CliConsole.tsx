@@ -105,7 +105,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
     <div className="space-y-4">
       <h2 className="sr-only">{t("cli.title", { cli: firmware.cliName })}</h2>
       <p className="text-muted">{t("cli.lede", { firmware: fwName })}</p>
-      <div className="overflow-hidden rounded-ink border-2 border-line shadow-ink">
+      <div className="overflow-hidden rounded-xl">
         <div
           ref={screen}
           role="log"
@@ -122,7 +122,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
           ))}
         </div>
         <form
-          className="flex items-center gap-2 border-t-2 border-line bg-console-well p-2"
+          className="flex items-center gap-2 bg-console-well p-2 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-console-ink"
           onSubmit={(e) => {
             e.preventDefault();
             run(draft);
@@ -167,7 +167,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
 
       {firmware.snippets.length > 0 ? (
         <section aria-labelledby={`${base}-snippets`} className="space-y-4">
-          <h3 id={`${base}-snippets`} className="ink-kicker">
+          <h3 id={`${base}-snippets`} className="kicker">
             {t("cli.snippets")}
           </h3>
           {firmware.snippets.map((snippet) => {
@@ -176,7 +176,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
               <article key={snippet.id} className="space-y-2">
                 <h4 className="text-base">
                   {ct(snippet.title)}{" "}
-                  <span className="font-ui text-xs font-normal text-muted">{snippetMode(snippet, content, t, ct)}</span>
+                  <span className="text-xs font-normal text-muted">{snippetMode(snippet, content, t, ct)}</span>
                 </h4>
                 <p className="text-sm">{ct(snippet.explain)}</p>
                 <CodeBlock
