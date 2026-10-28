@@ -31,6 +31,7 @@ describe("legacy era (initialize handshake)", () => {
   it("negotiates the client's version, or offers its newest", async () => {
     const res = await post({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "1" } } });
     expect(res.status).toBe(200);
+    expect([...res.headers.keys()].filter((h) => h.startsWith("access-control-"))).toEqual([]);
     const body = await res.json();
     expect(body.result).toMatchObject({ protocolVersion: "2025-06-18", capabilities: { tools: { listChanged: false } }, serverInfo: { name: "iynk", title: "iynk" } });
     expect(body.result.instructions).toMatch(/search_catalog/);
@@ -156,6 +157,7 @@ describe("HTTP rules", () => {
     const get = await GET();
     expect(get.status).toBe(405);
     expect(get.headers.get("allow")).toBe("POST, OPTIONS");
+    expect([...get.headers.keys()].filter((h) => h.startsWith("access-control-"))).toEqual([]);
     expect((await DELETE()).status).toBe(405);
   });
 });

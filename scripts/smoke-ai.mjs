@@ -2,7 +2,7 @@
 // Smoke test for the Meta Model API calls iynk makes (docs/hacktx/AI.md).
 // Sends the same request shapes as src/lib/server/ai/provider.ts straight to
 // the API. Reads keys from the environment or .env.local and never prints them.
-// Usage: node scripts/smoke-ai.mjs [--no-image]
+// Usage: node scripts/smoke-ai.mjs
 
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -32,9 +32,7 @@ if (!key) {
 
 const base = (process.env.META_API_BASE?.trim() || "https://api.meta.ai/v1").replace(/\/+$/, "");
 const model = process.env.META_MODEL?.trim() || "muse-spark-1.3";
-const imageModel = process.env.META_IMAGE_MODEL?.trim() || "muse-image-1.0";
 const transcribeModel = process.env.META_TRANSCRIBE_MODEL?.trim() || "muse-voice-transcribe-1.0";
-const withImage = !process.argv.includes("--no-image");
 
 const results = [];
 
@@ -132,13 +130,13 @@ function multipart(parts) {
   return { bytes: Buffer.concat(chunks), contentType: `multipart/form-data; boundary=${boundary}` };
 }
 
-console.log(`smoke-ai: ${base} with ${model}, ${imageModel}, ${transcribeModel}`);
+console.log(`smoke-ai: ${base} with ${model}, ${transcribeModel}`);
 
 await check("models list has our ids", async () => {
   const res = await fetch(`${base}/models`, { headers: { authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(20_000) });
   if (!res.ok) throw new Error(await describe(res));
   const ids = new Set(((await res.json()).data ?? []).map((m) => m.id));
-  const missing = [model, imageModel, transcribeModel].filter((id) => !ids.has(id));
+  const missing = [model, transcribeModel].filter((id) => !ids.has(id));
   if (missing.length) throw new Error(`not listed: ${missing.join(", ")}`);
 });
 
@@ -216,32 +214,6 @@ await check("structured output (translate)", async () => {
   if (!reply.texts[0].includes("⟦0⟧")) throw new Error("the protected token was lost");
   return `from=${reply.from}`;
 });
-
-if (withImage) {
-  await check("image (Muse Image)", async () => {
-    const body = await (
-      await post(
-        "/images/generations",
-        {
-          model: imageModel,
-          prompt: "A hand-inked isometric red LED on warm paper, flat colour bands, no text.",
-          n: 1,
-          size: "1024x1024",
-          response_format: "b64_json",
-          output_format: "webp",
-          reasoning_strength: "low",
-          tool_enablement: { enable_web_search: false, enable_image_search: false, enable_shell: false },
-        },
-        { timeoutMs: 120_000 },
-      )
-    ).json();
-    const image = body.data?.[0];
-    if (!image?.b64_json && !image?.url) throw new Error("no image in the response");
-    return image.b64_json ? `${Math.round((image.b64_json.length * 3) / 4 / 1024)} KB ${body.output_format ?? "webp"}` : "url";
-  });
-} else {
-  console.log("SKIP image (Muse Image): --no-image");
-}
 
 await check("transcribe (Muse Voice Transcribe, 1 s WAV)", async () => {
   const request = { model: transcribeModel, audioEncoding: "WAV", mode: "PUSH_TO_TALK", languageBias: ["English"] };

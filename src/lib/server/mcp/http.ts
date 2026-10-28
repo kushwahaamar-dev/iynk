@@ -3,21 +3,6 @@ import { env } from "@/lib/server/env";
 
 /** What /api/mcp, /api/mcp/tools/* and /api/openapi.json share at the HTTP level. */
 
-const CORS_HEADERS: Readonly<Record<string, string>> = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-headers":
-    "content-type, accept, authorization, mcp-protocol-version, mcp-method, mcp-name, mcp-session-id, last-event-id",
-  "access-control-max-age": "86400",
-};
-
-/** Adds the open CORS headers H11 allows for these routes (every other /api route serves only our origin). */
-export function withCors(res: Response, methods: string): Response {
-  const headers = new Headers(res.headers);
-  for (const [k, v] of Object.entries(CORS_HEADERS)) headers.set(k, v);
-  headers.set("access-control-allow-methods", methods);
-  return new Response(res.body, { status: res.status, headers });
-}
-
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
 /**

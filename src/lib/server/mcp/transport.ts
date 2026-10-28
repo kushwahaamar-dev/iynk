@@ -18,7 +18,7 @@ import {
   type JsonRpcRequest,
   type JsonRpcResponse,
 } from "./protocol";
-import { originAllowed, withCors } from "./http";
+import { originAllowed } from "./http";
 import { describeTool, runTool, type ToolContext } from "./registry";
 import { SERVER_INSTRUCTIONS, TOOLS, serverInfo, toolNamed } from "./tools";
 
@@ -138,18 +138,13 @@ async function dispatch(req: Request): Promise<Response> {
   return answer(...(await legacy(msg, ctx)));
 }
 
-const MCP_METHODS = "POST, OPTIONS";
-
 export async function handleMcpPost(req: Request): Promise<Response> {
-  return withCors(await dispatch(req), MCP_METHODS);
+  return dispatch(req);
 }
 
 /** GET (the old standalone SSE stream) and DELETE (old sessions) are not offered: 405, as both eras allow. */
 export function mcpMethodNotAllowed(): Response {
-  const res = apiFail(405, "method_not_allowed", "iynk's MCP endpoint takes JSON-RPC over POST. REST callers: see /api/openapi.json.", {
-    allow: MCP_METHODS,
+  return apiFail(405, "method_not_allowed", "iynk's MCP endpoint takes JSON-RPC over POST. REST callers: see /api/openapi.json.", {
+    allow: "POST, OPTIONS",
   });
-  return withCors(res, MCP_METHODS);
 }
-
-export const mcpPreflight = (): Response => withCors(new Response(null, { status: 204 }), MCP_METHODS);

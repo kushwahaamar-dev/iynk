@@ -26,7 +26,7 @@ describe("GET /api/openapi.json", () => {
   it("describes every tool as a POST operation with its schemas", async () => {
     const res = await GET();
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBeNull();
+    expect([...res.headers.keys()].filter((h) => h.startsWith("access-control-"))).toEqual([]);
     const doc = await res.json();
     expect(doc).toMatchObject({ openapi: "3.1.0", info: { title: "iynk" }, servers: [{ url: "https://iynk.test" }] });
     type Body = { content: Record<string, { schema: { type?: string; $ref?: string } }> };
@@ -52,6 +52,7 @@ describe("POST /api/mcp/tools/<name>", () => {
   it("runs a tool and returns its result as plain JSON", async () => {
     const res = await callTool("search_catalog", { query: "stepper" });
     expect(res.status).toBe(200);
+    expect([...res.headers.keys()].filter((h) => h.startsWith("access-control-"))).toEqual([]);
     const body = await res.json();
     expect(body.results[0]).toMatchObject({ lab: "robotics", id: "a4988" });
   });
