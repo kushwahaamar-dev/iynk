@@ -245,7 +245,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
             className="h-full"
           />
         ) : (
-          <p className="grid h-full place-items-center rounded-xl border-2 border-dashed border-line bg-sunken p-6">{t("fly.missing")}</p>
+          <p className="grid h-full place-items-center rounded-xl border-2 border-dashed border-rule bg-sunken p-6">{t("fly.missing")}</p>
         )
       }
       rail={rail}
