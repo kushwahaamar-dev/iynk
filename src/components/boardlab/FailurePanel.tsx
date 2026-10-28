@@ -22,7 +22,8 @@ function faultCircuit(f: FailureMode): string | null {
 function FaultRow({ f, on, onTrigger, onRepair }: { f: FailureMode; on: boolean; onTrigger: () => void; onRepair: () => void }) {
   const { t, tc } = useText();
   return (
-    <li className={cx("py-2.5", on && "-mx-4 border-s-4 border-bad bg-sunken px-3")} data-failure={f.id}>
+    <li className={cx("relative py-3", on && "-mx-3 rounded-lg bg-hover px-3")} data-failure={f.id}>
+      {on && <span aria-hidden="true" className="absolute start-1 top-7 size-1 rounded-full bg-accent" />}
       <div className="flex items-center gap-3">
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold leading-snug">{tc(f.title)}</span>
@@ -90,11 +91,11 @@ export function FailurePanel({ store, failures, figure, circuit = null }: { stor
           {reported.fix ?? null}
         </Callout>
       )}
-      <ul className="divide-y-[1.5px] divide-rule">{rows(mine.length ? mine : rest)}</ul>
+      <ul className="divide-y divide-rule">{rows(mine.length ? mine : rest)}</ul>
       {mine.length > 0 && rest.length > 0 && (
         <>
-          <p className="ink-kicker mt-3">{t("failures.more")}</p>
-          <ul className="divide-y-[1.5px] divide-rule">{rows(rest)}</ul>
+          <p className="kicker mt-3">{t("failures.more")}</p>
+          <ul className="divide-y divide-rule">{rows(rest)}</ul>
         </>
       )}
     </section>

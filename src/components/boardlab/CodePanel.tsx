@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import { IconButton } from "@/components/ui/IconButton";
+import { Skeleton } from "@/components/ui/Skeleton";
 import type { ParamChip } from "@/content/schema";
 import { canRun } from "@/lib/boardlab/engine";
 import type { BoardLabStore } from "@/lib/boardlab/store";
@@ -16,9 +17,9 @@ import { useLab } from "./useLab";
 function EditorSkeleton() {
   return (
     <div aria-busy="true" className="boardlab-code min-h-48 space-y-2 p-3" data-testid="code-editor-loading">
-      <div className="h-4 w-2/5 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
-      <div className="h-4 w-3/5 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
-      <div className="h-4 w-1/3 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
+      <Skeleton className="h-4 w-2/5" />
+      <Skeleton className="h-4 w-3/5" />
+      <Skeleton className="h-4 w-1/3" />
     </div>
   );
 }
@@ -92,13 +93,13 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onE
 
   return (
     <section aria-labelledby={titleId} className={cx("flex min-h-0 flex-col", className)} data-testid="code-panel">
-      <div className="@container flex min-h-13 shrink-0 items-center gap-1.5 border-b-[1.5px] border-rule py-1.5 pe-2 ps-4">
+      <div className="@container flex min-h-12 shrink-0 items-center gap-2 border-b border-rule py-2 pe-2 ps-4">
         {/* Under xl the rail is too narrow for the title beside Run, which says what the panel is, and so is a rail the
             open Lab tools drawer has narrowed (under 27rem); otherwise the title fits in every language, and "Edited"
             joins it where there is room for both (Reset lights up anyway). */}
-        <h2 id={titleId} className="me-auto flex min-w-0 items-baseline gap-2 font-head text-lg max-xl:sr-only @max-[27rem]:sr-only">
+        <h2 id={titleId} className="me-auto flex min-w-0 items-baseline gap-2 text-lg font-semibold max-xl:sr-only @max-[27rem]:sr-only">
           <span className="truncate">{t("code.title")}</span>
-          {edited && <span className="ink-kicker shrink-0 @max-[32rem]:sr-only">{t("code.edited")}</span>}
+          {edited && <span className="kicker shrink-0 @max-[32rem]:sr-only">{t("code.edited")}</span>}
         </h2>
         <Button
           size="md"
@@ -109,10 +110,10 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onE
           aria-keyshortcuts="Space"
           title={running ? t("code.stopTitle") : t("code.runTitle")}
           data-testid="run-button"
-          className={cx("shrink-0 whitespace-nowrap", busy && "animate-pulse motion-reduce:animate-none")}
+          className="shrink-0 whitespace-nowrap"
         >
           {running || busy ? (
-            <span aria-hidden="true" className="inline-block size-3 rounded-[2px] bg-current" />
+            <Icon name="stop" size={16} aria-hidden="true" />
           ) : (
             <Icon name="play" size={16} aria-hidden="true" />
           )}
@@ -141,7 +142,7 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onE
         />
       </div>
       {!runnable && (
-        <p className="on-fill shrink-0 bg-warn-bg px-4 py-2 text-sm" role="note">
+        <p className="shrink-0 bg-warn-bg px-4 py-2 text-sm" role="note">
           {t("code.cantRun", { language: t(`lang.${language}`) })}
         </p>
       )}
@@ -160,9 +161,12 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onE
         />
       </div>
       {errorText && (
-        <p role="alert" className="on-fill shrink-0 border-t-[1.5px] border-bad bg-bad-bg px-4 py-2 font-mono text-sm" data-testid="code-error">
-          {errorText}
-          {error?.hint ? <span className="mt-1 block font-body">{error.hint}</span> : null}
+        <p role="alert" className="flex shrink-0 items-start gap-2 border-t border-rule bg-bad-bg px-4 py-2 text-sm" data-testid="code-error">
+          <Icon name="warn-circle" size={16} className="mt-0.5 shrink-0 text-bad" aria-hidden="true" />
+          <span className="min-w-0">
+            <code className="font-mono">{errorText}</code>
+            {error?.hint ? <span className="mt-1 block">{error.hint}</span> : null}
+          </span>
         </p>
       )}
     </section>
