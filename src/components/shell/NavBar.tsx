@@ -67,7 +67,7 @@ export function NavBar({ lang, labels, settings, commandLabels, children }: NavB
         <div className="lg:hidden">
           <MobileNav
             lang={lang}
-            labels={{ nav: labels.nav, menu: labels.menu, closeMenu: labels.closeMenu, navLabel: labels.navLabel, settings }}
+            labels={{ home: labels.home, nav: labels.nav, menu: labels.menu, closeMenu: labels.closeMenu, navLabel: labels.navLabel, settings }}
           />
         </div>
       </div>
