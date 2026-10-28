@@ -36,7 +36,7 @@
     "failed": "Impossible de charger les prix.",
     "rateLimited": "Trop de vérifications d’affilée. Attendez une minute, puis réessayez.",
     "quotaExhausted": "Votre limite mensuelle de recherches est épuisée et se réinitialise le 1er. Les résultats en cache fonctionnent toujours.",
-    "noKey": "Ajoutez une clé de recherche dans les Réglages pour vérifier les prix.",
+    "noKey": "Ajoutez une clé de recherche dans les réglages pour vérifier les prix.",
     "needsKey": "La vérification des prix",
     "retry": "Réessayer",
     "notSetUpDrone": "L’optimiseur ci-dessous utilise les prix du catalogue.",
