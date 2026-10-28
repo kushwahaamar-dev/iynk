@@ -9,8 +9,6 @@
     "robotics": "Robotics Lab",
     "drones": "Drone Lab",
     "together": "Together",
-    "passport": "Passport",
-    "verify": "Verify",
     "about": "About",
     "menu": "Menu",
     "closeMenu": "Close menu"
@@ -114,7 +112,7 @@
       },
       "partner": {
         "title": "A lab partner",
-        "text": "Muse Spark finds you a build buddy whose skills fit yours, then plans a build night you'll all enjoy."
+        "text": "Muse Spark reads your code and your build with you, explains what it sees and suggests changes you can accept or reject."
       },
       "languages": {
         "title": "Six languages",

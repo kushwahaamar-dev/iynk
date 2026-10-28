@@ -54,3 +54,21 @@ test("the common strings are translated, not copied from English", () => {
 test("a removed namespace is gone", () => {
   expect(NAMESPACES).not.toContain(["sol", "ana"].join(""));
 });
+
+test("the strings of removed features are gone from every language", () => {
+  const removed: [string, string][] = [
+    ["ai", "story"],
+    ["ai", `tools.tabs.${["pass", "port"].join("")}`],
+    ["common", `client.dock.tabs.${["pass", "port"].join("")}`],
+    ["shell", `nav.${["pass", "port"].join("")}`],
+    ["shell", "nav.verify"],
+    ["together", "lobby.buddies"],
+    ["together", "lobby.plan"],
+    ["together", "lobby.aiOff"],
+  ];
+  for (const locale of LOCALES) {
+    for (const [ns, key] of removed) {
+      expect(messageAt(read(locale, ns), key), `${locale}/${ns}.json ${key}`).toBeUndefined();
+    }
+  }
+});

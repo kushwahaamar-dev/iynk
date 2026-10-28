@@ -23,7 +23,6 @@
       "part": "pièces"
     },
     "code": "Code",
-    "chat": "Discussion",
     "transcript": "Discussion avec ton partenaire de labo"
   },
   "hint": {
@@ -74,7 +73,6 @@
       "partner": "Partenaire",
       "together": "Ensemble",
       "real": "Construire pour de vrai",
-      "passport": "Passeport",
       "hardware": "Matériel"
     },
     "question": "« {question} »"
@@ -104,33 +102,5 @@
     "unavailable": "La voix n’est pas configurée sur ce déploiement.",
     "empty": "Je n’ai rien entendu. Réessaie, un peu plus près du micro.",
     "failed": "Ta voix n’a pas pu être transcrite. Réessaie ou écris."
-  },
-  "story": {
-    "title": "Récit de construction",
-    "intro": "Transforme cette session en un court récit avec une couverture : qui a construit quoi, ce qui a cassé et qui a aidé.",
-    "make": "Écrire notre récit",
-    "remake": "Le réécrire",
-    "writing": "Écriture de ton récit…",
-    "drawing": "Dessin de la couverture…",
-    "empty": "Rien à raconter pour l’instant. Branche quelque chose, lance du code ou pose une question au partenaire, puis reviens.",
-    "moments": {
-      "one": "{count} moment pour l’instant",
-      "other": "{count} moments pour l’instant"
-    },
-    "coverAlt": "Illustration de couverture pour « {title} »",
-    "builtBy": "Construit par",
-    "helped": "{helper} a aidé {learner}",
-    "highlights": "Temps forts",
-    "download": "Télécharger le PNG",
-    "share": "Partager",
-    "copyLink": "Copier le lien",
-    "copied": "Lien copié",
-    "facebook": "Partager sur Facebook",
-    "shareText": "{title}, un récit de construction iynk",
-    "unavailable": "Les récits de construction ne sont pas configurés sur ce déploiement.",
-    "failed": "Le récit n’a pas pu être écrit. Réessaie.",
-    "noCover": "La couverture n’a pas pu être dessinée cette fois, le récit n’en a donc pas.",
-    "footer": "Fait ensemble dans iynk",
-    "me": "Moi"
   }
 }

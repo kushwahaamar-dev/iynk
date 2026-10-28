@@ -150,14 +150,11 @@
   },
   "lobby": {
     "metaTitle": "Build together",
-    "metaDescription": "Open a live build room on any board, robot or drone, find a build buddy and plan a build night with Muse Spark.",
+    "metaDescription": "Open a live build room on any board, robot or drone and build it together.",
     "eyebrow": "iynk Together",
     "title": "Nobody has to build alone",
     "lede": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, one person types at a time, and the chat shows each message in your own language.",
     "ledePlain": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, and one person types at a time.",
-    "notSetUp": "Not set up on this deployment",
-    "aiOff": "Build Buddies and the Build Night planner need the AI service, which isn't set up on this deployment.",
-    "retry": "Try again",
     "create": {
       "title": "Start a room",
       "hint": "You get an invite link and a QR code to share.",
@@ -177,62 +174,6 @@
       "unknown": "Room {code} is open, but it didn't say what it's building. Ask for the invite link.",
       "unavailable": "This browser can't open rooms.",
       "found": "Found it. Opening the room…"
-    },
-    "buddies": {
-      "title": "Build Buddies",
-      "lede": "Say what you've built and what you want to make next. Muse Spark suggests people whose skills fit with yours, and says why.",
-      "privacy": "Your profile holds no contact details and is deleted after 24 hours. You connect by room invite.",
-      "name": "Your name",
-      "interests": "Interests",
-      "interestsHint": "Separate them with commas, e.g. drones, LEDs, line followers",
-      "builtNote": {
-        "one": "Your profile also lists the {count} lesson or test you've finished in iynk.",
-        "other": "Your profile also lists the {count} lessons and tests you've finished in iynk."
-      },
-      "wants": "What you want to build next",
-      "submit": "Find my buddies",
-      "finding": "Looking for buddies…",
-      "matches": "Your matches",
-      "none": "No good matches yet. More people join through the day, so check back soon.",
-      "alone": "You're the first one on the list. Invite a friend, or check back later.",
-      "score": "{score}% match",
-      "shared": "You both like {interest}",
-      "project": "Build together: {item}",
-      "invite": "Invite to a room",
-      "inviteTitle": "Build {item} with {name}",
-      "inviteHint": "Show {name} this QR code or send the link. The room opens on {item}.",
-      "notSetUp": "Buddy matching needs the database and the AI service, and this deployment doesn't have both.",
-      "failed": "Couldn't find buddies just now.",
-      "missing": "Add your name and what you want to build next."
-    },
-    "plan": {
-      "title": "Build Night planner",
-      "lede": "Everyone says what they'd like to make. Muse Spark picks one project you'll all enjoy and gives each person a role and a first task.",
-      "people": "Who's building",
-      "person": "Person {n}",
-      "name": "Name",
-      "lang": "Language",
-      "level": "Experience",
-      "levels": {
-        "new": "New to this",
-        "some": "Some",
-        "lots": "Lots"
-      },
-      "wants": "What they'd like to make or learn",
-      "add": "Add a person",
-      "remove": "Remove {name}",
-      "submit": "Plan our build night",
-      "planning": "Planning…",
-      "roles": "Roles",
-      "firstTask": "First task",
-      "steps": "The plan",
-      "parts": "Parts",
-      "start": "Start this build",
-      "again": "Plan again",
-      "notSetUp": "The planner needs the AI service, which isn't set up on this deployment.",
-      "failed": "Couldn't make a plan just now.",
-      "missing": "Give everyone a name and say what they'd like to make.",
-      "unknownItem": "The plan picked something iynk doesn't have yet. Plan again."
     }
   }
 }

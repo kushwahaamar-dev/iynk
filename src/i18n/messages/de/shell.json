@@ -9,8 +9,6 @@
     "robotics": "Robotik-Labor",
     "drones": "Drohnen-Labor",
     "together": "Gemeinsam",
-    "passport": "Pass",
-    "verify": "Prüfen",
     "about": "Über iynk",
     "menu": "Menü",
     "closeMenu": "Menü schließen"
@@ -114,7 +112,7 @@
       },
       "partner": {
         "title": "Ein Laborpartner",
-        "text": "Muse Spark findet dir einen Bau-Buddy, dessen Können zu deinem passt, und plant einen Bauabend, der allen gefällt."
+        "text": "Muse Spark liest deinen Code und deinen Aufbau mit, erklärt, was es sieht, und schlägt Änderungen vor, die du annehmen oder ablehnen kannst."
       },
       "languages": {
         "title": "Sechs Sprachen",

@@ -23,7 +23,6 @@
       "part": "parts"
     },
     "code": "Code",
-    "chat": "Chat",
     "transcript": "Conversation with your lab partner"
   },
   "hint": {
@@ -74,7 +73,6 @@
       "partner": "Partner",
       "together": "Together",
       "real": "Build it for real",
-      "passport": "Passport",
       "hardware": "Hardware"
     },
     "question": "“{question}”"
@@ -104,33 +102,5 @@
     "unavailable": "Voice isn’t set up on this deployment.",
     "empty": "I didn’t catch that. Try again, a little closer to the mic.",
     "failed": "Your voice couldn’t be turned into text. Try again or type."
-  },
-  "story": {
-    "title": "Build Story",
-    "intro": "Turn this session into a short story with a cover: who built what, what broke and who helped.",
-    "make": "Write our Build Story",
-    "remake": "Write it again",
-    "writing": "Writing your story…",
-    "drawing": "Drawing the cover…",
-    "empty": "Nothing to tell yet. Wire something, run code or ask the partner, then come back.",
-    "moments": {
-      "one": "{count} moment so far",
-      "other": "{count} moments so far"
-    },
-    "coverAlt": "Cover illustration for “{title}”",
-    "builtBy": "Built by",
-    "helped": "{helper} helped {learner}",
-    "highlights": "Highlights",
-    "download": "Download PNG",
-    "share": "Share",
-    "copyLink": "Copy link",
-    "copied": "Link copied",
-    "facebook": "Share on Facebook",
-    "shareText": "{title}, a Build Story from iynk",
-    "unavailable": "Build Stories aren’t set up on this deployment.",
-    "failed": "The story couldn’t be written. Try again.",
-    "noCover": "The cover couldn’t be drawn this time, so the story has none.",
-    "footer": "Made together in iynk",
-    "me": "Me"
   }
 }

@@ -150,14 +150,11 @@
   },
   "lobby": {
     "metaTitle": "Construire ensemble",
-    "metaDescription": "Ouvrez un salon de construction en direct sur n'importe quelle carte, robot ou drone, trouvez un partenaire et planifiez une soirée de construction avec Muse Spark.",
+    "metaDescription": "Ouvrez un salon de construction en direct sur n'importe quelle carte, robot ou drone et construisez-le ensemble.",
     "eyebrow": "iynk Ensemble",
     "title": "Personne ne construit seul",
     "lede": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, une seule personne tape à la fois, et le chat affiche chaque message dans votre langue.",
     "ledePlain": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, et une seule personne tape à la fois.",
-    "notSetUp": "Non configuré sur ce déploiement",
-    "aiOff": "Partenaires de construction et le Planificateur de soirée de construction ont besoin du service d'IA, qui n'est pas configuré sur ce déploiement.",
-    "retry": "Réessayer",
     "create": {
       "title": "Ouvrir un salon",
       "hint": "Vous recevez un lien d'invitation et un QR code à partager.",
@@ -177,62 +174,6 @@
       "unknown": "Le salon {code} est ouvert, mais il n'a pas dit ce qu'il construit. Demandez le lien d'invitation.",
       "unavailable": "Ce navigateur ne peut pas ouvrir de salon.",
       "found": "Trouvé. Ouverture du salon…"
-    },
-    "buddies": {
-      "title": "Partenaires de construction",
-      "lede": "Dites ce que vous avez construit et ce que vous voulez faire ensuite. Muse Spark propose des personnes dont les compétences complètent les vôtres, et explique pourquoi.",
-      "privacy": "Votre profil ne contient aucune coordonnée et il est supprimé au bout de 24 heures. Vous vous retrouvez par invitation à un salon.",
-      "name": "Votre nom",
-      "interests": "Centres d'intérêt",
-      "interestsHint": "Séparez-les par des virgules, p. ex. drones, LED, suiveurs de ligne",
-      "builtNote": {
-        "one": "Votre profil liste aussi la {count} leçon ou le test que vous avez terminé dans iynk.",
-        "other": "Votre profil liste aussi les {count} leçons et tests que vous avez terminés dans iynk."
-      },
-      "wants": "Ce que vous voulez construire ensuite",
-      "submit": "Trouver mes partenaires",
-      "finding": "Recherche de partenaires…",
-      "matches": "Vos correspondances",
-      "none": "Pas encore de bonne correspondance. D'autres personnes arrivent au fil de la journée : revenez bientôt.",
-      "alone": "Vous êtes la première personne de la liste. Invitez quelqu'un ou revenez plus tard.",
-      "score": "{score} % d'affinité",
-      "shared": "Vous aimez tous les deux : {interest}",
-      "project": "À construire ensemble : {item}",
-      "invite": "Inviter dans un salon",
-      "inviteTitle": "Construire {item} avec {name}",
-      "inviteHint": "Montrez ce QR code à {name} ou envoyez le lien. Le salon s'ouvre sur {item}.",
-      "notSetUp": "La recherche de partenaires a besoin de la base de données et du service d'IA, et ce déploiement n'a pas les deux.",
-      "failed": "Impossible de trouver des partenaires pour le moment.",
-      "missing": "Ajoutez votre nom et ce que vous voulez construire ensuite."
-    },
-    "plan": {
-      "title": "Planificateur de soirée de construction",
-      "lede": "Chacun dit ce qu'il aimerait faire. Muse Spark choisit un projet qui plaira à tout le monde et donne à chacun un rôle et une première tâche.",
-      "people": "Qui construit",
-      "person": "Personne {n}",
-      "name": "Nom",
-      "lang": "Langue",
-      "level": "Expérience",
-      "levels": {
-        "new": "Débutant",
-        "some": "Un peu",
-        "lots": "Beaucoup"
-      },
-      "wants": "Ce que cette personne aimerait faire ou apprendre",
-      "add": "Ajouter une personne",
-      "remove": "Retirer {name}",
-      "submit": "Planifier notre soirée",
-      "planning": "Planification…",
-      "roles": "Rôles",
-      "firstTask": "Première tâche",
-      "steps": "Le plan",
-      "parts": "Pièces",
-      "start": "Lancer cette construction",
-      "again": "Replanifier",
-      "notSetUp": "Le planificateur a besoin du service d'IA, qui n'est pas configuré sur ce déploiement.",
-      "failed": "Impossible de faire un plan pour le moment.",
-      "missing": "Donnez un nom à chaque personne et dites ce qu'elle aimerait faire.",
-      "unknownItem": "Le plan a choisi quelque chose que iynk n'a pas encore. Replanifiez."
     }
   }
 }

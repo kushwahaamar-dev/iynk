@@ -23,7 +23,6 @@
       "part": "Bauteile"
     },
     "code": "Code",
-    "chat": "Chat",
     "transcript": "Unterhaltung mit deinem Laborpartner"
   },
   "hint": {
@@ -74,7 +73,6 @@
       "partner": "Partner",
       "together": "Gemeinsam",
       "real": "In echt bauen",
-      "passport": "Pass",
       "hardware": "Hardware"
     },
     "question": "„{question}“"
@@ -104,33 +102,5 @@
     "unavailable": "Sprache ist in dieser Installation nicht eingerichtet.",
     "empty": "Ich habe nichts verstanden. Versuch es nochmal, etwas näher am Mikrofon.",
     "failed": "Deine Stimme konnte nicht in Text umgewandelt werden. Versuch es nochmal oder tippe."
-  },
-  "story": {
-    "title": "Bau-Geschichte",
-    "intro": "Mach aus dieser Sitzung eine kurze Geschichte mit Titelbild: wer was gebaut hat, was kaputtging und wer geholfen hat.",
-    "make": "Unsere Bau-Geschichte schreiben",
-    "remake": "Neu schreiben",
-    "writing": "Deine Geschichte wird geschrieben …",
-    "drawing": "Das Titelbild wird gezeichnet …",
-    "empty": "Noch gibt es nichts zu erzählen. Verkabele etwas, starte Code oder frag den Partner und komm dann zurück.",
-    "moments": {
-      "one": "{count} Moment bisher",
-      "other": "{count} Momente bisher"
-    },
-    "coverAlt": "Titelbild zu „{title}“",
-    "builtBy": "Gebaut von",
-    "helped": "{helper} hat {learner} geholfen",
-    "highlights": "Höhepunkte",
-    "download": "PNG herunterladen",
-    "share": "Teilen",
-    "copyLink": "Link kopieren",
-    "copied": "Link kopiert",
-    "facebook": "Auf Facebook teilen",
-    "shareText": "{title}, eine Bau-Geschichte aus iynk",
-    "unavailable": "Bau-Geschichten sind in dieser Installation nicht eingerichtet.",
-    "failed": "Die Geschichte konnte nicht geschrieben werden. Versuche es erneut.",
-    "noCover": "Das Titelbild konnte diesmal nicht gezeichnet werden, deshalb hat die Geschichte keins.",
-    "footer": "Gemeinsam gebaut in iynk",
-    "me": "Ich"
   }
 }

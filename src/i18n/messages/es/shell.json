@@ -9,8 +9,6 @@
     "robotics": "Laboratorio de robótica",
     "drones": "Laboratorio de drones",
     "together": "Juntos",
-    "passport": "Pasaporte",
-    "verify": "Verificar",
     "about": "Acerca de",
     "menu": "Menú",
     "closeMenu": "Cerrar el menú"
@@ -114,7 +112,7 @@
       },
       "partner": {
         "title": "Un compañero de laboratorio",
-        "text": "Muse Spark te encuentra un compañero cuyas habilidades encajan con las tuyas y planea una noche de montaje que os guste a todos."
+        "text": "Muse Spark lee contigo tu código y tu montaje, explica lo que ve y propone cambios que puedes aceptar o rechazar."
       },
       "languages": {
         "title": "Seis idiomas",

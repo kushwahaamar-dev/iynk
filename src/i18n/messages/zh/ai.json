@@ -23,7 +23,6 @@
       "part": "元件"
     },
     "code": "代码",
-    "chat": "对话",
     "transcript": "与实验搭档的对话"
   },
   "hint": {
@@ -74,7 +73,6 @@
       "partner": "搭档",
       "together": "一起",
       "real": "动手做真的",
-      "passport": "护照",
       "hardware": "硬件"
     },
     "question": "“{question}”"
@@ -104,33 +102,5 @@
     "unavailable": "此部署尚未设置语音功能。",
     "empty": "我没听清。请靠近麦克风再试一次。",
     "failed": "无法把你的语音转成文字。请重试或直接输入。"
-  },
-  "story": {
-    "title": "搭建故事",
-    "intro": "把这次搭建写成一个带封面的小故事：谁做了什么、哪里出了问题、谁帮了忙。",
-    "make": "写下我们的搭建故事",
-    "remake": "重新写",
-    "writing": "正在写你的故事…",
-    "drawing": "正在绘制封面…",
-    "empty": "还没有可讲的内容。先接线、运行代码或问问搭档，再回来吧。",
-    "moments": {
-      "one": "目前有 {count} 个瞬间",
-      "other": "目前有 {count} 个瞬间"
-    },
-    "coverAlt": "“{title}”的封面插图",
-    "builtBy": "搭建者",
-    "helped": "{helper} 帮助了 {learner}",
-    "highlights": "精彩瞬间",
-    "download": "下载 PNG",
-    "share": "分享",
-    "copyLink": "复制链接",
-    "copied": "链接已复制",
-    "facebook": "分享到 Facebook",
-    "shareText": "{title}：来自 iynk 的搭建故事",
-    "unavailable": "此部署尚未设置搭建故事。",
-    "failed": "故事没能写出来。请再试一次。",
-    "noCover": "这次封面没能画出来，所以故事没有封面。",
-    "footer": "在 iynk 一起完成",
-    "me": "我"
   }
 }

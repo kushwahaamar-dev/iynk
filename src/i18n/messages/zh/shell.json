@@ -9,8 +9,6 @@
     "robotics": "机器人实验室",
     "drones": "无人机实验室",
     "together": "一起",
-    "passport": "护照",
-    "verify": "验证",
     "about": "关于",
     "menu": "菜单",
     "closeMenu": "关闭菜单"
@@ -114,7 +112,7 @@
       },
       "partner": {
         "title": "实验伙伴",
-        "text": "Muse Spark 为你找到技能互补的组装伙伴，再安排一场大家都喜欢的组装之夜。"
+        "text": "Muse Spark 和你一起看代码和搭建过程，讲解它看到的内容，并给出你可以接受或拒绝的修改建议。"
       },
       "languages": {
         "title": "六种语言",

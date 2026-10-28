@@ -9,8 +9,6 @@
     "robotics": "Labo de robotique",
     "drones": "Labo des drones",
     "together": "Ensemble",
-    "passport": "Passeport",
-    "verify": "Vérifier",
     "about": "À propos",
     "menu": "Menu",
     "closeMenu": "Fermer le menu"
@@ -114,7 +112,7 @@
       },
       "partner": {
         "title": "Un partenaire de labo",
-        "text": "Muse Spark vous trouve un partenaire dont les compétences complètent les vôtres, puis prépare une soirée de construction qui plaira à tous."
+        "text": "Muse Spark lit votre code et votre montage avec vous, explique ce qu'il voit et propose des changements que vous pouvez accepter ou refuser."
       },
       "languages": {
         "title": "Six langues",

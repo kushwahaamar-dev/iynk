@@ -150,14 +150,11 @@
   },
   "lobby": {
     "metaTitle": "Construir juntos",
-    "metaDescription": "Abre una sala de construcción en vivo para cualquier placa, robot o dron, encuentra un compañero de construcción y planea una noche de construcción con Muse Spark.",
+    "metaDescription": "Abre una sala de construcción en vivo para cualquier placa, robot o dron y constrúyanlo juntos.",
     "eyebrow": "iynk Juntos",
     "title": "Nadie tiene que construir solo",
     "lede": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo, una persona escribe a la vez y el chat muestra cada mensaje en tu propio idioma.",
     "ledePlain": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo y una persona escribe a la vez.",
-    "notSetUp": "No está configurado en esta instalación",
-    "aiOff": "Compañeros de construcción y el Planificador de noche de construcción necesitan el servicio de IA, que no está configurado en esta instalación.",
-    "retry": "Reintentar",
     "create": {
       "title": "Abrir una sala",
       "hint": "Recibes un enlace de invitación y un código QR para compartir.",
@@ -177,62 +174,6 @@
       "unknown": "La sala {code} está abierta, pero no dijo qué está construyendo. Pide el enlace de invitación.",
       "unavailable": "Este navegador no puede abrir salas.",
       "found": "La encontramos. Abriendo la sala…"
-    },
-    "buddies": {
-      "title": "Compañeros de construcción",
-      "lede": "Cuenta qué has construido y qué quieres hacer después. Muse Spark te sugiere personas cuyas habilidades encajan con las tuyas y te explica por qué.",
-      "privacy": "Tu perfil no guarda datos de contacto y se borra a las 24 horas. Os conectáis con una invitación a una sala.",
-      "name": "Tu nombre",
-      "interests": "Intereses",
-      "interestsHint": "Sepáralos con comas, p. ej. drones, LED, seguidores de línea",
-      "builtNote": {
-        "one": "Tu perfil también incluye la {count} lección o prueba que terminaste en iynk.",
-        "other": "Tu perfil también incluye las {count} lecciones y pruebas que terminaste en iynk."
-      },
-      "wants": "Qué quieres construir después",
-      "submit": "Buscar compañeros",
-      "finding": "Buscando compañeros…",
-      "matches": "Tus coincidencias",
-      "none": "Aún no hay buenas coincidencias. Se une más gente a lo largo del día; vuelve pronto.",
-      "alone": "Eres la primera persona de la lista. Invita a alguien o vuelve más tarde.",
-      "score": "{score} % de afinidad",
-      "shared": "A los dos os gusta {interest}",
-      "project": "Construid juntos: {item}",
-      "invite": "Invitar a una sala",
-      "inviteTitle": "Construye {item} con {name}",
-      "inviteHint": "Enséñale a {name} este código QR o envíale el enlace. La sala se abre en {item}.",
-      "notSetUp": "Buscar compañeros necesita la base de datos y el servicio de IA, y esta instalación no tiene ambos.",
-      "failed": "Ahora mismo no se pudieron buscar compañeros.",
-      "missing": "Añade tu nombre y lo que quieres construir después."
-    },
-    "plan": {
-      "title": "Planificador de noche de construcción",
-      "lede": "Cada persona dice qué le gustaría hacer. Muse Spark elige un proyecto que os guste a todos y da a cada uno un papel y una primera tarea.",
-      "people": "Quién construye",
-      "person": "Persona {n}",
-      "name": "Nombre",
-      "lang": "Idioma",
-      "level": "Experiencia",
-      "levels": {
-        "new": "Principiante",
-        "some": "Algo",
-        "lots": "Mucha"
-      },
-      "wants": "Qué le gustaría hacer o aprender",
-      "add": "Añadir persona",
-      "remove": "Quitar a {name}",
-      "submit": "Planear nuestra noche",
-      "planning": "Planeando…",
-      "roles": "Papeles",
-      "firstTask": "Primera tarea",
-      "steps": "El plan",
-      "parts": "Piezas",
-      "start": "Empezar esta construcción",
-      "again": "Planear de nuevo",
-      "notSetUp": "El planificador necesita el servicio de IA, que no está configurado en esta instalación.",
-      "failed": "Ahora mismo no se pudo hacer un plan.",
-      "missing": "Pon un nombre a cada persona y di qué le gustaría hacer.",
-      "unknownItem": "El plan eligió algo que iynk todavía no tiene. Planea de nuevo."
     }
   }
 }

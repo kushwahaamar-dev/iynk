@@ -23,7 +23,6 @@
       "part": "piezas"
     },
     "code": "Código",
-    "chat": "Chat",
     "transcript": "Conversación con tu compañero de laboratorio"
   },
   "hint": {
@@ -74,7 +73,6 @@
       "partner": "Compañero",
       "together": "Juntos",
       "real": "Constrúyelo de verdad",
-      "passport": "Pasaporte",
       "hardware": "Hardware"
     },
     "question": "«{question}»"
@@ -104,33 +102,5 @@
     "unavailable": "La voz no está configurada en este despliegue.",
     "empty": "No te he entendido. Inténtalo de nuevo, un poco más cerca del micrófono.",
     "failed": "No se pudo convertir tu voz en texto. Inténtalo de nuevo o escribe."
-  },
-  "story": {
-    "title": "Historia de construcción",
-    "intro": "Convierte esta sesión en una historia corta con portada: quién construyó qué, qué se rompió y quién ayudó.",
-    "make": "Escribir nuestra historia",
-    "remake": "Escribirla de nuevo",
-    "writing": "Escribiendo tu historia…",
-    "drawing": "Dibujando la portada…",
-    "empty": "Aún no hay nada que contar. Conecta algo, ejecuta código o pregunta al compañero y vuelve.",
-    "moments": {
-      "one": "{count} momento hasta ahora",
-      "other": "{count} momentos hasta ahora"
-    },
-    "coverAlt": "Ilustración de portada de «{title}»",
-    "builtBy": "Construido por",
-    "helped": "{helper} ayudó a {learner}",
-    "highlights": "Momentos destacados",
-    "download": "Descargar PNG",
-    "share": "Compartir",
-    "copyLink": "Copiar enlace",
-    "copied": "Enlace copiado",
-    "facebook": "Compartir en Facebook",
-    "shareText": "{title}, una historia de construcción de iynk",
-    "unavailable": "Las historias de construcción no están configuradas en este despliegue.",
-    "failed": "No se pudo escribir la historia. Inténtalo de nuevo.",
-    "noCover": "Esta vez no se pudo dibujar la portada, así que la historia no tiene.",
-    "footer": "Hecho en equipo en iynk",
-    "me": "Yo"
   }
 }
