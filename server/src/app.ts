@@ -7,6 +7,7 @@ import type { Deps } from "./deps.ts";
 import { authRoutes } from "./http/auth.ts";
 import { buddyRoutes } from "./http/buddies.ts";
 import type { Authed, RouteDef } from "./http/classes.ts";
+import { deletionRoutes } from "./http/deletion.ts";
 import { healthRoutes } from "./http/health.ts";
 import { identityRoutes } from "./http/identities.ts";
 import { createLimiter, type Limiter } from "./http/limits.ts";
@@ -45,7 +46,7 @@ function serverVersion(): string {
 }
 
 export function allRoutes(ctx: RouteDeps & { challenges: ChallengeStore }): RouteDef[] {
-  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx), ...buddyRoutes(ctx)];
+  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx), ...deletionRoutes(ctx), ...buddyRoutes(ctx)];
 }
 
 export function createApp(config: ServerConfig, deps: Deps, opts: { store?: ServerStore; log?: Logger } = {}): App {

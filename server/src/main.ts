@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { ConfigError, loadConfig } from "./config.ts";
 import { realDeps } from "./deps.ts";
 import { createApp } from "./app.ts";
+import { startSweep } from "./ops/sweep.ts";
 
 const DRAIN_LIMIT_MS = 15_000;
 const EXIT_CONFIG = 2;
@@ -17,7 +18,8 @@ function startConfig() {
 }
 
 const config = startConfig();
-const app = createApp(config, realDeps());
+const deps = realDeps();
+const app = createApp(config, deps);
 const server = createServer(app.handler);
 
 server.on("error", (error: NodeJS.ErrnoException) => {
@@ -26,10 +28,12 @@ server.on("error", (error: NodeJS.ErrnoException) => {
 });
 
 let stopping = false;
+let sweep: { stop(): void } | undefined;
 
 function stop(): void {
   if (stopping) process.exit(1);
   stopping = true;
+  sweep?.stop();
   app.drain();
   const force = setTimeout(() => server.closeAllConnections(), DRAIN_LIMIT_MS - 1000);
   force.unref();
@@ -48,4 +52,5 @@ process.on("SIGINT", stop);
 
 server.listen(config.port, config.host, () => {
   app.log.info("listening", { port: config.port });
+  sweep = startSweep(app.store, deps, app.log);
 });
