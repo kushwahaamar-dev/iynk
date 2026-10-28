@@ -167,7 +167,7 @@ describe("RealBuildPanel", () => {
       );
 
     const bench = show({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
-    expect(await screen.findByText("Live prices aren't set up on this deployment.")).toBeTruthy();
+    expect(await screen.findByText("Shop prices aren't set up. Add a search key in Settings.")).toBeTruthy();
     expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
     expect(screen.queryByText("$0.00")).toBeNull();
     expect(screen.queryByText("No listing found")).toBeNull();

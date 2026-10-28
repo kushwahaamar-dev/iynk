@@ -1,7 +1,7 @@
 {
   "real": {
     "title": "动手实做",
-    "lede": "来自 Google Shopping、Amazon 和 eBay 的实时价格，覆盖这套装机的每个零件。",
+    "lede": "每个零件的目录价格；添加搜索密钥并点击“查看价格”后，显示商店价格。",
     "loading": "正在查找价格…",
     "refresh": "重新查询价格",
     "checked": "价格查询于 {time}",
@@ -9,7 +9,7 @@
     "alternatives": "优化器可替换的备选零件",
     "total": "最低总价",
     "totalCatalogue": "目录价合计",
-    "allLive": "所有零件均为实时价格",
+    "allLive": "所有零件均为商店价格",
     "estimated": {
       "one": "{count} 个零件使用目录价格",
       "other": "{count} 个零件使用目录价格"
@@ -35,7 +35,7 @@
     "failed": "无法加载价格。",
     "rateLimited": "查询过于频繁。请等一分钟后再试。",
     "retry": "重试",
-    "notSetUp": "此部署尚未配置实时价格。",
+    "notSetUp": "商店价格尚未配置。请在设置中添加搜索密钥。",
     "notSetUpDrone": "下方的优化器改用目录价格计算。",
     "statusError": "无法连接服务器。",
     "noContent": "此项目的零件清单尚未发布。",

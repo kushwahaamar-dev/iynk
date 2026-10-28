@@ -98,7 +98,7 @@
     "runBest": "{title} done: {time} s (best!)",
     "outOfField": "Out of the field: turn back or press R",
     "farOut": "A long way out: switch to return-to-home, or press R",
-    "ceiling": "Height limit for this field: {m} m",
+    "ceiling": "Stay below {m} m",
     "desync": "Desync! The ESC lost motor {motor}: the craft yaws and sinks. Land and let it cool",
     "motorOut": "Motor {motor} failed: the mixer spreads its thrust over the others",
     "stall": "STALL: too slow, the nose drops",

@@ -98,7 +98,7 @@
     "runBest": "{title} terminé : {time} s (record !)",
     "outOfField": "Hors du terrain : faites demi-tour ou appuyez sur R",
     "farOut": "Très loin : passez en retour maison ou appuyez sur R",
-    "ceiling": "Hauteur maximale sur ce terrain : {m} m",
+    "ceiling": "Restez sous {m} m",
     "desync": "Désynchro ! L'ESC a perdu le moteur {motor} : il tourne et s'enfonce. Posez-vous et laissez refroidir",
     "motorOut": "Le moteur {motor} est en panne : le mixeur répartit sa poussée sur les autres",
     "stall": "DÉCROCHAGE : trop lent, le nez tombe",

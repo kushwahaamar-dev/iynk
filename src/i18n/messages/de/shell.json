@@ -136,7 +136,7 @@
       "privacy": "Fortschritt und Einstellungen werden im lokalen Speicher dieses Browsers gespeichert. Es gibt keine Konten. Wenn diese Installation eine Datenbank hat, senden die Labore anonyme Nutzungszahlen (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler, eine Rundenzeit) für die Live-Zähler und Bestenlisten, mit einer zufälligen ID für diesen Browser und nie mit deinem Namen oder deinem Code. Schalte „Anonyme Nutzungszahlen teilen“ in den Einstellungen (das Zahnrad oben in der Kopfzeile) aus, um sie zu stoppen."
     },
     "originalsTitle": "Die drei Originale",
-    "originalsLede": "iynk begann als Neubau von drei Lern-Websites und soll alles können, was sie können, und mehr. Es übernimmt ihre Fakten, Formeln, Zeiten und Lektionen, schreibt seinen ganzen Code selbst und behebt die Fehler, die es in ihnen gefunden hat.",
+    "originalsLede": "iynk wurde von drei Lern-Websites inspiriert. Es ist ein eigenes Projekt mit eigenem Code.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",

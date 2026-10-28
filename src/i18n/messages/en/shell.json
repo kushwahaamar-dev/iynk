@@ -136,7 +136,7 @@
       "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. When this deployment has a database, the labs send anonymous usage counts (a lesson passed, a step built, a fault tried, a lap time) for the live counters and leaderboards, with a random id for this browser and never your name or your code. Turn off “Share anonymous usage counts” in Settings (the gear in the header) to stop them."
     },
     "originalsTitle": "The three originals",
-    "originalsLede": "iynk started as a rebuild of three teaching sites and aims to do everything they do, and more. It reuses their facts, formulas, timings and lessons, writes all of its own code, and fixes the mistakes it found in them.",
+    "originalsLede": "iynk was inspired by three teaching sites. It is a separate project with its own code.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",

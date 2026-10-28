@@ -136,7 +136,7 @@
       "privacy": "La progression et les réglages sont enregistrés dans le stockage local de ce navigateur. Il n’y a pas de compte. Quand ce déploiement a une base de données, les labos envoient des statistiques d’usage anonymes (une leçon réussie, une étape montée, une panne essayée, un temps au tour) pour les compteurs en direct et les classements, avec un identifiant aléatoire pour ce navigateur, jamais votre nom ni votre code. Désactivez « Partager les statistiques d’usage anonymes » dans les Réglages (l’engrenage de l’en-tête) pour les arrêter."
     },
     "originalsTitle": "Les trois originaux",
-    "originalsLede": "iynk est né de la refonte de trois sites pédagogiques et veut faire tout ce qu’ils font, et davantage. Il reprend leurs faits, formules, durées et leçons, écrit tout son propre code et corrige les erreurs qu’il y a trouvées.",
+    "originalsLede": "iynk s’est inspiré de trois sites pédagogiques. C’est un projet distinct, avec son propre code.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",

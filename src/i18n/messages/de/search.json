@@ -1,7 +1,7 @@
 {
   "real": {
     "title": "Wirklich bauen",
-    "lede": "Live-Preise für jedes Teil dieses Aufbaus von Google Shopping, Amazon und eBay.",
+    "lede": "Katalogpreise für jedes Teil und Shop-Preise, wenn du einen Suchschlüssel hinzufügst und auf Preise prüfen drückst.",
     "loading": "Preise werden gesucht …",
     "refresh": "Preise erneut prüfen",
     "checked": "Preise geprüft um {time}",
@@ -9,7 +9,7 @@
     "alternatives": "Alternativen, die der Optimierer einsetzen kann",
     "total": "Günstigste Summe",
     "totalCatalogue": "Summe zu Katalogpreisen",
-    "allLive": "Alle Teile mit Live-Preis",
+    "allLive": "Alle Teile mit Shop-Preis",
     "estimated": {
       "one": "{count} Teil mit Katalogpreis",
       "other": "{count} Teile mit Katalogpreis"
@@ -35,7 +35,7 @@
     "failed": "Die Preise konnten nicht geladen werden.",
     "rateLimited": "Zu viele Preisabfragen hintereinander. Warte eine Minute und versuche es dann erneut.",
     "retry": "Erneut versuchen",
-    "notSetUp": "Live-Preise sind auf dieser Installation nicht eingerichtet.",
+    "notSetUp": "Shop-Preise sind nicht eingerichtet. Füge in den Einstellungen einen Suchschlüssel hinzu.",
     "notSetUpDrone": "Der Optimierer unten rechnet stattdessen mit den Katalogpreisen.",
     "statusError": "Der Server ist nicht erreichbar.",
     "noContent": "Die Teileliste dieses Elements ist noch nicht veröffentlicht.",

@@ -1,7 +1,7 @@
 {
   "real": {
     "title": "Build it for real",
-    "lede": "Live prices for every part of this build from Google Shopping, Amazon and eBay.",
+    "lede": "Catalogue prices for every part, and shop prices when you add a search key and press Check prices.",
     "loading": "Finding prices…",
     "refresh": "Check prices again",
     "checked": "Prices checked at {time}",
@@ -9,7 +9,7 @@
     "alternatives": "Alternatives the optimiser can swap in",
     "total": "Cheapest total",
     "totalCatalogue": "Catalogue total",
-    "allLive": "Every part priced live",
+    "allLive": "Every part priced from a shop",
     "estimated": {
       "one": "{count} part priced from the catalogue",
       "other": "{count} parts priced from the catalogue"
@@ -35,7 +35,7 @@
     "failed": "Prices couldn't be loaded.",
     "rateLimited": "Too many price checks in a row. Wait a minute, then try again.",
     "retry": "Try again",
-    "notSetUp": "Live prices aren't set up on this deployment.",
+    "notSetUp": "Shop prices aren't set up. Add a search key in Settings.",
     "notSetUpDrone": "The optimiser below works with the catalogue's prices instead.",
     "statusError": "The server couldn't be reached.",
     "noContent": "This item's parts list isn't published yet.",

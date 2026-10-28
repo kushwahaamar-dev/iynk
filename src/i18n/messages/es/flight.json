@@ -98,7 +98,7 @@
     "runBest": "{title} completado: {time} s (¡récord!)",
     "outOfField": "Fuera del campo: da la vuelta o pulsa R",
     "farOut": "Muy lejos: cambia a volver a casa o pulsa R",
-    "ceiling": "Altura máxima de este campo: {m} m",
+    "ceiling": "Mantente por debajo de {m} m",
     "desync": "¡Desincronización! El ESC perdió el motor {motor}: gira y se hunde. Aterriza y deja que se enfríe",
     "motorOut": "Falló el motor {motor}: el mezclador reparte su empuje entre los demás",
     "stall": "PÉRDIDA: demasiado lento, el morro cae",

@@ -1,7 +1,7 @@
 {
   "real": {
     "title": "Constrúyelo de verdad",
-    "lede": "Precios en vivo de cada pieza de este montaje en Google Shopping, Amazon y eBay.",
+    "lede": "Precios de catálogo de cada pieza, y precios de tienda cuando añades una clave de búsqueda y pulsas Comprobar precios.",
     "loading": "Buscando precios…",
     "refresh": "Volver a consultar precios",
     "checked": "Precios consultados a las {time}",
@@ -9,7 +9,7 @@
     "alternatives": "Alternativas que el optimizador puede usar",
     "total": "Total más barato",
     "totalCatalogue": "Total de catálogo",
-    "allLive": "Todas las piezas con precio en vivo",
+    "allLive": "Todas las piezas con precio de tienda",
     "estimated": {
       "one": "{count} pieza con precio del catálogo",
       "other": "{count} piezas con precio del catálogo"
@@ -35,7 +35,7 @@
     "failed": "No se pudieron cargar los precios.",
     "rateLimited": "Demasiadas consultas seguidas. Espera un minuto y vuelve a intentarlo.",
     "retry": "Reintentar",
-    "notSetUp": "Los precios en vivo no están configurados en este despliegue.",
+    "notSetUp": "Los precios de tienda no están configurados. Añade una clave de búsqueda en Ajustes.",
     "notSetUpDrone": "El optimizador de abajo usa los precios del catálogo.",
     "statusError": "No se pudo contactar con el servidor.",
     "noContent": "La lista de piezas de este elemento aún no está publicada.",

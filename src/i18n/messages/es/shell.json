@@ -136,7 +136,7 @@
       "privacy": "El progreso y los ajustes se guardan en el almacenamiento local de este navegador. No hay cuentas. Cuando este despliegue tiene una base de datos, los laboratorios envían recuentos de uso anónimos (una lección superada, un paso montado, un fallo probado, un tiempo de vuelta) para los contadores en directo y las clasificaciones, con un identificador aleatorio de este navegador y nunca tu nombre ni tu código. Desactiva «Compartir recuentos de uso anónimos» en Ajustes (el engranaje de la cabecera) para detenerlos."
     },
     "originalsTitle": "Los tres originales",
-    "originalsLede": "iynk nació como una reconstrucción de tres webs didácticas y aspira a hacer todo lo que hacen, y más. Reutiliza sus datos, fórmulas, tiempos y lecciones, escribe todo su propio código y corrige los errores que encontró en ellas.",
+    "originalsLede": "iynk se inspiró en tres webs didácticas. Es un proyecto aparte, con su propio código.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",

@@ -1,7 +1,7 @@
 {
   "real": {
     "title": "Construire pour de vrai",
-    "lede": "Prix en direct de chaque pièce de ce montage sur Google Shopping, Amazon et eBay.",
+    "lede": "Prix catalogue de chaque pièce, et prix en boutique quand vous ajoutez une clé de recherche et appuyez sur Vérifier les prix.",
     "loading": "Recherche des prix…",
     "refresh": "Vérifier à nouveau les prix",
     "checked": "Prix vérifiés à {time}",
@@ -9,7 +9,7 @@
     "alternatives": "Alternatives que l’optimiseur peut choisir",
     "total": "Total le moins cher",
     "totalCatalogue": "Total au prix du catalogue",
-    "allLive": "Toutes les pièces ont un prix en direct",
+    "allLive": "Toutes les pièces ont un prix en boutique",
     "estimated": {
       "one": "{count} pièce au prix du catalogue",
       "other": "{count} pièces au prix du catalogue"
@@ -35,7 +35,7 @@
     "failed": "Impossible de charger les prix.",
     "rateLimited": "Trop de vérifications d’affilée. Attendez une minute, puis réessayez.",
     "retry": "Réessayer",
-    "notSetUp": "Les prix en direct ne sont pas configurés sur ce déploiement.",
+    "notSetUp": "Les prix en boutique ne sont pas configurés. Ajoutez une clé de recherche dans les réglages.",
     "notSetUpDrone": "L’optimiseur ci-dessous utilise les prix du catalogue.",
     "statusError": "Impossible de joindre le serveur.",
     "noContent": "La liste des pièces de cet élément n’est pas encore publiée.",

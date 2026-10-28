@@ -98,7 +98,7 @@
     "runBest": "{title} 完成：{time} 秒（最佳！）",
     "outOfField": "飞出场地：掉头或按 R",
     "farOut": "飞得太远：切换到返航，或按 R",
-    "ceiling": "本场地限高：{m} 米",
+    "ceiling": "请保持在 {m} 米以下",
     "desync": "失步！电调丢失了 {motor} 号电机：飞机打转并下沉。降落并让它冷却",
     "motorOut": "{motor} 号电机故障：混控把它的推力分给其余电机",
     "stall": "失速：速度太慢，机头下坠",

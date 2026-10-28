@@ -98,7 +98,7 @@
     "runBest": "{title} geschafft: {time} s (Bestzeit!)",
     "outOfField": "Außerhalb des Felds: umkehren oder R drücken",
     "farOut": "Sehr weit draußen: auf Rückkehr nach Hause schalten oder R drücken",
-    "ceiling": "Höhengrenze auf diesem Feld: {m} m",
+    "ceiling": "Bleib unter {m} m",
     "desync": "Desync! Der ESC hat Motor {motor} verloren: Er dreht sich und sinkt. Lande und lass ihn abkühlen",
     "motorOut": "Motor {motor} ausgefallen: Der Mischer verteilt seinen Schub auf die anderen",
     "stall": "STRÖMUNGSABRISS: zu langsam, die Nase fällt",
