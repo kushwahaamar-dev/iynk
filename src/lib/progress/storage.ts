@@ -14,7 +14,7 @@ export type Settings = {
   lofi: boolean;
   labels: boolean;
   reduceMotion: boolean;
-  /** Anonymous usage events (src/lib/telemetry). On unless the learner opts out. */
+  /** Anonymous usage events (src/lib/telemetry). Off until the learner turns it on. */
   telemetry: boolean;
 };
 
@@ -35,7 +35,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   lofi: false,
   labels: true,
   reduceMotion: false,
-  telemetry: true,
+  telemetry: false,
 });
 
 /** What the server renders and what a first visit starts from: nothing saved. */

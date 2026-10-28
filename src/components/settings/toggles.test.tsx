@@ -46,12 +46,12 @@ test("the compact sound button keeps its name and test id", () => {
   expect(button.getAttribute("aria-pressed")).toBe("true");
 });
 
-test("usage counts are disclosed and on until the learner opts out", () => {
+test("usage counts are disclosed and off until the learner opts in", () => {
   inEnglish(<UsageToggle />);
   expect(screen.getByText(common.client.usage.body)).toBeTruthy();
   const box = screen.getByRole("switch", { name: common.client.usage.toggle });
-  expect(box.getAttribute("aria-checked")).toBe("true");
-  fireEvent.click(box);
-  expect(getSettings().telemetry).toBe(false);
   expect(box.getAttribute("aria-checked")).toBe("false");
+  fireEvent.click(box);
+  expect(getSettings().telemetry).toBe(true);
+  expect(box.getAttribute("aria-checked")).toBe("true");
 });

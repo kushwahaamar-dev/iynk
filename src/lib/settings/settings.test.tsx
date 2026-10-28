@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 test("settings start at the defaults and setSetting saves one field", () => {
-  expect(getSettings()).toEqual({ theme: "light", sound: false, lofi: false, labels: true, reduceMotion: false, telemetry: true });
+  expect(getSettings()).toEqual({ theme: "light", sound: false, lofi: false, labels: true, reduceMotion: false, telemetry: false });
   setSetting("lofi", true);
   setSetting("theme", "dark");
   expect(getSettings()).toMatchObject({ lofi: true, theme: "dark" });

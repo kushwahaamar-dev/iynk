@@ -66,7 +66,7 @@ describe("Leaderboard", () => {
     expect(screen.getByText("9 pilots on the board")).toBeTruthy();
     const url = String(fetchMock.mock.calls.find(([u]) => String(u).startsWith("/api/leaderboard"))?.[0]);
     expect(url).toContain("course=quad5-bando");
-    expect(url).toMatch(/session=[A-Za-z0-9_-]{8,}/);
+    expect(url).not.toContain("session=");
   });
 
   it("has a real empty state", async () => {
