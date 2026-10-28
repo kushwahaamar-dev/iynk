@@ -1,8 +1,10 @@
 # Self-hosting iynk
 
-This is a stub. The full server (rooms, shares, one container for everything) arrives in phase B6. Until then iynk is one Next.js app that you build and run yourself.
+iynk has two parts you can run yourself. The web app is one Next.js app and needs no key: with every setting below left empty, the labs, the editor and the lessons all work. The collaboration server adds buddies (people you pair with by code or link) and keeps their sign-ins. It is optional. Without it, everything on one device keeps working.
 
-The app needs no key to run. With every setting below left empty, the labs, the editor and the lessons all work. The AI partner and live search switch on only when you set them up, and each is off by default.
+The AI partner and live search switch on only when you set them up, and each is off by default.
+
+This guide covers both. Run the web app by itself, or put the app and the server behind one address with the Docker kit.
 
 ## Run it
 
@@ -48,6 +50,171 @@ Search works the same way with `IYNK_SEARCH_ENABLE=1`.
 
 One file: `<IYNK_DATA_DIR>/usage.json`. It holds a short hash of each key and the counts that go with it, so a restart does not reset the caps. It never holds a key. To reset all counts, stop the app and delete the file.
 
-## Back up and update
+## Back up and update the web app
 
 Nothing here needs a backup except, if you care about the counts, `usage.json`. To update, pull, run `npm install` and `npm run build`, and restart.
+
+## The collaboration server
+
+### What you need
+
+- Docker with the compose plugin, or Node 24 or newer for a run without Docker.
+- A domain name that points at the machine, or `localhost` to try it on one machine.
+- Ports 80 and 443 free for Caddy, which fetches and renews the HTTPS certificate by itself. Change them with `IYNK_HTTP_PORT` and `IYNK_HTTPS_PORT` if they are taken.
+
+### Start it with one command
+
+```
+cp deploy/.env.example deploy/.env
+```
+
+Open `deploy/.env` and set `IYNK_DOMAIN` to your domain (or `localhost`). Then:
+
+```
+docker compose -f deploy/compose.yaml up -d --build
+```
+
+This starts the web app, the server and Caddy. Caddy sends `/v1/*`, `/healthz` and `/readyz` to the server and everything else to the web app, so people use one address. The server keeps its data in the `iynk-data` volume.
+
+### First run
+
+```
+docker compose -f deploy/compose.yaml exec server node server/bin/iynk-server.ts init
+```
+
+`init` prepares the database, checks the configuration and prints the first enrolment link and a typed code of 12 characters (`XXXX-XXXX-XXXX`). Open the link in your browser, or open the app, go to Settings, Server address, paste your address and type the code. The first person to enrol on an empty server becomes the owner. Everyone after that is a member.
+
+### Point the app at the server
+
+In the app, open Settings and set Server address to your address, for example `https://iynk.example.com`. The app checks the server and shows whether it is connected, needs a code, or is closed to new people.
+
+A server address pasted into Settings works only if it is the same origin as the app or is listed in `IYNK_CONNECT_ORIGINS` on the web app; otherwise the browser blocks the call and the app says the server is unreachable. With the Docker kit the app and the server share one origin, so nothing extra is needed.
+
+### Keys need HTTPS
+
+Each browser makes a signing key and uses it to sign in. Browsers allow that only on an HTTPS page, with one exception: `localhost`. So a server on a public address must serve HTTPS (the Docker kit does), and plain `http://localhost` is fine for a try-out on your own machine.
+
+### Add a friend, then pair
+
+```
+docker compose -f deploy/compose.yaml exec server node server/bin/iynk-server.ts enrol --name Sam
+```
+
+Send the link or the typed code to your friend. A code works once and expires after 24 hours. When your friend has joined, open Buddies in the app, create a pairing and share its code, link or QR. Pairing connects two people who are already enrolled; it never enrols anyone.
+
+### Day to day commands
+
+Run these the same way as `init` (the examples drop the `docker compose ... exec server` prefix; on a plain Node install run `node server/bin/iynk-server.ts <command>` from the repository root with the same settings in the environment).
+
+| Command | What it does |
+|---|---|
+| `iynk-server devices` | Lists every enrolled device with its role, last seen time and whether it is revoked. |
+| `iynk-server revoke <deviceId or identityId>` | Cuts a device off and ends all its sessions. |
+| `iynk-server enrol [--name n]` | Prints a new one-time enrolment link and typed code. `enroll` is accepted too. `--json` prints it as JSON. |
+| `iynk-server backup` | Writes `backups/iynk-<time>.db` while the server runs and keeps the last 7. |
+| `iynk-server restore <file>` | Replaces the database with a backup. Only while the server is stopped. |
+| `iynk-server compact` | Shrinks the database file. Needs free disk space about the size of the database. |
+| `iynk-server diagnostics` | Writes a tarball with versions, settings (secrets shown as set or unset), migration state, table row counts and an integrity check. Safe to attach to a bug report. |
+| `iynk-server check-config` | Reads the environment and lists every unsafe or missing setting. Exit code 2 means a problem. |
+
+### Back up and restore
+
+Back up while the server runs:
+
+```
+docker compose -f deploy/compose.yaml exec server node server/bin/iynk-server.ts backup
+docker compose -f deploy/compose.yaml cp server:/data/backups/. ./iynk-backups
+```
+
+The first command prints the file it wrote. Keep a copy off the machine. Schedule the pair with cron.
+
+Restore on an empty or broken install:
+
+```
+docker compose -f deploy/compose.yaml stop server
+docker compose -f deploy/compose.yaml run --rm --no-deps -v "$PWD/iynk-backups:/restore:ro" server node server/bin/iynk-server.ts restore /restore/iynk-<time>.db
+docker compose -f deploy/compose.yaml up -d
+```
+
+`restore` checks the file's integrity, refuses a file from a newer server, refuses to run while the server holds the database, and removes the old `-wal` and `-shm` files. Devices and buddies come back. A browser whose session is missing from the older file signs a new challenge with its key and gets a new session without asking you anything.
+
+### Upgrade and roll back
+
+```
+git pull
+docker compose -f deploy/compose.yaml up -d --build
+```
+
+When the new version has a database change, the server writes `backups/pre-<number>-<time>.db` first (the last 3 are kept) and then applies it. A server refuses a database that is newer than itself, and says so.
+
+To roll back, check out the earlier version, rebuild, and restore the pre-upgrade file:
+
+```
+docker compose -f deploy/compose.yaml stop server
+git checkout <earlier version>
+docker compose -f deploy/compose.yaml build server
+docker compose -f deploy/compose.yaml run --rm --no-deps server node server/bin/iynk-server.ts restore /data/backups/pre-<number>-<time>.db
+docker compose -f deploy/compose.yaml up -d
+```
+
+### Stopping
+
+`docker compose stop` sends `SIGTERM`. The server stops taking new work, `/healthz` answers 503 with `"draining": true`, and it exits within 15 seconds, which is the `stop_grace_period` in the compose file.
+
+### Settings of the server
+
+Set these in `deploy/.env` or in the `environment` of the `server` service. The server reads its own `IYNK_DATA_DIR` and `IYNK_TRUST_PROXY`, apart from the web app's: the compose file gives each service its own values. A setting it cannot read stops the server with a message that names the setting.
+
+| Name | Default | What it does |
+|---|---|---|
+| `IYNK_PUBLIC_URL` | required | The address people reach the server at, with no path. The compose file builds it from `IYNK_DOMAIN`. |
+| `IYNK_ALLOWED_ORIGINS` | required | Exact origins of the web apps allowed to call the server, comma separated. |
+| `IYNK_DATA_DIR` | `./data` | Where `iynk.db` and `backups/` live. Mode 700, owned by the user that runs the server. |
+| `IYNK_HOST` | `127.0.0.1` | The address it listens on. Anything but loopback needs `IYNK_TRUST_PROXY` or `IYNK_ALLOW_DIRECT=1`. |
+| `IYNK_PORT` | `8787` | The port it listens on. |
+| `IYNK_TRUST_PROXY` | `0` | How many proxies sit in front, 0 to 8. Then the caller address comes from `X-Forwarded-For`. The compose file sets 1. |
+| `IYNK_ENROL` | `code` | `code` lets people join with a code. `closed` admits nobody new. |
+| `IYNK_MAX_IDENTITIES` | `100` | The most people the server will enrol. |
+| `IYNK_TOKEN_TTL_HOURS` | `12` | How long a sign-in lasts, 1 to 720. |
+| `IYNK_DELETION_GRACE_HOURS` | `24` | How long after Leave server an account waits before it is deleted. `0` deletes at once. |
+| `IYNK_STORE_SYNC` | `full` | `full` or `normal`. See below. |
+| `IYNK_LOG_LEVEL` | `info` | `debug`, `info`, `warn` or `error`. |
+| `IYNK_SERVER_NAME` | `iynk` | The name the app shows for this server. |
+| `IYNK_MIN_CLIENT` | `0.0.0` | The oldest app version the server accepts. |
+| `IYNK_ALLOW_ROOT` | `0` | The server refuses to run as root unless this is `1`. |
+| `IYNK_ALLOW_DIRECT` | `0` | `1` lets it listen on a public address without a proxy. Not recommended. |
+| `IYNK_METRICS_ADDR` | empty | Reserved. The server has no metrics endpoint yet; leave it empty. |
+
+The old relay settings (`IYNK_SECRET`, `IYNK_SERVER_TOKEN`, `LOG_LEVEL`, `TRUST_PROXY`, `MAX_ROOMS`, `MAX_CONNECTIONS`, `MAX_CONNECTIONS_PER_IP` and anything starting with `REALTIME_`) stop the server on purpose. Delete them from its environment.
+
+### Durability and `IYNK_STORE_SYNC`
+
+The default, `full`, makes the database wait until each change is on disk before it answers. On a Mac (Node 24.8, 400 writes a second, 50 rounds of `kill -9` during writes) that lost none of 53,906 acknowledged changes and left no damaged rows, and the database passed its integrity check every time. A change took 0.133 ms at the median and 2.3 ms at the 99th percentile. `normal` skips some waits. It cannot corrupt the database, but a power cut or an operating system crash can lose the last few changes. Keep `full` unless you measured a problem.
+
+### Leave server and deletion
+
+When someone chooses Leave server, their account is hidden from buddies and deleted after the grace period (`IYNK_DELETION_GRACE_HOURS`, 24 by default). During the grace they can still sign in and choose Keep my account. With `0` the deletion happens at once.
+
+### What the operator can read
+
+The database holds display names, public keys, who is a device of whom, who paired with whom, and when things happened. In this version there is no chat and no project text on the server, so there is nothing of that kind to read. The log never holds tokens or pairing secrets, and shows an address only in a warning about abuse. See [Data handling](DATA_HANDLING.md) for the rest.
+
+### If it faces the internet
+
+- Serve only HTTPS. The Docker kit does, through Caddy. Do not publish port 8787.
+- When your friends have enrolled, set `IYNK_ENROL=closed` in `deploy/.env` and run `docker compose -f deploy/compose.yaml up -d` again. Open it for a moment whenever you add someone.
+- Keep the server's `backups/` copied somewhere else, on a schedule.
+- Leave `IYNK_METRICS_ADDR` empty. The Caddy file forwards only `/v1/*`, `/healthz` and `/readyz`, so nothing else reaches the server.
+- Check from cron, and alert yourself on failure: `curl -f https://<your domain>/healthz` must succeed; disk use of the data volume stays under 80 percent; the newest file in `backups/` is less than a day old.
+
+### Uninstall
+
+```
+docker compose -f deploy/compose.yaml down -v
+```
+
+This stops the containers and deletes the data volume. Nothing else is on the machine. Without `-v` the data stays.
+
+### Check it works
+
+`bash server/scripts/drill.sh` runs backup, restore, an upgrade with a database change, a rollback and a graceful stop against a temporary folder on your machine, and prints a PASS or FAIL line for each. It needs Node 24 and curl, uses no network beyond localhost and leaves nothing behind.
