@@ -3,6 +3,8 @@
 // The user's own keys (D-015), kept apart from the progress document
 // localStorage["iynk:v1"]. Reads return a masked view; only the header builder
 // calls readSecret. Reads are cached by the raw string for useSyncExternalStore.
+// Once hydrateKeys has run, the ai and search keys live in the IndexedDB `keys` store
+// behind an in-memory mirror; the server token stays in localStorage until B6.
 
 import { useSyncExternalStore } from "react";
 import { parseSecret, type SecretProblem } from "./format";
@@ -12,6 +14,21 @@ const KEYS_VERSION = 1;
 const LABEL_MAX = 40;
 
 export type KeyKind = "ai" | "search" | "server";
+export type KeySlot = "ai" | "search";
+
+export interface KeyRow {
+  /** The ProviderProfile arrives in B14; until then rows are keyed by slot. */
+  providerProfile: null;
+  key: string;
+  label?: string;
+  addedAt: number;
+  lastUsedAt: number | null;
+}
+
+export interface KeysBackend {
+  load(): Promise<Record<KeySlot, KeyRow | null>>;
+  save(slot: KeySlot, row: KeyRow | null): Promise<void>;
+}
 
 type KeysDoc = {
   v: typeof KEYS_VERSION;
@@ -33,6 +50,8 @@ export type MaskedKey = {
 export type SetKeyResult = { ok: true } | { ok: false; reason: SecretProblem | "storage" };
 
 const KINDS: readonly KeyKind[] = ["ai", "search", "server"];
+const SLOTS: readonly KeySlot[] = ["ai", "search"];
+const CHANNEL_NAME = "iynk-keys";
 const TAIL_MIN_LENGTH = 12;
 
 const EMPTY_DOC: Readonly<KeysDoc> = Object.freeze({ v: KEYS_VERSION, ai: null, search: null, server: null });
@@ -73,13 +92,21 @@ function readRaw(): string | null {
   }
 }
 
+type Mirror = Record<KeySlot, KeyRow | null>;
+
+let backend: KeysBackend | null = null;
+let mirror: Mirror | null = null;
+let hydrating: Promise<HydrateResult> | null = null;
+let channel: BroadcastChannel | null = null;
+// Set when the last write to the backend failed, so the key lasts only until the tab closes.
+let backendFailed = false;
 let cachedRaw: string | null = null;
 let cachedDoc: KeysDoc = EMPTY_DOC;
 // Holds the keys when storage cannot be written, so the session still has them.
 let memoryOnly: KeysDoc | null = null;
 let snapshot: Readonly<Record<KeyKind, MaskedKey>> | null = null;
 
-function currentDoc(): KeysDoc {
+function localDoc(): KeysDoc {
   if (memoryOnly) return memoryOnly;
   const raw = readRaw();
   if (raw !== cachedRaw) {
@@ -94,6 +121,17 @@ function currentDoc(): KeysDoc {
   return cachedDoc;
 }
 
+function currentDoc(): KeysDoc {
+  const local = localDoc();
+  if (!mirror) return local;
+  return {
+    v: KEYS_VERSION,
+    ai: mirror.ai ? { key: mirror.ai.key, ...(mirror.ai.label ? { label: mirror.ai.label.slice(0, LABEL_MAX) } : {}) } : null,
+    search: mirror.search ? { key: mirror.search.key } : null,
+    server: local.server,
+  };
+}
+
 const listeners = new Set<() => void>();
 
 function notify() {
@@ -101,10 +139,7 @@ function notify() {
   for (const listener of [...listeners]) listener();
 }
 
-function write(next: KeysDoc) {
-  if (typeof window === "undefined") {
-    throw new Error("iynk keys: keys can only change in the browser.");
-  }
+function writeLocal(next: KeysDoc) {
   const empty = KINDS.every((kind) => secretIn(next, kind) === null);
   try {
     if (empty) window.localStorage.removeItem(KEYS_STORAGE_KEY);
@@ -114,6 +149,53 @@ function write(next: KeysDoc) {
     cachedDoc = next;
   } catch {
     memoryOnly = next;
+  }
+}
+
+function rowFor(slot: KeySlot, doc: KeysDoc, previous: KeyRow | null): KeyRow | null {
+  const key = secretIn(doc, slot);
+  if (key === null) return null;
+  const label = slot === "ai" ? doc.ai?.label : undefined;
+  const sameKey = previous?.key === key;
+  if (sameKey && previous.label === label) return previous;
+  return {
+    providerProfile: null,
+    key,
+    ...(label ? { label } : {}),
+    addedAt: sameKey ? previous.addedAt : Date.now(),
+    lastUsedAt: sameKey ? previous.lastUsedAt : null,
+  };
+}
+
+function saveRow(target: KeysBackend, slot: KeySlot, row: KeyRow | null) {
+  target.save(slot, row).then(
+    () => {
+      channel?.postMessage(slot);
+      if (backendFailed) {
+        backendFailed = false;
+        notify();
+      }
+    },
+    () => {
+      backendFailed = true;
+      notify();
+    },
+  );
+}
+
+function write(next: KeysDoc) {
+  if (typeof window === "undefined") {
+    throw new Error("iynk keys: keys can only change in the browser.");
+  }
+  if (backend && mirror) {
+    const previous = mirror;
+    mirror = { ai: rowFor("ai", next, previous.ai), search: rowFor("search", next, previous.search) };
+    for (const slot of SLOTS) {
+      if (mirror[slot] !== previous[slot]) saveRow(backend, slot, mirror[slot]);
+    }
+    writeLocal({ ...next, ai: null, search: null });
+  } else {
+    writeLocal(next);
   }
   notify();
 }
@@ -152,7 +234,7 @@ function mask(doc: KeysDoc, kind: KeyKind): MaskedKey {
     set: secret !== null,
     tail: secret !== null && secret.length >= TAIL_MIN_LENGTH ? secret.slice(-4) : "",
     ...(label ? { label } : {}),
-    persisted: memoryOnly === null,
+    persisted: memoryOnly === null && !backendFailed,
   };
 }
 
@@ -205,4 +287,97 @@ export function redact(text: string): string {
     .filter((secret): secret is string => secret !== null)
     .sort((a, b) => b.length - a.length);
   return secrets.reduce((out, secret) => out.split(secret).join("[key]"), text);
+}
+
+export type HydrateResult = { moved: KeySlot[]; degraded: boolean };
+
+function usableRow(value: KeyRow | null): KeyRow | null {
+  const parsed = value && parseSecret(value.key);
+  return value && parsed?.ok ? { ...value, key: parsed.value } : null;
+}
+
+function readStored(): KeysDoc {
+  try {
+    const raw = readRaw();
+    return raw ? normalize(JSON.parse(raw)) : EMPTY_DOC;
+  } catch {
+    return EMPTY_DOC;
+  }
+}
+
+function listenForOtherTabs(source: KeysBackend) {
+  if (channel || typeof BroadcastChannel === "undefined") return;
+  channel = new BroadcastChannel(CHANNEL_NAME);
+  channel.onmessage = () => {
+    source.load().then(
+      (rows) => {
+        mirror = { ai: usableRow(rows.ai), search: usableRow(rows.search) };
+        notify();
+      },
+      () => undefined,
+    );
+  };
+}
+
+async function moveToBackend(source: KeysBackend): Promise<HydrateResult> {
+  const rows: Mirror = await source.load().then((loaded) => ({ ai: usableRow(loaded.ai), search: usableRow(loaded.search) }));
+  const local = localDoc();
+  const moved: KeySlot[] = [];
+  for (const slot of SLOTS) {
+    const key = secretIn(local, slot);
+    if (key === null || rows[slot]) continue;
+    const row = rowFor(slot, local, null);
+    await source.save(slot, row);
+    const saved = usableRow((await source.load())[slot]);
+    if (saved?.key !== key) throw new Error("iynk keys: a key did not read back from the store.");
+    rows[slot] = saved;
+    moved.push(slot);
+  }
+  const leftover = SLOTS.filter((slot) => rows[slot] !== null && rows[slot]?.key === secretIn(local, slot));
+  if (leftover.length > 0) {
+    writeLocal({ ...local, ...Object.fromEntries(leftover.map((slot) => [slot, null])) });
+  }
+  backend = source;
+  mirror = rows;
+  listenForOtherTabs(source);
+  notify();
+  return { moved, degraded: false };
+}
+
+/**
+ * Fills the in-memory mirror from the `keys` store at app start and moves any ai or search key still in
+ * localStorage into it. If anything fails nothing is removed and B1 behaviour carries on.
+ */
+export function hydrateKeys(source: KeysBackend): Promise<HydrateResult> {
+  if (mirror) return Promise.resolve({ moved: [], degraded: false });
+  hydrating ??= moveToBackend(source).catch(() => {
+    hydrating = null;
+    return { moved: [], degraded: true };
+  });
+  return hydrating;
+}
+
+/** The revert path: copies both rows back into localStorage and deletes them from the store. */
+export async function restoreKeysToLocalStorage(source: KeysBackend): Promise<{ restored: KeySlot[] }> {
+  const rows = await source.load();
+  const found = SLOTS.flatMap((slot) => {
+    const row = usableRow(rows[slot]);
+    return row ? [{ slot, row }] : [];
+  });
+  if (found.length === 0) return { restored: [] };
+  const local = localDoc();
+  writeLocal({
+    ...local,
+    ...Object.fromEntries(found.map(({ slot, row }) => [slot, slot === "ai" ? { key: row.key, ...(row.label ? { label: row.label } : {}) } : { key: row.key }])),
+  });
+  const stored = readStored();
+  if (found.some(({ slot, row }) => secretIn(stored, slot) !== row.key)) {
+    throw new Error("iynk keys: a key did not read back from localStorage.");
+  }
+  for (const { slot } of found) await source.save(slot, null);
+  backend = null;
+  mirror = null;
+  hydrating = null;
+  notify();
+  return { restored: found.map(({ slot }) => slot) };
 }
