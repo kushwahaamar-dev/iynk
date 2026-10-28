@@ -17,6 +17,7 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   cacheComponents: true,
   partialPrefetching: true,

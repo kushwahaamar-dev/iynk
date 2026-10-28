@@ -1,0 +1,20 @@
+# One origin for the app and the server. IYNK_DOMAIN is a real name (iynk.example.com), <ip-with-dashes>.sslip.io,
+# or localhost for a test on this machine (Caddy then issues its own local certificate).
+# Caddy gets and renews the certificate itself and passes WebSocket upgrades through as they are.
+{$IYNK_DOMAIN} {
+	@server path /v1/* /ws /healthz /readyz
+	handle @server {
+		@api path /v1/*
+		header @api Cache-Control "no-store"
+		reverse_proxy server:8787
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}
