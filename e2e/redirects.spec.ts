@@ -40,3 +40,15 @@ test.describe("a path without a language, from an unsupported language", () => {
     await expect(page).toHaveURL("/en/together");
   });
 });
+
+test.describe("a removed page", () => {
+  const gone = [["pass", "port"].join(""), ["ver", "ify"].join("")];
+
+  test("answers 404 under a language", async ({ request }) => {
+    for (const name of gone) expect((await request.get(`/en/${name}`)).status(), name).toBe(404);
+  });
+
+  test("answers 404 without a language", async ({ request }) => {
+    expect((await request.get(`/${gone[0]}`, { maxRedirects: 0 })).status()).toBe(404);
+  });
+});

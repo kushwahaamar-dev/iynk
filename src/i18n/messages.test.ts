@@ -50,3 +50,7 @@ test("the common strings are translated, not copied from English", () => {
     expect(leaf(translated, "client.figure.loading"), locale).not.toBe(leaf(english, "client.figure.loading"));
   }
 });
+
+test("a removed namespace is gone", () => {
+  expect(NAMESPACES).not.toContain(["sol", "ana"].join(""));
+});
