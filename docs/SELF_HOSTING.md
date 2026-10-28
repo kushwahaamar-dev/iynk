@@ -33,7 +33,7 @@ Copy `.env.example` to `.env.local` and fill in only what you need. An empty lin
 | `IYNK_TRUST_PROXY` | `0` | `1` only when the app sits behind one proxy you control. Then the caller address comes from `X-Forwarded-For`. At `0` that header is ignored, so nobody can fake an address to dodge the rate limits. |
 | `IYNK_SERVER_URL` | not set | Address of a separate iynk server. The app serves it at `/config.json` so the browser knows where to connect. Not set means "no separate server". |
 
-The provider address and model names (`META_API_BASE`, `META_MODEL`, `META_TRANSCRIBE_MODEL`, `GEMINI_MODEL`) and the public address (`NEXT_PUBLIC_SITE_URL`, `SITE_URL`) are listed in `.env.example` as well. `NEXT_PUBLIC_SITE_URL` is baked in at build time, so set it before `npm run build`.
+The provider address and model names (`META_API_BASE`, `META_MODEL`, `META_TRANSCRIBE_MODEL`, `GEMINI_MODEL`) and the public address (`NEXT_PUBLIC_SITE_URL`, `SITE_URL`) are listed in `.env.example` as well. `NEXT_PUBLIC_SITE_URL` is baked in at build time, so set it before `npm run build`. `NEXT_PUBLIC_REALTIME_URL` is baked in the same way: it holds the `ws://` or `wss://` address of a relay for shared rooms, and without it rooms work between tabs of one browser only.
 
 ## Turning the AI partner on
 

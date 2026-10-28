@@ -4,6 +4,7 @@
 //   node scripts/gen-content-index.mjs              scan src/content/{boards,robotics,drones}/*.ts and
 //                                                   write src/content/index.generated.ts (only when it changes)
 //   node scripts/gen-content-index.mjs --check      also load every item and check id, lab and text keys; exit 1 on problems
+//   node scripts/gen-content-index.mjs --counts     print the item counts as JSON for the README count check
 //   node scripts/gen-content-index.mjs --emit board/uno-r3
 //                                                   print { meta, data, en } as JSON for the figure build (SL.data)
 //
@@ -168,6 +169,10 @@ const args = process.argv.slice(2);
 try {
   if (args[0] === '--emit') {
     await emit(args[1]);
+  } else if (args[0] === '--counts') {
+    const { found } = await collect();
+    const counts = { boards: found.board.length, robotics: found.robotics.length, drones: found.drone.length };
+    console.log(JSON.stringify({ items: counts.boards + counts.robotics + counts.drones, ...counts }));
   } else {
     const { found, problems } = await collect();
     const next = render(found);

@@ -12,7 +12,7 @@ set -uo pipefail
 
 cd "$(dirname "$0")/.."
 
-STEPS=(content typecheck lint no-only relay-deps unit relay build e2e secrets audit)
+STEPS=(content typecheck lint no-only copy provenance relay-deps unit relay build e2e secrets audit)
 
 usage_steps() {
   echo "valid steps: ${STEPS[*]}" >&2
@@ -53,7 +53,7 @@ if ! python3 --version >/dev/null 2>&1; then
   exit 2
 fi
 
-export META_API_KEY= GEMINI_API_KEY= SERPAPI_KEY= NEXT_PUBLIC_REALTIME_URL= IYNK_SERVER_TOKEN= IYNK_AI_ENABLE= IYNK_SEARCH_ENABLE=
+export NEXT_PUBLIC_REALTIME_URL= IYNK_SERVER_TOKEN= IYNK_AI_ENABLE= IYNK_SEARCH_ENABLE=
 export NEXT_DIST_DIR=.next-ci
 
 selected() {
@@ -73,6 +73,8 @@ run_step() {
     typecheck) npm run typecheck ;;
     lint) npm run lint ;;
     no-only) ! git grep -nE --untracked -e "[.]only[(]" -- src figures scripts e2e server ;;
+    copy) node scripts/copy-check.mjs ;;
+    provenance) npm run provenance:check ;;
     relay-deps) npm ci --prefix server/realtime ;;
     unit) CI=true npx vitest run ;;
     relay) npm test --prefix server/realtime ;;
