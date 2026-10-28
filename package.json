@@ -32,6 +32,7 @@
     "perf:budget": "node scripts/perf-budget.mjs",
     "perf:record": "node scripts/perf-budget.mjs --record",
     "corpus": "node scripts/convert-catalogue.mjs",
+    "measure:apply": "node scripts/measure-apply.mjs",
     "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
   },
   "dependencies": {
