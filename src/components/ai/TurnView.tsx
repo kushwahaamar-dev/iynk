@@ -1,10 +1,9 @@
 "use client";
 
-import { Button, Callout, Chip, cx } from "@/components/ui";
+import { Button, Callout, Chip, Icon, cx } from "@/components/ui";
 import type { Citation, ToolRecord, Turn } from "@/lib/ai/conversation";
 import type { AiT } from "@/lib/ai/messages";
 import { ChangeCard } from "./ChangeCard";
-import { PartnerIcon } from "./icons";
 import { Markdown } from "./Markdown";
 
 type TurnProps = {
@@ -23,12 +22,12 @@ type TurnProps = {
 export function TurnView({ turn, first, t, busy, onRetry, onDecide, onPeer, onFlash, onInvite }: TurnProps) {
   if (turn.role === "user") {
     return (
-      <div className="flex justify-end ps-8 motion-safe:animate-ink-rise">
-        <p className="max-w-full whitespace-pre-wrap break-words rounded-ink border-2 border-line bg-mustard px-3 py-2 text-sm text-on-color shadow-ink-sm">
+      <div className="flex justify-end ps-8 motion-safe:animate-rise-in">
+        <p className="max-w-full whitespace-pre-wrap break-words rounded-2xl bg-hover px-4 py-3 text-sm">
           <span className="sr-only">{t("panel.you")}: </span>
           {turn.via === "voice" ? (
             <span className="me-1 inline-block align-[-3px]" aria-hidden="true">
-              <PartnerIcon name="mic" size={14} />
+              <Icon name="mic" size={16} />
             </span>
           ) : null}
           {turn.text}
@@ -40,7 +39,7 @@ export function TurnView({ turn, first, t, busy, onRetry, onDecide, onPeer, onFl
   if (turn.role === "note") {
     const kind = t(`panel.kinds.${turn.kind}`);
     return (
-      <p className="text-center font-ui text-xs text-muted">
+      <p className="text-center text-xs text-muted">
         {t(turn.decision === "accepted" ? "panel.accepted" : "panel.rejected", { kind })}
       </p>
     );
@@ -49,25 +48,25 @@ export function TurnView({ turn, first, t, busy, onRetry, onDecide, onPeer, onFl
   const streaming = turn.status === "streaming";
   const labels = { code: t("panel.code"), copy: t("tools.copy"), copied: t("tools.copied") };
   return (
-    <div className="flex gap-2 pe-2 motion-safe:animate-ink-rise">
+    <div className="flex gap-2 pe-2 motion-safe:animate-rise-in">
       <span
         aria-hidden="true"
         className={cx(
-          "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-line bg-mint text-on-color",
+          "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-sunken",
           !first && "invisible",
         )}
       >
-        <PartnerIcon name="spark" size={14} />
+        <Icon name="spark" size={16} />
       </span>
       <div className="min-w-0 flex-1 space-y-2" aria-busy={streaming}>
         <span className="sr-only">{t("panel.partner")}: </span>
         {turn.text ? (
-          <div className="rounded-ink border-2 border-line bg-surface px-3 py-2 text-sm leading-relaxed shadow-ink-sm">
+          <div className="py-1 text-sm leading-relaxed">
             <Markdown text={turn.text} labels={labels} />
-            {streaming ? <span aria-hidden="true" className="ms-0.5 inline-block h-4 w-1.5 animate-pulse bg-ink align-middle" /> : null}
+            {streaming ? <span aria-hidden="true" className="ms-0.5 inline-block h-4 w-0.5 animate-pulse bg-ink align-middle motion-reduce:animate-none" /> : null}
           </div>
         ) : streaming && !turn.tools.length ? (
-          <p className="flex items-center gap-1.5 py-2 text-sm text-muted">
+          <p className="flex items-center gap-2 py-2 text-sm text-muted">
             <Dots />
             {t("panel.thinking")}
           </p>
@@ -79,13 +78,13 @@ export function TurnView({ turn, first, t, busy, onRetry, onDecide, onPeer, onFl
           <ToolView key={tool.id} tool={tool} t={t} onDecide={onDecide} onPeer={onPeer} onFlash={onFlash} onInvite={onInvite} />
         ))}
 
-        {turn.status === "stopped" ? <p className="font-ui text-xs text-muted">{t("panel.stopped")}</p> : null}
+        {turn.status === "stopped" ? <p className="text-xs text-muted">{t("panel.stopped")}</p> : null}
         {turn.status === "error" && turn.error ? (
           <Callout tone={turn.error === "not_configured" ? "note" : "warn"} live>
             {t(`errors.${turn.error}`)}
             {turn.error !== "not_configured" ? (
-              <Button size="sm" className="mt-2 flex" onClick={onRetry} disabled={busy}>
-                <PartnerIcon name="refresh" size={16} />
+              <Button size="sm" variant="secondary" className="mt-2 flex" onClick={onRetry} disabled={busy}>
+                <Icon name="refresh" size={16} />
                 {t("panel.retry")}
               </Button>
             ) : null}
@@ -121,22 +120,22 @@ function host(url: string) {
 function Citations({ citations, label }: { citations: Citation[]; label: string }) {
   return (
     <div>
-      <p className="ink-kicker mb-1">{label}</p>
-      <ul className="grid gap-1.5">
+      <p className="kicker mb-1">{label}</p>
+      <ul className="grid gap-2">
         {citations.map((citation, i) => (
           <li key={citation.url}>
             <a
               href={citation.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex gap-2 rounded-ink-sm border-2 border-line bg-paper p-2 no-underline shadow-ink-sm hover:-translate-y-px hover:shadow-ink"
+              className="flex gap-2 rounded-lg bg-sunken p-2 no-underline motion-fade hover:bg-hover"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-line bg-cobalt font-ui text-xs font-bold text-on-color">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-info-bg text-xs font-semibold text-info tabular">
                 {i + 1}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-ink">{citation.title}</span>
-                <span className="block truncate font-ui text-xs text-muted">{host(citation.url)}</span>
+                <span className="block truncate text-sm font-semibold text-ink">{citation.title}</span>
+                <span className="block truncate text-xs text-muted">{host(citation.url)}</span>
                 {citation.snippet ? <span className="line-clamp-2 text-xs text-muted">{citation.snippet}</span> : null}
               </span>
             </a>
@@ -185,7 +184,7 @@ function ToolView({
         case "pending":
           return (
             <Callout tone="note" title={t("tools.askPeerPending", { name: card.peer })}>
-              <p className="italic">{t("tools.question", { question: card.question })}</p>
+              <p className="text-muted">{t("tools.question", { question: card.question })}</p>
               <div className="mt-2 flex gap-2">
                 <Button size="sm" variant="primary" onClick={() => onPeer(tool.id, true)}>
                   {t("tools.askPeerSend")}
@@ -199,7 +198,7 @@ function ToolView({
         case "sent":
           return (
             <Callout tone="note" title={t("tools.askPeer", { name: card.peer })}>
-              <p className="italic">{t("tools.question", { question: card.question })}</p>
+              <p className="text-muted">{t("tools.question", { question: card.question })}</p>
             </Callout>
           );
         case "declined":
@@ -213,13 +212,13 @@ function ToolView({
             <Callout tone="note">
               <p>{t("tools.askPeerNoRoom")}</p>
               <Button size="sm" variant="primary" className="mt-2" onClick={onInvite}>
-                <PartnerIcon name="people" size={16} />
+                <Icon name="people" size={16} />
                 {t("tools.invite")}
               </Button>
             </Callout>
           );
       }
     case "panel":
-      return <Chip tone="cobalt">{t("tools.opened", { tab: t(`tools.tabs.${card.tab}`) })}</Chip>;
+      return <Chip tone="info">{t("tools.opened", { tab: t(`tools.tabs.${card.tab}`) })}</Chip>;
   }
 }

@@ -41,52 +41,43 @@ export function ChangeCard({
   return (
     <section
       aria-labelledby={titleId}
-      className="overflow-hidden rounded-ink border-2 border-line bg-surface shadow-ink-sm"
+      className="overflow-clip rounded-2xl border border-rule bg-surface"
     >
-      <header className="flex items-center justify-between gap-2 border-b-2 border-line bg-mustard px-3 py-2 text-on-color">
-        <h3 id={titleId} className="ink-kicker text-ink">
+      <header className="flex items-center justify-between gap-2 border-b border-rule px-3 py-2">
+        <h3 id={titleId} className="text-sm font-semibold">
           {t(`tools.change.${card.change.kind}`)}
         </h3>
         {card.status !== "pending" ? (
-          <Chip tone={card.status === "accepted" ? "mint" : "plain"}>
+          <Chip tone={card.status === "accepted" ? "good" : "neutral"}>
             {t(card.status === "accepted" ? "tools.accepted" : "tools.rejected")}
           </Chip>
         ) : null}
       </header>
       <p className="px-3 pt-2 text-sm">{card.change.reason}</p>
-      <div
-        role="group"
-        tabIndex={0}
-        aria-label={t("tools.diffLabel")}
-        className="m-3 max-h-64 overflow-auto rounded-ink-sm border-2 border-line bg-paper font-ui text-xs leading-5"
-      >
+      <pre role="group" tabIndex={0} aria-label={t("tools.diffLabel")} className="m-3 max-h-64 overflow-auto rounded-lg bg-sunken font-mono text-xs leading-5">
         {rows.map((row, i) =>
           row.op === "skip" ? (
-            <div key={i} className="border-y border-dashed border-rule px-2 text-center text-muted">
+            <span key={i} className="block border-y border-dashed border-rule px-2 text-center text-muted">
               {t("tools.unchanged", { count: row.count })}
-            </div>
+            </span>
           ) : (
-            <div
+            <span
               key={i}
-              className={cx(
-                "flex whitespace-pre",
-                row.op === "add" && "on-fill bg-good-bg",
-                row.op === "del" && "on-fill bg-bad-bg",
-              )}
+              className={cx("flex whitespace-pre", row.op === "add" && "bg-good-bg text-good", row.op === "del" && "bg-bad-bg text-bad")}
             >
-              <span className="w-5 shrink-0 select-none text-center font-bold">{MARK[row.op]}</span>
+              <span className="w-4 shrink-0 select-none text-center font-bold">{MARK[row.op]}</span>
               <span className="pe-2">{row.text || " "}</span>
-            </div>
+            </span>
           ),
         )}
-      </div>
+      </pre>
       {card.status === "pending" ? (
         applies ? (
           <div className="flex flex-wrap gap-2 px-3 pb-3">
             <Button variant="primary" size="sm" onClick={() => onDecide(true)}>
               {t("tools.accept")}
             </Button>
-            <Button size="sm" onClick={() => onDecide(false)}>
+            <Button size="sm" variant="secondary" onClick={() => onDecide(false)}>
               {t("tools.reject")}
             </Button>
           </div>
@@ -94,7 +85,7 @@ export function ChangeCard({
           <div className="space-y-2 px-3 pb-3">
             <p className="text-xs text-muted">{t("tools.manual")}</p>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" onClick={copy} aria-live="polite">
+              <Button size="sm" variant="secondary" onClick={copy} aria-live="polite">
                 {copied ? t("tools.copied") : t("tools.copy")}
               </Button>
               <Button variant="ghost" size="sm" onClick={() => onDecide(false)}>

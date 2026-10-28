@@ -1,9 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { cx } from "@/components/ui";
+import { IconButton, cx } from "@/components/ui";
 import type { AiT } from "@/lib/ai/messages";
-import { PartnerIcon } from "./icons";
 import type { VoiceProblem, VoiceState } from "./useVoice";
 
 /** Held this long, a press is push-to-talk: letting go sends. Shorter is a tap that toggles. */
@@ -25,11 +24,11 @@ export function MicButton({ t, voice, phase, start, stop, toggle }: MicProps) {
   const disabled = !voice || phase === "transcribing";
 
   return (
-    <button
-      type="button"
+    <IconButton
+      icon="mic"
+      label={label}
+      tooltipSide="top"
       aria-pressed={on}
-      aria-label={label}
-      title={label}
       aria-disabled={disabled}
       onPointerDown={(event) => {
         if (disabled || event.button !== 0) return;
@@ -50,13 +49,8 @@ export function MicButton({ t, voice, phase, start, stop, toggle }: MicProps) {
         // Enter, Space and screen readers click without a pointer (detail 0).
         if (event.detail === 0 && !disabled) toggle();
       }}
-      className={cx(
-        "inline-flex size-11 shrink-0 touch-none items-center justify-center rounded-full border-2 border-line shadow-ink-sm transition-colors aria-disabled:cursor-not-allowed aria-disabled:opacity-50",
-        on ? "bg-tomato text-on-color motion-safe:animate-pulse" : "bg-paper text-ink",
-      )}
-    >
-      <PartnerIcon name="mic" />
-    </button>
+      className="touch-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+    />
   );
 }
 
@@ -70,16 +64,17 @@ const PROBLEM: Record<VoiceProblem, "voice.denied" | "voice.unsupported" | "voic
 
 /** What the mic is doing, announced politely. */
 export function VoiceLine({ t, phase, problem }: { t: AiT; phase: VoiceState["phase"]; problem: VoiceProblem | null }) {
-  const text =
-    phase === "recording" || phase === "starting"
-      ? t("voice.recording")
-      : phase === "transcribing"
-        ? t("voice.transcribing")
-        : problem
-          ? t(PROBLEM[problem])
-          : "";
+  const recording = phase === "recording" || phase === "starting";
+  const text = recording
+    ? t("voice.recording")
+    : phase === "transcribing"
+      ? t("voice.transcribing")
+      : problem
+        ? t(PROBLEM[problem])
+        : "";
   return (
-    <p role="status" className={cx("min-h-0 text-xs", problem ? "text-bad" : "text-muted", !text && "sr-only")}>
+    <p role="status" className={cx("flex min-h-0 items-center gap-2 text-sm", problem ? "text-bad" : "text-muted", !text && "sr-only")}>
+      {recording ? <span aria-hidden="true" className="size-2 shrink-0 rounded-md bg-bad motion-safe:animate-pulse" /> : null}
       {text}
     </p>
   );

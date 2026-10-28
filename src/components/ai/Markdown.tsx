@@ -28,13 +28,13 @@ function Inlines({ nodes }: { nodes: Inline[] }) {
         return <Fragment key={i}>{node.v}</Fragment>;
       case "bold":
         return (
-          <strong key={i} className="font-extrabold">
+          <strong key={i} className="font-bold">
             <Inlines nodes={node.c} />
           </strong>
         );
       case "code":
         return (
-          <code key={i} className="rounded-ink-sm border border-rule bg-sunken px-1 py-px font-ui text-[0.85em]">
+          <code key={i} className="rounded-sm bg-sunken px-1 font-mono">
             {node.v}
           </code>
         );
@@ -45,7 +45,7 @@ function Inlines({ nodes }: { nodes: Inline[] }) {
             href={node.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-ink underline decoration-cobalt decoration-2 underline-offset-2 hover:decoration-ink"
+            className="font-semibold text-ink underline decoration-accent decoration-2 underline-offset-2 hover:decoration-ink"
           >
             <Inlines nodes={node.c} />
           </a>
@@ -73,13 +73,13 @@ export function Markdown({ text, labels }: { text: string; labels: Labels }) {
             );
           case "h":
             return (
-              <p key={i} className="font-head font-extrabold">
+              <p key={i} className="font-bold">
                 <Inlines nodes={block.c} />
               </p>
             );
           case "ul":
             return (
-              <ul key={i} className="list-disc space-y-1 ps-5 marker:text-tomato">
+              <ul key={i} className="list-disc space-y-1 ps-4 marker:text-muted">
                 {block.items.map((item, j) => (
                   <li key={j}>
                     <Inlines nodes={item} />
@@ -89,7 +89,7 @@ export function Markdown({ text, labels }: { text: string; labels: Labels }) {
             );
           case "ol":
             return (
-              <ol key={i} start={block.start} className="list-decimal space-y-1 ps-5 marker:font-ui marker:font-bold">
+              <ol key={i} start={block.start} className="list-decimal space-y-1 ps-4 tabular marker:font-semibold marker:text-muted">
                 {block.items.map((item, j) => (
                   <li key={j}>
                     <Inlines nodes={item} />
