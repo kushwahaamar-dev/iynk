@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# The one gate. The GitHub workflow runs this file, so the local and hosted checks cannot drift.
+#
+#   bash scripts/ci-local.sh [--list] [--only a,b] [--skip a,b]
+#
+# Steps run in the order --list prints them and stop at the first failure.
+# Exit 0: every step passed. 1: a step failed, or the arguments name a step that does not exist.
+# 2: Node is not major 24 (.nvmrc).
+# CI_SKIP_AUDIT=1 skips the audit step, for offline runs.
+# The variables that can switch a real service on are blanked here, so a local .env.local cannot leak in.
+set -uo pipefail
+
+cd "$(dirname "$0")/.."
+
+STEPS=(content typecheck lint relay-deps unit relay build e2e secrets audit)
+
+usage_steps() {
+  echo "valid steps: ${STEPS[*]}" >&2
+}
+
+only=""
+skip=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --list) printf '%s\n' "${STEPS[@]}"; exit 0 ;;
+    --only) only="${2-}"; shift 2 || { echo "--only needs a value" >&2; exit 1; } ;;
+    --skip) skip="${2-}"; shift 2 || { echo "--skip needs a value" >&2; exit 1; } ;;
+    *) echo "unknown argument: $1" >&2; echo "usage: bash scripts/ci-local.sh [--list] [--only a,b] [--skip a,b]" >&2; exit 1 ;;
+  esac
+done
+
+has_step() {
+  local s
+  for s in "${STEPS[@]}"; do [ "$s" = "$1" ] && return 0; done
+  return 1
+}
+
+for name in ${only//,/ } ${skip//,/ }; do
+  if ! has_step "$name"; then
+    echo "no step named '$name'" >&2
+    usage_steps
+    exit 1
+  fi
+done
+
+case "$(node -v)" in
+  v24.*) ;;
+  *) echo "Node 24 is required (.nvmrc), found $(node -v)" >&2; exit 2 ;;
+esac
+
+export META_API_KEY= GEMINI_API_KEY= SERPAPI_KEY= NEXT_PUBLIC_REALTIME_URL= IYNK_SERVER_TOKEN= IYNK_AI_ENABLE= IYNK_SEARCH_ENABLE=
+export NEXT_DIST_DIR=.next-ci
+
+selected() {
+  local name="$1" s
+  if [ -n "$only" ]; then
+    for s in ${only//,/ }; do [ "$s" = "$name" ] && return 0; done
+    return 1
+  fi
+  for s in ${skip//,/ }; do [ "$s" = "$name" ] && return 1; done
+  [ "$name" = audit ] && [ "${CI_SKIP_AUDIT:-}" = 1 ] && return 1
+  return 0
+}
+
+run_step() {
+  case "$1" in
+    content) npm run content:check ;;
+    typecheck) npm run typecheck ;;
+    lint) npm run lint ;;
+    relay-deps) npm ci --prefix server/realtime ;;
+    unit) CI=true npx vitest run ;;
+    relay) npm test --prefix server/realtime ;;
+    build) npm run build ;;
+    e2e) E2E_SKIP_BUILD=1 npx playwright test ;;
+    secrets) node scripts/secret-scan.mjs --history ;;
+    audit) npm audit --omit=dev --audit-level=high ;;
+  esac
+}
+
+rows=()
+status=0
+for name in "${STEPS[@]}"; do
+  if ! selected "$name"; then
+    rows+=("$name|-|skipped")
+    continue
+  fi
+  echo "==> $name"
+  started=$SECONDS
+  if run_step "$name"; then
+    result=passed
+  else
+    result=FAILED
+    status=1
+  fi
+  rows+=("$name|$((SECONDS - started))|$result")
+  [ "$status" -ne 0 ] && break
+done
+
+echo
+printf '%-12s %8s  %s\n' step seconds result
+for row in "${rows[@]}"; do
+  IFS='|' read -r name secs result <<<"$row"
+  printf '%-12s %8s  %s\n' "$name" "$secs" "$result"
+done
+exit "$status"
