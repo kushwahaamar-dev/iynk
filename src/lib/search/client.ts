@@ -6,7 +6,7 @@ import { track } from "@/lib/telemetry";
 import type { EventsInput, NearbyInput, OffersInput, VideosInput } from "./schema";
 import type { EventsResponse, NearbyResponse, OffersResponse, VideosResponse } from "./types";
 
-export type FailCode = "no_key" | "not_configured" | "rate_limited" | "failed";
+export type FailCode = "not_configured" | "no_key" | "rate_limited" | "quota_exhausted" | "failed";
 
 export type Result<T> = { ok: true; data: T } | { ok: false; code: FailCode };
 
@@ -42,7 +42,7 @@ async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promi
   if (res.status === 501 || code === "feature_disabled" || (res.status === 503 && code === "not_configured")) {
     return { ok: false, code: "not_configured" };
   }
-  if (res.status === 429) return { ok: false, code: "rate_limited" };
+  if (res.status === 429) return { ok: false, code: code === "quota_exhausted" ? "quota_exhausted" : "rate_limited" };
   return { ok: false, code: "failed" };
 }
 

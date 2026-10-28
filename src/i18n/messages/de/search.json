@@ -29,11 +29,13 @@
     "offersHide": "Angebote ausblenden",
     "offersLabel": "Angebote für {part}",
     "partial": {
-      "quota": "Das Suchbudget dieser Seite ist aufgebraucht, daher stammen einige Preise aus dem Katalog.",
+      "quota": "Dein Suchlimit für diesen Monat ist aufgebraucht. Zwischengespeicherte Ergebnisse funktionieren weiterhin.",
       "upstream": "Einige Shops haben nicht geantwortet, daher stammen einige Preise aus dem Katalog."
     },
     "failed": "Die Preise konnten nicht geladen werden.",
     "rateLimited": "Zu viele Preisabfragen hintereinander. Warte eine Minute und versuche es dann erneut.",
+    "quotaExhausted": "Dein monatliches Suchlimit ist aufgebraucht und wird am 1. zurückgesetzt. Zwischengespeicherte Ergebnisse funktionieren weiterhin.",
+    "noKey": "Füge in den Einstellungen einen Suchschlüssel hinzu, um Preise zu prüfen.",
     "retry": "Erneut versuchen",
     "notSetUp": "Shop-Preise sind nicht eingerichtet. Füge in den Einstellungen einen Suchschlüssel hinzu.",
     "notSetUpDrone": "Der Optimierer unten rechnet stattdessen mit den Katalogpreisen.",

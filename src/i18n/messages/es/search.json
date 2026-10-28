@@ -29,11 +29,13 @@
     "offersHide": "Ocultar ofertas",
     "offersLabel": "Ofertas de {part}",
     "partial": {
-      "quota": "Se agotó el presupuesto de búsquedas de este sitio, así que algunos precios son del catálogo.",
+      "quota": "Se agotó tu límite de búsquedas de este mes. Los resultados en caché siguen funcionando.",
       "upstream": "Algunas tiendas no respondieron, así que algunos precios son del catálogo."
     },
     "failed": "No se pudieron cargar los precios.",
     "rateLimited": "Demasiadas consultas seguidas. Espera un minuto y vuelve a intentarlo.",
+    "quotaExhausted": "Se agotó tu límite mensual de búsquedas; se restablece el día 1. Los resultados en caché siguen funcionando.",
+    "noKey": "Añade una clave de búsqueda en Ajustes para consultar precios.",
     "retry": "Reintentar",
     "notSetUp": "Los precios de tienda no están configurados. Añade una clave de búsqueda en Ajustes.",
     "notSetUpDrone": "El optimizador de abajo usa los precios del catálogo.",

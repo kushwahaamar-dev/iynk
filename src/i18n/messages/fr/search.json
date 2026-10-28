@@ -29,11 +29,13 @@
     "offersHide": "Masquer les offres",
     "offersLabel": "Offres pour {part}",
     "partial": {
-      "quota": "Le budget de recherche de ce site est épuisé : certains prix viennent du catalogue.",
+      "quota": "Votre limite de recherches de ce mois est épuisée. Les résultats en cache fonctionnent toujours.",
       "upstream": "Certaines boutiques n’ont pas répondu : certains prix viennent du catalogue."
     },
     "failed": "Impossible de charger les prix.",
     "rateLimited": "Trop de vérifications d’affilée. Attendez une minute, puis réessayez.",
+    "quotaExhausted": "Votre limite mensuelle de recherches est épuisée et se réinitialise le 1er. Les résultats en cache fonctionnent toujours.",
+    "noKey": "Ajoutez une clé de recherche dans les Réglages pour vérifier les prix.",
     "retry": "Réessayer",
     "notSetUp": "Les prix en boutique ne sont pas configurés. Ajoutez une clé de recherche dans les réglages.",
     "notSetUpDrone": "L’optimiseur ci-dessous utilise les prix du catalogue.",

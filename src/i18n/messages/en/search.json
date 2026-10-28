@@ -29,11 +29,13 @@
     "offersHide": "Hide offers",
     "offersLabel": "Offers for {part}",
     "partial": {
-      "quota": "This site's search budget is used up, so some prices come from the catalogue.",
+      "quota": "Your search limit for this month is used up. Cached results still work.",
       "upstream": "Some stores didn't answer, so some prices come from the catalogue."
     },
     "failed": "Prices couldn't be loaded.",
     "rateLimited": "Too many price checks in a row. Wait a minute, then try again.",
+    "quotaExhausted": "Your monthly search limit is used up and resets on the 1st. Cached results still work.",
+    "noKey": "Add a search key in Settings to check prices.",
     "retry": "Try again",
     "notSetUp": "Shop prices aren't set up. Add a search key in Settings.",
     "notSetUpDrone": "The optimiser below works with the catalogue's prices instead.",

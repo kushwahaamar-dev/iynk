@@ -189,11 +189,15 @@ export function createSerpApi(options: SerpApiOptions = {}) {
     if (!ENGINES.includes(engine)) throw new Error(`SerpApi engine "${engine}" is not on the whitelist.`);
     const caller = currentSearchKey();
     if (!caller) throw new SearchError("not_configured", "Search needs a key from the caller.");
+    // Coordinates are never cached or shared between requests.
+    const cacheable = !("ll" in params);
     const key = cacheKey(engine, params);
-    const hit = cache.get(key);
-    if (hit !== undefined) return hit;
-    const pending = inflight.get(key);
-    if (pending) return pending;
+    if (cacheable) {
+      const hit = cache.get(key);
+      if (hit !== undefined) return hit;
+      const pending = inflight.get(key);
+      if (pending) return pending;
+    }
     const spend = options.ledger ?? spendLedger;
     if (!spend.checkSearch(caller.keyId).ok) {
       throw new SearchError("quota_exhausted", "This key's monthly search limit is used up; cached results still work.");
@@ -206,11 +210,13 @@ export function createSerpApi(options: SerpApiOptions = {}) {
         return limit(() => send(engine, params, caller.key, signal));
       })
       .then((body) => {
-        cache.set(key, body);
+        if (cacheable) cache.set(key, body);
         return body;
       })
-      .finally(() => inflight.delete(key));
-    inflight.set(key, task);
+      .finally(() => {
+        if (cacheable) inflight.delete(key);
+      });
+    if (cacheable) inflight.set(key, task);
     return task;
   }
 

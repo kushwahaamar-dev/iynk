@@ -70,4 +70,13 @@ describe("search client", () => {
     answer(501, "feature_disabled");
     expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "not_configured" });
   });
+
+  it("tells a spent monthly cap from a burst of requests", async () => {
+    answer(429, "quota_exhausted");
+    expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "quota_exhausted" });
+    answer(429, "rate_limited");
+    expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "rate_limited" });
+    answer(502, "upstream_failed");
+    expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "failed" });
+  });
 });

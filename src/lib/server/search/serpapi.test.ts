@@ -115,6 +115,28 @@ describe("search()", () => {
     expect(serp.ledger.summary(serp.ledger.keyId(KEY)).search.month).toBe(2);
   });
 
+  it("never caches or shares a search that carries coordinates", async () => {
+    const { fn, calls } = fakeFetch(ok({ organic_results: [] }));
+    const serp = client(fn);
+    const params = { q: "makerspace", ll: "@30.2672,-97.7431,13z" };
+    await serp.search("google_maps", params);
+    await serp.search("google_maps", params);
+    await Promise.all([serp.search("google_maps", params), serp.search("google_maps", params)]);
+    expect(calls).toHaveLength(4);
+    expect(serp.ledger.summary(serp.ledger.keyId(KEY)).search.month).toBe(4);
+  });
+
+  it("nearby() by place name is cached, by coordinates is not", async () => {
+    const { fn, calls } = fakeFetch(ok({ local_results: [] }));
+    const serp = client(fn);
+    await serp.nearby({ kind: "makerspace", near: "Austin, TX" });
+    await serp.nearby({ kind: "makerspace", near: "Austin, TX" });
+    expect(calls).toHaveLength(1);
+    await serp.nearby({ kind: "makerspace", ll: "@30.2672,-97.7431,13z" });
+    await serp.nearby({ kind: "makerspace", ll: "@30.2672,-97.7431,13z" });
+    expect(calls).toHaveLength(3);
+  });
+
   it("shares one request between identical concurrent searches", async () => {
     const { fn, calls } = fakeFetch(ok({ organic_results: [] }));
     const serp = client(fn);
