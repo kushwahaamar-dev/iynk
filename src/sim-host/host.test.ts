@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createInlinePort, type RpcPort } from "@/protocol";
 import type { DigitalLayer, ProgramImage, SimNetlist, SimRunOptions } from "@/sim/engine";
 import { createInterpEngine } from "./engines/interp-engine";
@@ -115,5 +115,85 @@ describe("sim host", () => {
     off();
     push({ t: "state", run: 2, state: "done", at: 0 });
     expect(seen).toHaveLength(1);
+  });
+});
+
+describe("sim host watchdog", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  function stuckRig() {
+    const loads: Extract<SimReq, { t: "load" }>[] = [];
+    let ports = 0;
+    let hang = false;
+    const host = createSimHost({
+      makePort: () => {
+        ports++;
+        return createInlinePort<SimReq, SimEv>((msg, emit) => {
+          if (hang && ports === 1) return new Promise(() => undefined);
+          if (msg.t === "load") {
+            loads.push(msg);
+            emit({ t: "state", run: msg.run, state: "idle", at: 0 });
+            return { diagnostics: [] };
+          }
+          if (msg.t === "control" && msg.op === "run") emit({ t: "state", run: msg.run, state: "running", at: 5 });
+          if (msg.t === "control" && msg.op === "stop") emit({ t: "state", run: msg.run, state: "idle", at: 0 });
+          return msg.t === "step" ? { ignored: true } : undefined;
+        });
+      },
+    });
+    const events: SimEv[] = [];
+    host.onEvent((e) => events.push(e));
+    return { host, events, loads, stick: () => void (hang = true), ports: () => ports };
+  }
+
+  it("leaves a healthy run alone, even when it posts nothing", async () => {
+    const { host, ports } = stuckRig();
+    await host.load(NET, OPTS, PROGRAM);
+    await host.control("run");
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(host.stats.restarts).toBe(0);
+    expect(ports()).toBe(1);
+  });
+
+  it("kills a worker that stops answering, restarts it and loads the same project again", async () => {
+    const { host, events, loads, stick, ports } = stuckRig();
+    await host.load(NET, OPTS, PROGRAM);
+    await host.control("run");
+    stick();
+    await vi.advanceTimersByTimeAsync(2_100);
+    expect(ports()).toBe(2);
+    expect(host.stats.restarts).toBe(1);
+    expect(loads).toHaveLength(2);
+    expect(loads[1]).toEqual(loads[0]);
+    expect(events.at(-1)).toMatchObject({
+      t: "state",
+      run: 1,
+      state: "limit",
+      limit: { kind: "wall-stall" },
+    });
+    expect(host.stats.lastState).toBe("limit");
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(host.stats.restarts).toBe(1);
+  });
+
+  it("kills a worker that does not answer stop and settles the stop call", async () => {
+    const { host, events, stick, ports } = stuckRig();
+    await host.load(NET, OPTS, PROGRAM);
+    stick();
+    const stopped = host.control("stop");
+    await vi.advanceTimersByTimeAsync(2_000);
+    await expect(stopped).resolves.toBeUndefined();
+    expect(ports()).toBe(2);
+    expect(events.at(-1)).toMatchObject({ state: "limit", limit: { kind: "cancel-unanswered" } });
+  });
+
+  it("does not arm anything for a stop that is answered", async () => {
+    const { host, ports } = stuckRig();
+    await host.load(NET, OPTS, PROGRAM);
+    await host.control("run");
+    await host.control("stop");
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(ports()).toBe(1);
   });
 });
