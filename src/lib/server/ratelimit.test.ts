@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { checkRateLimit, rateLimit } from "./ratelimit";
 
 describe("rateLimit", () => {
@@ -25,7 +25,12 @@ describe("rateLimit", () => {
 });
 
 describe("checkRateLimit", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   it("answers 429 with Retry-After per caller", async () => {
+    vi.stubEnv("IYNK_TRUST_PROXY", "1");
+    vi.resetModules();
+    const { checkRateLimit } = await import("./ratelimit");
     const req = (ip: string) => new Request("http://localhost/api/x", { headers: { "x-real-ip": ip } });
     const opts = { limit: 2, windowMs: 60_000 };
     expect(checkRateLimit(req("9.9.9.9"), "test", opts)).toBeNull();
@@ -35,5 +40,13 @@ describe("checkRateLimit", () => {
     expect(Number(res?.headers.get("retry-after"))).toBeGreaterThan(0);
     expect((await res?.json()).error.code).toBe("rate_limited");
     expect(checkRateLimit(req("8.8.8.8"), "test", opts)).toBeNull();
+  });
+
+  it("shares one bucket across callers when no proxy is trusted", () => {
+    const req = (ip: string) => new Request("http://localhost/api/x", { headers: { "x-forwarded-for": ip } });
+    const opts = { limit: 2, windowMs: 60_000 };
+    expect(checkRateLimit(req("1.1.1.1"), "shared", opts)).toBeNull();
+    expect(checkRateLimit(req("2.2.2.2"), "shared", opts)).toBeNull();
+    expect(checkRateLimit(req("3.3.3.3"), "shared", opts)?.status).toBe(429);
   });
 });

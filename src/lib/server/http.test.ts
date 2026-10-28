@@ -115,11 +115,23 @@ describe("withTimeout", () => {
 });
 
 describe("clientIp", () => {
-  it("prefers the proxy's headers and falls back to unknown", () => {
-    const ip = (headers: Record<string, string>) => clientIp(new Request("http://localhost/", { headers }));
-    expect(ip({ "x-real-ip": "1.2.3.4" })).toBe("1.2.3.4");
-    expect(ip({ "x-forwarded-for": "5.6.7.8, 10.0.0.1" })).toBe("5.6.7.8");
-    expect(ip({})).toBe("unknown");
+  const ip = (headers: Record<string, string>, trust: boolean) =>
+    clientIp(new Request("http://localhost/", { headers }), trust);
+
+  it("ignores every forwarded header unless the proxy is trusted", () => {
+    expect(ip({ "x-real-ip": "1.2.3.4", "x-forwarded-for": "5.6.7.8", "cf-connecting-ip": "9.9.9.9" }, false)).toBe("direct");
+    expect(ip({}, false)).toBe("direct");
+  });
+
+  it("takes the entry the trusted proxy added", () => {
+    expect(ip({ "x-forwarded-for": "1.1.1.1, 2.2.2.2" }, true)).toBe("2.2.2.2");
+    expect(ip({ "x-real-ip": "3.3.3.3" }, true)).toBe("3.3.3.3");
+    expect(ip({ "cf-connecting-ip": "2001:db8::1" }, true)).toBe("2001:db8::1");
+  });
+
+  it("falls back to direct for a missing or invalid address", () => {
+    expect(ip({ "x-forwarded-for": "evil, <script>" }, true)).toBe("direct");
+    expect(ip({}, true)).toBe("direct");
   });
 });
 
@@ -133,6 +145,15 @@ describe("checkOrigin", () => {
   it("lets same-origin and origin-less requests through", () => {
     expect(checkOrigin(req())).toBeNull();
     expect(checkOrigin(req("http://localhost:3000"))).toBeNull();
+  });
+
+  it("honours x-forwarded-host only behind a trusted proxy", () => {
+    const proxied = new Request("http://internal/api/x", {
+      method: "POST",
+      headers: { host: "internal", "x-forwarded-host": "iynk.example", origin: "https://iynk.example" },
+    });
+    expect(checkOrigin(proxied, false)?.status).toBe(403);
+    expect(checkOrigin(proxied, true)).toBeNull();
   });
 
   it("refuses other sites", () => {

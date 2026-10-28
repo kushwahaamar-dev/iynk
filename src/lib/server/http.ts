@@ -1,5 +1,7 @@
 import "server-only";
+import { isIP } from "node:net";
 import type { z } from "zod";
+import { env } from "./env";
 
 /**
  * Response and request helpers for every route handler (HX-CONTRACT H2).
@@ -127,23 +129,27 @@ export function withTimeout(ms: number, parent?: AbortSignal | null): AbortSigna
 }
 
 /**
- * The caller's IP as the proxy in front of the app reports it. Without a proxy
- * these headers are only a rate-limit hint.
+ * The caller's IP as the one proxy in front of the app reports it. A route
+ * handler has no socket address, so without a trusted proxy every caller shares
+ * the key `direct`. Set IYNK_TRUST_PROXY=1 only behind a proxy that overwrites
+ * the headers named here; the last `x-forwarded-for` entry is the one it added.
  */
-export function clientIp(req: Request): string {
+export function clientIp(req: Request, trustProxy: boolean = env.IYNK_TRUST_PROXY): string {
+  if (!trustProxy) return "direct";
   const h = req.headers;
-  const ip = h.get("x-real-ip") ?? h.get("x-forwarded-for")?.split(",")[0] ?? h.get("cf-connecting-ip");
-  return ip?.trim().slice(0, 64) || "unknown";
+  const forwarded = h.get("x-forwarded-for")?.split(",").at(-1);
+  const ip = (forwarded ?? h.get("x-real-ip") ?? h.get("cf-connecting-ip"))?.trim();
+  return ip && isIP(ip) ? ip : "direct";
 }
 
 /**
  * H11: browsers may call the API only from our own origin. Requests without an
  * Origin header (same-origin GETs, scripts, MCP clients) pass.
  */
-export function checkOrigin(req: Request): Response | null {
+export function checkOrigin(req: Request, trustProxy: boolean = env.IYNK_TRUST_PROXY): Response | null {
   const origin = req.headers.get("origin");
   if (!origin) return null;
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  const host = (trustProxy ? req.headers.get("x-forwarded-host") : null) ?? req.headers.get("host");
   try {
     if (new URL(origin).host === host) return null;
   } catch {
