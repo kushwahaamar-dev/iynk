@@ -91,6 +91,16 @@
         "badChars": "Schlüssel bestehen nur aus Buchstaben, Ziffern und Symbolen, ohne Leerzeichen.",
         "notPersisted": "Wird nach dem Schließen dieses Tabs nicht gespeichert (dieser Browser blockiert den Speicher)"
       }
+    },
+    "notSetUp": {
+      "serverOff": "{what} ist auf diesem Server abgeschaltet.",
+      "needsKey": "{what} braucht deinen eigenen Schlüssel.",
+      "openKeys": "Schlüssel und Nutzung öffnen",
+      "fix": {
+        "ai": "Füge unter Schlüssel und Nutzung einen KI-Schlüssel ein.",
+        "search": "Füge unter Schlüssel und Nutzung einen Suchschlüssel ein.",
+        "server": "Bitte die Person, die diesen Server betreibt, es einzuschalten."
+      }
     }
   }
 }

@@ -91,6 +91,16 @@
         "badChars": "Une clé ne contient que des lettres, des chiffres et des symboles, sans espace.",
         "notPersisted": "Non conservée après la fermeture de cet onglet (ce navigateur bloque le stockage)"
       }
+    },
+    "notSetUp": {
+      "serverOff": "{what} est désactivé sur ce serveur.",
+      "needsKey": "{what} demande votre propre clé.",
+      "openKeys": "Ouvrir Clés et utilisation",
+      "fix": {
+        "ai": "Collez une clé d'IA dans Clés et utilisation.",
+        "search": "Collez une clé de recherche dans Clés et utilisation.",
+        "server": "Demandez à la personne qui gère ce serveur de l'activer."
+      }
     }
   }
 }

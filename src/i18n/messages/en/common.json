@@ -91,6 +91,16 @@
         "badChars": "Keys use letters, digits and symbols only, with no spaces.",
         "notPersisted": "Not saved after you close this tab (this browser blocks storage)"
       }
+    },
+    "notSetUp": {
+      "serverOff": "{what} is switched off on this server.",
+      "needsKey": "{what} needs your own key.",
+      "openKeys": "Open Keys and usage",
+      "fix": {
+        "ai": "Paste an AI key in Keys and usage.",
+        "search": "Paste a search key in Keys and usage.",
+        "server": "Ask whoever runs this server to switch it on."
+      }
     }
   }
 }

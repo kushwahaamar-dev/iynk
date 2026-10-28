@@ -91,6 +91,16 @@
         "badChars": "Las claves solo llevan letras, dígitos y símbolos, sin espacios.",
         "notPersisted": "No se guardará al cerrar esta pestaña (este navegador bloquea el almacenamiento)"
       }
+    },
+    "notSetUp": {
+      "serverOff": "{what} está desactivado en este servidor.",
+      "needsKey": "{what} necesita tu propia clave.",
+      "openKeys": "Abrir Claves y uso",
+      "fix": {
+        "ai": "Pega una clave de IA en Claves y uso.",
+        "search": "Pega una clave de búsqueda en Claves y uso.",
+        "server": "Pide a quien gestiona este servidor que lo active."
+      }
     }
   }
 }
