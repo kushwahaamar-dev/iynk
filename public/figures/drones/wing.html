@@ -1102,16 +1102,25 @@ window.SL = window.SL || {};
   /* ---------- actions (the only way the build state changes) ---------- */
   function busy(st){ return !!st.test || st.queue.length > 0; }
   let settled = [];
+  function tick(dt){
+    const more = step(ui.st, dt);
+    if (!more){ looping = false; const done = settled; settled = []; done.forEach(f => f()); }
+    return more;
+  }
   function kick(){
     if (looping || !ui) return;
     looping = true;
-    ui.animate(dt => {
-      const more = step(ui.st, dt);
-      if (!more){ looping = false; const done = settled; settled = []; done.forEach(f => f()); }
-      return more;
-    });
+    ui.animate(tick);
   }
   SD.kick = kick;
+  // test seam: steps simulated time in the frame loop's own steps (dt capped at 0.05 s) until done() or maxSeconds, draws once
+  SD.advanceUntil = (done, maxSeconds, dt = 0.05) => {
+    if (!(maxSeconds > 0)) throw new Error('advanceUntil: maxSeconds must be positive');
+    let ok = done();
+    for (let t = 0; !ok && t < maxSeconds - 1e-9; t += dt){ tick(Math.min(dt, maxSeconds - t)); ok = done(); }
+    ui.render();
+    return ok;
+  };
   // resolves once the figure stops animating: placements, tests, a craft's own motion (craft.animating) all done
   SD.settle = () => looping ? new Promise(r => settled.push(r)) : Promise.resolve();
 

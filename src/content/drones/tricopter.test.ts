@@ -163,18 +163,13 @@ describe('tricopter flight', () => {
   });
 });
 
-describe('tricopter craft tests in the figure', { timeout: 300000 }, () => {
+describe('tricopter craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => tricopter.tests.find((t) => t.id === id)!;
-  const until = async (id: string, want: 'passed' | 'failed', ms = 60000) => {
-    const end = Date.now() + ms;
-    while (fig!.status(test(id)) !== want && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
-    return fig!.status(test(id));
-  };
 
   it('sweeps the tail servo only with the servo and the flight controller on, the props off and a pack in', async () => {
     fig = await openFigure('tricopter');
@@ -193,7 +188,7 @@ describe('tricopter craft tests in the figure', { timeout: 300000 }, () => {
     await fig.run('plugIn');
     await fig.press('servo');
     expect(fig.status(test('servo'))).toBe('failed');
-    expect(await until('servo', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('servo')) === 'passed')).toBe(true);
     expect(fig.page.notes()).toEqual([]);
   });
 
@@ -211,7 +206,7 @@ describe('tricopter craft tests in the figure', { timeout: 300000 }, () => {
     await fig.add('TAILSERVO', 0);
     await fig.run('plugIn');
     await fig.press('servo');
-    expect(await until('servo', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('servo')) === 'passed')).toBe(true);
   });
 
   it('runs the failsafe test only with the props off and a pack in', async () => {

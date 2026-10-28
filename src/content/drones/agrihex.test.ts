@@ -174,19 +174,13 @@ describe('agrihex flight', () => {
   });
 });
 
-describe('agrihex craft tests in the figure', { timeout: 300000 }, () => {
+describe('agrihex craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => agrihex.tests.find((t) => t.id === id)!;
-  /** The checks run on the figure's clock (animation frames, slow under jsdom): wait for the result. */
-  const until = async (id: string, want: 'passed' | 'failed', ms = 120000) => {
-    const end = Date.now() + ms;
-    while (fig!.status(test(id)) !== want && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
-    return fig!.status(test(id));
-  };
   const extra = () => fig!.state().extra as Record<string, unknown>;
 
   it('runs the pump test only on a powered, plumbed drone, and re-plumbing the pump clears it', async () => {
@@ -203,7 +197,7 @@ describe('agrihex craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.status(test('pump'))).toBe('failed');
     await fig.run('plugIn');
     await fig.press('pump');
-    expect(await until('pump', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('pump')) === 'passed')).toBe(true);
     await fig.run('unplug');
     await fig.remove('BOOM');
     await fig.remove('PUMP');
@@ -222,10 +216,9 @@ describe('agrihex craft tests in the figure', { timeout: 300000 }, () => {
     await fig.add('BATT');
     await fig.run('plugIn');
     await fig.press('gpsyaw');
-    expect(await until('gpsyaw', 'failed')).toBe('failed');
+    expect(fig!.until(() => fig!.status(test('gpsyaw')) === 'failed')).toBe(true);
     // the run finishes, and the result is a 180° error rather than "not run"
-    const end = Date.now() + 120000;
-    while (extra().yawErr !== 180 && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
+    fig!.until(() => extra().yawErr === 180);
     expect(extra().yawErr).toBe(180);
     await fig.press('prearm');
     expect(fig.status(test('prearm'))).toBe('failed');
@@ -238,19 +231,19 @@ describe('agrihex craft tests in the figure', { timeout: 300000 }, () => {
     await fig.add('BATT');
     await fig.run('plugIn');
     await fig.press('gpsyaw');
-    expect(await until('gpsyaw', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('gpsyaw')) === 'passed')).toBe(true);
     expect(extra().yawErr).toBe(0);
     await fig.press('prearm');
-    expect(await until('prearm', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('prearm')) === 'passed')).toBe(true);
     expect(fig.page.notes()).toEqual([]);
   });
 
   it('blocks arming without the radar, and starts a fresh build with every craft check unrun', async () => {
     fig = await openFigure('agrihex');
     fig.SD.actions.strip(fig.st());
-    await fig.settle(180000);
+    await fig.settle();
     fig.SD.actions.build(fig.st());
-    await fig.settle(180000);
+    await fig.settle();
     for (const id of ['pump', 'gpsyaw', 'prearm']) expect(fig.status(test(id)), id).toBe('failed');
     await fig.remove('PROPS');
     await fig.remove('RADAR');

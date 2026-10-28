@@ -90,7 +90,7 @@ describe('longrange firmware and flight', () => {
   });
 });
 
-describe('longrange craft tests in the figure', { timeout: 40000 }, () => {
+describe('longrange craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();

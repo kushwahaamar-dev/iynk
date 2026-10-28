@@ -188,18 +188,13 @@ describe('swarm flight', () => {
   });
 });
 
-describe('swarm craft tests in the figure', { timeout: 300000 }, () => {
+describe('swarm craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => swarm.tests.find((t) => t.id === id)!;
-  const until = async (id: string, want: 'passed' | 'failed', ms = 120000) => {
-    const end = Date.now() + ms;
-    while (fig!.status(test(id)) !== want && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
-    return fig!.status(test(id));
-  };
   const extra = () => fig!.state().extra as Record<string, unknown>;
 
   it('has no smoke stopper, and arms the range once the motors and the sensors are checked', async () => {
@@ -218,8 +213,7 @@ describe('swarm craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.st().msg).toMatch(/Plug in the battery/);
     await fig.run('plugIn');
     await fig.press('link');
-    const end = Date.now() + 120000;
-    while (extra().linkQ !== 23 && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
+    fig!.until(() => extra().linkQ === 23);
     expect(extra().linkQ).toBe(23);
     expect(fig.status(test('link'))).toBe('failed');
     expect(fig.st().msg).toMatch(/antenna is not screwed on/);
@@ -228,7 +222,7 @@ describe('swarm craft tests in the figure', { timeout: 300000 }, () => {
     await fig.add('RADIO');
     await fig.run('plugIn');
     await fig.press('link');
-    expect(await until('link', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('link')) === 'passed')).toBe(true);
     expect(extra().linkQ).toBe(100);
     expect(fig.page.notes()).toEqual([]);
   });
@@ -248,7 +242,7 @@ describe('swarm craft tests in the figure', { timeout: 300000 }, () => {
     await fig.add('DECKL');
     await fig.run('plugIn');
     await fig.press('position');
-    expect(await until('position', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('position')) === 'passed')).toBe(true);
     expect(fig.page.notes()).toEqual([]);
   });
 
@@ -264,12 +258,12 @@ describe('swarm craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.status(test('failsafe'))).toBe('failed');
     await fig.run('plugIn');
     await fig.press('failsafe');
-    expect(await until('failsafe', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('failsafe')) === 'passed')).toBe(true);
 
     fig.SD.actions.strip(fig.st());
-    await fig.settle(180000);
+    await fig.settle();
     fig.SD.actions.build(fig.st());
-    await fig.settle(180000);
+    await fig.settle();
     for (const id of ['link', 'position', 'failsafe']) expect(fig.status(test(id)), id).toBe('failed');
     expect(fig.page.notes()).toEqual([]);
   });

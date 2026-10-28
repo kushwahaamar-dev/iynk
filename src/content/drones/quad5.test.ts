@@ -161,7 +161,7 @@ describe('quad5 frame and figure', () => {
     expect((f.state().extra as Record<string, unknown>).failsafe).toBe(true);
     expect(f.status(test)).toBe('passed');
     f.close();
-  }, 120_000);
+  });
 });
 
 describe('quad5 flight', () => {

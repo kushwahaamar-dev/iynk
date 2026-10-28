@@ -78,7 +78,7 @@ describe('cinewhoop firmware and flight', () => {
   });
 });
 
-describe('cinewhoop craft tests in the figure', { timeout: 30000 }, () => {
+describe('cinewhoop craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();

@@ -346,21 +346,20 @@ export function checkBetaflightSyntax(content: DroneContent) {
 
 /** The craft's built figure page in jsdom, driven the way the host drives it (docs/FIGURES-DRONE.md §10). */
 export async function openFigure(id: string) {
-  const page = await loadFigure(buildFigure(`drones/${id}`), { path: `/figures/drones/${id}.html` });
+  const page = await loadFigure(buildFigure(`drones/${id}`), { path: `/figures/drones/${id}.html`, frozenClock: true });
   const SD = page.drone;
   const st = () => SD.api.st;
   const state = () => SD.report() as FigureState;
-  /** Waits until no test, build queue or part animation is running (the figure animates them in real frames). */
+  /** Steps simulated time until no test, build queue or part animation is running (the figure's clock is frozen). */
   const busy = () =>
     !!st().test ||
     st().queue.length > 0 ||
     Object.values(st().placed as Record<string, { t: number; leave: boolean }>).some((p) => p.leave || p.t < 1);
-  const settle = async (ms = 50000) => {
-    const end = Date.now() + ms;
-    await new Promise((r) => setTimeout(r, 30));
-    while (busy() && Date.now() < end) await new Promise((r) => setTimeout(r, 25));
-    if (busy()) throw new Error(`${id}: still busy after ${ms} ms`);
+  const settle = async (maxSimSeconds = 120) => {
+    if (!SD.advanceUntil(() => !busy(), maxSimSeconds)) throw new Error(`${id}: still busy after ${maxSimSeconds} simulated seconds`);
   };
+  /** Steps simulated time until `ok()` holds; false if it still does not after `maxSimSeconds`. */
+  const until = (ok: () => boolean, maxSimSeconds = 120): boolean => SD.advanceUntil(ok, maxSimSeconds);
   const press = async (button: string) => {
     const b = SD.craft().buttons.find((x: { id: string }) => x.id === button);
     if (!b) throw new Error(`${id}: no button ${button}`);
@@ -382,5 +381,5 @@ export async function openFigure(id: string) {
   };
   /** What the host's tests panel shows for a test the learner ran. */
   const status = (test: DroneTest) => testStatus(test, state(), true);
-  return { page, SD, st, state, settle, press, run, add, remove, status, close: () => page.close() };
+  return { page, SD, st, state, settle, until, press, run, add, remove, status, close: () => page.close() };
 }

@@ -71,7 +71,7 @@ describe('whoop flight', () => {
   });
 });
 
-describe('whoop craft tests in the figure', { timeout: 30000 }, () => {
+describe('whoop craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
