@@ -48,3 +48,7 @@ Under 14 busy-loop processes, in 120 runs of the `]` step, does at least one run
 ## Reproduce
 
 Scratch spec and logs: `/Users/amar/iynk-master-plan-scratch/buildplan/B0/s1/` (`s1.spec.ts`, `b1.log` to `b3.log`, `run1.log`, `loads.txt`, `loads2.txt`, `go.sh`). Not committed.
+
+## Fix
+
+T-B0-04 applied the defensive fix in `e2e/boardlab.spec.ts` (15,000 ms for the dialog and the `]` URL, a focus check after the dialog is hidden) and added `src/components/boardlab/shortcuts.test.ts`. No retry was added and no product code changed.
