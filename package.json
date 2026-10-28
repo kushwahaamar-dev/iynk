@@ -23,6 +23,7 @@
     "provenance:check": "node scripts/provenance-check.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",
     "perf:record": "node scripts/perf-budget.mjs --record",
+    "icons": "node scripts/gen-icons.mjs",
     "ui:check": "node scripts/ui-check.mjs",
     "check": "npm run content:check && npm run typecheck && npm run lint && npm run ui:check && npm run test && npm run e2e"
   },
@@ -36,7 +37,6 @@
     "@codemirror/view": "6.43.14",
     "@lezer/highlight": "1.2.5",
     "@modelcontextprotocol/sdk": "1.32.2",
-    "@phosphor-icons/react": "2.1.10",
     "next": "16.4.3",
     "qrcode": "1.5.4",
     "react": "19.3.0",
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
+    "@phosphor-icons/react": "2.1.10",
     "@playwright/test": "1.64.0",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "10.4.2",

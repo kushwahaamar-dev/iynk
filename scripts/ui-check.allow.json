@@ -88,5 +88,11 @@
     "code": "R9",
     "pattern": ".",
     "reason": "The film grain is a noise texture, not an icon."
+  },
+  {
+    "file": "src/components/ui/icons.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The Icon component draws the generated Phosphor paths; every other file goes through it."
   }
 ]
