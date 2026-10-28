@@ -5,6 +5,9 @@ vi.mock("next/server", () => ({ connection: async () => {} }));
 
 async function load(vars: Record<string, string>) {
   vi.resetModules();
+  vi.stubEnv("IYNK_AI_ENABLE", "1");
+  vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
+  vi.stubEnv("IYNK_TRUST_PROXY", "1");
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return import("./route");
 }

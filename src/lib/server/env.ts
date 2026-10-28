@@ -12,6 +12,10 @@ import { z } from "zod";
 const text = z.string().trim().min(1);
 const url = z.url({ protocol: /^https?$/ });
 const wsUrl = z.url({ protocol: /^wss?$/ });
+const switchOf = z
+  .enum(["0", "1"])
+  .default("0")
+  .transform((v) => v === "1");
 
 const schema = {
   META_API_KEY: text.optional(),
@@ -24,6 +28,10 @@ const schema = {
   SERPAPI_MONTHLY_BUDGET: z.coerce.number().int().min(0).default(200),
   NEXT_PUBLIC_REALTIME_URL: wsUrl.optional(),
   NEXT_PUBLIC_SITE_URL: url.default("http://localhost:3000"),
+  IYNK_SERVER_TOKEN: text.min(32).optional(),
+  IYNK_AI_ENABLE: switchOf,
+  IYNK_SEARCH_ENABLE: switchOf,
+  IYNK_TRUST_PROXY: switchOf,
 } as const;
 
 type Schema = typeof schema;
@@ -65,11 +73,11 @@ export function featuresOf(e: Env): Features {
   const gemini = Boolean(e.GEMINI_API_KEY);
   return {
     // Gemini only stands in for Muse Spark's text work; voice needs Meta.
-    ai: meta || gemini,
-    voice: meta,
-    search: Boolean(e.SERPAPI_KEY),
+    ai: e.IYNK_AI_ENABLE && (meta || gemini),
+    voice: e.IYNK_AI_ENABLE && meta,
+    search: e.IYNK_SEARCH_ENABLE && Boolean(e.SERPAPI_KEY),
     realtime: Boolean(e.NEXT_PUBLIC_REALTIME_URL),
-    gemini,
+    gemini: e.IYNK_AI_ENABLE && gemini,
   };
 }
 

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { checkOrigin, clientIp, fail, json, parseBody, parseForm, withTimeout } from "./http";
+import { checkOrigin, clientIp, fail, featureDisabled, json, parseBody, parseForm, unauthorized, withTimeout } from "./http";
 
 const Body = z.object({ name: z.string().max(5), n: z.number().int() });
 
@@ -138,5 +138,20 @@ describe("checkOrigin", () => {
   it("refuses other sites", () => {
     expect(checkOrigin(req("https://evil.example"))?.status).toBe(403);
     expect(checkOrigin(req("null"))?.status).toBe(403);
+  });
+});
+
+describe("unauthorized and featureDisabled", () => {
+  it("answers 401 with an empty message and no caching", async () => {
+    const res = unauthorized();
+    expect(res.status).toBe(401);
+    expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(await res.text()).toBe('{"error":{"code":"unauthorized","message":""}}');
+  });
+
+  it("answers 501 and names the switched-off feature", async () => {
+    const res = featureDisabled("Search");
+    expect(res.status).toBe(501);
+    expect(await res.json()).toEqual({ error: { code: "feature_disabled", message: "Search is turned off on this server." } });
   });
 });

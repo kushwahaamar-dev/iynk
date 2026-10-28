@@ -7,6 +7,9 @@ let ip = 0;
 
 async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
   vi.resetModules();
+  vi.stubEnv("IYNK_AI_ENABLE", "1");
+  vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
+  vi.stubEnv("IYNK_TRUST_PROXY", "1");
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }

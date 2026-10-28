@@ -38,6 +38,11 @@ export function fail(status: number, code: string, message?: string, headers?: H
   return json(body, { status, headers });
 }
 
+/** The same bytes for a missing and a wrong server token. */
+export const unauthorized = () => fail(401, "unauthorized", "");
+
+export const featureDisabled = (what: string) => fail(501, "feature_disabled", `${what} is turned off on this server.`);
+
 export const notConfigured = (what: string) => fail(503, "not_configured", `${what} is not set up on this deployment.`);
 
 /** Reads at most `maxBytes` of the body; null when it is larger. */
@@ -122,8 +127,8 @@ export function withTimeout(ms: number, parent?: AbortSignal | null): AbortSigna
 }
 
 /**
- * The caller's IP as the platform's proxy reports it. Behind Vercel these
- * headers are set by the edge; without a proxy they are only a rate-limit hint.
+ * The caller's IP as the proxy in front of the app reports it. Without a proxy
+ * these headers are only a rate-limit hint.
  */
 export function clientIp(req: Request): string {
   const h = req.headers;

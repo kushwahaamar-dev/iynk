@@ -13,7 +13,6 @@ describe("readEnv", () => {
     expect(env.NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
     expect(featuresOf(env)).toEqual({
       ai: false,
-     
       voice: false,
       search: false,
       realtime: false,
@@ -53,13 +52,14 @@ describe("readEnv", () => {
       SERPAPI_MONTHLY_BUDGET: "50",
       NEXT_PUBLIC_REALTIME_URL: "wss://rt.example/ws",
       GEMINI_API_KEY: "g",
+      IYNK_AI_ENABLE: "1",
+      IYNK_SEARCH_ENABLE: "1",
     });
     expect(issues).toEqual([]);
     expect(env.META_API_BASE).toBe("https://proxy.example/v1");
     expect(env.SERPAPI_MONTHLY_BUDGET).toBe(50);
     expect(featuresOf(env)).toEqual({
       ai: true,
-     
       voice: true,
       search: true,
       realtime: true,
@@ -68,7 +68,33 @@ describe("readEnv", () => {
   });
 
   it("lets Gemini alone carry text AI but not voice", () => {
-    const f = featuresOf(readEnv({ GEMINI_API_KEY: "g" }).env);
+    const f = featuresOf(readEnv({ GEMINI_API_KEY: "g", IYNK_AI_ENABLE: "1" }).env);
     expect(f).toMatchObject({ ai: true, gemini: true, voice: false });
+  });
+
+  it("reads the switches as off unless they are exactly 1", () => {
+    const off = readEnv({});
+    expect([off.env.IYNK_AI_ENABLE, off.env.IYNK_SEARCH_ENABLE, off.env.IYNK_TRUST_PROXY]).toEqual([false, false, false]);
+    const on = readEnv({ IYNK_AI_ENABLE: "1", IYNK_SEARCH_ENABLE: "1", IYNK_TRUST_PROXY: "1" });
+    expect([on.env.IYNK_AI_ENABLE, on.env.IYNK_SEARCH_ENABLE, on.env.IYNK_TRUST_PROXY]).toEqual([true, true, true]);
+    const bad = readEnv({ IYNK_AI_ENABLE: "yes" });
+    expect(bad.issues).toEqual(["IYNK_AI_ENABLE"]);
+    expect(bad.env.IYNK_AI_ENABLE).toBe(false);
+  });
+
+  it("keeps a feature off while its switch is off, even with a key", () => {
+    const f = featuresOf(readEnv({ META_API_KEY: "k", GEMINI_API_KEY: "g", SERPAPI_KEY: "s" }).env);
+    expect(f).toMatchObject({ ai: false, voice: false, gemini: false, search: false });
+  });
+
+  it("keeps search off with its switch on but no key", () => {
+    expect(featuresOf(readEnv({ IYNK_SEARCH_ENABLE: "1" }).env).search).toBe(false);
+  });
+
+  it("treats a server token under 32 characters as unset", () => {
+    const short = readEnv({ IYNK_SERVER_TOKEN: "short" });
+    expect(short.issues).toEqual(["IYNK_SERVER_TOKEN"]);
+    expect(short.env.IYNK_SERVER_TOKEN).toBeUndefined();
+    expect(readEnv({ IYNK_SERVER_TOKEN: "x".repeat(32) }).env.IYNK_SERVER_TOKEN).toBe("x".repeat(32));
   });
 });
