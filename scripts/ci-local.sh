@@ -5,14 +5,14 @@
 #
 # Steps run in the order --list prints them and stop at the first failure.
 # Exit 0: every step passed. 1: a step failed, or the arguments name a step that does not exist.
-# 2: Node is not major 24 (.nvmrc).
+# 2: Node is not major 24 (.nvmrc), or python3 is missing (the figure tests run figures/tools/cfbuild.py).
 # CI_SKIP_AUDIT=1 skips the audit step, for offline runs.
 # The variables that can switch a real service on are blanked here, so a local .env.local cannot leak in.
 set -uo pipefail
 
 cd "$(dirname "$0")/.."
 
-STEPS=(content typecheck lint relay-deps unit relay build e2e secrets audit)
+STEPS=(content typecheck lint no-only relay-deps unit relay build e2e secrets audit)
 
 usage_steps() {
   echo "valid steps: ${STEPS[*]}" >&2
@@ -48,6 +48,11 @@ case "$(node -v)" in
   *) echo "Node 24 is required (.nvmrc), found $(node -v)" >&2; exit 2 ;;
 esac
 
+if ! python3 --version >/dev/null 2>&1; then
+  echo "python3 is required (figure tests run figures/tools/cfbuild.py)" >&2
+  exit 2
+fi
+
 export META_API_KEY= GEMINI_API_KEY= SERPAPI_KEY= NEXT_PUBLIC_REALTIME_URL= IYNK_SERVER_TOKEN= IYNK_AI_ENABLE= IYNK_SEARCH_ENABLE=
 export NEXT_DIST_DIR=.next-ci
 
@@ -67,6 +72,7 @@ run_step() {
     content) npm run content:check ;;
     typecheck) npm run typecheck ;;
     lint) npm run lint ;;
+    no-only) ! git grep -nE --untracked -e "[.]only[(]" -- src figures scripts e2e server ;;
     relay-deps) npm ci --prefix server/realtime ;;
     unit) CI=true npx vitest run ;;
     relay) npm test --prefix server/realtime ;;
