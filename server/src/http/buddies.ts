@@ -2,6 +2,7 @@ import { parsePairingCode } from "../../../src/protocol/identity.ts";
 import type { RouteDeps } from "../app.ts";
 import { listBuddies } from "../buddies/list.ts";
 import { createPairing, findPairing, listPairings, redeem, revokePairing, strike, type PairingRef } from "../buddies/pairing.ts";
+import { removeBuddy, setAlias, visibleBuddy } from "../buddies/visibility.ts";
 import { badField, iso, readObject, readText } from "./auth.ts";
 import { defineRoutes, type Ctx, type Reply, type RouteDef } from "./classes.ts";
 import { ApiError } from "./errors.ts";
@@ -19,13 +20,15 @@ const LABEL_JUNK = /[\u0000-\u001f\u007f-\u009f​‎‏‪-‮⁦-⁩﻿]/g;
 
 const notFound = (): ApiError => new ApiError(404, "not_found", "Not found.");
 
-function readLabel(fields: Record<string, unknown>): string | undefined {
-  const raw = readText(fields, "label", undefined, LABEL_MAX * 4);
+function readClean(fields: Record<string, unknown>, key: string): string | undefined {
+  const raw = readText(fields, key, undefined, LABEL_MAX * 4);
   if (raw === undefined) return undefined;
-  const label = raw.replace(LABEL_JUNK, "").replace(/\s+/g, " ").trim();
-  if (Array.from(label).length > LABEL_MAX) throw badField("/label", "Use at most 60 characters.");
-  return label === "" ? undefined : label;
+  const text = raw.replace(LABEL_JUNK, "").replace(/\s+/g, " ").trim();
+  if (Array.from(text).length > LABEL_MAX) throw badField(`/${key}`, "Use at most 60 characters.");
+  return text;
 }
+
+const readLabel = (fields: Record<string, unknown>): string | undefined => readClean(fields, "label") || undefined;
 
 function readTtl(fields: Record<string, unknown>): number | undefined {
   const ttl = fields["ttlSeconds"];
@@ -142,7 +145,29 @@ export function buddyRoutes(ctx: RouteDeps): RouteDef[] {
 
   const buddies = (c: Ctx): Reply => {
     const { deviceId } = c.authed as NonNullable<Ctx["authed"]>;
-    return { status: 200, body: { items: store.read((tx) => listBuddies(tx, deviceId)), nextCursor: null } };
+    return { status: 200, body: { items: store.read((tx) => listBuddies(tx, deviceId, deps.clock.now())), nextCursor: null } };
+  };
+
+  const getBuddy = (c: Ctx): Reply => {
+    const me = c.authed as NonNullable<Ctx["authed"]>;
+    const buddy = store.read((tx) => visibleBuddy(tx, me, c.params["identityId"] as string, deps.clock.now()));
+    if (!buddy) throw notFound();
+    return { status: 200, body: buddy };
+  };
+
+  const updateBuddy = (c: Ctx): Reply => {
+    const me = c.authed as NonNullable<Ctx["authed"]>;
+    const fields = readObject(c.body, ["alias"], ["alias"]);
+    const alias = readClean(fields, "alias") || null;
+    const buddy = store.transaction((tx) => setAlias(tx, me, c.params["identityId"] as string, alias, deps.clock.now()));
+    if (!buddy) throw notFound();
+    return { status: 200, body: buddy };
+  };
+
+  const dropBuddy = (c: Ctx): Reply => {
+    const me = c.authed as NonNullable<Ctx["authed"]>;
+    if (store.transaction((tx) => removeBuddy(tx, me, c.params["identityId"] as string))) log.info("buddy_removed");
+    return { status: 204 };
   };
 
   return defineRoutes([
@@ -152,5 +177,8 @@ export function buddyRoutes(ctx: RouteDeps): RouteDef[] {
     { method: "POST", path: "/v1/pairings/peek", operation: "peekPairing", cls: "capability", bucket: "pairing.guess", maxBodyBytes: MAX_BODY_BYTES, handler: peek },
     { method: "POST", path: "/v1/pairings/redeem", operation: "redeemPairing", cls: "device", bucket: "pairing.guess", maxBodyBytes: MAX_BODY_BYTES, handler: redeemRoute },
     { method: "GET", path: "/v1/buddies", operation: "listBuddies", cls: "device", bucket: "read", handler: buddies },
+    { method: "GET", path: "/v1/buddies/{identityId}", operation: "getBuddy", cls: "device", bucket: "read", handler: getBuddy },
+    { method: "PATCH", path: "/v1/buddies/{identityId}", operation: "updateBuddy", cls: "device", bucket: "write", maxBodyBytes: MAX_BODY_BYTES, handler: updateBuddy },
+    { method: "DELETE", path: "/v1/buddies/{identityId}", operation: "removeBuddy", cls: "device", bucket: "write", handler: dropBuddy },
   ]);
 }

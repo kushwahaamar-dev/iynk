@@ -169,8 +169,8 @@ describe("redeeming", () => {
       assert.ok(typeof tryRedeem(bob, { token: make(ada).token }) === "object");
       const row = store.read((tx) => tx.get<{ a: string; b: string }>("SELECT a, b FROM buddies WHERE a IN (?, ?) AND b IN (?, ?)", ada.deviceId, bob.deviceId, ada.deviceId, bob.deviceId));
       assert.ok(row && row.a < row.b);
-      assert.deepEqual(store.read((tx) => listBuddies(tx, ada.deviceId)).map((b) => b.deviceId), [bob.deviceId]);
-      assert.deepEqual(store.read((tx) => listBuddies(tx, bob.deviceId)).map((b) => b.deviceId), [ada.deviceId]);
+      assert.deepEqual(store.read((tx) => listBuddies(tx, ada.deviceId, deps.clock.now())).map((b) => b.deviceId), [bob.deviceId]);
+      assert.deepEqual(store.read((tx) => listBuddies(tx, bob.deviceId, deps.clock.now())).map((b) => b.deviceId), [ada.deviceId]);
     }
   });
 
@@ -182,8 +182,8 @@ describe("redeeming", () => {
     tryRedeem(bob, { token: make(ada).token });
     const [a, b] = ada.deviceId < bob.deviceId ? [ada, bob] : [bob, ada];
     store.transaction((tx) => tx.run("UPDATE buddies SET alias_a = 'for a', alias_b = 'for b' WHERE a = ? AND b = ?", a.deviceId, b.deviceId));
-    assert.equal(store.read((tx) => listBuddies(tx, a.deviceId))[0]?.alias, "for a");
-    assert.equal(store.read((tx) => listBuddies(tx, b.deviceId))[0]?.alias, "for b");
+    assert.equal(store.read((tx) => listBuddies(tx, a.deviceId, deps.clock.now()))[0]?.alias, "for a");
+    assert.equal(store.read((tx) => listBuddies(tx, b.deviceId, deps.clock.now()))[0]?.alias, "for b");
   });
 
   test("the 64 buddy limit holds on either side", () => {

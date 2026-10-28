@@ -164,7 +164,7 @@ export function redeem(tx: Tx, deps: Deps, redeemer: Authed, ref: PairingRef): R
   const used = tx.run("UPDATE pairings SET used_at = ?, used_by = ? WHERE id = ? AND used_at IS NULL", now, redeemer.deviceId, found.id);
   if (used.changes !== 1) return "gone";
   tx.run("INSERT INTO buddies (a, b, since) VALUES (?, ?, ?)", a, b, now);
-  const buddy = listBuddies(tx, redeemer.deviceId).find((entry) => entry.deviceId === found.creator);
+  const buddy = listBuddies(tx, redeemer.deviceId, now).find((entry) => entry.deviceId === found.creator);
   return buddy ? { buddy } : "gone";
 }
 
