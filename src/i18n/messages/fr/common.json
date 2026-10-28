@@ -12,6 +12,7 @@
     "title": "Cette page n’est pas sur l’établi",
     "body": "L’adresse est peut-être mal saisie, ou la page a été déplacée. Choisissez un labo pour continuer.",
     "home": "Retour au tableau de bord",
+    "search": "Rechercher sur le site",
     "boards": "Labo des cartes",
     "robotics": "Labo de robotique",
     "drones": "Labo des drones"
@@ -121,6 +122,12 @@
       "empty": "Rien ici pour l'instant",
       "error": "Un problème est survenu. Réessayez.",
       "retry": "Réessayer"
+    },
+    "error": {
+      "title": "Un problème est survenu",
+      "text": "Cette page a rencontré un problème. Réessayez ou revenez au début.",
+      "reference": "Référence : {digest}",
+      "home": "Retour au début"
     }
   }
 }

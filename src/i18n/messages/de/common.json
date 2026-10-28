@@ -12,6 +12,7 @@
     "title": "Diese Seite liegt nicht auf der Werkbank",
     "body": "Vielleicht ist die Adresse falsch geschrieben, oder die Seite ist umgezogen. Wähle ein Labor, um weiterzumachen.",
     "home": "Zurück zur Übersicht",
+    "search": "Website durchsuchen",
     "boards": "Board-Labor",
     "robotics": "Robotik-Labor",
     "drones": "Drohnen-Labor"
@@ -121,6 +122,12 @@
       "empty": "Noch nichts hier",
       "error": "Etwas ist schiefgelaufen. Versuche es erneut.",
       "retry": "Erneut versuchen"
+    },
+    "error": {
+      "title": "Etwas ist schiefgelaufen",
+      "text": "Auf dieser Seite ist ein Problem aufgetreten. Versuche es erneut oder gehe zurück zum Start.",
+      "reference": "Referenz: {digest}",
+      "home": "Zurück zum Start"
     }
   }
 }

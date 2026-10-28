@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { lang } from "next/root-params";
-import { actionClass, eyebrow, page } from "@/components/editorial/Editorial";
-import { typeClass } from "@/components/marketing";
-import { cx } from "@/components/ui/cx";
+import { PageHead, Wrap } from "@/components/editorial/Editorial";
+import { OpenSearchButton } from "@/components/shell/OpenSearchButton";
+import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/i18n/config";
 import { getT } from "@/i18n/server";
@@ -25,31 +25,35 @@ export default async function NotFound() {
 
   // not-found.tsx cannot export metadata; React 19 hoists this <title> into <head>.
   return (
-    <section className={cx(page, "grid grid-cols-1 gap-x-6 gap-y-12 pt-[clamp(40px,6vw,96px)] pb-[clamp(72px,10vw,160px)] lg:grid-cols-12")}>
+    <Wrap className="pb-24 md:pb-32">
       <title>{`${t("notFound.metaTitle")} · ${t("site.name")}`}</title>
-      <div className="min-w-0 lg:col-span-7">
-        <p className={cx(eyebrow, "tabular")}>404</p>
-        <h1 className={cx(typeClass.display, "mt-5")}>{t("notFound.title")}</h1>
-        <p className="mt-7 max-w-[52ch] text-[17px] leading-[1.55] text-muted">{t("notFound.body")}</p>
-        <div className="mt-10">
-          <Link href={`/${locale}`} className={actionClass("primary")}>
-            {t("notFound.home")}
-          </Link>
-        </div>
-      </div>
-      <ul className="self-end border-t border-rule lg:col-span-4 lg:col-start-9">
-        {labs.map((lab, i) => (
-          <li key={lab.href} className="border-b border-rule">
-            <Link href={lab.href} className="group flex min-h-16 items-center gap-4 font-body text-lg font-medium no-underline">
-              <span className={cx(eyebrow, "tabular")} aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="flex-1">{lab.label}</span>
-              <Icon name="chevron-right" size={18} className="transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none" />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
+      <PageHead
+        label={<span className="tabular-nums">404</span>}
+        title={t("notFound.title")}
+        lede={
+          <>
+            <p>{t("notFound.body")}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ButtonLink variant="primary" href={`/${locale}`}>
+                {t("notFound.home")}
+              </ButtonLink>
+              <OpenSearchButton label={t("notFound.search")} />
+            </div>
+          </>
+        }
+        aside={
+          <ul className="border-t border-rule">
+            {labs.map((lab) => (
+              <li key={lab.href} className="border-b border-rule">
+                <Link href={lab.href} className="group flex min-h-16 items-center gap-4 text-lg font-medium text-ink no-underline">
+                  <span className="flex-1">{lab.label}</span>
+                  <Icon name="arrow-right" size={20} className="motion-move group-hover:translate-x-1 motion-reduce:transition-none" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        }
+      />
+    </Wrap>
   );
 }

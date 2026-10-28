@@ -12,6 +12,7 @@
     "title": "Esta página no está en el banco de trabajo",
     "body": "Puede que la dirección esté mal escrita o que la página se haya movido. Elige un laboratorio para continuar.",
     "home": "Volver al panel",
+    "search": "Buscar en el sitio",
     "boards": "Laboratorio de placas",
     "robotics": "Laboratorio de robótica",
     "drones": "Laboratorio de drones"
@@ -121,6 +122,12 @@
       "empty": "Todavía no hay nada",
       "error": "Algo salió mal. Inténtalo de nuevo.",
       "retry": "Reintentar"
+    },
+    "error": {
+      "title": "Algo salió mal",
+      "text": "Esta página tuvo un problema. Inténtalo de nuevo o vuelve al inicio.",
+      "reference": "Referencia: {digest}",
+      "home": "Volver al inicio"
     }
   }
 }

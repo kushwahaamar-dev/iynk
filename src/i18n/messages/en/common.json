@@ -12,6 +12,7 @@
     "title": "This page is not on the bench",
     "body": "The address may be mistyped, or the page has moved. Pick a lab to carry on.",
     "home": "Back to the dashboard",
+    "search": "Search the site",
     "boards": "Board Lab",
     "robotics": "Robotics Lab",
     "drones": "Drone Lab"
@@ -121,6 +122,12 @@
       "empty": "Nothing here yet",
       "error": "Something went wrong. Try again.",
       "retry": "Try again"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "text": "This page hit a problem. Try again, or go back to the start.",
+      "reference": "Reference: {digest}",
+      "home": "Back to the start"
     }
   }
 }
