@@ -228,5 +228,29 @@
       "failed": "{name} stopped working. Your project is unchanged.",
       "reload": "Reload {name}"
     }
+  },
+  "workspace": {
+    "loading": "Opening the project",
+    "back": "Back to projects",
+    "missingTitle": "This project is not here",
+    "missing": "It may have been deleted, or it was made in another browser. Projects stay in the browser that made them.",
+    "lostTitle": "This project could not be read",
+    "lost": "Both saved copies are damaged. Nothing was deleted.",
+    "errorTitle": "This project could not be opened",
+    "error": "Something went wrong while reading it. Your other projects are not affected.",
+    "readOnlyTitle": "Read only",
+    "readOnly": "This project is open for viewing. You can look around and run it, but changes are not saved.",
+    "hashMismatchTitle": "Saved copy checked",
+    "hashMismatch": "The saved copy did not match this page, so it was written again from here.",
+    "files": {
+      "title": "Project files",
+      "empty": "This project has no files yet.",
+      "open": "Open {path} in the code panel"
+    },
+    "keys": {
+      "title": "Keyboard shortcuts",
+      "hint": "Single key shortcuts can be turned off in the view settings.",
+      "close": "Close"
+    }
   }
 }

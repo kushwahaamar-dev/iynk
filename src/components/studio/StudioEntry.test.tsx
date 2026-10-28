@@ -13,9 +13,13 @@ vi.mock("next/dynamic", () => ({
   },
 }));
 
-const messages = { studio } as StudioMessages;
+vi.mock("./wiring/services", () => ({ ServicesProvider: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
+vi.mock("./Home", () => ({ Home: () => <div data-testid="home" /> }));
+vi.mock("./Workspace", () => ({
+  Workspace: ({ projectId, autorun }: { projectId: string; autorun: boolean }) => <div data-testid="workspace" data-project={projectId} data-autorun={String(autorun)} />,
+}));
 
-vi.mock("./ProjectList", () => ({ ProjectList: () => <div data-testid="stub" /> }));
+const messages = { studio } as StudioMessages;
 
 afterEach(() => {
   window.location.hash = "";
@@ -27,32 +31,40 @@ const setHash = (hash: string) =>
   });
 
 describe("StudioEntry", () => {
-  it("shows the list and the diagnostics section on home", () => {
+  it("shows home and the diagnostics section at the bare hash", () => {
     render(<StudioEntry messages={messages} lang="en" />);
-    expect(screen.getAllByTestId("stub").length).toBeGreaterThan(0);
+    expect(screen.getByTestId("home")).toBeTruthy();
     expect(screen.getByTestId("diagnostics")).toBeTruthy();
-    expect(document.querySelector("[data-studio-slot]")).toBeNull();
+    expect(screen.queryByTestId("workspace")).toBeNull();
   });
 
-  it("shows the workspace slot and no diagnostics for a project", () => {
+  it("opens the workspace for a project and drops the diagnostics", () => {
     window.location.hash = "#/prj_a";
     render(<StudioEntry messages={messages} lang="en" />);
-    expect(document.querySelector('[data-studio-slot="workspace"]')).toBeTruthy();
+    expect(screen.getByTestId("workspace").dataset.project).toBe("prj_a");
+    expect(screen.getByTestId("workspace").dataset.autorun).toBe("false");
+    expect(screen.queryByTestId("home")).toBeNull();
     expect(screen.queryByTestId("diagnostics")).toBeNull();
+  });
+
+  it("passes the run flag of the hash on", () => {
+    window.location.hash = "#/prj_a?run=1";
+    render(<StudioEntry messages={messages} lang="en" />);
+    expect(screen.getByTestId("workspace").dataset.autorun).toBe("true");
   });
 
   it("follows hashchange both ways", async () => {
     render(<StudioEntry messages={messages} lang="en" />);
     await setHash("#/prj_a?run=1");
-    expect(document.querySelector('[data-studio-slot="workspace"]')).toBeTruthy();
+    expect(screen.getByTestId("workspace")).toBeTruthy();
     await setHash("#/");
-    expect(document.querySelector("[data-studio-slot]")).toBeNull();
+    expect(screen.queryByTestId("workspace")).toBeNull();
     expect(screen.getByTestId("diagnostics")).toBeTruthy();
   });
 
   it("treats an unknown hash as home", () => {
     window.location.hash = "#/Prj_A";
     render(<StudioEntry messages={messages} lang="en" />);
-    expect(screen.getByTestId("diagnostics")).toBeTruthy();
+    expect(screen.getByTestId("home")).toBeTruthy();
   });
 });

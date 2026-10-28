@@ -60,6 +60,8 @@ test.describe("the first milestone, headless to the page", () => {
     await expect(page.getByText(studio.list.emptyTitle)).toBeVisible();
 
     await button(page, studio.newProject).click();
+    await expect(page.getByRole("region", { name: studio.layout.regions.canvas })).toBeVisible({ timeout: 15_000 });
+    await page.goBack();
     const list = page.getByTestId("project-list");
     await expect(list.getByRole("row", { name: NEW_ROW })).toBeVisible();
 
@@ -122,7 +124,8 @@ test.describe("the first milestone, headless to the page", () => {
     const reopened = list.getByRole("row", { name: SAMPLE_ROW });
     await expect(reopened).toBeVisible({ timeout: 15_000 });
     await reopened.getByRole("button", { name: `Open ${SAMPLE_NAME}` }).click();
-    await expect(page.getByText(envelope.hash.slice(0, 8), { exact: false })).toBeVisible();
+    await expect(page.getByRole("region", { name: studio.layout.regions.canvas })).toBeVisible({ timeout: 15_000 });
+    await page.goBack();
 
     // The saved file and the stored copy agree after a reload, too.
     await page.reload();
@@ -154,6 +157,8 @@ test.describe("the first milestone, headless to the page", () => {
     await expect(button(page, studio.newProject)).toBeVisible({ timeout: 15_000 });
 
     await button(page, studio.newProject).click();
+    await expect(page.getByRole("region", { name: studio.layout.regions.canvas })).toBeVisible({ timeout: 15_000 });
+    await page.goBack();
     const list = page.getByTestId("project-list");
     await expect(list.getByRole("row", { name: NEW_ROW })).toBeVisible();
 

@@ -228,5 +228,29 @@
       "failed": "{name} funktioniert nicht mehr. Dein Projekt ist unverändert.",
       "reload": "{name} neu laden"
     }
+  },
+  "workspace": {
+    "loading": "Das Projekt wird geöffnet",
+    "back": "Zurück zu den Projekten",
+    "missingTitle": "Dieses Projekt ist nicht hier",
+    "missing": "Es wurde vielleicht gelöscht oder in einem anderen Browser erstellt. Projekte bleiben in dem Browser, der sie erstellt hat.",
+    "lostTitle": "Dieses Projekt konnte nicht gelesen werden",
+    "lost": "Beide gespeicherten Kopien sind beschädigt. Es wurde nichts gelöscht.",
+    "errorTitle": "Dieses Projekt konnte nicht geöffnet werden",
+    "error": "Beim Lesen ist etwas schiefgegangen. Deine anderen Projekte sind nicht betroffen.",
+    "readOnlyTitle": "Nur lesen",
+    "readOnly": "Dieses Projekt ist zum Ansehen geöffnet. Du kannst dich umsehen und es ausführen, Änderungen werden aber nicht gespeichert.",
+    "hashMismatchTitle": "Gespeicherte Kopie geprüft",
+    "hashMismatch": "Die gespeicherte Kopie passte nicht zu dieser Seite und wurde deshalb von hier aus neu geschrieben.",
+    "files": {
+      "title": "Projektdateien",
+      "empty": "Dieses Projekt hat noch keine Dateien.",
+      "open": "{path} im Code-Bereich öffnen"
+    },
+    "keys": {
+      "title": "Tastenkürzel",
+      "hint": "Tastenkürzel mit einer einzelnen Taste lassen sich in den Ansichtseinstellungen ausschalten.",
+      "close": "Schließen"
+    }
   }
 }

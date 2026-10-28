@@ -15,6 +15,9 @@ async function openStudio(page: Page) {
 
 async function addProject(page: Page) {
   await page.getByRole("button", { name: studio.newProject }).click();
+  // New opens the project in the workspace; going back returns to the list it was made from.
+  await expect(page.getByRole("region", { name: studio.layout.regions.canvas })).toBeVisible({ timeout: 15_000 });
+  await page.goBack();
   await expect(list(page).getByRole("row", { name: new RegExp(studio.newName) })).toBeVisible();
 }
 
@@ -58,13 +61,12 @@ test.describe("project list", () => {
     await expect(page.getByRole("button", { name: "Open Copy of Blink" })).toBeVisible();
   });
 
-  test("opens a project and shows its revision and hash", async ({ page }) => {
+  test("opens a project in the workspace from its row", async ({ page }) => {
     await openStudio(page);
     await addProject(page);
     await page.getByRole("button", { name: "Open Blink" }).click();
-    const panel = page.getByRole("region", { name: studio.selected.title });
-    await expect(panel).toContainText(studio.selected.revision);
-    await expect(panel.getByText(/^[0-9a-f]{8}$/)).toBeVisible();
+    await expect(page.getByRole("region", { name: studio.layout.regions.canvas })).toBeVisible({ timeout: 15_000 });
+    await expect(page).toHaveTitle(`${studio.newName} | iynk`);
   });
 
   test("warns when the browser keeps nothing, and New still works", async ({ page }) => {
@@ -78,8 +80,8 @@ test.describe("project list", () => {
       Object.defineProperty(window, "indexedDB", { value: undefined });
     });
     await openStudio(page);
-    await addProject(page);
     await expect(page.getByText(studio.banner.degradedTitle)).toBeVisible();
+    await addProject(page);
   });
 
   test("passes axe with a project present", async ({ page }) => {

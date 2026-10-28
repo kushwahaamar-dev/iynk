@@ -228,5 +228,29 @@
       "failed": "{name} ne fonctionne plus. Ton projet n'a pas changé.",
       "reload": "Recharger {name}"
     }
+  },
+  "workspace": {
+    "loading": "Ouverture du projet",
+    "back": "Retour aux projets",
+    "missingTitle": "Ce projet n'est pas ici",
+    "missing": "Il a peut-être été supprimé, ou créé dans un autre navigateur. Les projets restent dans le navigateur qui les a créés.",
+    "lostTitle": "Ce projet n'a pas pu être lu",
+    "lost": "Les deux copies enregistrées sont abîmées. Rien n'a été supprimé.",
+    "errorTitle": "Ce projet n'a pas pu être ouvert",
+    "error": "Une erreur est survenue à la lecture. Vos autres projets ne sont pas touchés.",
+    "readOnlyTitle": "Lecture seule",
+    "readOnly": "Ce projet est ouvert en consultation. Vous pouvez le parcourir et le lancer, mais les modifications ne sont pas enregistrées.",
+    "hashMismatchTitle": "Copie enregistrée vérifiée",
+    "hashMismatch": "La copie enregistrée ne correspondait pas à cette page, elle a donc été réécrite depuis ici.",
+    "files": {
+      "title": "Fichiers du projet",
+      "empty": "Ce projet n'a pas encore de fichiers.",
+      "open": "Ouvrir {path} dans le panneau de code"
+    },
+    "keys": {
+      "title": "Raccourcis clavier",
+      "hint": "Les raccourcis à une seule touche se désactivent dans les réglages d'affichage.",
+      "close": "Fermer"
+    }
   }
 }

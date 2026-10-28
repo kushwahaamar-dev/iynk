@@ -228,5 +228,29 @@
       "failed": "{name} dejó de funcionar. Tu proyecto no ha cambiado.",
       "reload": "Recargar {name}"
     }
+  },
+  "workspace": {
+    "loading": "Abriendo el proyecto",
+    "back": "Volver a los proyectos",
+    "missingTitle": "Este proyecto no está aquí",
+    "missing": "Puede que se haya borrado, o que se creara en otro navegador. Los proyectos se quedan en el navegador que los creó.",
+    "lostTitle": "No se pudo leer este proyecto",
+    "lost": "Las dos copias guardadas están dañadas. No se borró nada.",
+    "errorTitle": "No se pudo abrir este proyecto",
+    "error": "Algo salió mal al leerlo. Tus otros proyectos no se ven afectados.",
+    "readOnlyTitle": "Solo lectura",
+    "readOnly": "Este proyecto está abierto para verlo. Puedes explorarlo y ejecutarlo, pero los cambios no se guardan.",
+    "hashMismatchTitle": "Copia guardada revisada",
+    "hashMismatch": "La copia guardada no coincidía con esta página, así que se volvió a escribir desde aquí.",
+    "files": {
+      "title": "Archivos del proyecto",
+      "empty": "Este proyecto aún no tiene archivos.",
+      "open": "Abrir {path} en el panel de código"
+    },
+    "keys": {
+      "title": "Atajos de teclado",
+      "hint": "Los atajos de una sola tecla se pueden desactivar en los ajustes de vista.",
+      "close": "Cerrar"
+    }
   }
 }
