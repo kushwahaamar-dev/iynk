@@ -20,6 +20,7 @@
     "pretest": "npm run content",
     "test": "vitest run",
     "e2e": "playwright test",
+    "provenance:check": "node scripts/provenance-check.mjs",
     "check": "npm run content:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
   },
   "dependencies": {
