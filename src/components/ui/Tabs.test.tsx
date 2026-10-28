@@ -73,4 +73,12 @@ describe("Tabs", () => {
     rerender(<Tabs label="Board info" tabs={tabs} value="overview" />);
     expect(screen.getByRole("tab", { name: "Overview" }).getAttribute("aria-selected")).toBe("true");
   });
+
+  it("marks the selected tab and draws its underline from a pseudo element", () => {
+    render(<Tabs label="Board info" tabs={tabs} defaultValue="pinout" />);
+    const selected = screen.getByRole("tab", { name: "Pinout" });
+    expect(selected.getAttribute("aria-selected")).toBe("true");
+    expect(selected.className).toContain("after:bg-ink");
+    expect(selected.className).toContain("aria-selected:after:scale-x-100");
+  });
 });

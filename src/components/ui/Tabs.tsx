@@ -100,7 +100,7 @@ export function Tabs({ label, tabs, value, defaultValue, onChange, className, pa
         onKeyDown={onKeyDown}
         data-overflow={overflow}
         className={cx(
-          "flex shrink-0 gap-1 overflow-x-auto border-b-[1.5px] border-rule px-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          "flex shrink-0 gap-1 overflow-x-auto border-b border-rule [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           "data-[overflow=end]:[mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]",
           "data-[overflow=start]:[mask-image:linear-gradient(to_left,#000_calc(100%-2.5rem),transparent)]",
           "data-[overflow=both]:[mask-image:linear-gradient(to_right,transparent,#000_2.5rem,#000_calc(100%-2.5rem),transparent)]",
@@ -124,18 +124,19 @@ export function Tabs({ label, tabs, value, defaultValue, onChange, className, pa
               tabIndex={active ? 0 : -1}
               onClick={() => select(tab.id)}
               className={cx(
-                "inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-t-md px-3 font-body text-sm font-semibold transition-colors",
+                "relative inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold motion-fade",
+                "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:origin-center after:scale-x-0 after:bg-ink after:motion-move aria-selected:after:scale-x-100",
                 // The strip scrolls sideways and would clip a ring drawn outside the tab.
                 "focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-(--focus) focus-visible:shadow-none",
-                phoneGrid && "max-sm:whitespace-normal max-sm:px-1.5 max-sm:text-center max-sm:leading-tight",
-                active ? "text-ink shadow-[inset_0_-2.5px_0_var(--ink)]" : "text-muted hover:text-ink",
+                phoneGrid && "max-sm:whitespace-normal max-sm:px-2 max-sm:text-center max-sm:leading-tight",
+                active ? "text-ink" : "text-muted hover:bg-hover hover:text-ink",
               )}
             >
               {tab.label}
               {tab.badge !== undefined && tab.badge !== null ? (
                 <>
                   {/* a space, so the name reads "Steps 0/17"; it collapses at the label's end, the margin draws the gap */}{" "}
-                  <span className="tabular ms-1.5 rounded-full bg-sunken px-1.5 font-ui text-xs font-semibold">{tab.badge}</span>
+                  <span className="tabular ms-2 rounded-md bg-sunken px-2 text-xs font-semibold">{tab.badge}</span>
                 </>
               ) : null}
             </button>

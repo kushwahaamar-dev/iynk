@@ -1,6 +1,5 @@
 export { Button, ButtonLink, buttonClass, type ButtonSize, type ButtonVariant } from "./Button";
 export { Callout, type CalloutTone } from "./Callout";
-export { Card, type Tone } from "./Card";
 export { Chip, type ChipTone } from "./Chip";
 export { CodeBlock } from "./CodeBlock";
 export { cx } from "./cx";
