@@ -77,3 +77,17 @@ Not done here, because I may edit only this file:
 - ADR-0430 still needs its Status line changed to "superseded by ADR-0014" and its decision 1 pointed at the three-entry map. Its `ADR/README.md` row (line 120) needs the same status.
 - ADR-0400 already uses the SYSTEM 5.2 names and calls the module `sim-host` (its option D and decision 1), so the restatement is largely in place. What remains: its Known limitations still say SYSTEM 5.3 has no `protocol` row, which is now false (SYSTEM 5.3 has it); and it has no explicit layer-order line (core < project, parts, protocol < sim < sim-host, local < studio, ai, collab < app), which the owner should add.
 - FRONTEND_ARCHITECTURE section 4 and Objection 7 still describe the old `host` layer and `#parts/*`; SYSTEM line 196 already gives the mapping.
+
+## Review fixes (T-B6-15, 2026-10-28)
+
+| # | Issue | What I did |
+|---|---|---|
+| 2 | `#core/*` from `server/` (decision 5) cannot work | Node reads only the nearest `package.json`. Once `server/package.json` exists and defines no `imports`, `#core/*` throws `ERR_PACKAGE_IMPORT_NOT_DEFINED`, and a target of `../src/core/*.ts` throws `ERR_INVALID_PACKAGE_TARGET`. Decision 5 is replaced for `server/`: the server imports shared code by relative `.ts` path (`../../src/core/sha256.ts`). The root `imports` map stays for the web app and tests. |
+
+Spike result, PASS (Node 24.8.0, no flags):
+
+- Without a stub, `node server/test/fixtures/import-core.ts` prints the right digest but also `MODULE_TYPELESS_PACKAGE_JSON` on stderr, because the root `package.json` has no `"type"`.
+- With `src/core/package.json` = `{"type":"module"}`, stderr is empty and stdout is the SHA-256 of `abc`. The root `"type"` fallback and the esbuild bundle were not needed.
+- `BUILD` (with a throwaway `src/core/sha256.ts` import in the about page, removed afterwards) passes. `npx vitest run src` passes. `npm run typecheck` (including the portable config) passes.
+- `npm run server:typecheck` first failed with 44 `noUncheckedIndexedAccess` errors in `src/core/sha256.ts`. The shared code is checked by the root and portable configs, which do not enable that flag, so it was removed from `server/tsconfig.json`; shared files are checked once, under the same rules everywhere.
+- Rule for later tasks: each shared folder the server imports (`src/core` now, `src/protocol` in T-B6-16) carries its own `{"type":"module"}` stub.
