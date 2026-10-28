@@ -1,1 +1,48 @@
-{}
+{
+  "edit": {
+    "place": {
+      "offBoard": "这个元件需要放在面包板上。",
+      "quota": "这个项目已达到大小上限。请先删除一些内容再添加。",
+      "unknownDefinition": "元件库里没有这个元件，所以没有放置。",
+      "readOnly": "这个项目以只读方式打开，不能添加元件。",
+      "placed": "已放置 {refdes}。",
+      "cancelled": "已取消放置。"
+    }
+  },
+  "palette": {
+    "title": "元件",
+    "search": "搜索元件",
+    "results": {
+      "one": "{count} 个元件",
+      "other": "{count} 个元件"
+    },
+    "empty": "没有元件与 {query} 匹配。",
+    "emptyHelp": "试试更短的词，或者元件类别，例如无源或显示。",
+    "armed": "{name} 已就绪。点击面包板放置，或按 Enter 放在视图中央。",
+    "place": "放置 {name}",
+    "modelLabel": "模型",
+    "model": {
+      "modelled": "已模拟",
+      "partly-modelled": "部分模拟",
+      "not-modelled-yet": "尚未模拟"
+    },
+    "category": {
+      "microcontroller": "微控制器",
+      "dev-board": "开发板",
+      "passive": "无源",
+      "semiconductor": "半导体",
+      "sensor": "传感器",
+      "actuator": "执行器",
+      "motor-driver": "电机驱动",
+      "power": "电源",
+      "display": "显示",
+      "communication": "通信",
+      "mechanical": "机械",
+      "robotics": "机器人",
+      "drone": "无人机",
+      "fpga": "FPGA",
+      "instrument": "仪器",
+      "virtual": "虚拟"
+    }
+  }
+}

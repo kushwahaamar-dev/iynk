@@ -1,1 +1,48 @@
-{}
+{
+  "edit": {
+    "place": {
+      "offBoard": "Cette pièce a besoin de la plaque d'essai.",
+      "quota": "Ce projet a atteint sa limite de taille. Retire quelque chose avant d'en ajouter.",
+      "unknownDefinition": "Cette pièce n'est pas dans la bibliothèque, elle n'a donc pas été placée.",
+      "readOnly": "Ce projet est ouvert en lecture seule, on ne peut donc pas y ajouter de pièces.",
+      "placed": "{refdes} a été placée.",
+      "cancelled": "Placement annulé."
+    }
+  },
+  "palette": {
+    "title": "Pièces",
+    "search": "Rechercher des pièces",
+    "results": {
+      "one": "{count} pièce",
+      "other": "{count} pièces"
+    },
+    "empty": "Aucune pièce ne correspond à {query}.",
+    "emptyHelp": "Essaie un mot plus court, ou un type comme passif ou écran.",
+    "armed": "{name} est prête. Clique sur la plaque d'essai pour la placer, ou appuie sur Entrée pour la placer au milieu de la vue.",
+    "place": "Placer {name}",
+    "modelLabel": "Modèle",
+    "model": {
+      "modelled": "Modélisée",
+      "partly-modelled": "Modélisée en partie",
+      "not-modelled-yet": "Pas encore modélisée"
+    },
+    "category": {
+      "microcontroller": "Microcontrôleur",
+      "dev-board": "Carte de développement",
+      "passive": "Passif",
+      "semiconductor": "Semi-conducteur",
+      "sensor": "Capteur",
+      "actuator": "Actionneur",
+      "motor-driver": "Pilote de moteur",
+      "power": "Alimentation",
+      "display": "Écran",
+      "communication": "Communication",
+      "mechanical": "Mécanique",
+      "robotics": "Robotique",
+      "drone": "Drone",
+      "fpga": "FPGA",
+      "instrument": "Instrument",
+      "virtual": "Virtuel"
+    }
+  }
+}

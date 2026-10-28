@@ -1,1 +1,48 @@
-{}
+{
+  "edit": {
+    "place": {
+      "offBoard": "Dieses Bauteil braucht das Steckbrett.",
+      "quota": "Dieses Projekt hat seine Größengrenze erreicht. Entferne etwas, bevor du mehr hinzufügst.",
+      "unknownDefinition": "Dieses Bauteil ist nicht in der Bibliothek und wurde deshalb nicht platziert.",
+      "readOnly": "Dieses Projekt ist schreibgeschützt geöffnet, deshalb lassen sich keine Bauteile hinzufügen.",
+      "placed": "{refdes} platziert.",
+      "cancelled": "Platzieren abgebrochen."
+    }
+  },
+  "palette": {
+    "title": "Bauteile",
+    "search": "Bauteile suchen",
+    "results": {
+      "one": "{count} Bauteil",
+      "other": "{count} Bauteile"
+    },
+    "empty": "Kein Bauteil passt zu {query}.",
+    "emptyHelp": "Versuche ein kürzeres Wort oder eine Art wie passiv oder Display.",
+    "armed": "{name} ist bereit. Klicke auf das Steckbrett, um es zu platzieren, oder drücke die Eingabetaste, um es in die Mitte der Ansicht zu setzen.",
+    "place": "{name} platzieren",
+    "modelLabel": "Modell",
+    "model": {
+      "modelled": "Abgebildet",
+      "partly-modelled": "Teilweise abgebildet",
+      "not-modelled-yet": "Noch nicht abgebildet"
+    },
+    "category": {
+      "microcontroller": "Mikrocontroller",
+      "dev-board": "Entwicklungsboard",
+      "passive": "Passiv",
+      "semiconductor": "Halbleiter",
+      "sensor": "Sensor",
+      "actuator": "Aktor",
+      "motor-driver": "Motortreiber",
+      "power": "Stromversorgung",
+      "display": "Display",
+      "communication": "Kommunikation",
+      "mechanical": "Mechanisch",
+      "robotics": "Robotik",
+      "drone": "Drohne",
+      "fpga": "FPGA",
+      "instrument": "Messgerät",
+      "virtual": "Virtuell"
+    }
+  }
+}

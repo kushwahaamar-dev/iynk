@@ -94,5 +94,11 @@
     "code": "R9",
     "pattern": ".",
     "reason": "The Icon component draws the generated Phosphor paths; every other file goes through it."
+  },
+  {
+    "file": "src/components/studio/Palette.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The thumbnail is the part's drawing, not an icon."
   }
 ]
