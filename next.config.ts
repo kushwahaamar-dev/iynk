@@ -1,6 +1,20 @@
+import { execFileSync } from "node:child_process";
 import type { NextConfig } from "next";
 import { buildCsp, buildFigureCsp, parseOrigins } from "./src/lib/csp";
 import { DEFAULT_LOCALE, LANG_COOKIE, LOCALES, acceptLanguagePattern } from "./src/i18n/config";
+
+// One id for three uses: Next's build id, the page's NEXT_PUBLIC_BUILD_ID and the service worker's ?v=. The config
+// loads more than once (the build spawns children), so the result is written back to the environment.
+function computeBuildId() {
+  const fromHost = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12);
+  if (fromHost) return fromHost;
+  try {
+    return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch {
+    return `t${Date.now().toString(36)}`;
+  }
+}
+const BUILD_ID = (process.env.IYNK_BUILD_ID ??= computeBuildId());
 
 const rawOrigins = process.env.IYNK_CONNECT_ORIGINS ?? "";
 const connectOrigins = parseOrigins(rawOrigins);
@@ -18,6 +32,8 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  generateBuildId: async () => BUILD_ID,
+  env: { NEXT_PUBLIC_BUILD_ID: BUILD_ID },
   cacheComponents: true,
   partialPrefetching: true,
   // Agents build side by side with NEXT_DIST_DIR=.next-<label> (D12).
@@ -44,6 +60,15 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=300, must-revalidate" },
           { key: "Content-Security-Policy", value: buildFigureCsp() },
           { key: "X-Content-Type-Options", value: "nosniff" },
+        ],
+      },
+      {
+        // Declared last so its CSP and Cache-Control replace the catch-all's. The browser must always see a new worker.
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
         ],
       },
     ];

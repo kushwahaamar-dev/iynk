@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { page } from "@/components/editorial/Editorial";
 import { StudioEntry } from "@/components/studio/StudioEntry";
+import { SwRegister } from "@/components/studio/SwRegister";
 import { cx } from "@/components/ui/cx";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
@@ -37,6 +38,7 @@ async function Studio({ params }: Pick<Props, "params">) {
         <p className="mt-4 text-pretty text-base text-muted">{strings.lede}</p>
       </header>
       <StudioEntry strings={strings} lang={lang} />
+      <SwRegister />
     </div>
   );
 }
