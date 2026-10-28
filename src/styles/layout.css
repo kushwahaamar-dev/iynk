@@ -1,9 +1,26 @@
+/* Winning over the :root declarations in tokens.css, which still hold the old header height, hand cut radii and
+   fluid gutters. The workspace override in tokens.css (:root:has) is more specific and still takes the gutters back. */
+html:root {
+  --header-h: 64px;
+  --radius-ink: var(--radius-xl, 0.75rem);
+  --radius-ink-sm: var(--radius-lg, 0.5rem);
+  --shell-pad: 16px;
+  --frame-pad: 16px;
+}
+@media (width >= 40rem) {
+  html:root { --shell-pad: 24px; --frame-pad: 24px; }
+}
+@media (width >= 64rem) {
+  html:root { --shell-pad: 40px; --frame-pad: 40px; }
+}
+@media (width >= 80rem) {
+  html:root { --shell-pad: 48px; --frame-pad: 48px; }
+}
+
 @layer base {
   :focus-visible {
-    outline: 2.5px solid var(--focus);
-    outline-offset: 3px;
-    box-shadow: 0 0 0 7px var(--halo);
-    border-radius: 6px;
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
 
   [hidden] { display: none !important; }
@@ -15,23 +32,20 @@
 }
 
 @layer components {
-  /* An ink-bordered card on the page: offset ink shadow, hand-cut corners. */
   .ink-card {
     background: var(--surface);
-    border: 2px solid var(--card-line);
-    border-radius: var(--radius-ink);
-    box-shadow: var(--card-shadow);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-2xl, 1rem);
   }
 
   /* A paper plate: figures, schematics and inked art sit on it. It keeps light
      paper and dark ink in both themes; in dark mode the paper is dimmed. */
-  .ink-plate {
+  .ink-plate,
+  .plate {
     background-color: var(--plate-bg);
-    background-image: var(--grain);
     color: var(--ink);
-    border: 2px solid var(--plate-frame);
-    border-radius: var(--radius-ink);
-    box-shadow: 3px 3px 0 var(--shadow-c);
+    border: 1px solid var(--plate-frame);
+    border-radius: var(--radius-xl, 0.75rem);
   }
 
   /* Whatever sits on a pastel status fill (bg-good-bg, bg-bad-bg). The fills keep their colour in both themes, and
@@ -44,20 +58,17 @@
     min-height: 44px;
     font: inherit;
     font-family: var(--font-body);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 500;
     color: var(--ink);
-    background-color: var(--surface);
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
-    padding: 0 2.25rem 0 0.9rem;
+    background-color: var(--sunken);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 8px 12px;
   }
   select.ink-field {
     appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-    background-position: calc(100% - 18px) 52%, calc(100% - 13px) 52%;
-    background-size: 5px 5px, 5px 5px;
-    background-repeat: no-repeat;
+    padding-inline-end: 40px;
     cursor: pointer;
   }
 
@@ -106,11 +117,10 @@
     [data-phone-stage="sticky"] > .ws > .ws-stage {
       position: sticky;
       top: var(--header-h);
-      z-index: 10;
+      z-index: var(--z-sticky);
       height: var(--stage-h);
       padding-block: 0.25rem;
       background-color: var(--paper);
-      background-image: var(--grain);
     }
     [data-phone-stage="full"] > .ws > .ws-stage {
       height: calc(100svh - var(--header-h) - 3.5rem);
@@ -118,7 +128,7 @@
     .ws-sticky-tabs {
       position: sticky;
       top: calc(var(--header-h) + var(--stage-h));
-      z-index: 9;
+      z-index: var(--z-sticky);
       background: var(--surface);
     }
   }
@@ -134,26 +144,27 @@
   }
 
   /* Long-form lesson and about text. */
-  .ink-prose {
-    max-width: 68ch;
+  .ink-prose,
+  .prose {
+    max-width: 65ch;
     line-height: 1.65;
   }
-  .ink-prose > * + * { margin-top: 0.9em; }
-  .ink-prose h2 { margin-top: 1.6em; }
-  .ink-prose h3 { margin-top: 1.3em; }
-  .ink-prose ul { list-style: disc; padding-inline-start: 1.4em; }
-  .ink-prose ol { list-style: decimal; padding-inline-start: 1.4em; }
-  .ink-prose li + li { margin-top: 0.3em; }
-  .ink-prose li::marker { color: var(--muted); }
-  .ink-prose :not(pre) > code {
+  :is(.ink-prose, .prose) > * + * { margin-top: 0.9em; }
+  :is(.ink-prose, .prose) h2 { margin-top: 1.6em; }
+  :is(.ink-prose, .prose) h3 { margin-top: 1.3em; }
+  :is(.ink-prose, .prose) ul { list-style: disc; padding-inline-start: 1.4em; }
+  :is(.ink-prose, .prose) ol { list-style: decimal; padding-inline-start: 1.4em; }
+  :is(.ink-prose, .prose) li + li { margin-top: 0.3em; }
+  :is(.ink-prose, .prose) li::marker { color: var(--muted); }
+  :is(.ink-prose, .prose) :not(pre) > code {
     font-size: 0.9em;
     padding: 0.05em 0.35em;
     border: 1px solid var(--rule);
-    border-radius: 5px;
+    border-radius: var(--radius-sm, 0.25rem);
     background: var(--sunken);
   }
-  .ink-prose blockquote {
-    border-inline-start: 3px solid var(--line);
+  :is(.ink-prose, .prose) blockquote {
+    border-inline-start: 3px solid var(--rule);
     padding-inline-start: 1em;
     color: var(--muted);
   }
