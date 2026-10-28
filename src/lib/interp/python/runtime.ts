@@ -225,6 +225,7 @@ function rangeLen(r: PyRange): number {
 // Interpreter -------------------------------------------------------------------------------
 
 const MAX_DEPTH = 100;
+const MAX_ELEMENTS = 1_000_000;
 
 /** Python subset interpreter: generator-based statements on the shared virtual clock. */
 /** Where the names beginners forget to import come from. */
@@ -490,6 +491,10 @@ export class PyRt extends Exec {
     if (e instanceof InterpError) return null;
     if (e instanceof RangeError) return pyErr('RecursionError', 'maximum recursion depth exceeded');
     return null;
+  }
+
+  private checkRepeat(len: number, k: number, p?: SourcePos): void {
+    if (len * k > MAX_ELEMENTS) throw this.err('MemoryError', `cannot repeat to ${len * k} items (limit 1,000,000)`, p);
   }
 
   err(cls: string, msg: string, p?: SourcePos): PyRaise {
@@ -1072,9 +1077,15 @@ export class PyRt extends Exec {
       const [s, n] = isInt(a) ? [b, a] : [a, b];
       if (isInt(n)) {
         const k = Math.max(0, Number(toBig(n)));
-        if (typeof s === 'string') return s.repeat(k);
-        if (s instanceof PyList) return new PyList(Array.from({ length: k }, () => s.items).flat());
-        if (s instanceof PyTuple) return new PyTuple(Array.from({ length: k }, () => s.items).flat());
+        if (typeof s === 'string') {
+          this.checkRepeat(s.length, k, p);
+          return s.repeat(k);
+        }
+        if (s instanceof PyList || s instanceof PyTuple) {
+          this.checkRepeat(s.items.length, k, p);
+          const items = s.items.length ? Array.from({ length: k }, () => s.items).flat() : [];
+          return s instanceof PyList ? new PyList(items) : new PyTuple(items);
+        }
       }
     }
     if (op === '%' && typeof a === 'string') return this.percentFormat(a, b instanceof PyTuple ? b.items : [b], p);

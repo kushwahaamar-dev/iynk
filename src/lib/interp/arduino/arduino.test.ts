@@ -357,3 +357,20 @@ void loop() {}`, 'uno-r4');
     expect(run.snapshot().pins[14].volts).toBeCloseTo(1.27, 2);
   });
 });
+
+describe('array size cap', () => {
+  it('rejects an array over a million elements with the line number', () => {
+    const { errors } = boot('int big[200000000];\nvoid setup() {}\nvoid loop() {}');
+    expect(errors.join('\n')).toMatch(/^1:\d+ .*array size 200000000 is over the limit of 1,000,000 elements/);
+  });
+
+  it('rejects a 2-D array whose dimensions multiply past the cap', () => {
+    const { errors } = boot('int grid[2000][1000];\nvoid setup() {}\nvoid loop() {}');
+    expect(errors.join('\n')).toMatch(/array size 2000000 is over the limit/);
+  });
+
+  it('compiles an array of exactly a million elements', () => {
+    const { errors } = boot('char ok[1000000];\nvoid setup() {}\nvoid loop() {}');
+    expect(errors).toEqual([]);
+  });
+});

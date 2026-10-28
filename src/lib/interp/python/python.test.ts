@@ -397,3 +397,38 @@ r.close()
     expect(out()).toMatch(/^192\.168\.4\.\d+\n\d{3}\n$/);
   });
 });
+
+describe('size caps', () => {
+  const failure = (src: string) => {
+    const started = performance.now();
+    const { run, errors } = boot(src, 'pico');
+    advance(run, 100);
+    expect(performance.now() - started).toBeLessThan(1000);
+    return errors.join('\n');
+  };
+
+  it('refuses to repeat a string past a million characters', () => {
+    expect(failure('print("x" * 100000000)')).toMatch(/MemoryError: cannot repeat to 100000000 items \(limit 1,000,000\)/);
+  });
+
+  it('refuses to repeat a list past a million items', () => {
+    expect(failure('a = [0] * 50000000')).toMatch(/MemoryError.*limit 1,000,000/);
+  });
+
+  it('allows exactly a million items', () => {
+    const { run, out, errors } = boot('print(len([0] * 1000000))', 'pico');
+    advance(run, 100);
+    expect(errors).toEqual([]);
+    expect(out()).toBe('1000000\n');
+  });
+
+  it('catches the second multiply of a nested repeat', () => {
+    expect(failure('a = [0] * 1000\nb = a * 1001')).toMatch(/MemoryError.*limit 1,000,000/);
+  });
+
+  it('keeps an empty sequence cheap however large the count', () => {
+    const { run, errors } = boot('a = [] * 50000000', 'pico');
+    advance(run, 100);
+    expect(errors).toEqual([]);
+  });
+});

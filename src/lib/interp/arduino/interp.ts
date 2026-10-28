@@ -61,6 +61,7 @@ interface ObjSym {
 type Sym = VarSym | FnSym | ObjSym;
 
 const MAX_DEPTH = 120;
+const MAX_ARRAY = 1_000_000;
 
 /**
  * Compiled sketch: a typed closure tree plus the runtime state it runs on.
@@ -264,6 +265,7 @@ class Compiler {
 
   private arrayType(el: Ty, dims: (Expr | null)[], init: Expr | undefined, p: SourcePos): Ty {
     let t = el;
+    let total = 1;
     for (let d = dims.length - 1; d >= 0; d--) {
       const de = dims[d];
       let n: number;
@@ -272,6 +274,8 @@ class Compiler {
       else if (d === 0 && init?.k === 'str') n = init.value.length + 1;
       else this.err('this array needs a size', p, 'write the size in the brackets, like int pins[3]');
       if (n <= 0) this.err('array size must be positive', p);
+      total *= n;
+      if (total > MAX_ARRAY) throw new InterpError('limit', `array size ${total} is over the limit of 1,000,000 elements`, p, 'use a smaller array');
       t = { k: 'array', el: t, n };
     }
     return t;

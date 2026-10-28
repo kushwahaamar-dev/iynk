@@ -9,6 +9,9 @@ import { PyRt, PyRaise } from './python/runtime';
 import { installBuiltins, installModules, type RosMessage } from './python/modules';
 import { compileVerilog, type VerilogSim } from './verilog/sim';
 
+const SERIAL_CAP = 1_048_576;
+const SERIAL_MARKER = '\r\n[output truncated at 1 MB]\r\n';
+
 export type DeviceKind = 'mpu6050' | 'pca9685' | 'ssd1306' | 'lcd1602';
 
 export interface RunOptions {
@@ -148,7 +151,20 @@ class RunImpl implements Run {
     const before = this.world as World | undefined;
     this.world = new World(this.profile, this.opts.world);
     const w = this.world;
-    w.serialOut = (t) => this.emit('serial', t);
+    let sent = 0;
+    let marked = false;
+    w.serialOut = (t) => {
+      if (marked) return;
+      const room = SERIAL_CAP - sent;
+      if (t.length <= room) {
+        sent += t.length;
+        this.emit('serial', t);
+        return;
+      }
+      if (room > 0) this.emit('serial', t.slice(0, room));
+      marked = true;
+      this.emit('serial', SERIAL_MARKER);
+    };
     w.warn = (m) => this.emit('warn', m);
     if (this.opts.devices?.length) addStandardDevices(w, this.opts.devices);
     for (const s of this.setups) s(w);
