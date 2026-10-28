@@ -21,7 +21,7 @@ describe("randomTestPort", () => {
   });
 
   test("the relay package's copy reserves the same ports", () => {
-    const source = readFileSync(join(process.cwd(), "server/realtime/test/helpers.js"), "utf8");
+    const source = readFileSync(join(process.cwd(), "server/legacy/test/helpers.js"), "utf8");
     const list = /RESERVED_PORTS = new Set\(\[([\d_,\s]*)\]\)/.exec(source);
     expect(list).not.toBeNull();
     const copy = list![1].split(",").map((n) => Number(n.trim().replaceAll("_", ""))).filter(Boolean);

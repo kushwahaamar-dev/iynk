@@ -175,5 +175,74 @@
       "unavailable": "Dieser Browser kann keine Räume öffnen.",
       "found": "Gefunden. Der Raum wird geöffnet …"
     }
+  },
+  "buddies": {
+    "title": "Freunde",
+    "needsServer": {
+      "title": "Freunde brauchen einen Server",
+      "body": "Freunde leben auf einem iynk Server, den du oder ein Freund betreibt. Ohne Server hat diese Seite nichts zu zeigen, und der Rest von iynk funktioniert wie gewohnt.",
+      "guide": "So startest du einen Server"
+    },
+    "insecure": {
+      "title": "Diese Seite braucht eine sichere Verbindung",
+      "body": "Dein Browser erstellt Geräteschlüssel nur auf https Seiten oder auf localhost. Öffne iynk über https und versuche es erneut."
+    },
+    "empty": {
+      "title": "Noch keine Freunde",
+      "add": "Mit einem Freund koppeln",
+      "enter": "Code eingeben"
+    },
+    "list": {
+      "online": "Online",
+      "offline": "Offline",
+      "asOf": "Zuletzt gesehen {time}",
+      "inRoom": "Im Raum {code}",
+      "rename": "Umbenennen",
+      "remove": "Freund entfernen",
+      "block": "Blockieren",
+      "removeConfirm": "{name} aus deinen Freunden entfernen? Ihr könnt später erneut koppeln.",
+      "blockConfirm": "{name} blockieren? Die Person wird entfernt und kann sich nicht erneut mit dir koppeln.",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "enrol": {
+      "title": "Diesem Server beitreten",
+      "code": "Anmeldecode",
+      "name": "Dein Name",
+      "submit": "Beitreten",
+      "closed": "Dieser Server nimmt gerade keine neuen Leute auf.",
+      "wrongCode": "Der Code hat nicht funktioniert. Prüfe ihn oder frag die Person, die den Server betreibt, nach einem neuen.",
+      "help": "Die Person, die den Server betreibt, gibt dir einen Code. Er gilt nur einmal."
+    },
+    "pair": {
+      "title": "Mit einem Freund koppeln",
+      "code": "Kopplungscode",
+      "link": "Kopplungslink",
+      "qr": "QR Code für den Kopplungslink",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert",
+      "expires": "Läuft {time} ab",
+      "cancel": "Kopplung abbrechen",
+      "enterCode": "Kopplungscode eingeben",
+      "enterLabel": "Code oder Link von deinem Freund",
+      "peekFrom": "{name} möchte sich mit dir koppeln.",
+      "accept": "Annehmen",
+      "wrong": "Der Code hat nicht funktioniert. Prüfe ihn und versuche es erneut.",
+      "tooMany": "Zu viele Versuche. Warte eine Minute und versuche es erneut.",
+      "already": "Ihr seid schon befreundet.",
+      "full": "Einer von euch hat die Freundesgrenze erreicht.",
+      "show": "Code anzeigen",
+      "joined": "{name} ist beigetreten.",
+      "fingerprint": "Schlüssel {fingerprint}"
+    },
+    "joined": "Du bist dem Server als {name} beigetreten.",
+    "unknown": {
+      "title": "Diesen Server kennt dieser Browser nicht",
+      "body": "Dieser Browser hat keinen Schlüssel für diesen Server. Tritt ihm zuerst mit einem Anmeldecode bei."
+    },
+    "unreachable": "Der Server ist nicht erreichbar. Prüfe, ob er läuft, und versuche es erneut.",
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen. Versuche es erneut."
+    }
   }
 }

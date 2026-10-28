@@ -128,6 +128,32 @@
       "text": "Auf dieser Seite ist ein Problem aufgetreten. Versuche es erneut oder gehe zurück zum Start.",
       "reference": "Referenz: {digest}",
       "home": "Zurück zum Start"
+    },
+    "server": {
+      "title": "Server",
+      "address": "Serveradresse",
+      "status": {
+        "off": "Dafür braucht es einen Server. Es ist keiner eingerichtet.",
+        "unreachable": "Dieser Server ist nicht erreichbar.",
+        "unreachableHint": "Falls diese Adresse auf einem anderen Origin liegt: Steht sie in IYNK_CONNECT_ORIGINS?",
+        "ready": "Verbunden.",
+        "needsEnrol": "Dieser Server braucht einen Anmeldecode von der Person, die ihn betreibt.",
+        "closed": "Dieser Server nimmt gerade keine neuen Leute auf.",
+        "checking": "Dieser Server wird geprüft.",
+        "insecure": "Browser erlauben die Anmeldung nur über https. Nimm eine https-Adresse oder localhost.",
+        "upgrade": "Dieser Server braucht eine neuere Version von iynk. Aktualisiere die App."
+      },
+      "enrolled": "Du bist auf diesem Server angemeldet.",
+      "signOut": "Abmelden",
+      "leave": {
+        "title": "Diesen Server verlassen",
+        "body": "Du wirst vom Server entfernt und deine Buddy-Liste dort wird gelöscht. Deine Projekte bleiben in diesem Browser.",
+        "confirm": "Server verlassen",
+        "grace": "Du hast {hours} Stunden Zeit, es dir anders zu überlegen.",
+        "cancel": "Konto behalten"
+      },
+      "guide": "Buddys brauchen einen Server. Die Anleitung zum Selbsthosten zeigt, wie du einen betreibst.",
+      "addressInvalid": "Gib eine Adresse wie https://iynk.example ein, ohne Pfad."
     }
   }
 }

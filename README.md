@@ -76,7 +76,8 @@ flowchart LR
   calculator and a flight model. All of it runs in the browser.
 - **Server:** the same Next.js app serves the AI and search routes. They take the caller's own key, rate-limit calls per
   server instance and count spend per key.
-- **Realtime:** a small Node WebSocket relay in `server/realtime`.
+- **Realtime and buddies:** a small Node WebSocket relay in `server/legacy`, and the self-hosted collaboration server in
+  `server`.
 - **MCP:** AI assistants can search the catalogue and run the drone calculator through `/api/mcp`. Its parts price tool
   answers "not set up", because an MCP call carries no search key.
 
@@ -109,7 +110,8 @@ src/content        boards, benches and drones: lessons, steps, faults, checks
 src/lib            interpreters, circuit solver, drone calculator, flight model, realtime, AI, search
 src/i18n           messages and lesson prose in six languages
 figures            figure sources and engines (built into public/figures)
-server/realtime    the room relay
+server             the collaboration server (identity and buddies)
+server/legacy      the room relay
 e2e                Playwright tests
 docs/facts         sourced fact sheets for every board and drone
 ```

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHead, eyebrow, page } from "@/components/editorial/Editorial";
+import { BuddiesPage } from "@/components/buddies/BuddiesPage";
 import { FigureStill } from "@/components/figure";
 import { TogetherStrings } from "@/components/realtime/messages";
 import { PageSkeleton } from "@/components/ui";
@@ -55,6 +56,7 @@ async function TogetherLobby({ params }: Props) {
           }
         />
         <Lobby items={items} />
+        <BuddiesPage />
       </TogetherStrings>
     </div>
   );

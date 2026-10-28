@@ -8,10 +8,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const script = join(root, 'scripts/ci-local.sh');
 const workflowPath = join(root, '.github/workflows/ci.yml');
 
-const STEPS = ['content', 'schema', 'typecheck', 'lint', 'ui', 'no-only', 'copy', 'provenance', 'relay-deps', 'unit', 'perf', 'relay', 'build', 'e2e', 'secrets', 'audit'];
+const STEPS = ['content', 'schema', 'typecheck', 'lint', 'ui', 'no-only', 'copy', 'provenance', 'relay-deps', 'unit', 'perf', 'relay', 'server', 'build', 'e2e', 'secrets', 'audit'];
 
 describe('scripts/ci-local.sh', () => {
-  it('lists the sixteen steps in order', () => {
+  it('lists the seventeen steps in order', () => {
     const out = execFileSync('bash', [script, '--list'], { cwd: root, encoding: 'utf8' });
     expect(out.trim().split('\n')).toEqual(STEPS);
   });

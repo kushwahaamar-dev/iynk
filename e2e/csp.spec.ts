@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { buildCsp, buildFigureCsp } from "../src/lib/csp";
+import { connectOrigins } from "./server-harness";
 import { expect, test } from "./support/no-egress";
 
 const PAGES = ["/en", "/en/boards/uno-r3/blink", "/en/robotics/uno-r3-build", "/en/drones/quad5/fly"];
@@ -29,7 +30,7 @@ test.describe("page policy", () => {
     test(`${path} runs with no violation and no page error`, async ({ page }) => {
       const result = await watch(page);
       const response = await page.goto(path);
-      expect(response?.headers()["content-security-policy"]).toBe(buildCsp({ dev: false, connectOrigins: [] }));
+      expect(response?.headers()["content-security-policy"]).toBe(buildCsp({ dev: false, connectOrigins: connectOrigins() }));
       expect(response?.headers()["content-security-policy"]).toContain("frame-ancestors 'self'");
       await page.waitForLoadState("networkidle");
       expect(await result()).toEqual({ violations: [], errors: [] });

@@ -128,6 +128,32 @@
       "text": "这个页面出现了问题。请重试，或返回首页。",
       "reference": "参考编号：{digest}",
       "home": "返回首页"
+    },
+    "server": {
+      "title": "服务器",
+      "address": "服务器地址",
+      "status": {
+        "off": "这需要一台服务器，目前还没有设置。",
+        "unreachable": "无法连接到这台服务器。",
+        "unreachableHint": "如果这个地址属于另一个来源，它是否已列入 IYNK_CONNECT_ORIGINS？",
+        "ready": "已连接。",
+        "needsEnrol": "这台服务器需要运行它的人提供注册码。",
+        "closed": "这台服务器目前不接受新成员。",
+        "checking": "正在检查这台服务器。",
+        "insecure": "浏览器只允许通过 https 登录。请使用 https 地址或 localhost。",
+        "upgrade": "这台服务器需要更新版本的 iynk。请更新应用。"
+      },
+      "enrolled": "你已登录这台服务器。",
+      "signOut": "退出登录",
+      "leave": {
+        "title": "离开这台服务器",
+        "body": "这会把你从服务器中移除，并删除你在那里的好友列表。你的项目仍保留在此浏览器中。",
+        "confirm": "离开服务器",
+        "grace": "你有 {hours} 小时可以改变主意。",
+        "cancel": "保留我的账号"
+      },
+      "guide": "好友功能需要一台服务器。自托管指南介绍了如何搭建。",
+      "addressInvalid": "请输入类似 https://iynk.example 的地址，不带路径。"
     }
   }
 }

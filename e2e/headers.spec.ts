@@ -1,4 +1,5 @@
 import { buildCsp, buildFigureCsp } from "../src/lib/csp";
+import { connectOrigins } from "./server-harness";
 import { expect, test } from "./support/no-egress";
 
 const PAGES = ["/en", "/en/about", "/en/boards/uno-r3/blink", "/en/does-not-exist"];
@@ -8,7 +9,7 @@ const EXPECTED = {
   "x-content-type-options": "nosniff",
   "referrer-policy": "strict-origin-when-cross-origin",
   "permissions-policy": "camera=(), microphone=(self), geolocation=(self), serial=(self), usb=(), payment=()",
-  "content-security-policy": buildCsp({ dev: false, connectOrigins: [] }),
+  "content-security-policy": buildCsp({ dev: false, connectOrigins: connectOrigins() }),
 };
 
 function expectSecurityHeaders(headers: Record<string, string>, csp = EXPECTED["content-security-policy"]) {

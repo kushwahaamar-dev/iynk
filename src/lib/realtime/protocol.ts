@@ -1,5 +1,5 @@
 // The relay's wire protocol (HX-CONTRACT H7). Both transports speak it: the
-// WebSocket one talks to server/realtime, the BroadcastChannel one plays the
+// WebSocket one talks to server/legacy, the BroadcastChannel one plays the
 // relay itself between tabs of one browser.
 
 import type { Locale } from "@/i18n/config";

@@ -50,6 +50,14 @@ export const SCREENS: Screen[] = [
   { name: "drone", path: "/en/drones/quad5" },
   { name: "fly", path: "/en/drones/quad5/fly" },
   { name: "together", path: "/en/together" },
+  {
+    name: "buddies",
+    path: "/en/together#buddies",
+    before: async (page) => {
+      await page.locator("#buddies").waitFor();
+      await page.locator("#buddies [aria-busy='true']").waitFor({ state: "detached" });
+    },
+  },
   { name: "about", path: "/en/about" },
   { name: "privacy", path: "/en/privacy" },
   { name: "not-found", path: "/en/does-not-exist" },

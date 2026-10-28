@@ -175,5 +175,74 @@
       "unavailable": "Ce navigateur ne peut pas ouvrir de salon.",
       "found": "Trouvé. Ouverture du salon…"
     }
+  },
+  "buddies": {
+    "title": "Amis",
+    "needsServer": {
+      "title": "Les amis ont besoin d'un serveur",
+      "body": "Les amis vivent sur un serveur iynk que vous ou un ami faites tourner. Sans serveur, cette page n'a rien à montrer et le reste d'iynk fonctionne comme avant.",
+      "guide": "Comment lancer un serveur"
+    },
+    "insecure": {
+      "title": "Cette page demande une connexion sécurisée",
+      "body": "Votre navigateur ne crée des clés d'appareil que sur les pages https ou sur localhost. Ouvrez iynk en https et réessayez."
+    },
+    "empty": {
+      "title": "Pas encore d'amis",
+      "add": "Se jumeler avec un ami",
+      "enter": "Saisir un code"
+    },
+    "list": {
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "asOf": "Vu pour la dernière fois {time}",
+      "inRoom": "Dans la salle {code}",
+      "rename": "Renommer",
+      "remove": "Retirer l'ami",
+      "block": "Bloquer",
+      "removeConfirm": "Retirer {name} de vos amis ? Vous pourrez vous jumeler de nouveau plus tard.",
+      "blockConfirm": "Bloquer {name} ? Cette personne sera retirée et ne pourra plus se jumeler avec vous.",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "enrol": {
+      "title": "Rejoindre ce serveur",
+      "code": "Code d'inscription",
+      "name": "Votre nom",
+      "submit": "Rejoindre",
+      "closed": "Ce serveur n'accepte pas de nouvelles personnes pour le moment.",
+      "wrongCode": "Ce code n'a pas fonctionné. Vérifiez-le ou demandez-en un nouveau à la personne qui gère le serveur.",
+      "help": "La personne qui gère le serveur vous donne un code. Il ne marche qu'une fois."
+    },
+    "pair": {
+      "title": "Se jumeler avec un ami",
+      "code": "Code de jumelage",
+      "link": "Lien de jumelage",
+      "qr": "QR code du lien de jumelage",
+      "copy": "Copier le lien",
+      "copied": "Lien copié",
+      "expires": "Expire {time}",
+      "cancel": "Annuler le jumelage",
+      "enterCode": "Saisir un code de jumelage",
+      "enterLabel": "Code ou lien de votre ami",
+      "peekFrom": "{name} veut se jumeler avec vous.",
+      "accept": "Accepter",
+      "wrong": "Ce code n'a pas fonctionné. Vérifiez-le et réessayez.",
+      "tooMany": "Trop d'essais. Attendez une minute et réessayez.",
+      "already": "Vous êtes déjà amis.",
+      "full": "L'un de vous a atteint la limite d'amis.",
+      "show": "Afficher un code",
+      "joined": "{name} vous a rejoint.",
+      "fingerprint": "Clé {fingerprint}"
+    },
+    "joined": "Vous avez rejoint le serveur sous le nom {name}.",
+    "unknown": {
+      "title": "Ce serveur n'est pas connu ici",
+      "body": "Ce navigateur n'a pas de clé pour ce serveur. Rejoignez-le d'abord avec un code d'inscription."
+    },
+    "unreachable": "Impossible de joindre le serveur. Vérifiez qu'il tourne et réessayez.",
+    "errors": {
+      "generic": "Une erreur s'est produite. Réessayez."
+    }
   }
 }

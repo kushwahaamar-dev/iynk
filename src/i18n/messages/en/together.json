@@ -175,5 +175,74 @@
       "unavailable": "This browser can't open rooms.",
       "found": "Found it. Opening the room…"
     }
+  },
+  "buddies": {
+    "title": "Buddies",
+    "needsServer": {
+      "title": "Buddies need a server",
+      "body": "Buddies live on an iynk server that you or a friend runs. Without one, this page has nothing to show and the rest of iynk works as before.",
+      "guide": "How to run a server"
+    },
+    "insecure": {
+      "title": "This page needs a secure connection",
+      "body": "Your browser only makes device keys on https pages or on localhost. Open iynk over https and try again."
+    },
+    "empty": {
+      "title": "No buddies yet",
+      "add": "Pair with a buddy",
+      "enter": "Enter a code"
+    },
+    "list": {
+      "online": "Online",
+      "offline": "Offline",
+      "asOf": "Last seen {time}",
+      "inRoom": "In room {code}",
+      "rename": "Rename",
+      "remove": "Remove buddy",
+      "block": "Block",
+      "removeConfirm": "Remove {name} from your buddies? You can pair again later.",
+      "blockConfirm": "Block {name}? They are removed and cannot pair with you again.",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "enrol": {
+      "title": "Join this server",
+      "code": "Enrolment code",
+      "name": "Your name",
+      "submit": "Join",
+      "closed": "This server isn't taking new people right now.",
+      "wrongCode": "That code didn't work. Check it, or ask the person who runs the server for a new one.",
+      "help": "The person who runs the server gives you a code. It works once."
+    },
+    "pair": {
+      "title": "Pair with a buddy",
+      "code": "Pairing code",
+      "link": "Pairing link",
+      "qr": "QR code for the pairing link",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "expires": "Expires {time}",
+      "cancel": "Cancel pairing",
+      "enterCode": "Enter a pairing code",
+      "enterLabel": "Code or link from your buddy",
+      "peekFrom": "{name} wants to pair with you.",
+      "accept": "Accept",
+      "wrong": "That code didn't work. Check it and try again.",
+      "tooMany": "Too many tries. Wait a minute and try again.",
+      "already": "You are already buddies.",
+      "full": "One of you has reached the buddy limit.",
+      "show": "Show a code",
+      "joined": "{name} joined.",
+      "fingerprint": "Key {fingerprint}"
+    },
+    "joined": "You joined the server as {name}.",
+    "unknown": {
+      "title": "This server isn't known here",
+      "body": "This browser has no key for that server. Join it with an enrolment code first."
+    },
+    "unreachable": "Can't reach the server. Check that it is running and try again.",
+    "errors": {
+      "generic": "Something went wrong. Try again."
+    }
   }
 }

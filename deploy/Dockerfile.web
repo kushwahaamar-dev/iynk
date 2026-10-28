@@ -1,0 +1,23 @@
+# iynk web app (Next standalone). Build context: the repository root (compose.yaml sets it). No keys are needed
+# or present: the app is built keyless and the server address arrives at run time as IYNK_SERVER_URL.
+FROM node:24.22.1-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+RUN npm run build
+
+FROM node:24.22.1-alpine
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+WORKDIR /app
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/public ./public
+COPY --from=build /app/.next/static ./.next/static
+
+# The code stays root-owned and read-only; the process runs as the image's unprivileged node user.
+USER node
+EXPOSE 3000
+STOPSIGNAL SIGTERM
+CMD ["node", "server.js"]

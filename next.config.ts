@@ -31,6 +31,7 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   generateBuildId: async () => BUILD_ID,
   env: { NEXT_PUBLIC_BUILD_ID: BUILD_ID },

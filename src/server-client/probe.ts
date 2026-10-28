@@ -1,3 +1,7 @@
+import { probeServer as fetchServerInfo } from "./auth.ts";
+import { ClientError } from "./types.ts";
+import type { ServerInfo } from "./types.ts";
+
 export type ConfigDoc = {
   server: string | null;
   protocol: 1;
@@ -37,5 +41,43 @@ export async function fetchConfig(
     return { ok: true, config: parseConfig(await res.json()) };
   } catch {
     return { ok: false };
+  }
+}
+
+export type ServerState = "none" | "checking" | "ready" | "unreachable" | "insecure";
+
+export type ServerProbe = {
+  state: Exclude<ServerState, "none" | "checking">;
+  info: ServerInfo | null;
+  /** The server answered 426: its minimum client is newer than this app. */
+  upgradeRequired: boolean;
+};
+
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+export function isLocalHost(hostname: string): boolean {
+  return LOCAL_HOSTS.has(hostname);
+}
+
+/**
+ * Asks the server who it is. Every failure becomes a state, never a throw: a dead server, a blocked origin and a
+ * refusal all look like `unreachable`, and nothing is logged. An http address on a page the browser does not treat
+ * as secure is `insecure` without a request, because device keys cannot be used there.
+ */
+export async function probeServer(
+  base: string,
+  o: { fetch?: typeof fetch; secure?: boolean } = {},
+): Promise<ServerProbe> {
+  const secure = o.secure ?? globalThis.isSecureContext ?? true;
+  const url = URL.canParse(base) ? new URL(base) : null;
+  if (!url) return { state: "unreachable", info: null, upgradeRequired: false };
+  if (!secure && url.protocol === "http:" && !isLocalHost(url.hostname)) {
+    return { state: "insecure", info: null, upgradeRequired: false };
+  }
+  try {
+    const info = await fetchServerInfo({ base: url.origin, fetch: o.fetch ?? ((input, init) => fetch(input, init)) });
+    return { state: "ready", info, upgradeRequired: false };
+  } catch (e) {
+    return { state: "unreachable", info: null, upgradeRequired: e instanceof ClientError && e.status === 426 };
   }
 }

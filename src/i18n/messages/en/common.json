@@ -128,6 +128,32 @@
       "text": "This page hit a problem. Try again, or go back to the start.",
       "reference": "Reference: {digest}",
       "home": "Back to the start"
+    },
+    "server": {
+      "title": "Server",
+      "address": "Server address",
+      "status": {
+        "off": "This needs a server. None is set up.",
+        "unreachable": "Could not reach this server.",
+        "unreachableHint": "If this address is on another origin, is it listed in IYNK_CONNECT_ORIGINS?",
+        "ready": "Connected.",
+        "needsEnrol": "This server needs an enrolment code from whoever runs it.",
+        "closed": "This server is not accepting new people right now.",
+        "checking": "Checking this server.",
+        "insecure": "Browsers only allow signing in over https. Use an https address or localhost.",
+        "upgrade": "This server needs a newer version of iynk. Update the app."
+      },
+      "enrolled": "You are signed in on this server.",
+      "signOut": "Sign out",
+      "leave": {
+        "title": "Leave this server",
+        "body": "This removes you from the server and deletes your buddy list there. Your projects stay in this browser.",
+        "confirm": "Leave server",
+        "grace": "You have {hours} hours to change your mind.",
+        "cancel": "Keep my account"
+      },
+      "guide": "Buddies need a server. The guide to hosting your own shows how to run one.",
+      "addressInvalid": "Enter an address like https://iynk.example, with no path."
     }
   }
 }
