@@ -1,9 +1,9 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { LabDockProps } from "@/components/dock/types";
-import { Button, Callout } from "@/components/ui";
-import { useLocale } from "@/i18n/client";
+import { Button, Callout, InlineStatus, Skeleton, SkeletonGroup, TextInput } from "@/components/ui";
+import { useCommonT, useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
 import { parseRoomInput, RoomProvider, useTogether, type Together } from "@/lib/realtime";
 import { ChatPanel } from "./ChatPanel";
@@ -12,7 +12,6 @@ import { useTogetherT, type TogetherT } from "./messages";
 import { RoomBar } from "./RoomBar";
 
 function JoinForm({ t, onJoin }: { t: TogetherT; onJoin: (id: string) => void }) {
-  const id = useId();
   const [value, setValue] = useState("");
   const [bad, setBad] = useState(false);
 
@@ -25,30 +24,20 @@ function JoinForm({ t, onJoin }: { t: TogetherT; onJoin: (id: string) => void })
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-1" noValidate>
-      <label htmlFor={`${id}-code`} className="text-sm font-semibold">
-        {t("panel.joinLabel")}
-      </label>
-      <div className="flex max-w-[16rem] gap-2">
-        <input
-          id={`${id}-code`}
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder={t("panel.joinPlaceholder")}
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          aria-invalid={bad}
-          aria-describedby={bad ? `${id}-error` : undefined}
-          className="min-h-11 min-w-0 flex-1 rounded-ink-sm border-2 border-line bg-surface px-3 font-ui text-sm text-ink aria-invalid:border-bad"
-        />
-        <Button type="submit">{t("panel.join")}</Button>
-      </div>
-      {bad ? (
-        <p id={`${id}-error`} className="text-sm text-bad">
-          {t("panel.badCode")}
-        </p>
-      ) : null}
+    <form onSubmit={submit} className="flex max-w-xs flex-col gap-2" noValidate>
+      <TextInput
+        label={t("panel.joinLabel")}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder={t("panel.joinPlaceholder")}
+        autoComplete="off"
+        autoCapitalize="none"
+        spellCheck={false}
+        error={bad ? t("panel.badCode") : undefined}
+      />
+      <Button type="submit" className="self-start">
+        {t("panel.join")}
+      </Button>
     </form>
   );
 }
@@ -75,9 +64,9 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
     }
     if (room.status === "connecting") {
       return (
-        <p role="status" className="text-sm text-muted">
+        <InlineStatus tone="info" live>
           {t("panel.connecting", { code: room.id })}
-        </p>
+        </InlineStatus>
       );
     }
     return (
@@ -95,12 +84,12 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
           {t(`panel.ended.${together.ended}`)}
         </Callout>
       ) : null}
-      <p className="text-sm leading-relaxed">{translates ? t("panel.intro") : t("panel.introPlain")}</p>
+      <p className="text-sm text-pretty">{translates ? t("panel.intro") : t("panel.introPlain")}</p>
       <Button variant="primary" className="self-start" onClick={together.start}>
         {together.ended ? t("panel.again") : t("panel.start")}
       </Button>
       <JoinForm t={t} onJoin={together.join} />
-      {transport === "broadcast" ? <p className="text-xs text-muted">{t("panel.localOnly")}</p> : null}
+      {transport === "broadcast" ? <InlineStatus tone="info">{t("panel.localOnly")}</InlineStatus> : null}
     </div>
   );
 }
@@ -118,8 +107,16 @@ function Panel({ t }: { t: TogetherT }) {
  */
 export function TogetherPanel<S, A extends { type: string }>({ lab, itemId, store }: LabDockProps<S, A>) {
   const t = useTogetherT();
+  const common = useCommonT();
   const outer = useTogether();
-  if (!t) return <div aria-busy="true" className="h-40 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />;
+  if (!t) {
+    return (
+      <SkeletonGroup label={common("state.loading")} className="flex flex-col gap-2">
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="h-24" />
+      </SkeletonGroup>
+    );
+  }
   const body = (
     <section aria-label={t("panel.title")}>
       <Panel t={t} />

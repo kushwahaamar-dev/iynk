@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
+import { PageSkeleton } from "@/components/ui";
 import { loadCraft } from "@/components/dronelab/data";
 import { FlyWorkspace } from "@/components/dronelab/FlyWorkspace";
 import { contentT } from "@/components/dronelab/text";
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function FlyPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="workspace" />}>
       <Fly params={params} />
     </Suspense>
   );

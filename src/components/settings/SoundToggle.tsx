@@ -1,20 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/icons";
 import { IconButton } from "@/components/ui/IconButton";
 import { useCommonT } from "@/i18n/client";
 import { setSetting } from "@/lib/settings/settings";
 import { useSettings } from "@/lib/settings/hooks";
 import { silence, startSound } from "@/lib/sound";
-
-function Speaker({ on }: { on: boolean }) {
-  return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
-      <path d={on ? "M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" : "M16 9.5l5 5M21 9.5l-5 5"} />
-    </svg>
-  );
-}
 
 /**
  * The sound setting as one button: figure sounds and lab cues, off until pressed.
@@ -55,7 +47,7 @@ export function SoundToggle({ className, compact = false }: { className?: string
       data-testid="sound-toggle"
       onClick={toggle}
     >
-      <Speaker on={sound} />
+      <Icon name={sound ? "sound-on" : "sound-off"} size={20} aria-hidden="true" />
       <span>{t("sound.label")}</span>
     </Button>
   );

@@ -2,7 +2,8 @@
 
 import { useMemo, type ReactNode } from "react";
 import { NotSetUp } from "@/components/settings/NotSetUp";
-import { Button, Callout, cx } from "@/components/ui";
+import { Button, Callout, Skeleton, SkeletonGroup, cx } from "@/components/ui";
+import { useCommonT } from "@/i18n/client";
 import { htmlLang, type Locale } from "@/i18n/config";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { useKeys } from "@/lib/keys";
@@ -36,7 +37,7 @@ export function PanelHead({ id, title, lede, children }: { id: string; title: st
   return (
     <header className="flex flex-wrap items-start justify-between gap-2">
       <div className="min-w-0">
-        <h2 id={id} className="font-head text-lg leading-tight">
+        <h2 id={id} className="text-lg font-semibold text-balance">
           {title}
         </h2>
         <p className="mt-1 text-sm text-muted">{lede}</p>
@@ -48,12 +49,33 @@ export function PanelHead({ id, title, lede, children }: { id: string; title: st
 
 /** Shown while a language's strings load: no text yet, so only the shape of a panel. */
 export function PanelSkeleton({ className }: { className?: string }) {
+  const t = useCommonT();
   return (
-    <div aria-busy="true" className={cx("space-y-3 p-1", className)}>
-      <div className="h-5 w-1/2 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
-      <div className="h-4 w-3/4 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
-      <div className="h-24 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />
-    </div>
+    <SkeletonGroup label={t("state.loading")} className={cx("space-y-3 p-1", className)}>
+      <Skeleton className="h-5 w-1/2" />
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-24" />
+    </SkeletonGroup>
+  );
+}
+
+const SKELETON_ROWS = [0, 1, 2];
+
+/** Rows shaped like search results while a search is under way; `label` is the panel's own loading text. */
+export function ResultsSkeleton({ label, thumb = false }: { label: string; thumb?: boolean }) {
+  return (
+    <SkeletonGroup label={label} className="divide-y divide-rule">
+      {SKELETON_ROWS.map((row) => (
+        <div key={row} className="flex gap-3 py-3">
+          {thumb ? <Skeleton className="size-16 shrink-0 rounded-lg" /> : null}
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-1/3" />
+          </div>
+        </div>
+      ))}
+    </SkeletonGroup>
   );
 }
 

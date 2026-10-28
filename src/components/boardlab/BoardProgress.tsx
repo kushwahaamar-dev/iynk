@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/ui/icons";
 import { ProgressBadge } from "@/components/ui/ProgressBadge";
 import { progressKey, progressPrefix, useCount, useDone } from "@/lib/progress";
 
@@ -23,8 +24,9 @@ export function BoardProgress({ board, total, hasAssembly, labels, size = "md" }
         </span>
       )}
       {hasAssembly && (
-        <span className={assembled ? "text-sm font-semibold text-good" : "text-sm text-muted"} data-assembled={assembled ? 1 : 0}>
-          {assembled ? `✓ ${labels.assemblyDone}` : labels.assembly}
+        <span className={assembled ? "inline-flex items-center gap-1 text-sm font-semibold text-good" : "text-sm text-muted"} data-assembled={assembled ? 1 : 0}>
+          {assembled && <Icon name="check" size={16} aria-hidden="true" />}
+          {assembled ? labels.assemblyDone : labels.assembly}
         </span>
       )}
     </div>

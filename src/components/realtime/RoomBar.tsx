@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { Button, Callout, Chip, Dialog } from "@/components/ui";
+import { Button, Callout, Chip, Dialog, Icon, Select } from "@/components/ui";
 import { ROLES, type Peer, type Role, type RoomApi } from "@/lib/realtime";
 import { InviteDialog } from "./InviteDialog";
 import type { TogetherT } from "./messages";
@@ -40,13 +40,13 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
   return (
     <section aria-labelledby={`${id}-title`} className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h3 id={`${id}-title`} className="font-head text-base font-bold">
+        <h3 id={`${id}-title`} className="text-base font-bold">
           {t("bar.label", { code: room.id })}
         </h3>
-        <Chip tone={room.status === "live" ? (room.transport === "ws" ? "mint" : "cobalt") : "mustard"} dot>
+        <Chip tone={room.status === "live" ? (room.transport === "ws" ? "good" : "info") : "warn"} dot>
           {t(`bar.status.${room.status === "live" ? room.transport : room.status}`)}
         </Chip>
-        <div className="flex basis-full flex-wrap gap-1.5">
+        <div className="flex basis-full flex-wrap gap-2">
           <Button size="sm" variant="primary" onClick={() => setInviting(true)}>
             {t("bar.invite")}
           </Button>
@@ -68,15 +68,13 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
         <div className="mb-1 flex min-h-9 items-center justify-between gap-2">
           <p className="text-xs font-semibold text-muted">{t("bar.people", { count: everyone.length })}</p>
           {room.peers.length > 0 ? (
-            <Button size="sm" variant="ghost" aria-pressed={pointing} onClick={() => setPointing(!pointing)} className="gap-1.5">
-              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-                <path d="M3 2l9 5-4 1-1.6 4z" />
-              </svg>
+            <Button size="sm" variant="ghost" aria-pressed={pointing} onClick={() => setPointing(!pointing)}>
+              <Icon name="target" size={16} />
               {t("cursors.point")}
             </Button>
           ) : null}
         </div>
-        <ul className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-2">
           {everyone.map((peer) => (
             <li key={peer.id} className="flex min-h-11 items-center gap-2">
               <PeerAvatar name={peer.name} color={peer.color} baton={peer.baton} />
@@ -105,46 +103,37 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
         </ul>
       </div>
 
-      <label className="flex flex-col gap-1 text-sm font-semibold" htmlFor={`${id}-role`}>
-        {t("bar.role")}
-        <select
-          id={`${id}-role`}
-          value={room.you.role ?? ""}
-          onChange={(event) => room.setPresence({ role: (event.target.value || undefined) as Role | undefined })}
-          className="ink-field w-full font-normal"
-        >
-          <option value="">{t("bar.roles.none")}</option>
-          {ROLES.map((role) => (
-            <option key={role} value={role}>
-              {t(`bar.roles.${role}`)}
-            </option>
-          ))}
-        </select>
-      </label>
+      <Select
+        id={`${id}-role`}
+        label={t("bar.role")}
+        value={room.you.role ?? ""}
+        onChange={(event) => room.setPresence({ role: (event.target.value || undefined) as Role | undefined })}
+      >
+        <option value="">{t("bar.roles.none")}</option>
+        {ROLES.map((role) => (
+          <option key={role} value={role}>
+            {t(`bar.roles.${role}`)}
+          </option>
+        ))}
+      </Select>
 
-      <div className="flex flex-col gap-2 rounded-ink-sm bg-sunken p-3">
+      <div className="flex flex-col gap-2 rounded-xl border border-rule p-3">
         <p className="flex items-center gap-2 text-sm font-semibold" aria-live="polite">
-          <PeerAvatar name={holder?.name ?? ""} color={holder?.color ?? "#cfc8b8"} baton size="sm" />
+          <PeerAvatar name={holder?.name ?? ""} color={holder?.color ?? "var(--rule)"} baton size="sm" />
           {youHold ? t("bar.keyboardYou") : t("bar.keyboardOther", { name: holder?.name ?? t("chat.someone") })}
         </p>
         {youHold && request ? <p className="text-sm">{t("bar.asked", { name: request.name })}</p> : null}
         {youHold && room.peers.length > 0 ? (
           <div className="flex flex-wrap items-end gap-2">
-            <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs font-semibold" htmlFor={`${id}-pass`}>
-              {t("bar.passTo")}
-              <select
-                id={`${id}-pass`}
-                value={passTarget}
-                onChange={(event) => setPassTo(event.target.value)}
-                className="ink-field w-full font-normal"
-              >
+            <div className="min-w-0 flex-1">
+              <Select id={`${id}-pass`} label={t("bar.passTo")} value={passTarget} onChange={(event) => setPassTo(event.target.value)}>
                 {room.peers.map((peer) => (
                   <option key={peer.id} value={peer.id}>
                     {peer.name}
                   </option>
                 ))}
-              </select>
-            </label>
+              </Select>
+            </div>
             <Button
               onClick={() => {
                 if (passTarget) room.passBaton(passTarget);

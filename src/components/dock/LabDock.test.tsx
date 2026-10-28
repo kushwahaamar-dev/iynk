@@ -231,4 +231,10 @@ describe("LabDock", () => {
     expect(container.querySelector('[data-lab-room="board"][data-lab-item="nano"]')).not.toBeNull();
     expect(screen.getByRole("button", { name: dock.open })).toBeTruthy();
   });
+
+  test("renders no style element", () => {
+    renderDock();
+    openDrawer();
+    expect(document.querySelector("style")).toBeNull();
+  });
 });

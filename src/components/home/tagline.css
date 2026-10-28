@@ -1,0 +1,26 @@
+.tagline-word {
+  color: color-mix(in oklab, var(--ink) 30%, transparent);
+  transition: color 300ms var(--ease-iynk);
+}
+
+.tagline-word[data-lit="true"] {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tagline-word {
+    color: var(--ink);
+    transition: none;
+  }
+}
+
+:root[data-reduce-motion="true"] .tagline-word {
+  color: var(--ink);
+  transition: none;
+}
+
+@media (scripting: none) {
+  .tagline-word {
+    color: var(--ink);
+  }
+}

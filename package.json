@@ -33,7 +33,9 @@
     "perf:record": "node scripts/perf-budget.mjs --record",
     "corpus": "node scripts/convert-catalogue.mjs",
     "measure:apply": "node scripts/measure-apply.mjs",
-    "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
+    "icons": "node scripts/gen-icons.mjs",
+    "ui:check": "node scripts/ui-check.mjs",
+    "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run ui:check && npm run test && npm run e2e"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
@@ -54,6 +56,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
+    "@phosphor-icons/react": "2.1.10",
     "@playwright/test": "1.64.0",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "10.4.2",

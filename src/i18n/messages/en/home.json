@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "title": "iynk: a hardware lab in your browser",
+    "description": "An open source workbench for circuits, boards, robots and drones. Wire parts, write code, run it and break it on purpose, in your browser, with no account."
+  },
+  "hero": {
+    "kicker": "Open source hardware workbench",
+    "title": "Learn hardware by wiring it,\nrunning it and breaking it",
+    "lede": "iynk is an open source workbench for circuits, boards, robots and drones. Wire parts, write code, run it, and watch the simulation answer, all in your browser.",
+    "cta": "Open the workbench",
+    "browse": "Browse the boards",
+    "reassure": "No account. Nothing to install. Your work stays in this browser.",
+    "proof": "{boards} boards, {benches} robotics benches and {drones} drones, each one runnable.",
+    "figure": "Arduino Uno R3 running Blink on a breadboard, live: drag to turn it"
+  },
+  "tagline": {
+    "text": "Wire a part the wrong way and watch it fail. Fix it, and watch it work. That is when the datasheet finally makes sense."
+  },
+  "benefits": {
+    "title": "What you can do here",
+    "see": {
+      "title": "See the circuit think",
+      "text": "Turn a hand drawn 3D board, switch between breadboard and schematic, and watch the pins and the current change as the code runs."
+    },
+    "code": {
+      "title": "Write code and get a result",
+      "text": "Edit Arduino C++, MicroPython or Verilog and press Run. The simulation drives the figure, the pins and the serial monitor."
+    },
+    "break": {
+      "title": "Break it, then learn why",
+      "text": "Leave a resistor off, fit a part backwards, put a motor on the wrong pin. Each fault explains what failed and how to fix it."
+    },
+    "fly": {
+      "title": "Fly what you built",
+      "text": "Size a drone with the thrust and weight maths, pass the safety tests, then fly it on a range against your best runs."
+    }
+  },
+  "labs": {
+    "title": "Three labs",
+    "open": "Open the {lab}",
+    "boards": {
+      "text": "From the Arduino Uno R3 to two FPGA boards: lessons, a live code editor, schematic and breadboard views, a serial monitor and failures that really trigger.",
+      "unit": "boards"
+    },
+    "robotics": {
+      "text": "Motor drivers, sensors and power stages, built part by part with live status and current draw.",
+      "unit": "benches"
+    },
+    "drones": {
+      "text": "From a Tiny Whoop to an octocopter: build it part by part, check the maths, pass the safety tests, then fly.",
+      "unit": "drones"
+    }
+  },
+  "how": {
+    "title": "How it works",
+    "1": {
+      "title": "Pick a part",
+      "text": "Choose a board, a robotics bench or a drone. Each opens as a figure you can turn and take apart."
+    },
+    "2": {
+      "title": "Wire it and write code",
+      "text": "Follow a lesson or start from Blink. The editor, the pinout and the serial monitor sit beside the figure."
+    },
+    "3": {
+      "title": "Run it, then break it",
+      "text": "Press Run. Switch on a fault, read the check that failed, fix it, and run it again."
+    }
+  },
+  "proof": {
+    "title": "What runs, and what is simulated",
+    "runs": {
+      "title": "What runs in your browser",
+      "1": "Your Arduino C++, MicroPython and Verilog run in interpreters inside the page, on a fixed clock, so the same code gives the same result.",
+      "2": "Pins, the serial monitor and the figure answer your code.",
+      "3": "A circuit solver decides what a mistake does, and shows the current."
+    },
+    "sim": {
+      "title": "What is simulated",
+      "1": "The parts follow models of their datasheets, not the real silicon.",
+      "2": "Timing follows the simulation clock, not a chip's.",
+      "3": "Your code is not compiled for the board."
+    },
+    "fidelity": "iynk runs your code in its own interpreter, not on a real chip. It teaches how parts behave; it does not replace a bench, a compiler or a datasheet."
+  },
+  "faq": {
+    "title": "Questions",
+    "1": {
+      "q": "Do I need an account?",
+      "a": "No. There is nothing to register for. Your progress and settings stay in this browser."
+    },
+    "2": {
+      "q": "Is it free?",
+      "a": "Yes. It is open source and has no paid tier. If you run your own copy, any AI or search keys you add are your own."
+    },
+    "3": {
+      "q": "Which languages does it speak?",
+      "a": "English, Spanish, French, German, Chinese and Hindi, including the labels inside the figures."
+    },
+    "4": {
+      "q": "Does my code run on a real board?",
+      "a": "No. It runs in iynk's own interpreter in the page. To use a real board you still need a compiler and a bench."
+    },
+    "5": {
+      "q": "How accurate is the simulation?",
+      "a": "Parts follow simple models and the clock is deterministic. Treat the results as teaching, not as a test of your hardware."
+    },
+    "6": {
+      "q": "What do the AI features need?",
+      "a": "They are optional. Add your own key under Settings, Keys and usage, and the partner and the shop search switch on. Everything else works without one."
+    },
+    "7": {
+      "q": "Where is my work stored?",
+      "a": "In this browser on this device. Clearing site data removes it."
+    },
+    "8": {
+      "q": "Can I read or change the code?",
+      "a": "Yes. The source is on GitHub, with a guide to running your own copy and one to contributing."
+    }
+  },
+  "open": {
+    "title": "Open source",
+    "text": "Read it, run your own copy, or send a fix.",
+    "readme": "Read the README",
+    "selfHost": "Run your own copy",
+    "contribute": "Contribute"
+  },
+  "end": {
+    "title": "The bench is ready.",
+    "text": "Pick a board and press Run. There is nothing to install and no account to make.",
+    "cta": "Open the workbench"
+  }
+}

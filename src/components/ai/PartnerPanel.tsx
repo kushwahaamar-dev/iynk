@@ -3,6 +3,7 @@
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -12,7 +13,7 @@ import {
 } from "react";
 import type { LabDockProps } from "@/components/dock/types";
 import { NotSetUp } from "@/components/settings/NotSetUp";
-import { Button, Callout, cx } from "@/components/ui";
+import { Button, Callout, EmptyState, Icon, Skeleton, SkeletonGroup, TextArea, cx } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
 import { benchFacts, describeBench } from "@/lib/ai/bench";
@@ -23,10 +24,11 @@ import { suggestions } from "@/lib/ai/suggest";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { useKeys } from "@/lib/keys";
 import { useRoom, useTogether } from "@/lib/realtime";
-import { PartnerIcon } from "./icons";
 import { MicButton, VoiceLine } from "./MicButton";
 import { TurnView } from "./TurnView";
 import { useVoice } from "./useVoice";
+
+const SQUARE = "size-10 px-0 [@media(pointer:coarse)]:size-11";
 
 /** The AI lab partner (H4), one LabDock tab on every lab page. */
 export function PartnerPanel(props: LabDockProps) {
@@ -35,7 +37,13 @@ export function PartnerPanel(props: LabDockProps) {
   const { status, features } = useFeatures();
   const keys = useKeys();
 
-  if (!t) return <section aria-busy="true" className="h-28 animate-pulse rounded-ink bg-sunken" />;
+  if (!t) {
+    return (
+      <section aria-busy="true">
+        <Skeleton className="h-28 rounded-xl" />
+      </section>
+    );
+  }
   if (status === "ready" && features.ai && keys.ai.set) {
     return <PartnerChat {...props} t={t} locale={locale} voice={features.voice} />;
   }
@@ -43,13 +51,13 @@ export function PartnerPanel(props: LabDockProps) {
     <Frame t={t}>
       <div className="pt-3">
         {status === "loading" ? (
-          <p role="status" className="flex items-center gap-2 text-sm text-muted">
-            <span className="size-2 animate-ping rounded-full bg-mint motion-reduce:animate-none" aria-hidden="true" />
-            {t("status.loading")}
-          </p>
+          <SkeletonGroup label={t("status.loading")} className="space-y-2">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-16 rounded-lg" />
+          </SkeletonGroup>
         ) : status === "error" ? (
           <Callout tone="warn" title={t("status.unreachable")}>
-            <Button size="sm" className="mt-2" onClick={reloadFeatures}>
+            <Button size="sm" variant="secondary" className="mt-2" onClick={reloadFeatures}>
               {t("status.check")}
             </Button>
           </Callout>
@@ -66,12 +74,12 @@ function Frame({ t, actions, fill, children }: { t: AiT; actions?: ReactNode; fi
   const titleId = useId();
   return (
     <section aria-labelledby={titleId} className={cx("@container flex flex-col text-ink", fill && "h-full min-h-[24rem]")}>
-      <header className="flex items-center gap-2.5 border-b-[1.5px] border-rule pb-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-line bg-mint text-on-color">
-          <PartnerIcon name="spark" />
+      <header className="flex items-center gap-3 border-b border-rule pb-3">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sunken">
+          <Icon name="spark" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 id={titleId} className="truncate font-head text-lg leading-tight">
+          <h2 id={titleId} className="truncate text-base font-semibold leading-tight">
             {t("panel.title")}
           </h2>
           <p className="truncate text-xs text-muted">{t("panel.byline")}</p>
@@ -94,7 +102,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
   const together = useTogether();
   const [draft, setDraft] = useState("");
   const transcript = useRef<HTMLDivElement>(null);
-  const input = useRef<HTMLTextAreaElement>(null);
+  const tail = useRef<HTMLDivElement>(null);
   const pinned = useRef(true);
 
   // The latest figure and room, read when a tool runs (a reply can outlive a render).
@@ -131,8 +139,22 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
 
   const { state: mic, start, stop, toggle } = useVoice(locale, (text) => send(text, "voice"));
 
-  // Follow the reply while the reader is at the bottom; leave them be when they scroll up.
+  // The reader is "at the bottom" while the tail marker is within reach of the transcript's edge.
   useEffect(() => {
+    if (!transcript.current || !tail.current || typeof IntersectionObserver === "undefined") return;
+    const watch = new IntersectionObserver(
+      ([entry]) => {
+        pinned.current = entry.isIntersecting;
+      },
+      { root: transcript.current, rootMargin: "0px 0px 48px 0px" },
+    );
+    watch.observe(tail.current);
+    return () => watch.disconnect();
+  }, []);
+
+  // Follow the reply while the reader is at the bottom; leave them be when they scroll up. This runs before the
+  // observer can see the taller transcript, so growth alone never counts as scrolling away.
+  useLayoutEffect(() => {
     const el = transcript.current;
     if (el && pinned.current) el.scrollTop = el.scrollHeight;
   }, [turns]);
@@ -179,7 +201,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
     <div className="flex shrink-0 items-center gap-1">
       {turns.length ? (
         <Button variant="ghost" size="sm" onClick={() => conversation.clear()} disabled={busy}>
-          <PartnerIcon name="refresh" size={16} />
+          <Icon name="refresh" size={16} />
           <span className="@max-sm:sr-only">{t("panel.newChat")}</span>
         </Button>
       ) : null}
@@ -193,14 +215,12 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
           ref={transcript}
           tabIndex={0}
           aria-label={t("panel.transcript")}
-          onScroll={(event) => {
-            const el = event.currentTarget;
-            pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
-          }}
           className="-mx-1 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-1 py-3"
         >
           {turns.length === 0 ? (
-            <p className="text-sm leading-relaxed text-muted">{t("panel.intro")}</p>
+            <EmptyState icon="spark" title={t("panel.inputLabel")}>
+              {t("panel.intro")}
+            </EmptyState>
           ) : (
             turns.map((turn, index) => (
               <TurnView
@@ -221,41 +241,40 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
               />
             ))
           )}
+          <div ref={tail} aria-hidden="true" className="h-px" />
         </div>
 
-        <div className="space-y-2 border-t-[1.5px] border-rule pt-3">
+        <div className="space-y-2 border-t border-rule pt-3">
           {ideas.length || !busy ? (
             <div
               role="group"
               aria-label={t("panel.suggestions")}
               className={cx(
-                "flex items-center gap-1.5",
+                "flex items-center gap-2",
                 turns.length ? "-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]" : "flex-wrap",
               )}
             >
               {ideas.map((idea) => {
                 const text = "params" in idea ? t(`suggest.${idea.key}`, idea.params) : t(`suggest.${idea.key}`);
                 return (
-                  <button
+                  <Button
                     key={idea.key}
-                    type="button"
+                    size="sm"
+                    variant="secondary"
                     onClick={() => send(text, "suggestion")}
-                    className={cx(
-                      "min-h-9 rounded-full border-[1.5px] border-line bg-surface px-3 py-1 text-start text-sm font-semibold leading-snug hover:bg-sunken [@media(pointer:coarse)]:min-h-11",
-                      turns.length ? "shrink-0 whitespace-nowrap" : "max-w-full",
-                    )}
+                    className={cx("text-start", turns.length ? "shrink-0 whitespace-nowrap" : "max-w-full")}
                   >
                     {text}
-                  </button>
+                  </Button>
                 );
               })}
-              <span className={cx("flex shrink-0 items-center gap-1.5", turns.length ? "order-first" : "ms-auto")}>
+              <span className={cx("flex shrink-0 items-center gap-2", turns.length ? "order-first" : "ms-auto")}>
                 {afterHint ? (
                   <>
                     <Button size="sm" variant="ghost" onClick={() => send(t("hint.askAnother"), "hint")}>
                       {t("hint.another")}
                     </Button>
-                    <Button size="sm" variant="ink" onClick={() => send(t("hint.askShow"), "show")}>
+                    <Button size="sm" variant="solid" onClick={() => send(t("hint.askShow"), "show")}>
                       {t("hint.show")}
                     </Button>
                   </>
@@ -263,7 +282,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
                   <>
                     <span className="text-xs text-muted">{t("hint.label")}</span>
                     <Button size="sm" variant="ghost" onClick={() => send(t("hint.askHint"), "hint")}>
-                      <PartnerIcon name="spark" size={14} />
+                      <Icon name="spark" size={16} />
                       {t("hint.hint")}
                     </Button>
                   </>
@@ -279,33 +298,33 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
               submit();
             }}
           >
-            <label className="sr-only" htmlFor={`${lab}-${itemId}-ask`}>
-              {t("panel.inputLabel")}
-            </label>
-            <textarea
-              id={`${lab}-${itemId}-ask`}
-              ref={input}
-              rows={1}
-              value={draft}
-              maxLength={2000}
-              placeholder={t("panel.placeholder")}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
-                  event.preventDefault();
-                  submit();
-                }
-              }}
-              className="field-sizing-content max-h-32 min-h-11 min-w-0 flex-1 resize-none rounded-ink-sm border-2 border-line bg-paper px-3 py-2 text-sm placeholder:text-muted"
-            />
+            <div className="min-w-0 flex-1">
+              <TextArea
+                id={`${lab}-${itemId}-ask`}
+                label={t("panel.inputLabel")}
+                hideLabel
+                rows={1}
+                value={draft}
+                maxLength={2000}
+                placeholder={t("panel.placeholder")}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+                    submit();
+                  }
+                }}
+                className="max-h-32 min-h-10 resize-none! field-sizing-content"
+              />
+            </div>
             <MicButton t={t} voice={voice} phase={mic.phase} start={start} stop={stop} toggle={toggle} />
             {busy ? (
-              <Button type="button" variant="danger" onClick={() => conversation.stop()} aria-label={t("panel.stop")} className="size-11 px-0">
-                <PartnerIcon name="stop" />
+              <Button type="button" variant="danger" onClick={() => conversation.stop()} aria-label={t("panel.stop")} className={SQUARE}>
+                <Icon name="stop" />
               </Button>
             ) : (
-              <Button type="submit" variant="primary" disabled={!draft.trim()} aria-label={t("panel.send")} className="size-11 px-0">
-                <PartnerIcon name="send" />
+              <Button type="submit" variant="primary" disabled={!draft.trim()} aria-label={t("panel.send")} className={SQUARE}>
+                <Icon name="send" />
               </Button>
             )}
           </form>

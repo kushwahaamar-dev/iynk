@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent, type KeyboardEvent, type PointerEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
+import { Select, TextInput } from "@/components/ui/Field";
 import { IconButton } from "@/components/ui/IconButton";
 import type { BoardLabStore, SerialLine } from "@/lib/boardlab/store";
 import { useText } from "./text";
@@ -56,12 +57,14 @@ function subscribeHeight(listener: () => void): () => void {
 }
 
 const KIND_CLASS: Record<SerialLine["kind"], string> = {
-  sys: "text-muted",
-  out: "text-ink",
-  in: "text-cobalt-m",
-  err: "text-bad font-medium",
-  note: "text-warn",
+  sys: "text-console-muted",
+  out: "text-console-ink",
+  in: "text-console-accent",
+  err: "text-console-err font-medium",
+  note: "text-console-warn",
 };
+
+const consoleFont = "font-mono text-sm";
 
 export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop: () => void }) {
   const { t } = useText();
@@ -107,12 +110,7 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
 
   const mismatch = serial.sketchBaud > 0 && serial.sketchBaud !== serial.baud;
   const statusText = t(`serial.status.${status}`);
-  const dot =
-    status === "running"
-      ? "bg-mint-m shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-mint)_45%,transparent)]"
-      : status === "stopped"
-        ? "bg-mono-400"
-        : "bg-mustard-m animate-pulse motion-reduce:animate-none";
+  const dot = status === "running" ? "bg-good" : status === "stopped" ? "bg-muted" : "bg-warn animate-pulse motion-reduce:animate-none";
 
   const lineText = (line: SerialLine): string => {
     if (line.kind === "sys" || (line.kind === "err" && /^(refused\.|error\.|lostPower$)/.test(line.text))) {
@@ -129,9 +127,9 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
       <h3 id={`${id}-title`} className="sr-only">
         {t("serial.title")}
       </h3>
-      <div className="flex shrink-0 items-center gap-2">
-        <span aria-hidden="true" className={cx("inline-block size-2.5 shrink-0 rounded-full", dot)} />
-        <p className="min-w-0 flex-1 text-sm leading-snug">
+      <div className="flex shrink-0 items-start gap-2">
+        <span aria-hidden="true" className={cx("mt-2 inline-block size-2 shrink-0 rounded-full", dot)} />
+        <p className="min-w-0 flex-1 py-1 text-sm leading-snug">
           <span role="status" className="font-semibold" data-testid="serial-status">
             {statusText}
           </span>
@@ -143,7 +141,7 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
         {status !== "stopped" && <IconButton icon="close" size="sm" label={t("serial.close")} onClick={onStop} />}
       </div>
       {mismatch && (
-        <p className="on-fill shrink-0 rounded-ink-sm bg-warn-bg px-3 py-2 text-sm" role="note">
+        <p className="shrink-0 rounded-lg bg-warn-bg px-3 py-2 text-sm" role="note">
           {t("serial.mismatch", { sketch: serial.sketchBaud, monitor: serial.baud })}
         </p>
       )}
@@ -155,17 +153,17 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
         aria-live="polite"
         aria-label={t("serial.lines")}
         tabIndex={0}
-        className="h-(--serial-h) overflow-y-auto rounded-ink-sm border-[1.5px] border-rule bg-code-bg px-3 py-2 font-mono text-sm leading-5 lg:h-auto lg:min-h-16 lg:flex-1"
+        className={cx("h-(--serial-h) overflow-y-auto rounded-xl border border-rule bg-console px-3 py-2 leading-5 lg:h-auto lg:min-h-16 lg:flex-1", consoleFont)}
         style={{ "--serial-h": `${height}px` } as CSSProperties}
         data-testid="serial-lines"
       >
         {serial.lines.length === 0 ? (
-          <p className="font-body text-muted">{t("serial.empty")}</p>
+          <p className="font-sans text-console-muted">{t("serial.empty")}</p>
         ) : (
           serial.lines.map((line) => (
             <div key={line.id} className={cx("whitespace-pre-wrap break-words", KIND_CLASS[line.kind])} data-kind={line.kind}>
               {line.t !== null && line.kind !== "sys" ? (
-                <span className="me-2 text-muted tabular select-none" aria-hidden="true">
+                <span className="me-2 text-console-muted tabular select-none" aria-hidden="true">
                   {(line.t / 1000).toFixed(3)}
                 </span>
               ) : null}
@@ -186,37 +184,27 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
         onPointerUp={onGripUp}
         onDoubleClick={() => resize(DEFAULT_H)}
       >
-        <span aria-hidden="true" className="block h-1 w-10 rounded-full bg-mono-400" />
+        <span aria-hidden="true" className="block h-1 w-10 rounded-full bg-muted" />
       </button>
-      <form onSubmit={send} className="flex shrink-0 gap-1.5">
-        <label className="sr-only" htmlFor={`${id}-input`}>
-          {t("serial.input")}
-        </label>
-        <input
-          id={`${id}-input`}
-          className="ink-field h-11 min-w-0 flex-1 text-ellipsis pe-4 font-mono text-sm"
+      <form onSubmit={send} className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto_auto] items-start gap-2">
+        <TextInput
+          label={t("serial.input")}
+          hideLabel
+          className={cx("text-ellipsis", consoleFont)}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={t("serial.inputPlaceholder")}
           autoComplete="off"
           spellCheck={false}
         />
-        <label className="sr-only" htmlFor={`${id}-baud`}>
-          {t("serial.baud")}
-        </label>
-        <select
-          id={`${id}-baud`}
-          className="ink-field tabular h-11 shrink-0 py-0"
-          value={serial.baud}
-          onChange={(e) => store.dispatch({ type: "serial/baud", baud: Number(e.target.value) })}
-        >
+        <Select label={t("serial.baud")} hideLabel className="tabular" value={serial.baud} onChange={(e) => store.dispatch({ type: "serial/baud", baud: Number(e.target.value) })}>
           {BAUDS.map((b) => (
             <option key={b} value={b}>
               {t("serial.baudValue", { baud: b })}
             </option>
           ))}
-        </select>
-        <Button type="submit" size="md" className="shrink-0" disabled={!draft}>
+        </Select>
+        <Button type="submit" size="md" className="h-11 shrink-0" disabled={!draft}>
           {t("serial.send")}
         </Button>
       </form>

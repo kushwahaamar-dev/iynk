@@ -29,10 +29,10 @@ export function ParamPanel({ store, pulse }: { store: BoardLabStore; pulse: stri
         {params.map((p: ParamChip) => {
           const value = values[p.id] ?? p.default;
           return (
-            <li key={p.id} id={`param-${p.id}`} className={cx("rounded-md p-1 transition-colors", pulse === p.id && "bg-mint/30")}>
+            <li key={p.id} id={`param-${p.id}`} className={cx("motion-fade rounded-lg p-2", pulse === p.id && "bg-good-bg")}>
               {p.kind === "number" && (
                 <label className="flex flex-col gap-1">
-                  <span className="flex items-baseline justify-between gap-2 text-sm font-semibold">
+                  <span className="field-label flex items-baseline justify-between gap-2">
                     <span>{tc(p.label)}</span>
                     <output className="font-mono tabular">
                       {String(value)}
@@ -52,7 +52,7 @@ export function ParamPanel({ store, pulse }: { store: BoardLabStore; pulse: stri
               )}
               {p.kind === "choice" && (
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm font-semibold" id={`${id}-${p.id}`}>
+                  <span className="field-label" id={`${id}-${p.id}`}>
                     {tc(p.label)}
                   </span>
                   <SegmentedControl

@@ -22,7 +22,7 @@ type Props = {
   headingId: string;
 };
 
-const KIND_TONE = { build: "cobalt", break: "tomato", test: "mint" } as const;
+const KIND_TONE = { build: "info", break: "bad", test: "good" } as const;
 
 /** The nearest ancestor that scrolls (the rail's tab panel on a wide screen; none on a phone, where the page scrolls). */
 function scroller(el: HTMLElement): HTMLElement | null {
@@ -52,7 +52,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col">
-      <h2 id={headingId} className="font-head text-lg">
+      <h2 id={headingId} className="text-lg">
         {t("steps.heading")}
       </h2>
       <ol ref={listRef} className="mt-2 flex flex-col divide-y divide-rule">
@@ -76,15 +76,16 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
                 key={step.id}
                 data-step={step.id}
                 aria-current="step"
-                className="relative -mx-4 bg-sunken/60 px-4 py-3 before:absolute before:inset-y-0 before:start-0 before:w-1 before:bg-ink"
+                className="-mx-4 rounded-lg bg-hover px-4 py-3"
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="tabular font-ui text-sm font-bold">{index + 1}</span>
+                  <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-accent" />
+                  <span className="tabular text-sm font-bold">{index + 1}</span>
                   <Chip tone={KIND_TONE[step.kind]}>{t(`steps.kinds.${step.kind}`)}</Chip>
-                  <span className="ms-auto font-body text-xs font-semibold text-muted">
+                  <span className="ms-auto text-xs font-semibold text-muted">
                     {done ? (
                       <span className="inline-flex items-center gap-1 text-good">
-                        <Icon name="check" size={14} />
+                        <Icon name="check" size={16} />
                         {t("steps.done")}
                       </span>
                     ) : (
@@ -92,7 +93,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
                     )}
                   </span>
                 </div>
-                <h3 className="mt-1.5 font-body text-base font-semibold leading-snug">{title}</h3>
+                <h3 className="mt-2 text-base font-semibold leading-snug">{title}</h3>
                 <p className="mt-1 text-sm leading-relaxed">{tx(step.body)}</p>
                 {step.kind === "break" && progress?.seen && !doneNow && fault ? (
                   <p className="mt-2 text-sm font-semibold">{t("steps.faultSeen", { fix: tx(fault.fix) })}</p>
@@ -107,17 +108,17 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
           }
 
           return (
-            <li key={step.id} data-step={step.id} className={cx("-mx-4 flex min-h-12 items-center gap-3 px-4 py-1.5", done && "text-muted")}>
-              <span className="tabular w-6 shrink-0 text-end font-ui text-sm font-semibold">{index + 1}</span>
-              <h3 className="min-w-0 flex-1 font-body text-sm font-semibold leading-snug">
+            <li key={step.id} data-step={step.id} className={cx("-mx-4 flex min-h-11 items-center gap-3 px-4 py-2", done && "text-muted")}>
+              <span className="tabular w-6 shrink-0 text-end text-sm font-semibold">{index + 1}</span>
+              <h3 className="min-w-0 flex-1 text-sm font-semibold leading-snug">
                 {title}
                 {step.kind === "break" ? (
                   <span className="ms-2 whitespace-nowrap text-xs font-semibold text-bad">{t("steps.kinds.break")}</span>
                 ) : null}
               </h3>
               {done ? (
-                <span className="inline-flex shrink-0 items-center gap-1 font-body text-xs font-semibold text-good">
-                  <Icon name="check" size={16} />
+                <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-good">
+                  <Icon name="check" size={20} />
                   <span className="max-sm:sr-only">{t("steps.done")}</span>
                 </span>
               ) : null}
@@ -135,7 +136,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
       </ol>
       {current === bench.steps.length ? (
         <p className="mt-3 flex items-center gap-2 text-sm font-semibold">
-          <Icon name="check" size={18} className="text-good" />
+          <Icon name="check" size={20} className="text-good" />
           {t("steps.allDone")}
         </p>
       ) : null}

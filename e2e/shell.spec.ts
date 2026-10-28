@@ -38,7 +38,9 @@ async function openSettings(page: Page, label = shell.settings.label) {
 }
 
 // The theme options whose words don't fit their pill, or that the row hides by scrolling.
-function cutThemeOptions(page: Page) {
+async function cutThemeOptions(page: Page) {
+  // The settings load the first time the popover or the drawer opens.
+  await expect(page.locator('[role="dialog"] [role="radiogroup"]:visible')).toBeVisible();
   return page.evaluate(() => {
     const group = [...document.querySelectorAll('[role="dialog"] [role="radiogroup"]')].find((g) => (g as HTMLElement).offsetParent !== null);
     if (!group) return ["no theme control"];
@@ -175,7 +177,7 @@ test("an unknown URL is a real 404 inside the localized layout", async ({ page }
   await expect(page.getByRole("heading", { level: 1, name: commonZh.notFound.title })).toBeVisible();
   await expect(page).toHaveTitle(new RegExp(commonZh.notFound.metaTitle));
   await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
-  await expect(page.locator("header:visible")).toHaveCount(1);
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator("footer:visible")).toHaveCount(1);
 });
 
@@ -312,4 +314,49 @@ test("without the AI service, the Together lede doesn't promise translated chat"
   await page.goto("/en/together");
   await expect(page.getByText(together.lobby.ledePlain)).toBeVisible();
   await expect(page.getByText(together.lobby.lede)).toHaveCount(0);
+});
+
+test.describe("the floating nav bar", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("floats 8 px off the top, is centred and is narrower than the page", async ({ page }) => {
+    await page.goto("/en");
+    const box = await visibleHeader(page).getByRole("link", { name: shell.brand.home }).evaluate((link) => {
+      const rect = (link.parentElement as HTMLElement).getBoundingClientRect();
+      return { top: rect.top, width: rect.width, centre: rect.left + rect.width / 2, viewport: document.documentElement.clientWidth };
+    });
+    expect(box.top).toBe(8);
+    expect(box.width).toBeLessThan(1200);
+    expect(Math.abs(box.centre - box.viewport / 2)).toBeLessThanOrEqual(1);
+    await expect(page.locator("body > header:visible")).toHaveCount(1);
+  });
+});
+
+test.describe("the nav bar in German at 1024 px", () => {
+  test.use({ viewport: { width: 1024, height: 768 } });
+
+  test("keeps the links on one row", async ({ page }) => {
+    await page.goto("/de");
+    const tops = await visibleHeader(page)
+      .getByRole("navigation")
+      .getByRole("link")
+      .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().top)));
+    expect(tops.length).toBeGreaterThan(1);
+    expect(new Set(tops).size).toBe(1);
+  });
+});
+
+test("the footer opens the privacy page, which passes axe", async ({ page }) => {
+  await page.goto("/en");
+  await page.locator("footer:visible").getByRole("link", { name: shell.footer.privacyLink }).click();
+  await expect(page).toHaveURL(/\/en\/privacy$/);
+  await expect(page.getByRole("heading", { level: 1, name: shell.privacy.title })).toBeVisible();
+  await expectNoAxeViolations(page);
+});
+
+test("the Hindi privacy page renders in Devanagari", async ({ page }) => {
+  await page.goto("/hi/privacy");
+  await expect(page.locator("html")).toHaveAttribute("lang", "hi");
+  const heading = page.getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText(/[ऀ-ॿ]/);
 });

@@ -36,6 +36,8 @@ const nextConfig: NextConfig = {
   env: { NEXT_PUBLIC_BUILD_ID: BUILD_ID },
   cacheComponents: true,
   partialPrefetching: true,
+  // The root layout is the dynamic [lang] segment, so a URL with no language needs its own 404 (app/global-not-found.tsx).
+  experimental: { globalNotFound: true },
   // Agents build side by side with NEXT_DIST_DIR=.next-<label> (D12).
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // While ~40 agents share one tree, IYNK_BUILD_SKIP_TYPECHECK=1 lets one of
@@ -72,6 +74,12 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
+  },
+  async rewrites() {
+    // [lang] is a dynamic root segment, so "/zzz" matches it and only fails inside the layout, which ends in Next's
+    // default 404. Whatever the files, the API and the redirects did not claim, and whose first segment is not a
+    // language, goes to the global 404 instead.
+    return [{ source: `/:first((?!(?:${LOCALES.join("|")})(?:/|$))[^/]+)/:rest*`, destination: "/_not-found" }];
   },
   async redirects() {
     // A path with no language ("/", "/boards/uno-r3" from a pitch or a shared link): the saved language cookie, then

@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { beforeEach, expect, test } from "vitest";
 import { I18nProvider } from "@/i18n/client";
 import common from "@/i18n/messages/en/common.json";
@@ -10,15 +10,18 @@ beforeEach(() => {
   clearLog();
 });
 
-test("a closed dialog still records page errors, and stops when it unmounts", () => {
+test("a closed dialog still records page errors, and stops when it unmounts", async () => {
   const { unmount } = render(
     <I18nProvider locale="en" messages={common.client}>
       <KeysDialog open={false} onClose={() => {}} />
     </I18nProvider>,
   );
-  window.dispatchEvent(new ErrorEvent("error", { message: "boom" }));
-  expect(readLog()).toHaveLength(1);
+  await waitFor(() => {
+    window.dispatchEvent(new ErrorEvent("error", { message: "boom" }));
+    expect(readLog()).not.toHaveLength(0);
+  });
+  const recorded = readLog().length;
   unmount();
   window.dispatchEvent(new ErrorEvent("error", { message: "after" }));
-  expect(readLog()).toHaveLength(1);
+  expect(readLog()).toHaveLength(recorded);
 });

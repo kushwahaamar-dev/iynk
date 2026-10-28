@@ -3,13 +3,5 @@ import { cx } from "./cx";
 
 /** A key cap, e.g. <Kbd>Space</Kbd>. */
 export function Kbd({ className, ...rest }: ComponentProps<"kbd">) {
-  return (
-    <kbd
-      className={cx(
-        "inline-flex min-w-[1.75em] items-center justify-center rounded-md border-[1.5px] border-line bg-surface px-1.5 py-px font-ui text-[0.85em] font-semibold leading-tight text-ink shadow-[0_2px_0_var(--shadow-c)]",
-        className,
-      )}
-      {...rest}
-    />
-  );
+  return <kbd className={cx("inline-flex min-w-6 items-center justify-center rounded-md border border-rule bg-sunken px-1 py-0.5 font-ui text-xs font-semibold text-ink", className)} {...rest} />;
 }

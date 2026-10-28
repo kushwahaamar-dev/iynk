@@ -44,11 +44,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
+  snapshotPathTemplate: "{testDir}/{testFileName}-snapshots/{arg}{ext}",
   use: { baseURL: `http://localhost:${port}`, trace: "on-first-retry" },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: [/.*\.phone\.spec\.ts/, /r048-compare\.spec\.ts/] },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: [/.*\.phone\.spec\.ts/, /r048-compare\.spec\.ts/, /visual\.spec\.ts/] },
     { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /core\.spec\.ts/ },
     { name: "r048", testMatch: /r048-compare\.spec\.ts/, dependencies: ["chromium", "webkit"] },
+    { name: "visual", use: { ...devices["Desktop Chrome"] }, testMatch: /visual\.spec\.ts/ },
     { name: "phone", use: { ...devices["Pixel 7"] }, testMatch: /.*\.phone\.spec\.ts/ },
   ],
   // Test the production build: dev mode compiles on demand and behaves differently.

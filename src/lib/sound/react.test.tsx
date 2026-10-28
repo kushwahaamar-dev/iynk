@@ -57,7 +57,7 @@ function boardStore() {
 describe("useLabMoments", () => {
   test("a check run sounds and counts", () => {
     const store = boardStore();
-    const { unmount } = renderHook(() => useLabMoments(store, boardMoments, "uno-r3"));
+    const { unmount } = renderHook(() => useLabMoments(store, boardMoments));
     act(() => {
       store.dispatch({ type: "checks/start" });
       store.dispatch({ type: "checks/result", results: [{ ok: true }] });
@@ -79,7 +79,7 @@ describe("useLabMoments", () => {
       { kind: "step" as const, key: "robotics:tb6612fng:step:wire-stby" },
       { kind: "step" as const, key: null },
     ];
-    renderHook(() => useLabMoments(store, steps, "tb6612fng"));
+    renderHook(() => useLabMoments(store, steps));
     act(() => store.dispatch({ type: "fault/trigger", id: "short-5v" }));
     expect(calls.tracked).toEqual([["step.done", { key: "robotics:tb6612fng:step:wire-stby" }]]);
     expect(calls.played).toEqual(["step", "step"]);
@@ -95,7 +95,7 @@ describe("useLabMoments", () => {
       holdsBaton: () => false,
     } as unknown as RoomClient;
     const detach = attachStore(store, "board", room, { scope: "/boards/uno-r3/blink" });
-    renderHook(() => useLabMoments(store, boardMoments, "uno-r3"));
+    renderHook(() => useLabMoments(store, boardMoments));
     const host = { ...store.getState(), fault: "short-5v", assembly: ["usb"] };
     act(() => target!.hydrate({ scope: "/boards/uno-r3/blink", state: JSON.parse(JSON.stringify(host)) }));
     expect(store.getState().fault).toBe("short-5v");

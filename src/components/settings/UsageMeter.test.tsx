@@ -102,3 +102,14 @@ test("saving a key reads the usage again", async () => {
   await waitFor(() => expect(screen.getByText("7 of 100")).toBeTruthy());
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
+
+test("a slow read shows skeleton lines in a busy status, not a bare pulsing block", async () => {
+  setKey("ai", AI);
+  vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => {})));
+  const { container } = renderMeter("ai");
+  const status = await screen.findByRole("status");
+  expect(status.getAttribute("aria-busy")).toBe("true");
+  expect(status.textContent).toBe(common.client.state.loading);
+  expect(container.querySelectorAll(".animate-pulse")).toHaveLength(2);
+  expect(container.querySelector(".h-8")).toBeNull();
+});

@@ -5,13 +5,15 @@
   "nav": {
     "label": "Labs",
     "dashboard": "Dashboard",
-    "boards": "Board Lab",
-    "robotics": "Robotics Lab",
-    "drones": "Drone Lab",
+    "boards": "Board lab",
+    "robotics": "Robotics lab",
+    "drones": "Drone lab",
     "together": "Together",
     "about": "About",
     "menu": "Menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "search": "Search",
+    "searchHint": "Search pages and actions"
   },
   "language": {
     "label": "Language"
@@ -26,54 +28,19 @@
     "label": "Settings"
   },
   "footer": {
-    "privacy": "No accounts. Your progress stays in this browser. The labs send anonymous usage counts, which you can turn off in Settings.",
-    "figures": "Figures drawn with Colorfigures by April Zhu (MIT licence).",
-    "pages": "Site pages"
+    "privacy": "No accounts, no ads, no analytics. Your progress and settings stay in this browser.",
+    "figures": "Drawn with Colorfigures",
+    "pages": "Site pages",
+    "privacyLink": "Privacy",
+    "licenceLink": "Licence status",
+    "sourceLink": "Source code",
+    "licence": "Licence: not chosen yet. Figures: MIT, by April Zhu."
   },
   "ui": {
-    "close": "Close",
-    "copy": "Copy",
-    "copied": "Copied",
-    "copyCode": "Copy code",
-    "done": "Done",
-    "current": "Current step",
-    "stepOf": "Step {n} of {total}",
     "progress": "{done}/{total}",
     "progressLabel": "{label}: {done} of {total} done"
   },
   "dashboard": {
-    "metaTitle": "Dashboard",
-    "metaDescription": "A free, open source workbench in your browser for learning circuits, boards, robots and drones. Wire parts, run code in a simulator and break things on purpose.",
-    "kicker": "Explore · Understand · Build",
-    "title": "Learn hardware by *building* it",
-    "lede": "iynk is a browser workbench for learning circuits, boards, robots and drones. You wire the parts, run your own code on a simulated board and see what happens, including when something goes wrong.",
-    "start": "Start with the Arduino Uno R3",
-    "browse": "Browse the boards",
-    "heroFigure": "Arduino Uno R3 running Blink on a breadboard, live: drag to turn it",
-    "labsTitle": "The three labs",
-    "open": "Open the {lab}",
-    "openSource": {
-      "title": "Open source",
-      "readme": "Read the README",
-      "selfHost": "Host it yourself",
-      "contribute": "Contribute",
-      "fidelity": "iynk runs your code in its own interpreter, not on a real chip. It teaches how parts behave; it does not replace a bench, a compiler or a datasheet."
-    },
-    "board": {
-      "text": "From the Arduino Uno R3 to two FPGA boards: lessons, a live code editor, schematic and breadboard views, a serial monitor and failures that really trigger.",
-      "unit": "boards",
-      "progress": "Lessons and assemblies"
-    },
-    "robotics": {
-      "text": "Motor drivers, sensors and power stages, built part by part on the bench, with practice tasks, quizzes after each step, live status and current draw.",
-      "unit": "benches",
-      "progress": "Steps, tasks and quizzes"
-    },
-    "drones": {
-      "text": "From a Tiny Whoop to an octocopter: a part-by-part build, live weight and thrust maths, safety tests, real Betaflight and ArduPilot settings, and a flying range.",
-      "unit": "drones",
-      "progress": "Builds, tests and courses"
-    },
     "continue": {
       "title": "Continue where you left off",
       "empty": "Nothing finished yet. The Uno R3 is the best place to begin: sixteen short lessons, from the parts of the board to a parking sensor.",
@@ -93,41 +60,31 @@
       }
     },
     "overall": "Overall progress",
-    "features": {
-      "title": "In every lab",
-      "see": {
-        "title": "See through it",
-        "text": "Drag to turn any figure all the way round, switch on See-through and watch the parts inside work, with labels that light up."
-      },
-      "code": {
-        "title": "Run real code",
-        "text": "Edit Arduino C++, MicroPython or Verilog and press Run: the simulator drives the figure, the pins and the serial monitor."
-      },
-      "break": {
-        "title": "Break it on purpose",
-        "text": "Reverse the polarity, brown out the supply, leave out a part or make a cold joint, and see what really goes wrong."
-      },
-      "fly": {
-        "title": "Arm and fly",
-        "text": "Build a drone, check its numbers, run the smoke stopper and motor tests, then fly gates in angle or acro mode."
-      }
+    "board": {
+      "progress": "Lessons and assemblies"
     },
-    "languages": "Languages",
-    "closing": {
-      "title": "The bench is *ready*.",
-      "text": "No account. Nothing to install."
+    "robotics": {
+      "progress": "Steps, tasks and quizzes"
+    },
+    "drones": {
+      "progress": "Builds, tests and courses"
     }
   },
   "about": {
     "metaTitle": "About and credits",
     "metaDescription": "What iynk is, how it works, and the credits and licences behind it.",
     "title": "About iynk",
-    "lede": "iynk is a hardware lab you open in a browser. Every board, module and drone is a hand-inked 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
+    "lede": "iynk is a hardware lab you open in a browser. Every board, module and drone is a hand drawn 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
     "howTitle": "How it works",
+    "howHeads": {
+      "figures": "Figures you operate",
+      "code": "Code that runs",
+      "privacy": "Stays in your browser"
+    },
     "how": {
-      "figures": "Each figure is a self-contained page drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
+      "figures": "Each figure is a page of its own, drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
       "code": "Sketches run in a simulator in your browser on a virtual clock: an Arduino C++ subset with the right integer widths for each chip, a MicroPython subset, and a Verilog subset for the two FPGA boards.",
-      "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. When this deployment has a database, the labs send anonymous usage counts (a lesson passed, a step built, a fault tried, a lap time) for the live counters and leaderboards, with a random id for this browser and never your name or your code. Turn off “Share anonymous usage counts” in Settings (the gear in the header) to stop them."
+      "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. iynk keeps a local log of what happens in the labs. It stays in this browser, and you can read, copy or clear it under Keys and usage. Nothing is sent to us."
     },
     "originalsTitle": "The three originals",
     "originalsLede": "iynk was inspired by three teaching sites. It is a separate project with its own code.",
@@ -142,15 +99,55 @@
       },
       "drones": {
         "name": "Drone Engineer",
-        "text": "Thirteen drones with part-by-part builds, live calculations, safety tests and a flying range."
+        "text": "Thirteen drones with builds part by part, live calculations, safety tests and a flying range."
       }
     },
     "visit": "Visit {name}",
     "licenceTitle": "Licences",
-    "licenceText": "The figures are drawn with Colorfigures by April Zhu, the engine the Robotics Engineer and Drone Engineer sites are drawn with too. Colorfigures builds on ISO-GLOW by April Zhu and iso-figure by Tolga Cohce, and is released under the MIT licence below.",
+    "licenceText": "The figures are drawn with Colorfigures by April Zhu, the engine the Robotics Engineer and Drone Engineer sites are drawn with too. Colorfigures builds on isometric figure work by April Zhu and Tolga Cohce, and is released under the MIT licence below.",
     "licenceNote": "The licence is reproduced in its original English.",
     "builtWithTitle": "Built with",
     "builtWith": "Next.js, React and Tailwind CSS (all MIT licensed), plus the Colorfigures engine for every figure.",
     "colorfigures": "Colorfigures skill page"
+  },
+  "command": {
+    "title": "Command menu",
+    "placeholder": "Search pages and actions",
+    "empty": "Nothing matches. Try a lab name or a setting.",
+    "groups": {
+      "pages": "Pages",
+      "actions": "Actions",
+      "theme": "Theme",
+      "language": "Language"
+    },
+    "open": "Search",
+    "sound": {
+      "on": "Turn sound on",
+      "off": "Turn sound off"
+    },
+    "motion": {
+      "on": "Reduce motion",
+      "off": "Allow motion"
+    },
+    "keys": "Keys and usage",
+    "hint": "{key} opens this menu"
+  },
+  "privacy": {
+    "metaTitle": "Privacy",
+    "metaDescription": "What iynk stores in your browser, what it sends and what it never does.",
+    "title": "Privacy",
+    "lede": "iynk has no accounts, no ads and no analytics. This is a short note on what the app stores and sends. It is not legal advice.",
+    "stays": {
+      "title": "What stays in your browser",
+      "text": "Your progress and settings are saved in this browser's local storage under iynk:v1. The language you pick is remembered in a cookie. If you add an AI or search key, it is kept under iynk:keys:v1. A local log of what happens in the labs is kept under iynk:log:v1. You can read, copy or clear it under Keys and usage."
+    },
+    "leaves": {
+      "title": "What leaves your browser",
+      "text": "Nothing, unless you use a room or add a key. A room sends your name, cursor and chat messages, including the text of a voice message, to the room relay. A key you add is sent to your own iynk server with each AI or search call, and a voice recording is sent there to be transcribed. The server does not store the key."
+    },
+    "never": {
+      "title": "What we do not do",
+      "text": "There are no accounts, no ads and no analytics. The usage counts are a local log in your browser. You can read it and clear it at any time."
+    }
   }
 }

@@ -5,6 +5,7 @@ import { CatalogueCard, CatalogueGrid, CatalogueHead, CataloguePage, eyebrow } f
 import { CraftProgress } from "@/components/dronelab/CraftProgress";
 import { loadCards } from "@/components/dronelab/data";
 import { formatNumber } from "@/components/dronelab/text";
+import { PageSkeleton } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { DRONE_IDS } from "@/content/ids";
 import { htmlLang, isLocale } from "@/i18n/config";
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function DronesPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="list" />}>
       <DronesIndex params={params} />
     </Suspense>
   );
@@ -50,7 +51,7 @@ async function DronesIndex({ params }: Pick<Props, "params">) {
         countText={t("index.count", { count: DRONE_IDS.length })}
         numberLocale={htmlLang(lang)}
       />
-      <div className="mt-[clamp(48px,6vw,96px)]">
+      <div className="mt-12 md:mt-24">
         <CatalogueGrid labelledBy={headingId}>
           {cards.map((card) => {
             const fig = t("index.fig", { n: String(card.fig).padStart(2, "0") });
@@ -91,7 +92,7 @@ async function DronesIndex({ params }: Pick<Props, "params">) {
                     {stats.map(({ label, value }) => (
                       <div key={label} className="min-w-0">
                         <dt className="truncate text-xs leading-4 text-muted">{label}</dt>
-                        <dd className="tabular mt-1 font-body text-[17px] font-medium leading-6 tracking-[-0.01em]">{value}</dd>
+                        <dd className="tabular mt-1 text-base font-medium leading-6">{value}</dd>
                       </div>
                     ))}
                   </dl>

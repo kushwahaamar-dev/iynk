@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLink, CtaLink } from "@/components/marketing";
+import { ArrowLink, CtaLink } from "@/components/editorial/Editorial";
 import { ProgressBadge } from "@/components/ui/ProgressBadge";
 import { useT } from "@/i18n/client";
 import type { Messages } from "@/i18n/namespaces";

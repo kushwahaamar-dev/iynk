@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { InlineStatus } from "@/components/ui/InlineStatus";
 import { Meter } from "@/components/ui/Meter";
+import { Skeleton, SkeletonGroup } from "@/components/ui/Skeleton";
 import { useCommonT, useLocale } from "@/i18n/client";
 import { htmlLang } from "@/i18n/config";
 import { useKeys } from "@/lib/keys";
@@ -40,30 +42,37 @@ export function UsageMeter({ kind }: { kind: Kind }) {
   }, [id, kind]);
 
   const state = read?.id === id ? read.result : null;
-  if (!state) return slowId === id ? <div aria-hidden="true" className="h-8 animate-pulse rounded-lg bg-sunken" /> : null;
+  if (!state) {
+    return slowId === id ? (
+      <SkeletonGroup label={t("state.loading")} className="flex flex-col gap-2">
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-2 w-full" />
+      </SkeletonGroup>
+    ) : null;
+  }
 
   if (!state.ok) {
     if (state.code === "failed") {
       return (
-        <div className="flex items-center justify-between gap-3 text-sm">
-          <p role="status" className="text-bad">
+        <div className="flex items-center justify-between gap-3">
+          <InlineStatus tone="bad" live>
             {t("meter.failed")}
-          </p>
-          <Button size="sm" variant="secondary" onClick={() => setAttempt((n) => n + 1)}>
+          </InlineStatus>
+          <Button size="sm" variant="ghost" onClick={() => setAttempt((n) => n + 1)}>
             {t("meter.retry")}
           </Button>
         </div>
       );
     }
     return (
-      <p className="text-sm text-muted">
+      <InlineStatus tone="info">
         {t("meter.unavailable")}. {t(state.code === "off" ? "meter.off" : "meter.noKey")}
-      </p>
+      </InlineStatus>
     );
   }
 
   const { data } = state;
-  if (data.cap === 0) return <p className="text-sm text-muted">{t(kind === "ai" ? "meter.aiOff" : "meter.searchOff")}</p>;
+  if (data.cap === 0) return <InlineStatus tone="info">{t(kind === "ai" ? "meter.aiOff" : "meter.searchOff")}</InlineStatus>;
 
   if (data.kind === "ai") {
     const used = number.format(data.today.tokens);

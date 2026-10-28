@@ -17,8 +17,8 @@ export function SourcesList({ sources, heading, className }: { sources: readonly
   const title = heading ?? t("sources.heading");
   return (
     <section aria-label={title} className={cx("min-w-0", className)}>
-      <h3 className="ink-kicker mb-1">{title}</h3>
-      <ol className="space-y-1.5 text-sm">
+      <h3 className="kicker mb-1">{title}</h3>
+      <ol className="space-y-2 text-sm">
         {sources.map((source, i) => {
           const site = siteOf(source.url);
           return (
@@ -31,12 +31,12 @@ export function SourcesList({ sources, heading, className }: { sources: readonly
                   href={source.url}
                   {...external}
                   aria-label={`${source.title}. ${t("sources.open", { site })}`}
-                  className="inline-flex max-w-full items-baseline gap-1 font-semibold underline decoration-line underline-offset-2 hover:decoration-2 focus-visible:outline-2"
+                  className="inline-flex max-w-full items-baseline gap-1 font-semibold underline decoration-rule underline-offset-2 motion-fade hover:decoration-ink"
                 >
                   <span className="truncate">{source.title}</span>
-                  <Icon name="external" size={14} aria-hidden="true" className="shrink-0 self-center" />
+                  <Icon name="external" size={16} aria-hidden="true" className="shrink-0 self-center" />
                 </a>
-                <div className="truncate font-ui text-xs text-muted">{site}</div>
+                <div className="truncate text-xs text-muted">{site}</div>
                 {source.snippet ? <p className="line-clamp-2 text-muted">{source.snippet}</p> : null}
               </div>
             </li>

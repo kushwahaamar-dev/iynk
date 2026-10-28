@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Explore · Understand · Build",
-    "description": "A hands-on hardware lab in the browser: build, wire, code, break and fly boards, robots and drones."
+    "tagline": "Explore, understand, build",
+    "description": "A hardware lab in your browser. Build, wire, code, break and fly boards, robots and drones."
   },
   "a11y": {
     "skipToContent": "Skip to main content"
@@ -12,9 +12,10 @@
     "title": "This page is not on the bench",
     "body": "The address may be mistyped, or the page has moved. Pick a lab to carry on.",
     "home": "Back to the dashboard",
-    "boards": "Board Lab",
-    "robotics": "Robotics Lab",
-    "drones": "Drone Lab"
+    "search": "Search the site",
+    "boards": "Board lab",
+    "robotics": "Robotics lab",
+    "drones": "Drone lab"
   },
   "progress": {
     "count": "{done}/{total}",
@@ -115,6 +116,18 @@
         "search": "Paste a search key in Keys and usage.",
         "server": "Ask whoever runs this server to switch it on."
       }
+    },
+    "state": {
+      "loading": "Loading",
+      "empty": "Nothing here yet",
+      "error": "Something went wrong. Try again.",
+      "retry": "Try again"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "text": "This page hit a problem. Try again, or go back to the start.",
+      "reference": "Reference: {digest}",
+      "home": "Back to the start"
     }
   }
 }

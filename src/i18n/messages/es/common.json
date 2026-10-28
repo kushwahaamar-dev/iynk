@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Explora · Comprende · Construye",
-    "description": "Un laboratorio de hardware práctico en el navegador: monta, cablea, programa, rompe y haz volar placas, robots y drones."
+    "tagline": "Explora, comprende, construye",
+    "description": "Un laboratorio de hardware en tu navegador. Monta, cablea, programa, rompe y haz volar placas, robots y drones."
   },
   "a11y": {
     "skipToContent": "Saltar al contenido principal"
@@ -12,6 +12,7 @@
     "title": "Esta página no está en el banco de trabajo",
     "body": "Puede que la dirección esté mal escrita o que la página se haya movido. Elige un laboratorio para continuar.",
     "home": "Volver al panel",
+    "search": "Buscar en el sitio",
     "boards": "Laboratorio de placas",
     "robotics": "Laboratorio de robótica",
     "drones": "Laboratorio de drones"
@@ -109,12 +110,24 @@
     "notSetUp": {
       "serverOff": "{what} está desactivado en este servidor.",
       "needsKey": "{what} necesita tu propia clave.",
-      "openKeys": "Abrir Claves y uso",
+      "openKeys": "Abrir claves y uso",
       "fix": {
         "ai": "Pega una clave de IA en Claves y uso.",
         "search": "Pega una clave de búsqueda en Claves y uso.",
         "server": "Pide a quien gestiona este servidor que lo active."
       }
+    },
+    "state": {
+      "loading": "Cargando",
+      "empty": "Todavía no hay nada",
+      "error": "Algo salió mal. Inténtalo de nuevo.",
+      "retry": "Reintentar"
+    },
+    "error": {
+      "title": "Algo salió mal",
+      "text": "Esta página tuvo un problema. Inténtalo de nuevo o vuelve al inicio.",
+      "reference": "Referencia: {digest}",
+      "home": "Volver al inicio"
     }
   }
 }

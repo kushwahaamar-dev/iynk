@@ -45,7 +45,7 @@ const ink = HighlightStyle.define([
   { tag: [tags.number, tags.integer, tags.float], color: "var(--code-num)" },
   { tag: [tags.function(tags.variableName), tags.function(tags.propertyName), tags.macroName], color: "var(--code-fn)" },
   { tag: [tags.string, tags.special(tags.string), tags.character], color: "var(--code-str)" },
-  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: "var(--code-cm)", fontStyle: "italic" },
+  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: "var(--code-cm)" },
   { tag: [tags.processingInstruction, tags.meta], color: "var(--code-kw)" },
   { tag: tags.invalid, color: "var(--bad)" },
 ]);
@@ -57,7 +57,7 @@ function languageExtension(language: Language): Extension {
 }
 
 const theme = EditorView.theme({
-  "&": { fontSize: "14px", backgroundColor: "var(--code-bg)", color: "var(--code-fg)" },
+  "&": { fontSize: "var(--text-sm)", backgroundColor: "var(--code-bg)", color: "var(--code-fg)" },
   ".cm-content": { fontFamily: "var(--font-mono), ui-monospace, monospace", padding: "10px 0", caretColor: "var(--code-fg)" },
   ".cm-gutters": { backgroundColor: "transparent", border: "none", color: "var(--code-cm)" },
   ".cm-lineNumbers .cm-gutterElement": { padding: "0 10px 0 8px", minWidth: "2.2em" },

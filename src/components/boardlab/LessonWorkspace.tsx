@@ -8,6 +8,7 @@ import { SoundToggle } from "@/components/settings";
 import type { FigureEvent, FigureHandle } from "@/components/figure/protocol";
 import { WorkspaceBar, WorkspaceFrame } from "@/components/shell/workspace";
 import { ButtonLink } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import { IconButton } from "@/components/ui/IconButton";
@@ -170,7 +171,7 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
     });
   }, [store, figureOpts]);
 
-  useLabMoments(store, boardMoments, board.id);
+  useLabMoments(store, boardMoments);
   useSketchTones(store);
   const figureSound = useFigureSound();
 
@@ -331,10 +332,10 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
           status={
             <>
               {done && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-good px-2.5 py-0.5 text-xs font-semibold text-paper" data-testid="lesson-done">
-                  <Icon name="check" size={12} aria-hidden="true" />
+                <Chip tone="good" className="gap-1" data-testid="lesson-done">
+                  <Icon name="check" size={16} aria-hidden="true" />
                   {t("lesson.done")}
-                </span>
+                </Chip>
               )}
               {notice}
             </>

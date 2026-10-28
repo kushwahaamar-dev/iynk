@@ -2,7 +2,6 @@
 
 import { useId, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui/Button";
-import { cx } from "@/components/ui/cx";
 import { Toggle } from "@/components/ui/Toggle";
 import type { WorldInput } from "@/content/schema";
 import { controlFor } from "@/lib/boardlab/inputs";
@@ -22,13 +21,9 @@ function HoldButton({ input, store }: { input: WorldInput; store: BoardLabStore 
     if (!down) set(input.min);
   };
   return (
-    <button
-      type="button"
+    <Button
       aria-pressed={pressed}
-      className={cx(
-        "touch-target flex w-full touch-none select-none items-center justify-between gap-3 rounded-md border-2 border-line px-3 py-2 text-start font-semibold",
-        pressed ? "bg-ink text-paper" : "bg-surface",
-      )}
+      className="w-full touch-none justify-between text-start"
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
         set(input.max);
@@ -41,7 +36,7 @@ function HoldButton({ input, store }: { input: WorldInput; store: BoardLabStore 
     >
       <span>{tc(input.label)}</span>
       <span className="text-sm font-normal">{pressed ? t("world.pressed") : t("world.hold")}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -77,7 +72,7 @@ function Requests({ input, requests, store }: { input: WorldInput; requests: { v
       <legend className="text-sm font-semibold">{tc(input.label)}</legend>
       <div className="flex flex-wrap gap-2">
         {requests.map((r) => (
-          <Button key={r.value} size="sm" variant="secondary" className="font-mono" onClick={() => store.dispatch({ type: "input/request", id: input.id, value: r.value })}>
+          <Button key={r.value} size="sm" variant="secondary" className="tabular font-mono" onClick={() => store.dispatch({ type: "input/request", id: input.id, value: r.value })}>
             {r.label}
           </Button>
         ))}

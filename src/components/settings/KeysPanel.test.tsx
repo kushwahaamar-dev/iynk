@@ -74,3 +74,11 @@ test("a key too short to show a tail still says it is saved", () => {
   fireEvent.click(screen.getByRole("button", { name: `${keys.save}: ${keys.server.label}` }));
   expect(screen.getByText("Saved: …")).toBeTruthy();
 });
+
+test("an invalid key puts the message in the field's described-by target", () => {
+  renderPanel();
+  fireEvent.change(aiField(), { target: { value: "has a space in it" } });
+  fireEvent.click(screen.getByRole("button", { name: `${keys.save}: ${keys.ai.label}` }));
+  const target = document.getElementById(aiField().getAttribute("aria-describedby")!);
+  expect(target?.textContent).toBe(keys.errors.badChars);
+});

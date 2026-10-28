@@ -1,11 +1,11 @@
 {
   "meta": {
-    "indexTitle": "Board Lab",
+    "indexTitle": "Board lab",
     "indexDescription": "Twelve real development boards to assemble, power up, program and break on purpose, from the Arduino Uno to two FPGAs.",
     "lessonTitle": "{lesson} · {board}"
   },
   "index": {
-    "title": "Board Lab",
+    "title": "Board lab",
     "kicker": "Microcontrollers and FPGAs",
     "lede": "Twelve real boards. Assemble each one, power it up, write code that really runs, wire in sensors and break it on purpose to see what fails and why.",
     "count": "{count} boards",
@@ -42,9 +42,9 @@
     "rp2350": "RP2350",
     "pio": "PIO",
     "stm32": "STM32",
-    "debugger": "On-board debugger",
+    "debugger": "Debugger on the board",
     "nrf52": "nRF52",
-    "sensors": "Built-in sensors",
+    "sensors": "Sensors on the board",
     "linux": "Linux",
     "gpio": "GPIO header",
     "ros2": "ROS 2",
@@ -87,8 +87,8 @@
     "range": "{min}–{max} V",
     "recommended": "recommended {min}–{max} V",
     "maxCurrent": "up to {n} mA",
-    "protected": "Reverse-polarity protected",
-    "unprotected": "No reverse-polarity protection",
+    "protected": "Protected against reversed polarity",
+    "unprotected": "No protection against reversed polarity",
     "rails": "Rails",
     "io": "Pin current",
     "perPin": "{n} mA per pin",
@@ -96,8 +96,8 @@
     "total": "{n} mA for all pins together",
     "brownout": "Resets below {n} V",
     "idle": "Draws about {n} mA idle",
-    "leds": "On-board LEDs",
-    "controls": "On-board controls",
+    "leds": "LEDs on the board",
+    "controls": "Controls on the board",
     "displays": "Displays",
     "drivenBy": "Driven by {pin}",
     "activeLow": "active low",
@@ -153,7 +153,7 @@
     }
   },
   "assembly": {
-    "title": "Assembly and power-up",
+    "title": "Assembly and power on",
     "lede": "Build the board in the right order, then power it up and check it, as on the bench.",
     "doIt": "Do it",
     "doneStep": "Done",
@@ -178,7 +178,7 @@
     "figureFault": "The figure reports: {msg}",
     "kind": {
       "reverse-polarity": "Reverse polarity",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "wrong-voltage": "Wrong voltage",
       "cold-solder": "Cold solder joint",
       "short": "Short circuit",
@@ -293,7 +293,7 @@
     },
     "refused": {
       "unplugged": "Plug in USB first: uploads go over the cable.",
-      "brownout": "The board keeps resetting (brown-out): fix the power first.",
+      "brownout": "The board keeps resetting (brownout): fix the power first.",
       "fault": "Fix the fault first: unplug, then repair.",
       "notReady": "The board is not running: finish the assembly and power it up first."
     },
@@ -337,7 +337,7 @@
     "schematic": "Schematic",
     "power": "Power tree",
     "exploded": "Exploded view",
-    "seeThrough": "See-through",
+    "seeThrough": "See through",
     "turnLeft": "Turn left (Q)",
     "turnRight": "Turn right (E)",
     "resetView": "Reset view (R)",
@@ -351,7 +351,7 @@
       "powered": "Powered, not running",
       "running": "Running",
       "uploading": "Uploading",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "fault": "Fault"
     },
     "statusLabel": "Board status",
@@ -370,7 +370,7 @@
     "breadboard": "Breadboard view",
     "board": "Board view",
     "exploded": "Exploded view",
-    "seeThrough": "See-through",
+    "seeThrough": "See through",
     "turn": "Turn the figure a quarter",
     "resetView": "Reset the view",
     "prevNext": "Previous or next lesson",

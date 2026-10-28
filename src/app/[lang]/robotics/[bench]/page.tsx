@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
+import { PageSkeleton } from "@/components/ui";
 import { Icon } from "@/components/ui/icons";
 import { BenchWorkspace } from "@/components/robotics/BenchWorkspace";
 import type { BenchMessages } from "@/components/robotics/messages";
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function BenchPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="workspace" />}>
       <Bench params={params} />
     </Suspense>
   );
@@ -71,19 +72,19 @@ async function Bench({ params }: Pick<Props, "params">) {
 
   const walk =
     prev || next ? (
-      <nav aria-label={t("bench.walk")} className="flex flex-wrap justify-between gap-3 border-t-[1.5px] border-rule pt-6">
+      <nav aria-label={t("bench.walk")} className="flex flex-wrap justify-between gap-4 border-t border-rule pt-6">
         {prev ? (
-          <Link href={`/${lang}/robotics/${prev}`} className="inline-flex min-h-11 items-center gap-1.5 font-body text-sm font-semibold">
-            <Icon name="chevron-left" size={18} />
+          <Link href={`/${lang}/robotics/${prev}`} className="inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold">
+            <Icon name="chevron-left" size={20} />
             {t("bench.prevBench", { name: t(`benches.${prev}.name`) })}
           </Link>
         ) : (
           <span />
         )}
         {next ? (
-          <Link href={`/${lang}/robotics/${next}`} className="inline-flex min-h-11 items-center gap-1.5 font-body text-sm font-semibold">
+          <Link href={`/${lang}/robotics/${next}`} className="inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold">
             {t("bench.nextBench", { name: t(`benches.${next}.name`) })}
-            <Icon name="chevron-right" size={18} />
+            <Icon name="chevron-right" size={20} />
           </Link>
         ) : null}
       </nav>

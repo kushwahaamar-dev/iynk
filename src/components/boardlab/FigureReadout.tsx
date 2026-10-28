@@ -1,6 +1,6 @@
 "use client";
 
-import { cx } from "@/components/ui/cx";
+import { Chip } from "@/components/ui/Chip";
 import type { BoardLabStore, BoardView } from "@/lib/boardlab/store";
 import { useText } from "./text";
 import { useLab } from "./useLab";
@@ -31,20 +31,24 @@ export function FigureReadout({ store, leds }: { store: BoardLabStore; leds: { i
   const measItems = circuit && DRAWS_CIRCUIT.includes(view) ? Object.entries(meas ?? {}).filter(([, m]) => !m.kind || m.kind === "led") : [];
   if (ledItems.length === 0 && measItems.length === 0) return null;
   return (
-    <ul aria-label={t("readout.label")} className="flex shrink-0 gap-1.5 font-ui text-xs" data-testid="figure-readout">
+    <ul aria-label={t("readout.label")} className="flex shrink-0 gap-2" data-testid="figure-readout">
       {ledItems.map((l) => {
         const on = Number(reported![l.id]) > 0;
         return (
-          <li key={l.id} className={cx("whitespace-nowrap rounded-full border-[1.5px] px-2.5 py-1", on ? "border-mustard-m bg-mustard/25" : "border-rule")} data-led={l.id} data-on={on ? 1 : 0}>
-            {t(on ? "readout.ledOn" : "readout.ledOff", { led: l.label })}
+          <li key={l.id} data-led={l.id} data-on={on ? 1 : 0}>
+            <Chip tone={on ? "good" : "neutral"} mono>
+              {t(on ? "readout.ledOn" : "readout.ledOff", { led: l.label })}
+            </Chip>
           </li>
         );
       })}
       {measItems.map(([part, m]) => {
         const state = m.state && MEAS_STATES.includes(m.state) ? m.state : "off";
         return (
-          <li key={part} className={cx("whitespace-nowrap rounded-full border-[1.5px] px-2.5 py-1", state === "burnt" ? "on-fill border-bad bg-bad-bg" : state === "ok" ? "border-good" : "border-rule")} data-part={part} data-state={state}>
-            {t(`readout.part.${state}` as Parameters<typeof t>[0], { part, ma: Math.round((m.i_mA ?? 0) * 10) / 10 })}
+          <li key={part} data-part={part} data-state={state}>
+            <Chip tone={state === "burnt" ? "bad" : state === "ok" ? "good" : "neutral"} mono>
+              {t(`readout.part.${state}` as Parameters<typeof t>[0], { part, ma: Math.round((m.i_mA ?? 0) * 10) / 10 })}
+            </Chip>
           </li>
         );
       })}

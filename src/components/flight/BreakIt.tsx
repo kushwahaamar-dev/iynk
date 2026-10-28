@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Button, Toggle } from "@/components/ui";
+import { Button, InlineStatus, Toggle } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { createTranslator } from "@/i18n/translate";
 import { BREAKS, type BreakId, type CraftClass } from "@/lib/flight";
@@ -26,7 +26,7 @@ export function BreakIt({ craftClass, isOn, changed, broken, onToggle, onReset, 
   return (
     <section aria-labelledby="break-it-title" className="space-y-2" data-testid="break-it">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="break-it-title" className="font-head text-lg">
+        <h2 id="break-it-title" className="text-lg font-semibold">
           {dict.breakIt.title}
         </h2>
         {/* nothing to undo: the button keeps its place but isn't drawn, so the heading doesn't jump */}
@@ -42,7 +42,7 @@ export function BreakIt({ craftClass, isOn, changed, broken, onToggle, onReset, 
             key={id}
             data-break={id}
             data-on={isOn(id)}
-            className="-mx-2 cursor-pointer rounded-ink-sm px-2 py-1 hover:bg-sunken"
+            className="-mx-2 cursor-pointer rounded-lg px-2 py-1 hover:bg-sunken"
             onClick={(e) => {
               if (!(e.target as HTMLElement).closest('[role="switch"]')) onToggle(id, !isOn(id));
             }}
@@ -52,9 +52,9 @@ export function BreakIt({ craftClass, isOn, changed, broken, onToggle, onReset, 
         ))}
       </div>
       {broken ? (
-        <p className="border-s-4 border-tomato ps-3 text-sm font-semibold" role="status">
+        <InlineStatus tone="bad" live className="font-semibold">
           {dict.breakIt.noBoard}
-        </p>
+        </InlineStatus>
       ) : null}
     </section>
   );

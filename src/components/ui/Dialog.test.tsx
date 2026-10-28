@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Dialog } from "./Dialog";
 import { Sheet } from "./Sheet";
 
@@ -44,6 +44,19 @@ describe("Dialog", () => {
     expect(document.activeElement).toBe(screen.getByRole("button", { name: "Close" }));
     const outside = screen.getByText("Outside");
     expect(outside.closest("[inert]")).not.toBeNull();
+  });
+
+  it("opens without a tooltip on the close button it focuses", () => {
+    const matches = Element.prototype.matches;
+    // jsdom has no focus-visible heuristics: every focus counts as a keyboard focus.
+    vi.spyOn(Element.prototype, "matches").mockImplementation(function (this: Element, selector: string) {
+      return selector === ":focus-visible" || matches.call(this, selector);
+    });
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Open" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("tooltip")).toBeNull();
+    vi.restoreAllMocks();
   });
 
   it("traps Tab and Shift+Tab inside", () => {
@@ -96,5 +109,26 @@ describe("Sheet", () => {
     fireEvent.keyDown(sheet, { key: "Escape" });
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(document.activeElement).toBe(opener);
+  });
+});
+
+describe("overlay styling", () => {
+  it("dialog scrim fades in, the panel rises and has no border", () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Open" }));
+    const panel = screen.getByRole("dialog");
+    expect(panel.parentElement?.className).toContain("animate-fade-in");
+    expect(panel.parentElement?.className).toContain("bg-(--scrim)");
+    expect(panel.className).toContain("animate-rise-in");
+    expect(panel.className).not.toMatch(/(^|\s)border/);
+  });
+
+  it("sheet rounds the corners away from its edge", () => {
+    const { rerender } = render(
+      <Sheet open onClose={() => {}} title="Menu" closeLabel="Close menu" side="end" />,
+    );
+    expect(screen.getByRole("dialog").className).toContain("rounded-s-2xl");
+    rerender(<Sheet open onClose={() => {}} title="Menu" closeLabel="Close menu" side="bottom" />);
+    expect(screen.getByRole("dialog").className).toContain("rounded-t-2xl");
   });
 });

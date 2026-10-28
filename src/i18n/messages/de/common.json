@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Entdecken · Verstehen · Bauen",
-    "description": "Ein praktisches Hardware-Labor im Browser: Boards, Roboter und Drohnen bauen, verdrahten, programmieren, kaputt machen und fliegen."
+    "tagline": "Entdecken, verstehen, bauen",
+    "description": "Ein Hardware-Labor in deinem Browser. Boards, Roboter und Drohnen bauen, verdrahten, programmieren, kaputt machen und fliegen."
   },
   "a11y": {
     "skipToContent": "Zum Hauptinhalt springen"
@@ -12,6 +12,7 @@
     "title": "Diese Seite liegt nicht auf der Werkbank",
     "body": "Vielleicht ist die Adresse falsch geschrieben, oder die Seite ist umgezogen. Wähle ein Labor, um weiterzumachen.",
     "home": "Zurück zur Übersicht",
+    "search": "Website durchsuchen",
     "boards": "Board-Labor",
     "robotics": "Robotik-Labor",
     "drones": "Drohnen-Labor"
@@ -115,6 +116,18 @@
         "search": "Füge unter Schlüssel und Nutzung einen Suchschlüssel ein.",
         "server": "Bitte die Person, die diesen Server betreibt, es einzuschalten."
       }
+    },
+    "state": {
+      "loading": "Wird geladen",
+      "empty": "Noch nichts hier",
+      "error": "Etwas ist schiefgelaufen. Versuche es erneut.",
+      "retry": "Erneut versuchen"
+    },
+    "error": {
+      "title": "Etwas ist schiefgelaufen",
+      "text": "Auf dieser Seite ist ein Problem aufgetreten. Versuche es erneut oder gehe zurück zum Start.",
+      "reference": "Referenz: {digest}",
+      "home": "Zurück zum Start"
     }
   }
 }

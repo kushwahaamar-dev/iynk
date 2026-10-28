@@ -73,7 +73,7 @@ export function AssemblyPanel({ store, board, steps, figure }: { store: BoardLab
       </h3>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <p className="me-auto text-sm text-muted">{t("assembly.lede")}</p>
-        <span className="tabular shrink-0 font-ui text-xs font-bold">{t("assembly.progress", { done: done.length, total: steps.length })}</span>
+        <span className="tabular shrink-0 text-xs font-semibold">{t("assembly.progress", { done: done.length, total: steps.length })}</span>
         {done.length > 0 && (
           <Button size="sm" variant="ghost" className="shrink-0" onClick={() => store.dispatch({ type: "assembly/reset" })}>
             {t("assembly.reset")}
@@ -90,27 +90,28 @@ export function AssemblyPanel({ store, board, steps, figure }: { store: BoardLab
           {t("assembly.complete")}
         </p>
       )}
-      <ol className="divide-y-[1.5px] divide-rule">
+      <ol className="divide-y divide-rule">
         {steps.map((step, i) => {
           const isDone = done.includes(step.id);
           const isCurrent = current?.id === step.id;
           return (
             <li
               key={step.id}
-              className={cx("py-2.5", isCurrent && "-mx-4 border-s-4 border-ink bg-sunken px-3")}
+              className={cx("relative py-3", isCurrent && "-mx-3 rounded-lg bg-hover px-3")}
               aria-current={isCurrent ? "step" : undefined}
               data-step={step.id}
               data-done={isDone ? 1 : 0}
             >
-              <div className="flex items-center gap-3">
+              {isCurrent && <span aria-hidden="true" className="absolute start-1 top-[22px] size-1 rounded-full bg-accent" />}
+              <div className="flex items-center gap-4">
                 <span
                   aria-hidden="true"
                   className={cx(
-                    "tabular inline-flex size-6 shrink-0 items-center justify-center rounded-full border-[1.5px] font-ui text-xs font-bold",
+                    "tabular inline-flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold",
                     isDone ? "border-good bg-good text-paper" : isCurrent ? "border-ink" : "border-rule text-muted",
                   )}
                 >
-                  {isDone ? <Icon name="check" size={12} /> : i + 1}
+                  {isDone ? <Icon name="check" size={16} /> : i + 1}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className={cx("block text-sm leading-snug", isDone ? "text-muted" : "font-semibold")}>{tc(step.title)}</span>
@@ -126,7 +127,7 @@ export function AssemblyPanel({ store, board, steps, figure }: { store: BoardLab
                   <span className="max-w-[9rem] shrink-0 text-end text-xs text-muted">{t("assembly.byHand")}</span>
                 )}
               </div>
-              {isCurrent && <p className="mt-2 ps-9 text-sm">{tc(step.body)}</p>}
+              {isCurrent && <p className="mt-2 ps-10 text-sm">{tc(step.body)}</p>}
             </li>
           );
         })}

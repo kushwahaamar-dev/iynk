@@ -25,7 +25,7 @@ export function FigureStill({ item, className }: FigureStillProps) {
         height={450}
         loading="lazy"
         decoding="async"
-        className="size-full object-contain transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
+        className="size-full object-contain motion-move group-hover:scale-105"
       />
     </div>
   );

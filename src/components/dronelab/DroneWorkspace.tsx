@@ -82,7 +82,7 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
 
   useEffect(() => (figure ? store.connect((command) => sendTo(figure, command)) : undefined), [figure, store]);
   const moments = useCallback((prev: DroneLabState, next: DroneLabState) => droneMoments(content, prev, next), [content]);
-  useLabMoments(store, moments, id);
+  useLabMoments(store, moments);
   const figureSound = useFigureSound();
 
   // The design picked earlier in this tab, restored after hydration so server and client render the same.
@@ -247,34 +247,36 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           onChange={(v) => dispatch({ type: "sheet", sheet: v === "wiring" ? "wiring" : null })}
           size="sm"
         />
-        <Button
-          size="sm"
-          variant="secondary"
-          aria-pressed={state.exploded}
-          onClick={() => dispatch({ type: "exploded", on: !state.exploded })}
-          // the wiring sheet covers the craft: exploding it then shows nothing
-          disabled={!ready || state.sheet === "wiring"}
-          className="shrink-0 whitespace-nowrap"
-        >
-          {t("workspace.exploded")}
-        </Button>
+        <span className="flex shrink-0 items-center rounded-lg border border-rule p-0.5">
+          <Button
+            size="sm"
+            variant="ghost"
+            aria-pressed={state.exploded}
+            onClick={() => dispatch({ type: "exploded", on: !state.exploded })}
+            // the wiring sheet covers the craft: exploding it then shows nothing
+            disabled={!ready || state.sheet === "wiring"}
+            className="min-h-8 whitespace-nowrap px-2 py-0"
+          >
+            {t("workspace.exploded")}
+          </Button>
+        </span>
         <div className="flex shrink-0 items-center gap-x-2 max-sm:w-full sm:ms-auto">
           <dl
             aria-label={t("workspace.status.title")}
             className="flex items-center gap-x-4 whitespace-nowrap max-sm:w-full max-sm:justify-between"
             data-testid="bench-status"
           >
-            <div className="flex items-baseline gap-1.5">
-              <dt className="ink-label">{t("workspace.status.parts")}</dt>
+            <div className="flex items-baseline gap-2">
+              <dt className="field-label">{t("workspace.status.parts")}</dt>
               <dd className="tabular font-ui text-sm font-semibold">{ready ? `${bench.fitted}/${bench.total}` : "…"}</dd>
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <dt className="ink-label">{t("workspace.status.plugged")}</dt>
-              <dd className="font-ui text-sm font-semibold">{bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}</dd>
+            <div className="flex items-baseline gap-2">
+              <dt className="field-label">{t("workspace.status.plugged")}</dt>
+              <dd className="text-sm font-semibold">{bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}</dd>
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <dt className="ink-label">{t("workspace.status.fault")}</dt>
-              <dd className={`font-ui text-sm font-semibold ${bench.fault ? "text-bad" : ""}`}>
+            <div className="flex items-baseline gap-2">
+              <dt className="field-label">{t("workspace.status.fault")}</dt>
+              <dd className={`text-sm font-semibold ${bench.fault ? "text-bad" : ""}`}>
                 {bench.fault ? t("workspace.status.faultCap") : t("workspace.status.faultNone")}
               </dd>
             </div>
@@ -304,8 +306,8 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
         {empty ? (
           // centred between the figure's part pickers (two rows in German on a phone) and its zoom and See-through rows
           <div className="pointer-events-none absolute inset-0 grid place-items-center px-3 py-20 sm:p-4">
-            <div className="pointer-events-auto w-full max-w-sm rounded-ink border-2 border-line bg-surface p-3 text-center shadow-ink animate-ink-fade sm:p-4">
-              <p className="font-head text-base sm:text-lg">{t("workspace.empty")}</p>
+            <div className="pointer-events-auto w-full max-w-sm rounded-2xl bg-surface p-3 text-center shadow-md animate-fade-in sm:p-4">
+              <p className="text-base sm:text-lg">{t("workspace.empty")}</p>
               <div className="mt-2 flex flex-wrap justify-center gap-2 sm:mt-3">
                 <Button variant="primary" onClick={() => dispatch({ type: "bench/run", run: "build" })} data-testid="empty-build">
                   {t("build.buildForMe")}
@@ -345,7 +347,7 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
 
   const below = (
     <section className="grid gap-x-12 gap-y-8 lg:grid-cols-2" aria-labelledby={`meet-${id}-${lang}`}>
-      <div className="ink-prose">
+      <div className="prose">
         <h2 id={`meet-${id}-${lang}`}>{t("workspace.meet", { noun: ct(content.noun) })}</h2>
         {ct(content.overview)
           .split(/\n{2,}/)
@@ -353,7 +355,7 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
             <p key={i}>{para}</p>
           ))}
       </div>
-      <div className="ink-prose">
+      <div className="prose">
         <h2>{t("workspace.practice")}</h2>
         <p>{ct(content.practice)}</p>
         <p className="text-muted">{ct(content.hint)}</p>

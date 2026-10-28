@@ -12,7 +12,7 @@ set -uo pipefail
 
 cd "$(dirname "$0")/.."
 
-STEPS=(content schema typecheck lint no-only copy provenance relay-deps unit relay build e2e secrets audit)
+STEPS=(content schema typecheck lint ui no-only copy provenance relay-deps unit relay build e2e secrets audit)
 
 usage_steps() {
   echo "valid steps: ${STEPS[*]}" >&2
@@ -73,6 +73,7 @@ run_step() {
     schema) npm run schema:check ;;
     typecheck) npm run typecheck ;;
     lint) npm run lint ;;
+    ui) node scripts/ui-check.mjs ;;
     no-only) ! git grep -nE --untracked -e "[.]only[(]" -- src figures scripts e2e server ;;
     copy) node scripts/copy-check.mjs ;;
     provenance) npm run provenance:check ;;

@@ -18,7 +18,7 @@ export function Toggle({ checked, onChange, label, description, disabled, classN
   return (
     <div className={cx("flex min-h-11 items-center justify-between gap-4", className)}>
       <span className="min-w-0">
-        <span id={`${id}-l`} className="block font-body text-sm font-semibold">
+        <span id={`${id}-l`} className="block text-sm font-semibold">
           {label}
         </span>
         {description ? (
@@ -35,22 +35,22 @@ export function Toggle({ checked, onChange, label, description, disabled, classN
         aria-describedby={description ? `${id}-d` : undefined}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className="group relative inline-flex h-11 w-16 shrink-0 cursor-pointer items-center rounded-full disabled:cursor-not-allowed disabled:opacity-50"
+        className="group inline-flex h-11 w-12 shrink-0 cursor-pointer items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
       >
         <span
           aria-hidden="true"
           className={cx(
-            "absolute inset-x-1 inset-y-2 rounded-full border-2 border-line transition-colors",
-            checked ? "bg-mint" : "bg-sunken",
+            "motion-fade relative h-6 w-10 rounded-full border border-muted",
+            checked ? "bg-accent" : "bg-sunken",
           )}
-        />
-        <span
-          aria-hidden="true"
-          className={cx(
-            "absolute top-1/2 size-5 -translate-y-1/2 rounded-full border-2 border-line bg-surface shadow-ink-sm transition-[inset-inline-start] duration-150",
-            checked ? "start-9" : "start-2",
-          )}
-        />
+        >
+          <span
+            className={cx(
+              "motion-move absolute start-0.5 top-0.5 size-5 rounded-full bg-paper shadow-sm",
+              checked ? "translate-x-4 rtl:-translate-x-4" : "translate-x-0",
+            )}
+          />
+        </span>
       </button>
     </div>
   );

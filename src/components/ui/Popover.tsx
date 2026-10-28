@@ -88,7 +88,7 @@ export function Popover({ label, trigger, align = "end", children, className }: 
         role="dialog"
         aria-label={label}
         className={cx(
-          "ink-card fixed inset-auto m-0 w-[min(20rem,calc(100vw-2rem))] border-line p-3 text-ink shadow-ink-lg open:animate-ink-fade",
+          "fixed inset-auto m-0 w-[min(20rem,calc(100vw-2rem))] rounded-2xl bg-raised p-4 text-ink shadow-lg open:animate-fade-in",
           className,
         )}
       >

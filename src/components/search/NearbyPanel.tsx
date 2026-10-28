@@ -2,13 +2,13 @@
 
 import { useEffect, useId, useState, type FormEvent } from "react";
 import type { LabDockProps, LabKind } from "@/components/dock/types";
-import { Button, Callout, Chip, Icon, SegmentedControl } from "@/components/ui";
+import { Button, Callout, Chip, EmptyState, Icon, SegmentedControl, TextInput } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { fetchEvents, fetchNearby, type FailCode } from "@/lib/search/client";
 import { useSearchT, type SearchT } from "@/lib/search/messages";
 import { EVENT_TOPICS, cityOf } from "@/lib/search/topics";
 import { NEARBY_KINDS, type MakerEvent, type NearbyKind, type Place } from "@/lib/search/types";
-import { PanelHead, PanelSkeleton, SearchFailure, SearchNotSetUp, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
+import { PanelHead, PanelSkeleton, ResultsSkeleton, SearchFailure, SearchNotSetUp, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
 
 /** Where the search is centred: a typed place, or the browser's position (asked for only on a click). */
 type Where = { near: string } | { ll: string };
@@ -21,7 +21,7 @@ function PlaceItem({ place, t, f }: { place: Place; t: SearchT; f: Format }) {
   return (
     <li className="space-y-1 py-3">
       <div className="flex items-start justify-between gap-2">
-        <h4 className="min-w-0 text-sm font-semibold">{place.title}</h4>
+        <h4 className="min-w-0 text-sm font-semibold text-balance">{place.title}</h4>
         {place.distanceKm !== undefined ? (
           <Chip tone="plain" className="shrink-0 tabular">
             {t("nearby.distance", { km: f.one(place.distanceKm) })}
@@ -35,16 +35,16 @@ function PlaceItem({ place, t, f }: { place: Place; t: SearchT; f: Format }) {
           {place.reviews !== undefined ? <span className="text-muted"> · {t("nearby.reviews", { count: place.reviews })}</span> : null}
         </p>
       ) : null}
-      {place.hours ? <p className="font-ui text-xs text-muted">{place.hours}</p> : null}
+      {place.hours ? <p className="text-xs text-muted">{place.hours}</p> : null}
       <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-sm">
         <a href={place.mapsUrl} {...external} className="inline-flex items-center gap-1 font-semibold underline underline-offset-2">
           {t("nearby.maps", { place: place.title })}
-          <Icon name="external" size={14} aria-hidden="true" />
+          <Icon name="external" size={16} aria-hidden="true" />
         </a>
         {place.url ? (
           <a href={place.url} {...external} className="inline-flex items-center gap-1 underline underline-offset-2">
             {t("nearby.website", { place: place.title })}
-            <Icon name="external" size={14} aria-hidden="true" />
+            <Icon name="external" size={16} aria-hidden="true" />
           </a>
         ) : null}
       </div>
@@ -59,15 +59,15 @@ function EventItem({ event, t }: { event: MakerEvent; t: SearchT }) {
         href={event.url}
         {...external}
         aria-label={t("nearby.eventLink", { event: event.title })}
-        className="-mx-2 flex gap-3 rounded-ink-sm p-2 no-underline hover:bg-sunken"
+        className="-mx-2 flex gap-3 rounded-lg px-2 py-3 no-underline motion-fade hover:bg-hover"
       >
         {event.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element -- remote thumbnail from Google's CDN
-          <img src={event.thumbnail} alt="" width={64} height={64} loading="lazy" className="h-16 w-16 shrink-0 rounded-ink border-2 border-line object-cover" />
+          <img src={event.thumbnail} alt="" width={64} height={64} loading="lazy" className="size-16 shrink-0 rounded-lg border border-rule object-cover" />
         ) : null}
         <span className="min-w-0">
-          <span className="block font-semibold">{event.title}</span>
-          <span className="block font-ui text-xs">{event.when}</span>
+          <span className="block text-sm font-semibold">{event.title}</span>
+          <span className="block text-xs">{event.when}</span>
           <span className="block truncate text-sm text-muted">{event.address ?? event.venue}</span>
         </span>
       </a>
@@ -89,6 +89,7 @@ export function NearbyPanel({ lab }: LabDockProps) {
   const [places, setPlaces] = useState<{ key: string; outcome: Outcome<Place> } | null>(null);
   const [events, setEvents] = useState<{ key: string; outcome: Outcome<MakerEvent> } | null>(null);
   const [eventsRequested, setEventsRequested] = useState<string | null>(null);
+  const [eventsRound, setEventsRound] = useState(0);
 
   const ready = availability === "ready" && where !== null;
   const placesKey = where ? `${kind}|${"near" in where ? where.near : where.ll}|${locale}` : "";
@@ -115,7 +116,7 @@ export function NearbyPanel({ lab }: LabDockProps) {
       .then((r) => setEvents({ key: eventsKey, outcome: r.ok ? { ok: true, items: r.data.events } : r }))
       .catch(() => undefined);
     return () => controller.abort();
-  }, [availability, eventPlace, eventsKey, eventsRequested, lab]);
+  }, [availability, eventPlace, eventsKey, eventsRequested, eventsRound, lab]);
 
   const eventOutcome = events?.key === eventsKey ? events.outcome : null;
 
@@ -125,6 +126,11 @@ export function NearbyPanel({ lab }: LabDockProps) {
     event.preventDefault();
     const near = draft.trim();
     if (near.length >= 2) setWhere({ near });
+  }
+
+  function retryPlaces() {
+    setPlaces(null);
+    setWhere((w) => (w ? { ...w } : w));
   }
 
   function locate() {
@@ -144,6 +150,11 @@ export function NearbyPanel({ lab }: LabDockProps) {
       (error) => setLocating(error.code === error.PERMISSION_DENIED ? "denied" : "failed"),
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 600_000 },
     );
+  }
+
+  function retryEvents() {
+    setEvents(null);
+    setEventsRound((round) => round + 1);
   }
 
   const loadingPlaces = ready && !placeOutcome;
@@ -167,19 +178,18 @@ export function NearbyPanel({ lab }: LabDockProps) {
             className="max-w-full overflow-x-auto"
           />
           <form onSubmit={submit} className="flex flex-wrap gap-2" role="search">
-            <label htmlFor={`${id}-place`} className="sr-only">
-              {t("nearby.place")}
-            </label>
-            <input
-              id={`${id}-place`}
-              type="text"
-              autoComplete="address-level2"
-              placeholder={t("nearby.placeHint")}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              maxLength={120}
-              className="ink-field min-w-0 flex-1 basis-40"
-            />
+            <div className="min-w-0 flex-1 basis-40">
+              <TextInput
+                id={`${id}-place`}
+                label={t("nearby.place")}
+                hideLabel
+                autoComplete="address-level2"
+                placeholder={t("nearby.placeHint")}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                maxLength={120}
+              />
+            </div>
             <Button type="submit" size="sm" disabled={draft.trim().length < 2}>
               {t("nearby.search")}
             </Button>
@@ -200,9 +210,15 @@ export function NearbyPanel({ lab }: LabDockProps) {
 
           <div aria-live="polite" aria-busy={loadingPlaces}>
             {!where ? <p className="text-sm text-muted">{t("nearby.start")}</p> : null}
-            {loadingPlaces ? <p className="text-sm text-muted">{t("nearby.loading")}</p> : null}
-            {placeOutcome && !placeOutcome.ok ? <SearchFailure code={placeOutcome.code} t={t} what={t("nearby.needsKey")} generic={t("nearby.failed")} /> : null}
-            {placeOutcome?.ok && placeOutcome.items.length === 0 ? <p className="text-sm text-muted">{t("nearby.empty")}</p> : null}
+            {loadingPlaces ? <ResultsSkeleton label={t("nearby.loading")} /> : null}
+            {placeOutcome && !placeOutcome.ok ? (
+              <SearchFailure code={placeOutcome.code} t={t} what={t("nearby.needsKey")} generic={t("nearby.failed")}>
+                <Button size="sm" onClick={retryPlaces}>
+                  {t("real.retry")}
+                </Button>
+              </SearchFailure>
+            ) : null}
+            {placeOutcome?.ok && placeOutcome.items.length === 0 ? <EmptyState icon="search" title={t("nearby.empty")} bordered /> : null}
             {placeOutcome?.ok && placeOutcome.items.length > 0 ? (
               <ul className="divide-y divide-rule">
                 {placeOutcome.items.map((place) => (
@@ -214,7 +230,7 @@ export function NearbyPanel({ lab }: LabDockProps) {
 
           {eventPlace ? (
             <section aria-labelledby={`${id}-events`} aria-busy={loadingEvents} className="space-y-2">
-              <h3 id={`${id}-events`} className="ink-kicker">
+              <h3 id={`${id}-events`} className="kicker">
                 {t("nearby.events")}
               </h3>
               {!eventsAsked ? (
@@ -222,13 +238,17 @@ export function NearbyPanel({ lab }: LabDockProps) {
                   {t("nearby.findEvents")}
                 </Button>
               ) : null}
-              {loadingEvents ? <p className="text-sm text-muted">{t("nearby.loading")}</p> : null}
-              {eventOutcome && !eventOutcome.ok ? <SearchFailure code={eventOutcome.code} t={t} what={t("nearby.needsKey")} generic={t("nearby.failed")} /> : null}
-              {eventOutcome?.ok && eventOutcome.items.length === 0 ? (
-                <p className="text-sm text-muted">{t("nearby.eventsEmpty", { place: eventPlace })}</p>
+              {loadingEvents ? <ResultsSkeleton label={t("nearby.loading")} thumb /> : null}
+              {eventOutcome && !eventOutcome.ok ? (
+                <SearchFailure code={eventOutcome.code} t={t} what={t("nearby.needsKey")} generic={t("nearby.failed")}>
+                  <Button size="sm" onClick={retryEvents}>
+                    {t("real.retry")}
+                  </Button>
+                </SearchFailure>
               ) : null}
+              {eventOutcome?.ok && eventOutcome.items.length === 0 ? <EmptyState icon="search" title={t("nearby.eventsEmpty", { place: eventPlace })} bordered /> : null}
               {eventOutcome?.ok && eventOutcome.items.length > 0 ? (
-                <ul className="grid gap-2">
+                <ul className="divide-y divide-rule">
                   {eventOutcome.items.map((event) => (
                     <EventItem key={event.url + event.when} event={event} t={t} />
                   ))}

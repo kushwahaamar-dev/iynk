@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "title": "iynk : un labo de hardware dans votre navigateur",
+    "description": "Un établi open source pour les circuits, les cartes, les robots et les drones. Câblez des composants, écrivez du code, exécutez-le et cassez-le exprès, dans votre navigateur, sans compte."
+  },
+  "hero": {
+    "kicker": "Établi de hardware open source",
+    "title": "Apprenez le hardware en le câblant,\nen l'exécutant et en le cassant",
+    "lede": "iynk est un établi open source pour les circuits, les cartes, les robots et les drones. Câblez des composants, écrivez du code, exécutez-le et regardez la simulation répondre, le tout dans votre navigateur.",
+    "cta": "Ouvrir l'établi",
+    "browse": "Parcourir les cartes",
+    "reassure": "Pas de compte. Rien à installer. Votre travail reste dans ce navigateur.",
+    "proof": "{boards} cartes, {benches} bancs de robotique et {drones} drones, tous exécutables.",
+    "figure": "Arduino Uno R3 exécutant Blink sur une plaque d'essai, en direct : faites glisser pour le tourner"
+  },
+  "tagline": {
+    "text": "Câblez un composant à l'envers et regardez-le échouer. Corrigez, et regardez-le fonctionner. C'est là que la fiche technique prend enfin son sens."
+  },
+  "benefits": {
+    "title": "Ce que vous pouvez faire ici",
+    "see": {
+      "title": "Regardez le circuit réfléchir",
+      "text": "Tournez une carte 3D dessinée à la main, passez de la plaque d'essai au schéma, et regardez les broches et le courant changer pendant que le code s'exécute."
+    },
+    "code": {
+      "title": "Écrivez du code et obtenez un résultat",
+      "text": "Modifiez du C++ Arduino, du MicroPython ou du Verilog et appuyez sur Exécuter. La simulation pilote la figure, les broches et le moniteur série."
+    },
+    "break": {
+      "title": "Cassez-le, puis comprenez pourquoi",
+      "text": "Oubliez une résistance, montez un composant à l'envers, branchez un moteur sur la mauvaise broche. Chaque panne explique ce qui a échoué et comment la corriger."
+    },
+    "fly": {
+      "title": "Faites voler ce que vous avez construit",
+      "text": "Dimensionnez un drone avec le calcul de poussée et de poids, réussissez les tests de sécurité, puis faites-le voler sur un parcours pour battre vos meilleurs temps."
+    }
+  },
+  "labs": {
+    "title": "Trois labos",
+    "open": "Ouvrir {lab}",
+    "boards": {
+      "text": "De l'Arduino Uno R3 à deux cartes FPGA : leçons, éditeur de code en direct, vues schéma et plaque d'essai, moniteur série et pannes qui se produisent vraiment.",
+      "unit": "cartes"
+    },
+    "robotics": {
+      "text": "Pilotes de moteur, capteurs et étages de puissance, montés pièce par pièce avec l'état en direct et le courant consommé.",
+      "unit": "bancs"
+    },
+    "drones": {
+      "text": "Du Tiny Whoop à l'octocoptère : construisez-le pièce par pièce, vérifiez les calculs, réussissez les tests de sécurité, puis volez.",
+      "unit": "drones"
+    }
+  },
+  "how": {
+    "title": "Comment ça marche",
+    "1": {
+      "title": "Choisissez une pièce",
+      "text": "Choisissez une carte, un banc de robotique ou un drone. Chacun s'ouvre comme une figure que vous pouvez tourner et démonter."
+    },
+    "2": {
+      "title": "Câblez et écrivez du code",
+      "text": "Suivez une leçon ou partez de Blink. L'éditeur, le brochage et le moniteur série se trouvent à côté de la figure."
+    },
+    "3": {
+      "title": "Exécutez, puis cassez",
+      "text": "Appuyez sur Exécuter. Activez une panne, lisez la vérification qui a échoué, corrigez et exécutez de nouveau."
+    }
+  },
+  "proof": {
+    "title": "Ce qui s'exécute et ce qui est simulé",
+    "runs": {
+      "title": "Ce qui s'exécute dans votre navigateur",
+      "1": "Votre C++ Arduino, votre MicroPython et votre Verilog s'exécutent dans des interpréteurs à l'intérieur de la page, sur une horloge fixe, si bien qu'un même code donne le même résultat.",
+      "2": "Les broches, le moniteur série et la figure répondent à votre code.",
+      "3": "Un solveur de circuit décide de l'effet d'une erreur et affiche le courant."
+    },
+    "sim": {
+      "title": "Ce qui est simulé",
+      "1": "Les composants suivent des modèles de leurs fiches techniques, pas le vrai silicium.",
+      "2": "Le timing suit l'horloge de la simulation, pas celle d'une puce.",
+      "3": "Votre code n'est pas compilé pour la carte."
+    },
+    "fidelity": "iynk exécute votre code dans son propre interpréteur, pas sur une vraie puce. Il enseigne le comportement des composants ; il ne remplace ni un établi, ni un compilateur, ni une fiche technique."
+  },
+  "faq": {
+    "title": "Questions",
+    "1": {
+      "q": "Ai-je besoin d'un compte ?",
+      "a": "Non. Il n'y a rien à enregistrer. Votre progression et vos réglages restent dans ce navigateur."
+    },
+    "2": {
+      "q": "Est-ce gratuit ?",
+      "a": "Oui. C'est open source et il n'y a pas d'offre payante. Si vous faites tourner votre propre copie, les clés d'IA ou de recherche que vous ajoutez sont les vôtres."
+    },
+    "3": {
+      "q": "Quelles langues parle-t-il ?",
+      "a": "Anglais, espagnol, français, allemand, chinois et hindi, y compris les libellés à l'intérieur des figures."
+    },
+    "4": {
+      "q": "Mon code s'exécute-t-il sur une vraie carte ?",
+      "a": "Non. Il s'exécute dans l'interpréteur propre à iynk, dans la page. Pour utiliser une vraie carte, il vous faut toujours un compilateur et un établi."
+    },
+    "5": {
+      "q": "Quelle est la précision de la simulation ?",
+      "a": "Les composants suivent des modèles simples et l'horloge est déterministe. Prenez les résultats comme un support d'apprentissage, pas comme un test de votre matériel."
+    },
+    "6": {
+      "q": "De quoi les fonctions d'IA ont-elles besoin ?",
+      "a": "Elles sont facultatives. Ajoutez votre propre clé dans Réglages, Clés et utilisation, et le partenaire et la recherche de boutiques s'activent. Tout le reste fonctionne sans clé."
+    },
+    "7": {
+      "q": "Où mon travail est-il stocké ?",
+      "a": "Dans ce navigateur, sur cet appareil. Effacer les données du site le supprime."
+    },
+    "8": {
+      "q": "Puis-je lire ou modifier le code ?",
+      "a": "Oui. Le code source est sur GitHub, avec un guide pour faire tourner votre propre copie et un autre pour contribuer."
+    }
+  },
+  "open": {
+    "title": "Open source",
+    "text": "Lisez-le, faites tourner votre propre copie ou envoyez une correction.",
+    "readme": "Lire le README",
+    "selfHost": "Faire tourner votre propre copie",
+    "contribute": "Contribuer"
+  },
+  "end": {
+    "title": "L'établi est prêt.",
+    "text": "Choisissez une carte et appuyez sur Exécuter. Il n'y a rien à installer et aucun compte à créer.",
+    "cta": "Ouvrir l'établi"
+  }
+}

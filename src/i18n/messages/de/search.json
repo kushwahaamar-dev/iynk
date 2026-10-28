@@ -49,10 +49,10 @@
     }
   },
   "opt": {
-    "heading": "Budget-Optimierer",
+    "heading": "Budgetoptimierer",
     "lede": "Lege ein Budget und deine Grenzen fest. Der Drohnenrechner prüft jede Kombination aus Akku, Motor und Propeller zu heutigen Preisen.",
     "budget": "Budget",
-    "minTW": "Mindest-Schub-Gewicht",
+    "minTW": "Mindestwert Schub zu Gewicht",
     "minFlight": "Mindestflugzeit",
     "minutes": "{value} min",
     "best": "Bester Aufbau bis {amount}",
@@ -65,8 +65,8 @@
     "swap": "{slot}: {from} → {to}",
     "apply": "Diesen Aufbau im Labor verwenden",
     "applied": "Das Labor verwendet jetzt diesen Aufbau.",
-    "upgrade": "Für {amount} mehr: Schub-Gewicht {tw} und {minutes} min Flugzeit.",
-    "upgradeCurrent": "Dein aktueller Aufbau schafft Schub-Gewicht {tw} und {minutes} min Flugzeit für {amount} mehr.",
+    "upgrade": "Für {amount} mehr: Schub zu Gewicht {tw} und {minutes} min Flugzeit.",
+    "upgradeCurrent": "Dein aktueller Aufbau schafft Schub zu Gewicht {tw} und {minutes} min Flugzeit für {amount} mehr.",
     "noneBudget": "Bis {amount} erfüllt nichts deine Grenzen. Der günstigste passende Aufbau kostet {cheapest}.",
     "noneConstraints": "Keine Kombination dieser Teile erfüllt deine Grenzen. Senke ein Minimum, um einen Aufbau zu sehen.",
     "tw": "S:G",

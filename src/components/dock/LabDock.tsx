@@ -70,7 +70,7 @@ const VideoHelp = dynamic(() => import("@/components/search/VideoHelp").then((m)
 function RealTab(lab: LabDockProps) {
   const search = useSearchAvailability();
   return (
-    <div className="flex flex-col gap-6 [&>*+*]:border-t-[1.5px] [&>*+*]:border-rule [&>*+*]:pt-6">
+    <div className="flex flex-col gap-6 [&>*+*]:border-t [&>*+*]:border-rule [&>*+*]:pt-6">
       <RealBuildPanel {...lab} />
       {search === "off" ? null : (
         <>
@@ -95,15 +95,6 @@ function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
  * workspace bar) as a "Lab tools" button: on a desk it opens a drawer along
  * the right edge that leaves the figure in view, on a phone a bottom sheet.
  */
-// Where the screen has room, the open drawer pushes the page over instead of covering the rail, so in a room you can
-// work the steps or the code and still see the keyboard and the chat. Narrower desks keep the overlay. The figure gives
-// up its room first, down to about 34rem, and then the rail, down to 22rem (its width on a 1024 px screen), so a lesson's
-// code stays readable beside the drawer on a wide screen (64rem: the drawer, the figure's 34rem, the gap and padding).
-const PUSH_PAGE = `@media (width >= 80rem) {
-  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) > :is(main, footer) { padding-inline-end: 26rem; }
-  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) .ws { grid-template-columns: minmax(0, 1fr) min(var(--rail-w), max(22rem, 100vw - 64rem)); }
-}`;
-
 export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>) {
   const t = useCommonT();
   const { features } = useFeatures();
@@ -247,9 +238,9 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       }}
       className="relative w-fit shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
     >
-      <Icon name="tools" size={18} />
+      <Icon name="tools" size={20} />
       <span className="max-sm:sr-only">{t("dock.label")}</span>
-      {inRoom ? <span aria-hidden="true" className="absolute -end-0.5 -top-0.5 size-3 rounded-full border-[1.5px] border-line bg-mint" /> : null}
+      {inRoom ? <span aria-hidden="true" className="absolute -end-0.5 -top-0.5 size-2 rounded-full bg-good" /> : null}
     </Button>
   );
 
@@ -277,27 +268,24 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       {trigger}
       {isClient
         ? createPortal(
-            <>
-              <aside
-                ref={drawerRef}
-                id={drawerId}
-                aria-label={t("dock.label")}
-                data-testid="lab-dock"
-                data-ready="true"
-                data-layout="desk"
-                hidden={!isOpen}
-                onKeyDown={onDrawerKey}
-                className="fixed end-0 top-(--header-h) bottom-0 z-30 flex w-[min(26rem,calc(100vw-3rem))] flex-col border-s-2 border-line bg-surface shadow-[-4px_0_0_var(--shadow-c)] animate-ink-from-end"
-              >
-                <div className="flex min-h-14 shrink-0 items-center gap-2 border-b-[1.5px] border-rule ps-4 pe-2">
-                  <Icon name="tools" size={18} className="text-muted" />
-                  <h2 className="min-w-0 flex-1 font-head text-lg">{t("dock.label")}</h2>
-                  <IconButton icon="close" size="sm" label={t("dock.close")} onClick={close} />
-                </div>
-                <div className="min-h-0 flex-1">{tabList}</div>
-              </aside>
-              <style>{PUSH_PAGE}</style>
-            </>,
+            <aside
+              ref={drawerRef}
+              id={drawerId}
+              aria-label={t("dock.label")}
+              data-testid="lab-dock"
+              data-ready="true"
+              data-layout="desk"
+              hidden={!isOpen}
+              onKeyDown={onDrawerKey}
+              className="fixed end-0 top-(--header-h) bottom-0 z-dock flex w-[min(var(--dock-w),calc(100vw-3rem))] flex-col rounded-s-2xl bg-raised shadow-lg animate-slide-in-end"
+            >
+              <div className="flex min-h-12 shrink-0 items-center gap-2 border-b border-rule ps-4 pe-2">
+                <Icon name="tools" size={20} className="text-muted" />
+                <h2 className="min-w-0 flex-1 text-lg font-semibold">{t("dock.label")}</h2>
+                <IconButton icon="close" size="sm" label={t("dock.close")} onClick={close} />
+              </div>
+              <div className="min-h-0 flex-1">{tabList}</div>
+            </aside>,
             document.body,
           )
         : null}

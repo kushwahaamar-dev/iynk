@@ -70,3 +70,7 @@ __pycache__/
 
 # Tool installs inside the master plan docs (schema checks, spikes)
 docs/MASTER_PLAN/**/node_modules/
+
+# Local screenshot baselines and shots of the visual spec
+/e2e/visual.spec.ts-snapshots/
+/test-results/ui-shots/

@@ -57,24 +57,22 @@ export function ChecksPanel({ store, checks, onCheck, done }: { store: BoardLabS
       </div>
       {!hasResult && <p className="text-sm text-muted">{t("checks.lede")}</p>}
       {result.status === "running" && (
-        <progress className="h-2 w-full accent-[var(--color-mustard-m)]" max={1} value={result.progress ?? 0} aria-label={t("checks.running")} />
+        <progress className="h-2 w-full accent-accent" max={1} value={result.progress ?? 0} aria-label={t("checks.running")} />
       )}
-      <ol className="divide-y-[1.5px] divide-rule">
+      <ol className="divide-y divide-rule">
         {checks.map((c, i) => {
           const r = result.results[i];
           const state = result.status === "running" ? "running" : r ? (r.ok ? "pass" : "fail") : "pending";
           return (
-            <li key={i} className="flex items-start gap-3 py-2.5 text-sm" data-check={state}>
-              <span
-                aria-hidden="true"
-                className={cx(
-                  "inline-flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] text-xs font-bold",
-                  state === "pass" ? "border-good bg-good text-paper" : state === "fail" ? "border-bad text-bad" : "border-rule text-muted",
-                )}
-              >
-                {state === "pass" ? <Icon name="check" size={12} /> : state === "fail" ? "×" : null}
-              </span>
-              <span className="min-w-0 flex-1">
+            <li key={i} className="flex items-start gap-3 py-3 text-sm" data-check={state}>
+              {state === "pass" ? (
+                <Icon name="check" size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-good" />
+              ) : state === "fail" ? (
+                <Icon name="close" size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-bad" />
+              ) : (
+                <span aria-hidden="true" className="mt-0.5 size-4 shrink-0 rounded-full border border-rule" />
+              )}
+              <span className={cx("min-w-0 flex-1", state === "fail" && "text-bad")}>
                 {tc(c.label)}
                 <span className="sr-only"> · {t(`checks.${state}`)}</span>
               </span>
