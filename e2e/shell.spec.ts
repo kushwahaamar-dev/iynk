@@ -50,6 +50,8 @@ function cutThemeOptions(page: Page) {
 }
 
 async function expectNoAxeViolations(page: Page) {
+  // Axe reads the blended colour of a block that is still fading in, so let the entrance animations finish first.
+  await page.evaluate(() => Promise.all(document.getAnimations().filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity).map((animation) => animation.finished)));
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const summary = results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`);
   expect(summary).toEqual([]);
