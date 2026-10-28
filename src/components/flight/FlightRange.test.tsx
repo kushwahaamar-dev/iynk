@@ -119,7 +119,7 @@ test("a finished lap names its medal, and the demo's lap never counts", () => {
   act(() => session().sim.events.push({ t: 1, type: "lap", time: 12.5, best: true, splits: [] }));
   act(() => session().dispatch({ type: "sticks", sticks: { throttle: 0, yaw: 0, pitch: 0, roll: 0 } }));
   fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
-  expect(screen.getByText("Lap 12.50 s (best!). Silver medal!")).toBeTruthy();
+  expect(screen.getByText("Lap 12.50 s, a new best. Silver medal.")).toBeTruthy();
   act(() => session().sim.events.push({ t: 2, type: "lap", time: 9, best: false, splits: [], demo: true }));
   fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
   expect(screen.getByText("Demo done in 9.0 s: the autopilot's time does not count")).toBeTruthy();
