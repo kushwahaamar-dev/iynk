@@ -20,6 +20,7 @@ vi.mock("@/lib/server/search/serpapi", () => ({
   offers: search.offers,
 }));
 
+const TOKEN = "t".repeat(40);
 let ip = 0;
 
 async function load(vars: Record<string, string> = { META_API_KEY: "k", SERPAPI_KEY: "s" }) {
@@ -27,6 +28,7 @@ async function load(vars: Record<string, string> = { META_API_KEY: "k", SERPAPI_
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
   vi.stubEnv("IYNK_TRUST_PROXY", "1");
+  vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }
@@ -35,7 +37,7 @@ function post(body: unknown, headers: Record<string, string> = {}) {
   ip += 1;
   return new Request("http://localhost/api/ai/chat", {
     method: "POST",
-    headers: { "content-type": "application/json", "x-real-ip": `10.0.0.${ip}`, ...headers },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.0.0.${ip}`, ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -58,11 +60,28 @@ afterEach(() => {
 });
 
 describe("POST /api/ai/chat", () => {
-  it("answers 503 not_configured as JSON when no AI key is set", async () => {
+  it("answers 401 with an empty message when the token is missing or wrong", async () => {
+    const POST = await load();
+    const missing = await POST(post(ask, { "x-iynk-server-token": "" }));
+    const wrong = await POST(post(ask, { "x-iynk-server-token": "w".repeat(40) }));
+    expect(missing.status).toBe(401);
+    expect((await missing.json()).error).toEqual({ code: "unauthorized", message: "" });
+    expect(wrong.status).toBe(401);
+    expect((await wrong.json()).error).toEqual({ code: "unauthorized", message: "" });
+  });
+
+  it("answers 501 feature_disabled when the switch is off", async () => {
+    const POST = await load({ META_API_KEY: "k", IYNK_AI_ENABLE: "0" });
+    const res = await POST(post(ask));
+    expect(res.status).toBe(501);
+    expect((await res.json()).error.code).toBe("feature_disabled");
+  });
+
+  it("answers 501 feature_disabled when the switch is on and the key is missing", async () => {
     const POST = await load({});
     const res = await POST(post(ask));
-    expect(res.status).toBe(503);
-    expect((await res.json()).error.code).toBe("not_configured");
+    expect(res.status).toBe(501);
+    expect((await res.json()).error).toMatchObject({ code: "feature_disabled", message: expect.stringMatching(/turned off/) });
   });
 
   it("validates the body and the tool-call history", async () => {
@@ -79,7 +98,7 @@ describe("POST /api/ai/chat", () => {
       ],
     };
     expect((await POST(post(unanswered))).status).toBe(400);
-    const req = new Request("http://localhost/api/ai/chat", { method: "POST", body: JSON.stringify(ask) });
+    const req = new Request("http://localhost/api/ai/chat", { method: "POST", headers: { "x-iynk-server-token": TOKEN }, body: JSON.stringify(ask) });
     expect((await POST(req)).status).toBe(415);
   });
 
@@ -223,11 +242,11 @@ describe("POST /api/ai/chat", () => {
     const req = () =>
       new Request("http://localhost/api/ai/chat", {
         method: "POST",
-        headers: { "content-type": "application/json", "x-real-ip": "10.9.9.9" },
+        headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": "10.9.9.9" },
         body: JSON.stringify(ask),
       });
     // Without a key every call is refused before the limiter, so set one up and fail upstream instead.
-    expect((await POST(req())).status).toBe(503);
+    expect((await POST(req())).status).toBe(501);
     const keyed = await load({ META_API_KEY: "k" });
     fakeFetch(...Array.from({ length: 40 }, () => apiError(400)));
     const statuses: number[] = [];

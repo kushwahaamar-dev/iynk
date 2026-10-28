@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const flags = vi.hoisted(() => ({ search: true }));
 
 vi.mock("@/lib/server/env", () => ({
-  env: { SERPAPI_KEY: "route-test-key", SERPAPI_MONTHLY_BUDGET: 500 },
+  env: { SERPAPI_KEY: "route-test-key", SERPAPI_MONTHLY_BUDGET: 500, IYNK_SERVER_TOKEN: "t".repeat(40), IYNK_TRUST_PROXY: true },
   features: flags,
 }));
 // connection() needs a request scope that a unit test doesn't have.
@@ -15,13 +15,15 @@ import * as offersRoute from "./offers/route";
 import * as videosRoute from "./videos/route";
 import * as webRoute from "./web/route";
 
+const TOKEN = "t".repeat(40);
 let counter = 0;
 // A fresh IP per request keeps the per-IP rate limiter out of the way, except where a test wants it.
-const get = (path: string, ip = `10.0.0.${++counter % 250}`) => new Request(`http://localhost${path}`, { headers: { "x-real-ip": ip } });
+const get = (path: string, ip = `10.0.0.${++counter % 250}`, headers: Record<string, string> = {}) =>
+  new Request(`http://localhost${path}`, { headers: { "x-iynk-server-token": TOKEN, "x-real-ip": ip, ...headers } });
 const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
   new Request(`http://localhost${path}`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-real-ip": `10.1.0.${++counter % 250}`, ...headers },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.1.0.${++counter % 250}`, ...headers },
     body: JSON.stringify(body),
   });
 
@@ -91,11 +93,11 @@ describe("/api/search/offers", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("answers 503 not_configured when search is off", async () => {
+  it("answers 501 feature_disabled when search is off or has no key", async () => {
     flags.search = false;
     const res = await offersRoute.POST(post("/api/search/offers", { parts: [{ key: "a", query: "servo", qty: 1 }] }));
-    expect(res.status).toBe(503);
-    expect((await res.json()).error.code).toBe("not_configured");
+    expect(res.status).toBe(501);
+    expect((await res.json()).error).toMatchObject({ code: "feature_disabled", message: expect.stringMatching(/turned off/) });
   });
 
   it("refuses other origins", async () => {
@@ -174,5 +176,36 @@ describe("/api/search/events, videos, web", () => {
     let last = 0;
     for (let i = 0; i < 31; i++) last = (await videosRoute.GET(get("/api/search/videos?q=solder+tips", "10.9.9.9"))).status;
     expect(last).toBe(429);
+  });
+});
+
+describe("the server token", () => {
+  const routes = [
+    () => eventsRoute.GET(get("/api/search/events?near=Austin", undefined, { "x-iynk-server-token": "" })),
+    () => nearbyRoute.GET(get("/api/search/nearby?kind=makerspace&near=Austin", undefined, { "x-iynk-server-token": "" })),
+    () => offersRoute.GET(get("/api/search/offers?q=servo", undefined, { "x-iynk-server-token": "" })),
+    () => videosRoute.GET(get("/api/search/videos?q=quad", undefined, { "x-iynk-server-token": "" })),
+    () => webRoute.GET(get("/api/search/web?q=l298n", undefined, { "x-iynk-server-token": "" })),
+  ];
+
+  it("answers 401 with an empty message on every search route, and never reaches SerpApi", async () => {
+    for (const call of routes) {
+      const res = await call();
+      expect(res.status).toBe(401);
+      expect((await res.json()).error).toEqual({ code: "unauthorized", message: "" });
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("answers a wrong token with the same bytes as a missing one", async () => {
+    const missing = await webRoute.GET(get("/api/search/web?q=l298n", undefined, { "x-iynk-server-token": "" }));
+    const wrong = await webRoute.GET(get("/api/search/web?q=l298n", undefined, { "x-iynk-server-token": "w".repeat(40) }));
+    expect(wrong.status).toBe(401);
+    expect(await wrong.text()).toBe(await missing.text());
+  });
+
+  it("checks the token before search is switched off", async () => {
+    flags.search = false;
+    expect((await webRoute.GET(get("/api/search/web?q=l298n", undefined, { "x-iynk-server-token": "" }))).status).toBe(401);
   });
 });

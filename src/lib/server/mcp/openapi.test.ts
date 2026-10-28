@@ -1,11 +1,13 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/openapi.json/route";
-import { OPTIONS as TOOL_OPTIONS, POST as TOOL_POST } from "@/app/api/mcp/tools/[name]/route";
+import { POST as TOOL_POST } from "@/app/api/mcp/tools/[name]/route";
+
+const TOKEN = vi.hoisted(() => "t".repeat(40));
 
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, voice: false, search: false, db: false, realtime: false, gemini: false },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test", IYNK_SERVER_TOKEN: TOKEN, IYNK_TRUST_PROXY: true },
+  features: { ai: false, voice: false, search: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 
@@ -14,7 +16,7 @@ let ip = 0;
 function callTool(name: string, body: unknown, headers: Record<string, string> = {}) {
   const req = new Request(`https://iynk.test/api/mcp/tools/${name}`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-real-ip": `10.1.0.${++ip}`, ...headers },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.1.0.${++ip}`, ...headers },
     body: JSON.stringify(body),
   });
   return TOOL_POST(req, { params: Promise.resolve({ name }) });
@@ -24,7 +26,7 @@ describe("GET /api/openapi.json", () => {
   it("describes every tool as a POST operation with its schemas", async () => {
     const res = await GET();
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    expect(res.headers.get("access-control-allow-origin")).toBeNull();
     const doc = await res.json();
     expect(doc).toMatchObject({ openapi: "3.1.0", info: { title: "iynk" }, servers: [{ url: "https://iynk.test" }] });
     type Body = { content: Record<string, { schema: { type?: string; $ref?: string } }> };
@@ -50,7 +52,6 @@ describe("POST /api/mcp/tools/<name>", () => {
   it("runs a tool and returns its result as plain JSON", async () => {
     const res = await callTool("search_catalog", { query: "stepper" });
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
     const body = await res.json();
     expect(body.results[0]).toMatchObject({ lab: "robotics", id: "a4988" });
   });
@@ -76,11 +77,8 @@ describe("POST /api/mcp/tools/<name>", () => {
     }
   });
 
-  it("refuses non-JSON bodies and answers preflight", async () => {
-    const req = new Request("https://iynk.test/api/mcp/tools/search_catalog", { method: "POST", headers: { "content-type": "text/plain" }, body: "hi" });
+  it("refuses non-JSON bodies", async () => {
+    const req = new Request("https://iynk.test/api/mcp/tools/search_catalog", { method: "POST", headers: { "content-type": "text/plain", "x-iynk-server-token": TOKEN }, body: "hi" });
     expect((await TOOL_POST(req, { params: Promise.resolve({ name: "search_catalog" }) })).status).toBe(415);
-    const pre = TOOL_OPTIONS();
-    expect(pre.status).toBe(204);
-    expect(pre.headers.get("access-control-allow-methods")).toBe("POST, OPTIONS");
   });
 });

@@ -6,9 +6,11 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DELETE, GET, POST } from "@/app/api/mcp/route";
 
+const TOKEN = vi.hoisted(() => "t".repeat(40));
+
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, voice: false, search: false, db: false, realtime: true, gemini: false },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test", IYNK_SERVER_TOKEN: TOKEN, IYNK_TRUST_PROXY: true },
+  features: { ai: false, voice: false, search: false, realtime: true, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 vi.mock("@/content/index.generated", async () => {
@@ -37,7 +39,10 @@ afterEach(async () => {
 
 async function connect() {
   client = new Client({ name: "iynk-e2e", version: "1.1.0" });
-  const transport = new StreamableHTTPClientTransport(new URL("https://iynk.test/api/mcp"), { fetch: routeHandler });
+  const transport = new StreamableHTTPClientTransport(new URL("https://iynk.test/api/mcp"), {
+    fetch: routeHandler,
+    requestInit: { headers: { "x-iynk-server-token": TOKEN } },
+  });
   await client.connect(transport);
   return client;
 }

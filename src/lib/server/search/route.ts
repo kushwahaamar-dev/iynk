@@ -1,17 +1,19 @@
 import "server-only";
 import type { z } from "zod";
 import { features } from "@/lib/server/env";
-import { checkOrigin, fail, json, notConfigured, parseBody } from "@/lib/server/http";
+import { requireServerToken } from "@/lib/server/access";
+import { checkOrigin, fail, featureDisabled, json, parseBody } from "@/lib/server/http";
 import { checkRateLimit } from "@/lib/server/ratelimit";
 import { SearchError } from "./serpapi";
 
 // What every /api/search/* route does around its one search: our origin only,
-// a rate limit per IP, the "not set up" answer when there is no key, the input
+// the server token, the "turned off" answer when search is off or has no key,
+// a rate limit per IP, the input
 // from the query string (GET) or a JSON body (POST), and SearchError codes
 // mapped to statuses. Raw upstream errors never reach the client.
 
 const STATUS: Record<SearchError["code"], number> = {
-  not_configured: 503,
+  not_configured: 501,
   quota_exhausted: 429,
   upstream_failed: 502,
   upstream_timeout: 504,
@@ -30,9 +32,11 @@ export type SearchRoute<S extends z.ZodType> = {
 const MAX_BODY = 16 * 1024;
 
 export async function handleSearch<S extends z.ZodType>(req: Request, route: SearchRoute<S>): Promise<Response> {
-  const refused = checkOrigin(req) ?? checkRateLimit(req, `search:${route.bucket}`, { limit: route.perMinute, windowMs: 60_000 });
-  if (refused) return refused;
-  if (!features.search) return notConfigured("Search");
+  const denied = checkOrigin(req) ?? requireServerToken(req);
+  if (denied) return denied;
+  if (!features.search) return featureDisabled("Search");
+  const limited = checkRateLimit(req, `search:${route.bucket}`, { limit: route.perMinute, windowMs: 60_000 });
+  if (limited) return limited;
 
   let input: z.output<S>;
   if (req.method === "GET") {
@@ -48,6 +52,7 @@ export async function handleSearch<S extends z.ZodType>(req: Request, route: Sea
   try {
     return json(await route.run(input, req.signal));
   } catch (error) {
+    if (error instanceof SearchError && error.code === "not_configured") return featureDisabled("Search");
     if (error instanceof SearchError) return fail(STATUS[error.code], error.code, error.message);
     console.error("[search] unexpected failure", error instanceof Error ? error.name : typeof error);
     return fail(500, "internal_error");

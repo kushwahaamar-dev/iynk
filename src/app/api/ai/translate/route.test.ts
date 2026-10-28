@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
 
+const TOKEN = "t".repeat(40);
 let ip = 0;
 
 async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
@@ -9,14 +10,15 @@ async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
   vi.stubEnv("IYNK_TRUST_PROXY", "1");
+  vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }
 
-const post = (body: unknown) =>
+const post = (body: unknown, headers: Record<string, string> = {}) =>
   new Request("http://localhost/api/ai/translate", {
     method: "POST",
-    headers: { "content-type": "application/json", "x-real-ip": `10.1.0.${++ip}` },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.1.0.${++ip}`, ...headers },
     body: JSON.stringify(body),
   });
 
@@ -80,8 +82,27 @@ describe("POST /api/ai/translate", () => {
     expect((await POST(post({ texts: ["hi"], to: "pt" }))).status).toBe(400);
   });
 
-  it("is not configured without a key", async () => {
+  it("answers 401 with an empty message when the token is missing or wrong", async () => {
+    const POST = await load();
+    const missing = await POST(post({ texts: ["hi"], to: "es" }, { "x-iynk-server-token": "" }));
+    const wrong = await POST(post({ texts: ["hi"], to: "es" }, { "x-iynk-server-token": "w".repeat(40) }));
+    expect(missing.status).toBe(401);
+    expect((await missing.json()).error).toEqual({ code: "unauthorized", message: "" });
+    expect(wrong.status).toBe(401);
+    expect((await wrong.json()).error).toEqual({ code: "unauthorized", message: "" });
+  });
+
+  it("answers 501 feature_disabled when the switch is off", async () => {
+    const POST = await load({ META_API_KEY: "k", IYNK_AI_ENABLE: "0" });
+    const res = await POST(post({ texts: ["hi"], to: "es" }));
+    expect(res.status).toBe(501);
+    expect((await res.json()).error.code).toBe("feature_disabled");
+  });
+
+  it("answers 501 feature_disabled when the switch is on and the key is missing", async () => {
     const POST = await load({});
-    expect((await POST(post({ texts: ["hi"], to: "es" }))).status).toBe(503);
+    const res = await POST(post({ texts: ["hi"], to: "es" }));
+    expect(res.status).toBe(501);
+    expect((await res.json()).error).toMatchObject({ code: "feature_disabled", message: expect.stringMatching(/turned off/) });
   });
 });

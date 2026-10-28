@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
 import { encodeWav } from "@/lib/server/ai/wav";
 
+const TOKEN = "t".repeat(40);
 let ip = 0;
 
 async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
@@ -10,15 +11,16 @@ async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
   vi.stubEnv("IYNK_TRUST_PROXY", "1");
+  vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }
 
-function post(audio: Uint8Array | null, lang?: string, type = "audio/wav") {
+function post(audio: Uint8Array | null, lang?: string, type = "audio/wav", headers: Record<string, string> = {}) {
   const form = new FormData();
   if (audio) form.set("audio", new Blob([audio as BlobPart], { type }), "clip");
   if (lang) form.set("lang", lang);
-  return new Request("http://localhost/api/ai/transcribe", { method: "POST", body: form, headers: { "x-real-ip": `10.2.0.${++ip}` } });
+  return new Request("http://localhost/api/ai/transcribe", { method: "POST", body: form, headers: { "x-iynk-server-token": TOKEN, "x-real-ip": `10.2.0.${++ip}`, ...headers } });
 }
 
 const speech = (seconds: number, sampleRate = 44100) =>
@@ -84,12 +86,29 @@ describe("POST /api/ai/transcribe", () => {
     expect((await POST(post(speech(121, 8000)))).status).toBe(400);
   });
 
-  it("says voice is not set up when the Meta key is absent", async () => {
+  it("answers 401 with an empty message when the token is missing or wrong", async () => {
+    const POST = await load();
+    const missing = await POST(post(speech(1), "en", "audio/wav", { "x-iynk-server-token": "" }));
+    const wrong = await POST(post(speech(1), "en", "audio/wav", { "x-iynk-server-token": "w".repeat(40) }));
+    expect(missing.status).toBe(401);
+    expect((await missing.json()).error).toEqual({ code: "unauthorized", message: "" });
+    expect(wrong.status).toBe(401);
+    expect((await wrong.json()).error).toEqual({ code: "unauthorized", message: "" });
+  });
+
+  it("answers 501 feature_disabled when the switch is off", async () => {
+    const POST = await load({ META_API_KEY: "k", IYNK_AI_ENABLE: "0" });
+    const res = await POST(post(speech(1), "en"));
+    expect(res.status).toBe(501);
+    expect((await res.json()).error.code).toBe("feature_disabled");
+  });
+
+  it("answers 501 feature_disabled when voice has no Meta key", async () => {
     const POST = await load({ META_API_KEY: "", GEMINI_API_KEY: "g" });
     const res = await POST(post(speech(1), "en"));
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(501);
     const body = (await res.json()) as { error: { code: string; message: string } };
-    expect(body.error.code).toBe("not_configured");
-    expect(body.error.message).toMatch(/not set up/);
+    expect(body.error.code).toBe("feature_disabled");
+    expect(body.error.message).toMatch(/turned off/);
   });
 });

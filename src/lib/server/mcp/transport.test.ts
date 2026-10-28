@@ -1,10 +1,12 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
-import { DELETE, GET, OPTIONS, POST } from "@/app/api/mcp/route";
+import { DELETE, GET, POST } from "@/app/api/mcp/route";
+
+const TOKEN = vi.hoisted(() => "t".repeat(40));
 
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, voice: false, search: false, db: false, realtime: false, gemini: false },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test", IYNK_SERVER_TOKEN: TOKEN, IYNK_TRUST_PROXY: true },
+  features: { ai: false, voice: false, search: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 
@@ -15,7 +17,7 @@ function post(body: unknown, headers: Record<string, string> = {}, from = `10.0.
   return POST(
     new Request("https://iynk.test/api/mcp", {
       method: "POST",
-      headers: { "content-type": "application/json", accept: "application/json, text/event-stream", "x-real-ip": from, ...headers },
+      headers: { "content-type": "application/json", accept: "application/json, text/event-stream", "x-iynk-server-token": TOKEN, "x-real-ip": from, ...headers },
       body: typeof body === "string" ? body : JSON.stringify(body),
     }),
   );
@@ -29,7 +31,6 @@ describe("legacy era (initialize handshake)", () => {
   it("negotiates the client's version, or offers its newest", async () => {
     const res = await post({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "1" } } });
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
     const body = await res.json();
     expect(body.result).toMatchObject({ protocolVersion: "2025-06-18", capabilities: { tools: { listChanged: false } }, serverInfo: { name: "iynk", title: "iynk" } });
     expect(body.result.instructions).toMatch(/search_catalog/);
@@ -151,13 +152,10 @@ describe("HTTP rules", () => {
     expect(statuses[120]).toBe(429);
   });
 
-  it("answers GET and DELETE with 405 and preflight with open CORS", async () => {
+  it("answers GET and DELETE with 405", async () => {
     const get = await GET();
     expect(get.status).toBe(405);
     expect(get.headers.get("allow")).toBe("POST, OPTIONS");
     expect((await DELETE()).status).toBe(405);
-    const pre = OPTIONS();
-    expect(pre.status).toBe(204);
-    expect(pre.headers.get("access-control-allow-headers")).toMatch(/mcp-protocol-version/);
   });
 });
