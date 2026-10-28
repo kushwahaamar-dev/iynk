@@ -5,8 +5,11 @@ import { describe, expect, it } from "vitest";
 
 const ROOTS = ["src/studio", "src/components/studio"];
 const WRITER = path.join("src", "studio", "stores", "doc.ts");
-/** The B3 diagnostics panel writes scratch sessions it creates itself for its kill and save-speed probes, never the open project. */
-const SCRATCH_SESSIONS = path.join("src", "components", "studio", "diagnostics-run.ts");
+/** These write scratch sessions they create themselves (the B3 diagnostics probes, the breadboard test fixture), never the open project. */
+const SCRATCH_SESSIONS = [
+  path.join("src", "components", "studio", "diagnostics-run.ts"),
+  path.join("src", "studio", "testing", "breadboard-fixture.ts"),
+];
 const MUTATORS = "undo|redo|replace";
 
 function sourceFiles(dir: string): string[] {
@@ -67,7 +70,7 @@ describe("no direct writes", () => {
     });
     expect(files.length).toBeGreaterThan(0);
     const hits = files
-      .filter((file) => file !== WRITER && file !== SCRATCH_SESSIONS)
+      .filter((file) => file !== WRITER && !SCRATCH_SESSIONS.includes(file))
       .flatMap((file) => findWrites(readFileSync(file, "utf8")).map((line) => `${file}: ${line.trim()}`));
     expect(hits).toEqual([]);
   });
