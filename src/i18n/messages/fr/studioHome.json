@@ -1,1 +1,22 @@
-{}
+{
+  "settings": {
+    "open": "Réglages de la vue",
+    "art": {
+      "label": "Dessin",
+      "illustrated": "Illustré",
+      "simple": "Simple"
+    },
+    "grid": {
+      "label": "Grille",
+      "hint": "Affiche la grille sur le canevas"
+    },
+    "snap": {
+      "label": "Aimantation en mm",
+      "hint": "De {min} à {max} mm. Les valeurs hors limites sont ramenées dans la plage."
+    },
+    "shortcuts": {
+      "label": "Raccourcis à une touche",
+      "hint": "Les touches de lettre changent d’outil quand le canevas a le focus."
+    }
+  }
+}

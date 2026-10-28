@@ -1,1 +1,22 @@
-{}
+{
+  "settings": {
+    "open": "Ansichtseinstellungen",
+    "art": {
+      "label": "Darstellung",
+      "illustrated": "Illustriert",
+      "simple": "Einfach"
+    },
+    "grid": {
+      "label": "Raster",
+      "hint": "Zeigt das Raster auf der Zeichenfläche"
+    },
+    "snap": {
+      "label": "Einrasten in mm",
+      "hint": "Von {min} bis {max} mm. Werte außerhalb werden in den Bereich gebracht."
+    },
+    "shortcuts": {
+      "label": "Einzeltasten-Kürzel",
+      "hint": "Buchstabentasten wechseln das Werkzeug, solange die Zeichenfläche den Fokus hat."
+    }
+  }
+}

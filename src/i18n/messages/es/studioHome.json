@@ -1,1 +1,22 @@
-{}
+{
+  "settings": {
+    "open": "Ajustes de vista",
+    "art": {
+      "label": "Dibujo",
+      "illustrated": "Ilustrado",
+      "simple": "Simple"
+    },
+    "grid": {
+      "label": "Cuadrícula",
+      "hint": "Muestra la cuadrícula en el lienzo"
+    },
+    "snap": {
+      "label": "Ajuste en mm",
+      "hint": "De {min} a {max} mm. Los valores fuera de rango se corrigen."
+    },
+    "shortcuts": {
+      "label": "Atajos de una tecla",
+      "hint": "Las teclas de letra cambian de herramienta mientras el lienzo tiene el foco."
+    }
+  }
+}

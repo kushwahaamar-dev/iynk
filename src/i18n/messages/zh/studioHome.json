@@ -1,1 +1,22 @@
-{}
+{
+  "settings": {
+    "open": "视图设置",
+    "art": {
+      "label": "图样",
+      "illustrated": "插画",
+      "simple": "简洁"
+    },
+    "grid": {
+      "label": "网格",
+      "hint": "在画布上显示网格"
+    },
+    "snap": {
+      "label": "吸附间距（毫米）",
+      "hint": "范围为 {min} 到 {max} 毫米，超出范围的值会被调整。"
+    },
+    "shortcuts": {
+      "label": "单键快捷键",
+      "hint": "画布获得焦点时，字母键用来切换工具。"
+    }
+  }
+}

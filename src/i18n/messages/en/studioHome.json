@@ -1,1 +1,22 @@
-{}
+{
+  "settings": {
+    "open": "View settings",
+    "art": {
+      "label": "Art",
+      "illustrated": "Illustrated",
+      "simple": "Simple"
+    },
+    "grid": {
+      "label": "Grid",
+      "hint": "Show the grid on the canvas"
+    },
+    "snap": {
+      "label": "Snap in mm",
+      "hint": "From {min} to {max} mm. Values outside are brought into range."
+    },
+    "shortcuts": {
+      "label": "One key shortcuts",
+      "hint": "Letter keys switch tools while the canvas has focus."
+    }
+  }
+}

@@ -72,3 +72,13 @@ test("the strings of removed features are gone from every language", () => {
     }
   }
 });
+
+test("Studio strings never say validated and never use an em dash", () => {
+  for (const locale of LOCALES) {
+    for (const ns of NAMESPACES.filter((name) => name.startsWith("studio"))) {
+      const text = readFileSync(file(locale, ns), "utf8");
+      expect(text.toLowerCase(), `${locale}/${ns}.json`).not.toContain("validated");
+      expect(text, `${locale}/${ns}.json`).not.toContain("—");
+    }
+  }
+});
