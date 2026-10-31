@@ -33,14 +33,14 @@ export interface HomeProps {
 type StarterKey = MessageKey<Messages["studioHome"]>;
 
 const FIRST_RUN = "blink";
-const DEFAULT_BOARD = "uno-r3";
+export const DEFAULT_BOARD = "uno-r3";
 const ENTRY_PATH = "main.ino";
-const INO_ACCEPT = ".ino,.h,.hpp,.c,.cpp";
+export const INO_ACCEPT = ".ino,.h,.hpp,.c,.cpp";
 // A character takes at most four bytes in UTF-8.
-const MAX_FILE_BYTES = LIMITS.sourceBytes * 4;
+export const MAX_FILE_BYTES = LIMITS.sourceBytes * 4;
 const SOURCE_LANGUAGES: Record<string, SourceLanguage> = { ".ino": "arduino-cpp", ".c": "c" };
 
-const boardOptions = [DEFAULT_BOARD, ...STARTER_ENTRIES.map((entry) => entry.board)]
+export const boardOptions = [DEFAULT_BOARD, ...STARTER_ENTRIES.map((entry) => entry.board)]
   .filter((id, index, all) => all.indexOf(id) === index)
   .map((id) => ({ id, label: PROFILES[id as BoardId]?.name ?? id }));
 
@@ -49,7 +49,7 @@ const languageOf = (path: string): SourceLanguage => SOURCE_LANGUAGES[path.slice
 type Review = { files: InoFile[]; imported: InoImport };
 
 /** The text of the sketch put into a new project on its board, through the same ops an edit would use. */
-async function projectFromIno(imported: InoImport, lang: string, now: string): Promise<Project> {
+export async function projectFromIno(imported: InoImport, lang: string, now: string): Promise<Project> {
   let base: Project;
   const starter = imported.board === DEFAULT_BOARD ? undefined : starterFor(imported.board);
   if (starter) {

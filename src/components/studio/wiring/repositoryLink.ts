@@ -1,5 +1,7 @@
 import { fail, type Result } from "@/core/result";
 import { attachAutosave, DEFAULT_FLUSH_STRATEGY, type AutosaveEnv, type AutosaveStatus } from "@/local/autosave";
+import { openDb } from "@/local/db";
+import { createIdbRepository } from "@/local/idb-repository";
 import type { ProjectHost } from "@/local/project-host";
 import type { ProjectEv } from "@/local/project-protocol";
 import type { Repository } from "@/local/repository";
@@ -49,6 +51,18 @@ export function createRevisionPort(repo: Repository): RevisionPort {
     get: async (projectId, revision) => (await repo.revisions.get(projectId, revision))?.state,
     list: (projectId) => repo.revisions.list(projectId),
     remove: (projectId, revision) => repo.revisions.remove(projectId, revision),
+  };
+}
+
+/** The version store of this browser, opened on the first version read or written; the project worker uses the same database. */
+export function createPageRevisionPort(): RevisionPort {
+  let port: Promise<RevisionPort> | undefined;
+  const open = () => (port ??= openDb().then((db) => createRevisionPort(createIdbRepository(db))));
+  return {
+    put: async (projectId, revision, snapshot) => (await open()).put(projectId, revision, snapshot),
+    get: async (projectId, revision) => (await open()).get(projectId, revision),
+    list: async (projectId) => (await open()).list(projectId),
+    remove: async (projectId, revision) => (await open()).remove(projectId, revision),
   };
 }
 

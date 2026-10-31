@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import { PartnerPanel, type PartnerHost } from "@/components/ai";
 import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
-import { Button, Callout, Dialog, EmptyState, Icon, Kbd, Skeleton, cx } from "@/components/ui";
+import { Button, Callout, Chip, Dialog, EmptyState, Icon, Kbd, Skeleton, cx } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
@@ -16,7 +16,7 @@ import { builtinRegistry } from "@/parts/builtin";
 import { fallbackSpec } from "@/parts/fallback";
 import { classifyImpact } from "@/project/opImpact";
 import { createArtProvider } from "@/studio/art/figure-art";
-import { runCommand } from "@/studio/commands";
+import { registerCommand, runCommand } from "@/studio/commands";
 import { STUDIO_KEYS, installKeymap } from "@/studio/commands/keymap";
 import { registerHistoryCommands } from "@/studio/commands/history";
 import { firstFirmwareSource } from "@/studio/code/sources";
@@ -31,12 +31,13 @@ import { stateOverlays } from "@/studio/overlays/state";
 import { resolvePart } from "@/studio/parts-view";
 import { collectProblems, nextProblem, type Problem } from "@/studio/problems";
 import { staticFlags, type WireEndRef } from "@/studio/rules/connect";
+import { CHECKPOINT_POLICY } from "@/studio/history/revisions";
 import { navigate } from "@/studio/router";
 import type { DocStore } from "@/studio/stores/doc";
 import { createRunStore, type RunStore } from "@/studio/stores/run";
 import { useStoreSelector } from "@/studio/stores/select";
 import { createSessionStore, type SessionStore } from "@/studio/stores/session";
-import { createUiStore, type UiStore } from "@/studio/stores/ui";
+import { createUiStore, type UiState, type UiStore } from "@/studio/stores/ui";
 import { buildPinMap, livePins } from "@/studio/views/board";
 import { VIEW_DEFS, viewIdFor, type ViewKind } from "@/studio/views/registry";
 import { createToolHost, type ToolHost } from "@/studio/tools/host";
@@ -54,6 +55,8 @@ import { Outline } from "./Outline";
 import { Palette } from "./Palette";
 import { PinPicker } from "./PinPicker";
 import { Problems } from "./Problems";
+import { useProjectActions, type ProjectActions } from "./ProjectActions";
+import { ChecksTab, HistoryTab, useChecksRun, type ChecksRun } from "./ProjectTabs";
 import { RegionLayout } from "./RegionLayout";
 import { RunBar } from "./RunBar";
 import { ViewTabs } from "./ViewTabs";
@@ -65,7 +68,7 @@ import { installDebugHook } from "./wiring/debugHook";
 import { linkPartner, studioUi } from "./wiring/partnerLink";
 import { openPartnerParts } from "./wiring/partnerParts";
 import { useOpenProject, type OpenStatus } from "./wiring/openProject";
-import { linkRepository, type LinkNotice } from "./wiring/repositoryLink";
+import { createPageRevisionPort, linkRepository, onRunStart, type LinkNotice } from "./wiring/repositoryLink";
 import { linkSim, type SimLink } from "./wiring/simLink";
 import { useServices, type Services } from "./wiring/services";
 
@@ -108,6 +111,8 @@ type GraphInput = {
   messages: StudioMessages;
   reduceMotion: () => boolean;
   onNotice: (notice: LinkNotice) => void;
+  /** The code of a version that could not be made before a run. The run goes on. */
+  onVersionFailed: (code: string | null) => void;
 };
 
 function focusKind(): "canvas" | "code" | "other" {
@@ -121,7 +126,7 @@ function focusKind(): "canvas" | "code" | "other" {
  * Creates the stores, the engine and the links for one open project. `dispose` undoes them in the reverse order. The
  * keymap and the scene controller need the mounted canvas, so the workspace starts them once it is on the page.
  */
-function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, onNotice }: GraphInput): Graph {
+function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, onNotice, onVersionFailed }: GraphInput): Graph {
   const state = doc.getState().state;
   const ui = createUiStore(projectId);
   const shownView = viewIdFor(state, ui.getState().activeView);
@@ -180,8 +185,16 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, on
   const announcer = createAnnouncer();
   const offHistory = registerHistoryCommands({ doc, focus: focusKind });
   const debug = installDebugHook({ doc, run, announcer, tools: tools.recent });
-  const offRepository = linkRepository(doc, debug.wrapHost(services.host), { onNotice });
-  const link = linkSim({ doc, run, host: services.sim, impact: classifyImpact });
+  const offRepository = linkRepository(doc, debug.wrapHost(services.host), { onNotice, revisions: createPageRevisionPort() });
+  const sim = linkSim({ doc, run, host: services.sim, impact: classifyImpact });
+  const link: SimLink = {
+    ...sim,
+    async run() {
+      const made = await onRunStart(messages.studio.history.runLabel);
+      onVersionFailed(made.ok ? null : made.error);
+      await sim.run();
+    },
+  };
 
   const viewId = () => session.getState().viewId;
   const overlays: OverlayProviders = {
@@ -450,9 +463,13 @@ type RegionsProps = {
   /** Where the newest problem list and the one the person last went to are kept for the F8 keys. */
   problemsRef: MutableRefObject<Problem[]>;
   currentProblemRef: MutableRefObject<string | null>;
+  checksRun: ChecksRun;
+  projectMenu: ReactNode;
+  /** Why the version before the last run could not be made, or null. */
+  versionWarning: string | null;
 };
 
-function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef }: RegionsProps) {
+function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning }: RegionsProps) {
   const { ui, session, run, engine, tools, place, link, controller, announcer } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
@@ -474,13 +491,18 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
       messages={t}
       top={
         <>
-          <TopBar doc={doc} run={run} link={link} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
+          <TopBar doc={doc} run={run} link={link} menu={projectMenu} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
           {readOnly ? (
             <Callout tone="note" title={t.workspace.readOnlyTitle} className="mt-2">
               {t.workspace.readOnly}
             </Callout>
           ) : null}
           <Notices notices={notices} name={title} messages={messages} onDismiss={onDismiss} />
+          {versionWarning ? (
+            <Chip tone="warn" role="status" className="mt-2">
+              {versionWarning}
+            </Chip>
+          ) : null}
         </>
       }
       left={{
@@ -531,6 +553,8 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
           />
         ),
         models: <ModelsTab doc={doc} messages={messages} />,
+        history: <HistoryTab doc={doc} messages={messages} lang={lang} />,
+        checks: <ChecksTab doc={doc} checksRun={checksRun} messages={messages} lang={lang} />,
         partner: partner ? <PartnerPanel host={partner} /> : <Skeleton className="h-28 rounded-xl" />,
       }}
       dock={{
@@ -560,11 +584,28 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
   const [notices, setNotices] = useState<LinkNotice[]>(recovered ? ["recovered"] : []);
   const [wireFrom, setWireFrom] = useState<WireEndRef | null>(null);
   const [keysOpen, setKeysOpen] = useState(false);
+  const [versionFailure, setVersionFailure] = useState<string | null>(null);
+  const checksRun = useChecksRun(doc);
+  const actions = useProjectActions({
+    doc,
+    services,
+    messages,
+    lang,
+    onVersionFailed: setVersionFailure,
+    onOpenHistory: () => graph?.ui.set("rightRail", "history"),
+  });
+  const actionsNow = useRef<ProjectActions>(actions);
+  const checksRunNow = useRef(checksRun);
   const partner = usePartnerHost(doc, graph, lang);
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
+  const history = messages.studio.history;
+  const versionWarning =
+    versionFailure === null ? null : versionFailure === "limit" ? history.limit.replace("{max}", String(CHECKPOINT_POLICY.max)) : history.storeFailed.replace("{reason}", versionFailure);
 
   useEffect(() => {
     reduceMotionNow.current = reduceMotion;
+    actionsNow.current = actions;
+    checksRunNow.current = checksRun;
   });
 
   useEffect(() => {
@@ -587,6 +628,42 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
     };
 
     graph.controller.start();
+    const rail = (id: UiState["rightRail"], then?: () => void) => () => {
+      graph.ui.set("rightRail", id);
+      then?.();
+    };
+    const offCommands = [
+      registerCommand({ id: "history.open", labelKey: "studio.history.title", scope: "global", enabled: () => true, run: rail("history") }),
+      registerCommand({
+        id: "history.name",
+        labelKey: "studio.history.nameThis",
+        scope: "global",
+        enabled: () => !doc.getState().readOnly,
+        run: rail("history", () => focusIn(regions.right, "input")),
+      }),
+      registerCommand({ id: "checks.open", labelKey: "studio.checks.title", scope: "global", enabled: () => true, run: rail("checks") }),
+      registerCommand({
+        id: "checks.run",
+        labelKey: "studio.checks.run",
+        scope: "global",
+        enabled: () => !checksRunNow.current.running,
+        run: rail("checks", () => checksRunNow.current.run()),
+      }),
+      registerCommand({
+        id: "project.exportIno",
+        labelKey: "studio.ino.export",
+        scope: "global",
+        enabled: () => actionsNow.current.canExportIno(),
+        run: () => actionsNow.current.exportIno(),
+      }),
+      registerCommand({
+        id: "project.importIno",
+        labelKey: "studio.ino.import",
+        scope: "global",
+        enabled: () => !doc.getState().readOnly,
+        run: () => actionsNow.current.importIno(),
+      }),
+    ];
     const offKeys = installKeymap(root.current!, {
       doc,
       session: graph.session,
@@ -641,6 +718,7 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
     return () => {
       cancelAnimationFrame(frame);
       offKeys();
+      offCommands.forEach((off) => off());
       graph.controller.stop();
     };
   }, [graph, doc, autorun, messages.studio.layout]);
@@ -668,6 +746,7 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
       messages,
       reduceMotion: () => reduceMotionNow.current,
       onNotice: (notice) => setNotices((now) => (now.includes(notice) ? now : [...now, notice])),
+      onVersionFailed: setVersionFailure,
     });
     setGraph(made);
     return made.dispose;
@@ -703,7 +782,11 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
             onWireFrom={wireFromBoard}
             problemsRef={problemsRef}
             currentProblemRef={currentProblemRef}
+            checksRun={checksRun}
+            projectMenu={actions.menu}
+            versionWarning={versionWarning}
           />
+          {actions.dialogs}
           <LiveRegion announcer={graph.announcer} messages={messages} lang={lang} />
           {wireFrom ? (
             <PinPicker

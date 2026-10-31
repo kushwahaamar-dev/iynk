@@ -110,12 +110,13 @@ function Rail<K extends string>({ region, order, panels, value, onChange, messag
   onChange: (id: K) => void;
   messages: StudioStrings;
 }) {
-  const tabs: TabItem[] = order.map((id) => ({ id, label: messages.layout.tabs[id as keyof StudioStrings["layout"]["tabs"]], content: panels[id] }));
+  const labels: Record<string, string> = { ...messages.layout.tabs, ...messages.rail };
+  const tabs: TabItem[] = order.map((id) => ({ id, label: labels[id]!, content: panels[id] }));
   return <Tabs fill className="flex-1" label={messages.layout.regions[region]} tabs={tabs} value={value} onChange={(id) => onChange(id as K)} />;
 }
 
 const LEFT_ORDER = ["palette", "files", "outline"] as const;
-const RIGHT_ORDER = ["inspector", "problems", "models", "partner"] as const;
+const RIGHT_ORDER = ["inspector", "problems", "models", "history", "checks", "partner"] as const;
 const DOCK_ORDER = ["code", "serial"] as const;
 
 /** The five regions of the workspace. Under 768 px the canvas keeps the room and each rail opens as a drawer. */

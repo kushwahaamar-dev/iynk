@@ -7,15 +7,19 @@ export interface ProjectMenuProps {
   strings: Messages["studio"];
   /** False when no board of the project runs an Arduino sketch. */
   canExportIno: boolean;
+  /** False for a project opened read-only. */
+  canImportIno: boolean;
   onSaveFile(): void;
   onExportIno(): void;
+  onImportIno(): void;
   onExportCsv(): void;
   onOpenHistory(): void;
 }
 
-export function ProjectMenu({ strings, canExportIno, onSaveFile, onExportIno, onExportCsv, onOpenHistory }: ProjectMenuProps) {
+export function ProjectMenu({ strings, canExportIno, canImportIno, onSaveFile, onExportIno, onImportIno, onExportCsv, onOpenHistory }: ProjectMenuProps) {
   const items: MenuItem[] = [
     { id: "save", label: strings.projectMenu.saveFile, icon: "download", onSelect: onSaveFile },
+    { id: "import", label: strings.ino.import, icon: "arrow-right", onSelect: onImportIno, disabled: !canImportIno },
     { id: "ino", label: strings.ino.export, icon: "code", onSelect: onExportIno, disabled: !canExportIno },
     { id: "csv", label: strings.ino.wiringCsv, icon: "link", onSelect: onExportCsv },
     { separator: true },
