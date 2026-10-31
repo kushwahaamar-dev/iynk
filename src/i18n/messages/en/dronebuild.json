@@ -62,5 +62,45 @@
     "h": "H",
     "hex": "Hexa",
     "octo": "Octo"
-  }
+  },
+  "header": {
+    "tier": "Tier {tier}",
+    "figure": "Top view of the drone"
+  },
+  "legacy": {
+    "title": "This craft uses the original calculator",
+    "body": "Changing a part switches the whole craft to your parts, with new numbers. The original craft stays as the factory build on the Fly tab.",
+    "confirm": "Switch to my parts"
+  },
+  "setup": {
+    "title": "Frame and motors",
+    "hint": "Choose a frame, a layout and the motor, prop and ESC. Every motor starts with the same parts and you can change them one by one.",
+    "label": {
+      "frame": "Frame",
+      "layout": "Layout",
+      "motor": "Motor",
+      "prop": "Prop",
+      "esc": "ESC"
+    },
+    "trigger": "{role}: {part}",
+    "wheelbase": "Wheelbase (mm)",
+    "wheelbaseHint": "Motor centre to opposite motor centre",
+    "wheelbaseBad": "Enter a wheelbase above 0 mm.",
+    "create": "Place frame and motors",
+    "incomplete": "Choose a frame, motor, prop and ESC to continue."
+  },
+  "actions": {
+    "title": "Actions",
+    "addPart": "Add my own part",
+    "closePart": "Close",
+    "exportBom": "Export BOM",
+    "exportFailed": "The parts list could not be saved."
+  },
+  "notDrone": {
+    "title": "This is not a drone project",
+    "body": "The builder opens projects that hold a drone design.",
+    "back": "Back to projects"
+  },
+  "readOnly": "You can read the numbers here. Picking parts needs edit access.",
+  "numbersTitle": "Numbers"
 }

@@ -28,14 +28,9 @@ function shapeOf(s: ShapeIn): Shape | undefined {
   }
 }
 
-/** The mounts of a layout, the frame they hang from, and a frame and a body for each part with a mass. One batch, so one undo step. */
-export function layoutOps(layout: Layout, wheelbase_mm: number, ctx: LayoutCtx): Op[] {
-  const root: Op = {
-    k: "mech.set",
-    collection: "frames",
-    value: { id: ctx.frameComponent, name: "Body (FLU)", parent: "world", pose: { position_mm: [0, 0, 0], rpy_deg: [0, 0, 0] } },
-  };
-  const parts = ctx.bodies.flatMap((b): Op[] => {
+/** A frame and a body for each part with a mass, hung from the frame component. Setting a body again replaces it. */
+export function bodyOps(ctx: Pick<LayoutCtx, "frameComponent" | "bodies">): Op[] {
+  return ctx.bodies.flatMap((b): Op[] => {
     const frame = `frm_${b.id}`;
     const shape = shapeOf(b.shape);
     return [
@@ -51,7 +46,16 @@ export function layoutOps(layout: Layout, wheelbase_mm: number, ctx: LayoutCtx):
       },
     ];
   });
-  return [root, ...mountOps(layoutMounts(layout, wheelbase_mm, ctx.z_mm), ctx.frameComponent, ctx.slotComponent), ...parts];
+}
+
+/** The mounts of a layout, the frame they hang from, and a frame and a body for each part with a mass. One batch, so one undo step. */
+export function layoutOps(layout: Layout, wheelbase_mm: number, ctx: LayoutCtx): Op[] {
+  const root: Op = {
+    k: "mech.set",
+    collection: "frames",
+    value: { id: ctx.frameComponent, name: "Body (FLU)", parent: "world", pose: { position_mm: [0, 0, 0], rpy_deg: [0, 0, 0] } },
+  };
+  return [root, ...mountOps(layoutMounts(layout, wheelbase_mm, ctx.z_mm), ctx.frameComponent, ctx.slotComponent), ...bodyOps(ctx)];
 }
 
 /** One merge patch carrying every slot with the pick applied. An ESC picked for all slots is wired one channel per slot. */

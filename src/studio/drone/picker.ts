@@ -38,7 +38,7 @@ const READERS: Record<Role, (d: Descriptor) => Read<unknown>> = {
 
 const isNumber = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 
-function priceOf(d: Descriptor): PickerItem["price"] {
+export function priceOf(d: Descriptor): PickerItem["price"] {
   const raw = (d as { x_price?: Record<string, unknown> }).x_price;
   if (!raw || !isNumber(raw["amount"]) || typeof raw["currency"] !== "string" || typeof raw["as_of"] !== "string") return undefined;
   return { amount: raw["amount"], currency: raw["currency"], asOf: raw["as_of"], estimate: raw["estimate"] === true };

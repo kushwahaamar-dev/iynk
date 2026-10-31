@@ -7,6 +7,7 @@ import { roleOf, type Role } from "@/parts/mechanics";
 import { setBatteryPatch, setControllerPatch, slotPatch, type MotorSlot } from "@/project/domains/drone-ops";
 import type { Op, Project } from "@/project/generated/types";
 import { sameForAllPatch } from "@/studio/drone/layout";
+import { instanceFor } from "@/studio/drone/instance";
 import type { Build } from "@/sim/flight/build";
 import type { PickerContext } from "@/studio/drone/picker";
 import { PartPicker, type DroneBuildT } from "./PartPicker";
@@ -27,29 +28,15 @@ const SLOT_ROLES: readonly SlotRole[] = ["motor", "prop", "esc"];
 const MIN_SLOTS = 3;
 const MAX_SLOTS = 12;
 const LABEL = "drone.pick";
-const TAG: Record<Pickable, string> = { motor: "M", prop: "P", esc: "ESC", battery: "BAT", fc: "FC" };
-
-/** The project's instance of this exact part, or the op that adds one. */
-function instanceFor(project: Project, role: Pickable, part: Descriptor): { id: string; add: Op[] } {
-  const pool = role === "fc" ? project.boards : project.components;
-  const found = pool.find((c) => c.definition.ref === part.id && c.definition.version === part.version);
-  if (found) return { id: found.id, add: [] };
-
-  const taken = new Set([...project.components, ...project.boards].flatMap((c) => [c.id, c.refdes]));
-  let n = 1;
-  while (taken.has(`${TAG[role]}${n}`) || taken.has(`${role === "fc" ? "brd" : "cmp"}_${role}${n}`)) n++;
-  const instance = { id: `${role === "fc" ? "brd" : "cmp"}_${role}${n}`, definition: { ref: part.id, version: part.version }, refdes: `${TAG[role]}${n}` };
-  return { id: instance.id, add: [role === "fc" ? { k: "board.add", board: instance } : { k: "component.add", component: instance }] };
-}
 
 const partOf = (project: Project, instanceId: string | undefined): string | undefined =>
   [...project.components, ...project.boards].find((c) => c.id === instanceId)?.definition.ref;
 
-interface PickerCellProps {
+export interface PickerCellProps {
   label: string;
   shown: string;
   disabled: boolean;
-  role: Pickable;
+  role: Role;
   lib: readonly Descriptor[];
   ctx: Omit<PickerContext, "query">;
   value: string | null;
@@ -57,7 +44,7 @@ interface PickerCellProps {
   t: DroneBuildT;
 }
 
-function PickerCell({ label, shown, disabled, role, lib, ctx, value, onPick, t }: PickerCellProps) {
+export function PickerCell({ label, shown, disabled, role, lib, ctx, value, onPick, t }: PickerCellProps) {
   const body = useRef<HTMLDivElement>(null);
   return (
     <Popover

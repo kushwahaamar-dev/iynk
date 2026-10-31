@@ -62,5 +62,45 @@
     "h": "H",
     "hex": "Hexa",
     "octo": "Octo"
-  }
+  },
+  "header": {
+    "tier": "Stufe {tier}",
+    "figure": "Draufsicht auf die Drohne"
+  },
+  "legacy": {
+    "title": "Dieses Fluggerät nutzt den ursprünglichen Rechner",
+    "body": "Wenn du ein Teil änderst, wechselt das ganze Fluggerät zu deinen Teilen, mit neuen Werten. Das ursprüngliche Fluggerät bleibt als Werksbau im Tab Fliegen.",
+    "confirm": "Zu meinen Teilen wechseln"
+  },
+  "setup": {
+    "title": "Rahmen und Motoren",
+    "hint": "Wähle einen Rahmen, ein Layout sowie Motor, Propeller und ESC. Zunächst bekommt jeder Motor dieselben Teile; du kannst sie einzeln ändern.",
+    "label": {
+      "frame": "Rahmen",
+      "layout": "Layout",
+      "motor": "Motor",
+      "prop": "Propeller",
+      "esc": "ESC"
+    },
+    "trigger": "{role}: {part}",
+    "wheelbase": "Radstand (mm)",
+    "wheelbaseHint": "Von der Motormitte zur gegenüberliegenden Motormitte",
+    "wheelbaseBad": "Gib einen Radstand über 0 mm ein.",
+    "create": "Rahmen und Motoren setzen",
+    "incomplete": "Wähle Rahmen, Motor, Propeller und ESC, um fortzufahren."
+  },
+  "actions": {
+    "title": "Aktionen",
+    "addPart": "Eigenes Teil hinzufügen",
+    "closePart": "Schließen",
+    "exportBom": "Stückliste exportieren",
+    "exportFailed": "Die Stückliste konnte nicht gespeichert werden."
+  },
+  "notDrone": {
+    "title": "Das ist kein Drohnenprojekt",
+    "body": "Der Baukasten öffnet Projekte mit einem Drohnenentwurf.",
+    "back": "Zurück zu den Projekten"
+  },
+  "readOnly": "Du kannst hier die Werte lesen. Teile wählen braucht Schreibzugriff.",
+  "numbersTitle": "Werte"
 }
