@@ -115,5 +115,40 @@
     "conflict": "Une pièce avec cet identifiant et cette version est déjà enregistrée avec d'autres valeurs. Changez la version pour enregistrer celle-ci.",
     "failed": "La pièce n'a pas pu être enregistrée sur cet appareil.",
     "loading": "Ouverture de la bibliothèque de pièces"
+  },
+  "compare": {
+    "title": "Comparer les montages",
+    "pinnedLabel": "Épinglé : {label}",
+    "memoryNote": "Les montages épinglés restent dans cet onglet seulement. Ils ne sont pas enregistrés dans le projet et un rechargement les efface.",
+    "empty": "Épinglez d'abord un montage. Changez ensuite une pièce et revenez voir chaque chiffre côte à côte.",
+    "figure": "Valeur",
+    "pinnedHead": "Épinglé",
+    "currentHead": "Actuel",
+    "difference": "Écart",
+    "percent": "Variation",
+    "blocked": "bloqué",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} pour 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Contrôles modifiés",
+    "checksNone": "Aucun contrôle n'a changé de résultat.",
+    "checkChange": "{pinned} vers {current}",
+    "assumptionsTitle": "Hypothèses",
+    "assumptionsSame": "Les deux montages utilisent les mêmes hypothèses.",
+    "assumptionsDiffer": "Les hypothèses diffèrent.",
+    "onlyPinned": "Seulement dans le montage épinglé",
+    "onlyCurrent": "Seulement dans le montage actuel",
+    "row": {
+      "auw": "Poids",
+      "tw": "Poussée sur poids",
+      "hoverThrottle": "Gaz en vol stationnaire",
+      "hoverAmps": "Courant en vol stationnaire",
+      "maxAmps": "Courant plein gaz",
+      "enduranceTyp": "Durée de vol, typique"
+    }
   }
 }

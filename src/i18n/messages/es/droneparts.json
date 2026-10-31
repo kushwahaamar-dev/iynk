@@ -115,5 +115,40 @@
     "conflict": "Ya hay una pieza con este id y versión guardada con otros números. Cambia la versión para guardar esta.",
     "failed": "No se pudo guardar la pieza en este dispositivo.",
     "loading": "Abriendo la biblioteca de piezas"
+  },
+  "compare": {
+    "title": "Comparar montajes",
+    "pinnedLabel": "Fijado: {label}",
+    "memoryNote": "Los montajes fijados solo se guardan en esta pestaña. No se guardan en el proyecto y al recargar se borran.",
+    "empty": "Fija primero un montaje. Luego cambia una pieza y vuelve para ver cada número lado a lado.",
+    "figure": "Valor",
+    "pinnedHead": "Fijado",
+    "currentHead": "Actual",
+    "difference": "Diferencia",
+    "percent": "Cambio",
+    "blocked": "bloqueado",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} a 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Comprobaciones que cambiaron",
+    "checksNone": "Ninguna comprobación cambió de resultado.",
+    "checkChange": "{pinned} a {current}",
+    "assumptionsTitle": "Supuestos",
+    "assumptionsSame": "Ambos montajes usan los mismos supuestos.",
+    "assumptionsDiffer": "Los supuestos son distintos.",
+    "onlyPinned": "Solo en el montaje fijado",
+    "onlyCurrent": "Solo en el montaje actual",
+    "row": {
+      "auw": "Peso",
+      "tw": "Empuje sobre peso",
+      "hoverThrottle": "Gas en vuelo estacionario",
+      "hoverAmps": "Corriente en vuelo estacionario",
+      "maxAmps": "Corriente a gas máximo",
+      "enduranceTyp": "Tiempo de vuelo, típico"
+    }
   }
 }

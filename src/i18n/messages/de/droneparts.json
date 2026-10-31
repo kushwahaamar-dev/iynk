@@ -115,5 +115,40 @@
     "conflict": "Ein Teil mit dieser ID und Version ist schon mit anderen Werten gespeichert. Ändere die Version, um dieses zu speichern.",
     "failed": "Das Teil konnte auf diesem Gerät nicht gespeichert werden.",
     "loading": "Teilebibliothek wird geöffnet"
+  },
+  "compare": {
+    "title": "Aufbauten vergleichen",
+    "pinnedLabel": "Festgehalten: {label}",
+    "memoryNote": "Festgehaltene Aufbauten bleiben nur in diesem Tab. Sie werden nicht im Projekt gespeichert, und ein Neuladen löscht sie.",
+    "empty": "Halte zuerst einen Aufbau fest. Ändere dann ein Teil und komm zurück, um jede Zahl nebeneinander zu sehen.",
+    "figure": "Wert",
+    "pinnedHead": "Festgehalten",
+    "currentHead": "Aktuell",
+    "difference": "Unterschied",
+    "percent": "Änderung",
+    "blocked": "gesperrt",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} zu 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Geänderte Prüfungen",
+    "checksNone": "Keine Prüfung hat ihr Ergebnis geändert.",
+    "checkChange": "{pinned} zu {current}",
+    "assumptionsTitle": "Annahmen",
+    "assumptionsSame": "Beide Aufbauten nutzen dieselben Annahmen.",
+    "assumptionsDiffer": "Die Annahmen unterscheiden sich.",
+    "onlyPinned": "Nur im festgehaltenen Aufbau",
+    "onlyCurrent": "Nur im aktuellen Aufbau",
+    "row": {
+      "auw": "Gewicht",
+      "tw": "Schub zu Gewicht",
+      "hoverThrottle": "Schwebegas",
+      "hoverAmps": "Strom im Schwebeflug",
+      "maxAmps": "Strom bei Vollgas",
+      "enduranceTyp": "Flugzeit, typisch"
+    }
   }
 }

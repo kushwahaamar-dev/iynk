@@ -115,5 +115,40 @@
     "conflict": "已有相同 ID 和版本的零件保存了不同的数值。请更改版本号后再保存。",
     "failed": "无法在这台设备上保存零件。",
     "loading": "正在打开零件库"
+  },
+  "compare": {
+    "title": "比较机型配置",
+    "pinnedLabel": "已固定：{label}",
+    "memoryNote": "固定的配置只保存在此标签页中，不会存入项目，重新加载后会清除。",
+    "empty": "请先固定一个配置。然后更换某个部件，再回来并排查看每个数值。",
+    "figure": "数值",
+    "pinnedHead": "已固定",
+    "currentHead": "当前",
+    "difference": "差值",
+    "percent": "变化",
+    "blocked": "无法计算",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} 比 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} 分钟"
+    },
+    "checksTitle": "结果有变化的检查",
+    "checksNone": "没有检查的结果发生变化。",
+    "checkChange": "{pinned} 变为 {current}",
+    "assumptionsTitle": "假设",
+    "assumptionsSame": "两个配置使用相同的假设。",
+    "assumptionsDiffer": "两个配置的假设不同。",
+    "onlyPinned": "仅在已固定的配置中",
+    "onlyCurrent": "仅在当前配置中",
+    "row": {
+      "auw": "重量",
+      "tw": "推重比",
+      "hoverThrottle": "悬停油门",
+      "hoverAmps": "悬停电流",
+      "maxAmps": "满油门电流",
+      "enduranceTyp": "飞行时间，典型值"
+    }
   }
 }

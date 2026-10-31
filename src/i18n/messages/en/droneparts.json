@@ -115,5 +115,40 @@
     "conflict": "A part with this id and version is already saved with other numbers. Change the version to save this one.",
     "failed": "The part could not be saved on this device.",
     "loading": "Opening the part library"
+  },
+  "compare": {
+    "title": "Compare builds",
+    "pinnedLabel": "Pinned: {label}",
+    "memoryNote": "Pinned builds are kept in this tab only. They are not saved to the project, and a reload clears them.",
+    "empty": "Pin a build first. Then change a part and come back to see each number side by side.",
+    "figure": "Figure",
+    "pinnedHead": "Pinned",
+    "currentHead": "Current",
+    "difference": "Difference",
+    "percent": "Change",
+    "blocked": "blocked",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} to 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Checks that changed",
+    "checksNone": "No check changed its result.",
+    "checkChange": "{pinned} to {current}",
+    "assumptionsTitle": "Assumptions",
+    "assumptionsSame": "Both builds use the same assumptions.",
+    "assumptionsDiffer": "The assumptions differ.",
+    "onlyPinned": "Only in the pinned build",
+    "onlyCurrent": "Only in the current build",
+    "row": {
+      "auw": "Weight",
+      "tw": "Thrust to weight",
+      "hoverThrottle": "Hover throttle",
+      "hoverAmps": "Current at hover",
+      "maxAmps": "Current at full throttle",
+      "enduranceTyp": "Flight time, typical"
+    }
   }
 }
