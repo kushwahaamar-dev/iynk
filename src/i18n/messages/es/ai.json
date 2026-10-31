@@ -106,5 +106,63 @@
     "unavailable": "La voz no está configurada en este despliegue.",
     "empty": "No te he entendido. Inténtalo de nuevo, un poco más cerca del micrófono.",
     "failed": "No se pudo convertir tu voz en texto. Inténtalo de nuevo o escribe."
+  },
+  "partner": {
+    "state": {
+      "notSetUp": "El compañero aún no está configurado. Elige un proveedor en los ajustes.",
+      "needsKey": "Este proveedor necesita una clave. Añádela en los ajustes.",
+      "capped": "Se alcanzó el límite de gasto de hoy. Súbelo en los ajustes.",
+      "offline": "Estás sin conexión. El laboratorio sigue funcionando; el compañero necesita conexión.",
+      "busy": "El compañero está respondiendo…"
+    },
+    "mode": {
+      "label": "Cómo ayuda el compañero",
+      "direct": {
+        "name": "Directo",
+        "hint": "Respuestas cortas y claras."
+      },
+      "debugging": {
+        "name": "Depuración",
+        "hint": "Busca la causa de un fallo, paso a paso."
+      },
+      "beginner": {
+        "name": "Principiante",
+        "hint": "Palabras sencillas, pasos pequeños y una pregunta al final."
+      }
+    },
+    "send": "Enviar",
+    "stop": "Detener",
+    "counter": "{count} de {max}",
+    "keyRemoved": "Se quitó de tu mensaje un valor que parecía una clave.",
+    "error": {
+      "not_configured": "Configura un proveedor de IA en los ajustes.",
+      "no_key": "Este proveedor necesita una clave.",
+      "auth": "El proveedor no aceptó esta clave.",
+      "bad_model": "Este modelo no está disponible con tu clave.",
+      "context_too_long": "Este proyecto es demasiado grande para este modelo. Selecciona una pieza o elige un modelo mayor.",
+      "quota": "Tu cuenta del proveedor se quedó sin crédito.",
+      "capped": "Se alcanzó el límite de hoy. Súbelo en los ajustes.",
+      "network": "No se pudo contactar con el proveedor. Si es una restricción del navegador, activa el relé.",
+      "relay_denied": "Tu servidor no lo permitió.",
+      "upstream_busy": "El proveedor está ocupado. Inténtalo de nuevo.",
+      "upstream_timeout": "El proveedor tardó demasiado. Inténtalo de nuevo.",
+      "upstream_failed": "El proveedor falló. Inténtalo de nuevo.",
+      "filtered": "El proveedor no quiso responder. Prueba a reformular la pregunta."
+    },
+    "hint": {
+      "relay": "Pasa por tu propio servidor, no directo desde este navegador.",
+      "selectPart": "Selecciona una pieza para darle al compañero una vista más pequeña y precisa."
+    },
+    "tool": {
+      "args": "Argumentos",
+      "result": "Resultado",
+      "showAll": "Mostrar las {count} líneas",
+      "showLess": "Mostrar menos líneas",
+      "ok": "Hecho",
+      "failed": "Falló",
+      "noArgs": "Sin argumentos",
+      "noResult": "Sin resultado"
+    },
+    "unverified": "Referencia sin verificar"
   }
 }

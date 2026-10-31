@@ -106,5 +106,63 @@
     "unavailable": "La voix n’est pas configurée sur ce déploiement.",
     "empty": "Je n’ai rien entendu. Réessaie, un peu plus près du micro.",
     "failed": "Ta voix n’a pas pu être transcrite. Réessaie ou écris."
+  },
+  "partner": {
+    "state": {
+      "notSetUp": "Le partenaire n’est pas encore configuré. Choisis un fournisseur dans les réglages.",
+      "needsKey": "Ce fournisseur demande une clé. Ajoute-la dans les réglages.",
+      "capped": "La limite de dépense du jour est atteinte. Augmente-la dans les réglages.",
+      "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+      "busy": "Le partenaire répond…"
+    },
+    "mode": {
+      "label": "Comment le partenaire aide",
+      "direct": {
+        "name": "Direct",
+        "hint": "Des réponses courtes et claires."
+      },
+      "debugging": {
+        "name": "Débogage",
+        "hint": "Cherche la cause d’une panne, étape par étape."
+      },
+      "beginner": {
+        "name": "Débutant",
+        "hint": "Des mots simples, de petits pas, une question à la fin."
+      }
+    },
+    "send": "Envoyer",
+    "stop": "Arrêter",
+    "counter": "{count} sur {max}",
+    "keyRemoved": "Une valeur qui ressemblait à une clé a été retirée de ton message.",
+    "error": {
+      "not_configured": "Configure un fournisseur d’IA dans les réglages.",
+      "no_key": "Ce fournisseur demande une clé.",
+      "auth": "Le fournisseur n’a pas accepté cette clé.",
+      "bad_model": "Ce modèle n’est pas disponible avec ta clé.",
+      "context_too_long": "Ce projet est trop grand pour ce modèle. Sélectionne une pièce ou choisis un modèle plus grand.",
+      "quota": "Ton compte fournisseur n’a plus de crédit.",
+      "capped": "La limite du jour est atteinte. Augmente-la dans les réglages.",
+      "network": "Impossible de joindre le fournisseur. Si c’est une restriction du navigateur, active le relais.",
+      "relay_denied": "Ton serveur ne l’a pas autorisé.",
+      "upstream_busy": "Le fournisseur est occupé. Réessaie.",
+      "upstream_timeout": "Le fournisseur a mis trop de temps. Réessaie.",
+      "upstream_failed": "Le fournisseur a échoué. Réessaie.",
+      "filtered": "Le fournisseur a refusé de répondre. Essaie de reformuler."
+    },
+    "hint": {
+      "relay": "Passe par ton propre serveur, pas directement depuis ce navigateur.",
+      "selectPart": "Sélectionne une pièce pour donner au partenaire une vue plus petite et plus nette."
+    },
+    "tool": {
+      "args": "Arguments",
+      "result": "Résultat",
+      "showAll": "Afficher les {count} lignes",
+      "showLess": "Afficher moins de lignes",
+      "ok": "Terminé",
+      "failed": "Échec",
+      "noArgs": "Aucun argument",
+      "noResult": "Aucun résultat"
+    },
+    "unverified": "Référence non vérifiée"
   }
 }

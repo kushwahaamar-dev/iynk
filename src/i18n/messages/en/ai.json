@@ -106,5 +106,63 @@
     "unavailable": "Voice isn’t set up on this deployment.",
     "empty": "I didn’t catch that. Try again, a little closer to the mic.",
     "failed": "Your voice couldn’t be turned into text. Try again or type."
+  },
+  "partner": {
+    "state": {
+      "notSetUp": "The partner isn’t set up yet. Choose a provider in settings.",
+      "needsKey": "This provider needs a key. Add it in settings.",
+      "capped": "Today’s spending limit is reached. Raise it in settings.",
+      "offline": "You’re offline. The lab still works; the partner needs a connection.",
+      "busy": "The partner is answering…"
+    },
+    "mode": {
+      "label": "How the partner helps",
+      "direct": {
+        "name": "Direct",
+        "hint": "Short, straight answers."
+      },
+      "debugging": {
+        "name": "Debugging",
+        "hint": "Hunts for the cause of a fault, step by step."
+      },
+      "beginner": {
+        "name": "Beginner",
+        "hint": "Plain words, small steps, a question at the end."
+      }
+    },
+    "send": "Send",
+    "stop": "Stop",
+    "counter": "{count} of {max}",
+    "keyRemoved": "A value that looked like a key was removed from your message.",
+    "error": {
+      "not_configured": "Set up an AI provider in settings.",
+      "no_key": "This provider needs a key.",
+      "auth": "The provider did not accept this key.",
+      "bad_model": "This model is not available to your key.",
+      "context_too_long": "This project is too large for this model. Select a part or choose a larger model.",
+      "quota": "Your provider account has no credit left.",
+      "capped": "Today’s limit is reached. Raise it in settings.",
+      "network": "Could not reach the provider. If this is a browser restriction, turn on the relay.",
+      "relay_denied": "Your server did not allow this.",
+      "upstream_busy": "The provider is busy. Try again.",
+      "upstream_timeout": "The provider took too long. Try again.",
+      "upstream_failed": "The provider failed. Try again.",
+      "filtered": "The provider declined to answer this. Try rephrasing."
+    },
+    "hint": {
+      "relay": "Goes through your own server, not straight from this browser.",
+      "selectPart": "Select a part to give the partner a smaller, sharper view."
+    },
+    "tool": {
+      "args": "Arguments",
+      "result": "Result",
+      "showAll": "Show all {count} lines",
+      "showLess": "Show fewer lines",
+      "ok": "Done",
+      "failed": "Failed",
+      "noArgs": "No arguments",
+      "noResult": "No result"
+    },
+    "unverified": "Unverified reference"
   }
 }

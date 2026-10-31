@@ -106,5 +106,63 @@
     "unavailable": "Sprache ist in dieser Installation nicht eingerichtet.",
     "empty": "Ich habe nichts verstanden. Versuch es nochmal, etwas näher am Mikrofon.",
     "failed": "Deine Stimme konnte nicht in Text umgewandelt werden. Versuch es nochmal oder tippe."
+  },
+  "partner": {
+    "state": {
+      "notSetUp": "Der Partner ist noch nicht eingerichtet. Wähle in den Einstellungen einen Anbieter.",
+      "needsKey": "Dieser Anbieter braucht einen Schlüssel. Trage ihn in den Einstellungen ein.",
+      "capped": "Das Tageslimit ist erreicht. Erhöhe es in den Einstellungen.",
+      "offline": "Du bist offline. Das Labor funktioniert weiter; der Partner braucht eine Verbindung.",
+      "busy": "Der Partner antwortet …"
+    },
+    "mode": {
+      "label": "Wie der Partner hilft",
+      "direct": {
+        "name": "Direkt",
+        "hint": "Kurze, klare Antworten."
+      },
+      "debugging": {
+        "name": "Fehlersuche",
+        "hint": "Sucht die Ursache eines Fehlers Schritt für Schritt."
+      },
+      "beginner": {
+        "name": "Einsteiger",
+        "hint": "Einfache Worte, kleine Schritte, am Ende eine Frage."
+      }
+    },
+    "send": "Senden",
+    "stop": "Stopp",
+    "counter": "{count} von {max}",
+    "keyRemoved": "Ein Wert, der wie ein Schlüssel aussah, wurde aus deiner Nachricht entfernt.",
+    "error": {
+      "not_configured": "Richte in den Einstellungen einen KI-Anbieter ein.",
+      "no_key": "Dieser Anbieter braucht einen Schlüssel.",
+      "auth": "Der Anbieter hat diesen Schlüssel nicht akzeptiert.",
+      "bad_model": "Dieses Modell ist mit deinem Schlüssel nicht verfügbar.",
+      "context_too_long": "Dieses Projekt ist für dieses Modell zu groß. Wähle ein Teil aus oder ein größeres Modell.",
+      "quota": "Auf deinem Anbieterkonto ist kein Guthaben mehr.",
+      "capped": "Das Tageslimit ist erreicht. Erhöhe es in den Einstellungen.",
+      "network": "Der Anbieter war nicht erreichbar. Falls der Browser das blockiert, schalte das Relay ein.",
+      "relay_denied": "Dein Server hat das nicht erlaubt.",
+      "upstream_busy": "Der Anbieter ist ausgelastet. Versuche es erneut.",
+      "upstream_timeout": "Der Anbieter hat zu lange gebraucht. Versuche es erneut.",
+      "upstream_failed": "Beim Anbieter ist ein Fehler aufgetreten. Versuche es erneut.",
+      "filtered": "Der Anbieter hat die Antwort abgelehnt. Formuliere die Frage anders."
+    },
+    "hint": {
+      "relay": "Läuft über deinen eigenen Server, nicht direkt aus diesem Browser.",
+      "selectPart": "Wähle ein Teil aus, damit der Partner einen kleineren, schärferen Ausschnitt sieht."
+    },
+    "tool": {
+      "args": "Argumente",
+      "result": "Ergebnis",
+      "showAll": "Alle {count} Zeilen zeigen",
+      "showLess": "Weniger Zeilen zeigen",
+      "ok": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "noArgs": "Keine Argumente",
+      "noResult": "Kein Ergebnis"
+    },
+    "unverified": "Nicht überprüfter Verweis"
   }
 }
