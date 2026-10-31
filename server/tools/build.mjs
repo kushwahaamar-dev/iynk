@@ -1,11 +1,11 @@
-// Bundles the four catalogue tools of the site (src/lib/server/mcp/tools) into dist/tools.mjs so the
+// Bundles the four catalogue tools (server/tools/catalogue/tools) into dist/tools.mjs so the
 // server can run them under plain Node. The site's Next-only imports are swapped for small stand-ins here.
 import { build } from "esbuild";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const server = fileURLToPath(new URL("../", import.meta.url));
-const toolsDir = `${root}src/lib/server/mcp/tools/`;
+const toolsDir = `${server}tools/catalogue/tools/`;
 
 // The registry, the tool errors and the search errors must be the server's own modules, or `instanceof`
 // and the one registry would not see the bundle's tools. dist/ sits next to src/, so these paths hold at run time.
