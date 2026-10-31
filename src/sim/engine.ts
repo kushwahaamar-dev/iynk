@@ -59,6 +59,20 @@ export interface EngineSnapshot {
   data: unknown | Uint8Array;
 }
 
+/** SIMULATION A.2. */
+export interface OrchestratorSnapshot {
+  format: 1;
+  docHash: string;
+  at: SimTime;
+  seqNext: number;
+  queue: SimEvent[];
+  rng: Record<string, [number, number, number, number]>;
+  /** Index into `ReplayRecord.inputs`. */
+  logCursor: number;
+  engines: EngineSnapshot[];
+  stateHash: string;
+}
+
 export interface SimNetlist {
   version: 1;
   docHash: string;

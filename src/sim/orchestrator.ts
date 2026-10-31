@@ -10,6 +10,7 @@ import {
   type HostInput,
   type InputEntry,
   type LoadResult,
+  type OrchestratorSnapshot,
   type PinEventPayload,
   type SimEvent,
   type SimNetlist,
@@ -22,6 +23,7 @@ import { PWL_OPTIONS } from "./analog/elements.ts";
 import type { AnalogStepResult, Change, LiveAnalog } from "./analog/live.ts";
 import { type BoardPinOwner, analogChangeOf, boardPinOwners } from "./digital/pins.ts";
 import { EventQueue } from "./queue.ts";
+import type { InterpSnapshotData } from "./replay/snapshot.ts";
 
 export interface PinEdge {
   at: SimTime;
@@ -43,6 +45,13 @@ export interface Orchestrator {
   readonly diagnostics: readonly SimDiagnostic[];
   readonly analog: AnalogHook;
   pinEdges(): readonly PinEdge[];
+  /**
+   * An engine without its own `snapshot()` is an interpreter: its frames cannot be saved, so it gets a cut point
+   * (`docHash` stands for its source, `logCursor` for the input index). `docHash` and `logCursor` come from the record.
+   */
+  snapshot(record: { docHash: string; logCursor: number }): OrchestratorSnapshot;
+  /** Takes over the whole state of `from`, which a restore has replayed to the snapshot's time. `from` is spent afterwards. */
+  adopt(from: Orchestrator): void;
 }
 
 const SLICE_NS = NS_PER_MS;
@@ -87,8 +96,8 @@ const isPinPayload = (p: unknown): p is PinEventPayload =>
   typeof p === "object" && p !== null && typeof (p as PinEventPayload).pin === "string";
 
 class SimOrchestrator implements Orchestrator, EventSink {
-  private readonly engines: Engine[];
-  private readonly queue = new EventQueue();
+  private engines: Engine[];
+  private queue = new EventQueue();
   private opts: SimRunOptions | null = null;
   private seq = 0;
   private stall = 0;
@@ -99,8 +108,8 @@ class SimOrchestrator implements Orchestrator, EventSink {
   private hashes: { at: SimTime; hash: string }[] = [];
   private problems: SimDiagnostic[] = [];
   private current: Orchestrator["state"] = "idle";
-  private readonly digital: DigitalLayer;
-  private readonly live: LiveAnalog | null;
+  private digital: DigitalLayer;
+  private live: LiveAnalog | null;
   private owners = new Map<string, BoardPinOwner>();
   private solveAt: SimTime | null = null;
   now = 0;
@@ -137,6 +146,60 @@ class SimOrchestrator implements Orchestrator, EventSink {
 
   pinEdges(): readonly PinEdge[] {
     return this.edges;
+  }
+
+  snapshot(record: { docHash: string; logCursor: number }): OrchestratorSnapshot {
+    const cut: InterpSnapshotData = { sourceHash: record.docHash, virtualNs: this.now, inputCursor: record.logCursor };
+    const engines = this.engines.map((e) => e.snapshot?.() ?? { engine: e.id, engineVersion: "1", schema: 1, data: cut });
+    if (this.live) engines.push(this.live.snapshot());
+    return {
+      format: 1,
+      docHash: record.docHash,
+      at: this.now,
+      seqNext: this.seq + 1,
+      queue: this.pending(),
+      rng: {},
+      logCursor: record.logCursor,
+      engines,
+      stateHash: this.hash(),
+    };
+  }
+
+  adopt(from: Orchestrator): void {
+    if (!(from instanceof SimOrchestrator)) throw new TypeError("only an orchestrator made by createOrchestrator can be adopted");
+    this.engines = from.engines;
+    this.digital = from.digital;
+    this.live = from.live;
+    this.queue = from.queue;
+    this.opts = from.opts;
+    this.seq = from.seq;
+    this.stall = from.stall;
+    this.nextCheckpoint = from.nextCheckpoint;
+    this.pinLevels = from.pinLevels;
+    this.edges = from.edges;
+    this.logged = from.logged;
+    this.hashes = from.hashes;
+    this.problems = from.problems;
+    this.owners = from.owners;
+    this.solveAt = from.solveAt;
+    this.now = from.now;
+    this.current = from.current === "running" ? "paused" : from.current;
+    for (const engine of this.engines) engine.attach(this);
+  }
+
+  /** The queued events in delivery order; the heap itself is left as it was. */
+  private pending(): SimEvent[] {
+    const events: SimEvent[] = [];
+    for (let e = this.queue.pop(); e !== undefined; e = this.queue.pop()) events.push(e);
+    for (const e of events) this.queue.push(e);
+    return events;
+  }
+
+  private hash(): string {
+    const hasher = new StateHasher();
+    for (const engine of this.engines) hasher.str(engine.id).str(engine.stateHash());
+    hasher.str(this.digital.stateHash());
+    return hasher.hex();
   }
 
   load(net: SimNetlist, opts: SimRunOptions): LoadResult {
@@ -351,10 +414,7 @@ class SimOrchestrator implements Orchestrator, EventSink {
   private checkpointIfDue(): void {
     const pending = this.queue.peekTime();
     if (this.now < this.nextCheckpoint || (pending !== null && pending <= this.now)) return;
-    const hasher = new StateHasher();
-    for (const engine of this.engines) hasher.str(engine.id).str(engine.stateHash());
-    hasher.str(this.digital.stateHash());
-    this.hashes.push({ at: this.nextCheckpoint, hash: hasher.hex() });
+    this.hashes.push({ at: this.nextCheckpoint, hash: this.hash() });
     this.nextCheckpoint += CHECKPOINT_NS;
   }
 }
