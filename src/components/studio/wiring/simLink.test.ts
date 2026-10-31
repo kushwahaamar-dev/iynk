@@ -209,6 +209,16 @@ describe("simLink", () => {
     expect(run.getState().serial.at(-1)).toMatchObject({ kind: "in", text: "hi" });
   });
 
+  it("sends a world input only while running", async () => {
+    const { link, calls, emit } = rig();
+    link.setInput("in_pot", 512);
+    expect(calls).toEqual([]);
+    await link.run();
+    emit(stateEv("running"));
+    link.setInput("in_pot", 512);
+    expect(calls.at(-1)).toBe("input:analog");
+  });
+
   it("goes back to idle on reset and ignores late events", async () => {
     const { link, run, calls, emit } = rig();
     await link.run();

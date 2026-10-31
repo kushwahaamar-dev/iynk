@@ -7,7 +7,7 @@ import type { SimLink } from "./wiring/simLink";
 
 function rig(running = true) {
   const run = createRunStore();
-  const link: SimLink = { run: vi.fn(async () => {}), stop: vi.fn(), reset: vi.fn(), pause: vi.fn(), resume: vi.fn(), step: vi.fn(), setSpeed: vi.fn(), restart: vi.fn(async () => {}), sendSerial: vi.fn(), press: vi.fn(), dispose: vi.fn() };
+  const link: SimLink = { run: vi.fn(async () => {}), stop: vi.fn(), reset: vi.fn(), pause: vi.fn(), resume: vi.fn(), step: vi.fn(), setSpeed: vi.fn(), restart: vi.fn(async () => {}), sendSerial: vi.fn(), press: vi.fn(), setInput: vi.fn(), dispose: vi.fn() };
   if (running) {
     run.apply({ t: "phase", phase: "starting" });
     run.apply({ t: "phase", phase: "running" });

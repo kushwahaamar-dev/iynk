@@ -38,6 +38,8 @@ export interface SimLink {
   restart(): Promise<void>;
   sendSerial(text: string): void;
   press(c: string, pin: string, down: boolean): void;
+  /** Sets a world input of the run; the value is run data and never touches the document. */
+  setInput(id: string, value: number): void;
   dispose(): void;
 }
 
@@ -259,6 +261,10 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
     press(c, pin, down) {
       if (run.getState().phase !== "running") return;
       void host.input({ kind: "pin", target: `${c}/${pin}`, value: down }).catch(() => undefined);
+    },
+    setInput(id, value) {
+      if (run.getState().phase !== "running") return;
+      void host.input({ kind: "analog", target: id, value }).catch(() => undefined);
     },
     dispose() {
       generation++;
