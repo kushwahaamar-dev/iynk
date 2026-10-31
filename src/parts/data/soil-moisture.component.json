@@ -4,14 +4,15 @@
   "id": "core.soil-moisture",
   "version": "1.0.0",
   "identity": {
-    "manufacturer": "generic (unbranded module)",
+    "manufacturer": "generic",
     "model": "Capacitive soil moisture sensor v1.2",
     "generic": true,
-    "kind": "module",
+    "refdes_prefix": "U",
+    "kind": "sensor",
     "category": "sensor",
     "description": {
       "i18n_key": "parts.soil-moisture.description",
-      "en": "A probe board with a 555 oscillator and a copper pad. Wetter soil gives a lower voltage on AOUT, about 2.6 V in dry air and 1.4 V in water."
+      "en": "A capacitive soil moisture probe with a 3-pin cable: AOUT, VCC and GND. The reading falls as the soil gets wetter."
     },
     "primary_source": "factsheet",
     "legacy_ids": [
@@ -22,7 +23,6 @@
       "moisture",
       "capacitive",
       "analog",
-      "garden",
       "sensor"
     ]
   },
@@ -30,23 +30,16 @@
     {
       "id": "factsheet",
       "kind": "fact-sheet",
-      "title": "Board Lab components fact sheet, section 16: capacitive soil moisture sensor v1.2",
+      "title": "Board Lab components fact sheet, section 16: Capacitive soil moisture sensor v1.2",
       "publisher": "iynk",
-      "revision": "2026-10-24",
+      "revision": "2026-10-31",
       "reliability": "secondary",
-      "note": "docs/facts/la-components.md. The sheet marks the size and the pin order unverified."
-    },
-    {
-      "id": "modulejs",
-      "kind": "own-estimate",
-      "title": "figures/modules/soil-moisture.js: board model and elec block",
-      "publisher": "iynk",
-      "reliability": "unverified"
+      "note": "docs/facts/la-components.md. It marks the board size and the output range as community figures, unverified."
     },
     {
       "id": "partjs",
       "kind": "own-estimate",
-      "title": "figures/parts/soil-moisture.js: breadboard figure",
+      "title": "figures/parts/soil-moisture.js and figures/modules/soil-moisture.js",
       "publisher": "iynk",
       "reliability": "unverified"
     }
@@ -54,23 +47,23 @@
   "pins": [
     {
       "id": "AOUT",
+      "name": {
+        "en": "Analog output"
+      },
       "designator": "AOUT",
       "type": "analog_out",
       "class": "analog",
       "position": {
         "x": 4.5,
-        "y": 13.5
+        "y": 9.5
       },
-      "name": {
-        "en": "Analog output"
-      },
-      "connector": "J1",
-      "note": {
-        "en": "Wetter is lower. Read it with analogRead."
-      }
+      "connector": "J1"
     },
     {
       "id": "VCC",
+      "name": {
+        "en": "Supply"
+      },
       "designator": "VCC",
       "type": "power_in",
       "class": "power",
@@ -78,19 +71,19 @@
         "x": 4.5,
         "y": 11.5
       },
-      "connector": "J1",
-      "note": {
-        "en": "3.3 to 5.5 V."
-      }
+      "connector": "J1"
     },
     {
       "id": "GND",
+      "name": {
+        "en": "Ground"
+      },
       "designator": "GND",
       "type": "ground",
       "class": "ground",
       "position": {
         "x": 4.5,
-        "y": 9.5
+        "y": 13.5
       },
       "connector": "J1"
     }
@@ -99,6 +92,7 @@
     {
       "id": "J1",
       "kind": "jst",
+      "gender": "male",
       "pitch": 2,
       "pins": [
         "AOUT",
@@ -106,27 +100,21 @@
         "GND"
       ],
       "note": {
-        "en": "A 3-pin JST-PH socket at 2.0 mm. The order is from product photos and varies by batch: read the silk."
+        "en": "White JST-PH socket. The cable plugs onto it and ends in the three header pins the breadboard takes."
       }
     }
   ],
   "dimensions": {
-    "package": "probe board, 98 x 23 mm",
+    "package": "probe board",
     "body": {
       "w": 98,
       "h": 23,
-      "d": 1.6
-    },
-    "board": {
-      "w": 98,
-      "h": 23,
-      "thickness": 1.6,
-      "corner_radius": 0
+      "d": 7.6
     },
     "accuracy": 2,
     "source": {
       "src": "factsheet",
-      "loc": "section 16, board"
+      "loc": "section 16, Board"
     }
   },
   "ratings": {
@@ -138,39 +126,13 @@
           "VCC"
         ]
       },
-      "simulation": {
+      "manufacturer": {
         "unit": "V",
         "min": 3.3,
         "max": 5.5,
-        "confidence": "medium",
         "source": {
           "src": "factsheet",
-          "loc": "section 16, supply"
-        },
-        "rationale": {
-          "en": "The sheet gives 3.3 to 5.5 V; the on-board 3.3 V regulator keeps the reading steady across it."
-        }
-      },
-      "used_by_model": "none"
-    },
-    "supply_current_active": {
-      "measure": "current",
-      "role": "consumption",
-      "scope": {
-        "pins": [
-          "VCC"
-        ]
-      },
-      "simulation": {
-        "unit": "A",
-        "value": 0.005,
-        "confidence": "low",
-        "source": {
-          "src": "modulejs",
-          "loc": "figures/modules/soil-moisture.js: elec.pins.VCC mA: 5"
-        },
-        "rationale": {
-          "en": "Constant in figures/modules/soil-moisture.js, no source found."
+          "loc": "section 16, Supply"
         }
       },
       "used_by_model": "none"
@@ -185,20 +147,15 @@
       },
       "simulation": {
         "unit": "V",
-        "min": 2.5,
-        "max": 3,
+        "value": 2.6,
         "confidence": "low",
-        "source": {
-          "src": "factsheet",
-          "loc": "section 16, supply"
-        },
         "rationale": {
-          "en": "The sheet gives about 2.5 to 3.0 V in dry air; the figure uses its AIR_V constant. Each unit needs its own calibration."
+          "en": "Constant AIR_V in figures/modules/soil-moisture.js:27 for dry air on a 5 V supply. The fact sheet gives 2.5 to 3.0 V and no maker figure."
         }
       },
       "used_by_model": "none"
     },
-    "aout_wet": {
+    "aout_water": {
       "measure": "voltage",
       "role": "characteristic",
       "scope": {
@@ -208,15 +165,10 @@
       },
       "simulation": {
         "unit": "V",
-        "min": 1.2,
-        "max": 1.5,
+        "value": 1.4,
         "confidence": "low",
-        "source": {
-          "src": "factsheet",
-          "loc": "section 16, supply"
-        },
         "rationale": {
-          "en": "The sheet gives about 1.2 to 1.5 V in water. Wetter reads lower."
+          "en": "Constant WATER_V in figures/modules/soil-moisture.js:27 for the probe in water on a 5 V supply. The fact sheet gives 1.2 to 1.5 V and no maker figure."
         }
       },
       "used_by_model": "none"
@@ -235,76 +187,103 @@
       "max": 100,
       "unit": "percent",
       "affects": [
-        "probe"
+        "dc"
       ]
     }
   ],
   "behaviour": {
     "summary": {
-      "en": "A 555 timer at about 1.5 MHz drives the probe pad, which is one plate of a capacitor with the soil as the other. Wetter soil lowers the amplitude, and a peak detector turns it into a DC level on AOUT: about 2.6 V in dry air and 1.4 V in water."
+      "en": "An analog level on AOUT that falls from about 2.6 V in dry air to about 1.4 V in water, from a 3.3 to 5.5 V supply. The Studio does not run it yet."
     },
     "layers": [
       {
-        "id": "probe",
+        "id": "dc",
         "domain": "analog",
         "reads": [
-          "moisture",
-          "VCC"
+          "VCC",
+          "GND",
+          "moisture"
+        ],
+        "drives": [
+          "AOUT"
         ],
         "summary": {
-          "en": "A capacitive probe read through a peak detector."
+          "en": "A 555 oscillator and a copper pad turned into a DC level. No solver element holds it."
         },
         "model": {
           "kind": "none",
           "reason": {
-            "en": "The output comes from a 555 oscillator, a probe capacitance and a peak detector. The figure page maps the moisture setting to a voltage; the solver has no element for that mapping."
+            "en": "The reading comes from a lesson world input and the board's own oscillator, peak detector and bleed resistor. The solver has no element for a pad that loads a timer, so this layer does nothing."
           }
-        },
-        "drives": [
-          "AOUT"
-        ]
+        }
       }
     ]
   },
+  "injectable_faults": [
+    {
+      "id": "cold_socket",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "AOUT",
+          "VCC",
+          "GND"
+        ]
+      },
+      "legacy_id": "cold:J1",
+      "cause_id": "x-connection.cold-joint",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "A cracked joint on the sensor socket."
+      }
+    }
+  ],
   "simulation": {
     "tier": "none",
     "status": "not-modelled-yet",
     "what_it_models": [
       {
-        "en": "Nothing in the Studio yet. The figure page maps the moisture setting to an output voltage between the dry and wet levels."
+        "en": "Nothing is solved. The figure draws the probe, the pot and the cable, and the moisture setting darkens the soil."
       }
     ],
     "not_modelled": [
       {
-        "en": "The 555 oscillator, the probe capacitance and the peak detector."
+        "en": "The 555 oscillator, the pad as one plate of a capacitor, the peak detector and the bleed resistor."
       },
       {
-        "en": "The NE555 clone that needs 4.5 V and sticks on a 3.3 V rail, which the figure offers as a variant."
+        "en": "The AOUT level that falls as the soil gets wetter."
       },
       {
-        "en": "A missing bleed resistor, which makes the reading stick at the driest value."
-      },
-      {
-        "en": "Damage from water on the electronics."
+        "en": "The NE555 clone that never starts on 3.3 V, and the clone without a bleed resistor."
       }
     ],
     "known_gaps": [
       {
-        "id": "moisture_to_voltage",
+        "id": "reading_in_figure",
         "text": {
-          "en": "The mapping from the moisture setting to a voltage is a straight line between two constants in the figure, with no source."
+          "en": "The AOUT level, the NE555 and bleed-resistor variants and the watering cycle live in the module page only."
         },
-        "evidence": "figures/modules/soil-moisture.js:44"
+        "evidence": "figures/modules/soil-moisture.js:32-45"
       },
       {
-        "id": "ne555_variant",
+        "id": "no_numeric_test",
         "text": {
-          "en": "The stuck NE555 clone is a variant of the figure page, not a build option of this descriptor."
+          "en": "No test checks the AOUT level against a measurement. The 2.6 V and 1.4 V ends are the figure's constants, not maker figures."
         },
-        "evidence": "figures/modules/soil-moisture.js:154-157"
+        "evidence": "figures/modules/soil-moisture.js:27"
       }
     ],
-    "solver_requires": []
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
   },
   "visual": {
     "breadboard": {
@@ -336,29 +315,10 @@
     "fallback": {
       "renderer": "generic-header-module",
       "label": "Soil moisture",
-      "body_colour": "#1b1a1c",
+      "body_colour": "#2b2927",
       "show_pin_labels": true
     }
   },
-  "injectable_faults": [
-    {
-      "id": "cold_socket",
-      "kind": "cold_joint",
-      "legacy_id": "cold:J1",
-      "cause_id": "open-connection",
-      "symptom_ids": [
-        "reading-erratic"
-      ],
-      "description": {
-        "en": "A cracked joint on the sensor socket, so the reading drops out."
-      },
-      "target": {
-        "pins": [
-          "AOUT"
-        ]
-      }
-    }
-  ],
   "provenance": {
     "license": "LicenseRef-iynk-pending",
     "attribution": [
@@ -373,27 +333,28 @@
     "created": "2026-10-31",
     "third_party_content": true,
     "review": {
-      "status": "ci-checked"
+      "status": "unreviewed"
     },
     "changelog": [
       {
         "version": "1.0.0",
         "date": "2026-10-31",
-        "note": "First descriptor, converted from figures/modules/soil-moisture.js, figures/parts/soil-moisture.js and docs/facts/la-components.md section 16.",
+        "note": "First descriptor, converted from figures/parts/soil-moisture.js, figures/modules/soil-moisture.js and docs/facts/la-components.md section 16.",
         "behaviour_change": false
       }
     ]
   },
-  "x_legacy_model": [
-    {
-      "ref": "module:soil-moisture-aout@1",
-      "path": "figures/modules/soil-moisture.js",
-      "lines": "30-60, reading() and the elec block at 153-157"
-    }
-  ],
   "x_module_figure": {
+    "kind": "module",
     "id": "soil-moisture",
     "path": "public/figures/modules/soil-moisture.html",
     "sha256": "d1311fb7632beb7710815dc95ab2501ed988c3294357c865ed656a303602d817"
-  }
+  },
+  "x_legacy_model": [
+    {
+      "ref": "aoutNow",
+      "path": "figures/modules/soil-moisture.js",
+      "lines": "32-45"
+    }
+  ]
 }

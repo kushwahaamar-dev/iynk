@@ -5,14 +5,14 @@
   "version": "1.0.0",
   "identity": {
     "manufacturer": "generic (unbranded module)",
-    "model": "LM2596 step-down module with LED voltmeter, 2596-SDC",
+    "model": "LM2596 DC-DC step-down module with LED voltmeter (2596-SDC)",
     "generic": true,
     "refdes_prefix": "U",
     "kind": "module",
     "category": "power",
     "description": {
       "i18n_key": "parts.lm2596-module.description",
-      "en": "A buck converter board that turns 4.5 to 40 V into an adjustable 1.23 to 37 V, up to 3 A, with a 3-digit voltmeter."
+      "en": "A blue buck converter board that turns 4.5 to 40 V in into a lower voltage that you set with a trimmer. It has no reverse-polarity protection."
     },
     "chip": {
       "manufacturer": "Texas Instruments",
@@ -24,11 +24,11 @@
       "lm2596"
     ],
     "tags": [
+      "lm2596",
       "buck",
       "step-down",
       "regulator",
-      "power",
-      "robotics"
+      "power"
     ]
   },
   "sources": [
@@ -37,14 +37,14 @@
       "kind": "fact-sheet",
       "title": "LM2596S-ADJ buck converter module with 3-digit voltmeter: fact sheet",
       "publisher": "iynk",
-      "revision": "2026-10-24",
+      "revision": "2026-10-31",
       "reliability": "secondary",
-      "note": "docs/facts/lm2596.md. It cites TI datasheet SNVS124G; this descriptor cites the fact sheet, not the datasheet."
+      "note": "docs/facts/lm2596.md. It cites the TI datasheet SNVS124G, read by the fact-sheet author, not by this descriptor. Board geometry is read from a product photo, 0.5 mm."
     },
     {
       "id": "modulejs",
       "kind": "own-estimate",
-      "title": "figures/modules/lm2596.js: board model and converter model",
+      "title": "figures/modules/lm2596.js",
       "publisher": "iynk",
       "reliability": "unverified"
     }
@@ -52,53 +52,71 @@
   "pins": [
     {
       "id": "VIN",
-      "designator": "VIN",
+      "name": {
+        "en": "Input positive"
+      },
+      "designator": "IN+",
       "type": "power_in",
       "class": "power",
       "position": {
         "x": 4.2,
         "y": 20
       },
-      "name": {
-        "en": "Input positive"
-      },
-      "connector": "J1",
-      "note": {
-        "en": "4.5 to 40 V. No reverse protection, no fuse."
-      }
+      "connector": "J1"
     },
     {
-      "id": "GND",
-      "designator": "GND",
+      "id": "GND_IN",
+      "name": {
+        "en": "Input ground"
+      },
+      "designator": "IN-",
       "type": "ground",
       "class": "ground",
       "position": {
         "x": 4.2,
-        "y": 15
+        "y": 14.9
       },
-      "name": {
-        "en": "Ground"
-      },
-      "connector": "J1",
-      "note": {
-        "en": "IN- and OUT- are the same net."
-      }
+      "connector": "J1"
     },
     {
       "id": "VOUT",
-      "designator": "VOUT",
+      "name": {
+        "en": "Regulated output"
+      },
+      "designator": "OUT+",
       "type": "power_out",
       "class": "power",
       "position": {
         "x": 62,
         "y": 20
       },
+      "connector": "J2"
+    },
+    {
+      "id": "GND_OUT",
       "name": {
-        "en": "Output positive"
+        "en": "Output ground"
       },
-      "connector": "J2",
+      "designator": "OUT-",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 62,
+        "y": 14.9
+      },
+      "connector": "J2"
+    }
+  ],
+  "groups": [
+    {
+      "id": "gnd",
+      "kind": "internal-short",
+      "pins": [
+        "GND_IN",
+        "GND_OUT"
+      ],
       "note": {
-        "en": "Set it with the trimmer before connecting the load."
+        "en": "IN- and OUT- are the same copper. The converter is not isolated."
       }
     }
   ],
@@ -109,10 +127,10 @@
       "pitch": 5,
       "pins": [
         "VIN",
-        "GND"
+        "GND_IN"
       ],
       "note": {
-        "en": "The input terminal, IN+ above IN-."
+        "en": "Input terminal, wire entry on the left edge."
       }
     },
     {
@@ -121,19 +139,19 @@
       "pitch": 5,
       "pins": [
         "VOUT",
-        "GND"
+        "GND_OUT"
       ],
       "note": {
-        "en": "The output terminal, OUT+ above OUT-."
+        "en": "Output terminal, wire entry on the right edge."
       }
     }
   ],
   "dimensions": {
-    "package": "module, 66 x 34 mm",
+    "package": "module",
     "body": {
       "w": 66,
       "h": 34,
-      "d": 14
+      "d": 12.5
     },
     "board": {
       "w": 66,
@@ -163,32 +181,29 @@
         }
       ]
     },
+    "height_total": 12.5,
     "accuracy": 0.5,
     "source": {
       "src": "factsheet",
-      "loc": "section 2.1 and 2.4"
+      "loc": "section 2.1, Outline, holes, colours"
     }
   },
   "ratings": {
     "vin_range": {
       "measure": "voltage",
-      "role": "operating",
+      "role": "recommended",
       "scope": {
         "pins": [
           "VIN"
         ]
       },
-      "simulation": {
+      "manufacturer": {
         "unit": "V",
         "min": 4.5,
         "max": 40,
-        "confidence": "medium",
         "source": {
           "src": "factsheet",
-          "loc": "section 3.1, input range"
-        },
-        "rationale": {
-          "en": "4.5 to 40 V as sold; the fact sheet takes 4.5 V from the regulator datasheet."
+          "loc": "section 3.1, Input range"
         }
       },
       "used_by_model": "none"
@@ -201,135 +216,114 @@
           "VIN"
         ]
       },
-      "simulation": {
+      "manufacturer": {
         "unit": "V",
-        "value": 45,
-        "confidence": "medium",
+        "max": 45,
         "source": {
           "src": "factsheet",
-          "loc": "section 3.1, input range"
-        },
-        "rationale": {
-          "en": "45 V is the regulator's absolute maximum. The SS34 diode on the board is a 40 V part."
+          "loc": "section 3.1, Input range"
         }
       },
       "used_by_model": "none"
     },
-    "vout_range": {
+    "vref": {
       "measure": "voltage",
-      "role": "operating",
-      "scope": {
-        "pins": [
-          "VOUT"
-        ]
-      },
-      "simulation": {
-        "unit": "V",
-        "min": 1.23,
-        "max": 37,
-        "confidence": "medium",
-        "source": {
-          "src": "factsheet",
-          "loc": "section 0, ratings as sold"
-        },
-        "rationale": {
-          "en": "Adjustable with a 25-turn trimmer; the reference is 1.23 V."
-        }
-      },
-      "used_by_model": "none"
-    },
-    "iout_continuous": {
-      "measure": "current",
-      "role": "operating",
-      "scope": {
-        "pins": [
-          "VOUT"
-        ]
-      },
-      "simulation": {
-        "unit": "A",
-        "value": 2,
-        "confidence": "medium",
-        "source": {
-          "src": "factsheet",
-          "loc": "section 0, ratings as sold"
-        },
-        "rationale": {
-          "en": "2 A continuous and 3 A with a heatsink, as sold."
-        }
-      },
-      "used_by_model": "none"
-    },
-    "switch_current_limit": {
-      "measure": "current",
-      "role": "abs_max",
-      "scope": {
-        "pins": [
-          "VOUT"
-        ]
-      },
-      "simulation": {
-        "unit": "A",
-        "min": 3.6,
-        "typ": 4.5,
-        "confidence": "medium",
-        "source": {
-          "src": "factsheet",
-          "loc": "section 3.1, switch current limit"
-        },
-        "rationale": {
-          "en": "4.5 A typical peak, 3.6 A minimum, from the regulator datasheet as quoted by the fact sheet."
-        }
-      },
-      "used_by_model": "none"
-    },
-    "switching_frequency": {
-      "measure": "frequency",
       "role": "characteristic",
       "scope": {
         "pins": [
           "VOUT"
         ]
       },
-      "simulation": {
-        "unit": "Hz",
-        "value": 150000,
-        "confidence": "medium",
+      "manufacturer": {
+        "unit": "V",
+        "min": 1.193,
+        "typ": 1.23,
+        "max": 1.267,
         "source": {
           "src": "factsheet",
-          "loc": "section 3.1, switching frequency"
+          "loc": "section 3.1, Feedback reference"
         },
-        "rationale": {
-          "en": "150 kHz typical."
+        "conditions": "25 degC"
+      },
+      "used_by_model": "none"
+    },
+    "current_continuous": {
+      "measure": "current",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VOUT"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 2,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 0, Ratings as sold"
         }
+      },
+      "used_by_model": "none"
+    },
+    "switch_frequency": {
+      "measure": "frequency",
+      "role": "characteristic",
+      "manufacturer": {
+        "unit": "Hz",
+        "min": 127000,
+        "typ": 150000,
+        "max": 173000,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3.1, Switching frequency"
+        },
+        "conditions": "25 degC"
       },
       "used_by_model": "none"
     }
   },
+  "parameters": [
+    {
+      "id": "trimmer_turns",
+      "name": {
+        "en": "Trimmer turns from the low end"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 2.53,
+      "min": 0,
+      "max": 25,
+      "unit": "1",
+      "affects": [
+        "VOUT"
+      ]
+    }
+  ],
   "behaviour": {
     "summary": {
-      "en": "A non-synchronous buck converter. Vout is 1.23 V times one plus the trimmer over 330 ohm, it can only step down, and at full duty it follows Vin minus a dropout of about 0.92 V at 1 A. Efficiency is about 80 percent at 5 V out."
+      "en": "A buck converter: Vout = 1.23 V x (1 + R2 / 330 ohm), R2 being the 10 kohm trimmer, never above the input minus about 1 V. The Studio does not run it yet."
     },
     "layers": [
       {
-        "id": "converter",
+        "id": "buck",
         "domain": "power",
         "reads": [
           "VIN",
-          "GND"
+          "GND_IN",
+          "trimmer_turns"
+        ],
+        "drives": [
+          "VOUT"
         ],
         "summary": {
-          "en": "Adjustable step-down regulation."
+          "en": "Switching step-down with a current limit and a thermal cut-out."
         },
         "model": {
           "kind": "none",
           "reason": {
-            "en": "The converter, its losses and heat live in the figure page (B.lm2596 in figures/modules/lm2596.js). The solver has no regulator or switching element."
+            "en": "The converter, its losses, its heat and the trimmer live in the module page. The solver has no switching or regulator element yet."
           }
-        },
-        "drives": [
-          "VOUT"
-        ]
+        }
       }
     ]
   },
@@ -338,41 +332,50 @@
     "status": "not-modelled-yet",
     "what_it_models": [
       {
-        "en": "Nothing in the Studio yet. The figure page computes the output, the losses, the current limit and the heat from the trimmer position and the load."
+        "en": "Nothing is solved here. The module page computes the output voltage, efficiency, current limit and heat for its own display."
       }
     ],
     "not_modelled": [
       {
-        "en": "The regulator as a circuit element, the inductor current and the output ripple."
+        "en": "The output voltage from the trimmer setting and the input."
       },
       {
-        "en": "The voltmeter circuit, which draws about 15 mA from the input."
+        "en": "Losses in the switch, the catch diode and the inductor, and the heat they make."
       },
       {
-        "en": "Reversed or too high an input, and the back-feed from a battery on the output."
+        "en": "The 4.5 A peak current limit and the thermal shutdown."
       },
       {
-        "en": "The other board layouts sold under the same name."
+        "en": "Damage from a reversed or over-voltage input: the board has no protection."
+      },
+      {
+        "en": "The 3-digit voltmeter and its IN and OUT select button."
       }
     ],
     "known_gaps": [
       {
-        "id": "no_regulator_element",
+        "id": "converter_in_figure",
         "text": {
-          "en": "The solver has no linear or switching regulator element, so the converter cannot run as a layer."
+          "en": "The whole converter model, built from the datasheet curves in the fact sheet, is code in the module page and is not data."
         },
-        "evidence": "figures/modules/lm2596.js:25-94"
+        "evidence": "figures/modules/lm2596.js:40-94"
       },
       {
-        "id": "assumed_losses",
+        "id": "no_numeric_test",
         "text": {
-          "en": "The inductor resistance, the switching loss and the thermal shutdown point are assumed in the figure; the datasheet gives none of them."
+          "en": "No test checks the converter against the datasheet curves."
         },
-        "evidence": "figures/modules/lm2596.js:14-22"
+        "evidence": "src/content/robotics/lm2596.test.ts"
       }
     ],
-    "solver_requires": [
-      "regulator_linear"
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
     ]
   },
   "visual": {
@@ -383,23 +386,15 @@
         "path": "public/figures/modules/lm2596.html",
         "sha256": "a8de20c9567a6d40b0472602273c4e37e8bece2bdc27e9cca7d7bb3ed8daadc0",
         "engine": "colorfigures-bench"
-      },
-      "legs": [
-        "VIN",
-        "GND",
-        "VOUT"
-      ],
-      "span": [
-        5,
-        5
-      ]
+      }
     },
     "schematic": {
       "symbol": "module-box",
       "pin_sides": {
         "VIN": "left",
-        "GND": "bottom",
-        "VOUT": "right"
+        "GND_IN": "left",
+        "VOUT": "right",
+        "GND_OUT": "right"
       }
     },
     "fallback": {
@@ -423,7 +418,7 @@
     "created": "2026-10-31",
     "third_party_content": true,
     "review": {
-      "status": "ci-checked"
+      "status": "unreviewed"
     },
     "changelog": [
       {
@@ -436,9 +431,9 @@
   },
   "x_legacy_model": [
     {
-      "ref": "module:lm2596-converter@1",
+      "ref": "convert",
       "path": "figures/modules/lm2596.js",
-      "lines": "25-94, convert() and step(); 97-135, model()"
+      "lines": "40-94"
     }
   ]
 }

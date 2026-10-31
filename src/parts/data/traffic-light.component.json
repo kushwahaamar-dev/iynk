@@ -4,48 +4,43 @@
   "id": "core.traffic-light",
   "version": "1.0.0",
   "identity": {
-    "manufacturer": "generic (unbranded module)",
-    "model": "Traffic-light LED module, 4 pins",
+    "manufacturer": "generic",
+    "model": "Traffic-light LED module",
     "generic": true,
     "refdes_prefix": "U",
     "kind": "module",
     "category": "display",
     "description": {
       "i18n_key": "parts.traffic-light.description",
-      "en": "Three 8 mm LEDs, red, yellow and green, each behind its own resistor with the cathodes tied to GND. A HIGH on a pin lights its LED."
+      "en": "A small board with a red, a yellow and a green LED, each with its own series resistor. The cathodes share GND, so each lamp lights when its pin is high."
     },
     "primary_source": "factsheet",
     "legacy_ids": [
       "traffic-light"
     ],
     "tags": [
-      "led",
       "traffic-light",
-      "display",
-      "indicator"
+      "led",
+      "red",
+      "yellow",
+      "green",
+      "display"
     ]
   },
   "sources": [
     {
       "id": "factsheet",
       "kind": "fact-sheet",
-      "title": "Board Lab components fact sheet, section 19: traffic-light LED module",
+      "title": "Board Lab components fact sheet, section 19: Traffic-light LED module",
       "publisher": "iynk",
-      "revision": "2026-10-24",
+      "revision": "2026-10-31",
       "reliability": "secondary",
-      "note": "docs/facts/la-components.md. The sheet marks the size and the resistor value unverified."
-    },
-    {
-      "id": "modulejs",
-      "kind": "own-estimate",
-      "title": "figures/modules/traffic-light.js: board model and elec block",
-      "publisher": "iynk",
-      "reliability": "unverified"
+      "note": "docs/facts/la-components.md. It marks the board size and the resistor value as unverified and says both pin orders exist."
     },
     {
       "id": "partjs",
       "kind": "own-estimate",
-      "title": "figures/parts/traffic-light.js: breadboard figure",
+      "title": "figures/parts/traffic-light.js and figures/modules/traffic-light.js",
       "publisher": "iynk",
       "reliability": "unverified"
     }
@@ -53,73 +48,64 @@
   "pins": [
     {
       "id": "GND",
+      "name": {
+        "en": "Common cathode"
+      },
       "designator": "GND",
       "type": "ground",
       "class": "ground",
       "position": {
-        "x": 6.6899999999999995,
-        "y": 2.6
+        "x": 3.19,
+        "y": 0
       },
-      "connector": "J1",
-      "note": {
-        "en": "The cathodes of all three LEDs."
-      }
+      "connector": "H1"
     },
     {
       "id": "R",
+      "name": {
+        "en": "Red lamp"
+      },
       "designator": "R",
       "type": "digital_in",
       "class": "digital",
       "position": {
-        "x": 9.23,
-        "y": 2.6
+        "x": 5.73,
+        "y": 0
       },
-      "name": {
-        "en": "Red LED"
-      },
-      "connector": "J1",
-      "note": {
-        "en": "HIGH lights the red LED through a 330 ohm resistor."
-      }
+      "connector": "H1"
     },
     {
       "id": "Y",
+      "name": {
+        "en": "Yellow lamp"
+      },
       "designator": "Y",
       "type": "digital_in",
       "class": "digital",
       "position": {
-        "x": 11.77,
-        "y": 2.6
+        "x": 8.27,
+        "y": 0
       },
-      "name": {
-        "en": "Yellow LED"
-      },
-      "connector": "J1",
-      "note": {
-        "en": "HIGH lights the yellow LED through a 330 ohm resistor."
-      }
+      "connector": "H1"
     },
     {
       "id": "G",
+      "name": {
+        "en": "Green lamp"
+      },
       "designator": "G",
       "type": "digital_in",
       "class": "digital",
       "position": {
-        "x": 14.31,
-        "y": 2.6
+        "x": 10.81,
+        "y": 0
       },
-      "name": {
-        "en": "Green LED"
-      },
-      "connector": "J1",
-      "note": {
-        "en": "HIGH lights the green LED through a 330 ohm resistor."
-      }
+      "connector": "H1"
     }
   ],
   "connectors": [
     {
-      "id": "J1",
+      "id": "H1",
       "kind": "header",
       "gender": "male",
       "pitch": 2.54,
@@ -130,60 +116,27 @@
         "G"
       ],
       "note": {
-        "en": "The order GND R Y G is the default. Some makers print R Y G GND: read the silk."
+        "en": "The breadboard figure uses the order GND R Y G. Some boards print R Y G GND: read the silk."
       }
     }
   ],
   "dimensions": {
-    "package": "module, 21 x 56 mm",
+    "package": "module board",
     "body": {
-      "w": 21,
-      "h": 56,
-      "d": 14
+      "w": 14,
+      "h": 30,
+      "d": 5.7
     },
-    "board": {
-      "w": 21,
-      "h": 56,
-      "thickness": 1.6,
-      "corner_radius": 1.5,
-      "mounting_holes": [
-        {
-          "x": 10.5,
-          "y": 52.6,
-          "diameter": 3.2
-        }
-      ]
-    },
-    "accuracy": 1,
+    "accuracy": 2,
     "source": {
-      "src": "factsheet",
-      "loc": "section 19"
+      "src": "partjs",
+      "loc": "figures/parts/traffic-light.js:2"
     }
   },
   "ratings": {
-    "led_series_ohms": {
-      "measure": "resistance",
-      "role": "characteristic",
-      "scope": {
-        "layer": "r"
-      },
-      "simulation": {
-        "unit": "ohm",
-        "value": 330,
-        "confidence": "medium",
-        "source": {
-          "src": "factsheet",
-          "loc": "section 19"
-        },
-        "rationale": {
-          "en": "The sheet says 220 to 330 ohm on real modules; the figure uses 330."
-        }
-      },
-      "used_by_model": "simulation"
-    },
-    "led_current_max": {
+    "lamp_current": {
       "measure": "current",
-      "role": "abs_max",
+      "role": "characteristic",
       "scope": {
         "pins": [
           "R",
@@ -193,243 +146,105 @@
       },
       "simulation": {
         "unit": "A",
-        "value": 0.02,
+        "value": 0.01,
         "confidence": "low",
-        "source": {
-          "src": "modulejs",
-          "loc": "figures/modules/traffic-light.js: elec imax .02"
-        },
         "rationale": {
-          "en": "Constant in the figure, no source found."
+          "en": "About 10 mA from a 5 V pin through the on-board resistor, as figures/parts/traffic-light.js:3 states. The fact sheet gives 8 to 12 mA and marks it unverified."
         }
       },
-      "used_by_model": "simulation"
-    },
-    "vf_red": {
-      "measure": "voltage",
-      "role": "characteristic",
-      "scope": {
-        "layer": "r"
-      },
-      "simulation": {
-        "unit": "V",
-        "typ": 2.0,
-        "confidence": "low",
-        "source": {
-          "src": "modulejs",
-          "loc": "figures/modules/traffic-light.js: VF"
-        },
-        "rationale": {
-          "en": "Constant in the figure for the red LED, no source found."
-        }
-      },
-      "used_by_model": "simulation"
-    },
-    "vf_yellow": {
-      "measure": "voltage",
-      "role": "characteristic",
-      "scope": {
-        "layer": "y"
-      },
-      "simulation": {
-        "unit": "V",
-        "typ": 2.1,
-        "confidence": "low",
-        "source": {
-          "src": "modulejs",
-          "loc": "figures/modules/traffic-light.js: VF"
-        },
-        "rationale": {
-          "en": "Constant in the figure for the yellow LED, no source found."
-        }
-      },
-      "used_by_model": "simulation"
-    },
-    "vf_green": {
-      "measure": "voltage",
-      "role": "characteristic",
-      "scope": {
-        "layer": "g"
-      },
-      "simulation": {
-        "unit": "V",
-        "typ": 2.2,
-        "confidence": "low",
-        "source": {
-          "src": "modulejs",
-          "loc": "figures/modules/traffic-light.js: VF"
-        },
-        "rationale": {
-          "en": "Constant in the figure for the green LED, no source found."
-        }
-      },
-      "used_by_model": "simulation"
+      "used_by_model": "none"
     }
   },
   "behaviour": {
     "summary": {
-      "en": "Each pin drives one LED through a series resistor, active high. The current is the pin voltage minus the forward voltage, over the resistor: about 9 mA at 5 V and 3 to 4 mA at 3.3 V."
+      "en": "Three lamps, each lit by a high level on its own pin. The Studio does not run them yet."
     },
     "layers": [
       {
-        "id": "r",
+        "id": "lamps",
         "domain": "analog",
         "reads": [
+          "GND",
           "R",
-          "GND"
-        ],
-        "summary": {
-          "en": "The red LED with its series resistor, folded into one diode with a forward voltage and a resistance."
-        },
-        "model": {
-          "kind": "element",
-          "element": "led",
-          "terminals": {
-            "anode": "R",
-            "cathode": "GND"
-          },
-          "params": {
-            "vf": {
-              "from_rating": "vf_red",
-              "pick": "typ"
-            },
-            "rd": {
-              "from_rating": "led_series_ohms",
-              "pick": "value"
-            },
-            "imax": {
-              "from_rating": "led_current_max",
-              "pick": "value"
-            }
-          }
-        }
-      },
-      {
-        "id": "y",
-        "domain": "analog",
-        "reads": [
           "Y",
-          "GND"
+          "G"
         ],
         "summary": {
-          "en": "The yellow LED with its series resistor, folded into one diode with a forward voltage and a resistance."
+          "en": "Three LEDs behind 330 ohm resistors, cathodes on GND."
         },
         "model": {
-          "kind": "element",
-          "element": "led",
-          "terminals": {
-            "anode": "Y",
-            "cathode": "GND"
-          },
-          "params": {
-            "vf": {
-              "from_rating": "vf_yellow",
-              "pick": "typ"
-            },
-            "rd": {
-              "from_rating": "led_series_ohms",
-              "pick": "value"
-            },
-            "imax": {
-              "from_rating": "led_current_max",
-              "pick": "value"
-            }
-          }
-        }
-      },
-      {
-        "id": "g",
-        "domain": "analog",
-        "reads": [
-          "G",
-          "GND"
-        ],
-        "summary": {
-          "en": "The green LED with its series resistor, folded into one diode with a forward voltage and a resistance."
-        },
-        "model": {
-          "kind": "element",
-          "element": "led",
-          "terminals": {
-            "anode": "G",
-            "cathode": "GND"
-          },
-          "params": {
-            "vf": {
-              "from_rating": "vf_green",
-              "pick": "typ"
-            },
-            "rd": {
-              "from_rating": "led_series_ohms",
-              "pick": "value"
-            },
-            "imax": {
-              "from_rating": "led_current_max",
-              "pick": "value"
-            }
+          "kind": "none",
+          "reason": {
+            "en": "The three lamps share one ground and have resistors on the board. The bench draws them from its own pin loads, so no element layer is written for them yet."
           }
         }
       }
     ]
   },
+  "injectable_faults": [
+    {
+      "id": "cold_pins",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "GND",
+          "R",
+          "Y",
+          "G"
+        ]
+      },
+      "legacy_id": "cold:PINS",
+      "cause_id": "x-connection.cold-joint",
+      "symptom_ids": [
+        "led.dark"
+      ],
+      "description": {
+        "en": "A cracked joint on the header pins."
+      }
+    }
+  ],
   "simulation": {
-    "tier": "T1",
-    "status": "partly-modelled",
+    "tier": "none",
+    "status": "not-modelled-yet",
     "what_it_models": [
       {
-        "en": "Each LED as a diode with the figure's forward voltage, 2.0 V red, 2.1 V yellow and 2.2 V green, and the 330 ohm series resistor as its resistance."
-      },
-      {
-        "en": "The current from a HIGH pin, which the solver turns into a brightness."
+        "en": "Nothing is solved. The figure lights each lamp from the pin its leg is wired to while the sketch runs."
       }
     ],
     "not_modelled": [
       {
-        "en": "The brightness curve, which the figure page draws itself."
+        "en": "The current in each lamp: the resistor, the forward voltage and the pin driver."
       },
       {
-        "en": "The pin order variant R Y G GND, which is a different board layout."
+        "en": "A lamp burning out when its resistor is removed."
       },
       {
-        "en": "A resistor removed, which the figure treats as the pin driver alone limiting the current."
-      },
-      {
-        "en": "A reversed LED."
+        "en": "The 3.3 V board case, where each lamp takes 3 to 4 mA."
       }
     ],
     "known_gaps": [
       {
-        "id": "resistor_unsourced",
+        "id": "lamp_current_in_figure",
         "text": {
-          "en": "The sheet says 220 to 330 ohm and marks it unverified; the 330 ohm and the forward voltages are constants in the figure."
+          "en": "The lamp current, the 330 ohm resistor and the forward voltages of 2.0, 2.1 and 2.2 V live in the module page only."
         },
-        "evidence": "figures/modules/traffic-light.js:17-23"
+        "evidence": "figures/modules/traffic-light.js:14-27"
       },
       {
-        "id": "no_numeric_test_beyond_one",
+        "id": "board_size_differs",
         "text": {
-          "en": "One test checks the red LED current at 5 V. The yellow and green layers share the model and have no test of their own because the test harness reads the first element layer."
+          "en": "The part figure draws a 14 x 30 mm board and the module page a 56 x 21 mm one. The dimensions here follow the part figure."
         },
-        "evidence": "src/parts/golden.ts: circuitFor"
+        "evidence": "figures/parts/traffic-light.js:2 and figures/modules/traffic-light.js:3"
       }
     ],
-    "solver_requires": [
-      "led"
-    ],
-    "tests": [
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
       {
-        "id": "red_at_5v",
-        "kind": "golden-trace",
-        "state": "present",
-        "file": "src/parts/data/tests/traffic-light.golden.json",
-        "note": "Red LED at 5 V: (5 - 2.0) / 330 = 9.09 mA."
-      },
-      {
-        "id": "conformance",
-        "kind": "conformance",
-        "state": "present",
-        "file": "src/parts/data/tests/traffic-light.conformance.json",
-        "note": "The three layers resolve, their terminals are pins and every rating they read has a slot."
+        "language": "none"
       }
     ]
   },
@@ -465,29 +280,10 @@
     "fallback": {
       "renderer": "generic-header-module",
       "label": "Traffic light",
-      "body_colour": "#1f1e1c",
+      "body_colour": "#2b2927",
       "show_pin_labels": true
     }
   },
-  "injectable_faults": [
-    {
-      "id": "cold_header",
-      "kind": "cold_joint",
-      "legacy_id": "cold:PINS",
-      "cause_id": "open-connection",
-      "symptom_ids": [
-        "led-dark"
-      ],
-      "description": {
-        "en": "A cracked joint on the header, so an LED drops out."
-      },
-      "target": {
-        "pins": [
-          "GND"
-        ]
-      }
-    }
-  ],
   "provenance": {
     "license": "LicenseRef-iynk-pending",
     "attribution": [
@@ -502,20 +298,28 @@
     "created": "2026-10-31",
     "third_party_content": true,
     "review": {
-      "status": "ci-checked"
+      "status": "unreviewed"
     },
     "changelog": [
       {
         "version": "1.0.0",
         "date": "2026-10-31",
-        "note": "First descriptor, converted from figures/modules/traffic-light.js, figures/parts/traffic-light.js and docs/facts/la-components.md section 19.",
+        "note": "First descriptor, converted from figures/parts/traffic-light.js, figures/modules/traffic-light.js and docs/facts/la-components.md section 19.",
         "behaviour_change": false
       }
     ]
   },
   "x_module_figure": {
+    "kind": "module",
     "id": "traffic-light",
     "path": "public/figures/modules/traffic-light.html",
     "sha256": "b2cc5196802f07f183340d016374b2e4014e084a98d0c72db1ab4b878b2c1a28"
-  }
+  },
+  "x_legacy_model": [
+    {
+      "ref": "ledCurrent",
+      "path": "figures/modules/traffic-light.js",
+      "lines": "23-28"
+    }
+  ]
 }
