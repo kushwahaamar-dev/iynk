@@ -58,6 +58,7 @@ import { CanvasView } from "./CanvasView";
 import { CodeDock } from "./CodeDock";
 import type { FaultDockProps, FaultRequest } from "./FaultDock";
 import { Inspector } from "./Inspector";
+import { UpgradeOffer } from "./UpgradeOffer";
 import { LiveRegion } from "./LiveRegion";
 import { InstrumentDock } from "./InstrumentDock";
 import { ModelsPanel } from "./ModelsPanel";
@@ -674,7 +675,12 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         </div>
       }
       right={{
-        inspector: <Inspector doc={doc} session={session} ui={ui} messages={messages.studioInspect} alignMessages={t.align} modelMessages={messages.studioModels} lang={lang} />,
+        inspector: (
+          <div className="flex flex-col gap-4">
+            <Inspector doc={doc} session={session} ui={ui} messages={messages.studioInspect} alignMessages={t.align} modelMessages={messages.studioModels} lang={lang} />
+            <UpgradeOffer doc={doc} session={session} messages={messages.partinfo} lang={lang} />
+          </div>
+        ),
         problems: (
           <Problems
             problems={problems}

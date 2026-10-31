@@ -183,7 +183,7 @@ export function buildDependency(def: Descriptor, origin: "builtin" | "library" |
 }
 
 /** What upgrading every instance of `from` to `to` would do, as ops the person can review before applying. */
-export function planUpgrade(doc: Project, from: Descriptor, to: Descriptor, origin: "library" | "embedded"): UpgradePlan {
+export function planUpgrade(doc: Project, from: Descriptor, to: Descriptor, origin: "builtin" | "library" | "embedded"): UpgradePlan {
   const instances = doc.components
     .filter((c) => c.definition.ref === from.id && c.definition.version === from.version)
     .map((c) => c.id)

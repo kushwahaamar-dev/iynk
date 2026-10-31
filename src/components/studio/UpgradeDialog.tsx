@@ -29,7 +29,7 @@ export interface UpgradeDialogProps {
 export interface UpgradeHostProps {
   from: Descriptor;
   to: Descriptor;
-  origin: "library" | "embedded";
+  origin: "builtin" | "library" | "embedded";
   doc: Project;
   fixtures: ReadonlyMap<string, GoldenFixture>;
   env: ModelEnv;
