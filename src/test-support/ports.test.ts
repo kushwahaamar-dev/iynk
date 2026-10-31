@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { RESERVED_PORTS, randomTestPort } from "./ports";
 
@@ -18,13 +16,5 @@ describe("randomTestPort", () => {
       expect(port).toBeLessThanOrEqual(49_999);
       expect(RESERVED_PORTS.has(port)).toBe(false);
     }
-  });
-
-  test("the relay package's copy reserves the same ports", () => {
-    const source = readFileSync(join(process.cwd(), "server/legacy/test/helpers.js"), "utf8");
-    const list = /RESERVED_PORTS = new Set\(\[([\d_,\s]*)\]\)/.exec(source);
-    expect(list).not.toBeNull();
-    const copy = list![1].split(",").map((n) => Number(n.trim().replaceAll("_", ""))).filter(Boolean);
-    expect([...copy].sort()).toEqual([...RESERVED_PORTS].sort());
   });
 });

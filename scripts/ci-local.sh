@@ -12,7 +12,7 @@ set -uo pipefail
 
 cd "$(dirname "$0")/.."
 
-STEPS=(content schema typecheck lint ui no-only copy provenance relay-deps unit perf relay server build e2e secrets audit)
+STEPS=(content schema typecheck lint ui no-only copy provenance unit perf server build e2e secrets audit)
 
 usage_steps() {
   echo "valid steps: ${STEPS[*]}" >&2
@@ -77,10 +77,8 @@ run_step() {
     no-only) ! git grep -nE --untracked -e "[.]only[(]" -- src figures scripts e2e server ;;
     copy) node scripts/copy-check.mjs ;;
     provenance) npm run provenance:check ;;
-    relay-deps) npm ci --prefix server/legacy ;;
     unit) CI=true npx vitest run ;;
     perf) CI=true npm run test:perf ;;
-    relay) npm test --prefix server/legacy ;;
     server) npm ci --prefix server && npm run server:typecheck && npm test --prefix server ;;
     build) npm run build ;;
     # The e2e build bakes the harness's connect origins (random ports) into the CSP, so it builds its own copy.

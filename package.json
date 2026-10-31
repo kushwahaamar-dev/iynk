@@ -29,7 +29,7 @@
     "typecheck": "next typegen && tsc --noEmit && tsc -p tsconfig.portable.json",
     "typecheck:portable": "tsc -p tsconfig.portable.json",
     "server:typecheck": "tsc -p server/tsconfig.json",
-    "server:test": "npm --prefix server test && npm --prefix server/legacy test",
+    "server:test": "npm --prefix server test",
     "pretest": "npm run content && npm run engines:build",
     "test": "vitest run",
     "pretest:perf": "npm run content",
