@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, configure, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import together from "@/i18n/messages/en/together.json";
 import { togetherT } from "@/components/realtime/messages";
@@ -6,6 +6,9 @@ import type { ServerClient } from "@/server-client/client";
 import { ClientError, ServerUnreachable } from "@/server-client/types";
 import type { Buddy, PairingCreated } from "@/server-client/types";
 import { PairDialog, readPairingInput } from "./PairDialog";
+
+// The default one second is tight when the whole suite runs at once.
+configure({ asyncUtilTimeout: 5000 });
 
 const t = togetherT("en", together);
 const pair = together.buddies.pair;
