@@ -3,6 +3,8 @@
 // crafts) reproduce at their printed precision; see calc.test.ts. Each craft's options (batteries, motors, props,
 // fixed parts) and its constants (CalcModel) live in its content file under design.
 
+import { checkAll, firstNonFinite, type OutOfRange, type Range } from '@/sim/flight/guards';
+
 export type CostCategory = 'Electrical' | 'Mechanical';
 
 export type CalcBattery = {
@@ -245,6 +247,95 @@ export function calc({ model, fixed, battery: b, motor: m, prop: pr }: CalcInput
     cost: { electrical, mechanical, total: electrical + mechanical },
     cruise,
   };
+}
+
+const GRAMS: Range = { min: 0, max: 1e5 };
+const PRICE: Range = { min: 0, max: 1e6 };
+const POSITIVE: Range = { min: 0, max: 1e6, minExclusive: true };
+const SHARE: Range = { min: 0, max: 1, minExclusive: true };
+
+/** Allowed range of every number `calc` reads, by dotted path into the input; `fixed[]` stands for each fixed part. */
+export const CALC_RANGES: Readonly<Record<string, Range>> = {
+  'model.motors': { min: 1, max: 12, integer: true },
+  'model.usable': SHARE,
+  'model.minTW': POSITIVE,
+  'model.payloadG': GRAMS,
+  'model.armRadiusMm': POSITIVE,
+  'model.escAmps': POSITIVE,
+  'model.hoverLimit': SHARE,
+  'model.thrust.k': POSITIVE,
+  'model.thrust.maxGPerW': POSITIVE,
+  'model.thrust.overCap': POSITIVE,
+  'model.thrust.refKv': POSITIVE,
+  'model.thrust.grams': POSITIVE,
+  'model.thrust.amps': POSITIVE,
+  'model.flight.gPerW': POSITIVE,
+  'model.flight.flyFactor': POSITIVE,
+  'model.flight.speed': POSITIVE,
+  'model.flight.liftToDrag': POSITIVE,
+  'model.flight.efficiency': POSITIVE,
+  'model.flight.speedK': POSITIVE,
+  'model.flight.loadRef': POSITIVE,
+  'model.flight.stallRatio': POSITIVE,
+  'model.flight.cruiseRatio': POSITIVE,
+  'battery.cells': { min: 1, max: 24, integer: true },
+  'battery.mah': { min: 0, max: 1e6, minExclusive: true },
+  'battery.g': GRAMS,
+  'battery.price': PRICE,
+  'battery.parallel': { min: 1, max: 24, integer: true },
+  'battery.cRating': POSITIVE,
+  'motor.kv': { min: 0, max: 60_000, minExclusive: true },
+  'motor.g': GRAMS,
+  'motor.price': PRICE,
+  'motor.sz': POSITIVE,
+  'motor.maxCells': { min: 1, max: 24, integer: true },
+  'prop.pf': { min: 0, max: 20, minExclusive: true },
+  'prop.eff': { min: 0, max: 20, minExclusive: true },
+  'prop.g': GRAMS,
+  'prop.price': PRICE,
+  'prop.r': POSITIVE,
+  'fixed[].g': GRAMS,
+  'fixed[].price': PRICE,
+};
+
+function numbersOf(prefix: string, o: object, required: readonly string[], optional: readonly string[] = []) {
+  const record = o as Record<string, unknown>;
+  const present = optional.filter((k) => record[k] !== undefined);
+  return [...required, ...present].map((k) => [`${prefix}.${k}`, record[k]] as [string, unknown]);
+}
+
+/** The first input number outside `CALC_RANGES`, in a fixed order; optional fields are checked when present. */
+export function validateCalcInput(i: CalcInput): OutOfRange | null {
+  const t = i.model.thrust;
+  const f = i.model.flight;
+  const fields: [string, unknown][] = [
+    ...numbersOf('model', i.model, ['motors', 'usable', 'minTW'], ['payloadG', 'armRadiusMm', 'escAmps', 'hoverLimit']),
+    ...(t.kind === 'krpm'
+      ? numbersOf('model.thrust', t, ['k', 'maxGPerW'], ['overCap'])
+      : numbersOf('model.thrust', t, ['refKv', 'grams', 'amps'])),
+    ...(f.kind === 'multirotor'
+      ? numbersOf('model.flight', f, ['gPerW', 'flyFactor'])
+      : f.kind === 'vtol'
+        ? numbersOf('model.flight', f, ['gPerW', 'speed', 'liftToDrag', 'efficiency'])
+        : numbersOf('model.flight', f, [
+            'speedK', 'loadRef', 'stallRatio', 'cruiseRatio', 'liftToDrag', 'efficiency', 'flyFactor',
+          ])),
+    ...numbersOf('battery', i.battery, ['cells', 'mah', 'g', 'price'], ['parallel', 'cRating']),
+    ...numbersOf('motor', i.motor, ['kv', 'g', 'price'], ['sz', 'maxCells']),
+    ...numbersOf('prop', i.prop, ['pf', 'eff', 'g', 'price'], ['r']),
+  ];
+  i.fixed.forEach((p, at) => {
+    fields.push([`fixed[${at}].g`, p.g], [`fixed[${at}].price`, p.price]);
+  });
+  return checkAll(fields.map(([field, value]) => [field, value, CALC_RANGES[field.replace(/\[\d+\]/, '[]')]] as const));
+}
+
+/** `calc` for input that may be wrong: a bad field, or any non-finite output, comes back as an error instead of a number. */
+export function calcChecked(i: CalcInput): CalcResult | OutOfRange {
+  const bad = validateCalcInput(i);
+  if (bad) return bad;
+  const r = calc(i);
+  return firstNonFinite('result', r) ?? r;
 }
 
 /** Distance between neighbouring motors on a round frame, mm. */
