@@ -15,6 +15,16 @@ export type ControlOp = "run" | "pause" | "stop" | "reset" | "cancel";
 
 export type PinLevel = 0 | 1 | "Z" | "X";
 
+/** SIM A.4. A run has one runtime, so every op names the engine id it is for in the request. */
+export type DebugOp =
+  | { op: "set-breakpoints"; file: string; lines: number[] }
+  | { op: "continue" }
+  | { op: "pause" }
+  | { op: "step"; unit: "line" | "over" | "out" }
+  | { op: "inspect"; frame: number }
+  | { op: "watch"; addr: number; len: number }
+  | { op: "unwatch"; addr: number };
+
 export type SimRunState = "idle" | "running" | "paused" | "halted" | "done" | "limit";
 
 /** The port adds `v: 1` and the call id on the way out and the handler never sees them. `run` is the run id (R-041). */
@@ -33,6 +43,8 @@ export type SimReq =
   | { t: "probe.read"; run: number; id: string }
   /** Streams the samples of a probe from `from` on, as `probe.chunk` events. */
   | { t: "probe.sub"; run: number; id: string; from: SimTime }
+  /** `runtime` is the id of the engine the op is for. `inspect`, `watch` and `unwatch` answer `not-yet`. */
+  | { t: "debug"; run: number; runtime: string; op: DebugOp }
   /** Answered only when the run is at `tNs`. */
   | { t: "hashes.request"; run: number; tNs: SimTime }
   /** Busy-loops for ever so the watchdog can be tested; answered only by a worker created with `diag`. */
@@ -55,8 +67,23 @@ export type SimEv =
   | {
       t: "event";
       run: number;
-      event: { kind: "diagnostic" | "output-contention" | "no-time-progress"; message: string; at: SimTime };
+      event:
+        | { kind: "diagnostic" | "output-contention" | "no-time-progress"; message: string; at: SimTime }
+        | {
+            kind: "paused";
+            runtime: string;
+            reason: "breakpoint" | "step" | "watch";
+            file: string;
+            line: number;
+            atNs: SimTime;
+            bound?: Array<{ file: string; line: number }>;
+          };
     };
+
+/** The ack of `debug` `step`: whether the step ran, and the state the run is in. */
+export interface DebugStepReply {
+  state: SimRunState;
+}
 
 /** The ack of `load` and `step`. */
 export interface DiagnosticsReply {

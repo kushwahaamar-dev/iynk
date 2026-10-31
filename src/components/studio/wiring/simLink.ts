@@ -81,6 +81,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: Sim
       return;
     }
     if (ev.t === "event") {
+      if (ev.event.kind === "paused") return;
       const severity = ev.event.kind === "no-time-progress" ? "error" : "warning";
       run.apply({ t: "diagnostics", append: true, diagnostics: [{ id: ev.event.kind, severity, text: ev.event.message }] });
       return;

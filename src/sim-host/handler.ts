@@ -14,15 +14,18 @@ import type {
   SliceBudget,
   SliceResult,
 } from "@/sim/engine";
+import type { DebugPort, PauseEvent } from "@/sim/debug/breakpoints";
 import { createOrchestrator, type Orchestrator } from "@/sim/orchestrator";
 import type { ProbeHandle, ProbeTap, TraceChunk } from "@/sim/probe/tap";
 import { classHashes } from "@/sim/replay/trace";
-import type { DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, SimEv, SimReq, SimRunState } from "./protocol";
+import { MAX_BREAKPOINTS_PER_FILE } from "@/sim/debug/breakpoints";
+import type { DebugStepReply, DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, SimEv, SimReq, SimRunState } from "./protocol";
 
 /** What the handler reads from an engine beyond `McuEngine`; the interpreter engines have both. */
 export type SimEngine = McuEngine & {
   readonly serialLog?: ReadonlyArray<{ at: SimTime; text: string }>;
   readonly diagnostics?: readonly SimDiagnostic[];
+  readonly debug?: DebugPort;
 };
 
 export interface SimHandlerDeps {
@@ -272,18 +275,39 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     emit({ t: "speed.report", run, achieved, behind: speed > 0 && achieved < BEHIND_RATIO * speed });
   }
 
+  function pauseAt(r: Runtime, pause: PauseEvent) {
+    stopPump();
+    setState("paused");
+    emit({
+      t: "event",
+      run,
+      event: {
+        kind: "paused",
+        runtime: r.engine.id,
+        reason: pause.reason,
+        file: pause.file,
+        line: pause.line,
+        atNs: pause.atNs,
+      },
+    });
+  }
+
   function pump(r: Runtime, gen: number) {
     deps.schedule(() => {
       if (gen !== pumpGen) return;
       const started = deps.wallMs();
       const result = r.orch.runUntil(targetOf(r), {
-        shouldYield: () => deps.wallMs() - started >= SLICE_WALL_MS,
+        shouldYield: () => r.engine.debug?.paused != null || deps.wallMs() - started >= SLICE_WALL_MS,
         work: r.opts.limits,
       });
-      if (!finish(r, result)) {
-        reportSpeed(r);
-        pump(r, gen);
+      if (finish(r, result)) return;
+      const pause = r.engine.debug?.paused;
+      if (pause) {
+        pauseAt(r, pause);
+        return;
       }
+      reportSpeed(r);
+      pump(r, gen);
     });
   }
 
@@ -391,6 +415,35 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     return { diagnostics };
   }
 
+  function debugOp(msg: Extract<SimReq, { t: "debug" }>): DebugStepReply | void {
+    if (!rt) throw bad("nothing is loaded");
+    if (msg.runtime !== rt.engine.id) {
+      throw new WorkerError({ kind: "unknown-runtime", message: `no runtime ${msg.runtime} in this run` });
+    }
+    const port = rt.engine.debug;
+    if (!port) throw new WorkerError({ kind: "no-debug-port", message: `${msg.runtime} cannot be debugged` });
+    const { op } = msg;
+    switch (op.op) {
+      case "set-breakpoints":
+        if (op.lines.length > MAX_BREAKPOINTS_PER_FILE) throw bad(`at most ${MAX_BREAKPOINTS_PER_FILE} breakpoints per file`);
+        return port.setBreakpoints(op.file, op.lines);
+      case "pause":
+        return control("pause");
+      case "continue":
+        port.resume();
+        return control("run");
+      case "step":
+        if (op.unit !== "line" && op.unit !== "over" && op.unit !== "out") throw bad(`unknown step unit ${String(op.unit)}`);
+        if (state === "paused" && port.paused) {
+          port.step(op.unit);
+          control("run");
+        }
+        return { state };
+      default:
+        throw new WorkerError({ kind: "not-yet", message: `debug ${op.op} is not available yet` });
+    }
+  }
+
   return (msg, send) => {
     emit = send;
     if (msg.t === "check") return runChecks(msg.job, { budgetMs: msg.budgetMs });
@@ -408,6 +461,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (msg.t === "control") return void control(msg.op);
     if (msg.t === "step") return step(msg);
     if (msg.t === "speed") return void setSpeed(msg.x);
+    if (msg.t === "debug") return debugOp(msg);
     if (!rt) throw bad("nothing is loaded");
     if (msg.t === "input") return void rt.orch.inject(msg.input);
     return probe(rt, msg);
