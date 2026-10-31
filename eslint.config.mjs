@@ -2,6 +2,13 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
+const simClockBans = [
+  { object: "Date", property: "now", message: "Simulation code cannot read the clock. Use SimTime. See SA-11" },
+  { object: "Math", property: "random", message: "Simulation code cannot use Math.random. Use rng(seed, stream). See SA-11" },
+  { object: "performance", property: "now", message: "Simulation code cannot read the clock. Use SimTime. See SA-11" },
+  { object: "crypto", property: "getRandomValues", message: "Simulation code cannot draw random bytes. Use rng(seed, stream). See SA-11" },
+];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -41,19 +48,29 @@ const eslintConfig = defineConfig([
     files: ["src/sim/**/*.ts"],
     ignores: ["src/sim/**/*.test.ts", "src/sim/**/*.testing.ts"],
     rules: {
-      "no-restricted-properties": [
-        "error",
-        { object: "Date", property: "now", message: "Simulation code cannot read the clock. Use SimTime. See SA-11" },
-        { object: "Math", property: "random", message: "Simulation code cannot use Math.random. Use rng(seed, stream). See SA-11" },
-        { object: "performance", property: "now", message: "Simulation code cannot read the clock. Use SimTime. See SA-11" },
-        { object: "crypto", property: "getRandomValues", message: "Simulation code cannot draw random bytes. Use rng(seed, stream). See SA-11" },
-      ],
+      "no-restricted-properties": ["error", ...simClockBans],
       "no-restricted-syntax": [
         "error",
         { selector: "NewExpression[callee.name='Date']", message: "Simulation code cannot read the clock. See SA-11" },
         { selector: "NewExpression[callee.name='Function']", message: "Simulation code cannot build code at run time. See SA-11" },
         { selector: "CallExpression[callee.name='eval']", message: "Simulation code cannot use eval. See SA-11" },
         { selector: "ImportExpression", message: "Simulation code cannot import dynamically. See SA-11" },
+      ],
+    },
+  },
+  {
+    // Torque goes through applyTorqueImpulse only: addTorque keeps the torque until it is reset and over-drove a wheel 3.7 times (RA-05).
+    // Restates the simulation bans, because a later block replaces the options of the same rule.
+    files: ["src/sim/mech/**/*.ts"],
+    ignores: ["src/sim/**/*.test.ts", "src/sim/**/*.testing.ts"],
+    rules: {
+      "no-restricted-properties": [
+        "error",
+        ...simClockBans,
+        ...["addForce", "addTorque", "addForceAtPoint"].map((property) => ({
+          property,
+          message: `Mechanical code cannot call ${property}. Use applyJointTorqueImpulse. See RA-05`,
+        })),
       ],
     },
   },
@@ -80,6 +97,8 @@ const eslintConfig = defineConfig([
     "docs/MASTER_PLAN/**",
     // Written by scripts/schema-gen.mjs.
     "src/**/generated/**",
+    // The unmodified RS-13 scripts read the clock.
+    "src/sim/mech/fixtures/rs13/**",
   ]),
 ]);
 
