@@ -2,7 +2,6 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { LabStore } from "@/components/dock/types";
 import common from "@/i18n/messages/en/common.json";
-import together from "@/i18n/messages/en/together.json";
 
 const flags = vi.hoisted(() => ({
   status: "ready" as "loading" | "ready" | "error",
@@ -18,12 +17,8 @@ vi.mock("@/lib/features", () => ({
   reloadFeatures: () => undefined,
 }));
 
-const loaded = vi.hoisted(() => ({ together: 0, real: 0 }));
+const loaded = vi.hoisted(() => ({ real: 0 }));
 
-vi.mock("@/components/realtime/TogetherPanel", async (original) => {
-  loaded.together++;
-  return original();
-});
 vi.mock("@/components/search/RealBuildPanel", async (original) => {
   loaded.real++;
   return original();
@@ -31,7 +26,6 @@ vi.mock("@/components/search/RealBuildPanel", async (original) => {
 
 import { I18nProvider } from "@/i18n/client";
 import { LabDock } from "./LabDock";
-import { LabRoom } from "./LabRoom";
 
 const dock = common.client.dock;
 const PHONE = "(max-width: 767px)";
@@ -91,20 +85,13 @@ afterEach(() => {
 });
 
 describe("LabDock", () => {
-  // The module registry lives for the whole file, so this has to run before any test that opens another tab.
   test("fetches a panel's code only when its tab is first on screen", async () => {
     renderDock();
-    expect(loaded).toEqual({ together: 0, real: 0 });
-
     openDrawer();
-    await waitFor(() => expect(loaded.together).toBe(1));
-    expect(loaded.real).toBe(0);
-
-    fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
     await waitFor(() => expect(loaded.real).toBe(1));
   });
 
-  test("is a closed Lab tools button until pressed, then a drawer with Together and Real", async () => {
+  test("is a closed Lab tools button until pressed, then a drawer with Real", async () => {
     renderDock();
     const trigger = screen.getByRole("button", { name: dock.open });
     expect(trigger.textContent).toContain(dock.label);
@@ -117,28 +104,8 @@ describe("LabDock", () => {
     expect(screen.queryByRole("tab", { name: dock.tabs.partner })).toBeNull();
     expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
 
-    fireEvent.click(screen.getByRole("tab", { name: dock.tabs.together }));
-    expect(screen.getByRole("tab", { name: dock.tabs.together }).getAttribute("aria-selected")).toBe("true");
-    await waitFor(() => {
-      const start = screen.queryByRole("button", { name: together.panel.start });
-      const unavailable = screen.queryByText(together.panel.unavailable);
-      expect(start ?? unavailable).toBeTruthy();
-    });
-
-    fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
-    await waitFor(() => expect(screen.getAllByTestId("not-set-up")).toHaveLength(1));
-  });
-
-  test("opens on the first tab that works: Together, or prices on a drone", () => {
-    const first = renderDock();
-    openDrawer();
-    expect(screen.getByRole("tab", { name: dock.tabs.together }).getAttribute("aria-selected")).toBe("true");
-    first.unmount();
-
-    const drone = renderDock("drone");
-    openDrawer();
     expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
-    drone.unmount();
+    await waitFor(() => expect(screen.getAllByTestId("not-set-up")).toHaveLength(1));
   });
 
   test("shows Hardware only when its flag is on", async () => {
@@ -149,20 +116,11 @@ describe("LabDock", () => {
     expect(await screen.findByRole("tab", { name: dock.tabs.hardware })).toBeTruthy();
   });
 
-  test("a room in the address opens the drawer on Together", async () => {
-    window.history.replaceState(null, "", "/en/boards/nano?room=k7m2qx");
-    renderDock();
-    await waitFor(() => {
-      expect(screen.getByRole("tab", { name: dock.tabs.together }).getAttribute("aria-selected")).toBe("true");
-    });
-    expect(drawer()).toBeTruthy();
-  });
-
   test("Escape and the close button shut the drawer and give focus back to the button", () => {
     renderDock();
     const trigger = screen.getByRole("button", { name: dock.open });
     const panel = openDrawer();
-    fireEvent.keyDown(screen.getByRole("tab", { name: dock.tabs.together }), { key: "Escape" });
+    fireEvent.keyDown(screen.getByRole("tab", { name: dock.tabs.real }), { key: "Escape" });
     expect(screen.queryByRole("complementary", { name: dock.label })).toBeNull();
     expect(panel.hidden).toBe(true);
     expect(document.activeElement).toBe(trigger);
@@ -185,18 +143,6 @@ describe("LabDock", () => {
     expect((await screen.findAllByTestId("not-set-up")).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: dock.close }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-  });
-
-  test("the page room is registered around the dock", () => {
-    const { container } = render(
-      <I18nProvider locale="en" messages={common.client}>
-        <LabRoom lab="board" itemId="nano">
-          <LabDock lab="board" itemId="nano" store={store()} figure={null} />
-        </LabRoom>
-      </I18nProvider>,
-    );
-    expect(container.querySelector('[data-lab-room="board"][data-lab-item="nano"]')).not.toBeNull();
-    expect(screen.getByRole("button", { name: dock.open })).toBeTruthy();
   });
 
   test("renders no style element", () => {

@@ -2,7 +2,6 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import ai from "../src/i18n/messages/en/ai.json";
 import common from "../src/i18n/messages/en/common.json";
 import search from "../src/i18n/messages/en/search.json";
-import together from "../src/i18n/messages/en/together.json";
 
 export const dockCopy = common.client.dock;
 
@@ -42,7 +41,7 @@ export async function openDock(page: Page, phone: boolean): Promise<Locator> {
 }
 
 export async function expectTabs(dock: Locator) {
-  for (const name of [dockCopy.tabs.partner, dockCopy.tabs.together, dockCopy.tabs.real]) {
+  for (const name of [dockCopy.tabs.partner, dockCopy.tabs.real]) {
     await dock.getByRole("tab", { name }).click();
     await expect(dock.getByRole("tab", { name })).toHaveAttribute("aria-selected", "true");
   }
@@ -50,9 +49,6 @@ export async function expectTabs(dock: Locator) {
 
   await dock.getByRole("tab", { name: dockCopy.tabs.partner }).click();
   await expect(dock.getByRole("region", { name: ai.panel.title }).getByTestId("not-set-up").or(dock.getByLabel(ai.panel.inputLabel))).toBeVisible();
-
-  await dock.getByRole("tab", { name: dockCopy.tabs.together }).click();
-  await expect(dock.getByRole("button", { name: together.panel.start }).or(dock.getByText(together.panel.unavailable))).toBeVisible();
 
   await dock.getByRole("tab", { name: dockCopy.tabs.real }).click();
   await expect(dock.getByTestId("not-set-up").last().or(dock.getByRole("button", { name: search.real.check }))).toBeVisible();

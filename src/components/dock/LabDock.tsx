@@ -3,29 +3,23 @@
 import dynamic from "next/dynamic";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { DOCK_TABS, type DockTab, type LabDockProps, type LabKind } from "@/components/dock/types";
+import { DOCK_TABS, type DockTab, type LabDockProps } from "@/components/dock/types";
 import { setPointing, usePointing } from "@/components/realtime/pointing";
 import { PanelSkeleton, useSearchAvailability } from "@/components/search/shared";
 import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
 import { useFeatures, type Features } from "@/lib/features";
-import { useTogether } from "@/lib/realtime";
-import { ROOM_PARAM } from "@/lib/realtime/config";
-import { isRoomId, normalizeRoomId } from "@/lib/realtime/protocol";
-import { useRegisterLabStore } from "./LabRoom";
 
 // Phones, including 390×844. Matches the header's md breakpoint.
 const PHONE_QUERY = "(max-width: 767px)";
 
 const TAB_FLAG: Record<DockTab, "hw" | null> = {
-  together: null,
   real: null,
   hardware: "hw",
 };
 
 const TAB_LABEL = {
-  together: "dock.tabs.together",
   real: "dock.tabs.real",
   hardware: "dock.tabs.hardware",
 } as const;
@@ -35,22 +29,11 @@ function tabShown(tab: DockTab, features: Features): boolean {
   return flag === null || features[flag] === true;
 }
 
-/** The first tab that does something on this deployment: rooms, or prices on a drone. */
-function firstWorkingTab(lab: LabKind): DockTab {
-  return lab === "drone" ? "real" : "together";
-}
-
 function isDockTab(value: string): value is DockTab {
   return (DOCK_TABS as readonly string[]).includes(value);
 }
 
-function roomInAddress() {
-  const raw = new URLSearchParams(window.location.search).get(ROOM_PARAM);
-  return isRoomId(raw ? normalizeRoomId(raw) : "");
-}
-
 const loading = () => <PanelSkeleton />;
-const TogetherPanel = dynamic(() => import("@/components/realtime/TogetherPanel").then((m) => m.TogetherPanel), { loading });
 const HardwareTwinPanel = dynamic(() => import("@/components/hw/HardwareTwinPanel").then((m) => m.HardwareTwinPanel), { loading });
 const RealBuildPanel = dynamic(() => import("@/components/search/RealBuildPanel").then((m) => m.RealBuildPanel), { loading });
 const NearbyPanel = dynamic(() => import("@/components/search/NearbyPanel").then((m) => m.NearbyPanel), { loading });
@@ -72,45 +55,34 @@ function RealTab(lab: LabDockProps) {
 }
 
 function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
-  if (tab === "together") return <TogetherPanel {...lab} />;
   if (tab === "hardware") return <HardwareTwinPanel {...lab} />;
   return <RealTab {...lab} />;
 }
 
 /**
- * Together and Build it for real on every lab page (Hardware
- * when its flag is on). Rendered where the page puts it (the
+ * Build it for real on every lab page (Hardware when its
+ * flag is on). Rendered where the page puts it (the
  * workspace bar) as a "Lab tools" button: on a desk it opens a drawer along
  * the right edge that leaves the figure in view, on a phone a bottom sheet.
  */
 export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>) {
   const t = useCommonT();
   const { features } = useFeatures();
-  const together = useTogether();
   const isClient = useIsClient();
   const drawerId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
-  // Start on the desktop layout with no room so the server HTML matches hydration.
-  // The real layout and ?room= are applied on the next turn.
+  // Start on the desktop layout so the server HTML matches hydration. The real layout is applied on the next turn.
   const [phone, setPhone] = useState(false);
-  const [addressRoom, setAddressRoom] = useState(false);
-  const register = useRegisterLabStore();
-  const { lab, store } = props;
 
   const [tab, setTab] = useState<DockTab | null>(null);
   const [open, setOpen] = useState(false);
-  const [dismissedRoom, setDismissedRoom] = useState(false);
   const [visited, setVisited] = useState<readonly DockTab[]>([]);
-  const inRoom = together ? together.roomId !== null : addressRoom;
   const shown = DOCK_TABS.filter((id) => tabShown(id, features));
-  const preferred = firstWorkingTab(lab);
-  const fromRoom = tab === null && inRoom && shown.includes("together");
-  const selected = fromRoom ? "together" : tab && shown.includes(tab) ? tab : shown.includes(preferred) ? preferred : shown[0];
-  const roomOpened = inRoom && !dismissedRoom;
+  const selected = tab && shown.includes(tab) ? tab : shown[0];
   // On a phone the sheet covers the figure, so it steps aside while you point and comes back after.
   const pointing = usePointing();
-  const isOpen = (open || roomOpened) && !(phone && pointing);
+  const isOpen = open && !(phone && pointing);
   // A panel's code is fetched the first time its tab is on screen, then it stays mounted like before.
   if (isOpen && !visited.includes(selected)) setVisited([...visited, selected]);
 
@@ -120,14 +92,8 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
 
   function close() {
     setOpen(false);
-    setDismissedRoom(true);
     triggerRef.current?.focus();
   }
-
-  useEffect(() => {
-    if (!register) return;
-    return register(store);
-  }, [register, store]);
 
   useEffect(() => {
     if (typeof window.matchMedia !== "function") return;
@@ -141,40 +107,16 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
     };
   }, []);
 
-  // Outside a RoomProvider (tests, a page without rooms) the address is the only source.
+  // On a desk the drawer takes focus when you open it.
   useEffect(() => {
-    if (together) return;
-    const read = () => setAddressRoom(roomInAddress());
-    const timer = window.setTimeout(read, 0);
-    window.addEventListener("popstate", read);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("popstate", read);
-    };
-  }, [together]);
-
-  // On a desk the drawer takes focus when you open it, or when a room link needs your name; a room link that
-  // opens it for someone already named leaves focus where it is.
-  const wantsName = roomOpened && together?.identity === null;
-  const takesFocus = open || wantsName;
-  useEffect(() => {
-    if (phone || !isOpen || !takesFocus) return;
-    // The Together strings load on demand, so the name field can take a few frames to appear.
-    let frame = 0;
-    let tries = 0;
-    const place = () => {
+    if (phone || !isOpen) return;
+    const frame = requestAnimationFrame(() => {
       const drawer = drawerRef.current;
       if (!drawer || drawer.contains(document.activeElement)) return;
-      const name = wantsName ? drawer.querySelector<HTMLInputElement>('input[autocomplete="nickname"]') : null;
-      if (wantsName && !name && tries++ < 120) {
-        frame = requestAnimationFrame(place);
-        return;
-      }
-      (name ?? drawer.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]'))?.focus();
-    };
-    frame = requestAnimationFrame(place);
+      drawer.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.focus();
+    });
     return () => cancelAnimationFrame(frame);
-  }, [phone, isOpen, takesFocus, wantsName]);
+  }, [phone, isOpen]);
 
   const tabs = shown.map((id) => ({
     id,
@@ -209,14 +151,12 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       onClick={() => {
         if (isOpen && !phone) return close();
         setPointing(false);
-        setDismissedRoom(false);
         setOpen(true);
       }}
-      className="relative w-fit shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
+      className="w-fit shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
     >
       <Icon name="tools" size={20} />
       <span className="max-sm:sr-only">{t("dock.label")}</span>
-      {inRoom ? <span aria-hidden="true" className="absolute -end-0.5 -top-0.5 size-2 rounded-full bg-good" /> : null}
     </Button>
   );
 

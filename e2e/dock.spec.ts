@@ -19,15 +19,13 @@ test("Together is in the nav", async ({ page }) => {
   await expect(page.locator("header:visible").getByRole("link", { name: shell.nav.together })).toBeVisible();
 });
 
-test("a room link opens Together, and a hidden tab event does not reveal Hardware", async ({ page }) => {
-  await page.goto("/en/boards/nano?room=k7m2qx");
+test("a hidden tab event does not reveal Hardware", async ({ page }) => {
+  await page.goto("/en/boards/nano");
   const dock = await openDock(page, false);
-  await expect(dock.getByRole("tab", { name: dockCopy.tabs.together })).toHaveAttribute("aria-selected", "true");
   await page.evaluate(() => {
     window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "hardware" } }));
   });
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.hardware })).toHaveCount(0);
-  await expect(dock.getByRole("tab", { name: dockCopy.tabs.together })).toHaveAttribute("aria-selected", "true");
 });
 
 for (const [w, h] of [[1440, 900], [1920, 1080]]) {

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /** The dock tabs the partner may open (D-016: no passport tab). */
-export const DOCK_TABS = ["partner", "together", "real", "hardware"] as const;
+export const DOCK_TABS = ["partner", "real", "hardware"] as const;
 
 export const PART_FIELDS = ["identity", "pins", "ratings", "sources", "simulation"] as const;
 
