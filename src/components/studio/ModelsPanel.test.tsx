@@ -3,7 +3,11 @@ import { join } from "node:path";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import messages from "@/i18n/messages/en/studioModels.json";
+import fidelityMessages from "@/i18n/messages/en/fidelity.json";
 import { LOCALES } from "@/i18n/config";
+import { createTranslator } from "@/i18n/translate";
+import { staticTier } from "@/studio/fidelity/static-tier";
+import { loadRegistry } from "@/sim/registry/entries";
 import { blankProject } from "@/project/blank";
 import type { Project } from "@/project/generated/types";
 import type { PartLookup } from "@/studio/fidelity/static-tier";
@@ -53,6 +57,28 @@ describe("ModelsPanel", () => {
     expect(screen.getAllByText(/^models line/)).toHaveLength(7);
     fireEvent.click(screen.getByRole("button", { name: messages.showLess }));
     expect(screen.getAllByText(/^models line/)).toHaveLength(5);
+  });
+});
+
+describe("ModelsPanel layer details", () => {
+  const t = createTranslator("en", fidelityMessages);
+  const entries = loadRegistry();
+
+  it("lists each layer's entry under Modelled, Mocked and Not modelled yet", () => {
+    const state = project();
+    const fidelity = staticTier(state, entries);
+    render(<ModelsPanel state={state} messages={messages} details={{ fidelity, entries, t }} />);
+    expect(screen.getByRole("heading", { name: "Execution: Teaching model" })).toBeTruthy();
+    expect(screen.getAllByText(fidelityMessages.panel.modelled).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(fidelityMessages.validation.none).length).toBeGreaterThan(0);
+  });
+
+  it("names a model without an entry under Not modelled yet and focuses the opened layer", () => {
+    const state = project();
+    const fidelity = { layers: [{ layer: "circuit" as const, tier: "none" as const, entryIds: [], unmodelled: ["model:ghost@1"] }], summary: "none" as const };
+    render(<ModelsPanel state={state} messages={messages} details={{ fidelity, entries, t, open: "circuit" }} />);
+    expect(screen.getByText("model:ghost@1 is not modelled yet")).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole("heading", { name: /^Circuit/ }));
   });
 });
 
