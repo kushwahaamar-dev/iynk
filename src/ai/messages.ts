@@ -11,6 +11,8 @@ export type AiMessages = typeof import("@/i18n/messages/en/ai.json");
 export type AiT = Translate<AiMessages>;
 type InsightMessages = typeof import("@/i18n/messages/en/aiInsight.json");
 type EffectMessages = typeof import("@/i18n/messages/en/aiEffects.json");
+export type ProvidersMessages = typeof import("@/i18n/messages/en/aiProviders.json");
+export type ProvidersT = Translate<ProvidersMessages>;
 
 function namespace<M extends object>(name: string, loaders: Record<Locale, () => Promise<{ default: M }>>) {
   const ready = new Map<Locale, Translate<M>>();
@@ -72,4 +74,13 @@ export const useEffectsT = namespace<EffectMessages>("aiEffects", {
   de: () => import("@/i18n/messages/de/aiEffects.json"),
   zh: () => import("@/i18n/messages/zh/aiEffects.json"),
   hi: () => import("@/i18n/messages/hi/aiEffects.json"),
+});
+
+export const useProvidersT = namespace<ProvidersMessages>("aiProviders", {
+  en: () => import("@/i18n/messages/en/aiProviders.json"),
+  es: () => import("@/i18n/messages/es/aiProviders.json"),
+  fr: () => import("@/i18n/messages/fr/aiProviders.json"),
+  de: () => import("@/i18n/messages/de/aiProviders.json"),
+  zh: () => import("@/i18n/messages/zh/aiProviders.json"),
+  hi: () => import("@/i18n/messages/hi/aiProviders.json"),
 });

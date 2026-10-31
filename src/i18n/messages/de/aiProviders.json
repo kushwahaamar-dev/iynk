@@ -1,1 +1,142 @@
-{}
+{
+  "list": {
+    "title": "KI-Anbieter",
+    "intro": "Füge den Anbieter hinzu, den der Partner nutzen soll. Dein Schlüssel bleibt in diesem Browser.",
+    "empty": "Noch kein Anbieter. Füge einen hinzu, um den Partner einzuschalten.",
+    "add": "Anbieter hinzufügen",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "removeAsk": "{label} entfernen? Der Schlüssel wird ebenfalls gelöscht.",
+    "removeYes": "Entfernen",
+    "removeNo": "Behalten",
+    "limit": "Du kannst bis zu {count} Anbieter behalten.",
+    "key": "Schlüssel endet auf {tail}",
+    "noKey": "Kein Schlüssel",
+    "local": "Läuft auf diesem Computer",
+    "via": {
+      "auto": "Direkt, dann Relay",
+      "direct": "Direkt",
+      "relay": "Relay"
+    },
+    "tested": "Getestet am {date}: {passed} von {total} Prüfungen bestanden",
+    "untested": "Noch nicht getestet",
+    "notPersisted": "Dieser Browser kann Anbieter nach dem Schließen des Tabs nicht behalten."
+  },
+  "legacy": {
+    "offer": "Gespeicherten Schlüssel verwenden mit",
+    "use": "Gespeicherten Schlüssel verwenden",
+    "failed": "Der gespeicherte Schlüssel konnte nicht übernommen werden. Versuche es noch einmal."
+  },
+  "form": {
+    "addTitle": "Anbieter hinzufügen",
+    "editTitle": "{label} bearbeiten",
+    "preset": "Anbieter",
+    "custom": "Andere Adresse",
+    "family": "Art",
+    "familyAnthropic": "Anthropic",
+    "familyOpenai": "OpenAI-kompatibel",
+    "label": "Name",
+    "baseUrl": "Adresse",
+    "baseUrlHint": "Die Webadresse bis zur Version, zum Beispiel https://api.openai.com/v1",
+    "key": "Schlüssel",
+    "keyHint": "Bleibt in diesem Browser und wird nie wieder angezeigt.",
+    "keyKeep": "Leer lassen, um den gespeicherten Schlüssel zu behalten.",
+    "keySaved": "Gespeicherter Schlüssel endet auf {tail}",
+    "keyLocal": "Dieser Anbieter läuft auf deinem Computer und braucht keinen Schlüssel.",
+    "keyBad": "Der Schlüssel muss aus 8 bis 512 sichtbaren Zeichen bestehen.",
+    "via": "Weg",
+    "viaAuto": "Automatisch",
+    "viaDirect": "Direkt aus diesem Browser",
+    "viaRelay": "Über deinen Server",
+    "models": "Modelle",
+    "modelsNone": "Füge mindestens ein Modell hinzu.",
+    "modelId": "Modell-ID",
+    "tier": "Stufe",
+    "tierNone": "Keine Stufe",
+    "tierFast": "Schnell",
+    "tierStandard": "Standard",
+    "tierStrong": "Stark",
+    "context": "Kontext-Tokens",
+    "output": "Ausgabe-Tokens",
+    "priceIn": "Eingabe in USD pro Million Tokens",
+    "priceOut": "Ausgabe in USD pro Million Tokens",
+    "priceBoth": "Fülle beide Preise aus oder keinen.",
+    "priceStale": "Dieser Preis stammt vom {date}. Prüfe ihn beim Anbieter.",
+    "modelAdd": "Modell hinzufügen",
+    "modelRemove": "Modell {n} entfernen",
+    "save": "Speichern",
+    "saved": "Gespeichert.",
+    "close": "Schließen",
+    "test": "Speichern und testen",
+    "testing": "Test läuft"
+  },
+  "test": {
+    "title": "Testergebnisse",
+    "date": "Getestet am {date}",
+    "pass": "Bestanden",
+    "fail": "Fehlgeschlagen",
+    "toolsOff": "Werkzeuge: aus für diesen Anbieter. Der Partner kann antworten, aber dein Projekt nicht mit Werkzeugen lesen.",
+    "csp": "Die Richtlinie dieser Seite erlaubt diese Adresse nicht. Trage sie in IYNK_CONNECT_ORIGINS ein und starte den Web-Container neu.",
+    "noModel": "Füge vor dem Test ein Modell hinzu.",
+    "error": "Der Test konnte nicht laufen. Versuche es noch einmal.",
+    "check": {
+      "C1": "Anbieter erreichbar",
+      "C2": "Einfacher Chat",
+      "C3": "Streaming mit Nutzung",
+      "C4": "Werkzeug-Rundlauf",
+      "C5": "Parallele Werkzeuge",
+      "C6": "Werkzeugwahl: keins",
+      "C7": "JSON-Text als Ersatz",
+      "C8": "Fehlerzuordnung",
+      "C9": "Cache-Meldung",
+      "C10": "Abbruch"
+    }
+  },
+  "caps": {
+    "title": "Ausgabenlimits",
+    "hint": "Lass ein Feld leer für den Standardwert. Tippe {word}, um ein Limit zu entfernen. 0 wird nicht angenommen.",
+    "word": "kein Limit",
+    "dayUSD": "Pro Tag (USD)",
+    "monthUSD": "Pro Monat (USD)",
+    "sessionUSD": "Pro Sitzung (USD)",
+    "dayTokens": "Tokens pro Tag",
+    "sessionTokens": "Tokens pro Sitzung",
+    "default": "Standard {value}",
+    "zero": "0 wird nicht angenommen. Tippe {word}, um das Limit zu entfernen.",
+    "number": "Gib eine Zahl über 0 ein.",
+    "save": "Limits speichern",
+    "saved": "Limits gespeichert."
+  },
+  "usage": {
+    "title": "In diesem Browser genutzt",
+    "today": "Heute: {tokens} Tokens, {cost}",
+    "month": "Dieser Monat: {tokens} Tokens, {cost}",
+    "unpriced": {
+      "one": "{count} Aufruf hat keinen bekannten Preis.",
+      "other": "{count} Aufrufe haben keinen bekannten Preis."
+    },
+    "search": "Suchanfragen: {today} heute, {month} diesen Monat"
+  },
+  "prices": {
+    "asOf": "Preistabelle vom {date}.",
+    "stale": "Preistabelle vom {date}. Sie ist über 90 Tage alt, prüfe die Preise also beim Anbieter."
+  },
+  "retention": {
+    "title": "Gespräche behalten",
+    "session": "Nur diese Sitzung",
+    "project": "Pro Projekt, 90 Tage",
+    "forever": "Bis ich sie lösche"
+  },
+  "data": {
+    "delete": "KI-Daten löschen",
+    "ask": "Alle Gespräche, Protokolle und Nutzungszähler löschen? Deine Schlüssel bleiben.",
+    "yes": "Löschen",
+    "no": "Behalten",
+    "done": "KI-Daten gelöscht.",
+    "failed": "Die KI-Daten konnten nicht gelöscht werden. Versuche es noch einmal."
+  },
+  "notes": {
+    "relay": "Wenn du den Server eines Freundes als Relay nutzt, läuft dein Schlüssel bei jedem Aufruf über dessen Rechner.",
+    "cap": "Die Ausgabenlimits zählen nur in diesem Browser. Setze also auch beim Anbieter ein Limit."
+  }
+}

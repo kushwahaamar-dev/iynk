@@ -1,1 +1,142 @@
-{}
+{
+  "list": {
+    "title": "AI providers",
+    "intro": "Add the provider the partner should use. Your key stays in this browser.",
+    "empty": "No provider yet. Add one to turn the partner on.",
+    "add": "Add a provider",
+    "edit": "Edit",
+    "remove": "Remove",
+    "removeAsk": "Remove {label}? Its key is deleted too.",
+    "removeYes": "Remove it",
+    "removeNo": "Keep it",
+    "limit": "You can keep up to {count} providers.",
+    "key": "Key ending {tail}",
+    "noKey": "No key",
+    "local": "Runs on this computer",
+    "via": {
+      "auto": "Direct, then relay",
+      "direct": "Direct",
+      "relay": "Relay"
+    },
+    "tested": "Tested {date}: {passed} of {total} checks passed",
+    "untested": "Not tested yet",
+    "notPersisted": "This browser cannot keep providers after the tab closes."
+  },
+  "legacy": {
+    "offer": "Use your saved key with",
+    "use": "Use saved key",
+    "failed": "Could not move the saved key. Try again."
+  },
+  "form": {
+    "addTitle": "Add a provider",
+    "editTitle": "Edit {label}",
+    "preset": "Provider",
+    "custom": "Other address",
+    "family": "Kind",
+    "familyAnthropic": "Anthropic",
+    "familyOpenai": "OpenAI compatible",
+    "label": "Name",
+    "baseUrl": "Address",
+    "baseUrlHint": "The web address up to the version, for example https://api.openai.com/v1",
+    "key": "Key",
+    "keyHint": "Kept in this browser and never shown again.",
+    "keyKeep": "Leave blank to keep the saved key.",
+    "keySaved": "Saved key ending {tail}",
+    "keyLocal": "This provider runs on your computer and needs no key.",
+    "keyBad": "The key must be 8 to 512 visible characters.",
+    "via": "Route",
+    "viaAuto": "Automatic",
+    "viaDirect": "Direct from this browser",
+    "viaRelay": "Through your server",
+    "models": "Models",
+    "modelsNone": "Add at least one model.",
+    "modelId": "Model id",
+    "tier": "Tier",
+    "tierNone": "No tier",
+    "tierFast": "Fast",
+    "tierStandard": "Standard",
+    "tierStrong": "Strong",
+    "context": "Context tokens",
+    "output": "Output tokens",
+    "priceIn": "Input USD per million tokens",
+    "priceOut": "Output USD per million tokens",
+    "priceBoth": "Fill in both prices or neither.",
+    "priceStale": "This price is from {date}. Check it with the provider.",
+    "modelAdd": "Add a model",
+    "modelRemove": "Remove model {n}",
+    "save": "Save",
+    "saved": "Saved.",
+    "close": "Close",
+    "test": "Save and test",
+    "testing": "Testing"
+  },
+  "test": {
+    "title": "Test results",
+    "date": "Tested {date}",
+    "pass": "Passed",
+    "fail": "Failed",
+    "toolsOff": "Tools: off for this provider. The partner can answer, but it cannot read your project with tools.",
+    "csp": "This site's policy does not allow that address. Add it to IYNK_CONNECT_ORIGINS and restart the web container.",
+    "noModel": "Add a model before testing.",
+    "error": "The test could not run. Try again.",
+    "check": {
+      "C1": "Reaches the provider",
+      "C2": "Plain chat",
+      "C3": "Streaming with usage",
+      "C4": "Tool round trip",
+      "C5": "Parallel tools",
+      "C6": "Tool choice none",
+      "C7": "JSON text fallback",
+      "C8": "Error mapping",
+      "C9": "Cache reporting",
+      "C10": "Abort"
+    }
+  },
+  "caps": {
+    "title": "Spending limits",
+    "hint": "Leave a field blank for the default. Type {word} to remove a limit. 0 is not accepted.",
+    "word": "no cap",
+    "dayUSD": "Per day (USD)",
+    "monthUSD": "Per month (USD)",
+    "sessionUSD": "Per session (USD)",
+    "dayTokens": "Tokens per day",
+    "sessionTokens": "Tokens per session",
+    "default": "Default {value}",
+    "zero": "0 is not accepted. Type {word} to remove the limit.",
+    "number": "Type a number above 0.",
+    "save": "Save limits",
+    "saved": "Limits saved."
+  },
+  "usage": {
+    "title": "Used in this browser",
+    "today": "Today: {tokens} tokens, {cost}",
+    "month": "This month: {tokens} tokens, {cost}",
+    "unpriced": {
+      "one": "{count} call has no known price.",
+      "other": "{count} calls have no known price."
+    },
+    "search": "Search calls: {today} today, {month} this month"
+  },
+  "prices": {
+    "asOf": "Price table dated {date}.",
+    "stale": "Price table dated {date}. It is more than 90 days old, so check prices with your provider."
+  },
+  "retention": {
+    "title": "Keep conversations",
+    "session": "This session only",
+    "project": "Per project, 90 days",
+    "forever": "Until I delete them"
+  },
+  "data": {
+    "delete": "Delete AI data",
+    "ask": "Delete every conversation, log and usage count? Your keys stay.",
+    "yes": "Delete",
+    "no": "Keep",
+    "done": "AI data deleted.",
+    "failed": "Could not delete the AI data. Try again."
+  },
+  "notes": {
+    "relay": "If you use a friend's server as the relay, your key passes through their machine for each call.",
+    "cap": "The spending limits count in this browser only, so set a limit with your provider too."
+  }
+}

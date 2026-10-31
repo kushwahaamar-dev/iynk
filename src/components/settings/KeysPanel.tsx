@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useProvidersT } from "@/ai/messages";
 import { Button } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/icons";
-import { useCommonT } from "@/i18n/client";
-import { removeKey, setKey, useKeys, type KeyKind, type SetKeyResult } from "@/lib/keys";
-import { UsageMeter } from "./UsageMeter";
+import { Skeleton, SkeletonGroup } from "@/components/ui/Skeleton";
+import { useCommonT, useLocale } from "@/i18n/client";
+import { removeKey, setKey, useKeys, type SetKeyResult } from "@/lib/keys";
+import { ProfilesPanel, type ProfilesPanelProps } from "./ProfilesPanel";
 
 type Problem = Extract<SetKeyResult, { ok: false }>["reason"];
 
@@ -17,13 +19,10 @@ const PROBLEM_MESSAGE = {
   storage: "keys.errors.notPersisted",
 } as const satisfies Record<Problem, string>;
 
-const LABELS = { ai: "keys.ai.label", search: "keys.search.label", server: "keys.server.label" } as const;
-
-function KeyField({ kind }: { kind: KeyKind }) {
+function SearchKeyField() {
   const t = useCommonT();
-  const masked = useKeys()[kind];
+  const masked = useKeys().search;
   const [draft, setDraft] = useState("");
-  const [name, setName] = useState("");
   const [problem, setProblem] = useState<Problem | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const removeButton = useRef<HTMLButtonElement>(null);
@@ -36,19 +35,17 @@ function KeyField({ kind }: { kind: KeyKind }) {
     (masked.set ? removeButton : input).current?.focus();
   }, [masked.set]);
 
-  const label = t(LABELS[kind]);
-  const hint = kind === "server" ? t("keys.server.hint") : undefined;
+  const label = t("keys.search.label");
 
   function save(event: FormEvent) {
     event.preventDefault();
-    const result = setKey(kind, draft, kind === "ai" ? name : undefined);
+    const result = setKey("search", draft);
     if (!result.ok) {
       setProblem(result.reason);
       return;
     }
     setProblem(null);
     setDraft("");
-    setName("");
     moveFocus.current = true;
   }
 
@@ -61,7 +58,6 @@ function KeyField({ kind }: { kind: KeyKind }) {
             <Icon name="check" size={16} className="shrink-0 text-good" aria-hidden="true" />
             <span className="min-w-0 break-words tabular-nums">
               {t("keys.saved", { tail: masked.tail })}
-              {masked.label ? <span className="font-normal text-muted"> ({masked.label})</span> : null}
             </span>
           </p>
           {masked.persisted ? null : <p className="mt-1 text-sm text-muted">{t("keys.errors.notPersisted")}</p>}
@@ -73,7 +69,7 @@ function KeyField({ kind }: { kind: KeyKind }) {
           aria-label={`${t("keys.remove")}: ${label}`}
           onClick={() => {
             moveFocus.current = true;
-            removeKey(kind);
+            removeKey("search");
           }}
         >
           {t("keys.remove")}
@@ -95,31 +91,41 @@ function KeyField({ kind }: { kind: KeyKind }) {
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             error={problem ? t(PROBLEM_MESSAGE[problem]) : undefined}
-            hint={hint}
           />
         </div>
         <Button type="submit" size="md" variant="primary" className="mt-6" aria-label={`${t("keys.save")}: ${label}`}>
           {t("keys.save")}
         </Button>
       </div>
-      {kind === "ai" ? (
-        <TextInput label={t("keys.ai.labelOptional")} autoComplete="off" maxLength={40} value={name} onChange={(event) => setName(event.target.value)} />
-      ) : null}
     </form>
   );
 }
 
-/** The three key slots: AI, search and the server token. The secrets stay in this browser. */
-export function KeysPanel() {
+/** The AI providers need the browser's stores and the AI worker, which the page that mounts the dialog supplies. */
+export type AiServices = Omit<ProfilesPanelProps, "t">;
+
+function Providers({ ai }: { ai: AiServices }) {
+  const common = useCommonT();
+  const t = useProvidersT(useLocale());
+  if (!t) {
+    return (
+      <SkeletonGroup label={common("state.loading")} className="flex flex-col gap-2">
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-16 w-full" />
+      </SkeletonGroup>
+    );
+  }
+  return <ProfilesPanel {...ai} t={t} />;
+}
+
+/** The AI providers and the search key. The secrets stay in this browser. */
+export function KeysPanel({ ai }: { ai?: AiServices }) {
   const t = useCommonT();
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted">{t("keys.notice")}</p>
-      <KeyField kind="ai" />
-      <UsageMeter kind="ai" />
-      <KeyField kind="search" />
-      <UsageMeter kind="search" />
-      <KeyField kind="server" />
+      {ai ? <Providers ai={ai} /> : null}
+      <SearchKeyField />
     </div>
   );
 }
