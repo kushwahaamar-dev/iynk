@@ -11,6 +11,32 @@ import { pxToMm } from "./viewport.ts";
 
 export type OverlayProviders = { net: () => Overlay[]; state: () => Overlay[]; air: () => Overlay[] };
 
+type ProviderContext = { viewport: Viewport; viewId: string };
+type RegisteredProvider = (ctx: ProviderContext) => Overlay[];
+
+const registered = new Map<RegisteredProvider, () => void>();
+const watchers = new Set<() => void>();
+
+const notifyWatchers = () => {
+  for (const wake of [...watchers]) wake();
+};
+
+/**
+ * Adds an overlay layer that this module does not own, such as other members' pointers. Controllers call it after
+ * `air` with the active viewport and view id. `subscribe` names what makes the items change, so a quiet scene still
+ * redraws. Returns the function that removes the provider.
+ */
+export function registerOverlayProvider(p: RegisteredProvider, subscribe?: (fn: () => void) => () => void): () => void {
+  const unsubscribe = subscribe?.(notifyWatchers) ?? (() => {});
+  registered.set(p, unsubscribe);
+  notifyWatchers();
+  return () => {
+    registered.get(p)?.();
+    registered.delete(p);
+    notifyWatchers();
+  };
+}
+
 export type SceneStatus = { cursorMm: PointMm | null; zoom: number; scene: DrawStats };
 
 export interface SceneController {
@@ -75,7 +101,7 @@ function overlayItem(o: Overlay): DrawItem {
 /**
  * Joins the document, the engine and the renderer. The engine redraws the parts and wires itself on every document
  * change, and its draw list diff already names only the items that differ. This adds what the engine does not know
- * about: the net, state and air-wire overlays (redrawn at most 30 times a second), the numbers behind the status
+ * about: the net, state and air-wire overlays, plus any registered provider's (redrawn at most 30 times a second), the numbers behind the status
  * line, and the viewport that outlives the page in the viewer's local view state.
  */
 export function createSceneController(deps: SceneControllerDeps): SceneController {
@@ -105,7 +131,9 @@ export function createSceneController(deps: SceneControllerDeps): SceneControlle
 
   function refreshOverlays() {
     const next = new Map<string, Overlay>();
-    for (const o of [...overlays.net(), ...overlays.state(), ...overlays.air()]) next.set(o.id, o);
+    const ctx = { viewport: engine.viewport(), viewId: session.getState().viewId };
+    const extra = [...registered.keys()].flatMap((p) => p(ctx));
+    for (const o of [...overlays.net(), ...overlays.state(), ...overlays.air(), ...extra]) next.set(o.id, o);
     const diff = { added: [] as string[], changed: [] as string[], removed: [] as string[] };
     for (const [id, o] of next) {
       const before = shown.get(id);
@@ -186,7 +214,8 @@ export function createSceneController(deps: SceneControllerDeps): SceneControlle
       running = true;
       restoreViewport();
       lastViewport = session.getState().viewports[session.getState().viewId];
-      unsubscribe = [doc.onChange(schedule), session.subscribe(onSession), run.subscribe(schedule)];
+      watchers.add(schedule);
+      unsubscribe = [() => watchers.delete(schedule), doc.onChange(schedule), session.subscribe(onSession), run.subscribe(schedule)];
       refresh();
     },
 
