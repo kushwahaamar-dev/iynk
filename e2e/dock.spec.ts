@@ -7,7 +7,6 @@ for (const lab of LAB_PAGES) {
     const errors = watchErrors(page);
     const response = await page.goto(lab.path);
     expect(response?.status(), lab.path).toBe(200);
-    await expect(page.locator(`[data-lab-room="${lab.lab}"][data-lab-item="${lab.item}"]`).first()).toBeAttached();
     const dock = await openDock(page, false);
     await expectTabs(dock);
     expect(errors).toEqual([]);

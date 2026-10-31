@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LessonWorkspace } from "@/components/boardlab/LessonWorkspace";
 import { OpenInStudio } from "@/components/boardlab/OpenInStudio";
-import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
 import { PageSkeleton } from "@/components/ui";
 import { isLocale } from "@/i18n/config";
@@ -53,16 +52,14 @@ async function Lesson({ params }: Pick<Props, "params">) {
   return (
     <>
       <OpenInStudio lang={lang} board={board} lesson={lesson} label={t("openInStudio")} note={t("lessonView")} />
-      <LabRoom lab="board" itemId={board}>
-        <LessonWorkspace
-          key={`${board}/${lesson}`}
-          lang={lang}
-          model={model}
-          messages={messages}
-          text={lessonText(page.text, lesson)}
-          notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
-        />
-      </LabRoom>
+      <LessonWorkspace
+        key={`${board}/${lesson}`}
+        lang={lang}
+        model={model}
+        messages={messages}
+        text={lessonText(page.text, lesson)}
+        notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
+      />
     </>
   );
 }

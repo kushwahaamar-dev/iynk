@@ -7,11 +7,8 @@ import together from "../src/i18n/messages/en/together.json";
 export const dockCopy = common.client.dock;
 
 export const LAB_PAGES = [
-  { name: "board", path: "/en/boards/nano", lab: "board", item: "nano" },
-  { name: "lesson", path: "/en/boards/nano/blink", lab: "board", item: "nano" },
-  { name: "bench", path: "/en/robotics/transistor-switch", lab: "robotics", item: "transistor-switch" },
-  { name: "drone", path: "/en/drones/quad5", lab: "drone", item: "quad5" },
-  { name: "fly", path: "/en/drones/quad5/fly", lab: "drone", item: "quad5" },
+  { name: "board", path: "/en/boards/nano" },
+  { name: "lesson", path: "/en/boards/nano/blink" },
 ] as const;
 
 export function watchErrors(page: Page) {

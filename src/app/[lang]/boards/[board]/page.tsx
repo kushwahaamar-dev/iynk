@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BoardWorkspace } from "@/components/boardlab/BoardWorkspace";
 import { OpenInStudio } from "@/components/boardlab/OpenInStudio";
-import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
 import { PageSkeleton } from "@/components/ui";
 import { BOARD_IDS } from "@/content/ids";
@@ -52,15 +51,13 @@ async function Board({ params }: Pick<Props, "params">) {
   return (
     <>
       <OpenInStudio lang={lang} board={id} label={t("openInStudio")} note={t("lessonView")} />
-      <LabRoom lab="board" itemId={id}>
-        <BoardWorkspace
-          lang={lang}
-          messages={messages}
-          text={{ ...page.text, lessons: lessonsText }}
-          data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
-          notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
-        />
-      </LabRoom>
+      <BoardWorkspace
+        lang={lang}
+        messages={messages}
+        text={{ ...page.text, lessons: lessonsText }}
+        data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
+        notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
+      />
     </>
   );
 }

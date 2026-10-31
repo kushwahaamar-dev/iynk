@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { LabRoom } from "@/components/dock/LabRoom";
-import { UntranslatedNotice } from "@/components/shell";
 import { PageSkeleton } from "@/components/ui";
-import { Icon } from "@/components/ui/icons";
-import { BenchWorkspace } from "@/components/robotics/BenchWorkspace";
-import type { BenchMessages } from "@/components/robotics/messages";
+import { LabHost } from "@/components/studio/lab/LabHost";
+import { ServicesProvider } from "@/components/studio/wiring/services";
 import { ROBOTICS_IDS, isRoboticsId } from "@/content/ids";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
+import { STUDIO_NAMESPACES, type StudioMessages } from "@/i18n/namespaces";
 import { getMessages, getT } from "@/i18n/server";
-import { nextBench, prevBench } from "@/lib/robotics/catalog";
 import { loadBench } from "@/lib/robotics/load";
 
 type Props = PageProps<"/[lang]/robotics/[bench]">;
@@ -48,58 +44,13 @@ async function Bench({ params }: Pick<Props, "params">) {
   if (!isLocale(lang) || !isRoboticsId(id)) notFound();
   const loaded = await loadBench(lang, id);
   if (!loaded) notFound();
-  const [t, all] = await Promise.all([getT(lang, "robotics"), getMessages(lang, "robotics")]);
-  const { bench, texts } = loaded;
-
-  const messages: BenchMessages = {
-    bench: all.bench,
-    steps: all.steps,
-    faults: all.faults,
-    status: all.status,
-    current: all.current,
-    serial: all.serial,
-    modes: all.modes,
-    tasks: all.tasks,
-    quiz: all.quiz,
-    keys: all.keys,
-  };
-
-  // Neighbours are linked only when their content and prose are written.
-  const [prevId, nextId] = [prevBench(id), nextBench(id)];
-  const [prev, next] = await Promise.all(
-    [prevId, nextId].map(async (other) => (other && (await loadBench(lang, other)) ? other : null)),
-  );
-
-  const walk =
-    prev || next ? (
-      <nav aria-label={t("bench.walk")} className="flex flex-wrap justify-between gap-4 border-t border-rule pt-6">
-        {prev ? (
-          <Link href={`/${lang}/robotics/${prev}`} className="inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold">
-            <Icon name="chevron-left" size={20} />
-            {t("bench.prevBench", { name: t(`benches.${prev}.name`) })}
-          </Link>
-        ) : (
-          <span />
-        )}
-        {next ? (
-          <Link href={`/${lang}/robotics/${next}`} className="inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold">
-            {t("bench.nextBench", { name: t(`benches.${next}.name`) })}
-            <Icon name="chevron-right" size={20} />
-          </Link>
-        ) : null}
-      </nav>
-    ) : null;
-
+  const files = await Promise.all(STUDIO_NAMESPACES.map((ns) => getMessages(lang, ns)));
+  const messages = Object.fromEntries(STUDIO_NAMESPACES.map((ns, i) => [ns, files[i]])) as StudioMessages;
   return (
     <div data-bench-page={id}>
-      <LabRoom lab="robotics" itemId={id}>
-        <BenchWorkspace
-          setup={{ bench, texts, starters: loaded.starters, solutions: loaded.solutions }}
-          messages={messages}
-          notice={<UntranslatedNotice lang={lang} textLang={loaded.textLang} variant="chip" />}
-          walk={walk}
-        />
-      </LabRoom>
+      <ServicesProvider>
+        <LabHost templateId={`prj_robotics-${id}`} lang={lang} messages={messages} />
+      </ServicesProvider>
     </div>
   );
 }
