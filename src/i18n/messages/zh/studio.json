@@ -306,7 +306,10 @@
       "release": "归还键盘",
       "asked": "你已申请键盘",
       "denied": "主持人说现在不行",
-      "freeIn": "{name} 已离开。键盘将在 {seconds} 秒后空闲。"
+      "freeIn": "{name} 已离开。键盘将在 {seconds} 秒后空闲。",
+      "giveTo": "交给",
+      "takeBack": "收回",
+      "pickPerson": "选择一个人"
     },
     "host": {
       "kick": "移出",
@@ -321,7 +324,12 @@
       "claim": "接任主持人",
       "settings": "房间设置",
       "runControl": "谁来运行代码",
-      "spectatorCursors": "显示旁观者的指针"
+      "spectatorCursors": "显示旁观者的指针",
+      "title": "主持人控制",
+      "keyboardPassing": "键盘轮流",
+      "memberActions": "对 {name} 的操作",
+      "runEditors": "编辑者",
+      "runHost": "仅主持人"
     },
     "invite": {
       "open": "邀请",
@@ -338,7 +346,16 @@
       "expired": "此邀请无法使用",
       "workTogether": "一起搭建",
       "pickBuddy": "选一位好友",
-      "noBuddies": "你还没有好友"
+      "noBuddies": "你还没有好友",
+      "needsServer": "需要服务器，而此部署没有",
+      "menu": "房间",
+      "copyLink": "复制邀请链接",
+      "away": "离开",
+      "invitations": { "one": "{count} 个邀请", "other": "{count} 个邀请" },
+      "invitedBy": "{name} 邀请你加入 {title}",
+      "roleLabel": "对方可以做什么",
+      "live": "有效的邀请",
+      "quota": "已达到房间数量上限。关闭一个房间后才能再开一个。"
     },
     "chat": {
       "title": "聊天",

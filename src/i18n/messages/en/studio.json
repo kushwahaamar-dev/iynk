@@ -306,7 +306,10 @@
       "release": "Give the keyboard back",
       "asked": "You asked for the keyboard",
       "denied": "The host said not now",
-      "freeIn": "{name} left. The keyboard is free in {seconds} s."
+      "freeIn": "{name} left. The keyboard is free in {seconds} s.",
+      "giveTo": "Give it to",
+      "takeBack": "Take it back",
+      "pickPerson": "Pick a person"
     },
     "host": {
       "kick": "Remove",
@@ -321,7 +324,12 @@
       "claim": "Take over as host",
       "settings": "Room settings",
       "runControl": "Who runs the code",
-      "spectatorCursors": "Show watchers' pointers"
+      "spectatorCursors": "Show watchers' pointers",
+      "title": "Host controls",
+      "keyboardPassing": "Keyboard passing",
+      "memberActions": "Actions for {name}",
+      "runEditors": "Editors",
+      "runHost": "Only the host"
     },
     "invite": {
       "open": "Invite",
@@ -338,7 +346,16 @@
       "expired": "This invite does not work",
       "workTogether": "Work together",
       "pickBuddy": "Pick a buddy",
-      "noBuddies": "You have no buddies yet"
+      "noBuddies": "You have no buddies yet",
+      "needsServer": "Needs a server, and this deployment has none",
+      "menu": "Room",
+      "copyLink": "Copy an invite link",
+      "away": "away",
+      "invitations": { "one": "{count} invitation", "other": "{count} invitations" },
+      "invitedBy": "{name} invites you to {title}",
+      "roleLabel": "What they can do",
+      "live": "Live invites",
+      "quota": "You have reached the room limit. Close a room to start another."
     },
     "chat": {
       "title": "Chat",

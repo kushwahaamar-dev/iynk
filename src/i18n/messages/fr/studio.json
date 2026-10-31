@@ -306,7 +306,10 @@
       "release": "Rendre le clavier",
       "asked": "Vous avez demandé le clavier",
       "denied": "L'hôte a dit pas maintenant",
-      "freeIn": "{name} est parti. Le clavier sera libre dans {seconds} s."
+      "freeIn": "{name} est parti. Le clavier sera libre dans {seconds} s.",
+      "giveTo": "Le donner à",
+      "takeBack": "Le reprendre",
+      "pickPerson": "Choisir une personne"
     },
     "host": {
       "kick": "Retirer",
@@ -321,7 +324,12 @@
       "claim": "Devenir l'hôte",
       "settings": "Réglages de la salle",
       "runControl": "Qui lance le code",
-      "spectatorCursors": "Afficher les pointeurs des spectateurs"
+      "spectatorCursors": "Afficher les pointeurs des spectateurs",
+      "title": "Commandes de l'hôte",
+      "keyboardPassing": "Passage du clavier",
+      "memberActions": "Actions pour {name}",
+      "runEditors": "Les éditeurs",
+      "runHost": "L'hôte seulement"
     },
     "invite": {
       "open": "Inviter",
@@ -338,7 +346,16 @@
       "expired": "Cette invitation ne fonctionne pas",
       "workTogether": "Travailler ensemble",
       "pickBuddy": "Choisir un ami",
-      "noBuddies": "Vous n'avez pas encore d'amis"
+      "noBuddies": "Vous n'avez pas encore d'amis",
+      "needsServer": "Il faut un serveur, et cette installation n'en a pas",
+      "menu": "Salle",
+      "copyLink": "Copier un lien d'invitation",
+      "away": "absent",
+      "invitations": { "one": "{count} invitation", "other": "{count} invitations" },
+      "invitedBy": "{name} vous invite à {title}",
+      "roleLabel": "Ce que la personne peut faire",
+      "live": "Invitations actives",
+      "quota": "Vous avez atteint la limite de salles. Fermez-en une pour en ouvrir une autre."
     },
     "chat": {
       "title": "Discussion",

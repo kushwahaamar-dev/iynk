@@ -56,6 +56,7 @@ export function InviteDialog({
   title,
   hint,
   code,
+  note,
   action,
   t,
 }: {
@@ -67,6 +68,8 @@ export function InviteDialog({
   title: string;
   hint: string;
   code: string;
+  /** What the link allows, shown under it: "Editor, 1 use, until Oct 28, 14:00". */
+  note?: string;
   t: TogetherT;
 }) {
   const id = useId();
@@ -118,6 +121,7 @@ export function InviteDialog({
           </div>
           <IconButton label={t("bar.copy")} icon={copy === "done" ? "check" : "copy"} variant="solid" onClick={copyLink} />
         </div>
+        {note ? <p className="text-sm text-muted">{note}</p> : null}
         <div className="flex flex-wrap gap-2">
           {action ? (
             <Button variant="primary" onClick={action.run}>

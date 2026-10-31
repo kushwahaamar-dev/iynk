@@ -306,7 +306,10 @@
       "release": "Devolver el teclado",
       "asked": "Has pedido el teclado",
       "denied": "El anfitrión dijo que ahora no",
-      "freeIn": "{name} se fue. El teclado queda libre en {seconds} s."
+      "freeIn": "{name} se fue. El teclado queda libre en {seconds} s.",
+      "giveTo": "Dárselo a",
+      "takeBack": "Recuperarlo",
+      "pickPerson": "Elige a una persona"
     },
     "host": {
       "kick": "Sacar",
@@ -321,7 +324,12 @@
       "claim": "Asumir como anfitrión",
       "settings": "Ajustes de la sala",
       "runControl": "Quién ejecuta el código",
-      "spectatorCursors": "Mostrar los punteros de quienes miran"
+      "spectatorCursors": "Mostrar los punteros de quienes miran",
+      "title": "Controles del anfitrión",
+      "keyboardPassing": "Turno del teclado",
+      "memberActions": "Acciones para {name}",
+      "runEditors": "Editores",
+      "runHost": "Solo el anfitrión"
     },
     "invite": {
       "open": "Invitar",
@@ -338,7 +346,16 @@
       "expired": "Esta invitación no funciona",
       "workTogether": "Trabajar juntos",
       "pickBuddy": "Elegir un amigo",
-      "noBuddies": "Aún no tienes amigos"
+      "noBuddies": "Aún no tienes amigos",
+      "needsServer": "Necesita un servidor y esta instalación no tiene ninguno",
+      "menu": "Sala",
+      "copyLink": "Copiar un enlace de invitación",
+      "away": "ausente",
+      "invitations": { "one": "{count} invitación", "other": "{count} invitaciones" },
+      "invitedBy": "{name} te invita a {title}",
+      "roleLabel": "Qué puede hacer",
+      "live": "Invitaciones activas",
+      "quota": "Llegaste al límite de salas. Cierra una para abrir otra."
     },
     "chat": {
       "title": "Chat",

@@ -306,7 +306,10 @@
       "release": "Tastatur zurückgeben",
       "asked": "Du hast die Tastatur angefragt",
       "denied": "Der Host hat gerade abgelehnt",
-      "freeIn": "{name} ist gegangen. Die Tastatur ist in {seconds} s frei."
+      "freeIn": "{name} ist gegangen. Die Tastatur ist in {seconds} s frei.",
+      "giveTo": "Geben an",
+      "takeBack": "Zurücknehmen",
+      "pickPerson": "Person wählen"
     },
     "host": {
       "kick": "Entfernen",
@@ -321,7 +324,12 @@
       "claim": "Als Host übernehmen",
       "settings": "Raumeinstellungen",
       "runControl": "Wer den Code ausführt",
-      "spectatorCursors": "Zeiger der Zuschauer zeigen"
+      "spectatorCursors": "Zeiger der Zuschauer zeigen",
+      "title": "Host-Steuerung",
+      "keyboardPassing": "Tastatur weitergeben",
+      "memberActions": "Aktionen für {name}",
+      "runEditors": "Bearbeiter",
+      "runHost": "Nur der Host"
     },
     "invite": {
       "open": "Einladen",
@@ -338,7 +346,16 @@
       "expired": "Diese Einladung funktioniert nicht",
       "workTogether": "Gemeinsam bauen",
       "pickBuddy": "Buddy auswählen",
-      "noBuddies": "Du hast noch keine Buddys"
+      "noBuddies": "Du hast noch keine Buddys",
+      "needsServer": "Braucht einen Server, und diese Installation hat keinen",
+      "menu": "Raum",
+      "copyLink": "Einladungslink kopieren",
+      "away": "abwesend",
+      "invitations": { "one": "{count} Einladung", "other": "{count} Einladungen" },
+      "invitedBy": "{name} lädt dich zu {title} ein",
+      "roleLabel": "Was die Person darf",
+      "live": "Aktive Einladungen",
+      "quota": "Du hast das Raumlimit erreicht. Schließe einen Raum, um einen neuen zu starten."
     },
     "chat": {
       "title": "Chat",
