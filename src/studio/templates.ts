@@ -10,7 +10,9 @@ import { createSession } from "../project/session.ts";
 import { forkTemplate, withStartCheckpoint } from "./fork.ts";
 import type { ForkDeps } from "./fork.ts";
 import { createDocStore } from "./stores/doc.ts";
+import { recipe } from "./tools/robot.ts";
 import { breadboardBatch } from "./views/breadboard.ts";
+import type { IdSource } from "./views/breadboard.ts";
 
 /** The owner of every project made on this device. The project worker stamps its own projects with the same actor. */
 export const LOCAL_ACTOR = "usr_local";
@@ -78,6 +80,64 @@ export async function loadStarter(id: string, deps: { rnd: RandomSource; now: st
   const source = (await load()).default as Project;
   const fork = forkTemplate({ ...source, id }, "template", {
     newId: () => newProjectId(Date.parse(deps.now), deps.rnd),
+    now: () => deps.now,
+    actor: deps.actor,
+    genesis: chainStart,
+    stateHash,
+  });
+  fork.meta.kind = "project";
+  return fork;
+}
+
+const ROBOT_FLOOR_MM = 10_000;
+const CHASSIS = "core.chassis-2wd";
+
+/** The robotics domain of a new robot project: a bare 10 m floor with the gravity, the surface and the step limits of the other robot projects. */
+const ROBOTICS_DOMAIN = {
+  schemaVersion: "1.0",
+  data: {
+    physics: { length_scale: 1, gravity_mps2: [0, 0, -9.81], sleeping: false, ccd: "auto", params: { solver_iterations: 4 } },
+    surfaces: [{ id: "floor", name: "Matte white board", mu: 0.8, crr: 0.02, reflectance: 0.85 }],
+    bodies: {},
+    joints: {},
+    wheels: {},
+    sensors: [],
+    arena: { floor: { size_mm: [ROBOT_FLOOR_MM, ROBOT_FLOOR_MM], surface: "floor" }, tracks: [], statics: [], start: { x_mm: 0, y_mm: 0, yaw_deg: 0 } },
+  },
+} as const;
+
+/** A robot project: the blank project plus an empty arena and a chassis, put in through the ops an edit would use. */
+export function newRobotProject(blank: Project, deps: { registry: PartRegistry; ids: IdSource; rnd: RandomSource }): Project {
+  const session = createSession({ state: blank, clock: () => Date.parse(blank.meta.updatedAt), rnd: deps.rnd });
+  const actor = blank.access.owners[0]!;
+  const domain = session.apply({ k: "domain.set", domain: "robotics", value: ROBOTICS_DOMAIN }, { actor, kind: "import" });
+  if (!domain.ok) throw new Error(`${domain.reject}: ${domain.message}`);
+  const made = recipe("chassis", { descriptor: CHASSIS }, { doc: session.state, newId: deps.ids, describe: (id) => deps.registry.latest(id) });
+  if (!made.ok) throw new Error(made.error.message);
+  const done = session.apply(made.value, { actor, kind: "user" });
+  if (!done.ok) throw new Error(`${done.reject}: ${done.message}`);
+  return session.state;
+}
+
+export const ROBOT_TEMPLATES = [
+  { id: "line-follower", titleKey: "home.lineFollower" },
+  { id: "drive-base", titleKey: "home.driveBase" },
+  { id: "speed-control", titleKey: "home.speedControl" },
+] as const;
+
+export type RobotTemplateId = (typeof ROBOT_TEMPLATES)[number]["id"];
+
+const ROBOT_FILES: Record<RobotTemplateId, () => Promise<StarterFile>> = {
+  "line-follower": () => import("../../content/projects/robots/line-follower.project.json"),
+  "drive-base": () => import("../../content/projects/robots/drive-base.project.json"),
+  "speed-control": () => import("../../content/projects/robots/speed-control.project.json"),
+};
+
+/** A new project made from one of the robot templates: its own id, revision 0, `origin` naming the template. */
+export async function loadRobotTemplate(id: RobotTemplateId, deps: { ids: IdSource; now: string; actor: string }): Promise<Project> {
+  const source = (await ROBOT_FILES[id]()).default as Project;
+  const fork = forkTemplate(source, "template", {
+    newId: () => deps.ids("prj"),
     now: () => deps.now,
     actor: deps.actor,
     genesis: chainStart,

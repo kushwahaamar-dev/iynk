@@ -14,6 +14,8 @@ export interface ProblemsProps {
   messages: Messages["studioCode"];
   /** The strings of the fault rules, which name their problems with keys of this namespace. */
   faultMessages: Messages["faults"];
+  /** The strings of the robot checks, which name their problems with keys of this namespace. */
+  robotMessages: Messages["robot"];
   lang: Locale;
   onCheck(): void;
   /** Why Check cannot run now; false when it can. */
@@ -25,9 +27,10 @@ const ICON: Record<ProblemSeverity, IconName> = { error: "danger", warning: "war
 const TEXT: Record<ProblemSeverity, string> = { error: "text-bad", warning: "text-warn", note: "text-info" };
 const TONE: Record<ProblemSeverity, ChipTone> = { error: "bad", warning: "warn", note: "info" };
 
-export function Problems({ problems, onJump, messages, faultMessages, lang, onCheck, checkDisabled, counts }: ProblemsProps) {
+export function Problems({ problems, onJump, messages, faultMessages, robotMessages, lang, onCheck, checkDisabled, counts }: ProblemsProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioCode`), [lang, messages]);
   const ft = useMemo(() => createTranslator(lang, faultMessages, `${lang}/faults`), [lang, faultMessages]);
+  const rt = useMemo(() => createTranslator(lang, robotMessages, `${lang}/robot`), [lang, robotMessages]);
   const errors = problems.filter((p) => p.severity === "error").length;
 
   const faultTitle = (p: Problem): string => {
@@ -61,7 +64,12 @@ export function Problems({ problems, onJump, messages, faultMessages, lang, onCh
         <ul className="flex min-h-0 flex-col overflow-y-auto">
           {problems.map((p) => {
             const severity = t(`problems.severity.${p.severity}`);
-            const title = p.rule !== undefined ? faultTitle(p) : (p.fallbackText ?? t(p.titleKey as MessageKey<Messages["studioCode"]>, p.args));
+            const title =
+              p.source === "robot"
+                ? rt(p.titleKey as MessageKey<Messages["robot"]>, p.args)
+                : p.rule !== undefined
+                  ? faultTitle(p)
+                  : (p.fallbackText ?? t(p.titleKey as MessageKey<Messages["studioCode"]>, p.args));
             const where = p.line === undefined ? null : t("problems.line", { line: p.line });
             return (
               <li key={p.id}>
@@ -78,6 +86,7 @@ export function Problems({ problems, onJump, messages, faultMessages, lang, onCh
                       {where ? <span className="font-mono tabular-nums text-muted">{where}</span> : null}
                     </span>
                     <span className="text-pretty">{title}</span>
+                    {p.path ? <span className="font-mono text-muted break-all">{p.path}</span> : null}
                     {p.hint ? <span className="text-pretty text-muted">{t("problems.hint", { hint: p.hint })}</span> : null}
                   </span>
                 </button>

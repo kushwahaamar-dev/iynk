@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import robot from "@/i18n/messages/en/robot.json";
 import studio from "@/i18n/messages/en/studio.json";
 import studioHome from "@/i18n/messages/en/studioHome.json";
 import { createMemoryRepository } from "@/local/memory-repository";
@@ -40,7 +41,7 @@ function rig({ degraded = false } = {}) {
   const onOpen = vi.fn();
   render(
     <ServicesProvider factory={factory}>
-      <Home messages={studioHome} strings={studio} lang="en" onOpen={onOpen} />
+      <Home messages={studioHome} robot={robot} strings={studio} lang="en" onOpen={onOpen} />
     </ServicesProvider>,
   );
   return { onOpen, services: () => made };

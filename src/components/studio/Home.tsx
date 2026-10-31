@@ -17,7 +17,7 @@ import type { Op, Project, SourceLanguage } from "@/project/generated/types";
 import { createSession } from "@/project/session";
 import { navigate } from "@/studio/router";
 import { STARTERS as STARTER_ENTRIES, starterFor } from "@/studio/starters";
-import { LOCAL_ACTOR, loadStarter, newUnoProject, STARTERS, type StarterDef } from "@/studio/templates";
+import { LOCAL_ACTOR, loadRobotTemplate, loadStarter, newRobotProject, newUnoProject, ROBOT_TEMPLATES, STARTERS, type RobotTemplateId, type StarterDef } from "@/studio/templates";
 import { analyserFor, inoErrorKey } from "./inoAnalyser";
 import { LossReport } from "./LossReport";
 import { ProjectList, type StudioStrings } from "./ProjectList";
@@ -25,6 +25,7 @@ import { useServices } from "./wiring/services";
 
 export interface HomeProps {
   messages: Messages["studioHome"];
+  robot: Messages["robot"];
   strings: StudioStrings;
   lang: Locale;
   /** Shows a stored project in the editor. `run` asks the workspace to start it. */
@@ -32,6 +33,7 @@ export interface HomeProps {
 }
 
 type StarterKey = MessageKey<Messages["studioHome"]>;
+type RobotKey = MessageKey<Messages["robot"]>;
 
 const FIRST_RUN = "blink";
 export const DEFAULT_BOARD = "uno-r3";
@@ -94,12 +96,20 @@ export async function projectFromIno(imported: InoImport, lang: string, now: str
   return session.state;
 }
 
-export function Home({ messages, strings, lang, onOpen }: HomeProps) {
+function blankRobot(title: string, lang: string): Project {
+  const blank = blankProject({ board: "uno", title, locale: lang, actor: LOCAL_ACTOR, now: new Date().toISOString(), id: newProjectId(Date.now(), cryptoRandom) });
+  return newRobotProject(blank, { registry: builtinRegistry(), ids: (prefix) => newId(prefix, cryptoRandom), rnd: cryptoRandom });
+}
+
+export function Home({ messages, robot, strings, lang, onOpen }: HomeProps) {
   const { host, files } = useServices();
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioHome`), [lang, messages]);
   const [starting, setStarting] = useState<StarterDef | null>(null);
   const [failed, setFailed] = useState<StarterDef | null>(null);
   const ts = useMemo(() => createTranslator(lang, strings, `${lang}/studio`), [lang, strings]);
+  const tr = useMemo(() => createTranslator(lang, robot, `${lang}/robot`), [lang, robot]);
+  const [robotStarting, setRobotStarting] = useState<string | null>(null);
+  const [robotFailed, setRobotFailed] = useState<string | null>(null);
   const [review, setReview] = useState<Review | null>(null);
   const [reading, setReading] = useState(false);
   const [inoError, setInoError] = useState<string | null>(null);
@@ -146,6 +156,28 @@ export function Home({ messages, strings, lang, onOpen }: HomeProps) {
       setStarting(null);
     }
   }
+
+  async function startRobot(titleKey: RobotKey, make: () => Promise<Project>) {
+    if (creating.current) return;
+    setRobotStarting(titleKey);
+    setRobotFailed(null);
+    try {
+      creating.current = make().then(store);
+      onOpen(await creating.current);
+    } catch {
+      setRobotFailed(titleKey);
+    } finally {
+      creating.current = null;
+      setRobotStarting(null);
+    }
+  }
+
+  const robotTemplate = (id: RobotTemplateId) => loadRobotTemplate(id, { ids: (prefix) => newId(prefix, cryptoRandom), now: new Date().toISOString(), actor: LOCAL_ACTOR });
+
+  const robotChoices: readonly { key: RobotKey; hint: RobotKey; make: () => Promise<Project> }[] = [
+    { key: "home.blank", hint: "home.blankHint", make: async () => blankRobot(tr("home.blank"), lang) },
+    ...ROBOT_TEMPLATES.map((entry) => ({ key: entry.titleKey as RobotKey, hint: `${entry.titleKey}Hint` as RobotKey, make: () => robotTemplate(entry.id) })),
+  ];
 
   function analyse(files: InoFile[], board?: string) {
     const outcome = importIno(files, analyserFor(), { board });
@@ -223,6 +255,36 @@ export function Home({ messages, strings, lang, onOpen }: HomeProps) {
           </Button>
         }
       />
+
+      <section aria-labelledby="studio-robot">
+        <h2 id="studio-robot" className="text-xl font-semibold text-balance">
+          {tr("home.group")}
+        </h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {robotChoices.map((choice) => (
+            <li key={choice.key} className="flex">
+              <button
+                type="button"
+                onClick={() => void startRobot(choice.key, choice.make)}
+                disabled={robotStarting !== null}
+                aria-busy={robotStarting === choice.key}
+                className="flex w-full flex-col gap-1 rounded-2xl border border-rule bg-surface p-4 text-start motion-fade enabled:hover:bg-hover enabled:active:scale-98 enabled:active:motion-press disabled:cursor-not-allowed disabled:opacity-50 aria-busy:opacity-100 aria-busy:animate-pulse motion-reduce:aria-busy:animate-none"
+              >
+                <span className="flex items-center justify-between gap-2 text-base font-semibold">
+                  {tr(choice.key)}
+                  <Icon name="arrow-right" size={16} className="shrink-0 text-muted" aria-hidden="true" />
+                </span>
+                <span className="text-sm text-pretty text-muted">{tr(choice.hint)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        {robotFailed ? (
+          <p role="alert" className="mt-4 text-sm text-bad">
+            {t("starters.failed", { name: tr(robotFailed as RobotKey) })}
+          </p>
+        ) : null}
+      </section>
 
       <section aria-labelledby="studio-starters">
         <h2 id="studio-starters" className="text-xl font-semibold text-balance">
@@ -318,7 +380,7 @@ export function Home({ messages, strings, lang, onOpen }: HomeProps) {
       </Dialog>
 
       <p role="status" className="sr-only">
-        {starting ? t("starters.opening", { name: titleOf(starting) }) : ""}
+        {starting ? t("starters.opening", { name: titleOf(starting) }) : robotStarting ? t("starters.opening", { name: tr(robotStarting as RobotKey) }) : ""}
       </p>
     </div>
   );

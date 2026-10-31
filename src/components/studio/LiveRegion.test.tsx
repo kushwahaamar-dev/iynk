@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import faults from "@/i18n/messages/en/faults.json";
 import parteditor from "@/i18n/messages/en/parteditor.json";
 import partinfo from "@/i18n/messages/en/partinfo.json";
+import robot from "@/i18n/messages/en/robot.json";
 import fidelity from "@/i18n/messages/en/fidelity.json";
 import instruments from "@/i18n/messages/en/instruments.json";
 import studio from "@/i18n/messages/en/studio.json";
@@ -17,7 +18,7 @@ import studioWire from "@/i18n/messages/en/studioWire.json";
 import { createAnnouncer } from "@/studio/tools/keyboard";
 import { LiveRegion } from "./LiveRegion";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, run, faults, parteditor, partinfo };
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, run, faults, parteditor, partinfo, robot };
 
 function rig() {
   const announcer = createAnnouncer();
