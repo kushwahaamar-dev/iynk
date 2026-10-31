@@ -3,9 +3,10 @@
 //
 //   node scripts/build-engines.mjs [--check] [--only <id,id>] [--if-present] [--publish]
 //
-// Each src/sim-host/engines/*.manifest.json names an npm package (source.npm) and its entry file. The entry is
-// bundled with esbuild into public/engines/<id>@<version>/<id>.js, and public/engines/manifest.json lists every
-// engine with the bytes and sha256 of its files. The committed manifests are never changed.
+// Each src/sim-host/engines/*.manifest.json names an npm package (source.npm). With source.entry, the entry is
+// bundled with esbuild into public/engines/<id>@<version>/<id>.js. Without it, the package's prebuilt gen/ files
+// are copied as they are. public/engines/manifest.json lists every engine with the bytes and sha256 of its files.
+// The committed manifests are never changed.
 //
 //   --check        exit 1 when a manifest's version or licence differs from the installed package
 //   --only         build just these ids; a missing package is then an error
@@ -17,9 +18,9 @@
 
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { brotliCompressSync } from 'node:zlib';
+import { brotliCompressSync, constants as zlib } from 'node:zlib';
 
 const root = resolve(process.env.IYNK_ENGINES_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), '..'));
 const manifestDir = join(root, 'src', 'sim-host', 'engines');
@@ -38,6 +39,8 @@ if (process.env.VERCEL && !only) {
 }
 
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
+const brotliBytes = (bytes) => brotliCompressSync(bytes, { params: { [zlib.BROTLI_PARAM_QUALITY]: 9 } }).length;
+const KINDS = { '.js': 'js', '.wasm': 'wasm' };
 
 function fail(message) {
   console.error(`engines: ${message}`);
@@ -71,6 +74,15 @@ async function bundle(m) {
   return result.outputFiles[0].contents;
 }
 
+/** The files an engine ships: the bundled entry, or the package's gen/ files copied unchanged. */
+async function engineFiles(m) {
+  if (m.source.entry) return [{ name: `${m.id}.js`, bytes: await bundle(m), kind: 'js' }];
+  const gen = join(root, 'node_modules', m.source.npm, 'gen');
+  return readdirSync(gen)
+    .sort()
+    .map((name) => ({ name, bytes: readFileSync(join(gen, name)), kind: KINDS[extname(name)] ?? 'data' }));
+}
+
 const built = [];
 for (const m of manifests) {
   const pkg = installed(m);
@@ -98,19 +110,22 @@ const listed = new Map();
 if (existsSync(manifestFile)) for (const e of JSON.parse(readFileSync(manifestFile, 'utf8')).engines) listed.set(e.id, e);
 
 for (const { m } of built) {
-  const bytes = await bundle(m);
   const dir = join(outRoot, `${m.id}@${m.version}`);
-  const path = `${m.id}@${m.version}/${m.id}.js`;
-  const file = join(root, 'public', 'engines', path);
-  const hash = sha256(bytes);
-  if (!existsSync(file) || sha256(readFileSync(file)) !== hash) {
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(file, bytes);
+  const files = [];
+  for (const { name, bytes, kind } of await engineFiles(m)) {
+    const path = `${m.id}@${m.version}/${name}`;
+    const file = join(outRoot, path);
+    const hash = sha256(bytes);
+    if (!existsSync(file) || sha256(readFileSync(file)) !== hash) {
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(file, bytes);
+    }
+    files.push({ path, sha256: hash, bytes: bytes.length, brotliBytes: brotliBytes(bytes), kind });
   }
   const entry = { ...m };
   delete entry.source;
-  listed.set(m.id, { ...entry, files: [{ path, sha256: hash, bytes: bytes.length, brotliBytes: brotliCompressSync(bytes).length, kind: 'js' }] });
-  console.log(`engines: ${m.id}@${m.version} ${bytes.length} bytes`);
+  listed.set(m.id, { ...entry, files });
+  console.log(`engines: ${m.id}@${m.version} ${files.reduce((sum, f) => sum + f.bytes, 0)} bytes in ${files.length} files`);
 }
 
 mkdirSync(outRoot, { recursive: true });
