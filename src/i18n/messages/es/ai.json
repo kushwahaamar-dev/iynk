@@ -201,7 +201,8 @@
     "copied": "Copiado",
     "addLink": "Añadir un enlace para compartir",
     "noLink": "Los enlaces para compartir necesitan tu servidor.",
-    "send": "Enviar a {name}",
+    "use": "Usar este borrador",
+    "dismiss": "Descartar",
     "sentByYou": "No se envía nada hasta que pulses Enviar.",
     "noBuddies": "Aún no tienes colegas. Copia el texto y envíalo a tu manera."
   }

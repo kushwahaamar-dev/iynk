@@ -201,7 +201,8 @@
     "copied": "Copied",
     "addLink": "Add a share link",
     "noLink": "Share links need your server.",
-    "send": "Send to {name}",
+    "use": "Use this draft",
+    "dismiss": "Dismiss",
     "sentByYou": "Nothing is sent until you press Send.",
     "noBuddies": "You have no buddies yet. Copy the text and send it your own way."
   }

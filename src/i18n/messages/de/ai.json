@@ -201,7 +201,8 @@
     "copied": "Kopiert",
     "addLink": "Freigabelink hinzufügen",
     "noLink": "Freigabelinks brauchen deinen Server.",
-    "send": "An {name} senden",
+    "use": "Diesen Entwurf verwenden",
+    "dismiss": "Verwerfen",
     "sentByYou": "Es wird nichts gesendet, bis du auf Senden drückst.",
     "noBuddies": "Du hast noch keine Kumpel. Kopiere den Text und schick ihn auf deinem Weg."
   }

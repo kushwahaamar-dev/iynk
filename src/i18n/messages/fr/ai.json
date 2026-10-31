@@ -201,7 +201,8 @@
     "copied": "Copié",
     "addLink": "Ajouter un lien de partage",
     "noLink": "Les liens de partage ont besoin de ton serveur.",
-    "send": "Envoyer à {name}",
+    "use": "Utiliser ce brouillon",
+    "dismiss": "Ignorer",
     "sentByYou": "Rien n'est envoyé tant que tu n'appuies pas sur Envoyer.",
     "noBuddies": "Tu n'as pas encore d'amis. Copie le texte et envoie-le à ta façon."
   }
