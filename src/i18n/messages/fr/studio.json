@@ -363,6 +363,7 @@
     },
     "fork": {
       "closedTitle": "Cette salle est fermée",
+      "closedKept": "La salle est fermée. Ce projet reste dans ta bibliothèque.",
       "keepCopy": "Garder une copie",
       "kept": "Copie enregistrée",
       "ffNote": "Votre copie repart du dernier état de la salle",

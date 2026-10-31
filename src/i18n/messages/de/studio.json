@@ -363,6 +363,7 @@
     },
     "fork": {
       "closedTitle": "Dieser Raum ist geschlossen",
+      "closedKept": "Der Raum ist geschlossen. Dieses Projekt bleibt in deiner Bibliothek.",
       "keepCopy": "Kopie behalten",
       "kept": "Kopie gespeichert",
       "ffNote": "Deine Kopie setzt beim letzten Stand des Raums an",

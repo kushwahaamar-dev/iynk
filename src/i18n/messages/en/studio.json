@@ -363,6 +363,7 @@
     },
     "fork": {
       "closedTitle": "This room has closed",
+      "closedKept": "The room is closed. This project stays in your library.",
       "keepCopy": "Keep a copy",
       "kept": "Copy saved",
       "ffNote": "Your copy continues from the room's last state",
