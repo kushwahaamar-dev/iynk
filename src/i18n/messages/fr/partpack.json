@@ -1,3 +1,84 @@
 {
-  "title": "Paquets de pièces"
+  "title": "Paquets de pièces",
+  "close": "Fermer",
+  "dialog": {
+    "title": "Ajouter le paquet {name}",
+    "description": "De {sender}. Rien n'est enregistré avant votre choix."
+  },
+  "refused": {
+    "title": "Ce paquet a été refusé",
+    "unchanged": "Votre bibliothèque et votre projet n'ont pas changé."
+  },
+  "actions": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "use": "Utiliser dans ce projet",
+    "add": "Ajouter à ma bibliothèque",
+    "addDisabled": "Ajouter comme données désactivées"
+  },
+  "tier": {
+    "T0": "Illustration",
+    "T1": "Modèle pédagogique",
+    "T2": "Modèle calculé",
+    "T3": "Exécute un firmware",
+    "none": "Aucun modèle"
+  },
+  "status": {
+    "modelled": "Modélisée",
+    "partly-modelled": "Modélisée en partie",
+    "not-modelled-yet": "Pas encore modélisée"
+  },
+  "row": {
+    "licence": "Licence",
+    "sources": "Sources",
+    "noSources": "Aucune indiquée",
+    "code": "Code",
+    "permissions": "Autorisations : {list}",
+    "pins": {
+      "one": "{count} broche",
+      "other": "{count} broches"
+    },
+    "collision": "Une autre pièce avec cet id et cette version est déjà installée, donc celle-ci ne peut pas être ajoutée.",
+    "codeOff": "Les pièces avec du code ne peuvent pas être activées dans cette version. Celle-ci est conservée comme données et reste désactivée.",
+    "art": "Images modifiées ou retirées"
+  },
+  "labels": {
+    "schema": "Schéma valide",
+    "tests": {
+      "yes": "A des tests",
+      "no": "Aucun test"
+    },
+    "run": {
+      "not-run": "Tests non lancés",
+      "pass": "Les tests passent",
+      "fail": "Les tests échouent"
+    },
+    "reference": {
+      "yes": "A un test de référence",
+      "no": "Aucun test de référence"
+    },
+    "code": {
+      "yes": "Contient du code",
+      "no": "Aucun code"
+    },
+    "thirdParty": {
+      "yes": "Contenu tiers",
+      "no": "Aucun contenu tiers"
+    }
+  },
+  "errors": {
+    "not-a-pack": "Ce fichier n'est pas un paquet iynk.",
+    "newer-pack": "Ce paquet a été créé par une version plus récente d'iynk. Mettez iynk à jour pour l'ouvrir.",
+    "too-big-compressed": "Refusé : le paquet dépasse {limit}.",
+    "too-big-uncompressed": "Refusé : une fois décompressé, le paquet dépasse {limit}.",
+    "ratio": "Refusé : le paquet se décompresse bien au-delà de sa taille, au-dessus de {limit}.",
+    "too-many-files": "Refusé : le paquet contient plus de {limit}.",
+    "path": "Refusé : {path} n'est pas un nom de fichier sûr.",
+    "duplicate": "Refusé : {path} apparaît deux fois.",
+    "symlink": "Refusé : {path} est un lien symbolique.",
+    "hash": "Refusé : {path} ne correspond pas au hash de la liste de fichiers du paquet.",
+    "manifest": "Refusé : la liste de fichiers du paquet ne correspond pas à son contenu ({path}).",
+    "schema": "Refusé : {path} n'est pas un fichier de pièce valide.",
+    "core-id": "Refusé : {path} utilise un id réservé aux pièces livrées avec iynk."
+  }
 }

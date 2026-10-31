@@ -1,3 +1,84 @@
 {
-  "title": "Bauteil-Pakete"
+  "title": "Bauteil-Pakete",
+  "close": "Schließen",
+  "dialog": {
+    "title": "Paket {name} hinzufügen",
+    "description": "Von {sender}. Nichts wird gespeichert, bevor du dich entscheidest."
+  },
+  "refused": {
+    "title": "Dieses Paket wurde abgelehnt",
+    "unchanged": "Deine Bibliothek und dein Projekt sind unverändert."
+  },
+  "actions": {
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "use": "In diesem Projekt verwenden",
+    "add": "Zu meiner Bibliothek hinzufügen",
+    "addDisabled": "Als deaktivierte Daten hinzufügen"
+  },
+  "tier": {
+    "T0": "Illustration",
+    "T1": "Lernmodell",
+    "T2": "Berechnetes Modell",
+    "T3": "Führt Firmware aus",
+    "none": "Kein Modell"
+  },
+  "status": {
+    "modelled": "Modelliert",
+    "partly-modelled": "Teilweise modelliert",
+    "not-modelled-yet": "Noch nicht modelliert"
+  },
+  "row": {
+    "licence": "Lizenz",
+    "sources": "Quellen",
+    "noSources": "Keine angegeben",
+    "code": "Code",
+    "permissions": "Berechtigungen: {list}",
+    "pins": {
+      "one": "{count} Pin",
+      "other": "{count} Pins"
+    },
+    "collision": "Ein anderes Bauteil mit dieser ID und Version ist schon installiert, daher kann dieses nicht hinzugefügt werden.",
+    "codeOff": "Bauteile mit Code lassen sich in dieser Version nicht einschalten. Dieses wird als Daten gespeichert und bleibt aus.",
+    "art": "Bilder, die geändert oder entfernt wurden"
+  },
+  "labels": {
+    "schema": "Schema gültig",
+    "tests": {
+      "yes": "Hat Tests",
+      "no": "Keine Tests"
+    },
+    "run": {
+      "not-run": "Tests nicht ausgeführt",
+      "pass": "Tests bestanden",
+      "fail": "Tests fehlgeschlagen"
+    },
+    "reference": {
+      "yes": "Hat einen Referenztest",
+      "no": "Kein Referenztest"
+    },
+    "code": {
+      "yes": "Enthält Code",
+      "no": "Kein Code"
+    },
+    "thirdParty": {
+      "yes": "Inhalte Dritter",
+      "no": "Keine Inhalte Dritter"
+    }
+  },
+  "errors": {
+    "not-a-pack": "Diese Datei ist kein iynk-Paket.",
+    "newer-pack": "Dieses Paket stammt von einer neueren iynk-Version. Aktualisiere iynk, um es zu öffnen.",
+    "too-big-compressed": "Abgelehnt: Das Paket ist größer als {limit}.",
+    "too-big-uncompressed": "Abgelehnt: Entpackt ist das Paket größer als {limit}.",
+    "ratio": "Abgelehnt: Das Paket wird auf ein Vielfaches seiner Größe entpackt, mehr als {limit}.",
+    "too-many-files": "Abgelehnt: Das Paket enthält mehr als {limit}.",
+    "path": "Abgelehnt: {path} ist kein sicherer Dateiname.",
+    "duplicate": "Abgelehnt: {path} kommt zweimal vor.",
+    "symlink": "Abgelehnt: {path} ist ein symbolischer Link.",
+    "hash": "Abgelehnt: {path} passt nicht zum Hash in der Dateiliste des Pakets.",
+    "manifest": "Abgelehnt: Die Dateiliste des Pakets passt nicht zum Inhalt ({path}).",
+    "schema": "Abgelehnt: {path} ist keine gültige Bauteildatei.",
+    "core-id": "Abgelehnt: {path} nutzt eine ID, die nur mit iynk ausgelieferten Bauteilen vorbehalten ist."
+  }
 }
