@@ -141,6 +141,7 @@
     "focusFigure": "进入图示",
     "selected": "选中的零件",
     "walk": "更多实验台",
+    "concept": "概念模型：Python API 模拟，不是 Raspberry Pi OS，也不是正在运行的 ROS 2 图",
     "tabs": {
       "label": "工作台面板",
       "steps": "步骤",

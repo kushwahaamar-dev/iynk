@@ -141,6 +141,7 @@
     "focusFigure": "In die Abbildung wechseln",
     "selected": "Ausgewähltes Bauteil",
     "walk": "Weitere Werkbänke",
+    "concept": "Konzeptmodell: Python-API als Attrappe, kein Raspberry Pi OS und kein laufender ROS-2-Graph",
     "tabs": {
       "label": "Bereiche der Werkbank",
       "steps": "Schritte",

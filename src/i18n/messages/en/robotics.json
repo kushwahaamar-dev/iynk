@@ -141,6 +141,7 @@
     "focusFigure": "Go into the figure",
     "selected": "Selected part",
     "walk": "More benches",
+    "concept": "concept model: Python API mock, not a Raspberry Pi OS and not a running ROS 2 graph",
     "tabs": {
       "label": "Bench panels",
       "steps": "Steps",
