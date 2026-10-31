@@ -5,7 +5,7 @@ import { sha256Hex } from "@/core/sha256";
 import type { Project, Text } from "@/project/generated/types";
 import { evaluateCompletion, evaluateSteps, type GuideDeps, type GuideInput, type GuideRun, type StepState } from "@/project/guided/engine";
 import { readPlan, type GuidedPlan, type PlanIssue } from "@/project/guided/plan";
-import { emptyRecord, withAnswer, withCompletion, withEdited, withStep, type LearnerRecord, type Tier } from "@/project/guided/record";
+import { emptyRecord, withAnswer, withCompletion, withEdited, withHintLevel, withStep, type LearnerRecord, type Tier } from "@/project/guided/record";
 import { validatePlan } from "@/project/guided/validate-plan";
 import type { LearnStore } from "@/local/learn-store";
 import { START_LABEL } from "@/studio/fork";
@@ -63,6 +63,13 @@ function readValidPlan(project: Project): { plan: GuidedPlan | null; issues: Pla
   }
 }
 
+/** The template a lesson project was made from, so the old pages and the gallery can find the learner's progress. */
+export function templateOf(project: Project): string | undefined {
+  const { origin } = project.provenance;
+  if (origin.kind === "fork") return origin.project;
+  return origin.kind === "template" ? origin.template : undefined;
+}
+
 function entrySource(project: Project): string {
   const entry = project.boards.find((b) => b.firmware)?.firmware?.entry;
   const source = project.sources.find((s) => s.id === entry) ?? project.sources.find((s) => s.role === "firmware");
@@ -93,6 +100,7 @@ export function useGuide(a: UseGuideArgs): GuideView & {
   stepNext(): void;
   markStep(i: number): void;
   answer(quizId: string, questionId: string, choice: number): void;
+  openHint(level: number): void;
   reset(): Promise<void>;
 } {
   const project = useStoreSelector(a.doc, (s) => s.state);
@@ -128,7 +136,7 @@ export function useGuide(a: UseGuideArgs): GuideView & {
       cur.store.update(
         projectId,
         (r) => {
-          let out = r ?? emptyRecord(projectId, at);
+          let out = r ?? emptyRecord(projectId, at, templateOf(project));
           for (const i of done) out = withStep(out, i, "gate", at);
           if (edited) out = withEdited(out, at);
           if (finished && gates) {
@@ -174,7 +182,7 @@ export function useGuide(a: UseGuideArgs): GuideView & {
     stepNext: () => setViewIndex(viewIndex + 1),
     markStep(i) {
       const at = a.now();
-      a.store.update(projectId, (r) => withStep(r ?? emptyRecord(projectId, at), i, "manual", at), at);
+      a.store.update(projectId, (r) => withStep(r ?? emptyRecord(projectId, at, templateOf(project)), i, "manual", at), at);
       a.logEvent?.({ kind: "step.done", payload: { projectId, step: i } });
     },
     answer(quizId, questionId, choice) {
@@ -183,8 +191,14 @@ export function useGuide(a: UseGuideArgs): GuideView & {
       if (!quiz || !question) return;
       const at = a.now();
       const correct = choice === question.answer;
-      a.store.update(projectId, (r) => withAnswer(r ?? emptyRecord(projectId, at), quizId, questionId, choice, correct, quiz.questions.length), at);
+      a.store.update(projectId, (r) => withAnswer(r ?? emptyRecord(projectId, at, templateOf(project)), quizId, questionId, choice, correct, quiz.questions.length), at);
       a.logEvent?.({ kind: "quiz.answer", payload: { projectId, quiz: quizId, correct } });
+    },
+    openHint(level) {
+      if (level !== 1 && level !== 2 && level !== 3) return;
+      const at = a.now();
+      a.store.update(projectId, (r) => withHintLevel(r ?? emptyRecord(projectId, at, templateOf(project)), level), at);
+      a.logEvent?.({ kind: "hint.open", payload: { projectId, level } });
     },
     reset: () => a.restoreStart(),
   };

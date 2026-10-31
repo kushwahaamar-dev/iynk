@@ -16,6 +16,7 @@ import type { PinRef } from "@/project/generated/types";
 import { buildPartIndex } from "@/parts/search";
 import { builtinRegistry } from "@/parts/builtin";
 import { fallbackSpec } from "@/parts/fallback";
+import { readPlan } from "@/project/guided/plan";
 import { classifyImpact } from "@/project/opImpact";
 import { readDiagnoseSpec } from "@/sim/faults/seal";
 import { loadRegistry } from "@/sim/registry/entries";
@@ -103,6 +104,11 @@ const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), {
 const registry = builtinRegistry();
 const SCENE_ERROR = "views.sceneError";
 
+const GuideMount = dynamic(() => import("./guide/GuideMount").then((m) => m.GuideMount), {
+  ssr: false,
+  loading: () => <Skeleton className="m-2 h-48 rounded-xl" />,
+});
+
 const FaultDock = dynamic(() => import("./FaultDock").then((m) => m.FaultDock), {
   ssr: false,
   loading: () => <div className="min-h-32" aria-busy="true" />,
@@ -157,6 +163,7 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
   const ui = createUiStore(projectId);
   const shownView = viewIdFor(state, ui.getState().activeView);
   if (shownView === undefined) ui.set("activeView", "breadboard");
+  if (state.guide && readPlan(state) !== null && ui.getState().leftRail === "palette") ui.set("leftRail", "guide");
   const session = createSessionStore(shownView ?? (state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const run = createRunStore();
 
@@ -586,13 +593,16 @@ type RegionsProps = {
   projectMenu: ReactNode;
   /** Why the version before the last run could not be made, or null. */
   versionWarning: string | null;
+  /** False for a read only share, which keeps no learner record. */
+  guideAllowed: boolean;
 };
 
-function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning }: RegionsProps) {
+function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning, guideAllowed }: RegionsProps) {
   const { ui, session, run, engine, tools, place, link, controller, announcer } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
+  const guided = useStoreSelector(doc, (s) => s.state.guide !== undefined);
   const armed = useStoreSelector(session, (s) => s.armedPart);
   const activeView = useStoreSelector(ui, (s) => s.activeView);
   const sceneFailed = useStoreSelector(session, (s) => s.status?.key === SCENE_ERROR);
@@ -629,6 +639,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         </>
       }
       left={{
+        guide: guideAllowed && guided ? <GuideMount doc={doc} run={run} link={link} messages={t} lang={lang} /> : undefined,
         palette: (
           <Palette
             index={partIndex}
@@ -937,6 +948,7 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
             checksRun={checksRun}
             projectMenu={actions.menu}
             versionWarning={versionWarning}
+            guideAllowed={shared === undefined}
           />
           {actions.dialogs}
           <LiveRegion announcer={graph.announcer} messages={messages} lang={lang} />

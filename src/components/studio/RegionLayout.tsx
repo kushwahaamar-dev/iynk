@@ -55,7 +55,8 @@ export class RegionBoundary extends Component<BoundaryProps, { failed: boolean; 
 
 export interface RegionLayoutProps {
   top: ReactNode;
-  left: Record<UiState["leftRail"], ReactNode>;
+  /** The guide tab exists only for a project that has a guide. */
+  left: Record<Exclude<UiState["leftRail"], "guide">, ReactNode> & { guide?: ReactNode };
   centre: ReactNode;
   right: Record<UiState["rightRail"], ReactNode>;
   dock: Record<UiState["dock"], ReactNode>;
@@ -110,12 +111,13 @@ function Rail<K extends string>({ region, order, panels, value, onChange, messag
   onChange: (id: K) => void;
   messages: StudioStrings;
 }) {
-  const labels: Record<string, string> = { ...messages.layout.tabs, ...messages.rail };
+  const labels: Record<string, string> = { guide: messages.lesson.guide.title, ...messages.layout.tabs, ...messages.rail };
   const tabs: TabItem[] = order.map((id) => ({ id, label: labels[id]!, content: panels[id] }));
   return <Tabs fill className="flex-1" label={messages.layout.regions[region]} tabs={tabs} value={value} onChange={(id) => onChange(id as K)} />;
 }
 
 const LEFT_ORDER = ["palette", "files", "outline"] as const;
+const GUIDED_LEFT_ORDER = ["guide", ...LEFT_ORDER] as const;
 const RIGHT_ORDER = ["inspector", "problems", "models", "history", "checks", "partner"] as const;
 const DOCK_ORDER = ["code", "serial", "faults"] as const;
 
@@ -135,7 +137,18 @@ export function RegionLayout({ top, left, centre, right, dock, ui, messages }: R
     </RegionBoundary>
   );
 
-  const leftNode = <Rail region="left" order={LEFT_ORDER} panels={left} value={leftRail} onChange={(id) => ui.set("leftRail", id)} messages={messages} />;
+  const guided = left.guide != null;
+  const leftValue = leftRail === "guide" && !guided ? "palette" : leftRail;
+  const leftNode = (
+    <Rail
+      region="left"
+      order={guided ? GUIDED_LEFT_ORDER : LEFT_ORDER}
+      panels={{ ...left, guide: left.guide ?? null }}
+      value={leftValue}
+      onChange={(id) => ui.set("leftRail", id)}
+      messages={messages}
+    />
+  );
   const rightNode = <Rail region="right" order={RIGHT_ORDER} panels={right} value={rightRail} onChange={(id) => ui.set("rightRail", id)} messages={messages} />;
 
   return (
