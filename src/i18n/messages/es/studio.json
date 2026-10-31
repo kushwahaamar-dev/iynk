@@ -42,7 +42,22 @@
     "notRunning": "No se está ejecutando",
     "high": "HIGH",
     "low": "LOW",
-    "liveDot": "{pin}: {level}"
+    "liveDot": "{pin}: {level}",
+    "missing": "Esta placa no está en el proyecto.",
+    "roles": {
+      "power": "Alimentación",
+      "ground": "Tierra",
+      "digital": "Digital",
+      "analog": "Analógico",
+      "bus": "Bus",
+      "misc": "Otro"
+    },
+    "dir": {
+      "in": "Entrada",
+      "out": "Salida"
+    },
+    "bits": "{count} bits",
+    "activeLow": "activo en bajo"
   },
   "row": {
     "open": "Abrir {name}",

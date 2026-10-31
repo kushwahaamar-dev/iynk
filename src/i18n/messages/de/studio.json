@@ -42,7 +42,22 @@
     "notRunning": "Läuft nicht",
     "high": "HIGH",
     "low": "LOW",
-    "liveDot": "{pin}: {level}"
+    "liveDot": "{pin}: {level}",
+    "missing": "Dieses Board ist nicht im Projekt.",
+    "roles": {
+      "power": "Versorgung",
+      "ground": "Masse",
+      "digital": "Digital",
+      "analog": "Analog",
+      "bus": "Bus",
+      "misc": "Sonstige"
+    },
+    "dir": {
+      "in": "Eingang",
+      "out": "Ausgang"
+    },
+    "bits": "{count} Bit",
+    "activeLow": "aktiv niedrig"
   },
   "row": {
     "open": "{name} öffnen",

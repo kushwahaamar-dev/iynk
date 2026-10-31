@@ -42,7 +42,22 @@
     "notRunning": "未运行",
     "high": "HIGH",
     "low": "LOW",
-    "liveDot": "{pin}：{level}"
+    "liveDot": "{pin}：{level}",
+    "missing": "项目中没有这块开发板。",
+    "roles": {
+      "power": "电源",
+      "ground": "地",
+      "digital": "数字",
+      "analog": "模拟",
+      "bus": "总线",
+      "misc": "其他"
+    },
+    "dir": {
+      "in": "输入",
+      "out": "输出"
+    },
+    "bits": "{count} 位",
+    "activeLow": "低电平有效"
   },
   "row": {
     "open": "打开 {name}",

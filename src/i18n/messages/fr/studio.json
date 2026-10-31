@@ -42,7 +42,22 @@
     "notRunning": "À l'arrêt",
     "high": "HIGH",
     "low": "LOW",
-    "liveDot": "{pin} : {level}"
+    "liveDot": "{pin} : {level}",
+    "missing": "Cette carte n'est pas dans le projet.",
+    "roles": {
+      "power": "Alimentation",
+      "ground": "Masse",
+      "digital": "Numérique",
+      "analog": "Analogique",
+      "bus": "Bus",
+      "misc": "Autre"
+    },
+    "dir": {
+      "in": "Entrée",
+      "out": "Sortie"
+    },
+    "bits": "{count} bits",
+    "activeLow": "actif au niveau bas"
   },
   "row": {
     "open": "Ouvrir {name}",

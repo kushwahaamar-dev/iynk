@@ -42,7 +42,22 @@
     "notRunning": "चल नहीं रहा",
     "high": "HIGH",
     "low": "LOW",
-    "liveDot": "{pin}: {level}"
+    "liveDot": "{pin}: {level}",
+    "missing": "यह बोर्ड प्रोजेक्ट में नहीं है।",
+    "roles": {
+      "power": "पावर",
+      "ground": "ग्राउंड",
+      "digital": "डिजिटल",
+      "analog": "एनालॉग",
+      "bus": "बस",
+      "misc": "अन्य"
+    },
+    "dir": {
+      "in": "इनपुट",
+      "out": "आउटपुट"
+    },
+    "bits": "{count} बिट",
+    "activeLow": "सक्रिय लो"
   },
   "row": {
     "open": "{name} खोलें",
