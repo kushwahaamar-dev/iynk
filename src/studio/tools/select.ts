@@ -3,9 +3,11 @@ import type { Op, PinRef, Placement, Project as ProjectState, View, Wire } from 
 import type { ArtElement, Hit, Overlay, PointMm, RectMm, Scene } from "../engine/types.ts";
 import { connectedGroups } from "../rules/connect.ts";
 import type { Selectable, StatusMessage } from "../stores/session.ts";
+import type { PartRegistry } from "../../parts/registry.ts";
 import type { IdSource } from "../views/breadboard.ts";
 import { copySelection, createClipboard, pasteBatch, pasteOffsetMm } from "./clipboard.ts";
 import type { Clipboard } from "./clipboard.ts";
+import { dragOps } from "./schematic-place.ts";
 import type { Tool, ToolCtx, ToolKeyEvent, ToolPointerEvent, ToolResult } from "./types.ts";
 
 export type DeleteMode = "cut-connection" | "drawing-only";
@@ -192,6 +194,8 @@ export type SelectToolDeps = {
   setStatus(status: StatusMessage | null): void;
   clipboard?: Clipboard;
   ids?: IdSource;
+  /** Needed to move parts in a schematic view, whose parts may have no stored placement yet. */
+  registry?: PartRegistry;
 };
 
 type Gesture =
@@ -202,9 +206,18 @@ type Gesture =
 
 const IDLE: Gesture = { at: "idle" };
 
+function selectedPartIds(ctx: ToolCtx): Set<string> {
+  return new Set(ctx.selection.filter((s) => s.kind === "part" && s.view === ctx.view.id).map((s) => s.id));
+}
+
 function placedParts(ctx: ToolCtx): Placement[] {
-  const chosen = new Set(ctx.selection.filter((s) => s.kind === "part" && s.view === ctx.view.id).map((s) => s.id));
+  const chosen = selectedPartIds(ctx);
   return ctx.view.placements.filter((p) => chosen.has(p.c));
+}
+
+/** The parts a drag carries. A schematic part without a stored placement still moves, so there the selection decides. */
+function draggedIds(ctx: ToolCtx): string[] {
+  return ctx.view.kind === "schematic" ? [...selectedPartIds(ctx)] : placedParts(ctx).map((p) => p.c);
 }
 
 function partBox(scene: Scene, c: string): RectMm | null {
@@ -241,7 +254,7 @@ const outline = (id: string, box: RectMm, extra: Partial<Extract<ArtElement, { t
  * per part, on release, and never touches a net or a leg (STU-11). On touch only a part that is already selected moves, so a
  * drag on anything else is left to the canvas to pan.
  */
-export function createSelectTool({ setSelection, setFocusNet, setStatus, clipboard = createClipboard(), ids = randomIds }: SelectToolDeps): SelectTool {
+export function createSelectTool({ setSelection, setFocusNet, setStatus, clipboard = createClipboard(), ids = randomIds, registry }: SelectToolDeps): SelectTool {
   let gesture: Gesture = IDLE;
 
   const readOnly = (ctx: ToolCtx): boolean => {
@@ -308,6 +321,12 @@ export function createSelectTool({ setSelection, setFocusNet, setStatus, clipboa
     gesture = IDLE;
     if (done.at === "dragging") {
       if (done.dx === 0 && done.dy === 0) return { kind: "cancel" };
+      if (ctx.view.kind === "schematic" && registry) {
+        const dragged = draggedIds(ctx);
+        const moved = dragOps(ctx.doc.state, ctx.view.id, dragged, done.dx, done.dy, registry);
+        if (moved.length === 0) return { kind: "cancel" };
+        return { kind: "commit", batch: moved, label: dragged.length === 1 ? `Move ${refdesOf(ctx.doc.state, dragged[0]!)}` : `Move ${dragged.length} parts` };
+      }
       const parts = placedParts(ctx);
       const batch = parts.map((p): Op => ({ k: "view.place", view: ctx.view.id, placement: { ...p, x_mm: round2(p.x_mm + done.dx), y_mm: round2(p.y_mm + done.dy) } }));
       return { kind: "commit", batch, label: parts.length === 1 ? `Move ${refdesOf(ctx.doc.state, parts[0]!.c)}` : `Move ${parts.length} parts` };
@@ -429,9 +448,9 @@ export function createSelectTool({ setSelection, setFocusNet, setStatus, clipboa
       if (gesture.at === "marquee") return [outline("select:marquee", rectOf(gesture.start, gesture.end))];
       if (gesture.at !== "dragging") return [];
       const { dx, dy } = gesture;
-      return placedParts(ctx).flatMap((p) => {
-        const box = partBox(ctx.scene, p.c);
-        return box ? [outline(`select:ghost:${p.c}`, { x0: box.x0 + dx, y0: box.y0 + dy, x1: box.x1 + dx, y1: box.y1 + dy })] : [];
+      return draggedIds(ctx).flatMap((c) => {
+        const box = partBox(ctx.scene, c);
+        return box ? [outline(`select:ghost:${c}`, { x0: box.x0 + dx, y0: box.y0 + dy, x1: box.x1 + dx, y1: box.y1 + dy })] : [];
       });
     },
   };
