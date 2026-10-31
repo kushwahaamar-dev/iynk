@@ -20,8 +20,10 @@ export type SimRunState = "idle" | "running" | "paused" | "halted" | "done" | "l
 export type SimReq =
   | { t: "load"; run: number; net: SimNetlist; opts: SimRunOptions; program: ProgramImage }
   | { t: "control"; run: number; op: ControlOp }
-  /** Only `ns` and `event` run; the other units ack with the diagnostic `step-unit-unsupported`. */
+  /** Only `ns` and `event` run; the other units ack with the diagnostic `step-unit-unsupported`. A running run refuses with `not_paused`. */
   | { t: "step"; run: number; unit: StepUnit; n: number }
+  /** Simulated seconds per wall second, 0.01 to 100, or 0 for as fast as the slice budget allows. Engines are never told. */
+  | { t: "speed"; run: number; x: number }
   | { t: "input"; run: number; input: HostInput }
   | { t: "check"; job: CheckJob; budgetMs?: number }
   /** Busy-loops for ever so the watchdog can be tested; answered only by a worker created with `diag`. */
@@ -37,6 +39,8 @@ export type SimEv =
       serial: Array<{ at: SimTime; text: string }>;
     }
   | { t: "state"; run: number; state: SimRunState; at: SimTime; limit?: { kind: string; message: string } }
+  /** What the last second of a running run achieved, and whether that is short of the speed asked for. */
+  | { t: "speed.report"; run: number; achieved: number; behind: boolean }
   | {
       t: "event";
       run: number;

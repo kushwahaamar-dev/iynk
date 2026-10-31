@@ -1,19 +1,22 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Callout, Chip, Icon, type CalloutTone, type ChipTone } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
+import type { StepUnit } from "@/sim/engine";
 import { registerCommand } from "@/studio/commands";
 import { useStoreSelector } from "@/studio/stores/select";
 import type { RunPhase, RunStore } from "@/studio/stores/run";
+import { SpeedControl } from "./SpeedControl";
 import type { SimLink } from "./wiring/simLink";
 
 export interface RunBarProps {
   run: RunStore;
   link: SimLink;
   messages: Messages["studioRun"];
+  instruments: Messages["instruments"];
   lang: Locale;
 }
 
@@ -21,6 +24,7 @@ const PHASE_TONE: Record<RunPhase, ChipTone> = {
   idle: "neutral",
   starting: "info",
   running: "good",
+  paused: "info",
   stopped: "neutral",
   done: "neutral",
   error: "bad",
@@ -29,6 +33,11 @@ const PHASE_TONE: Record<RunPhase, ChipTone> = {
 };
 
 const NOTE_TONE: Partial<Record<RunPhase, CalloutTone>> = { error: "danger", limit: "warn", killed: "warn" };
+
+const STEP_UNITS: readonly StepUnit[] = ["ns", "event", "statement", "line", "cycle"];
+
+/** One press is one unit; a nanosecond is too small to see, so `ns` steps a microsecond. */
+const STEP_COUNT: Record<StepUnit, number> = { ns: 1000, event: 1, statement: 1, line: 1, cycle: 1 };
 
 function Clock({ run, label }: { run: RunStore; label: string }) {
   const tNs = useStoreSelector(run, (s) => s.tNs);
@@ -39,8 +48,12 @@ function Clock({ run, label }: { run: RunStore; label: string }) {
   );
 }
 
-export function RunBar({ run, link, messages, lang }: RunBarProps) {
+export function RunBar({ run, link, messages, instruments, lang }: RunBarProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioRun`), [lang, messages]);
+  const ti = useMemo(() => createTranslator(lang, instruments, `${lang}/instruments`), [lang, instruments]);
+  const [unit, setUnit] = useState<StepUnit>("statement");
+  const speed = useStoreSelector(run, (s) => s.speed);
+  const achieved = useStoreSelector(run, (s) => s.achievedSpeed);
   const phase = useStoreSelector(run, (s) => s.phase);
   const stale = useStoreSelector(run, (s) => s.stale);
   const behind = useStoreSelector(run, (s) => s.behindReal);
@@ -61,7 +74,7 @@ export function RunBar({ run, link, messages, lang }: RunBarProps) {
         id: "sim.stop",
         labelKey: "studioRun.commands.stop",
         scope: "sim",
-        enabled: () => ["starting", "running"].includes(run.getState().phase),
+        enabled: () => ["starting", "running", "paused"].includes(run.getState().phase),
         run: () => link.stop(),
       }),
       registerCommand({
@@ -75,7 +88,7 @@ export function RunBar({ run, link, messages, lang }: RunBarProps) {
     return () => offs.forEach((off) => off());
   }, [run, link]);
 
-  const active = phase === "starting" || phase === "running";
+  const active = phase === "starting" || phase === "running" || phase === "paused";
   const restart = stale && phase !== "idle";
   const note = NOTE_TONE[phase];
   const noteText =
@@ -96,17 +109,42 @@ export function RunBar({ run, link, messages, lang }: RunBarProps) {
           <Icon name="reset" size={16} />
           {t("bar.reset")}
         </Button>
+        {phase === "paused" ? (
+          <Button variant="secondary" size="sm" onClick={() => link.resume()}>
+            <Icon name="play" size={16} />
+            {ti("run.resume")}
+          </Button>
+        ) : (
+          <Button variant="secondary" size="sm" disabled={phase !== "running"} onClick={() => link.pause()}>
+            {ti("run.pause")}
+          </Button>
+        )}
+        <Button variant="secondary" size="sm" disabled={phase !== "paused"} onClick={() => link.step(unit, STEP_COUNT[unit])}>
+          {ti("run.step")}
+        </Button>
+        <select
+          aria-label={ti("run.stepUnit")}
+          value={unit}
+          onChange={(e) => setUnit(e.target.value as StepUnit)}
+          className="rounded-lg bg-sunken px-2 py-2 text-sm font-semibold text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          {STEP_UNITS.map((u) => (
+            <option key={u} value={u} disabled={u === "cycle"}>
+              {u === "cycle" ? `${ti("run.unit.cycle")} (${ti("run.cycleNeedsFirmware")})` : ti(`run.unit.${u}`)}
+            </option>
+          ))}
+        </select>
         <Chip tone={PHASE_TONE[phase]} dot role="status">
           {t(`phase.${phase}`)}
         </Chip>
         <Clock run={run} label={t("bar.time")} />
       </div>
+      <SpeedControl t={ti} speed={speed} achieved={achieved} behind={behind && phase === "running"} onChange={(x) => link.setSpeed(x)} />
       {restart ? (
         <p className="text-sm text-muted" role="status">
           {t("bar.stale")}
         </p>
       ) : null}
-      {behind && phase === "running" ? <p className="text-sm text-warn">{t("bar.behind")}</p> : null}
       {note && noteText ? (
         <Callout tone={note} live>
           {noteText}

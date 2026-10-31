@@ -13,6 +13,7 @@
     "idle": "Listo",
     "starting": "Iniciando",
     "running": "En marcha",
+    "paused": "En pausa",
     "stopped": "Detenido",
     "done": "Terminado",
     "error": "No se pudo ejecutar",

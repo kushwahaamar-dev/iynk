@@ -31,7 +31,7 @@ export type Messages = {
 };
 
 /** The namespaces the Studio owns; its page passes all of them down together. */
-export const STUDIO_NAMESPACES = ["studio", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels"] as const;
+export const STUDIO_NAMESPACES = ["studio", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "instruments"] as const;
 
 export type StudioNamespace = (typeof STUDIO_NAMESPACES)[number];
 

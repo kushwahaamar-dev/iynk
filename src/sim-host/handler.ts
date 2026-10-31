@@ -33,6 +33,13 @@ export interface SimHandlerDeps {
 const SLICE_WALL_MS = 12;
 /** At most 30 frames per simulated second. */
 const FRAME_INTERVAL_NS = Math.ceil((1000 * NS_PER_MS) / 30);
+const MIN_SPEED = 0.01;
+const MAX_SPEED = 100;
+/** The span over which the achieved speed is averaged. */
+const SPEED_WINDOW_MS = 1000;
+/** A run is behind when it achieves less than this share of the speed asked for. */
+const BEHIND_RATIO = 0.95;
+const SPEED_REPORT_MS = 250;
 const SERIAL_LINES_PER_FRAME = 500;
 const SERIAL_CAP_CHARS = 1024 * 1024;
 
@@ -53,6 +60,9 @@ interface Runtime {
   lastParts: string | null;
   lastFrameAt: SimTime;
   anchor: { wall: number; sim: SimTime };
+  /** Wall and simulated time at the end of recent slices, oldest first. */
+  progress: Array<{ wall: number; sim: SimTime }>;
+  lastReportWall: number;
 }
 
 const bad = (message: string) => new WorkerError({ kind: "bad_message", message });
@@ -66,6 +76,7 @@ const messageOf = (d: SimDiagnostic): string => String(d.args?.message ?? d.text
 export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, SimEv> {
   let run = 0;
   let state: SimRunState = "idle";
+  let speed = 0;
   let rt: Runtime | null = null;
   let loaded: Extract<SimReq, { t: "load" }> | null = null;
   let pumpGen = 0;
@@ -150,9 +161,22 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   }
 
   function targetOf(r: Runtime): SimTime {
-    const { speed, endNs } = r.opts;
+    const { endNs } = r.opts;
     if (speed <= 0) return endNs ?? Infinity;
     return r.anchor.sim + Math.floor((deps.wallMs() - r.anchor.wall) * NS_PER_MS * speed);
+  }
+
+  /** Tells the host how much of the requested speed the last second achieved, a few times a second. */
+  function reportSpeed(r: Runtime) {
+    const wall = deps.wallMs();
+    const { progress } = r;
+    progress.push({ wall, sim: r.orch.now });
+    while (progress.length > 2 && wall - progress[1].wall >= SPEED_WINDOW_MS) progress.shift();
+    const first = progress[0];
+    if (wall - first.wall < SPEED_WINDOW_MS || wall - r.lastReportWall < SPEED_REPORT_MS) return;
+    r.lastReportWall = wall;
+    const achieved = (r.orch.now - first.sim) / ((wall - first.wall) * NS_PER_MS);
+    emit({ t: "speed.report", run, achieved, behind: speed > 0 && achieved < BEHIND_RATIO * speed });
   }
 
   function pump(r: Runtime, gen: number) {
@@ -163,7 +187,10 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
         shouldYield: () => deps.wallMs() - started >= SLICE_WALL_MS,
         work: r.opts.limits,
       });
-      if (!finish(r, result)) pump(r, gen);
+      if (!finish(r, result)) {
+        reportSpeed(r);
+        pump(r, gen);
+      }
     });
   }
 
@@ -201,10 +228,25 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       lastParts: null,
       lastFrameAt: -Infinity,
       anchor: { wall: 0, sim: 0 },
+      progress: [],
+      lastReportWall: 0,
     };
     post();
     sendFrame(rt, true);
     return { diagnostics };
+  }
+
+  function anchorAtNow(r: Runtime) {
+    const wall = deps.wallMs();
+    r.anchor = { wall, sim: r.orch.now };
+    r.progress = [{ wall, sim: r.orch.now }];
+    r.lastReportWall = wall;
+  }
+
+  function setSpeed(x: number): void {
+    if (Number.isNaN(x)) throw bad("speed must be a number");
+    speed = x === 0 ? 0 : Math.min(MAX_SPEED, Math.max(MIN_SPEED, x));
+    if (rt && state === "running") anchorAtNow(rt);
   }
 
   function control(op: Extract<SimReq, { t: "control" }>["op"]): void {
@@ -222,7 +264,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (!rt) throw bad("the loaded program did not compile");
     if (op === "run") {
       if (state !== "idle" && state !== "paused") return;
-      rt.anchor = { wall: deps.wallMs(), sim: rt.orch.now };
+      anchorAtNow(rt);
       setState("running");
       pump(rt, ++pumpGen);
       return;
@@ -236,6 +278,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function step(req: Extract<SimReq, { t: "step" }>): DiagnosticsReply {
     if (!(req.n > 0)) throw bad(`step needs n above 0, got ${req.n}`);
     if (!rt) throw bad("nothing is loaded");
+    if (state === "running") throw new WorkerError({ kind: "not_paused", message: "pause the run before stepping" });
     if (state === "done" || state === "halted" || state === "limit") return { diagnostics: [] };
     stopPump();
     const result = rt.orch.step(req.unit, req.n);
@@ -259,11 +302,13 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (msg.t === "load") {
       stopPump();
       run = msg.run;
+      speed = msg.opts.speed;
       return build(msg);
     }
     if (msg.run !== run) return { ignored: true } satisfies IgnoredReply;
     if (msg.t === "control") return void control(msg.op);
     if (msg.t === "step") return step(msg);
+    if (msg.t === "speed") return void setSpeed(msg.x);
     if (!rt) throw bad("nothing is loaded");
     rt.orch.inject(msg.input);
   };

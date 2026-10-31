@@ -13,6 +13,7 @@
     "idle": "Ready",
     "starting": "Starting",
     "running": "Running",
+    "paused": "Paused",
     "stopped": "Stopped",
     "done": "Finished",
     "error": "Could not run",

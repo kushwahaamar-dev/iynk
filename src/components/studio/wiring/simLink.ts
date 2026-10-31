@@ -5,11 +5,11 @@ import type { OpImpact } from "@/project/opImpact";
 import type { SimHost } from "@/sim-host/host";
 import { buildSimNetlist } from "@/sim-host";
 import type { SimEv } from "@/sim-host/protocol";
-import type { ProgramImage, SimDiagnostic, SimRunOptions } from "@/sim/engine";
+import type { ProgramImage, SimDiagnostic, SimRunOptions, StepUnit } from "@/sim/engine";
 import type { DocStore } from "@/studio/stores/doc";
 import type { Diagnostic, LimitInfo, RunStore } from "@/studio/stores/run";
 
-export type SimHostLike = Pick<SimHost, "load" | "control" | "input" | "onEvent">;
+export type SimHostLike = Pick<SimHost, "load" | "control" | "input" | "onEvent" | "pause" | "resume" | "step" | "setSpeed">;
 
 export interface SimLinkDeps {
   doc: DocStore;
@@ -17,14 +17,18 @@ export interface SimLinkDeps {
   host: SimHostLike;
   impact: (ops: Op[]) => OpImpact;
   reg?: Pick<PartRegistry, "get">;
-  /** Wall clock in milliseconds, for the "slower than real time" note. */
-  wallMs?: () => number;
 }
 
 export interface SimLink {
   run(): Promise<void>;
   stop(): void;
   reset(): void;
+  pause(): void;
+  resume(): void;
+  /** Runs `n` units of one kind from a paused run; the host refuses while running. */
+  step(unit: StepUnit, n: number): void;
+  /** Simulated seconds per wall second, or 0 for as fast as possible. */
+  setSpeed(x: number): void;
   restart(): Promise<void>;
   sendSerial(text: string): void;
   press(c: string, pin: string, down: boolean): void;
@@ -32,8 +36,6 @@ export interface SimLink {
 }
 
 const LIMITS = { statements: 400_000, events: 100_000, outputBytes: 1024 * 1024 };
-/** How far the simulation may trail the wall clock before the run bar says so. */
-const BEHIND_MS = 500;
 const WORKER_REPLACED = ["wall-stall", "cancel-unanswered"];
 
 const failure = (id: string, text: string): Diagnostic => ({ id, severity: "error", text });
@@ -63,17 +65,19 @@ function programOf(state: Project): ProgramImage | null {
   return entry === undefined || files.length === 0 ? null : { kind: "source", language: firmware.language, files, entry };
 }
 
-export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), wallMs = () => performance.now() }: SimLinkDeps): SimLink {
+export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: SimLinkDeps): SimLink {
   // A newer start, stop or reset makes the answers of an older start irrelevant.
   let generation = 0;
-  let runningFrom: number | null = null;
 
   function onSimEvent(ev: SimEv) {
     if (run.getState().phase === "idle") return;
     if (ev.t === "frame") {
       run.apply({ t: "frame", frame: { tNs: ev.at, pins: ev.pins, parts: ev.parts } });
       for (const chunk of ev.serial) run.apply({ t: "serial", tNs: chunk.at, kind: "out", text: chunk.text });
-      if (runningFrom !== null) run.apply({ t: "behind", behind: wallMs() - runningFrom - ev.at / 1e6 > BEHIND_MS });
+      return;
+    }
+    if (ev.t === "speed.report") {
+      run.apply({ t: "behind", behind: ev.behind, achieved: ev.achieved });
       return;
     }
     if (ev.t === "event") {
@@ -81,9 +85,8 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), wallM
       run.apply({ t: "diagnostics", append: true, diagnostics: [{ id: ev.event.kind, severity, text: ev.event.message }] });
       return;
     }
-    runningFrom = ev.state === "running" ? wallMs() - ev.at / 1e6 : null;
     if (ev.state === "running") run.apply({ t: "phase", phase: "running" });
-    else if (ev.state === "paused") run.apply({ t: "phase", phase: "stopped" });
+    else if (ev.state === "paused") run.apply({ t: "phase", phase: "paused" });
     else if (ev.state === "done") run.apply({ t: "phase", phase: "done" });
     else if (ev.state === "halted") run.apply({ t: "phase", phase: "error" });
     else if (ev.state === "limit") {
@@ -101,7 +104,6 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), wallM
 
   async function start(): Promise<void> {
     const mine = ++generation;
-    runningFrom = null;
     run.apply({ t: "phase", phase: "starting" });
     const fail = (diagnostics: Diagnostic[]) => {
       run.apply({ t: "diagnostics", diagnostics });
@@ -113,7 +115,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), wallM
     if (blocked.length > 0) return fail(blocked.map(diagnosticOf));
     const program = programOf(state);
     if (!program) return fail([failure("no-firmware", "The project has no code to run.")]);
-    const opts: SimRunOptions = { seed: state.simulation.seed, speed: 1, limits: LIMITS, tier: "T1" };
+    const opts: SimRunOptions = { seed: state.simulation.seed, speed: run.getState().speed, limits: LIMITS, tier: "T1" };
     try {
       const loaded = await host.load(net, opts, program);
       if (mine !== generation) return;
@@ -137,7 +139,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), wallM
     restart: start,
     stop() {
       const { phase } = run.getState();
-      if (phase !== "starting" && phase !== "running") return;
+      if (phase !== "starting" && phase !== "running" && phase !== "paused") return;
       generation++;
       run.apply({ t: "phase", phase: "stopped" });
       quiet("stop");
@@ -146,6 +148,19 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), wallM
       generation++;
       run.reset();
       quiet("reset");
+    },
+    pause() {
+      if (run.getState().phase === "running") void host.pause().catch(() => undefined);
+    },
+    resume() {
+      if (run.getState().phase === "paused") void host.resume().catch(() => undefined);
+    },
+    step(unit, n) {
+      if (run.getState().phase === "paused") void host.step(unit, n).catch(() => undefined);
+    },
+    setSpeed(x) {
+      run.apply({ t: "speed", speed: x });
+      if (run.getState().phase !== "idle") void host.setSpeed(x).catch(() => undefined);
     },
     sendSerial(text) {
       if (run.getState().phase !== "running") return;

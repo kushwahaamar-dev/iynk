@@ -388,7 +388,7 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
         serial: (
           <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <RunBar run={run} link={link} messages={messages.studioRun} lang={lang} />
+            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} lang={lang} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
           </div>
         ),

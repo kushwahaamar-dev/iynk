@@ -41,6 +41,18 @@ function fakeHost() {
     async input(i) {
       calls.push(`input:${i.kind}`);
     },
+    async pause() {
+      calls.push("pause");
+    },
+    async resume() {
+      calls.push("resume");
+    },
+    async step(unit, n) {
+      calls.push(`step:${unit}:${n}`);
+    },
+    async setSpeed(x) {
+      calls.push(`speed:${x}`);
+    },
     onEvent(fn) {
       listeners.push(fn);
       return () => void listeners.splice(listeners.indexOf(fn), 1);
@@ -204,19 +216,43 @@ describe("simLink", () => {
     expect(calls).toContain("control:reset");
   });
 
-  it("says when the simulation trails the wall clock", async () => {
-    let wall = 0;
-    const doc = createRecordingDoc(blinkSession());
-    const run = createRunStore();
-    const { host, emit } = fakeHost();
-    const link = linkSim({ doc, run, host, impact: classifyImpact, wallMs: () => wall });
+  it("shows what the host reports about keeping up", async () => {
+    const { link, run, emit } = rig();
     await link.run();
     emit(stateEv("running"));
-    wall = 2000;
-    emit({ t: "frame", run: 1, at: 100_000_000, pins: {}, parts: [], serial: [] });
-    expect(run.getState().behindReal).toBe(true);
-    emit({ t: "frame", run: 1, at: 2_000_000_000, pins: {}, parts: [], serial: [] });
+    emit({ t: "speed.report", run: 1, achieved: 20, behind: true });
+    expect(run.getState()).toMatchObject({ behindReal: true, achievedSpeed: 20 });
+    emit({ t: "speed.report", run: 1, achieved: 100, behind: false });
     expect(run.getState().behindReal).toBe(false);
+    emit({ t: "speed.report", run: 1, achieved: 20, behind: true });
+    emit(stateEv("paused"));
+    expect(run.getState()).toMatchObject({ phase: "paused", behindReal: false });
+  });
+
+  it("pauses, steps and resumes only in the phase that allows it", async () => {
+    const { link, run, calls, emit } = rig();
+    await link.run();
+    emit(stateEv("running"));
+    link.step("statement", 1);
+    link.pause();
+    emit(stateEv("paused"));
+    link.pause();
+    link.step("statement", 1);
+    link.resume();
+    expect(calls.filter((c) => /^(pause|resume|step)/.test(c))).toEqual(["pause", "step:statement:1", "resume"]);
+    expect(run.getState().phase).toBe("paused");
+  });
+
+  it("keeps the chosen speed for the next run and tells the host", async () => {
+    const { link, run, calls, host } = rig();
+    link.setSpeed(10);
+    expect(calls).not.toContain("speed:10");
+    await link.run();
+    expect((host.loads[0] as { opts: { speed: number } }).opts.speed).toBe(10);
+    link.setSpeed(0);
+    expect(calls).toContain("speed:0");
+    link.reset();
+    expect(run.getState().speed).toBe(0);
   });
 
   it("stops listening on dispose", async () => {

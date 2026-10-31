@@ -13,6 +13,7 @@
     "idle": "就绪",
     "starting": "正在启动",
     "running": "运行中",
+    "paused": "已暂停",
     "stopped": "已停止",
     "done": "已结束",
     "error": "无法运行",

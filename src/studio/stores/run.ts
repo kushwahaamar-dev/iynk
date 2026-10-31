@@ -1,7 +1,7 @@
 import { createStore } from "./select.ts";
 import type { Store } from "./select.ts";
 
-export type RunPhase = "idle" | "starting" | "running" | "stopped" | "done" | "error" | "limit" | "killed";
+export type RunPhase = "idle" | "starting" | "running" | "paused" | "stopped" | "done" | "error" | "limit" | "killed";
 
 export type LimitInfo = { which: "statements" | "operations" | "memory" | "time"; text: string };
 
@@ -22,6 +22,9 @@ export type RunView = {
   serialDropped: number;
   diagnostics: Diagnostic[];
   limit: LimitInfo | null;
+  /** The speed asked for, in simulated seconds per wall second; 0 is as fast as possible. It outlives a run. */
+  speed: number;
+  achievedSpeed: number;
   behindReal: boolean;
   startedAtMs: number | null;
   runningAtMs: number | null;
@@ -32,7 +35,8 @@ export type RunMessage =
   | { t: "frame"; frame: PartStateFrame }
   | { t: "serial"; tNs: number; kind: SerialEntry["kind"]; text: string }
   | { t: "diagnostics"; diagnostics: Diagnostic[]; append?: boolean }
-  | { t: "behind"; behind: boolean };
+  | { t: "behind"; behind: boolean; achieved?: number }
+  | { t: "speed"; speed: number };
 
 export interface RunStore extends Store<RunView> {
   apply(msg: RunMessage): void;
@@ -60,6 +64,8 @@ const initial = (): RunView => ({
   serialDropped: 0,
   diagnostics: [],
   limit: null,
+  speed: 1,
+  achievedSpeed: 0,
   behindReal: false,
   startedAtMs: null,
   runningAtMs: null,
@@ -107,7 +113,7 @@ export function createRunStore(clock: () => number = () => performance.now()): R
             if (msg.phase === "starting") {
               open = null;
               held = null;
-              return { ...initial(), phase: "starting", startedAtMs: clock() };
+              return { ...initial(), speed: s.speed, phase: "starting", startedAtMs: clock() };
             }
             const flushed = held;
             held = null;
@@ -137,8 +143,14 @@ export function createRunStore(clock: () => number = () => performance.now()): R
         case "diagnostics":
           store.setState((s) => ({ ...s, diagnostics: msg.append ? [...s.diagnostics, ...msg.diagnostics] : msg.diagnostics }));
           return;
-        case "behind":
-          if (store.getState().behindReal !== msg.behind) patch({ behindReal: msg.behind });
+        case "behind": {
+          const { behindReal, achievedSpeed } = store.getState();
+          const achieved = msg.achieved ?? 0;
+          if (behindReal !== msg.behind || achievedSpeed !== achieved) patch({ behindReal: msg.behind, achievedSpeed: achieved });
+          return;
+        }
+        case "speed":
+          patch({ speed: msg.speed });
           return;
       }
     },
@@ -152,7 +164,7 @@ export function createRunStore(clock: () => number = () => performance.now()): R
     },
     reset() {
       open = null;
-      store.setState(initial());
+      store.setState((s) => ({ ...initial(), speed: s.speed }));
     },
   };
 }

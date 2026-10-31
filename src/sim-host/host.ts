@@ -31,9 +31,23 @@ export interface SimHostStats {
   lastState: SimRunState | null;
 }
 
+export interface SimHostStatus {
+  state: SimRunState | null;
+  /** The speed asked for; 0 is as fast as the slice budget allows. */
+  speed: number;
+  /** What the last second of the run achieved, in simulated seconds per wall second. */
+  achievedSpeed: number;
+  behindReal: boolean;
+}
+
 export interface SimHost {
   load(net: SimNetlist, opts: SimRunOptions, program: ProgramImage): Promise<{ diagnostics: SimDiagnostic[]; runId: number }>;
   control(op: ControlOp): Promise<void>;
+  pause(): Promise<void>;
+  resume(): Promise<void>;
+  /** Changes the pace of the run; it applies at the next resume when the run is paused. */
+  setSpeed(x: number): Promise<void>;
+  /** Only a paused or idle run steps; a running one refuses with `not_paused`. */
   step(unit: StepUnit, n: number): Promise<void>;
   input(i: HostInput): Promise<void>;
   check(job: CheckJob, budgetMs?: number): Promise<CheckOutcome>;
@@ -45,6 +59,7 @@ export interface SimHost {
   restart(): Promise<void>;
   readonly state: "starting" | "ready" | "dead";
   readonly stats: Readonly<SimHostStats>;
+  readonly status: Readonly<SimHostStatus>;
 }
 
 export interface SimHostOptions {
@@ -63,6 +78,7 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     });
   const listeners = new Set<(e: SimEv) => void>();
   const stats: SimHostStats = { runs: 0, restarts: 0, lastState: null };
+  const pace = { achievedSpeed: 0, behindReal: false };
   let port = open();
   let runId = 0;
   let loaded = false;
@@ -142,6 +158,10 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
         stats.lastState = ev.state;
         lastAt = ev.at;
         setRunning(ev.state === "running");
+        if (ev.state !== "running") Object.assign(pace, { achievedSpeed: 0, behindReal: false });
+      } else if (ev.t === "speed.report") {
+        Object.assign(pace, { achievedSpeed: ev.achieved, behindReal: ev.behind });
+        watchdog.beat();
       } else if (running) {
         watchdog.beat();
       }
@@ -155,11 +175,12 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     return runId;
   }
 
-  return {
+  const host: SimHost = {
     async load(net, opts, program) {
       runId++;
       stats.runs++;
       stats.lastState = null;
+      Object.assign(pace, { achievedSpeed: 0, behindReal: false });
       loaded = true;
       setRunning(false);
       const ack = await port.call({ t: "load", run: runId, net, opts, program });
@@ -178,6 +199,13 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
       } finally {
         if (answerable && before === recoveries) watchdog.disarm();
       }
+    },
+    pause: () => host.control("pause"),
+    resume: () => host.control("run"),
+    async setSpeed(x) {
+      const run = current();
+      await port.call({ t: "speed", run, x });
+      if (lastLoad) lastLoad = { ...lastLoad, opts: { ...lastLoad.opts, speed: x } };
     },
     async step(unit, n) {
       await port.call({ t: "step", run: current(), unit, n });
@@ -208,5 +236,9 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
       return port.state;
     },
     stats,
+    get status() {
+      return { state: stats.lastState, speed: lastLoad?.opts.speed ?? 0, ...pace };
+    },
   };
+  return host;
 }
