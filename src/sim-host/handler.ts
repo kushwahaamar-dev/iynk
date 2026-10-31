@@ -12,6 +12,7 @@ import type {
   SimDiagnostic,
   SimNetlist,
   SimRunOptions,
+  InputEntry,
   SliceBudget,
   SliceResult,
 } from "@/sim/engine";
@@ -143,6 +144,8 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   let rt: Runtime | null = null;
   let loaded: Extract<SimReq, { t: "load" }> | null = null;
   let pumpGen = 0;
+  let horizon: SimTime | null = null;
+  let stamped: InputEntry[] = [];
   let emit: Emit = () => undefined;
   const monitor = deps.faults && createFaultMonitor(deps.faults.rules());
 
@@ -311,10 +314,33 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     return true;
   }
 
-  function targetOf(r: Runtime): SimTime {
+  function paceTarget(r: Runtime): SimTime {
     const { endNs } = r.opts;
     if (speed <= 0) return endNs ?? Infinity;
     return r.anchor.sim + Math.floor((deps.wallMs() - r.anchor.wall) * NS_PER_MS * speed);
+  }
+
+  /** A room run stops at the horizon and just before the next stamped input, so that input is the first thing at its instant. */
+  function targetOf(r: Runtime): SimTime {
+    const next = stamped[0];
+    return Math.min(paceTarget(r), horizon ?? Infinity, next ? next.at - 1 : Infinity);
+  }
+
+  function applyDueInputs(r: Runtime) {
+    while (stamped.length > 0 && r.orch.now >= stamped[0].at - 1) {
+      const { kind, target, value } = stamped.shift() as InputEntry;
+      r.orch.inject({ kind, target, value });
+    }
+  }
+
+  const atHorizon = (r: Runtime): boolean => horizon !== null && r.orch.now >= horizon;
+
+  /** Moves the horizon; the pump sleeps while it sits on it and wakes here. */
+  function setHorizon(r: Runtime | null, tNs: SimTime | null) {
+    horizon = tNs;
+    if (!r) return;
+    if (atHorizon(r)) emit({ t: "reached", run, at: r.orch.now });
+    else if (state === "running") pump(r, ++pumpGen);
   }
 
   /** Tells the host how much of the requested speed the last second achieved, a few times a second. */
@@ -361,7 +387,12 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
         pauseAt(r, pause);
         return;
       }
+      applyDueInputs(r);
       reportSpeed(r);
+      if (atHorizon(r)) {
+        emit({ t: "reached", run, at: r.orch.now });
+        return;
+      }
       pump(r, gen);
     });
   }
@@ -542,6 +573,8 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       stopPump();
       run = msg.run;
       speed = msg.opts.speed;
+      horizon = null;
+      stamped = [];
       return build(msg);
     }
     if (msg.run !== run) return { ignored: true } satisfies IgnoredReply;
@@ -551,6 +584,13 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (msg.t === "debug") return debugOp(msg);
     if (!rt) throw bad("nothing is loaded");
     if (msg.t === "input") return void rt.orch.inject(msg.input);
+    if (msg.t === "horizon") return void setHorizon(rt, msg.tNs);
+    if (msg.t === "input.stamped") {
+      stamped.push(msg.entry);
+      stamped.sort((a, b) => a.at - b.at || a.seq - b.seq);
+      applyDueInputs(rt);
+      return void (state === "running" && pump(rt, ++pumpGen));
+    }
     if (msg.t === "i2c-scan") return i2cScan(rt, msg);
     return probe(rt, msg);
   };

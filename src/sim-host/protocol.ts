@@ -2,6 +2,7 @@ import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import type { SimTime } from "@/sim/core/clock";
 import type {
   HostInput,
+  InputEntry,
   PartState,
   ProgramImage,
   SimDiagnostic,
@@ -48,6 +49,10 @@ export type SimReq =
   | { t: "probe.sub"; run: number; id: string; from: SimTime }
   /** `runtime` is the id of the engine the op is for. `inspect`, `watch` and `unwatch` answer `not-yet`. */
   | { t: "debug"; run: number; runtime: string; op: DebugOp }
+  /** The run never simulates past `tNs`, and a `reached` event follows once it is there; null lifts the clamp. */
+  | { t: "horizon"; run: number; tNs: SimTime | null }
+  /** A room input stamped by the runner. It is injected once the run has reached the instant just before `at`, so it is the first thing at `at`. */
+  | { t: "input.stamped"; run: number; entry: InputEntry }
   /** Answered only when the run is at `tNs`. */
   | { t: "hashes.request"; run: number; tNs: SimTime }
   /** Probes 0x08 to 0x77 on a restored copy of the run; the run itself is not stepped. Answered with `ScannedReply`. */
@@ -68,6 +73,8 @@ export type SimEv =
   /** What the last second of a running run achieved, and whether that is short of the speed asked for. */
   | { t: "probe.reading"; run: number; id: string; reading: Reading }
   | { t: "probe.chunk"; run: number; chunk: TraceChunk }
+  /** The run is sitting on the horizon it was given, at `at`. */
+  | { t: "reached"; run: number; at: SimTime }
   | { t: "speed.report"; run: number; achieved: number; behind: boolean }
   | {
       t: "event";

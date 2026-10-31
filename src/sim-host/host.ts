@@ -1,7 +1,7 @@
 import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
 import type { SimTime } from "@/sim/core/clock";
-import type { HostInput, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
+import type { HostInput, InputEntry, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
 import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
@@ -63,6 +63,10 @@ export interface SimHost {
   /** Only a paused or idle run steps; a running one refuses with `not_paused`. */
   step(unit: StepUnit, n: number): Promise<void>;
   input(i: HostInput): Promise<void>;
+  /** Room runs: the run never simulates past `t`, and this resolves once it is there. `null` lifts the clamp. */
+  horizon(t: SimTime | null): Promise<void>;
+  /** Room runs: a runner-stamped input, injected once the run is at the instant just before `e.at`. */
+  applyStamped(e: InputEntry): Promise<void>;
   check(job: CheckJob, budgetMs?: number): Promise<CheckOutcome>;
   /**
    * Runs the fault rules over `net` and the code in `sources`. A newer call makes an older one that is still waiting
@@ -271,6 +275,26 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     },
     async input(input) {
       await port.call({ t: "input", run: current(), input });
+    },
+    async horizon(t) {
+      const run = current();
+      if (t === null) {
+        await port.call({ t: "horizon", run, tNs: null });
+        return;
+      }
+      const reached = new Promise<void>((resolve) => {
+        const off = listenFor((ev) => {
+          if ((ev.t === "reached" && ev.at >= t) || (ev.t === "state" && ev.state !== "running")) {
+            off();
+            resolve();
+          }
+        });
+      });
+      await port.call({ t: "horizon", run, tNs: t });
+      await reached;
+    },
+    async applyStamped(entry) {
+      await port.call({ t: "input.stamped", run: current(), entry });
     },
     async check(job, budgetMs) {
       return (await port.call({ t: "check", job, budgetMs })).result as CheckOutcome;
