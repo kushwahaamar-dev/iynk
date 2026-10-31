@@ -12,8 +12,6 @@ import { buildBoardDescriptor } from "@/parts/testing/board-gen";
 
 /** Boards whose component descriptor is not written yet. A board task removes its own name when it adds the descriptor. */
 const NOT_YET_BOUND: readonly BoardId[] = [
-  "nano",
-  "uno-r4",
   "esp32-devkitc",
   "esp32-s3-devkitc-1",
   "nodemcu",

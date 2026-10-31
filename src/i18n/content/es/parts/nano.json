@@ -1,0 +1,17 @@
+{
+  "description": "Una placa de 5 V para protoboard con ATmega328P, chip USB-serie FT232RNL, 14 pines digitales, 8 entradas analógicas y un conector ICSP.",
+  "summary": "La placa ejecuta el sketch en el intérprete de iynk. Los pines, el PWM, el I2C, el puerto serie y los tiempos siguen el perfil de placa nano. No es el chip ATmega328P.",
+  "layer": "Entorno de ejecución del firmware.",
+  "models": {
+    "1": "Subconjunto de Arduino C++ ejecutado por el intérprete con el mapa de pines del Nano.",
+    "2": "E/S digital en D0 a D13 y A0 a A5, PWM en D3, D5, D6, D9, D10 y D11, interrupciones en D2 y D3.",
+    "3": "Lecturas analógicas de 10 bits con referencia de 5 V en A0 a A7, maestro I2C en SDA y SCL, salida serie y el LED L en D13."
+  },
+  "not": {
+    "1": "El núcleo AVR, los temporizadores, el bootloader y el comportamiento de la flash.",
+    "2": "El chip USB-serie FT232RNL y el circuito de reinicio automático.",
+    "3": "Los reguladores de 5 V y 3,3 V, los límites de VIN y el nivel de brown-out.",
+    "4": "El desgaste de la EEPROM y el conector ICSP."
+  },
+  "gap": "A6 y A7 son solo entradas analógicas: digitalRead y pinMode no funcionan en ellos. Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

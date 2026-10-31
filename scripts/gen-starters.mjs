@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Writes the ten Studio starters (T-B4-16) from the converted catalogue.
+// Writes the ten Studio starters (T-B4-16) and one `blink` starter per other board (T-B5-01 on) from the converted catalogue.
 //
 //   node scripts/gen-starters.mjs [--check]
 //
@@ -32,6 +32,12 @@ const FROM_CORPUS = {
   board: 'prj_uno-r3-board',
   light: 'prj_uno-r3-light',
   distance: 'prj_uno-r3-distance',
+};
+
+// Board id -> converted `blink` lesson. These are the starters of the boards other than the Uno, one per board.
+const BOARD_STARTERS = {
+  nano: 'prj_nano-blink',
+  'uno-r4': 'prj_uno-r4-blink',
 };
 
 const ECHO = `void setup() {
@@ -71,6 +77,12 @@ function serialEcho() {
 export function build() {
   const starters = { 'serial-echo': serialEcho() };
   for (const [id, source] of Object.entries(FROM_CORPUS)) starters[id] = fromCorpus(source);
+  for (const [board, source] of Object.entries(BOARD_STARTERS)) {
+    const project = fromCorpus(source);
+    project.meta.kind = 'template';
+    project.provenance.origin = { kind: 'template', template: `${board}-blink` };
+    starters[board] = project;
+  }
   return Object.fromEntries(Object.entries(starters).map(([id, project]) => [id, `${toCanonicalText(project)}\n`]));
 }
 

@@ -121,11 +121,13 @@ describe("buildPartIndex", () => {
     expect(built.map((e) => e.ref).sort()).toEqual([
       "core.buzzer-piezo",
       "core.led-5mm",
+      "core.nano",
       "core.potentiometer-10k",
       "core.push-button-6mm",
       "core.resistor",
       "core.ssd1306",
       "core.uno-r3",
+      "core.uno-r4",
     ]);
   });
 

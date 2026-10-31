@@ -1,0 +1,18 @@
+{
+  "description": "Una placa de desarrollo de 5 V con un Renesas RA4M1 Cortex-M4 a 48 MHz, en versión Minima y WiFi, con la disposición de cabeceras del UNO, ADC de 14 bits y DAC en A0.",
+  "summary": "La placa ejecuta el sketch en el intérprete de iynk. Los pines, el PWM, el I2C, el puerto serie y los tiempos siguen el perfil de placa uno-r4. No es el chip Renesas RA4M1.",
+  "layer": "Entorno de ejecución del firmware.",
+  "variant": "Variante",
+  "models": {
+    "1": "Subconjunto de Arduino C++ ejecutado por el intérprete con el mapa de pines del UNO R4, int de 32 bits y double de 64 bits.",
+    "2": "E/S digital en D0 a D13 y A0 a A5, PWM en D3, D5, D6, D9, D10 y D11, interrupciones en D2 y D3.",
+    "3": "Lecturas analógicas de hasta 14 bits con analogReadResolution, maestro I2C en SDA y SCL, salida serie y el LED L en D13."
+  },
+  "not": {
+    "1": "Los periféricos de Renesas aparte de E/S digital, I2C y serie.",
+    "2": "La biblioteca de la matriz LED de 12x8 y la radio ESP32-S3 de la versión WiFi.",
+    "3": "El DAC de A0 como valor de salida analógico.",
+    "4": "El límite de 8 mA por pin no se aplica."
+  },
+  "gap": "La versión WiFi se modela como la Minima: la matriz LED y la radio no hacen nada. Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}
