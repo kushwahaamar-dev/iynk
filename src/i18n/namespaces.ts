@@ -1,7 +1,7 @@
 // UI string namespaces (D5). Each lives in src/i18n/messages/<lang>/<ns>.json,
 // and the English file defines the keys every other language must have.
 
-export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "fidelity", "instruments", "run", "faults"] as const;
+export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "fidelity", "instruments", "run", "faults", "parteditor", "partpack", "partinfo"] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
 
@@ -29,6 +29,9 @@ export type Messages = {
   instruments: typeof import("./messages/en/instruments.json");
   run: typeof import("./messages/en/run.json");
   faults: typeof import("./messages/en/faults.json");
+  parteditor: typeof import("./messages/en/parteditor.json");
+  partpack: typeof import("./messages/en/partpack.json");
+  partinfo: typeof import("./messages/en/partinfo.json");
 };
 
 /** The namespaces the Studio owns; its page passes all of them down together. */

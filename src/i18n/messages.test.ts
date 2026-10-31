@@ -1,9 +1,9 @@
 // @vitest-environment node
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, test } from "vitest";
+import { describe, expect, expectTypeOf, test } from "vitest";
 import { LOCALES } from "./config";
-import { NAMESPACES } from "./namespaces";
+import { NAMESPACES, type Messages, type Namespace } from "./namespaces";
 import { messageAt, messageKeys } from "./translate";
 
 const root = join(process.cwd(), "src/i18n/messages");
@@ -49,6 +49,11 @@ test("the common strings are translated, not copied from English", () => {
     expect(leaf(translated, "notFound.title"), locale).not.toBe(leaf(english, "notFound.title"));
     expect(leaf(translated, "client.figure.loading"), locale).not.toBe(leaf(english, "client.figure.loading"));
   }
+});
+
+test("the Messages type has exactly the listed namespaces", () => {
+  expectTypeOf<keyof Messages>().toEqualTypeOf<Namespace>();
+  expect(new Set(NAMESPACES).size).toBe(NAMESPACES.length);
 });
 
 test("a removed namespace is gone", () => {
