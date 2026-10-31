@@ -768,7 +768,13 @@ const WireClass: LibClass = {
   headers: ['Wire.h'],
   create: () => ({ ...TWI, buf: [], rx: [] }),
   methods: {
-    begin: { ret: 'void', fn: () => undefined },
+    begin: {
+      ret: 'void',
+      fn: (rt, _self, [sda, scl]) => {
+        if (sda !== undefined && scl === undefined) throw notModelled('Wire.begin(address) as a slave', 'library-method-not-modelled', null);
+        rt.world.bindI2c(sda, scl);
+      },
+    },
     setClock: {
       ret: 'void',
       fn: (rt, _self, [hz]) => {

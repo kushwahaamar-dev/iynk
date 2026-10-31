@@ -168,6 +168,8 @@ export class World {
   });
   /** Who answers a library call: `library` devices the sketch attached, or only the devices wired in the netlist. */
   deviceSource: 'library' | 'netlist' = 'library';
+  /** Set by the netlist binding: `Wire.begin` calls it with the pins the sketch names. */
+  i2cBinder: ((sda: number, scl: number) => void) | null = null;
   /** Pending interrupt handlers, run by the interpreter between statements. */
   readonly irqQueue: Array<() => void> = [];
   private irqs: IrqHandler[] = [];
@@ -483,9 +485,15 @@ export class World {
 
   addDevice(dev: I2CDevice): void {
     this.i2c.set(dev.address, dev);
-    this.bus.attachLegacy(dev);
+    if (this.deviceSource === 'library') this.bus.attachLegacy(dev);
     dev.attach?.(this);
     this.touch();
+  }
+
+  /** `Wire.begin()` names no pins, so the board's own I²C pins stand in. */
+  bindI2c(sda?: number, scl?: number): void {
+    const pins = sda !== undefined && scl !== undefined ? { sda, scl } : this.profile.i2c;
+    if (pins) this.i2cBinder?.(pins.sda, pins.scl);
   }
 
   /** One I²C transaction on the bus model. The caller advances virtual time by `costUs`. */

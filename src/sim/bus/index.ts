@@ -32,7 +32,7 @@ export type StubPolicy = "fail" | "warn";
 export interface BusEvent {
   atNs: SimTime;
   bus: BusId;
-  kind: "nack" | "stuck-low" | "no-pullup" | "rise-time" | "not-modelled" | "spi-mode" | "baud-mismatch" | "address-conflict" | "expr-nan" | "part-not-powered" | "open-connection";
+  kind: "nack" | "stuck-low" | "no-pullup" | "rise-time" | "not-modelled" | "spi-mode" | "baud-mismatch" | "address-conflict" | "expr-nan" | "part-not-powered" | "open-connection" | "swapped-pins";
   detail: string;
 }
 

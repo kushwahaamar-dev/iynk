@@ -2,6 +2,7 @@ import type { SimTime } from "../core/clock.ts";
 import { type BusEvent, type BusOp, type BusResult, type NotModelled, type StubPolicy } from "../bus/index.ts";
 import { type I2cBusModel, type I2cDevice, createI2cBus } from "../bus/i2c.ts";
 import { createSpiBus } from "../bus/spi.ts";
+import type { I2cBinding } from "./i2c-bind.ts";
 
 const MIN_I2C_HZ = 1_000;
 const MAX_I2C_HZ = 1_000_000;
@@ -32,6 +33,8 @@ export interface I2cTransfer {
 
 export interface InterpBus {
   attachLegacy(dev: LegacyI2cDevice): void;
+  /** Rebuilds the I2C bus on the nets of a netlist binding, with exactly these devices on it. */
+  bindNetlist(binding: I2cBinding, devices: I2cDevice[]): void;
   /** Applies a new I2C clock, clamped to 1 kHz to 1 MHz, and returns the speed in effect. */
   setClock(hz: number): number;
   /** One I2C transaction: write `write` to `addr7`, then read `readN` bytes after a repeated start. */
@@ -78,9 +81,14 @@ export function createInterpBus(o: InterpBusOptions = {}): InterpBus {
   const attached: I2cDevice[] = [];
   let speedHz = DEFAULT_I2C_HZ;
   let i2cModel: I2cBusModel;
+  let wiring: Pick<I2cBinding, "sdaNet" | "sclNet" | "pullup"> = { sdaNet: "sda", sclNet: "scl", pullup: { kind: "assumed" } };
 
   const build = (hz: number): void => {
-    const made = createI2cBus({ id: "i2c0", sda: "sda", scl: "scl", speedHz: hz }, busOptions);
+    const { pullup } = wiring;
+    const made = createI2cBus(
+      { id: "i2c0", sda: wiring.sdaNet, scl: wiring.sclNet, speedHz: hz, pullupOhms: "ohms" in pullup ? pullup.ohms : undefined },
+      { ...busOptions, pullup: pullup.kind === "none" ? "none" : "assumed" },
+    );
     if (!made.ok) throw new Error(`i2c bus refused ${hz} Hz: ${made.error}`);
     i2cModel = made.bus;
     for (const dev of attached) i2cModel.attach(dev);
@@ -104,6 +112,12 @@ export function createInterpBus(o: InterpBusOptions = {}): InterpBus {
       const adapter = adaptLegacy(dev, () => readN);
       const res = i2cModel.attach(adapter);
       if (res.ok) attached.push(adapter);
+    },
+
+    bindNetlist(binding, devices) {
+      wiring = binding;
+      attached.splice(0, attached.length, ...devices);
+      build(Math.min(MAX_I2C_HZ, Math.max(MIN_I2C_HZ, binding.speedHz)));
     },
 
     setClock(hz) {
