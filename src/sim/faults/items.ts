@@ -55,7 +55,7 @@ export const OBSERVABLE_NOUNS: readonly string[] = [
 
 const GUIDED_KEY = "x-iynk-guided";
 const MIN_TITLE_WORD = 5;
-const SHARED_RUN = 4;
+export const SHARED_RUN = 4;
 const LADDER_LEVELS = 3;
 const SYSTEM_AUTHOR = { actor: "iynk", kind: "system" } as const;
 
@@ -75,7 +75,7 @@ const TITLE_STOP_WORDS: ReadonlySet<string> = new Set([
   "through",
 ]);
 
-const wordsOf = (text: string): string[] =>
+export const wordsOf = (text: string): string[] =>
   text.toLowerCase().match(/[a-z0-9]+/g) ?? [];
 
 const escapeRegExp = (text: string): string =>
