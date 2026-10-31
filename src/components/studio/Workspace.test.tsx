@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cryptoRandom } from "@/core/ids";
 import { writeIynk } from "@/export/iynk";
+import fidelity from "@/i18n/messages/en/fidelity.json";
 import instruments from "@/i18n/messages/en/instruments.json";
 import studio from "@/i18n/messages/en/studio.json";
 import studioCode from "@/i18n/messages/en/studioCode.json";
@@ -23,7 +24,7 @@ import { LOCAL_ACTOR, loadStarter } from "@/studio/templates";
 import { createServices, ServicesProvider, type Services } from "./wiring/services";
 import { Workspace } from "./Workspace";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, instruments } as StudioMessages;
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments } as StudioMessages;
 const regions = studio.layout.regions;
 
 function fakeSim() {

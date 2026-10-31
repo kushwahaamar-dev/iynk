@@ -11,6 +11,8 @@ import { buildPartIndex } from "@/parts/search";
 import { builtinRegistry } from "@/parts/builtin";
 import { fallbackSpec } from "@/parts/fallback";
 import { classifyImpact } from "@/project/opImpact";
+import { loadRegistry } from "@/sim/registry/entries";
+import { staticTier } from "@/studio/fidelity/static-tier";
 import { createArtProvider } from "@/studio/art/figure-art";
 import { STUDIO_KEYS, installKeymap } from "@/studio/commands/keymap";
 import { registerHistoryCommands } from "@/studio/commands/history";
@@ -42,6 +44,7 @@ import { CanvasView } from "./CanvasView";
 import { CodeDock } from "./CodeDock";
 import { Inspector } from "./Inspector";
 import { LiveRegion } from "./LiveRegion";
+import { InstrumentDock } from "./InstrumentDock";
 import { ModelsPanel } from "./ModelsPanel";
 import { Outline } from "./Outline";
 import { Palette } from "./Palette";
@@ -52,6 +55,7 @@ import { RunBar } from "./RunBar";
 import { SerialPane } from "./SerialPane";
 import { StatusLine } from "./StatusLine";
 import { StudioSettings, useReducedMotion } from "./StudioSettings";
+import { TierChips, TierSummaryChip } from "./TierChips";
 import { TopBar } from "./TopBar";
 import { installDebugHook } from "./wiring/debugHook";
 import { useOpenProject, type OpenStatus } from "./wiring/openProject";
@@ -67,6 +71,7 @@ export interface WorkspaceProps {
 }
 
 const registry = builtinRegistry();
+const fidelityEntries = loadRegistry();
 const EDITABLE = ".cm-editor, input, textarea, select, [contenteditable='true']";
 const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
 
@@ -211,6 +216,19 @@ function useProblems(doc: DocStore, run: RunStore, diagnostics: Diagnostic[]): P
   return useMemo(() => collectProblems({ diagnostics, run: { limit, frame }, flags }), [diagnostics, limit, frame, flags]);
 }
 
+function FidelityChips({ doc, ui, messages, lang }: { doc: DocStore; ui: UiStore; messages: StudioMessages; lang: Locale }) {
+  const state = useDeferredValue(useStoreSelector(doc, (s) => s.state));
+  const fidelity = useMemo(() => staticTier(state, fidelityEntries), [state]);
+  const t = useMemo(() => createTranslator(lang, messages.fidelity, `${lang}/fidelity`), [lang, messages.fidelity]);
+  if (fidelity.layers.length === 0) return null;
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2" data-testid="tier-chips">
+      <TierSummaryChip fidelity={fidelity} t={t} />
+      <TierChips fidelity={fidelity} t={t} onOpenLayer={() => ui.set("rightRail", "models")} />
+    </div>
+  );
+}
+
 function ModelsTab({ doc, messages }: { doc: DocStore; messages: StudioMessages }) {
   const state = useStoreSelector(doc, (s) => s.state);
   return <ModelsPanel state={state} messages={messages.studioModels} />;
@@ -307,6 +325,7 @@ function NotOpened({ status, error, messages }: { status: Exclude<OpenStatus, "l
 type RegionsProps = {
   graph: Graph;
   doc: DocStore;
+  sim: Services["sim"];
   messages: StudioMessages;
   lang: Locale;
   notices: readonly LinkNotice[];
@@ -317,7 +336,7 @@ type RegionsProps = {
   currentProblemRef: MutableRefObject<string | null>;
 };
 
-function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCentre, problemsRef, currentProblemRef }: RegionsProps) {
+function Regions({ graph, doc, sim, messages, lang, notices, onDismiss, onPlaceAtCentre, problemsRef, currentProblemRef }: RegionsProps) {
   const { ui, session, run, engine, tools, place, link, controller } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
@@ -338,6 +357,7 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
       top={
         <>
           <TopBar doc={doc} run={run} link={link} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
+          <FidelityChips doc={doc} ui={ui} messages={messages} lang={lang} />
           {readOnly ? (
             <Callout tone="note" title={t.workspace.readOnlyTitle} className="mt-2">
               {t.workspace.readOnly}
@@ -387,9 +407,10 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
       dock={{
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
         serial: (
-          <div className="flex min-h-0 flex-1 flex-col gap-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
             <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} lang={lang} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
+            <InstrumentDock doc={doc} run={run} ui={ui} sim={sim} messages={messages.instruments} fidelity={messages.fidelity} lang={lang} />
           </div>
         ),
       }}
@@ -520,6 +541,7 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
           <Regions
             graph={graph}
             doc={doc}
+            sim={services.sim}
             messages={messages}
             lang={lang}
             notices={notices}
