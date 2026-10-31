@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, test } from "node:test";
 import type { Deps } from "../src/deps.ts";
@@ -39,9 +40,9 @@ export function runStoreContract(name: string, makeStore: MakeStore): void {
       }
     }
 
-    test("migration 0001 leaves an intact database at version 1", () => {
+    test("the migrations leave an intact database at the latest version", () => {
       withStore((store) => {
-        assert.equal(store.schemaVersion(), 1);
+        assert.equal(store.schemaVersion(), readdirSync(MIGRATIONS_DIR).filter((name) => name.endsWith(".sql")).length);
         assert.equal(store.integrityCheck(), "ok");
         assert.equal(store.ping(), true);
       });

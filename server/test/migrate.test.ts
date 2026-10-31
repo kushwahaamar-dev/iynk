@@ -18,6 +18,8 @@ function setup() {
   return { scratch, migrationsDir, dbPath, backupsDir, open };
 }
 
+const LATEST = readdirSync(MIGRATIONS_DIR).filter((name) => name.endsWith(".sql")).length;
+
 function sha(path: string): string {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
 }
@@ -26,15 +28,15 @@ function expectCode(fn: () => unknown, code: string): void {
   assert.throws(fn, (error) => error instanceof StoreError && error.code === code);
 }
 
-test("a fresh file migrates to version 1 and a second open applies nothing", () => {
+test("a fresh file migrates to the latest version and a second open applies nothing", () => {
   const { scratch, open, backupsDir } = setup();
   try {
     const first = open();
-    assert.equal(first.schemaVersion(), 1);
+    assert.equal(first.schemaVersion(), LATEST);
     assert.equal(first.integrityCheck(), "ok");
     first.close();
     const second = open();
-    assert.equal(second.schemaVersion(), 1);
+    assert.equal(second.schemaVersion(), LATEST);
     second.close();
     assert.equal(readdirSync(backupsDir).length, 0);
   } finally {
@@ -45,13 +47,13 @@ test("a fresh file migrates to version 1 and a second open applies nothing", () 
 test("a database one version ahead is refused and its bytes stay", () => {
   const { scratch, migrationsDir, dbPath, open } = setup();
   try {
-    writeFileSync(join(migrationsDir, "0002_more.sql"), "CREATE TABLE extra (id INTEGER PRIMARY KEY);\n");
+    writeFileSync(join(migrationsDir, `${String(LATEST + 1).padStart(4, "0")}_more.sql`), "CREATE TABLE extra (id INTEGER PRIMARY KEY);\n");
     open().close();
     const before = sha(dbPath);
     const mtime = statSync(dbPath).mtimeMs;
     mkdirSync(join(scratch.dir, "old"));
     const older = join(scratch.dir, "old");
-    cpSync(join(MIGRATIONS_DIR, "0001_identity.sql"), join(older, "0001_identity.sql"));
+    cpSync(MIGRATIONS_DIR, older, { recursive: true });
     expectCode(
       () => openStore({ path: dbPath, sync: "normal", migrationsDir: older, backupsDir: join(scratch.dir, "b"), serverVersion: "old" }, fakeDeps()),
       "db_newer_than_server",
@@ -80,7 +82,7 @@ test("a pending migration is backed up first and only the last three backups sta
     const deps = fakeDeps();
     open(deps).close();
     assert.equal(readdirSync(backupsDir).length, 0);
-    for (let version = 2; version <= 6; version += 1) {
+    for (let version = LATEST + 1; version <= LATEST + 5; version += 1) {
       const id = String(version).padStart(4, "0");
       writeFileSync(join(migrationsDir, `${id}_step.sql`), `CREATE TABLE step_${version} (id INTEGER PRIMARY KEY);\n`);
       deps.advance(1000);
@@ -92,7 +94,7 @@ test("a pending migration is backed up first and only the last three backups sta
     assert.equal(backups.length, 3);
     assert.deepEqual(
       backups.map((name) => name.slice(0, 9)),
-      ["pre-0004-", "pre-0005-", "pre-0006-"],
+      [LATEST + 3, LATEST + 4, LATEST + 5].map((version) => `pre-${String(version).padStart(4, "0")}-`),
     );
   } finally {
     scratch.remove();
