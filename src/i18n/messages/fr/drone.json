@@ -1,0 +1,18 @@
+{
+  "notice": {
+    "title": "Avant de construire ou de voler",
+    "sourceLabel": {
+      "external": "Source externe",
+      "hypothesis": "Hypothèse",
+      "iynk": "Déclaration d'iynk"
+    },
+    "SN-1": "Chargez les batteries LiPo uniquement avec un chargeur équilibreur, jamais sans surveillance, dans un sac ou une boîte ignifuge. Mettez au rebut une batterie gonflée ou abîmée. Stockez-la vers 3,8 V par élément.",
+    "SN-2": "Retirez les hélices pour chaque essai sur banc. Portez une protection des yeux en vol. N'essayez jamais d'attraper un drone en vol.",
+    "SN-3": "Une batterie peut débiter un courant très élevé dans un court-circuit. Alimentez un nouvel assemblage la première fois avec une alimentation limitée en courant ou un smoke stopper.",
+    "SN-4": "Cet appareil est stable parce que la simulation le dit. Un appareil réel avec les mêmes chiffres peut ne pas l'être.",
+    "SN-5": "Testez dans cet ordre : sans hélices, puis attaché ou en vol stationnaire très bas sur sol souple, puis en espace dégagé loin des personnes.",
+    "SN-6": "L'enregistrement, le Remote ID, les limites de hauteur, la vue directe et l'âge minimal dépendent de l'endroit où vous volez. Renseignez-vous auprès de votre autorité nationale. Ce simulateur ne rend personne en règle pour voler.",
+    "SN-7": "Les modes autonomes d'ici sont des modèles pédagogiques. Ils ne détectent ni obstacles, ni personnes, ni autres aéronefs.",
+    "SN-8": "Cette simulation est un outil pédagogique, pas une décision officielle sur un projet. Elle ne prédit pas qu'un aéronef réel volera, ni qu'il volera en sécurité."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "notice": {
+    "title": "Vor dem Bauen oder Fliegen",
+    "sourceLabel": {
+      "external": "Externe Quelle",
+      "hypothesis": "Hypothese",
+      "iynk": "iynk-Aussage"
+    },
+    "SN-1": "LiPo-Akkus nur mit einem Balancer-Ladegerät laden, nie unbeaufsichtigt, in einem feuerfesten Beutel oder Behälter. Aufgeblähte oder beschädigte Akkus aussortieren. Bei etwa 3,8 V pro Zelle lagern.",
+    "SN-2": "Für jeden Tischtest die Propeller abnehmen. Beim Fliegen eine Schutzbrille tragen. Nie versuchen, eine fliegende Drohne zu fangen.",
+    "SN-3": "Ein Akku kann bei einem Kurzschluss sehr hohe Ströme liefern. Einen neuen Aufbau beim ersten Mal über ein strombegrenztes Netzteil oder einen Smoke Stopper versorgen.",
+    "SN-4": "Dieses Fluggerät ist stabil, weil die Simulation es sagt. Ein echtes Fluggerät mit denselben Werten muss es nicht sein.",
+    "SN-5": "In dieser Reihenfolge testen: ohne Propeller, dann angeleint oder sehr niedrig über weichem Boden schweben, dann auf freier Fläche abseits von Menschen.",
+    "SN-6": "Registrierung, Remote ID, Höhengrenzen, Sichtflug und Altersregeln hängen davon ab, wo du fliegst. Frage deine nationale Behörde. Dieser Simulator macht niemanden zum rechtmäßigen Piloten.",
+    "SN-7": "Die autonomen Modi hier sind Lehrmodelle. Sie erkennen keine Hindernisse, Menschen oder anderen Luftfahrzeuge.",
+    "SN-8": "Diese Simulation ist ein Lehrwerkzeug, keine offizielle Freigabe eines Entwurfs. Sie sagt nicht voraus, dass ein echtes Fluggerät fliegt oder sicher fliegt."
+  }
+}
