@@ -33,15 +33,15 @@ export const MODE_SETTINGS: Record<Mode, ModeSettings> = {
   direct: { tier: "standard", outputTokens: 500, readTools: ALL_TOOLS, quiz: false },
   debugging: { tier: "strong", outputTokens: 600, readTools: ALL_TOOLS, quiz: false },
   beginner: { tier: "fast", outputTokens: 350, readTools: BEGINNER_TOOLS, quiz: true },
-  socratic: { tier: "fast", outputTokens: 180, readTools: BEGINNER_TOOLS, quiz: true },
+  socratic: { tier: "fast", outputTokens: 180, readTools: BEGINNER_TOOLS, quiz: false },
   advanced: { tier: "standard", outputTokens: 900, readTools: ALL_TOOLS, quiz: false },
 };
 
-/** Socratic mode replaces the beginner default for lessons and challenges in B15. */
 export function defaultMode(kind: ProjectKind): Mode {
   switch (kind) {
     case "lesson":
     case "task":
+      return "socratic";
     case "tour":
       return "beginner";
     case "bench":

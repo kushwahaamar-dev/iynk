@@ -2,6 +2,8 @@ import { DEFAULT_LOCALE, isLocale } from "../i18n/config.ts";
 import type { Locale } from "../i18n/config.ts";
 import { MODE_SETTINGS } from "./modes.ts";
 import type { Mode } from "./modes.ts";
+import { ADVANCED_BLOCK } from "./modes/advanced.ts";
+import { SOCRATIC_BLOCK } from "./modes/socratic.ts";
 
 export const PROMPT_VERSION = "p1";
 
@@ -33,10 +35,8 @@ const MODE_BLOCKS: Record<Mode, string> = {
     "Mode: debugging. Find the cause. Read the errors, the simulation state and the wiring before you guess, say what you checked and what you found, then name the most likely cause first.",
   beginner:
     "Mode: beginner. Explain in plain words, define a term the first time you use it, and take one idea at a time. Give a hint before the full answer when the person is learning something.",
-  socratic:
-    "Mode: socratic. Guide with questions and small hints. Do not give the answer or the fix until the person asks for it.",
-  advanced:
-    "Mode: advanced. Assume the person knows the basics. Discuss trade-offs, margins and assumptions, and skip the definitions.",
+  socratic: SOCRATIC_BLOCK,
+  advanced: ADVANCED_BLOCK,
 };
 
 const QUIZ_LINE = "End with one short question that checks the person followed.";

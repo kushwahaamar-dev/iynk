@@ -140,7 +140,8 @@ describe("runTurn", () => {
     for (const settings of Object.values(MODE_SETTINGS)) {
       for (const name of settings.readTools) expect(["read", "compute", "ui"]).toContain(TOOLS.find((t) => t.name === name)?.cls);
     }
-    expect(defaultMode("lesson")).toBe("beginner");
+    expect(defaultMode("lesson")).toBe("socratic");
+    expect(defaultMode("tour")).toBe("beginner");
     expect(defaultMode("bench")).toBe("debugging");
   });
 });

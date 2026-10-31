@@ -2,6 +2,8 @@ import type { TrustClass } from "../context/fences.ts";
 import { cleanField } from "../context/sanitize.ts";
 import { makeNonce } from "../context/fences.ts";
 import type { Mode, ToolCallRecord } from "../log.ts";
+import type { GateResult } from "../proposals/guard.ts";
+import type { OpGroup } from "../proposals/types.ts";
 import type { PartnerSources } from "../sources.ts";
 import { runRead, READ_TAINT } from "./read.ts";
 import type { ReadToolName } from "./read.ts";
@@ -13,7 +15,7 @@ import type { ToolName } from "./schemas.ts";
 export { jsonSchemaOf };
 export type { ToolName };
 
-export type ToolClass = "read" | "compute" | "ui" | "effect";
+export type ToolClass = "read" | "compute" | "ui" | "effect" | "propose";
 
 export type ToolErrorCode =
   | "bad_args"
@@ -76,6 +78,29 @@ export const TOOLS: readonly ToolDef[] = [
 
 export function toolsFor(mode: Mode, flags: { effect: boolean }): readonly ToolDef[] {
   return TOOLS.filter((t) => t.modes.includes(mode) && (flags.effect || t.cls !== "effect"));
+}
+
+const PROPOSE_TOOLS: ReadonlySet<string> = new Set(["propose_ops", "try_ops", "request_ops_group"]);
+const OP_GROUPS: readonly OpGroup[] = ["core", "board", "mech", "sim", "meta"];
+
+/** The tools one model call may see. B15 tools that are not registered yet are simply absent. */
+export function toolsForCall(
+  mode: Mode,
+  gate: GateResult,
+  loaded: ReadonlySet<OpGroup>,
+  tainted: boolean,
+  flags: { effect: boolean },
+): readonly ToolDef[] {
+  const withheld = new Set<string>(PROPOSE_TOOLS);
+  if (mode === "socratic") withheld.add("get_revision_diff");
+  if (tainted) withheld.add("draft_buddy_message");
+  const tools = toolsFor(mode, flags).filter((t) => !withheld.has(t.name));
+  if (gate.offer) {
+    const offered = new Set<string>(PROPOSE_TOOLS);
+    if (OP_GROUPS.every((g) => loaded.has(g))) offered.delete("request_ops_group");
+    tools.push(...TOOLS.filter((t) => t.modes.includes(mode) && offered.has(t.name)));
+  }
+  return tools.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 const fail = (code: ToolErrorCode, message: string): ToolResult => ({ ok: false, code, message });
