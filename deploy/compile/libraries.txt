@@ -1,0 +1,8 @@
+Wire@1.8.8
+SPI@1.8.8
+Servo@1.8.8
+EEPROM@2.0
+SoftwareSerial@1.0
+Adafruit BME280 Library@2.2.4
+Adafruit Unified Sensor@1.1.14
+Adafruit BusIO@1.16.1
