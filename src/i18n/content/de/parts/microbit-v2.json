@@ -1,0 +1,18 @@
+{
+  "description": "Eine BBC micro:bit V2 mit nRF52833-Chip, 5x5-LED-Matrix, Tasten A und B und einem Kantenstecker.",
+  "summary": "Die Platine führt dein Programm im iynk-Interpreter aus, in MicroPython. Pins, PWM, I2C, Seriell und Timing folgen dem Platinenprofil microbit-v2. Es ist nicht der nRF52833-Chip.",
+  "layer": "Firmware-Laufzeit.",
+  "display": "Wird mit der LED-Matrix geteilt.",
+  "button": "Tasten-Pin: liest LOW, wenn die Taste gedrückt ist.",
+  "i2c": "I2C am Kantenstecker: P20 ist SDA und P19 ist SCL.",
+  "models": {
+    "1": "MicroPython-Teilmenge, die der Interpreter mit der micro:bit-Pinbelegung ausführt.",
+    "2": "Digitale Ein- und Ausgabe an P0 bis P16, P19 und P20, PWM an jedem Pin.",
+    "3": "Analoges Lesen mit 10 Bit an P0 bis P4 und P10, I2C-Master an P20 und P19, serielle Ausgabe sowie die Tasten A (P5) und B (P11), die gedrückt LOW lesen."
+  },
+  "not": {
+    "1": "Das Bluetooth-Funkmodul.",
+    "2": "Das Mikrofon und der Lautsprecher."
+  },
+  "gap": "undefined Es sind noch keine elektrischen Grenzwerte hinterlegt, daher gibt es für diese Platine keine Prüfung auf Pin-Überlast."
+}

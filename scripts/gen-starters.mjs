@@ -41,6 +41,9 @@ const BOARD_STARTERS = {
   'esp32-devkitc': 'prj_esp32-devkitc-blink',
   'esp32-s3-devkitc-1': 'prj_esp32-s3-devkitc-1-blink',
   nodemcu: 'prj_nodemcu-blink',
+  pico: 'prj_pico-blink',
+  'microbit-v2': 'prj_microbit-v2-blink',
+  'nucleo-f401re': 'prj_nucleo-f401re-blink',
 };
 
 const ECHO = `void setup() {

@@ -10,6 +10,9 @@ export const STARTERS: readonly StarterEntry[] = [
   { board: "esp32-devkitc", load: () => import("./esp32-devkitc.project.json").then((m) => m.default) },
   { board: "esp32-s3-devkitc-1", load: () => import("./esp32-s3-devkitc-1.project.json").then((m) => m.default) },
   { board: "nodemcu", load: () => import("./nodemcu.project.json").then((m) => m.default) },
+  { board: "pico", load: () => import("./pico.project.json").then((m) => m.default) },
+  { board: "microbit-v2", load: () => import("./microbit-v2.project.json").then((m) => m.default) },
+  { board: "nucleo-f401re", load: () => import("./nucleo-f401re.project.json").then((m) => m.default) },
 ];
 
 export function starterFor(board: string): StarterEntry | undefined {

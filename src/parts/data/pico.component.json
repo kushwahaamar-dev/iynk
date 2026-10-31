@@ -1,0 +1,669 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.pico",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Raspberry Pi",
+    "model": "Raspberry Pi Pico",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "pico"
+    ],
+    "description": {
+      "i18n_key": "parts.pico.description",
+      "en": "A Raspberry Pi Pico family board with an RP2040 or RP2350 chip, 26 GPIO pins on two edge rows and a debug header, in Pico, Pico W, Pico 2 and Pico 2 W variants."
+    },
+    "chip": {
+      "manufacturer": "Raspberry Pi",
+      "model": "RP2040"
+    },
+    "primary_source": "datasheet",
+    "tags": [
+      "rp2040",
+      "rp2350",
+      "raspberry-pi",
+      "dev-board",
+      "micropython",
+      "arduino",
+      "beginner"
+    ]
+  },
+  "sources": [
+    {
+      "id": "datasheet",
+      "kind": "datasheet",
+      "title": "Raspberry Pi Pico datasheet",
+      "publisher": "Raspberry Pi Ltd",
+      "url": "https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/pico.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "mcu",
+      "kind": "datasheet",
+      "title": "RP2040 datasheet",
+      "publisher": "Raspberry Pi Ltd",
+      "url": "https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/pico.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "micropython",
+      "kind": "library",
+      "title": "MicroPython quick reference for the RP2",
+      "publisher": "MicroPython",
+      "url": "https://docs.micropython.org/en/latest/rp2/quickref.html",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/pico.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile pico) and src/content/boards/pico.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "DEBUG",
+      "kind": "header",
+      "pins": [
+        "SWCLK",
+        "GND",
+        "SWDIO"
+      ]
+    },
+    {
+      "id": "edge",
+      "kind": "header",
+      "pins": [
+        "GP0",
+        "GP1",
+        "edge_3",
+        "GP2",
+        "GP3",
+        "GP4",
+        "GP5",
+        "edge_8",
+        "GP6",
+        "GP7",
+        "GP8",
+        "GP9",
+        "edge_13",
+        "GP10",
+        "GP11",
+        "GP12",
+        "GP13",
+        "edge_18",
+        "GP14",
+        "GP15",
+        "GP16",
+        "GP17",
+        "edge_23",
+        "GP18",
+        "GP19",
+        "GP20",
+        "GP21",
+        "edge_28",
+        "GP22",
+        "RUN",
+        "GP26",
+        "GP27",
+        "AGND",
+        "GP28",
+        "ADC_VREF",
+        "P3V3",
+        "P3V3_EN",
+        "edge_38",
+        "VSYS",
+        "VBUS"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "SWCLK",
+      "designator": "SWCLK",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "DEBUG",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "DEBUG"
+    },
+    {
+      "id": "SWDIO",
+      "designator": "SWDIO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "DEBUG",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP0",
+      "designator": "GP0",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP1",
+      "designator": "GP1",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "edge_3",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP2",
+      "designator": "GP2",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP3",
+      "designator": "GP3",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP4",
+      "designator": "GP4",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP5",
+      "designator": "GP5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "edge_8",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP6",
+      "designator": "GP6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP7",
+      "designator": "GP7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP8",
+      "designator": "GP8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP9",
+      "designator": "GP9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "edge_13",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP10",
+      "designator": "GP10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP11",
+      "designator": "GP11",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP12",
+      "designator": "GP12",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP13",
+      "designator": "GP13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "edge_18",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP14",
+      "designator": "GP14",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP15",
+      "designator": "GP15",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP16",
+      "designator": "GP16",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP17",
+      "designator": "GP17",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "edge_23",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP18",
+      "designator": "GP18",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP19",
+      "designator": "GP19",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP20",
+      "designator": "GP20",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP21",
+      "designator": "GP21",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "edge_28",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP22",
+      "designator": "GP22",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "RUN",
+      "designator": "RUN",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP26",
+      "designator": "GP26_A0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GP27",
+      "designator": "GP27_A1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "AGND",
+      "designator": "AGND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "GP28",
+      "designator": "GP28_A2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "ADC_VREF",
+      "designator": "ADC_VREF",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "P3V3",
+      "designator": "3V3",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "P3V3_EN",
+      "designator": "3V3_EN",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "edge_38",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "VSYS",
+      "designator": "VSYS",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "VBUS",
+      "designator": "VBUS",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "GP23",
+      "designator": "GP23",
+      "type": "digital_out",
+      "class": "digital",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.pico.gp23",
+        "en": "Internal pin: sets the board's power-supply mode. Leave it alone."
+      }
+    },
+    {
+      "id": "GP24",
+      "designator": "GP24",
+      "type": "digital_in",
+      "class": "digital",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.pico.gp24",
+        "en": "Internal pin: tells whether USB power is present."
+      }
+    },
+    {
+      "id": "GP25",
+      "designator": "GP25",
+      "type": "digital_out",
+      "class": "digital",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.pico.led",
+        "en": "On-board LED on GP25. On the W boards the LED hangs off the radio chip; use Pin(\"LED\")."
+      }
+    },
+    {
+      "id": "GP29",
+      "designator": "GP29",
+      "type": "analog_in",
+      "class": "analog",
+      "note": {
+        "i18n_key": "parts.pico.gp29",
+        "en": "Internal pin: reads the supply voltage through a divider (VSYS divided by 3)."
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "edge_3",
+        "edge_8",
+        "edge_13",
+        "edge_18",
+        "edge_23",
+        "edge_28",
+        "AGND",
+        "edge_38"
+      ]
+    }
+  ],
+  "ratings": {},
+  "parameters": [
+    {
+      "id": "variant",
+      "name": {
+        "i18n_key": "parts.pico.variant",
+        "en": "Variant"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "pico",
+      "values": [
+        "pico",
+        "pico-w",
+        "pico2",
+        "pico2-w"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.pico.summary",
+      "en": "The board runs the user's program in the iynk interpreter, in MicroPython or Arduino C++. Pins, PWM, I2C, serial and timing follow the pico board profile. It is not the RP2040 chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.pico.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile pico in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.pico.models.1",
+        "en": "MicroPython and Arduino-C++ subsets run by the interpreter with the Pico pin map."
+      },
+      {
+        "i18n_key": "parts.pico.models.2",
+        "en": "Digital I/O on GP0 to GP22 and GP26 to GP28, PWM and interrupts on every GPIO."
+      },
+      {
+        "i18n_key": "parts.pico.models.3",
+        "en": "12-bit analog reads on GP26 to GP28, returned as 0 to 65535 by read_u16(), I2C master on GP4 and GP5, serial output and the on-board LED on GP25."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.pico.not.1",
+        "en": "The PIO state machines and the second core."
+      },
+      {
+        "i18n_key": "parts.pico.not.2",
+        "en": "The Wi-Fi and Bluetooth radio of the W boards."
+      },
+      {
+        "i18n_key": "parts.pico.not.3",
+        "en": "The RP2350 differences beyond the pin map, and the flash and power-supply behaviour."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.pico.gap",
+          "en": "undefined No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a program on the pico profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "micropython"
+      },
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "pico",
+        "path": "public/figures/boards/pico.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Raspberry Pi Pico",
+      "body_colour": "#2f7d4f",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the 43 rows of src/content/boards/pico.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

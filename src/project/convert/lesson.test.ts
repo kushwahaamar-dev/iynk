@@ -277,7 +277,7 @@ describe("the report", () => {
 
   it("names the parts and the board that have no descriptor", () => {
     expect(lessons.get("uno-r3/blink")!.report.filter((x) => x.code === "no-descriptor")).toEqual([]);
-    expect(tours.get("pico")!.report.find((x) => x.code === "no-descriptor")!.refs).toEqual(["core.pico"]);
+    expect(tours.get("pi4-pi5")!.report.find((x) => x.code === "no-descriptor")!.refs).toEqual(["core.pi4-pi5"]);
   });
 
   it("attaches a world input of a part outside the circuit to the board, and says so", () => {

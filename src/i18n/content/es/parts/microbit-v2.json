@@ -1,0 +1,18 @@
+{
+  "description": "Una placa BBC micro:bit V2 con chip nRF52833, matriz de LED de 5x5, botones A y B y un conector de borde.",
+  "summary": "La placa ejecuta tu programa en el intérprete de iynk, en MicroPython. Los pines, PWM, I2C, serie y tiempos siguen el perfil de placa microbit-v2. No es el chip nRF52833.",
+  "layer": "Entorno de ejecución del firmware.",
+  "display": "Compartido con la matriz de LED.",
+  "button": "Pin de botón: lee LOW cuando se pulsa el botón.",
+  "i2c": "I2C en el conector de borde: P20 es SDA y P19 es SCL.",
+  "models": {
+    "1": "Subconjunto de MicroPython que el intérprete ejecuta con el mapa de pines de la micro:bit.",
+    "2": "E/S digital en P0 a P16, P19 y P20, PWM en cada pin.",
+    "3": "Lecturas analógicas de 10 bits en P0 a P4 y P10, maestro I2C en P20 y P19, salida serie, y los botones A (P5) y B (P11), que leen LOW al pulsarse."
+  },
+  "not": {
+    "1": "La radio Bluetooth.",
+    "2": "El micrófono y el altavoz."
+  },
+  "gap": "undefined Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

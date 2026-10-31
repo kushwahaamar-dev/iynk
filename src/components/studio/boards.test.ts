@@ -12,9 +12,6 @@ import { buildBoardDescriptor } from "@/parts/testing/board-gen";
 
 /** Boards whose component descriptor is not written yet. A board task removes its own name when it adds the descriptor. */
 const NOT_YET_BOUND: readonly BoardId[] = [
-  "pico",
-  "nucleo-f401re",
-  "microbit-v2",
   "pi4-pi5",
   "basys3",
   "de10-lite",
@@ -24,7 +21,7 @@ const registry = builtinRegistry();
 const descriptorOf = (id: BoardId): Descriptor | undefined => registry.latest(PROFILES[id].partId);
 const BOUND = BOARD_IDS.filter((id) => descriptorOf(id));
 
-const RESET_NAMES = new Set(["EN", "RST", "RESET"]);
+const RESET_NAMES = new Set(["EN", "RST", "RESET", "RUN", "NRST"]);
 const LANGUAGE_OF = { "arduino-cpp": "arduino", micropython: "python", python: "python", verilog: "verilog" } as Record<string, string>;
 
 function numberOf(profile: BoardProfile, pin: Descriptor["pins"][number]): number | undefined {

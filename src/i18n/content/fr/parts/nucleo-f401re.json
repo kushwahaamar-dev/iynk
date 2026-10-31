@@ -1,0 +1,18 @@
+{
+  "description": "Une carte STM32 Nucleo-64 avec une puce STM32F401RE, un débogueur ST-LINK, des connecteurs Arduino et ST Morpho, une LED verte et un bouton utilisateur bleu.",
+  "summary": "La carte exécute ton sketch dans l'interpréteur iynk. Les broches, le PWM, l'I2C, la série et le timing suivent le profil de carte nucleo-f401re. Ce n'est pas la puce STM32F401RE.",
+  "layer": "Environnement d'exécution du firmware.",
+  "led": "LD2, la LED verte sur D13 (PA5) : HIGH l'allume.",
+  "button": "B1 USER, le bouton bleu sur PC13 : lit LOW quand il est appuyé.",
+  "models": {
+    "1": "Sous-ensemble d'Arduino C++ exécuté par l'interpréteur avec le brochage de la Nucleo.",
+    "2": "E/S numériques sur D0 à D15 et A0 à A5, PWM sur D3, D5, D6, D9, D10 et D11, interruptions sur chaque broche.",
+    "3": "Lectures analogiques 10 bits, ou 12 bits après analogReadResolution(12), maître I2C sur D14 et D15, sortie série, LD2 sur D13 et le bouton B1 USER sur PC13."
+  },
+  "not": {
+    "1": "Le débogueur ST-LINK et le port série virtuel USB.",
+    "2": "L'arbre d'horloge et tous les périphériques autres que les E/S numériques, l'ADC, le PWM, l'I2C et la série.",
+    "3": "Les broches Morpho sans nom Arduino : elles sont listées, mais l'interpréteur ne les pilote pas."
+  },
+  "gap": "undefined Aucune valeur électrique maximale n'est encore renseignée, il n'y a donc pas de contrôle de surcharge des broches pour cette carte."
+}

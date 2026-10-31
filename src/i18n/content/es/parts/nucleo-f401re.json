@@ -1,0 +1,18 @@
+{
+  "description": "Una placa STM32 Nucleo-64 con chip STM32F401RE, depurador ST-LINK, conectores Arduino y conectores ST Morpho, un LED verde y un botón de usuario azul.",
+  "summary": "La placa ejecuta tu sketch en el intérprete de iynk. Los pines, PWM, I2C, serie y tiempos siguen el perfil de placa nucleo-f401re. No es el chip STM32F401RE.",
+  "layer": "Entorno de ejecución del firmware.",
+  "led": "LD2, el LED verde en D13 (PA5): HIGH lo enciende.",
+  "button": "B1 USER, el botón azul en PC13: lee LOW al pulsarlo.",
+  "models": {
+    "1": "Subconjunto de Arduino C++ que el intérprete ejecuta con el mapa de pines de la Nucleo.",
+    "2": "E/S digital en D0 a D15 y A0 a A5, PWM en D3, D5, D6, D9, D10 y D11, interrupciones en cada pin.",
+    "3": "Lecturas analógicas de 10 bits, o de 12 bits tras analogReadResolution(12), maestro I2C en D14 y D15, salida serie, LD2 en D13 y el botón B1 USER en PC13."
+  },
+  "not": {
+    "1": "El depurador ST-LINK y el puerto serie virtual USB.",
+    "2": "El árbol de reloj y todos los periféricos salvo E/S digital, ADC, PWM, I2C y serie.",
+    "3": "Los pines Morpho sin nombre Arduino: aparecen en la lista, pero el intérprete no los maneja."
+  },
+  "gap": "undefined Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

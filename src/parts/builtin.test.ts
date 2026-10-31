@@ -15,7 +15,7 @@ const pinnedInterface = (ref: string) => lesson.dependencies.components.find((c:
 describe("builtinRegistry", () => {
   const registry = builtinRegistry();
 
-  it("holds the thirteen shipped parts", () => {
+  it("holds the sixteen shipped parts", () => {
     expect(registry.list().map((p) => p.ref)).toEqual([
       "core.uno-r3",
       "core.nano",
@@ -23,6 +23,9 @@ describe("builtinRegistry", () => {
       "core.esp32-devkitc",
       "core.esp32-s3-devkitc-1",
       "core.nodemcu",
+      "core.pico",
+      "core.microbit-v2",
+      "core.nucleo-f401re",
       "core.led-5mm",
       "core.resistor",
       "core.push-button-6mm",

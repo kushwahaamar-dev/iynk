@@ -1,0 +1,21 @@
+{
+  "description": "Raspberry Pi Pico 系列开发板，搭载 RP2040 或 RP2350 芯片，两排边缘共 26 个 GPIO 引脚和一个调试接口，有 Pico、Pico W、Pico 2 和 Pico 2 W 四种型号。",
+  "summary": "开发板在 iynk 解释器中运行你的程序，可用 MicroPython 或 Arduino C++。引脚、PWM、I2C、串口和时序遵循 pico 开发板配置。它不是 RP2040 芯片本身。",
+  "layer": "固件运行时。",
+  "variant": "型号",
+  "led": "GP25 上的板载 LED。W 型号的 LED 接在无线芯片上，请使用 Pin(\"LED\")。",
+  "gp23": "内部引脚：设置开发板的电源模式，请勿改动。",
+  "gp24": "内部引脚：指示是否有 USB 供电。",
+  "gp29": "内部引脚：通过分压器读取供电电压（VSYS 除以 3）。",
+  "models": {
+    "1": "解释器按 Pico 引脚图运行的 MicroPython 和 Arduino C++ 子集。",
+    "2": "GP0 到 GP22 和 GP26 到 GP28 上的数字输入输出，每个 GPIO 都支持 PWM 和中断。",
+    "3": "GP26 到 GP28 上的 12 位模拟读取（read_u16() 返回 0 到 65535）、GP4 和 GP5 上的 I2C 主机、串口输出，以及 GP25 上的板载 LED。"
+  },
+  "not": {
+    "1": "PIO 状态机和第二个内核。",
+    "2": "W 型号的 Wi-Fi 和蓝牙无线电。",
+    "3": "引脚图之外的 RP2350 差异，以及闪存和电源的行为。"
+  },
+  "gap": "undefined 目前尚未列出电气额定值，因此这块开发板没有引脚过载检查。"
+}
