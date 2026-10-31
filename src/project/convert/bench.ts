@@ -2,11 +2,9 @@ import type {
   Board,
   Component,
   ComponentDependency,
-  Fault,
   Guide,
   InterfaceGroup,
   Project,
-  Source,
   Text,
   View,
 } from "../generated/types.ts";
@@ -15,15 +13,16 @@ import type { InterfaceSnapshot } from "../holes.ts";
 import { boardGroups, boardPinIds, pinIdFromLeg } from "../legacy-names.ts";
 import { CURRENT_SCHEMA_VERSION } from "../migrate.ts";
 import { BOARD_INSTANCE, circuitToNets, partInstance } from "./circuit.ts";
-import { buildAssembly, buildLegacyFigure, buildQuizzes } from "./guide.ts";
+import { convertBenchSim, slug } from "./bench-sim.ts";
+import type { CauseOf } from "./bench-sim.ts";
+import { convertSteps } from "./bench-steps.ts";
+import { buildLegacyFigure } from "./guide.ts";
 import { boardInterface, partInterface, partRef, surfaceInterface } from "./interfaces.ts";
 import type { BoardInterface } from "./interfaces.ts";
 import type { ConvertContext, ConvertResult } from "./lesson.ts";
-import { renderTemplate, translator } from "./text.ts";
+import { translator } from "./text.ts";
 import type {
   CatalogueItem,
-  ConvertBenchMode,
-  ConvertFailureMode,
   FigureBench,
   FigureCircuit,
   FigureHeader,
@@ -44,6 +43,10 @@ export interface BenchFigure extends FigureBench {
 export interface BenchContext extends ConvertContext {
   /** The catalogue board of the bench (`data.board`); null for a bench without one. */
   board: BoardItem | null;
+  /** The registry cause and symptoms of a bench fault. Without it a fault is its own cause and symptom. */
+  causeOf?: CauseOf;
+  /** The id of a bench project (`child` null) or of one of its task projects. */
+  projectId?: (lab: "robotics", id: string, child: string | null) => string;
 }
 
 const ACTOR = "usr_iynk";
@@ -53,17 +56,9 @@ const BENCH_DURATION_MS = 1000;
 const VERSION = "1.0.0";
 const TOOL = "iynk-catalogue-convert/0.1";
 const LEGACY = "x-iynk-legacy";
-const LEGACY_BENCH = "x-iynk-legacy-bench";
-
-const SOURCE_LANGUAGES: Readonly<Record<string, { language: Source["language"]; extension: string }>> = {
-  "arduino-cpp": { language: "arduino-cpp", extension: "ino" },
-  micropython: { language: "micropython", extension: "py" },
-  python: { language: "python", extension: "py" },
-  verilog: { language: "verilog", extension: "v" },
-};
+const BENCH = "x-iynk-bench";
 
 const byText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
-const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9_-]+/g, "_").replace(/^[^a-z0-9]+/, "");
 
 function refdesOf(id: string, taken: Set<string>): string {
   const clean = id.replace(/[^A-Za-z0-9_]/g, "_").toUpperCase();
@@ -146,46 +141,10 @@ function reporter(item: string, project: string) {
   return { report, note };
 }
 
-function faultOf(failure: ConvertFailureMode, english: (key: string) => string, netOf: (name: string) => string | undefined): Fault {
-  const nets = failure.trigger.nets?.map(netOf);
-  const both = nets !== undefined && nets[0] !== undefined && nets[1] !== undefined && nets[0] !== nets[1];
-  return {
-    id: `flt_${slug(failure.id).slice(0, 64)}`,
-    cause_id: failure.id,
-    symptom_ids: [failure.id],
-    kind: failure.kind as Fault["kind"],
-    target: both ? { nets: nets as [string, string] } : {},
-    params: { trigger: failure.trigger, effect: failure.effect, figure: failure.figure },
-    enabled: false,
-    note: english(failure.title),
-  };
-}
-
-function modeSources(
-  modes: readonly ConvertBenchMode[],
-  boardInstance: string | undefined,
-  english: (key: string) => string,
-  note: ReturnType<typeof reporter>["note"],
-): Source[] {
-  return modes.map((mode) => {
-    const known = SOURCE_LANGUAGES[mode.language];
-    if (!known) note("skipped", `the language "${mode.language}" of mode ${mode.id} is not a project language; the code is kept as text`, [mode.id]);
-    if (/\{\{t:/.test(mode.code.source)) note("code-comments-en-only", `Comments in the code of mode ${mode.id} are kept in English only`, [mode.id]);
-    return {
-      id: `src_${slug(mode.id)}`,
-      path: `${slug(mode.id)}.${known?.extension ?? "txt"}`,
-      language: known?.language ?? "text",
-      role: "firmware",
-      ...(boardInstance === undefined ? {} : { board: boardInstance }),
-      content: renderTemplate(mode.code.source, [], {}, english),
-    };
-  });
-}
-
 /** One robotics bench as a project: its mat wires or default circuit as nets, its modes as sources, its faults as simulation faults. */
 export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigure, ctx: BenchContext): ConvertResult {
   const data = item.data;
-  const id = `prj_bench-${slug(item.id)}`;
+  const id = ctx.projectId?.("robotics", item.id, null) ?? `prj_bench-${slug(item.id)}`;
   const name = `robotics/${item.id}`;
   const { report, note } = reporter(name, id);
   const missing = new Set<string>();
@@ -282,9 +241,10 @@ export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigur
   const dependencies = new Map<string, ComponentDependency>();
   const components: Component[] = [];
   const used = new Set<string>([SURFACE_INSTANCE, BOARD_INSTANCE]);
-  const pinsOf = new Map<string, InterfaceSnapshot["pins"]>(board ? [[BOARD_INSTANCE, board.snapshot.pins]] : []);
+  const unplaced = new Set<string>();
   const depend = (figure: string, snapshot: InterfaceSnapshot): { ref: string; version: "1.0.0" } => {
     const { ref, version } = partRef(figure);
+    if (!ctx.descriptors.has(ref)) unplaced.add(figure);
     if (!dependencies.has(ref)) dependencies.set(ref, { ref, version, origin: "builtin", interface: snapshot });
     return { ref, version };
   };
@@ -292,7 +252,6 @@ export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigur
     let cmp = partInstance(instanceId);
     for (let n = 2; used.has(cmp); n++) cmp = `${partInstance(instanceId)}_${n}`;
     used.add(cmp);
-    pinsOf.set(cmp, snapshot.pins);
     components.push({
       id: cmp,
       definition: depend(figure, snapshot),
@@ -324,7 +283,16 @@ export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigur
   const absent = [...dependencies.values()].map((d) => d.ref).filter((ref) => !ctx.descriptors.has(ref)).sort(byText);
   if (absent.length > 0) note("no-descriptor", `${absent.join(", ")} have no descriptor in the part library yet`, absent);
 
-  const sources = modeSources(data.modes, board ? BOARD_INSTANCE : undefined, english, note);
+  const tasks = data.tasks.map((task) => ctx.projectId?.("robotics", item.id, task.id) ?? `prj_task-${item.id}-${task.id}`);
+  const { faults, sources, ext: benchExt } = convertBenchSim(data, {
+    t,
+    english,
+    causeOf: ctx.causeOf ?? ((failure) => ({ cause_id: failure.id, symptom_ids: [failure.id] })),
+    ...(board ? { board: BOARD_INSTANCE } : {}),
+    tasks,
+    unplaced: [...unplaced].sort(byText),
+    note,
+  });
   const defaultSource = sources[data.modes.findIndex((m) => m.id === data.defaultMode)];
   const libraries = [...new Set(data.modes.flatMap((m) => m.code.libraries))].sort(byText);
   const firmwareLanguage = defaultSource?.language ?? "text";
@@ -332,20 +300,6 @@ export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigur
     board && defaultSource && sources.length > 0
       ? { language: firmwareLanguage as NonNullable<Board["firmware"]>["language"], entry: defaultSource.id, sources: sources.map((s) => s.id) as [string, ...string[]], libraries }
       : undefined;
-
-  const netOf = (figureNet: string): string | undefined => {
-    const named = nets.nets.find((n) => n.name === figureNet);
-    if (named) return named.id;
-    const pinNet = (c: string, p: string): string | undefined => pinsOf.get(c)?.find((pin) => pin.id === p)?.net;
-    return nets.nets.find((n) => n.connections.some((c) => pinNet(c.c, c.p) === figureNet))?.id;
-  };
-  const faults = data.faults.map((failure) => {
-    const fault = faultOf(failure, english, netOf);
-    if (failure.trigger.nets && fault.target.nets === undefined) {
-      note("skipped", `fault ${failure.id}: the nets ${failure.trigger.nets.join(" and ")} are not both nets of the bench, so the fault has no target`, [failure.id]);
-    }
-    return fault;
-  });
 
   const view: View = circuit
     ? { id: "vw_bb", kind: "breadboard", name: "Breadboard", surface: SURFACE_INSTANCE, placements: nets.placements, wires: nets.wires }
@@ -361,8 +315,7 @@ export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigur
     sub: t(data.sub),
     hint: t(data.hint),
     overview: t(data.overview),
-    assembly: buildAssembly(data.steps, t),
-    quizzes: buildQuizzes(data.quizzes, t),
+    ...convertSteps(data, t),
     references: data.sources.map(({ title, url }) => ({ title, url })),
     legacyFigure: buildLegacyFigure(data.figure, null),
   };
@@ -372,22 +325,9 @@ export function convertBench(item: RoboticsItem, texts: Texts, bench: BenchFigur
     [LEGACY]: {
       fig: data.fig,
       ...(meta.palette === undefined ? {} : { palette: meta.palette }),
-      figureParts: data.figure.parts.map((p) => ({ id: p.id, short: p.short, role: p.role, name: t(p.name), what: t(p.what) })),
       ...(Object.keys(otherCircuits).length > 0 ? { circuits: otherCircuits } : {}),
     },
-    [LEGACY_BENCH]: {
-      power: { source: data.power.source, label: t(data.power.label), ok: t(data.power.ok) },
-      modes: data.modes.map((m, i) => ({ id: m.id, instant: m.instant, bytes: m.bytes, serial: m.serial, title: t(m.title), source: sources[i]!.id })),
-      defaultMode: data.defaultMode,
-      faultText: Object.fromEntries(
-        data.faults.map((f) => [f.id, { title: t(f.title), symptom: t(f.symptom), explanation: t(f.explanation), fix: t(f.fix) }]),
-      ),
-      status: data.status.map((s) => ({ ...s, label: t(s.label) })),
-      current: {
-        supplies: data.current.supplies.map((s) => ({ ...s, label: t(s.label) })),
-        loads: data.current.loads.map((l) => ({ ...l, label: t(l.label) })),
-      },
-    },
+    [BENCH]: benchExt,
   };
   if (Object.keys(otherCircuits).length > 0) {
     note("skipped", `the staged circuits ${Object.keys(otherCircuits).join(", ")} are kept as legacy data, not as nets`, Object.keys(otherCircuits));

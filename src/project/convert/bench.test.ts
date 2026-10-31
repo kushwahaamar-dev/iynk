@@ -85,12 +85,12 @@ describe("the 13 converted benches", () => {
     }
   });
 
-  it("keep all 106 faults, each with a schema kind and the three legacy params", () => {
+  it("keep all 106 faults, each with a schema kind and the legacy params", () => {
     const faults = all().flatMap((r) => r.project.simulation.faults);
     expect(faults).toHaveLength(106);
     for (const fault of faults) {
       expect(faultKinds.has(fault.kind), fault.id).toBe(true);
-      expect(Object.keys(fault.params ?? {}).sort()).toEqual(["effect", "figure", "trigger"]);
+      expect(Object.keys(fault.params ?? {}).sort()).toEqual(["effect", "figure", "legacy", "trigger"]);
       expect(fault.enabled).toBe(false);
     }
     for (const [id, { item }] of loaded) {
@@ -98,10 +98,12 @@ describe("the 13 converted benches", () => {
     }
   });
 
-  it("carry the legacy bench data under x-iynk-legacy-bench", () => {
+  it("carry the legacy bench data under x-iynk-bench", () => {
     for (const [id, { item }] of loaded) {
-      const legacy = legacyOf<Texted>(pick(id).project, "x-iynk-legacy-bench");
-      expect(Object.keys(legacy).sort()).toEqual(["current", "defaultMode", "faultText", "modes", "power", "status"]);
+      const legacy = legacyOf<Texted>(pick(id).project, "x-iynk-bench");
+      expect(Object.keys(legacy).sort()).toEqual(["concept", "current", "defaultMode", "faultText", "figureParts", "modes", "power", "status", "tasks", "unplaced"]);
+      expect(legacy.concept).toBe(id === "pi5-ros2");
+      expect(legacy.tasks).toHaveLength(item.data.tasks.length);
       expect(legacy.power.label.en).toBeTypeOf("string");
       expect(legacy.modes).toHaveLength(item.data.modes.length);
       expect(legacy.status).toHaveLength(item.data.status.length);
@@ -115,7 +117,7 @@ describe("the 13 converted benches", () => {
     for (const [id, { item }] of loaded) {
       const { project } = pick(id);
       expect(project.sources).toHaveLength(item.data.modes.length);
-      const entry = project.sources.find((s) => s.id === `src_${item.data.defaultMode}`);
+      const entry = project.sources.find((s) => s.id === `src_${id}-${item.data.defaultMode}`);
       expect(entry, id).toBeDefined();
       if (item.data.board === null) expect(project.boards).toEqual([]);
       else expect(project.boards[0]!.firmware!.entry).toBe(entry!.id);
@@ -179,7 +181,7 @@ describe("the l298n bench", () => {
     expect(project.simulation.faults).toHaveLength(8);
     expect(project.guide!.assembly).toHaveLength(24);
     expect(project.sources).toHaveLength(5);
-    const power = legacyOf<Texted>(project, "x-iynk-legacy-bench").power;
+    const power = legacyOf<Texted>(project, "x-iynk-bench").power;
     expect(Object.keys(power.label)).toContain("de");
   });
 
@@ -190,10 +192,8 @@ describe("the l298n bench", () => {
     expect(net.connections.some((c) => c.c === "cmp_l298n")).toBe(true);
   });
 
-  it("targets the nets of a short fault when both exist", () => {
-    const { project } = pick("hc-sr04");
-    const short = project.simulation.faults.find((f) => (f.params as { trigger: { by: string } }).trigger.by === "short")!;
-    expect(short.target.nets).toHaveLength(2);
+  it("gives a fault no netlist target, so the netlist applier skips it", () => {
+    for (const fault of pick("hc-sr04").project.simulation.faults) expect(fault.target).toEqual({});
   });
 });
 
