@@ -142,6 +142,7 @@ export interface RoomsRepo {
   latestCheckpoint(id: RoomId, atOrBefore?: number): CheckpointRow | null;
   pruneCheckpoints(id: RoomId, keep: number): number;
   nullOldPayloads(id: RoomId, keepLatest: number): number;
+  rewindTo(id: RoomId, to: CheckpointRow, epoch: string, at: number): void;
   member(id: RoomId, device: DeviceId): MemberRow | null;
   members(id: RoomId): MemberRow[];
   upsertMember(m: MemberRow): void;
@@ -493,6 +494,23 @@ export function createRoomsRepo(store: ServerStore): RoomsRepo {
             keepLatest,
           ).changes,
       ),
+
+    rewindTo: (id, to, epoch, at) =>
+      store.transaction((tx) => {
+        tx.run("DELETE FROM ops WHERE room_id = ? AND seq > ?", id, to.seq);
+        tx.run("DELETE FROM checkpoints WHERE room_id = ? AND seq > ?", id, to.seq);
+        tx.run("DELETE FROM submissions WHERE room_id = ? AND seq1 > ?", id, to.seq);
+        tx.run(
+          "UPDATE rooms SET seq = ?, chain = ?, state_hash = ?, epoch = ?, state = 'open', closed_at = NULL, last_active_at = ? WHERE id = ?",
+          to.seq,
+          to.chain,
+          to.state_hash,
+          epoch,
+          at,
+          id,
+        );
+        insertEvent(tx, id, at, "room.restore", null, { seq: to.seq, epoch });
+      }),
 
     member: (id, device) =>
       store.read((tx) => {
