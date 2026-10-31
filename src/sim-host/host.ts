@@ -2,7 +2,7 @@ import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
 import type { SimTime } from "@/sim/core/clock";
 import type { HostInput, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
-import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, SimEv, SimReq, SimRunState } from "./protocol";
+import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
 
@@ -64,6 +64,11 @@ export interface SimHost {
   step(unit: StepUnit, n: number): Promise<void>;
   input(i: HostInput): Promise<void>;
   check(job: CheckJob, budgetMs?: number): Promise<CheckOutcome>;
+  /**
+   * Runs the fault rules over `net` and the code in `sources`. A newer call makes an older one that is still waiting
+   * resolve with `note: "check.skipped"`, and so does a worker that is not ready.
+   */
+  staticCheck(net: SimNetlist, sources: Record<string, string>): Promise<StaticCheckResult>;
   /** Probes are cleared by `load`, `reset` and `restart`; the caller adds them again. */
   readonly probes: SimHostProbes;
   /** The class hashes of the run at `tNs`; rejects when the run is somewhere else. */
@@ -77,6 +82,11 @@ export interface SimHost {
   readonly state: "starting" | "ready" | "dead";
   readonly stats: Readonly<SimHostStats>;
   readonly status: Readonly<SimHostStatus>;
+}
+
+export interface StaticCheckResult extends StaticCheckReply {
+  /** A key of the `faults` namespace, set when no check ran. */
+  note?: "check.skipped";
 }
 
 export interface SimHostOptions {
@@ -106,6 +116,7 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
   let recoveries = 0;
   let recovering = false;
   let reloading = false;
+  let checkSeq = 0;
   const watchdog = createWatchdog({ timers, kill: recover });
 
   function deliver(ev: SimEv) {
@@ -261,6 +272,17 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     },
     async check(job, budgetMs) {
       return (await port.call({ t: "check", job, budgetMs })).result as CheckOutcome;
+    },
+    async staticCheck(net, sources) {
+      const mine = ++checkSeq;
+      const skipped: StaticCheckResult = { findings: [], skipped: {}, errors: [], note: "check.skipped" };
+      if (port.state === "dead") return skipped;
+      try {
+        const reply = (await port.call({ t: "static-check", net, sources })).result as StaticCheckReply;
+        return mine === checkSeq ? reply : skipped;
+      } catch {
+        return skipped;
+      }
     },
     probes,
     async hashes(tNs) {

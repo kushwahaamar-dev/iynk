@@ -1,4 +1,8 @@
 import type { Diagnostic, ErrorKind } from "../lib/interp/errors.ts";
+import type { Project } from "../project/generated/types.ts";
+import type { Diagnosis } from "../project/diagnosis.ts";
+import { netlist } from "../project/netlist.ts";
+import type { Finding, ProblemTarget } from "../sim/faults/types.ts";
 import type { StaticFlag } from "./rules/connect.ts";
 import type { RunView } from "./stores/run.ts";
 
@@ -17,6 +21,10 @@ export type Problem = {
   col?: number;
   file?: string;
   hint?: string;
+  /** Set by a fault rule. `titleKey` is then a key of the `faults` namespace. */
+  rule?: string;
+  targets?: ProblemTarget[];
+  diagnosis?: Diagnosis;
 };
 
 export type ProblemInput = {
@@ -69,6 +77,58 @@ const fromFlag = (flag: StaticFlag): Problem => ({
   titleKey: `problem.static.${flag.rule}`,
   args: { net: flag.net, count: flag.pins.length },
 });
+
+/** Ordinary projects open the hint ladder at level 3 (STUDIO_EDITOR 10.1). */
+const STATIC_HINT_LEVEL = 3;
+
+export type StaticProblems = {
+  problems: Problem[];
+  /** Findings dropped because a target is not in the document. */
+  dropped: number;
+};
+
+function targetIds(doc: Project) {
+  const nl = netlist(doc);
+  const parts = new Set([...doc.boards, ...doc.components].map((c) => c.id));
+  const nets = new Set([...nl.nodes.map((n) => n.id), ...doc.nets.map((n) => n.id)]);
+  return (t: ProblemTarget): boolean => {
+    if (t.kind === "part" || t.kind === "pin") return parts.has(t.id);
+    if (t.kind === "net") return nets.has(t.id);
+    return true;
+  };
+}
+
+/**
+ * Maps the findings of a static check or of a run to Problems. A sealed item that is not revealed gets none, because
+ * the rules would give away its cause.
+ */
+export function staticProblems(
+  doc: Project,
+  findings: readonly Finding[],
+  opts: { sealedUnrevealed: boolean; source?: "static" | "run" },
+): StaticProblems {
+  if (opts.sealedUnrevealed) return { problems: [], dropped: 0 };
+  const known = targetIds(doc);
+  const problems: Problem[] = [];
+  let dropped = 0;
+  for (const f of findings) {
+    if (!f.targets.every(known)) {
+      dropped++;
+      continue;
+    }
+    problems.push({
+      id: [f.ruleId, ...f.targets.map((t) => (t.pin === undefined ? t.id : `${t.id}/${t.pin}`)).sort()].join(":"),
+      severity: f.severity,
+      source: opts.source ?? "static",
+      titleKey: f.messageKey,
+      args: f.args,
+      rule: f.ruleId,
+      targets: f.targets,
+      diagnosis: { cause_id: f.causeId, symptom_id: f.symptomId, evidence: f.evidence, hint_level: STATIC_HINT_LEVEL },
+    });
+  }
+  return { problems, dropped };
+}
 
 /** Everything wrong with the open project in one list: errors first, then by line, lines before lineless entries. */
 export function collectProblems({ diagnostics, run, flags }: ProblemInput): Problem[] {

@@ -15,11 +15,19 @@ import type {
   SliceResult,
 } from "@/sim/engine";
 import type { DebugPort, PauseEvent } from "@/sim/debug/breakpoints";
+import type { Descriptor } from "@/parts/descriptor";
+import { extractCodeFacts } from "@/sim/faults/code-facts";
+import { createFaultMonitor } from "@/sim/faults/monitor";
+import { buildNetView } from "@/sim/faults/netlist-view";
+import { runRules } from "@/sim/faults/rules";
+import { runFactsFrom } from "@/sim/faults/run-facts";
+import type { CodeFacts, Rule } from "@/sim/faults/types";
+import type { BoardId } from "@/lib/interp/profiles";
 import { createOrchestrator, type Orchestrator } from "@/sim/orchestrator";
 import type { ProbeHandle, ProbeTap, TraceChunk } from "@/sim/probe/tap";
 import { classHashes } from "@/sim/replay/trace";
 import { MAX_BREAKPOINTS_PER_FILE } from "@/sim/debug/breakpoints";
-import type { DebugStepReply, DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, SimEv, SimReq, SimRunState } from "./protocol";
+import type { DebugStepReply, DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 
 /** What the handler reads from an engine beyond `McuEngine`; the interpreter engines have both. */
 export type SimEngine = McuEngine & {
@@ -37,7 +45,17 @@ export interface SimHandlerDeps {
   makeDigital(): DigitalLayer;
   /** Without it every probe is refused. The tap stays outside the orchestrator so that probes never reach a hash. */
   makeTap?(): ProbeTap & Engine;
+  /** Without it `static-check` finds nothing and a run posts no `findings` events. */
+  faults?: {
+    describe(descriptorId: string): Descriptor | undefined;
+    rules(): readonly Rule[];
+  };
 }
+
+/** A part reference such as `core.uno-r3@1.0.0` names the board profile `uno-r3`. */
+export const boardIdOf = (descriptor: string): BoardId => descriptor.replace(/^core\./, "").replace(/@.*$/, "") as BoardId;
+
+const TERMINAL: readonly SimRunState[] = ["done", "halted", "limit"];
 
 const SLICE_WALL_MS = 12;
 /** At most 30 frames per simulated second. */
@@ -120,6 +138,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   let loaded: Extract<SimReq, { t: "load" }> | null = null;
   let pumpGen = 0;
   let emit: Emit = () => undefined;
+  const monitor = deps.faults && createFaultMonitor(deps.faults.rules());
 
   const post = (limit?: { kind: string; message: string }) => {
     emit({ t: "state", run, state, at: rt?.orch.now ?? 0, ...(limit ? { limit } : {}) });
@@ -128,6 +147,36 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function setState(next: SimRunState, limit?: { kind: string; message: string }) {
     state = next;
     post(limit);
+    if (rt && (next === "paused" || TERMINAL.includes(next))) postFindings(rt);
+  }
+
+  const boardOf = (net: SimNetlist) => ({ variant: boardIdOf(net.parts.find((p) => p.kind === "board")?.descriptor ?? "") });
+
+  function codeFactsOf(net: SimNetlist, sources: Record<string, string>, entry: string[]): CodeFacts | undefined {
+    return entry.length === 0 ? undefined : extractCodeFacts(sources, entry, boardOf(net));
+  }
+
+  function staticCheck(req: Extract<SimReq, { t: "static-check" }>): StaticCheckReply {
+    if (!deps.faults) return { findings: [], skipped: {}, errors: [] };
+    const view = buildNetView(req.net, deps.faults.describe);
+    const code = codeFactsOf(req.net, req.sources, Object.keys(req.sources).sort());
+    const { findings, skipped, errors } = runRules(deps.faults.rules(), { view, code });
+    return { findings, skipped, errors };
+  }
+
+  function postFindings(r: Runtime) {
+    if (!monitor || !deps.faults || !loaded) return;
+    const { net, program } = loaded;
+    const sources = Object.fromEntries(program.files.map((f) => [f.path, f.text]));
+    const facts = runFactsFrom({
+      endNs: r.orch.now,
+      states: [],
+      voltage: () => undefined,
+      current: () => undefined,
+      serial: [...(r.engine.serialLog ?? [])],
+    });
+    const findings = monitor.onRunEnd(facts, buildNetView(net, deps.faults.describe), codeFactsOf(net, sources, [program.entry]));
+    emit({ t: "event", run, event: { kind: "findings", findings } });
   }
 
   function stopPump() {
@@ -447,6 +496,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   return (msg, send) => {
     emit = send;
     if (msg.t === "check") return runChecks(msg.job, { budgetMs: msg.budgetMs });
+    if (msg.t === "static-check") return staticCheck(msg);
     if (msg.t === "diag") {
       if (!deps.diag || msg.op !== "stall") throw bad("diag is not enabled in this worker");
       for (;;);

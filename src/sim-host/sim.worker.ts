@@ -1,14 +1,14 @@
 import { INTERP_LANGUAGE } from "@/lib/interp";
-import type { BoardId } from "@/lib/interp/profiles";
+import { builtinRegistry } from "@/parts/builtin";
 import { serveWorker, type WorkerScopeLike } from "@/protocol";
 import { createDigitalNets } from "@/sim/digital/nets";
+import { defaultRules } from "@/sim/faults/rules";
 import { createProbeTap } from "@/sim/probe/tap";
 import { loadRegistry } from "@/sim/registry/entries";
 import { createInterpEngine } from "./engines/interp-engine";
-import { createSimHandler } from "./handler";
+import { boardIdOf, createSimHandler } from "./handler";
 
-/** A part reference such as `core.uno-r3@1.0.0` names the board profile `uno-r3`. */
-const boardIdOf = (descriptor: string): BoardId => descriptor.replace(/^core\./, "").replace(/@.*$/, "") as BoardId;
+const parts = builtinRegistry();
 
 /** The run has no analog solver in the worker yet, so a probe reads "not modelled" until one is wired in. */
 const noAnalog = {
@@ -37,6 +37,13 @@ serveWorker(
       });
     },
     makeDigital: createDigitalNets,
+    faults: {
+      describe: (id) => {
+        const [ref = "", version = ""] = id.split("@");
+        return parts.get(ref, version);
+      },
+      rules: defaultRules,
+    },
     makeTap: () => createProbeTap({ analog: noAnalog, registry: loadRegistry(), modelOf: () => [] }),
   }),
 );

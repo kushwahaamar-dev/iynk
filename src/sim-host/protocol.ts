@@ -9,6 +9,7 @@ import type {
   SimRunOptions,
   StepUnit,
 } from "@/sim/engine";
+import type { Finding } from "@/sim/faults/types";
 import type { ProbeHandle, ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 
 export type ControlOp = "run" | "pause" | "stop" | "reset" | "cancel";
@@ -37,6 +38,8 @@ export type SimReq =
   | { t: "speed"; run: number; x: number }
   | { t: "input"; run: number; input: HostInput }
   | { t: "check"; job: CheckJob; budgetMs?: number }
+  /** Runs the fault rules over a netlist. `sources` is path to text; the code rules read it when it is not empty. */
+  | { t: "static-check"; net: SimNetlist; sources: Record<string, string> }
   /** Probes belong to the run: a load or a reset clears them, and the UI adds them again. At most 64. */
   | { t: "probe.add"; run: number; spec: ProbeSpec }
   | { t: "probe.remove"; run: number; id: string }
@@ -77,7 +80,9 @@ export type SimEv =
             line: number;
             atNs: SimTime;
             bound?: Array<{ file: string; line: number }>;
-          };
+          }
+        /** Posted when a run ends and when it pauses. */
+        | { kind: "findings"; findings: Finding[] };
     };
 
 /** The ack of `debug` `step`: whether the step ran, and the state the run is in. */
@@ -88,6 +93,14 @@ export interface DebugStepReply {
 /** The ack of `load` and `step`. */
 export interface DiagnosticsReply {
   diagnostics: SimDiagnostic[];
+}
+
+/** The ack of `static-check`. */
+export interface StaticCheckReply {
+  findings: Finding[];
+  /** Rule id, then the reason a check was skipped, then how many times. */
+  skipped: Record<string, Record<string, number>>;
+  errors: Array<{ ruleId: string; message: string }>;
 }
 
 /** A request for a run the worker no longer has is acked with this and does nothing. */
