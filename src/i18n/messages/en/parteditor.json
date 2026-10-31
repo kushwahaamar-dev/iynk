@@ -261,5 +261,24 @@
       "removed": "Row {n} removed. The table has {count} rows.",
       "completed": "Added {count} rows for the missing input combinations."
     }
+  },
+  "palette": {
+    "mine": "Mine",
+    "from": "From {sender}",
+    "imported": "Imported",
+    "addPart": "Add part",
+    "importPack": "Import pack",
+    "addNamed": "Add {name} as a new part",
+    "notSaved": "Parts will not be saved in this browser mode.",
+    "reading": "Reading the pack",
+    "importFailed": "The pack could not be added. Nothing was changed.",
+    "conflict": "A different part with the same id and version is already saved. Nothing was changed.",
+    "added": {
+      "one": "{count} part added to your library.",
+      "other": "{count} parts added to your library."
+    },
+    "used": "Added to this project.",
+    "pickPack": "Choose a part pack",
+    "readFailed": "That file could not be read."
   }
 }

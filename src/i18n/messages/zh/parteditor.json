@@ -261,5 +261,24 @@
       "removed": "已移除第 {n} 行。表中共有 {count} 行。",
       "completed": "已为缺少的输入组合添加 {count} 行。"
     }
+  },
+  "palette": {
+    "mine": "我的",
+    "from": "来自 {sender}",
+    "imported": "已导入",
+    "addPart": "添加元件",
+    "importPack": "导入元件包",
+    "addNamed": "将 {name} 添加为新元件",
+    "notSaved": "在此浏览器模式下，元件不会被保存。",
+    "reading": "正在读取元件包",
+    "importFailed": "无法添加该元件包。没有任何更改。",
+    "conflict": "已保存了相同 ID 和版本的另一个元件。没有任何更改。",
+    "added": {
+      "one": "已向你的库添加 {count} 个元件。",
+      "other": "已向你的库添加 {count} 个元件。"
+    },
+    "used": "已添加到此项目。",
+    "pickPack": "选择元件包",
+    "readFailed": "无法读取该文件。"
   }
 }

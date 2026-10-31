@@ -1,3 +1,4 @@
+import type { Trust } from "./descriptor.ts";
 import type { PartRegistry } from "./registry.ts";
 
 export type ModelLabel = "modelled" | "partly-modelled" | "not-modelled-yet";
@@ -8,10 +9,24 @@ export interface PartEntry {
   category: string;
   keywords: string[];
   model: ModelLabel;
+  trust: Trust;
+  tier: string;
+  /** Who a pack came from, for an imported part. */
+  sender?: string;
   /** Body size in mm, for drawing the palette thumbnail. */
   widthMm: number;
   heightMm: number;
 }
+
+export interface SearchFilter {
+  /** `core` ships with iynk, `mine` was saved here, `buddies` came in a pack. */
+  source?: "core" | "mine" | "buddies";
+  /** Leaves out parts the simulator does not model yet. */
+  runnable?: boolean;
+}
+
+const TRUST_OF_SOURCE: Record<NonNullable<SearchFilter["source"]>, Trust> = { core: "core", mine: "local", buddies: "imported" };
+const TRUST_OF_ORIGIN = { core: "core", "local-user": "local", "imported-pack": "imported" } as const;
 
 type Folded = { lang: string; name: string; words: string[]; keywords: string[] };
 
@@ -37,19 +52,27 @@ function foldedOf(entry: PartEntry, lang: string): Folded {
   return folded;
 }
 
-/** The parts a palette offers: the newest version of each, except wiring surfaces, which the project adds itself. */
-export function buildPartIndex(registry: PartRegistry): PartEntry[] {
+/**
+ * The parts a palette offers: the newest version of each, except wiring surfaces, which the project adds itself.
+ * `senders` maps `id@version` to the sender of the pack a part came in.
+ */
+export function buildPartIndex(registry: PartRegistry, senders: ReadonlyMap<string, string> = new Map()): PartEntry[] {
   const entries: PartEntry[] = [];
   for (const ref of new Set(registry.list().map((p) => p.ref))) {
     const d = registry.latest(ref);
     if (!d || d.identity.tags?.includes(SURFACE_TAG)) continue;
     const body = d.dimensions?.body ?? d.dimensions?.board;
+    const trust = TRUST_OF_ORIGIN[registry.originOf(ref, d.version) ?? "core"];
+    const sender = senders.get(`${ref}@${d.version}`);
     entries.push({
       ref,
       name: d.identity.model,
       category: d.identity.category,
-      keywords: [...(d.identity.tags ?? []), ...(d.identity.legacy_ids ?? []), ...(d.identity.generic ? [] : [d.identity.manufacturer])],
+      keywords: [ref, ...(d.identity.tags ?? []), ...(d.identity.legacy_ids ?? []), ...(d.identity.mpn ? [d.identity.mpn] : []), ...(d.identity.generic ? [] : [d.identity.manufacturer])],
       model: d.simulation.status,
+      trust,
+      tier: d.simulation.tier,
+      ...(sender ? { sender } : {}),
       widthMm: body?.w ?? 0,
       heightMm: body?.h ?? 0,
     });
@@ -74,15 +97,17 @@ function rankOf(folded: Folded, query: string, tokens: string[]): number | null 
 /**
  * Entries that match `query`, best first: exact name, name prefix, every query word starting a word of the name, then
  * the same over the category and keywords. Ties go by name. Case and Latin accents do not matter. An empty query
- * lists everything by category.
+ * lists everything by category. A filter narrows the index first.
  */
-export function searchParts(index: readonly PartEntry[], query: string, lang: string): PartEntry[] {
+export function searchParts(index: readonly PartEntry[], query: string, lang: string, filter: SearchFilter = {}): PartEntry[] {
+  const wanted = filter.source && TRUST_OF_SOURCE[filter.source];
+  const pool = index.filter((e) => (wanted === undefined || e.trust === wanted) && (!filter.runnable || e.model !== "not-modelled-yet"));
   const q = fold(query, lang).trim().replace(/\s+/g, " ");
-  if (q === "") return [...index].sort(byCategoryThenName(lang));
+  if (q === "") return pool.sort(byCategoryThenName(lang));
   const tokens = wordsOf(q);
   if (tokens.length === 0) return [];
   const ranked: { entry: PartEntry; rank: number }[] = [];
-  for (const entry of index) {
+  for (const entry of pool) {
     const rank = rankOf(foldedOf(entry, lang), q, tokens);
     if (rank !== null) ranked.push({ entry, rank });
   }

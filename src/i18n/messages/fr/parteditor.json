@@ -261,5 +261,24 @@
       "removed": "Ligne {n} retirée. La table compte {count} lignes.",
       "completed": "{count} lignes ajoutées pour les combinaisons d'entrée manquantes."
     }
+  },
+  "palette": {
+    "mine": "Les miennes",
+    "from": "De {sender}",
+    "imported": "Importée",
+    "addPart": "Ajouter une pièce",
+    "importPack": "Importer un pack",
+    "addNamed": "Ajouter {name} comme nouvelle pièce",
+    "notSaved": "Dans ce mode de navigateur, les pièces ne seront pas enregistrées.",
+    "reading": "Lecture du pack",
+    "importFailed": "Le pack n'a pas pu être ajouté. Rien n'a été modifié.",
+    "conflict": "Une autre pièce avec le même id et la même version est déjà enregistrée. Rien n'a été modifié.",
+    "added": {
+      "one": "{count} pièce ajoutée à ta bibliothèque.",
+      "other": "{count} pièces ajoutées à ta bibliothèque."
+    },
+    "used": "Ajouté à ce projet.",
+    "pickPack": "Choisir un pack de pièces",
+    "readFailed": "Ce fichier n'a pas pu être lu."
   }
 }

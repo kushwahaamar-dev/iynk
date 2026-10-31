@@ -261,5 +261,24 @@
       "removed": "Zeile {n} entfernt. Die Tabelle hat {count} Zeilen.",
       "completed": "{count} Zeilen für die fehlenden Eingangskombinationen hinzugefügt."
     }
+  },
+  "palette": {
+    "mine": "Meins",
+    "from": "Von {sender}",
+    "imported": "Importiert",
+    "addPart": "Teil hinzufügen",
+    "importPack": "Paket importieren",
+    "addNamed": "{name} als neues Teil hinzufügen",
+    "notSaved": "In diesem Browsermodus werden Teile nicht gespeichert.",
+    "reading": "Das Paket wird gelesen",
+    "importFailed": "Das Paket konnte nicht hinzugefügt werden. Es wurde nichts geändert.",
+    "conflict": "Ein anderes Teil mit derselben ID und Version ist schon gespeichert. Es wurde nichts geändert.",
+    "added": {
+      "one": "{count} Teil zu deiner Bibliothek hinzugefügt.",
+      "other": "{count} Teile zu deiner Bibliothek hinzugefügt."
+    },
+    "used": "Zu diesem Projekt hinzugefügt.",
+    "pickPack": "Teilepaket auswählen",
+    "readFailed": "Diese Datei konnte nicht gelesen werden."
   }
 }

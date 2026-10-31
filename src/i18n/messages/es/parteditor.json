@@ -261,5 +261,24 @@
       "removed": "Fila {n} quitada. La tabla tiene {count} filas.",
       "completed": "Se añadieron {count} filas para las combinaciones de entrada que faltaban."
     }
+  },
+  "palette": {
+    "mine": "Mía",
+    "from": "De {sender}",
+    "imported": "Importada",
+    "addPart": "Añadir pieza",
+    "importPack": "Importar paquete",
+    "addNamed": "Añadir {name} como pieza nueva",
+    "notSaved": "En este modo del navegador las piezas no se guardarán.",
+    "reading": "Leyendo el paquete",
+    "importFailed": "No se pudo añadir el paquete. No se cambió nada.",
+    "conflict": "Ya hay guardada otra pieza con el mismo id y la misma versión. No se cambió nada.",
+    "added": {
+      "one": "{count} pieza añadida a tu biblioteca.",
+      "other": "{count} piezas añadidas a tu biblioteca."
+    },
+    "used": "Añadido a este proyecto.",
+    "pickPack": "Elige un paquete de piezas",
+    "readFailed": "No se pudo leer ese archivo."
   }
 }

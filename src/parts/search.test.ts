@@ -10,6 +10,8 @@ const entry = (ref: string, name: string, category: string, keywords: string[] =
   category,
   keywords,
   model: "partly-modelled",
+  trust: "core",
+  tier: "T1",
   widthMm: 5,
   heightMm: 5,
 });
