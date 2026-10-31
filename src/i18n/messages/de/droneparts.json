@@ -1,0 +1,119 @@
+{
+  "title": "Eigenes Teil hinzufügen",
+  "intro": "Gib die Werte aus einem Datenblatt oder aus deiner eigenen Messung ein. Das Teil wird nur auf diesem Gerät gespeichert.",
+  "kind": {
+    "label": "Teiletyp",
+    "motor": "Motor und Propeller",
+    "pack": "Akku",
+    "esc": "ESC"
+  },
+  "motor": {
+    "heading": "Motor",
+    "name": "Name",
+    "kv": "kv (U/min pro Volt)",
+    "r": "Widerstand (Ohm)",
+    "i0": "Leerlaufstrom (A)",
+    "vMax": "Höchste Spannung (V)",
+    "iMax": "Höchster Strom (A)",
+    "mass": "Masse (g)"
+  },
+  "prop": {
+    "heading": "Propeller",
+    "toggle": "Propeller an diesen Motor anpassen",
+    "toggleHint": "Ein Propeller braucht Datenblattzeilen. Schub und Leistung werden daran angepasst.",
+    "name": "Name",
+    "diameter": "Durchmesser (Zoll)",
+    "pitch": "Steigung (Zoll)",
+    "blades": "Blätter",
+    "mass": "Masse (g)"
+  },
+  "rows": {
+    "label": "Datenblattzeilen",
+    "hint": "Eine Zeile pro Zeile: Akkuspannung (V), Gas (0 bis 1), Schub (g), Strom (A). Trennen mit Tab, Semikolon oder Komma. Bis zu {max} Zeilen.",
+    "placeholder": "11,1; 0,5; 420; 6,5",
+    "parsed": "Gelesene Zeilen",
+    "count": {
+      "one": "{count} Zeile gelesen",
+      "other": "{count} Zeilen gelesen"
+    },
+    "volts": "Akku V",
+    "throttle": "Gas",
+    "thrust": "Schub g",
+    "current": "Strom A",
+    "error": {
+      "tooMany": "{count} Zeilen eingefügt. Das Limit ist {max}.",
+      "columns": "Zeile {line} braucht vier Spalten.",
+      "notNumber": "Zeile {line} enthält einen Wert, der keine Zahl ist."
+    }
+  },
+  "fit": {
+    "heading": "Angepasste Werte",
+    "ct0": "Schubbeiwert ct0",
+    "cp0": "Leistungsbeiwert cp0",
+    "thrust": "Schubabweichung",
+    "current": "Stromabweichung",
+    "band": "Band ±{percent} %. Das ist eine Anpassungsabweichung, keine Toleranz.",
+    "needed": "Füge mindestens vier Datenblattzeilen ein, die zu diesem Motor und Propeller passen, um die Anpassung zu sehen.",
+    "unsettled": "Die Anpassung ist nicht zur Ruhe gekommen. Prüfe die Zeilen."
+  },
+  "esc": {
+    "heading": "ESC",
+    "name": "Name",
+    "current": "Dauerstrom (A)",
+    "burst": "Spitzenstrom (A)",
+    "channels": "Motorkanäle",
+    "protocol": "Signalprotokoll",
+    "efficiency": "Wirkungsgrad (0 bis 1)",
+    "vMax": "Höchste Spannung (V)",
+    "mass": "Masse (g)"
+  },
+  "pack": {
+    "heading": "Akku",
+    "name": "Name",
+    "cells": "Zellen in Reihe",
+    "parallel": "Zellen parallel",
+    "capacity": "Kapazität (mAh)",
+    "c": "Dauerrate (C)",
+    "r": "Zellwiderstand (mOhm)",
+    "rHint": "Leer lassen, um ihn aus der Kapazität abzuleiten.",
+    "chemistry": "Chemie",
+    "mass": "Masse (g)"
+  },
+  "source": {
+    "heading": "Quelle",
+    "title": "Titel der Quelle",
+    "titleHint": "Das Datenblatt, der Test oder die Seite, aus der die Werte stammen. Jedes Teil braucht eine Quelle.",
+    "url": "Link (optional)",
+    "kind": "Art der Quelle",
+    "kinds": {
+      "manufacturer-datasheet": "Herstellerdatenblatt",
+      "own-measurement": "Meine eigene Messung",
+      "community": "Beitrag aus der Community"
+    },
+    "note": "Notiz (optional)"
+  },
+  "license": {
+    "label": "Lizenz",
+    "hint": "Bleibt das Feld leer, erhält das Teil eine Lizenz für selbst eingebrachte Teile."
+  },
+  "version": "Version",
+  "issues": {
+    "heading": "Zu beheben",
+    "number": "Gib eine Zahl ein.",
+    "name": "Der Name braucht Buchstaben oder Ziffern.",
+    "duplicate": "Ein anderes Teil hier hat denselben Namen.",
+    "source": "Gib an, woher die Werte stammen.",
+    "blocked": {
+      "one": "{count} Punkt vor dem Speichern beheben.",
+      "other": "{count} Punkte vor dem Speichern beheben."
+    }
+  },
+  "save": {
+    "action": "Teil speichern",
+    "saving": "Speichern",
+    "saved": "{names} gespeichert. Es ist jetzt in der Teileauswahl.",
+    "conflict": "Ein Teil mit dieser ID und Version ist schon mit anderen Werten gespeichert. Ändere die Version, um dieses zu speichern.",
+    "failed": "Das Teil konnte auf diesem Gerät nicht gespeichert werden.",
+    "loading": "Teilebibliothek wird geöffnet"
+  }
+}
