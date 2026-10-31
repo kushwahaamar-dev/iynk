@@ -6,6 +6,7 @@ import type {
   ArtMode,
   ArtProvider,
   DrawItem,
+  DrawList,
   DrawStats,
   Hit,
   HitTarget,
@@ -36,6 +37,8 @@ export type DrawListInput = {
   budget?: number;
   /** Draws every part at this level and ignores the budget. For the perf harness only. */
   forceLod?: LodLevel;
+  /** Items and targets a view definition built itself, in place of the placements and wires of the view. */
+  fixed?: DrawList;
 };
 
 const Z_SURFACE = 0;
@@ -188,6 +191,21 @@ function partElements(p: PlacedPart, lod: LodLevel, art: ArtProvider, mode: ArtM
   return body;
 }
 
+function overlayItem(o: Overlay): DrawItem {
+  return {
+    id: o.id,
+    kind: "overlay",
+    z: Z_OVERLAY,
+    lod: 2,
+    xMm: o.xMm,
+    yMm: o.yMm,
+    rotation: 0,
+    bbox: { x0: o.xMm, y0: o.yMm, x1: o.xMm, y1: o.yMm },
+    elements: o.elements,
+    title: "",
+  };
+}
+
 function routeOf(wire: Wire, from: PointMm, to: PointMm): PointMm[] {
   const waypoints = (wire.route_mm ?? []).map(([x, y]) => ({ x: x as number, y: y as number }));
   if (waypoints.length === 0 && from.x !== to.x && from.y !== to.y) waypoints.push({ x: to.x, y: from.y });
@@ -202,6 +220,7 @@ export function buildDrawList(input: DrawListInput): { scene: Scene; diff: Scene
   if (!view) throw new RangeError(`no view ${input.viewId}`);
 
   const prevItems = new Map<string, DrawItem>((input.prev?.viewId === view.id ? input.prev.items : []).map((i) => [i.id, i]));
+  if (input.fixed) return buildFixed(input, input.fixed, prevItems, started);
   const components = new Map(state.components.map((c) => [c.id, c]));
   const shapes = new Map<string, ResolvedPartShape>();
   const shapeOf = (defRef: string): ResolvedPartShape => {
@@ -327,18 +346,7 @@ export function buildDrawList(input: DrawListInput): { scene: Scene; diff: Scene
     targets.push({ item: label.id, hit: { kind: "label", id: label.id }, bbox });
   }
 
-  const overlayItems: DrawItem[] = input.overlays.map((o) => ({
-    id: o.id,
-    kind: "overlay",
-    z: Z_OVERLAY,
-    lod: 2,
-    xMm: o.xMm,
-    yMm: o.yMm,
-    rotation: 0,
-    bbox: { x0: o.xMm, y0: o.yMm, x1: o.xMm, y1: o.yMm },
-    elements: o.elements,
-    title: "",
-  }));
+  const overlayItems = input.overlays.map(overlayItem);
 
   const index = input.index ?? linearIndex(targets);
   const halfW = (viewport.w / viewport.k / 2) * (1 + 2 * CULL_MARGIN_SCREENS);
@@ -391,23 +399,74 @@ export function buildDrawList(input: DrawListInput): { scene: Scene; diff: Scene
   partItems.sort((a, b) => order.get(a.id)! - order.get(b.id)!);
   const items = [...partItems, ...visibleWires, ...visibleLabels, ...overlayItems].sort((a, b) => a.z - b.z);
 
+  return finish({ viewId: view.id, items, targets, index, lod: lodCounts, culled, dropped, started, prevItems });
+}
+
+type Built = {
+  viewId: string;
+  items: DrawItem[];
+  targets: readonly HitTarget[];
+  index: SpatialIndex;
+  lod: [number, number, number];
+  culled: number;
+  dropped: number;
+  started: number;
+  prevItems: ReadonlyMap<string, DrawItem>;
+};
+
+function finish(b: Built): { scene: Scene; diff: SceneDiff } {
   const diff: SceneDiff = { added: [], changed: [], removed: [] };
   const seen = new Set<string>();
-  for (const item of items) {
+  for (const item of b.items) {
     seen.add(item.id);
-    const before = prevItems.get(item.id);
+    const before = b.prevItems.get(item.id);
     if (!before) diff.added.push(item.id);
     else if (!sameItem(before, item)) diff.changed.push(item.id);
   }
-  for (const id of prevItems.keys()) if (!seen.has(id)) diff.removed.push(id);
+  for (const id of b.prevItems.keys()) if (!seen.has(id)) diff.removed.push(id);
 
   const stats: DrawStats = {
-    items: items.length,
-    elements: items.reduce((n, i) => n + i.elements.length, 0),
-    lod: lodCounts,
-    culled,
-    dropped,
-    buildMs: performance.now() - started,
+    items: b.items.length,
+    elements: b.items.reduce((n, i) => n + i.elements.length, 0),
+    lod: b.lod,
+    culled: b.culled,
+    dropped: b.dropped,
+    buildMs: performance.now() - b.started,
   };
-  return { scene: { viewId: view.id, items, targets, index, stats }, diff };
+  return { scene: { viewId: b.viewId, items: b.items, targets: b.targets, index: b.index, stats }, diff };
+}
+
+function buildFixed(input: DrawListInput, fixed: DrawList, prevItems: ReadonlyMap<string, DrawItem>, started: number) {
+  const { viewport } = input;
+  const halfW = (viewport.w / viewport.k / 2) * (1 + 2 * CULL_MARGIN_SCREENS);
+  const halfH = (viewport.h / viewport.k / 2) * (1 + 2 * CULL_MARGIN_SCREENS);
+  const window = { x0: viewport.cx_mm - halfW, y0: viewport.cy_mm - halfH, x1: viewport.cx_mm + halfW, y1: viewport.cy_mm + halfH };
+
+  const lod: [number, number, number] = [0, 0, 0];
+  const items: DrawItem[] = [];
+  for (const item of fixed.items) {
+    if (!touches(item.bbox, window)) continue;
+    const level = item.kind === "part" ? (input.forceLod ?? chooseLod(prevItems.get(item.id)?.lod, viewport.k * Math.max(item.bbox.x1 - item.bbox.x0, item.bbox.y1 - item.bbox.y0))) : 2;
+    lod[level]++;
+    if (level === 0) {
+      const { x0, y0, x1, y1 } = item.bbox;
+      items.push({ ...item, lod: 0, elements: [{ t: "rect", x: x0, y: y0, w: x1 - x0, h: y1 - y0, fill: "var(--studio-body)", stroke: "var(--studio-ink)", sw: 0.3 }] });
+    } else {
+      items.push({ ...item, lod: level });
+    }
+  }
+  items.sort((a, b) => a.z - b.z);
+  const overlays = input.overlays.map(overlayItem);
+  const index = input.index ?? linearIndex(fixed.targets);
+  return finish({
+    viewId: input.viewId,
+    items: [...items, ...overlays],
+    targets: fixed.targets,
+    index,
+    lod,
+    culled: fixed.items.length - items.length,
+    dropped: 0,
+    started,
+    prevItems,
+  });
 }

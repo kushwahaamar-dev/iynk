@@ -49,6 +49,9 @@ export interface SpatialIndex {
   pick(p: PointMm, slopMm: number): Hit | null;
 }
 
+/** What a view builds for itself: the items to draw and the targets a pointer can land on. */
+export type DrawList = { items: readonly DrawItem[]; targets: readonly HitTarget[] };
+
 export type DrawItemKind = "surface" | "part" | "wire" | "air" | "hole" | "label" | "overlay";
 
 export type DrawItem = {

@@ -1,5 +1,7 @@
 import { ZOOM_MAX, ZOOM_MIN } from "../engine/constants.ts";
 import type { Viewport } from "../engine/types.ts";
+import { VIEW_KINDS } from "../views/registry.ts";
+import type { ViewKind } from "../views/registry.ts";
 import { createStore } from "./select.ts";
 import type { Store } from "./select.ts";
 
@@ -13,6 +15,7 @@ export type UiState = {
   gridOn: boolean;
   singleKeyShortcuts: boolean;
   viewports: Record<string, Viewport>;
+  activeView: ViewKind;
 };
 
 export type UiStore = Store<UiState> & { set<K extends keyof UiState>(key: K, value: UiState[K]): void };
@@ -32,6 +35,7 @@ const DEFAULTS: UiState = {
   gridOn: true,
   singleKeyShortcuts: true,
   viewports: {},
+  activeView: "breadboard",
 };
 
 const finite = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
@@ -68,6 +72,7 @@ function normalise(raw: unknown): UiState {
     gridOn: typeof r.gridOn === "boolean" ? r.gridOn : DEFAULTS.gridOn,
     singleKeyShortcuts: typeof r.singleKeyShortcuts === "boolean" ? r.singleKeyShortcuts : DEFAULTS.singleKeyShortcuts,
     viewports: viewportsOf(r.viewports),
+    activeView: oneOf(r.activeView, VIEW_KINDS, DEFAULTS.activeView),
   };
 }
 
