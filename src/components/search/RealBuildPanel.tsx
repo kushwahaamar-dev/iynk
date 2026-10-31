@@ -9,7 +9,7 @@ import type { DesignPick, DroneDesign } from "@/content/schema";
 import { useLocale } from "@/i18n/client";
 import { SHORT_FLIGHT_MIN } from "@/lib/drone/calc";
 import { isDesignPick } from "@/lib/drone/design";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import { boardBom, droneBom, offerParts, roboticsBom, type BomLine, type Slot } from "@/lib/search/bom";
 import { fetchOffers, type FailCode } from "@/lib/search/client";
 import { lineCost, listingsNeeded, sumMoney } from "@/lib/search/cost";
@@ -26,7 +26,7 @@ type Bom =
   | { status: "missing" }
   | { status: "ready"; lines: BomLine[]; drone: { design: DroneDesign; pick: DesignPick } | null };
 
-/** The pick in a Drone Lab store (src/lib/dronelab/store.ts keeps it as state.pick). */
+/** The pick in a Drone Lab store (src/lib/dronelab/workshop.ts keeps it as state.pick). */
 function storePick(store: LabStore, design: DroneDesign | null): DesignPick | null {
   const pick = (store.getState() as { pick?: Partial<DesignPick> } | null)?.pick;
   return design && pick && isDesignPick(design, pick) ? pick : null;

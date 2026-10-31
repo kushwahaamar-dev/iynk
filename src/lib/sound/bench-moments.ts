@@ -2,7 +2,7 @@ import type { FailureMode, FigureState, RoboticsContent } from "@/content/schema
 import { progressKey } from "@/lib/progress/keys";
 import { allPass } from "@/lib/robotics/runner";
 import { activeFaults } from "@/lib/robotics/steps";
-import type { BenchState } from "@/lib/robotics/store";
+import type { BenchState } from "@/lib/robotics/session";
 import type { Moment } from "./moments";
 
 /** A robotics bench's moments (see moments.ts): steps done, task runs and results, faults appearing, steps refused. */

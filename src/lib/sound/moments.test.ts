@@ -2,9 +2,9 @@
 import { describe, expect, test } from "vitest";
 import { initialState as boardInitial, reducer as boardReducer, type BoardLabState } from "@/lib/boardlab/store";
 import { quad5Fixture as quad5 } from "@/lib/dronelab/__fixtures__/quad5";
-import { initialState as droneInitial, reduce as droneReduce, type DroneLabState } from "@/lib/dronelab/store";
+import { initialState as droneInitial, reduce as droneReduce, type DroneLabState } from "@/lib/dronelab/workshop";
 import { fixtureBench as bench } from "@/lib/robotics/__fixtures__/bench";
-import { createBenchStore, type BenchState } from "@/lib/robotics/store";
+import { initialBenchState, reduceBench, type BenchAction, type BenchState } from "@/lib/robotics/session";
 import { benchMoments } from "./bench-moments";
 import { boardMoments, droneMoments, heldTones, type Moment } from "./moments";
 
@@ -74,19 +74,20 @@ describe("held tones", () => {
 describe("bench moments", () => {
   const setup = { bench, starters: { "blink-led": "void setup() {}\nvoid loop() {}" }, solutions: { "blink-led": bench.tasks[0].solution }, texts: {} };
 
+  const play = (...actions: BenchAction[]) => {
+    const states = [initialBenchState(setup)];
+    for (const action of actions) states.push(reduceBench(setup, states[states.length - 1], action)[0]);
+    return states;
+  };
+
   test("steps done, a refused step and a fault appearing", () => {
-    const store = createBenchStore(setup);
-    store.connect({ run: () => {} });
-    const out: Moment[] = [];
-    let prev: BenchState = store.getState();
-    store.subscribe(() => {
-      out.push(...benchMoments(bench, prev, store.getState()));
-      prev = store.getState();
-    });
-    store.dispatch({ type: "step/do", step: "place" });
-    store.dispatch({ type: "figure/state", state: { build: "bare", status: "off" } });
-    store.dispatch({ type: "figure/state", state: { build: "tht", status: "off" } });
-    store.dispatch({ type: "figure/state", state: { build: "tht", status: "off", fault: "reversed:D1" } });
+    const states = play(
+      { type: "step/do", step: "place" },
+      { type: "figure/state", state: { build: "bare", status: "off" } },
+      { type: "figure/state", state: { build: "tht", status: "off" } },
+      { type: "figure/state", state: { build: "tht", status: "off", fault: "reversed:D1" } },
+    );
+    const out: Moment[] = states.slice(1).flatMap((s, i) => benchMoments(bench, states[i], s));
     expect(out).toEqual([
       { kind: "refused" },
       { kind: "step", key: "robotics:led-resistor:step:strip" },
@@ -96,14 +97,12 @@ describe("bench moments", () => {
   });
 
   test("a task run is an attempt, then a pass or a fail", () => {
-    const store = createBenchStore(setup);
-    store.connect({ run: () => {} });
-    const states: BenchState[] = [store.getState()];
-    store.subscribe(() => states.push(store.getState()));
-    store.dispatch({ type: "task/run", task: "blink-led" });
-    store.dispatch({ type: "task/result", task: "blink-led", result: { status: "ok", checks: [{ pass: true }], serial: [], ms: 10 } });
-    store.dispatch({ type: "task/run", task: "blink-led" });
-    store.dispatch({ type: "task/result", task: "blink-led", result: { status: "error", line: 1, message: "x", serial: [] } });
+    const states = play(
+      { type: "task/run", task: "blink-led" },
+      { type: "task/result", task: "blink-led", result: { status: "ok", checks: [{ pass: true }], serial: [], ms: 10 } },
+      { type: "task/run", task: "blink-led" },
+      { type: "task/result", task: "blink-led", result: { status: "error", line: 1, message: "x", serial: [] } },
+    );
     const out = states.slice(1).flatMap((s, i) => benchMoments(bench, states[i], s));
     const key = "robotics:led-resistor:task:blink-led";
     expect(out).toEqual([
