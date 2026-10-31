@@ -30,7 +30,19 @@
     "notSavedToFile": "Non enregistré"
   },
   "board": {
-    "unoR3": "Arduino Uno R3"
+    "unoR3": "Arduino Uno R3",
+    "pin": "Broche",
+    "role": "Rôle",
+    "net": "Réseau",
+    "connectedTo": "Connecté à",
+    "state": "État actuel",
+    "noneConnected": "Rien de connecté",
+    "wireThis": "Relier cette broche à...",
+    "ports": "Ports",
+    "notRunning": "À l'arrêt",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin} : {level}"
   },
   "row": {
     "open": "Ouvrir {name}",
@@ -253,5 +265,136 @@
       "hint": "Les raccourcis à une seule touche se désactivent dans les réglages d'affichage.",
       "close": "Fermer"
     }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "Platine d'essai",
+      "schematic": "Schéma",
+      "board": "Carte"
+    },
+    "tablist": "Vues",
+    "auto": "auto",
+    "arrange": "Organiser",
+    "schematicReadOnlyWire": "Câblez dans la vue de la platine d'essai. Le schéma montre les mêmes connexions.",
+    "sceneError": "Cette vue n'a pas pu être dessinée. Les autres vues fonctionnent toujours.",
+    "cmd": {
+      "breadboard": "Vue platine d'essai",
+      "schematic": "Vue schéma",
+      "board": "Vue carte"
+    }
+  },
+  "history": {
+    "title": "Historique",
+    "nameThis": "Nommer cette version",
+    "named": "Nommées",
+    "auto": "Automatiques",
+    "compare": "Comparer",
+    "restore": "Restaurer cette version",
+    "restoreHelp": "La restauration ajoute des modifications par-dessus votre travail. Vous pouvez l'annuler.",
+    "empty": "Aucune version pour l'instant.",
+    "limit": "La liste garde les {max} versions les plus récentes.",
+    "mismatch": "Cette version a échoué à sa vérification et n'a pas été ouverte.",
+    "diff": {
+      "added": "Ajouté : {items}",
+      "removed": "Supprimé : {items}",
+      "changed": "Modifié : {items}",
+      "nets": "Connexions différentes : {count}",
+      "files": "Fichiers différents : {count}"
+    },
+    "storeFailed": "La version n'a pas pu être enregistrée : {reason}",
+    "nameLabel": "Nom de la version (1 à 80 caractères)",
+    "labelRequired": "Saisissez un nom.",
+    "labelTooLong": "Utilisez au plus {max} caractères.",
+    "runLabel": "Exécution",
+    "fileLabel": "Fichier enregistré"
+  },
+  "checks": {
+    "title": "Vérifications",
+    "add": "Ajouter une vérification",
+    "run": "Lancer les vérifications",
+    "pass": "Réussie",
+    "fail": "Échouée",
+    "notRun": "Non lancée",
+    "kind": {
+      "runs": "S'exécute sans erreur",
+      "serial": "La sortie série contient",
+      "pin-level": "Niveau de la broche à un instant",
+      "pin-toggles": "La broche bascule",
+      "pwm": "Rapport cyclique PWM à un instant",
+      "tone": "Fréquence de la tonalité à un instant",
+      "servo": "Angle du servo à un instant",
+      "responds": "La broche répond à une entrée",
+      "code": "Le code contient"
+    },
+    "hiddenNote": "Masqué ne cache la valeur qu'à l'écran. Toute personne ayant le fichier peut la lire.",
+    "badPin": "Cette carte n'a pas de broche nommée {pin}.",
+    "needsRun": "Lancez l'exécution pour voir les résultats.",
+    "noSource": "Ce projet n'a pas de firmware pour la carte.",
+    "unsupportedLanguage": "Pour le langage de cette carte, seules les vérifications d'exécution, de série et de code fonctionnent.",
+    "limit": "L'exécution s'est arrêtée à la limite de 20 secondes."
+  },
+  "ino": {
+    "import": "Importer un croquis",
+    "export": "Exporter en .ino",
+    "wiringCsv": "Tableau de câblage (CSV)",
+    "lossTitle": "Ce qui change",
+    "lossNone": "Rien n'est perdu.",
+    "lossBoard": "Carte choisie : {board}. Changez-la si ce n'est pas la bonne.",
+    "unsupported": "Ligne {line} : {message}",
+    "banner": "Exporté depuis une simulation. Il se peut qu'il ne compile pas tel quel.",
+    "tooBig": "Ce fichier dépasse {max} caractères.",
+    "notText": "Ce fichier n'est pas du texte.",
+    "confirm": "Créer le projet",
+    "firstOnly": "Seul le premier problème est affiché. Corrigez-le et importez à nouveau.",
+    "noEntry": "Aucun fichier .ino n'a été trouvé.",
+    "empty": "Ce fichier est vide.",
+    "badPath": "Le nom de fichier {name} n'est pas autorisé.",
+    "tooMany": "Au plus {max} fichiers.",
+    "cancel": "Annuler",
+    "exportBlocked": "Ce projet n'a pas de croquis Arduino à exporter."
+  },
+  "align": {
+    "left": "Aligner à gauche",
+    "right": "Aligner à droite",
+    "top": "Aligner en haut",
+    "bottom": "Aligner en bas",
+    "centerH": "Centrer horizontalement",
+    "centerV": "Centrer verticalement",
+    "distributeH": "Répartir horizontalement",
+    "distributeV": "Répartir verticalement",
+    "needThree": "Choisissez au moins trois pièces à répartir.",
+    "group": "Grouper",
+    "ungroup": "Dissocier",
+    "groupNeedTwo": "Choisissez au moins deux éléments à grouper.",
+    "groupNesting": "Un groupe ne peut pas contenir un autre groupe."
+  },
+  "projectMenu": {
+    "label": "Projet",
+    "history": "Historique...",
+    "saveFile": "Enregistrer dans un fichier",
+    "historyTab": "Historique"
+  },
+  "rail": {
+    "history": "Historique",
+    "checks": "Vérifications"
+  },
+  "dialog": {
+    "cancel": "Annuler"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "Canevas",
+      "code": "Code",
+      "run": "Exécuter",
+      "project": "Projet"
+    },
+    "tabs": "Sections du studio",
+    "sheetClose": "Fermer"
+  },
+  "a11y": {
+    "viewAnnounce": "Vue {view}",
+    "groupMade": "{count} éléments groupés.",
+    "restored": "Version {label} restaurée.",
+    "pinLevel": "{pin} est à {level} ({mode})"
   }
 }

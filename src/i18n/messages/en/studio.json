@@ -30,7 +30,19 @@
     "notSavedToFile": "Not saved"
   },
   "board": {
-    "unoR3": "Arduino Uno R3"
+    "unoR3": "Arduino Uno R3",
+    "pin": "Pin",
+    "role": "Role",
+    "net": "Net",
+    "connectedTo": "Connected to",
+    "state": "State now",
+    "noneConnected": "Nothing connected",
+    "wireThis": "Wire this pin to...",
+    "ports": "Ports",
+    "notRunning": "Not running",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin}: {level}"
   },
   "row": {
     "open": "Open {name}",
@@ -253,5 +265,136 @@
       "hint": "Single key shortcuts can be turned off in the view settings.",
       "close": "Close"
     }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "Breadboard",
+      "schematic": "Schematic",
+      "board": "Board"
+    },
+    "tablist": "Views",
+    "auto": "auto",
+    "arrange": "Arrange",
+    "schematicReadOnlyWire": "Wire in the breadboard view. The schematic shows the same connections.",
+    "sceneError": "This view could not be drawn. The other views still work.",
+    "cmd": {
+      "breadboard": "Breadboard view",
+      "schematic": "Schematic view",
+      "board": "Board view"
+    }
+  },
+  "history": {
+    "title": "History",
+    "nameThis": "Name this version",
+    "named": "Named",
+    "auto": "Automatic",
+    "compare": "Compare",
+    "restore": "Restore this version",
+    "restoreHelp": "Restoring adds changes on top of your work. You can undo it.",
+    "empty": "No versions yet.",
+    "limit": "The list keeps the newest {max} versions.",
+    "mismatch": "This version failed its check and was not opened.",
+    "diff": {
+      "added": "Added: {items}",
+      "removed": "Removed: {items}",
+      "changed": "Changed: {items}",
+      "nets": "Connections that differ: {count}",
+      "files": "Files that differ: {count}"
+    },
+    "storeFailed": "The version could not be saved: {reason}",
+    "nameLabel": "Version name (1 to 80 characters)",
+    "labelRequired": "Enter a name.",
+    "labelTooLong": "Use at most {max} characters.",
+    "runLabel": "Run",
+    "fileLabel": "Saved file"
+  },
+  "checks": {
+    "title": "Checks",
+    "add": "Add a check",
+    "run": "Run checks",
+    "pass": "Passed",
+    "fail": "Failed",
+    "notRun": "Not run",
+    "kind": {
+      "runs": "Runs without error",
+      "serial": "Serial output contains",
+      "pin-level": "Pin level at a time",
+      "pin-toggles": "Pin toggles",
+      "pwm": "PWM duty at a time",
+      "tone": "Tone frequency at a time",
+      "servo": "Servo angle at a time",
+      "responds": "Pin responds to an input",
+      "code": "Code contains"
+    },
+    "hiddenNote": "Hidden only hides the value on screen. Anyone with the file can read it.",
+    "badPin": "This board has no pin called {pin}.",
+    "needsRun": "Run to see results.",
+    "noSource": "This project has no firmware for the board.",
+    "unsupportedLanguage": "For this board's language only the Runs, Serial and Code checks work.",
+    "limit": "The run stopped at the 20 second limit."
+  },
+  "ino": {
+    "import": "Import a sketch",
+    "export": "Export as .ino",
+    "wiringCsv": "Wiring table (CSV)",
+    "lossTitle": "What changes",
+    "lossNone": "Nothing is lost.",
+    "lossBoard": "Board chosen: {board}. Change it if this is wrong.",
+    "unsupported": "Line {line}: {message}",
+    "banner": "Exported from a simulation. It may not compile as exported.",
+    "tooBig": "This file is larger than {max} characters.",
+    "notText": "This file is not text.",
+    "confirm": "Create project",
+    "firstOnly": "Only the first problem is shown. Fix it and import again.",
+    "noEntry": "No .ino file was found.",
+    "empty": "This file is empty.",
+    "badPath": "The file name {name} is not allowed.",
+    "tooMany": "At most {max} files.",
+    "cancel": "Cancel",
+    "exportBlocked": "This project has no Arduino sketch to export."
+  },
+  "align": {
+    "left": "Align left",
+    "right": "Align right",
+    "top": "Align top",
+    "bottom": "Align bottom",
+    "centerH": "Center horizontally",
+    "centerV": "Center vertically",
+    "distributeH": "Distribute horizontally",
+    "distributeV": "Distribute vertically",
+    "needThree": "Pick three or more parts to distribute.",
+    "group": "Group",
+    "ungroup": "Ungroup",
+    "groupNeedTwo": "Pick two or more things to group.",
+    "groupNesting": "A group cannot hold another group."
+  },
+  "projectMenu": {
+    "label": "Project",
+    "history": "History...",
+    "saveFile": "Save to file",
+    "historyTab": "History"
+  },
+  "rail": {
+    "history": "History",
+    "checks": "Checks"
+  },
+  "dialog": {
+    "cancel": "Cancel"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "Canvas",
+      "code": "Code",
+      "run": "Run",
+      "project": "Project"
+    },
+    "tabs": "Studio sections",
+    "sheetClose": "Close"
+  },
+  "a11y": {
+    "viewAnnounce": "{view} view",
+    "groupMade": "Grouped {count} items.",
+    "restored": "Restored version {label}.",
+    "pinLevel": "{pin} is {level} ({mode})"
   }
 }

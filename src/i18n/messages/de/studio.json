@@ -30,7 +30,19 @@
     "notSavedToFile": "Nicht gesichert"
   },
   "board": {
-    "unoR3": "Arduino Uno R3"
+    "unoR3": "Arduino Uno R3",
+    "pin": "Pin",
+    "role": "Funktion",
+    "net": "Netz",
+    "connectedTo": "Verbunden mit",
+    "state": "Aktueller Zustand",
+    "noneConnected": "Nichts verbunden",
+    "wireThis": "Diesen Pin verbinden mit ...",
+    "ports": "Ports",
+    "notRunning": "Läuft nicht",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin}: {level}"
   },
   "row": {
     "open": "{name} öffnen",
@@ -253,5 +265,136 @@
       "hint": "Tastenkürzel mit einer einzelnen Taste lassen sich in den Ansichtseinstellungen ausschalten.",
       "close": "Schließen"
     }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "Steckbrett",
+      "schematic": "Schaltplan",
+      "board": "Platine"
+    },
+    "tablist": "Ansichten",
+    "auto": "automatisch",
+    "arrange": "Anordnen",
+    "schematicReadOnlyWire": "Verdrahte in der Steckbrett-Ansicht. Der Schaltplan zeigt dieselben Verbindungen.",
+    "sceneError": "Diese Ansicht konnte nicht gezeichnet werden. Die anderen Ansichten funktionieren weiter.",
+    "cmd": {
+      "breadboard": "Steckbrett-Ansicht",
+      "schematic": "Schaltplan-Ansicht",
+      "board": "Platinen-Ansicht"
+    }
+  },
+  "history": {
+    "title": "Verlauf",
+    "nameThis": "Diese Version benennen",
+    "named": "Benannt",
+    "auto": "Automatisch",
+    "compare": "Vergleichen",
+    "restore": "Diese Version wiederherstellen",
+    "restoreHelp": "Beim Wiederherstellen werden Änderungen auf deine Arbeit gelegt. Du kannst es rückgängig machen.",
+    "empty": "Noch keine Versionen.",
+    "limit": "Die Liste behält die neuesten {max} Versionen.",
+    "mismatch": "Diese Version hat die Prüfung nicht bestanden und wurde nicht geöffnet.",
+    "diff": {
+      "added": "Hinzugefügt: {items}",
+      "removed": "Entfernt: {items}",
+      "changed": "Geändert: {items}",
+      "nets": "Abweichende Verbindungen: {count}",
+      "files": "Abweichende Dateien: {count}"
+    },
+    "storeFailed": "Die Version konnte nicht gespeichert werden: {reason}",
+    "nameLabel": "Name der Version (1 bis 80 Zeichen)",
+    "labelRequired": "Gib einen Namen ein.",
+    "labelTooLong": "Verwende höchstens {max} Zeichen.",
+    "runLabel": "Lauf",
+    "fileLabel": "Gespeicherte Datei"
+  },
+  "checks": {
+    "title": "Prüfungen",
+    "add": "Prüfung hinzufügen",
+    "run": "Prüfungen ausführen",
+    "pass": "Bestanden",
+    "fail": "Fehlgeschlagen",
+    "notRun": "Nicht ausgeführt",
+    "kind": {
+      "runs": "Läuft ohne Fehler",
+      "serial": "Serielle Ausgabe enthält",
+      "pin-level": "Pin-Pegel zu einem Zeitpunkt",
+      "pin-toggles": "Pin wechselt",
+      "pwm": "PWM-Tastgrad zu einem Zeitpunkt",
+      "tone": "Tonfrequenz zu einem Zeitpunkt",
+      "servo": "Servo-Winkel zu einem Zeitpunkt",
+      "responds": "Pin reagiert auf eine Eingabe",
+      "code": "Code enthält"
+    },
+    "hiddenNote": "Versteckt blendet den Wert nur auf dem Bildschirm aus. Wer die Datei hat, kann ihn lesen.",
+    "badPin": "Diese Platine hat keinen Pin namens {pin}.",
+    "needsRun": "Ausführen, um Ergebnisse zu sehen.",
+    "noSource": "Dieses Projekt hat keine Firmware für die Platine.",
+    "unsupportedLanguage": "Für die Sprache dieser Platine funktionieren nur die Prüfungen Läuft, Seriell und Code.",
+    "limit": "Der Lauf wurde nach der Grenze von 20 Sekunden beendet."
+  },
+  "ino": {
+    "import": "Sketch importieren",
+    "export": "Als .ino exportieren",
+    "wiringCsv": "Verdrahtungstabelle (CSV)",
+    "lossTitle": "Was sich ändert",
+    "lossNone": "Nichts geht verloren.",
+    "lossBoard": "Gewählte Platine: {board}. Ändere sie, falls das nicht stimmt.",
+    "unsupported": "Zeile {line}: {message}",
+    "banner": "Aus einer Simulation exportiert. Es lässt sich womöglich nicht unverändert kompilieren.",
+    "tooBig": "Diese Datei ist größer als {max} Zeichen.",
+    "notText": "Diese Datei ist kein Text.",
+    "confirm": "Projekt erstellen",
+    "firstOnly": "Nur das erste Problem wird angezeigt. Behebe es und importiere erneut.",
+    "noEntry": "Es wurde keine .ino-Datei gefunden.",
+    "empty": "Diese Datei ist leer.",
+    "badPath": "Der Dateiname {name} ist nicht erlaubt.",
+    "tooMany": "Höchstens {max} Dateien.",
+    "cancel": "Abbrechen",
+    "exportBlocked": "Dieses Projekt hat keinen Arduino-Sketch zum Exportieren."
+  },
+  "align": {
+    "left": "Linksbündig ausrichten",
+    "right": "Rechtsbündig ausrichten",
+    "top": "Oben ausrichten",
+    "bottom": "Unten ausrichten",
+    "centerH": "Horizontal zentrieren",
+    "centerV": "Vertikal zentrieren",
+    "distributeH": "Horizontal verteilen",
+    "distributeV": "Vertikal verteilen",
+    "needThree": "Wähle mindestens drei Teile zum Verteilen.",
+    "group": "Gruppieren",
+    "ungroup": "Gruppierung aufheben",
+    "groupNeedTwo": "Wähle mindestens zwei Dinge zum Gruppieren.",
+    "groupNesting": "Eine Gruppe kann keine andere Gruppe enthalten."
+  },
+  "projectMenu": {
+    "label": "Projekt",
+    "history": "Verlauf ...",
+    "saveFile": "In Datei speichern",
+    "historyTab": "Verlauf"
+  },
+  "rail": {
+    "history": "Verlauf",
+    "checks": "Prüfungen"
+  },
+  "dialog": {
+    "cancel": "Abbrechen"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "Zeichenfläche",
+      "code": "Code",
+      "run": "Ausführen",
+      "project": "Projekt"
+    },
+    "tabs": "Studio-Bereiche",
+    "sheetClose": "Schließen"
+  },
+  "a11y": {
+    "viewAnnounce": "Ansicht {view}",
+    "groupMade": "{count} Elemente gruppiert.",
+    "restored": "Version {label} wiederhergestellt.",
+    "pinLevel": "{pin} ist {level} ({mode})"
   }
 }
