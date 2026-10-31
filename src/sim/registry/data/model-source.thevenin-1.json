@@ -1,0 +1,128 @@
+{
+  "id": "model:source.thevenin@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Voltage source behind a series resistance (battery, rail, output pin)",
+  "tier": "T2",
+  "layers": [
+    "L3",
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "rail",
+      "text": "Rails, USB, battery packs and bench supplies as a voltage behind 0.5 ohm"
+    },
+    {
+      "id": "pin",
+      "text": "An output pin as a voltage behind 25 ohm; PWM pins are solved per duty slice and time-averaged"
+    },
+    {
+      "id": "ground",
+      "text": "Ground as the reference node"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "sag",
+      "text": "Load-dependent battery voltage curve and state of charge"
+    },
+    {
+      "id": "noise",
+      "text": "Ripple and noise on a rail"
+    },
+    {
+      "id": "pin-board",
+      "text": "Pin resistance that differs by board"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "rail voltage",
+      "value": "board or part parameter",
+      "unit": "V",
+      "type": "datasheet",
+      "ref": "figures/boards/*.js",
+      "note": "nominal rail voltage from the board or battery figure"
+    },
+    {
+      "param": "RAIL_R",
+      "value": 0.5,
+      "unit": "ohm",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:10"
+    },
+    {
+      "param": "PIN_R",
+      "value": 25,
+      "unit": "ohm",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:10",
+      "note": "typical AVR pin figure; no citation in the file"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-resistive",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 resistive circuits C01-C05, C18, C19",
+      "flavour": "matched",
+      "result": {
+        "n": 7,
+        "passed": 7,
+        "metric": "worst relative error",
+        "worst": 7.177e-12,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md"
+    },
+    {
+      "id": "rs08-random",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 60 random resistor networks",
+      "flavour": "linear, five decades of resistor spread",
+      "result": {
+        "n": 60,
+        "passed": 60,
+        "metric": "worst relative error",
+        "worst": 8.7e-13,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0,
+      "max": 0.04,
+      "unit": "A",
+      "evidence": "pin maxAmps is 40 mA on the AVR and ESP32 profiles; rails are checked by the supply rules, not here"
+    }
+  ],
+  "knownFailureCases": [
+    "PIN_R: 25 ohm is copied to every board, including 3.3 V boards where the real figure differs",
+    "RAIL_R: real USB and battery sources droop by a different amount"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T2",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

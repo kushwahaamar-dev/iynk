@@ -47,8 +47,8 @@ describe("fidelity registry", () => {
 
   it("reports whether a value is inside the range the entry covers", () => {
     const led = seed("model:led.pwl@1");
-    expect(inRange(led, "forward current", 0.01)).toBe(true);
-    expect(inRange(led, "forward current", 0.5)).toBe(false);
+    expect(inRange(led, "current_A", 0.01)).toBe(true);
+    expect(inRange(led, "current_A", 0.5)).toBe(false);
     expect(inRange(led, "temperature", 20)).toBeNull();
   });
 });

@@ -1,0 +1,98 @@
+{
+  "id": "rule:brownout-threshold@1",
+  "version": "1.0.0",
+  "kind": "rule",
+  "title": "MCU brown-out at the board minimum",
+  "tier": "T1",
+  "layers": [
+    "L3",
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "min",
+      "text": "The board status is brown-out while the MCU rail is below its minimum (Uno 2.7 V, ESP32 2.43 V); the chip resets and restarts when the rail returns"
+    },
+    {
+      "id": "fault",
+      "text": "A motor on the MCU rail applies the 0.42 sag to the rail"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "dwell",
+      "text": "Hysteresis and minimum dwell for the live path are proposed values, not measured"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "boards",
+      "text": "A minimum for boards that do not state one: the model shows that it is unknown and does not guess"
+    },
+    {
+      "id": "detector",
+      "text": "The detector's own tolerance and delay"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "uno min",
+      "value": 2.7,
+      "unit": "V",
+      "type": "assumption",
+      "ref": "figures/boards/uno-r3.js:134",
+      "note": "stated in the figure, not cited to a datasheet"
+    },
+    {
+      "param": "esp32 min",
+      "value": 2.43,
+      "unit": "V",
+      "type": "assumption",
+      "ref": "figures/boards/esp32-devkitc.js:149",
+      "note": "stated in the figure, not cited to a datasheet"
+    },
+    {
+      "param": "dwell",
+      "value": 0.01,
+      "unit": "s",
+      "type": "assumption",
+      "note": "proposed default for the live path"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: a stalled motor draws more than USB gives: the board browns out",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "voltage_V",
+      "min": 0,
+      "max": 5.5,
+      "unit": "V",
+      "evidence": "only the Uno and ESP32 boards state a minimum"
+    }
+  ],
+  "knownFailureCases": [
+    "The threshold of a board that states none is unknown"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

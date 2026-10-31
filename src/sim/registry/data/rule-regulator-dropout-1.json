@@ -1,0 +1,61 @@
+{
+  "id": "rule:regulator-dropout@1",
+  "version": "1.0.0",
+  "kind": "rule",
+  "title": "Regulator dropout and current-limit fold-back",
+  "tier": "T0",
+  "layers": [
+    "L3"
+  ],
+  "implements": [
+    {
+      "id": "reg",
+      "text": "A feed with reg gives min(reg, vin - dropout); a feed with drop gives vin - drop"
+    },
+    {
+      "id": "fold-back",
+      "text": "A short on a rail fed through a current-limited regulator takes that rail and those it feeds to 0 V"
+    },
+    {
+      "id": "max",
+      "text": "Input above a feed's max burns the part"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "thermal",
+      "text": "Thermal shutdown"
+    },
+    {
+      "id": "load-regulation",
+      "text": "Load regulation and quiescent current"
+    },
+    {
+      "id": "transient",
+      "text": "Start-up and transients"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "AMS1117 dropout",
+      "value": 1.1,
+      "unit": "V",
+      "type": "assumption",
+      "ref": "figures/boards/esp32-devkitc.js:147",
+      "note": "from the board figure, not cited to a datasheet"
+    }
+  ],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test or reference run covers the power tree today, so the evidence supports no tier above T0"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

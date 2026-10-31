@@ -1,0 +1,69 @@
+{
+  "id": "runtime:pi-api-mock@1",
+  "version": "1.0.0",
+  "kind": "runtime",
+  "title": "Raspberry Pi Python API mock (gpiozero, RPi.GPIO, rclpy)",
+  "tier": "T1",
+  "layers": [
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "gpiozero",
+      "text": "LED, Button and DistanceSensor with callbacks and background blink, on the Python subset"
+    },
+    {
+      "id": "rpi-gpio",
+      "text": "RPi.GPIO with its real constants on the Pi 4; it refuses to import on the Pi 5"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "ros",
+      "text": "rclpy nodes and topics run in-process with no DDS"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "linux",
+      "text": "A Linux process, files, threads and the network"
+    },
+    {
+      "id": "dds",
+      "text": "DDS discovery and quality-of-service"
+    },
+    {
+      "id": "rp1",
+      "text": "RP1 GPIO timing"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "python-tests",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/python/python.test.ts: the gpiozero cases",
+      "result": {
+        "n": 3,
+        "passed": 3,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No reference run against a real Pi"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

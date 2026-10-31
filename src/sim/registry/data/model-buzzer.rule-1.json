@@ -1,0 +1,75 @@
+{
+  "id": "model:buzzer.rule@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Buzzer, rule table",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "passive",
+      "text": "A passive buzzer sounds when a tone is set on its pin or more than 0.5 V is across it"
+    },
+    {
+      "id": "active",
+      "text": "An active buzzer is a diode plus resistance (vmin / imax) and reports reverse polarity"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "acoustics",
+      "text": "Loudness, resonance and frequency response"
+    },
+    {
+      "id": "tone-draw",
+      "text": "Current draw under a tone for a passive part"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "vmin",
+      "value": 3,
+      "unit": "V",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:92"
+    },
+    {
+      "param": "imax",
+      "value": 0.03,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:92"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: set {tones} sounds the buzzer on that pin and the state reports it",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "Sound is a flag and a frequency, not a level"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

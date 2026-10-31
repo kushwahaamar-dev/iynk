@@ -1,0 +1,60 @@
+{
+  "id": "runtime:microbit-runtime@1",
+  "version": "1.0.0",
+  "kind": "runtime",
+  "title": "micro:bit MicroPython runtime",
+  "tier": "T1",
+  "layers": [
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "display",
+      "text": "The 5x5 LED display, buttons, accelerometer and the microbit module on the Python subset"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "radio",
+      "text": "Radio and Bluetooth"
+    },
+    {
+      "id": "sound",
+      "text": "Sound pitch and the speaker"
+    },
+    {
+      "id": "timing",
+      "text": "Cycle timing"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "microbit-tests",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/python/microbit.test.ts",
+      "result": {
+        "n": 15,
+        "passed": 15,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No reference run against a micro:bit"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

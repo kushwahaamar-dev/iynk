@@ -1,0 +1,112 @@
+{
+  "id": "rule:usb-sag@1",
+  "version": "1.0.0",
+  "kind": "rule",
+  "title": "USB limit and 0.42 sag (old figure engine)",
+  "tier": "T1",
+  "layers": [
+    "L3"
+  ],
+  "implements": [
+    {
+      "id": "ilim",
+      "text": "A source with ilim (USB 500 mA) sags when the circuit draws more than it gives"
+    },
+    {
+      "id": "sag",
+      "text": "For 0.6 s the MCU rail is multiplied by 0.42, which browns the chip out"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "droop",
+      "text": "Thevenin droop computed from the network"
+    },
+    {
+      "id": "polyfuse",
+      "text": "Polyfuse trip and recovery behaviour"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "ilim",
+      "value": 0.5,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-bb.js:116"
+    },
+    {
+      "param": "sag factor",
+      "value": 0.42,
+      "type": "assumption",
+      "ref": "figures/engine/bench.js:270",
+      "note": "no source"
+    },
+    {
+      "param": "sag time",
+      "value": 0.6,
+      "unit": "s",
+      "type": "assumption",
+      "ref": "figures/engine/bench-bb.js:116"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-c20",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 C20 brown-out verdict",
+      "flavour": "matched and realistic: both far above 500 mA (2091 and 1792 mA)",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "worst relative error",
+        "worst": 0,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md"
+    },
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: a stalled motor draws more than USB gives: the board browns out",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0,
+      "max": 0.5,
+      "unit": "A",
+      "evidence": "the verdict is checked only far above the limit (C20)"
+    }
+  ],
+  "knownFailureCases": [
+    "The 0.42 factor and the 0.6 s window have no source",
+    "Only the verdict is checked, not the sagged voltage"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

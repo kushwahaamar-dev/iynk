@@ -1,0 +1,106 @@
+{
+  "id": "model:servo.rule@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Servo, rule table",
+  "tier": "T1",
+  "layers": [
+    "L4",
+    "L8"
+  ],
+  "implements": [
+    {
+      "id": "draw",
+      "text": "Supply draw from the last frame's current: idle, moving or stalled (iidle, imove, istall)"
+    },
+    {
+      "id": "angle",
+      "text": "Angle from the average pulse width of the signal pin"
+    },
+    {
+      "id": "states",
+      "text": "Jitter below vmin, off without pulses, over above vmax + 0.5 V, stop beyond the travel"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "mechanics",
+      "text": "Mechanical response, load and torque"
+    },
+    {
+      "id": "speed",
+      "text": "Slew rate and overshoot"
+    },
+    {
+      "id": "deadband",
+      "text": "Dead band and jitter"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "iidle",
+      "value": 0.008,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:368"
+    },
+    {
+      "param": "imove",
+      "value": 0.2,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:368"
+    },
+    {
+      "param": "istall",
+      "value": 0.7,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:368"
+    },
+    {
+      "param": "pulse to angle",
+      "value": "500 to 2400 us over 180 deg",
+      "type": "fit",
+      "ref": "figures/parts/servo-sg90.js",
+      "note": "from the part's angleOf, or the fallback in bench-solve.js:364"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: a servo reads its pulse width from the SIG duty",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "voltage_V",
+      "min": 4,
+      "max": 6,
+      "unit": "V",
+      "evidence": "default vmin 4 V and vmax 6 V in bench-solve.js:367"
+    }
+  ],
+  "knownFailureCases": [
+    "No reference run: the draw figures are constants, not measured"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

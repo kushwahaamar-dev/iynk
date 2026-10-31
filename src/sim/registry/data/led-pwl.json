@@ -100,11 +100,11 @@
   ],
   "operatingRange": [
     {
-      "quantity": "forward current",
-      "min": 0.003,
-      "max": 0.12,
+      "quantity": "current_A",
+      "min": 0.001,
+      "max": 0.03,
       "unit": "A",
-      "evidence": "RS-08 cases C06-C10; below 1 mA the model is not checked"
+      "evidence": "RS-08 C06 to C12: 12.5 percent off a realistic card at 0.3 mA"
     }
   ],
   "knownFailureCases": [

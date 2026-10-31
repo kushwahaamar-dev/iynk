@@ -1,0 +1,88 @@
+{
+  "id": "device:mpu6050@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "MPU-6050 IMU, register level",
+  "tier": "T1",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "regs",
+      "text": "Registers 0x3B to 0x48 (accel, temperature, gyro), PWR_MGMT_1 sleep bit, WHO_AM_I 0x68; address 0x68 or 0x69"
+    },
+    {
+      "id": "scale",
+      "text": "16384 LSB per g at the default range"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "bus-time",
+      "text": "Bus time: a transfer completes instantly; pull-ups, clock stretching and repeated start are not modelled"
+    },
+    {
+      "id": "noise",
+      "text": "Noise, bias and temperature drift"
+    },
+    {
+      "id": "fifo",
+      "text": "FIFO, interrupts and the digital motion processor"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "accel scale",
+      "value": 16384,
+      "unit": "LSB/g",
+      "type": "datasheet",
+      "ref": "src/lib/interp/devices.ts",
+      "note": "default range; datasheet page not cited"
+    }
+  ],
+  "validation": [
+    {
+      "id": "arduino-test",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/arduino/arduino.test.ts: MPU-6050 over raw Wire reads 1 g on Z after waking it",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    },
+    {
+      "id": "lesson-reference",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/lessons.test.ts: the mpu6050 robotics lesson",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "lesson references",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "The register values are derived from the same constants the test checks, so the test cannot catch a wrong constant"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}
