@@ -20,7 +20,7 @@ import { readDiagnoseSpec } from "@/sim/faults/seal";
 import { loadRegistry } from "@/sim/registry/entries";
 import { staticTier } from "@/studio/fidelity/static-tier";
 import { createArtProvider } from "@/studio/art/figure-art";
-import { registerCommand, registerFaultCommands, runCommand, type FaultAction } from "@/studio/commands";
+import { registerCommand, registerFaultCommands, runCommand, type CommandCtx, type FaultAction } from "@/studio/commands";
 import { STUDIO_KEYS, installKeymap } from "@/studio/commands/keymap";
 import { registerHistoryCommands } from "@/studio/commands/history";
 import { firstFirmwareSource } from "@/studio/code/sources";
@@ -90,6 +90,8 @@ export interface WorkspaceProps {
   lang: Locale;
   /** A read only project that lives in memory only, such as a share: it is not loaded from or saved to the library. */
   shared?: DocStore;
+  /** Told when the workspace has its stores, and with null when it goes away; the room menu runs commands with it. */
+  onCtx?: (ctx: CommandCtx | null) => void;
 }
 
 const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), {
@@ -709,7 +711,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
 
 type OpenWorkspaceProps = WorkspaceProps & { doc: DocStore; recovered: boolean };
 
-function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, lang }: OpenWorkspaceProps) {
+function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, lang, onCtx }: OpenWorkspaceProps) {
   const services = useServices();
   const reduceMotion = useReducedMotion();
   const reduceMotionNow = useRef(reduceMotion);
@@ -892,8 +894,12 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
       onVersionFailed: setVersionFailure,
     });
     setGraph(made);
-    return made.dispose;
-  }, [doc, shared, services, projectId, lang, messages]);
+    onCtx?.({ doc, session: made.session, ui: made.ui });
+    return () => {
+      onCtx?.(null);
+      made.dispose();
+    };
+  }, [doc, shared, services, projectId, lang, messages, onCtx]);
 
   function wireFromBoard(from: WireEndRef) {
     if (!graph) return;

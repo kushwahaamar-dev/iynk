@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { EditAccess } from "@/collab/authority";
 import type { RoomHandle } from "@/collab/join";
 import type { CollabInstallDeps, CollabNotice } from "@/collab/install";
+import type { LobbyClient } from "@/collab/lobby";
 import { makeMyCopy, openShare, parseShareFragment, readOnlyAccess, type OpenedShare } from "@/collab/share-open";
 import { Callout, EmptyState, Skeleton, buttonClass } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
@@ -20,13 +21,14 @@ import type { Descriptor, DescriptorOrigin, Trust } from "@/parts/descriptor";
 import { partFacts } from "@/parts/facts";
 import { makeModelEnv } from "@/sim/models/kinds";
 import { createSession, type ProjectSession } from "@/project/session";
-import { registerCommand } from "@/studio/commands";
+import { registerCommand, runCommand, type CommandCtx } from "@/studio/commands";
 import { navigate, parseHash, readRoute, routeHash, subscribeRoute, type PartsRoute, type StudioRoute } from "@/studio/router";
 import { createDocStore, type DocStore } from "@/studio/stores/doc";
 import { Home } from "./Home";
 import { PartPage } from "./PartPage";
 import { BannerArea } from "./room/BannerArea";
 import { RoomProvider, type StudioRoomsT } from "./room/RoomDock";
+import { RoomMenuEnvProvider, type RoomMenuEnv } from "./room/RoomMenu";
 import { SidePanel } from "./room/SidePanel";
 import { Toolbar } from "./room/Toolbar";
 import { ShareDialog } from "./ShareDialog";
@@ -49,7 +51,7 @@ const EDIT: EditAccess = { mode: "edit" };
 /** What the rooms code needs from the signed in session; the entry adds the commands, the address bar and the dialogs. */
 export type CollabEnv = Omit<
   CollabInstallDeps,
-  "registerCommand" | "onHandle" | "readHash" | "onHash" | "navigate" | "replaceHash" | "onShare" | "onNotice" | "onNeedsEnrolment"
+  "registerCommand" | "onHandle" | "onLobby" | "readHash" | "onHash" | "navigate" | "replaceHash" | "onShare" | "onNotice" | "onNeedsEnrolment"
 >;
 
 const TRUST_OF_ORIGIN: Readonly<Record<DescriptorOrigin, Trust>> = { core: "core", "local-user": "local", "imported-pack": "imported" };
@@ -164,6 +166,11 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
   const [handle, setHandle] = useState<RoomHandle | null>(null);
   const [notice, setNotice] = useState<CollabNotice | null>(null);
   const [shared, setShared] = useState<SharedState | null>(null);
+  const [lobby, setLobby] = useState<LobbyClient | null>(null);
+  const ctx = useRef<CommandCtx | null>(null);
+  const setCtx = useCallback((next: CommandCtx | null) => {
+    ctx.current = next;
+  }, []);
   const rooms = useMemo(() => createTranslator(lang, strings.rooms, `${lang}/studio`), [lang, strings.rooms]);
 
   useEffect(() => {
@@ -181,6 +188,7 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
         replaceHash: (hash) => navigate(parseHash(hash), "replace"),
         onShare: setSharing,
         onHandle: setHandle,
+        onLobby: setLobby,
         onNotice: setNotice,
         onNeedsEnrolment: () => window.location.assign(`/${lang}/together`),
       });
@@ -230,46 +238,56 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
     };
   }, [collab, copyShared]);
 
+  const menuEnv = useMemo<RoomMenuEnv | null>(
+    () =>
+      collab && lobby
+        ? { client: collab.client, lobby, lang, run: (command) => ctx.current && void runCommand(command, ctx.current) }
+        : null,
+    [collab, lobby, lang],
+  );
+
   const sharedAccess = route.kind === "shared" && shared?.status === "open" ? shared.access : EDIT;
 
   return (
     <>
-      <RoomProvider handle={handle} access={sharedAccess}>
-        <Toolbar t={rooms} />
-        <BannerArea t={rooms} />
-        {notice ? (
-          <Callout tone="warn" live className="mb-4">
-            {rooms(notice)}
-          </Callout>
-        ) : null}
-        {route.kind === "shared" ? (
-          <SharedView state={shared} messages={messages} lang={lang} rooms={rooms} />
-        ) : route.kind === "parts-new" || route.kind === "parts-edit" ? (
-          <PartsEditorRoute key={routeHash(route)} route={route} messages={messages} lang={lang} />
-        ) : route.kind === "parts-info" ? (
-          <PartInfoRoute key={route.key} routeKey={route.key} messages={messages} lang={lang} />
-        ) : route.kind === "project" ? (
-          <Workspace projectId={route.id} autorun={route.autorun} messages={messages} lang={lang} />
-        ) : (
-          <>
-            <Home
-              messages={messages.studioHome}
-              strings={strings}
-              lang={lang}
-              onOpen={(id, opts) => navigate({ kind: "project", id, autorun: opts?.run === true })}
-            />
-            <details
-              className="mt-16 border-t border-rule pt-4"
-              data-testid="diagnostics"
-              onToggle={(e) => e.currentTarget.open && setOpened(true)}
-            >
-              <summary className="cursor-pointer text-base font-semibold">{strings.diag.title}</summary>
-              {opened ? <Diagnostics strings={strings} lang={lang} /> : null}
-            </details>
-          </>
-        )}
-        <SidePanel t={rooms} />
-      </RoomProvider>
+      <RoomMenuEnvProvider value={menuEnv}>
+        <RoomProvider handle={handle} access={sharedAccess}>
+          <Toolbar t={rooms} />
+          <BannerArea t={rooms} />
+          {notice ? (
+            <Callout tone="warn" live className="mb-4">
+              {rooms(notice)}
+            </Callout>
+          ) : null}
+          {route.kind === "shared" ? (
+            <SharedView state={shared} messages={messages} lang={lang} rooms={rooms} />
+          ) : route.kind === "parts-new" || route.kind === "parts-edit" ? (
+            <PartsEditorRoute key={routeHash(route)} route={route} messages={messages} lang={lang} />
+          ) : route.kind === "parts-info" ? (
+            <PartInfoRoute key={route.key} routeKey={route.key} messages={messages} lang={lang} />
+          ) : route.kind === "project" ? (
+            <Workspace projectId={route.id} autorun={route.autorun} messages={messages} lang={lang} onCtx={setCtx} />
+          ) : (
+            <>
+              <Home
+                messages={messages.studioHome}
+                strings={strings}
+                lang={lang}
+                onOpen={(id, opts) => navigate({ kind: "project", id, autorun: opts?.run === true })}
+              />
+              <details
+                className="mt-16 border-t border-rule pt-4"
+                data-testid="diagnostics"
+                onToggle={(e) => e.currentTarget.open && setOpened(true)}
+              >
+                <summary className="cursor-pointer text-base font-semibold">{strings.diag.title}</summary>
+                {opened ? <Diagnostics strings={strings} lang={lang} /> : null}
+              </details>
+            </>
+          )}
+          <SidePanel t={rooms} />
+        </RoomProvider>
+      </RoomMenuEnvProvider>
       {collab && sharing ? (
         <ShareDialog
           open

@@ -31,6 +31,8 @@ export type CollabInstallDeps = RoomOpenDeps & {
   /** The session to share, or null when the dialog closes. */
   onShare: (session: ProjectSession | null) => void;
   onHandle?: (h: RoomHandle | null) => void;
+  /** The lobby this install runs, or null once it is stopped. */
+  onLobby?: (lobby: LobbyClient | null) => void;
   onNotice: (notice: CollabNotice) => void;
   /** A link was opened by a browser that has no enrolment; the token has already been taken off the address. */
   onNeedsEnrolment: () => void;
@@ -160,6 +162,7 @@ export function installCollab(d: CollabInstallDeps): () => void {
     () => (rooms = false),
   );
   lobby.start();
+  d.onLobby?.(lobby);
   const offHash = d.onHash(() => void fromFragment());
   void fromFragment();
 
@@ -168,5 +171,6 @@ export function installCollab(d: CollabInstallDeps): () => void {
     offHash();
     for (const off of offCommands) off();
     lobby.stop();
+    d.onLobby?.(null);
   };
 }
