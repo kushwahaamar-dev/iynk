@@ -690,6 +690,12 @@ needs a run session; **Lists** works in a list or table that has focus.
 | | Shift+Delete | Delete the drawing only, leave an air wire | Canvas |
 | | Ctrl/Cmd+A | Select all | Canvas |
 | | Ctrl/Cmd+G, Ctrl/Cmd+Shift+G | Group, ungroup | Canvas |
+| | Alt+Shift+ArrowLeft | Align left | Canvas |
+| | Alt+Shift+ArrowRight | Align right | Canvas |
+| | Alt+Shift+ArrowUp | Align top | Canvas |
+| | Alt+Shift+ArrowDown | Align bottom | Canvas |
+| | Alt+Shift+C | Centre horizontally | Canvas |
+| | Alt+Shift+V | Centre vertically | Canvas |
 | | Esc | Cancel tool, close picker, then clear selection | Canvas |
 | | Esc, then Tab | Leave the code editor | Code editor |
 | | Enter | Drop a picked-up part; with a part selected, open its inspector; in a list, activate | Canvas, Lists |

@@ -141,6 +141,18 @@
     },
     "help": {
       "keys": "Show the keyboard shortcuts"
+    },
+    "align": {
+      "left": "Align left",
+      "right": "Align right",
+      "top": "Align top",
+      "bottom": "Align bottom",
+      "centerH": "Center horizontally",
+      "centerV": "Center vertically"
+    },
+    "group": {
+      "make": "Group",
+      "remove": "Ungroup"
     }
   }
 }

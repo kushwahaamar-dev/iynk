@@ -141,6 +141,18 @@
     },
     "help": {
       "keys": "显示键盘快捷键"
+    },
+    "align": {
+      "left": "左对齐",
+      "right": "右对齐",
+      "top": "顶部对齐",
+      "bottom": "底部对齐",
+      "centerH": "水平居中",
+      "centerV": "垂直居中"
+    },
+    "group": {
+      "make": "编组",
+      "remove": "取消编组"
     }
   }
 }

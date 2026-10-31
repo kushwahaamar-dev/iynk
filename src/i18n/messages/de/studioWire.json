@@ -141,6 +141,18 @@
     },
     "help": {
       "keys": "Tastenkürzel anzeigen"
+    },
+    "align": {
+      "left": "Linksbündig ausrichten",
+      "right": "Rechtsbündig ausrichten",
+      "top": "Oben ausrichten",
+      "bottom": "Unten ausrichten",
+      "centerH": "Horizontal zentrieren",
+      "centerV": "Vertikal zentrieren"
+    },
+    "group": {
+      "make": "Gruppieren",
+      "remove": "Gruppierung aufheben"
     }
   }
 }

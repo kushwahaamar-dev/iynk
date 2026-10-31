@@ -141,6 +141,18 @@
     },
     "help": {
       "keys": "Afficher les raccourcis clavier"
+    },
+    "align": {
+      "left": "Aligner à gauche",
+      "right": "Aligner à droite",
+      "top": "Aligner en haut",
+      "bottom": "Aligner en bas",
+      "centerH": "Centrer horizontalement",
+      "centerV": "Centrer verticalement"
+    },
+    "group": {
+      "make": "Grouper",
+      "remove": "Dissocier"
     }
   }
 }

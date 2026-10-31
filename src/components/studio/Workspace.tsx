@@ -436,7 +436,7 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
         </div>
       }
       right={{
-        inspector: <Inspector doc={doc} session={session} messages={messages.studioInspect} modelMessages={messages.studioModels} lang={lang} />,
+        inspector: <Inspector doc={doc} session={session} ui={ui} messages={messages.studioInspect} alignMessages={t.align} modelMessages={messages.studioModels} lang={lang} />,
         problems: (
           <Problems
             problems={problems}

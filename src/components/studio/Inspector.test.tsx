@@ -1,19 +1,24 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { LOCALES, type Locale } from "@/i18n/config";
 import en from "@/i18n/messages/en/studioInspect.json";
+import studio from "@/i18n/messages/en/studio.json";
 import models from "@/i18n/messages/en/studioModels.json";
 import type { Project } from "@/project/generated/types";
 import { createSession } from "@/project/session";
 import { seededRandom, steppingClock } from "@/project/session.testing";
 import { createSessionStore } from "@/studio/stores/session";
+import { createUiStore } from "@/studio/stores/ui";
 import type { Selectable } from "@/studio/stores/session";
 import { blinkCircuit } from "@/studio/testing/blink-circuit";
 import { createRecordingDoc } from "@/studio/testing/recording-doc";
+import { registerCommand } from "@/studio/commands";
 import { Inspector } from "./Inspector";
 
 const VIEW = "vw_bb";
 const part = (id: string): Selectable => ({ kind: "part", view: VIEW, id });
+
+const ui = () => createUiStore("test", { getItem: () => null, setItem: () => {} });
 
 afterEach(cleanup);
 
@@ -22,7 +27,7 @@ function setup(select: string[] = [], project?: Project) {
   const doc = createRecordingDoc(createSession({ state: project ?? circuit.project, clock: steppingClock(), rnd: seededRandom() }));
   const session = createSessionStore(VIEW);
   session.setSelection(select.map(part));
-  const view = render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+  const view = render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
   return { circuit, doc, session, ...view };
 }
 
@@ -46,6 +51,21 @@ describe("Inspector", () => {
     cleanup();
     setup([circuit.r1, circuit.led]);
     expect(screen.getByText("2 items selected")).toBeTruthy();
+  });
+
+  it("offers align, distribute and group from two selected parts, not from one, and runs the command", () => {
+    const { circuit } = setup();
+    cleanup();
+    setup([circuit.led]);
+    expect(screen.queryByRole("button", { name: studio.align.top })).toBeNull();
+    cleanup();
+    const run = vi.fn();
+    const off = registerCommand({ id: "align.top", labelKey: "x", scope: "canvas", enabled: () => true, run });
+    setup([circuit.r1, circuit.led]);
+    fireEvent.click(screen.getByRole("button", { name: studio.align.top }));
+    expect(run).toHaveBeenCalledTimes(1);
+    for (const name of [studio.align.distributeH, studio.align.group, studio.align.ungroup]) expect(screen.getByRole("button", { name })).toBeTruthy();
+    off();
   });
 
   it("shows the value fields, pin names and model level of the selected part from its descriptor", () => {
@@ -76,7 +96,7 @@ describe("Inspector", () => {
     const doc = createRecordingDoc(createSession({ state: circuit.project, clock: steppingClock(), rnd: seededRandom() }));
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     type("Resistance", "4k7");
     expect(doc.commits.at(-1)!.batch).toEqual([{ k: "component.set", id: circuit.r1, params: { ohms: 4700 } }]);
     expect(doc.getState().state.components.find((c) => c.id === circuit.r1)!.params).toEqual({ ohms: 4700 });
@@ -88,7 +108,7 @@ describe("Inspector", () => {
     cleanup();
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     type("Resistance", "0");
     expect(screen.getByRole("alert").textContent).toBe("Use a value from 1mΩ to 1GΩ.");
     type("Resistance", "banana");
@@ -108,7 +128,7 @@ describe("Inspector", () => {
     const doc = createRecordingDoc(createSession({ state: circuit.project, clock: steppingClock(), rnd: seededRandom() }));
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.led)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     fireEvent.change(screen.getByLabelText("Colour", { selector: "select" }), { target: { value: "green" } });
     expect(doc.commits.at(-1)!.batch).toEqual([{ k: "component.set", id: circuit.led, params: { color: "green" } }]);
   });
@@ -118,7 +138,7 @@ describe("Inspector", () => {
     const doc = createRecordingDoc(createSession({ state: circuit.project, clock: steppingClock(), rnd: seededRandom() }));
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     type(en.identity.refdes, "1R");
     expect(screen.getByRole("alert").textContent).toBe(en.identity.refdesInvalid);
     type(en.identity.refdes, "D1");
@@ -133,7 +153,7 @@ describe("Inspector", () => {
     const doc = createRecordingDoc(createSession({ state: circuit.project, clock: steppingClock(), rnd: seededRandom() }));
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     type(en.identity.label, "pull down");
     expect(doc.getState().state.components.find((c) => c.id === circuit.r1)!.label).toBe("pull down");
     type(en.identity.label, "  ");
@@ -145,7 +165,7 @@ describe("Inspector", () => {
     const doc = createRecordingDoc(createSession({ state: circuit.project, clock: steppingClock(), rnd: seededRandom() }));
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     type(en.position.x, "30.5");
     expect(doc.commits.at(-1)!.batch).toMatchObject([{ k: "view.place", placement: { c: circuit.r1, x_mm: 30.5 } }]);
     type(en.position.y, "x");
@@ -185,7 +205,7 @@ describe("Inspector", () => {
     doc.setSaveChip("read-only");
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     for (const field of [input("Resistance"), input(en.identity.refdes), input(en.identity.label), input(en.position.x)]) {
       expect(field.readOnly).toBe(true);
       expect(field.getAttribute("aria-disabled")).toBe("true");
@@ -200,7 +220,7 @@ describe("Inspector", () => {
     const doc = createRecordingDoc(createSession({ state: circuit.project, clock: steppingClock(), rnd: seededRandom() }));
     const session = createSessionStore(VIEW);
     session.setSelection([part(circuit.r1), part(circuit.led)]);
-    render(<Inspector doc={doc} session={session} messages={en} modelMessages={models} lang="en" />);
+    render(<Inspector doc={doc} session={session} ui={ui()} messages={en} alignMessages={studio.align} modelMessages={models} lang="en" />);
     act(() => void doc.commit([{ k: "component.remove", id: circuit.led }], { label: "x" }));
     expect(session.getState().selection).toEqual([part(circuit.r1)]);
     expect(session.getState().status).toEqual({ key: "selection.pruned", params: { count: 1 } });
@@ -214,7 +234,7 @@ describe("Inspector", () => {
     const session = createSessionStore(VIEW);
     for (const id of [circuit.r1, circuit.led, "brd_uno"]) {
       session.setSelection([part(id)]);
-      const { unmount } = render(<Inspector doc={doc} session={session} messages={messages} modelMessages={modelMessages} lang={lang} />);
+      const { unmount } = render(<Inspector doc={doc} session={session} ui={ui()} messages={messages} alignMessages={studio.align} modelMessages={modelMessages} lang={lang} />);
       expect(screen.getAllByRole("heading").length).toBeGreaterThan(3);
       unmount();
     }

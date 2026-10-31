@@ -141,6 +141,18 @@
     },
     "help": {
       "keys": "Mostrar los atajos de teclado"
+    },
+    "align": {
+      "left": "Alinear a la izquierda",
+      "right": "Alinear a la derecha",
+      "top": "Alinear arriba",
+      "bottom": "Alinear abajo",
+      "centerH": "Centrar horizontalmente",
+      "centerV": "Centrar verticalmente"
+    },
+    "group": {
+      "make": "Agrupar",
+      "remove": "Desagrupar"
     }
   }
 }
