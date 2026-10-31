@@ -53,5 +53,79 @@
   },
   "chip": {
     "aria": "{layer}: {tier}. Details öffnen"
+  },
+  "inspect": {
+    "title": "Synthetisierten Entwurf prüfen",
+    "intro": "Lade die Yosys-Netzliste deines Entwurfs, um Gatter und Leitungen zu sehen. Das läuft in deinem Browser; nichts wird hochgeladen.",
+    "size": "Download {wire} (entpackt {raw})",
+    "memory": "Spitzenspeicher etwa {peak}",
+    "refuse": "Dieses Gerät meldet 4 GB Speicher oder weniger, daher wird die Yosys-Engine hier nicht geladen.",
+    "unknown": "Dieser Browser meldet den Gerätespeicher nicht, die Engine passt vielleicht nicht. Lade sie nur, wenn du das in Kauf nimmst.",
+    "load": "Yosys laden",
+    "cancel": "Abbrechen",
+    "loading": "Yosys wird geladen",
+    "failed": "Yosys konnte nicht geladen werden",
+    "result": "Geprüft: {cells} Zellen, {wires} Leitungen",
+    "lint": {
+      "implicitWire": "Ein Signal wird ohne Deklaration verwendet. Yosys hat daraus eine 1-Bit-Leitung gemacht."
+    }
+  },
+  "firmware": {
+    "mode": "Modus",
+    "interpreter": "Interpreter",
+    "firmware": "Firmware",
+    "tier": "Führt deine Firmware aus",
+    "desktopNote": "Der Firmware-Modus braucht die Desktop-App. Auf diesem Gerät läuft weiter der Interpreter.",
+    "onlyAvr": "Der Firmware-Modus läuft nur mit AVR-Boards (Uno, Nano).",
+    "importHex": "Hex-Datei importieren",
+    "importElf": "ELF-Datei importieren",
+    "noImage": "Kein Firmware-Abbild geladen",
+    "imageLoaded": "{bytes} Byte Firmware geladen",
+    "notModelled": "noch nicht modelliert"
+  },
+  "import": {
+    "error": {
+      "hex-too-large": "Diese Hex-Datei ist zu groß.",
+      "hex-bad-record": "Eine Zeile der Hex-Datei ist kein gültiger Datensatz.",
+      "hex-bad-checksum": "Eine Zeile der Hex-Datei hat eine falsche Prüfsumme.",
+      "hex-out-of-flash": "Die Hex-Datei schreibt außerhalb des Flash-Speichers dieses Boards.",
+      "hex-overlap": "Die Hex-Datei schreibt zweimal an dieselbe Adresse.",
+      "hex-no-eof": "Der Hex-Datei fehlt der Dateiende-Datensatz.",
+      "elf-too-large": "Diese ELF-Datei ist zu groß.",
+      "elf-unsupported": "Diese ELF-Datei ist keine 32-Bit-AVR-Programmdatei.",
+      "elf-too-many-sections": "Diese ELF-Datei hat zu viele Abschnitte.",
+      "elf-bad-section": "Ein Abschnitt dieser ELF-Datei ist fehlerhaft.",
+      "dwarf-too-large": "Die DWARF-Debugdaten sind zu groß, Quellzeilen sind daher nicht verfügbar.",
+      "dwarf-bad-line-program": "Die DWARF-Zeilentabelle ist fehlerhaft, Quellzeilen sind daher nicht verfügbar.",
+      "import-timeout": "Der Import dauerte zu lange und wurde abgebrochen."
+    }
+  },
+  "debug": {
+    "toggle": "Debugger",
+    "step": "Einzelschritt",
+    "over": "Überspringen",
+    "out": "Herausspringen",
+    "continue": "Fortsetzen",
+    "pausedAt": "Angehalten bei {file}:{line}",
+    "running": "Läuft",
+    "variables": "Variablen",
+    "watch": "Überwachen",
+    "addWatch": "Überwachung hinzufügen",
+    "noSymbols": "Keine Debug-Symbole in diesem Abbild. Mit -g neu bauen.",
+    "inlineOnly": "Der Debugger arbeitet nur mit globalen Variablen.",
+    "gutter": "In den Rand klicken, um einen Haltepunkt zu setzen"
+  },
+  "compile": {
+    "build": "Bauen",
+    "building": "Wird gebaut",
+    "ok": "In {ms} ms gebaut",
+    "failed": "Build fehlgeschlagen",
+    "off": "Das Kompilieren ist vom Betreiber abgeschaltet",
+    "tooLarge": "Der Sketch ist zu groß zum Kompilieren",
+    "timeout": "Der Build dauerte zu lange und wurde abgebrochen",
+    "size": "Flash {flash}, RAM {ram}",
+    "cached": "Aus dem Cache",
+    "tool": "Toolchain",
+    "importInstead": "Stattdessen eine Hex-Datei importieren"
   }
 }

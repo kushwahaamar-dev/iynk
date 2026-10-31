@@ -53,5 +53,79 @@
   },
   "chip": {
     "aria": "{layer}: {tier}. Open details"
+  },
+  "inspect": {
+    "title": "Inspect the synthesised design",
+    "intro": "Load the Yosys netlist of your design to see its gates and wires. This runs in your browser; nothing is uploaded.",
+    "size": "Download {wire} (unpacked {raw})",
+    "memory": "Peak memory about {peak}",
+    "refuse": "This device reports 4 GB of memory or less, so the Yosys engine is not loaded here.",
+    "unknown": "This browser does not report device memory, so the engine may not fit. Load it only if you accept that.",
+    "load": "Load Yosys",
+    "cancel": "Cancel",
+    "loading": "Loading Yosys",
+    "failed": "Yosys could not be loaded",
+    "result": "Inspected: {cells} cells, {wires} wires",
+    "lint": {
+      "implicitWire": "A signal is used without being declared. Yosys made it a 1-bit wire."
+    }
+  },
+  "firmware": {
+    "mode": "Mode",
+    "interpreter": "Interpreter",
+    "firmware": "Firmware",
+    "tier": "Runs your firmware",
+    "desktopNote": "Firmware mode needs the desktop app. On this device the interpreter keeps running.",
+    "onlyAvr": "Firmware mode runs AVR boards only (Uno, Nano).",
+    "importHex": "Import a .hex file",
+    "importElf": "Import an .elf file",
+    "noImage": "No firmware image loaded",
+    "imageLoaded": "Loaded {bytes} bytes of firmware",
+    "notModelled": "not modelled yet"
+  },
+  "import": {
+    "error": {
+      "hex-too-large": "This hex file is too large.",
+      "hex-bad-record": "A line in the hex file is not a valid record.",
+      "hex-bad-checksum": "A line in the hex file has a wrong checksum.",
+      "hex-out-of-flash": "The hex file writes outside the flash of this board.",
+      "hex-overlap": "The hex file writes to the same address twice.",
+      "hex-no-eof": "The hex file has no end-of-file record.",
+      "elf-too-large": "This ELF file is too large.",
+      "elf-unsupported": "This ELF file is not a 32-bit AVR executable.",
+      "elf-too-many-sections": "This ELF file has too many sections.",
+      "elf-bad-section": "A section of this ELF file is malformed.",
+      "dwarf-too-large": "The DWARF debug data is too large, so source lines are not available.",
+      "dwarf-bad-line-program": "The DWARF line table is malformed, so source lines are not available.",
+      "import-timeout": "Importing took too long and was stopped."
+    }
+  },
+  "debug": {
+    "toggle": "Debugger",
+    "step": "Step into",
+    "over": "Step over",
+    "out": "Step out",
+    "continue": "Continue",
+    "pausedAt": "Paused at {file}:{line}",
+    "running": "Running",
+    "variables": "Variables",
+    "watch": "Watch",
+    "addWatch": "Add watch",
+    "noSymbols": "No debug symbols in this image. Rebuild with -g.",
+    "inlineOnly": "The debugger works on global variables only.",
+    "gutter": "Click the gutter to set a breakpoint"
+  },
+  "compile": {
+    "build": "Build",
+    "building": "Building",
+    "ok": "Built in {ms} ms",
+    "failed": "Build failed",
+    "off": "Compiling is turned off by the operator",
+    "tooLarge": "The sketch is too large to compile",
+    "timeout": "The build took too long and was stopped",
+    "size": "Flash {flash}, RAM {ram}",
+    "cached": "From cache",
+    "tool": "Toolchain",
+    "importInstead": "Import a .hex file instead"
   }
 }

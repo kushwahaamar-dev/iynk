@@ -53,5 +53,79 @@
   },
   "chip": {
     "aria": "{layer}：{tier}。打开详情"
+  },
+  "inspect": {
+    "title": "检查综合后的设计",
+    "intro": "加载你设计的 Yosys 网表,查看其中的门和连线。这在你的浏览器中运行,不会上传任何内容。",
+    "size": "下载 {wire}(解压后 {raw})",
+    "memory": "峰值内存约 {peak}",
+    "refuse": "此设备报告的内存为 4 GB 或更少,因此这里不加载 Yosys 引擎。",
+    "unknown": "此浏览器不报告设备内存,引擎可能放不下。只有在你接受这一点时才加载。",
+    "load": "加载 Yosys",
+    "cancel": "取消",
+    "loading": "正在加载 Yosys",
+    "failed": "无法加载 Yosys",
+    "result": "检查完成:{cells} 个单元,{wires} 条连线",
+    "lint": {
+      "implicitWire": "有信号未经声明就被使用。Yosys 把它当作 1 位连线。"
+    }
+  },
+  "firmware": {
+    "mode": "模式",
+    "interpreter": "解释器",
+    "firmware": "固件",
+    "tier": "运行你的固件",
+    "desktopNote": "固件模式需要桌面应用。在此设备上将继续使用解释器。",
+    "onlyAvr": "固件模式只支持 AVR 开发板(Uno、Nano)。",
+    "importHex": "导入 .hex 文件",
+    "importElf": "导入 .elf 文件",
+    "noImage": "尚未加载固件映像",
+    "imageLoaded": "已加载 {bytes} 字节固件",
+    "notModelled": "尚未建模"
+  },
+  "import": {
+    "error": {
+      "hex-too-large": "此 hex 文件太大。",
+      "hex-bad-record": "hex 文件中有一行不是有效记录。",
+      "hex-bad-checksum": "hex 文件中有一行校验和错误。",
+      "hex-out-of-flash": "hex 文件写入了此开发板 Flash 之外的地址。",
+      "hex-overlap": "hex 文件重复写入同一地址。",
+      "hex-no-eof": "hex 文件缺少文件结束记录。",
+      "elf-too-large": "此 ELF 文件太大。",
+      "elf-unsupported": "此 ELF 文件不是 32 位 AVR 可执行文件。",
+      "elf-too-many-sections": "此 ELF 文件的节太多。",
+      "elf-bad-section": "此 ELF 文件中有一个节已损坏。",
+      "dwarf-too-large": "DWARF 调试数据太大,因此无法显示源码行。",
+      "dwarf-bad-line-program": "DWARF 行表已损坏,因此无法显示源码行。",
+      "import-timeout": "导入耗时过长,已停止。"
+    }
+  },
+  "debug": {
+    "toggle": "调试器",
+    "step": "单步进入",
+    "over": "单步跳过",
+    "out": "单步跳出",
+    "continue": "继续",
+    "pausedAt": "已暂停于 {file}:{line}",
+    "running": "运行中",
+    "variables": "变量",
+    "watch": "监视",
+    "addWatch": "添加监视",
+    "noSymbols": "此映像没有调试符号。请加 -g 重新构建。",
+    "inlineOnly": "调试器只支持全局变量。",
+    "gutter": "点击边栏以设置断点"
+  },
+  "compile": {
+    "build": "构建",
+    "building": "正在构建",
+    "ok": "构建用时 {ms} ms",
+    "failed": "构建失败",
+    "off": "运营方已关闭编译功能",
+    "tooLarge": "草图太大,无法编译",
+    "timeout": "构建耗时过长,已停止",
+    "size": "Flash {flash},RAM {ram}",
+    "cached": "来自缓存",
+    "tool": "工具链",
+    "importInstead": "改为导入 .hex 文件"
   }
 }
