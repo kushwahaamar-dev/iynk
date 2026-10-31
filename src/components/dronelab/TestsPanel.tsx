@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/icons";
 import { InlineStatus } from "@/components/ui/InlineStatus";
 import { testStatus, type TestStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 const TONE: Record<TestStatus, ChipTone> = { passed: "good", running: "warn", failed: "bad", idle: "neutral" };

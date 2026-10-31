@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/icons";
 import { progressKey } from "@/lib/progress/keys";
 import { recordQuiz } from "@/lib/progress/progress";
 import { useQuiz } from "@/lib/progress/hooks";
-import { quizScore, type DroneLabAction, type DroneLabState } from "@/lib/dronelab/store";
+import { quizScore, type DroneLabAction, type DroneLabState } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 type Props = {

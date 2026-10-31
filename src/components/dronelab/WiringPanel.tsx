@@ -3,7 +3,7 @@
 import type { DroneContent, DroneWire } from "@/content/schema";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 // Same colours as the figure's wiring sheet (docs/FIGURES-DRONE.md §9).
