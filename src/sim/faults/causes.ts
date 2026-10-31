@@ -18,6 +18,8 @@ export interface CauseMeta {
   symptomIds: SymptomId[];
   /** False for the robot and drone causes until B16 to B19 add their models. */
   modelled: boolean;
+  /** The i18n namespace of the cause's hint texts. Defaults to `faults`. */
+  textNs?: "faults" | "robot";
 }
 
 type Row = Omit<CauseMeta, "id" | "confusableWith">;
@@ -31,7 +33,10 @@ const row = (family: CauseFamily, seat: CauseSeat, layer: CauseLayer, symptomIds
 });
 
 const sim = (family: CauseFamily, layer: CauseLayer, symptomIds: SymptomId[]): Row => row(family, "SIM", layer, symptomIds);
-const rob = (family: CauseFamily, layer: CauseLayer): Row => row(family, "ROB", layer, [], false);
+const rob = (family: CauseFamily, layer: CauseLayer, symptomIds: SymptomId[] = []): Row => ({
+  ...row(family, "ROB", layer, symptomIds, symptomIds.length > 0),
+  textNs: "robot",
+});
 const drn = (family: CauseFamily, layer: CauseLayer): Row => row(family, "DRN", layer, [], false);
 
 const ROWS: Record<CoreCauseId, Row> = {
@@ -52,18 +57,18 @@ const ROWS: Record<CoreCauseId, Row> = {
   "library-not-modelled": sim("code", "L5", ["code-no-effect"]),
   "pin-overcurrent": sim("value", "L4", ["pin-overloaded", "part-hot"]),
   brownout: sim("power", "L4", ["mcu-resets", "supply-collapses"]),
-  "motor-stall": rob("mechanical", "L4"),
+  "motor-stall": rob("mechanical", "L4", ["robot-wont-move"]),
   "reverse-polarity": sim("power", "L4", ["part-dead", "part-hot"]),
-  "motor-direction-reversed": rob("mechanical", "L7"),
-  "encoder-channel-swapped": rob("mechanical", "L7"),
-  "wheel-slip": rob("mechanical", "L7"),
-  "driver-undersized": rob("power", "L4"),
-  "battery-sag-reset": rob("power", "L4"),
-  "sensor-too-high": rob("mechanical", "L7"),
-  "sensor-saturated": rob("value", "L9"),
-  "ranger-beam-blocked": rob("mechanical", "L7"),
-  "tip-over": rob("mechanical", "L7"),
-  "loop-too-slow": rob("code", "L5"),
+  "motor-direction-reversed": rob("mechanical", "L7", ["robot-turns-wrong-way"]),
+  "encoder-channel-swapped": rob("mechanical", "L7", ["encoder-count-wrong"]),
+  "wheel-slip": rob("mechanical", "L7", ["wheel-spins-no-motion"]),
+  "driver-undersized": rob("power", "L4", ["robot-wont-move", "mcu-resets"]),
+  "battery-sag-reset": rob("power", "L4", ["robot-resets-at-start", "mcu-resets"]),
+  "sensor-too-high": rob("mechanical", "L7", ["line-not-detected"]),
+  "sensor-saturated": rob("value", "L9", ["line-not-detected"]),
+  "ranger-beam-blocked": rob("mechanical", "L7", ["ranger-always-near"]),
+  "tip-over": rob("mechanical", "L7", ["robot-tips-over"]),
+  "loop-too-slow": rob("code", "L5", ["speed-oscillates"]),
   "servo-jitter-supply": rob("power", "L4"),
   "stepper-lost-steps": rob("mechanical", "L7"),
   "hover-throttle-too-high": drn("flight", "L8"),
@@ -91,6 +96,12 @@ const CONFUSABLE_SEEDS: readonly (readonly [CoreCauseId, CoreCauseId])[] = [
   ["part-not-powered", "brownout"],
   ["swapped-pins", "open-connection"],
   ["wrong-pin-in-code", "open-connection"],
+  ["motor-stall", "driver-undersized"],
+  ["motor-stall", "wheel-slip"],
+  ["motor-direction-reversed", "encoder-channel-swapped"],
+  ["driver-undersized", "battery-sag-reset"],
+  ["battery-sag-reset", "brownout"],
+  ["sensor-too-high", "sensor-saturated"],
 ];
 
 function confusableMap(): Map<CoreCauseId, CoreCauseId[]> {
