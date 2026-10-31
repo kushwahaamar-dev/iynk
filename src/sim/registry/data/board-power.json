@@ -1,0 +1,188 @@
+[
+  {
+    "id": "board-power:esp32-devkitc@1",
+    "source": "figures/boards/esp32-devkitc.js:138-150",
+    "sources": [
+      {
+        "id": "usb",
+        "nominalV": 5.0,
+        "dropV": 0.35,
+        "limitA": 0.5
+      },
+      {
+        "id": "pin5",
+        "nominalV": 5.0,
+        "minV": 4.75,
+        "maxV": 5.25
+      },
+      {
+        "id": "pin3v3",
+        "nominalV": 3.3,
+        "minV": 3.0,
+        "maxV": 3.6
+      }
+    ],
+    "regulator": {
+      "kind": "linear",
+      "voutVolts": 3.3,
+      "dropoutVolts": 1.1
+    },
+    "mcu": {
+      "part": "U3",
+      "rail": "3V3",
+      "minV": 2.43,
+      "requires": [
+        "U3",
+        "R11"
+      ]
+    },
+    "brownout": {
+      "thresholdVolts": 2.43,
+      "hysteresisVolts": 0.1,
+      "minDwellNs": 10000000,
+      "resetNs": 1000000
+    },
+    "protection": [
+      {
+        "source": "pin5",
+        "present": false
+      },
+      {
+        "source": "usb",
+        "present": true
+      }
+    ],
+    "notModelled": [
+      "regulator current limit",
+      "quiescent current",
+      "thermal shutdown"
+    ],
+    "parameterSources": [
+      {
+        "param": "usb nominal",
+        "value": 5.0,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:140",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "usb drop through J1 and D3",
+        "value": 0.35,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:146",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "usb current limit",
+        "value": 0.5,
+        "unit": "A",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:140",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "pin5 range min",
+        "value": 4.75,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:141",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "pin5 range max",
+        "value": 5.25,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:141",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "pin5 nominal",
+        "value": 5.0,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:141",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "pin3v3 nominal",
+        "value": 3.3,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:142",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "pin3v3 range min",
+        "value": 3.0,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:142",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "pin3v3 range max",
+        "value": 3.6,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:142",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "regulator output",
+        "value": 3.3,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:147",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "regulator dropout",
+        "value": 1.1,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:147",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "mcu minimum",
+        "value": 2.43,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:149",
+        "note": "stated in the figure, not cited to a datasheet"
+      },
+      {
+        "param": "brown-out threshold",
+        "value": 2.43,
+        "unit": "V",
+        "type": "assumption",
+        "ref": "figures/boards/esp32-devkitc.js:149",
+        "note": "taken from the MCU minimum in the figure"
+      },
+      {
+        "param": "brown-out hysteresis",
+        "value": 0.1,
+        "unit": "V",
+        "type": "assumption",
+        "note": "assumed; the ESP32 datasheet is not cited yet"
+      },
+      {
+        "param": "brown-out minimum dwell",
+        "value": 10000000,
+        "unit": "ns",
+        "type": "assumption",
+        "note": "assumed; matches the 0.01 s dwell of rule:brownout-threshold@1"
+      },
+      {
+        "param": "brown-out reset time",
+        "value": 1000000,
+        "unit": "ns",
+        "type": "assumption",
+        "note": "assumed; the ESP32 datasheet is not cited yet"
+      }
+    ]
+  }
+]

@@ -52,3 +52,20 @@ export interface SolveResult {
   residual: { maxKclAmps: number; worstNode: number };
   diagnostics: SolveDiagnostic[];
 }
+
+export interface RegulatorModel {
+  kind: "linear" | "buck" | "boost";
+  voutVolts: number;
+  dropoutVolts: number;
+  ilimitAmps?: number;
+  quiescentAmps?: number;
+  efficiency?: number;
+  thermal?: { thetaJaCperW: number; shutdownCelsius: number };
+}
+
+export interface BrownoutDetector {
+  thresholdVolts: number;
+  hysteresisVolts: number;
+  minDwellNs: number;
+  resetNs: number;
+}
