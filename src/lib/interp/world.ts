@@ -197,6 +197,8 @@ export class World {
    * An accelerometer is an I²C device instead (the micro:bit's answers at 0x19, an `mpu6050` input moves it).
    */
   readonly onboard = new Map<OnboardSensor, number>();
+  /** The room around the board by channel (`environment.temperature`...), as the world script and the host set it. */
+  private readonly env = new Map<string, number>();
   powered = true;
   supplyV: number;
   // Displays and peripherals the libraries write into.
@@ -238,6 +240,16 @@ export class World {
 
   get now(): number {
     return this.clock.now;
+  }
+
+  setEnv(channel: string, value: number): void {
+    if (this.env.get(channel) === value) return;
+    this.env.set(channel, value);
+    this.touch();
+  }
+
+  getEnv(channel: string): number | undefined {
+    return this.env.get(channel);
   }
 
   /** Mark the snapshot dirty (displays call this after drawing). */
