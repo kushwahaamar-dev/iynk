@@ -132,6 +132,33 @@ export function worldPose(doc: Project, frame: string, deps: SceneDeps): DocPose
   };
 }
 
+const qconj = (q: Quat): Quat => [-q[0], -q[1], -q[2], q[3]];
+
+/**
+ * The body a mount is fixed to and where the mount sits relative to that body's frame, in metres. The body is the one whose
+ * frame is the mount's frame or the nearest parent of it; undefined when the mount, its frames or a body for them is missing.
+ */
+export function mountOnBody(doc: Project, mountId: string, deps: Pick<SceneDeps, "dmath">): { body: string; local: Pose } | undefined {
+  const mechanical = doc.mechanical;
+  const mount = mechanical?.mounts.find((m) => m.id === mountId);
+  if (!mechanical || !mount) return undefined;
+  const frames = new Map(mechanical.frames.map((f) => [f.id, f]));
+  const seen = new Set<string>();
+  for (let at = mount.frame; at !== "world" && !seen.has(at); at = frames.get(at)?.parent ?? "world") {
+    seen.add(at);
+    const body = mechanical.bodies.find((b) => b.frame === at);
+    if (!body) continue;
+    const bodyWorld = frameInWorld(frames, at, deps.dmath);
+    const frameWorld = frameInWorld(frames, mount.frame, deps.dmath);
+    if (!bodyWorld || !frameWorld) return undefined;
+    const inv = qconj(bodyWorld.q);
+    const offset = qrotate(inv, [frameWorld.p[0] - bodyWorld.p[0], frameWorld.p[1] - bodyWorld.p[1], frameWorld.p[2] - bodyWorld.p[2]]);
+    const frameInBody: Pose = { p: offset, q: qmul(inv, frameWorld.q) };
+    return { body: body.id, local: compose(frameInBody, poseOf(mount.pose, deps.dmath)) };
+  }
+  return undefined;
+}
+
 /** FNV-1a 64 over the canonical JSON of the scene, 16 hex digits. */
 export function sceneHash(scene: SceneSpec): string {
   return fnv1a64(utf8Encode(canonicalize(scene)));

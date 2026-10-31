@@ -91,7 +91,7 @@ describe("mech engine", () => {
   it("steps on the rational clock without drift", () => {
     const { engine, fake } = setup(0);
     for (let i = 0; i < 10_000; i++) {
-      expect(engine.nextDue()).toBe(cyclesToNs(i, RATE));
+      expect(engine.nextDue()).toBe(cyclesToNs(i + 1, RATE));
       engine.advanceTo(cyclesToNs(i + 1, RATE), open);
     }
     expect(fake.steps()).toBe(10_000);

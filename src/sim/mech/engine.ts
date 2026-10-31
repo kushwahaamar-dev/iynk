@@ -23,6 +23,8 @@ export const STEP_HZ = 240;
 const STEP_RATE = clockRate(25_000_000, 6);
 const FACTS_EVERY_STEPS = STEP_HZ / 10;
 const PHASE_MECH = 4;
+/** A ranger with nothing to hear is told a distance past the module's 4 m, which makes it time out. */
+const NO_ECHO_CM = 1000;
 
 export interface MechIo {
   /** Driver input pins as the digital layer resolved them at this time. */
@@ -52,6 +54,8 @@ export interface EncoderBank {
 export interface SensorPort {
   sensor: Sensor;
   part: string;
+  /** The mount id the sensor's binding names. */
+  mount: string;
   pins: string[];
   vLogic: number;
 }
@@ -147,14 +151,17 @@ export function createMechEngine(a: MechEngineArgs) {
       const reading = port.sensor.read(sensorWorld, t);
       if (!reading || lastReading.get(port.sensor.id) === reading) continue;
       lastReading.set(port.sensor.id, reading);
+      const start = { part: port.part, binding: port.sensor.id, mount: port.mount };
       if ("channels" in reading) {
+        sampler.pushReading(port.sensor.id, { ...start, kind: "line" }, { values: reading.channels });
         reading.channels.forEach((reflectance, i) => {
           const pin = port.pins[i];
           if (pin !== undefined) a.io.setAnalog(port.part, pin, port.vLogic * (1 - reflectance), t);
         });
-        sampler.setSensorHeight(port.sensor.id, reading.heightMm);
-      } else if (reading.distanceMm !== null) {
-        a.io.setParam(port.part, "distanceCm", reading.distanceMm / 10, t);
+        sampler.setSensorHeight(port.part, reading.heightMm);
+      } else {
+        sampler.pushReading(port.sensor.id, { ...start, kind: "ranger" }, { values: reading.distanceMm === null ? [] : [reading.distanceMm], ...(reading.tooClose ? { tooClose: true } : {}) });
+        a.io.setParam(port.part, "distanceCm", reading.distanceMm === null ? NO_ECHO_CM : reading.distanceMm / 10, t);
       }
     }
   }
@@ -232,7 +239,8 @@ export function createMechEngine(a: MechEngineArgs) {
   const engine: Engine = {
     id,
     rank: RANK.mech,
-    nextDue: () => (state === "halted" || state === "freed" ? null : cyclesToNs(k, STEP_RATE)),
+    // advanceTo(h) takes the steps that start before h, so the step due next is reached when the clock gets to its end.
+    nextDue: () => (state === "halted" || state === "freed" ? null : cyclesToNs(k + 1, STEP_RATE)),
     advanceTo(horizon: SimTime, budget: SliceBudget) {
       if (state === "halted" || state === "freed") return { reached: horizon, stoppedEarly: false };
       state = "running";

@@ -27,6 +27,8 @@ export interface RangeReading {
   distanceMm: number | null;
   /** Echo pulse width; null when nothing came back, and the reader then waits out ECHO_TIMEOUT_US. */
   echoUs: number | null;
+  /** Something answered from inside the minimum range and nothing farther did. */
+  tooClose?: boolean;
   atNs: number;
 }
 
@@ -130,7 +132,8 @@ export function sampleLine(b: SensorBinding, d: MechanicsSensor, w: SensorWorld,
 
   const channels: number[] = [];
   for (let c = 0; c < channelCount; c++) {
-    const yMm = (c - (channelCount - 1) / 2) * pitchMm;
+    // Channel 0 is the left end of the array and the robot's left is +y, so the array is laid out from +y down.
+    const yMm = ((channelCount - 1) / 2 - c) * pitchMm;
     const centre = toWorld(mount, { p: [0, yMm * MM, 0], q: IDENTITY.q });
     const h = centre.p[2] / MM;
     let sum = 0;
@@ -162,22 +165,30 @@ export function sampleRange(b: SensorBinding, d: MechanicsSensor, w: SensorWorld
   }
 
   let nearestMm: number | null = null;
+  let tooClose = false;
   w.castRays(rays).forEach((hit, i) => {
     if (!hit) return;
     const dir = rays[i].dir;
     const cosIncidence = -(dir[0] * hit.normal[0] + dir[1] * hit.normal[1] + dir[2] * hit.normal[2]);
     const incidenceDeg = (dmath.atan2(Math.sqrt(Math.max(0, 1 - cosIncidence * cosIncidence)), cosIncidence) * 180) / Math.PI;
     const mm = hit.toiM / MM;
-    if (incidenceDeg > maxAngle || mm < minMm) return;
+    if (incidenceDeg > maxAngle) return;
+    if (mm < minMm) {
+      tooClose = true;
+      return;
+    }
     if (nearestMm === null || mm < nearestMm) nearestMm = mm;
   });
 
-  if (nearestMm === null) return { distanceMm: null, echoUs: null, atNs };
+  if (nearestMm === null) return { distanceMm: null, echoUs: null, ...(tooClose ? { tooClose } : {}), atNs };
   const distanceMm = Math.max(0, nearestMm + (sigma > 0 ? g.gauss() * sigma : 0));
   return { distanceMm, echoUs: (2 * distanceMm) / SPEED_OF_SOUND_MM_PER_US, atNs };
 }
 
-export function createSensor(b: SensorBinding, d: MechanicsSensor | undefined, rng: (stream: string) => Rng): Sensor {
+/** `on` is the body the sensor's mount is fixed to and the mount's pose on it; without it the binding's mount is read as a body. */
+export function createSensor(binding: SensorBinding, d: MechanicsSensor | undefined, rng: (stream: string) => Rng, on?: { body: string; local: Pose }): Sensor {
+  const b = on ? { ...binding, mount: on.body } : binding;
+  const mountPose = on?.local ?? IDENTITY;
   if (!d) return { modelled: false };
   const g = rng(`sensor:${b.component}`);
   const sample = d.query === "surface-sample" ? sampleLine : sampleRange;
@@ -197,7 +208,7 @@ export function createSensor(b: SensorBinding, d: MechanicsSensor | undefined, r
     provenance: PROVENANCE,
     read(w, atNs) {
       if (atNs >= nextNs) {
-        inFlight.push(sample(b, d, w, IDENTITY, g, atNs));
+        inFlight.push(sample(b, d, w, mountPose, g, atNs));
         nextNs = atNs + periodNs;
       }
       while (inFlight.length > 0 && inFlight[0].atNs + latencyNs <= atNs) shown = inFlight.shift() ?? shown;
