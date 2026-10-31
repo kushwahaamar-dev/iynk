@@ -2,8 +2,6 @@ import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { FigureEvent } from "@/components/figure/protocol";
 import { createBoardLabStore, initialState } from "@/lib/boardlab/store";
-import type { RoomClient } from "@/lib/realtime/room";
-import { attachStore } from "@/lib/realtime/store-sync";
 import { boardMoments } from "./moments";
 
 const calls = vi.hoisted(() => ({ played: [] as string[], tracked: [] as [string, unknown][] }));
@@ -83,24 +81,5 @@ describe("useLabMoments", () => {
     act(() => store.dispatch({ type: "fault/trigger", id: "short-5v" }));
     expect(calls.tracked).toEqual([["step.done", { key: "robotics:tb6612fng:step:wire-stby" }]]);
     expect(calls.played).toEqual(["step", "step"]);
-  });
-
-  test("a room joiner taking the host's snapshot is not a new fault or step", () => {
-    const store = boardStore();
-    let target: { hydrate(snapshot: unknown): void } | null = null;
-    const room = {
-      bind: (next: typeof target) => (target = next),
-      beforeBatonPass: () => () => {},
-      getState: () => ({ you: { id: "me" }, batonHolder: "host" }),
-      holdsBaton: () => false,
-    } as unknown as RoomClient;
-    const detach = attachStore(store, "board", room, { scope: "/boards/uno-r3/blink" });
-    renderHook(() => useLabMoments(store, boardMoments));
-    const host = { ...store.getState(), fault: "short-5v", assembly: ["usb"] };
-    act(() => target!.hydrate({ scope: "/boards/uno-r3/blink", state: JSON.parse(JSON.stringify(host)) }));
-    expect(store.getState().fault).toBe("short-5v");
-    expect(calls.tracked).toEqual([]);
-    expect(calls.played).toEqual([]);
-    detach();
   });
 });

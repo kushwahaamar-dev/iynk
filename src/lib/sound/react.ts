@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef } from "react";
 import type { LabStore } from "@/components/dock/types";
 import type { FigureEvent } from "@/components/figure/protocol";
 import type { BoardLabState } from "@/lib/boardlab/store";
-import { isHydrating } from "@/lib/realtime";
 import { useSettings } from "@/lib/settings/hooks";
 import { track } from "@/lib/telemetry";
 import { playSound, setTone, silence } from "./index";
@@ -69,7 +68,6 @@ export function useLabMoments<S>(store: LabStore<S>, derive: (prev: S, next: S) 
       if (next === prev) return;
       const before = prev;
       prev = next;
-      if (isHydrating()) return;
       for (const moment of derive(before, next)) report(moment);
     });
   }, [store, derive]);

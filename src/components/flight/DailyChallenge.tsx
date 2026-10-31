@@ -6,7 +6,6 @@ import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
 import { createTranslator } from "@/i18n/translate";
 import { challengeDay, challengeLink, dailyChallenge, type ChallengeCraft, type DailyChallenge } from "@/lib/flight/challenge";
-import { useIdentity } from "@/lib/realtime";
 import type { FlightStrings } from "./FlightRange";
 
 /** One craft in the challenge pool, with its words in the page's language (the server page builds it). */
@@ -46,13 +45,12 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
   const today = useSyncExternalStore(noSubscribe, challengeDay, () => null);
   const date = active?.date ?? link?.date ?? today;
   const c = useMemo(() => (date ? dailyChallenge(date, pool) : null), [date, pool]);
-  const identity = useIdentity();
   const [shared, setShared] = useState<"copied" | "failed" | null>(null);
   if (!c) return null;
 
   const words = challengeWords(pool, c);
   const here = c.craft === craftId;
-  const beat = best !== null ? { time: best, by: identity?.name } : undefined;
+  const beat = best !== null ? { time: best } : undefined;
   const href = challengeLink(lang, c, beat);
   const share = async () => {
     const url = new URL(href, window.location.origin).toString();
