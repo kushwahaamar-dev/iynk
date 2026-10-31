@@ -108,7 +108,8 @@ export default defineConfig({
         NEXT_PUBLIC_STUDIO_TEST: "1",
         ...Object.fromEntries(BLANK.map((name) => [name, ""])),
         IYNK_SERVER_URL: `http://localhost:${serverPort}`,
-        IYNK_CONNECT_ORIGINS: connectOrigins().join(","),
+        // Specs that spawn their own server pick its port after this build starts.
+        IYNK_CONNECT_ORIGINS: [...connectOrigins(), "http://localhost:*", "ws://localhost:*"].join(","),
       },
       reuseExistingServer: false,
       timeout: 600_000,
