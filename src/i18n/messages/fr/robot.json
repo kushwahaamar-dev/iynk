@@ -1,0 +1,267 @@
+{
+  "builder": {
+    "title": "Robot",
+    "add": "Ajouter au robot",
+    "driveBase": "Base motrice",
+    "wheelPair": "Paire de roues",
+    "caster": "Roulette",
+    "arm": "Segment de bras",
+    "bodies": "Corps",
+    "joints": "Articulations",
+    "sensors": "Capteurs",
+    "mass": "Masse",
+    "size": "Taille",
+    "axis": "Axe",
+    "limits": "Limites",
+    "unit": "Unités",
+    "unitMetric": "Métrique",
+    "unitImperial": "Impérial",
+    "problems": "Problèmes",
+    "noProblems": "Aucun problème trouvé dans ce robot.",
+    "empty": "Ce robot n'a pas encore de pièces. Ajoutez une base motrice pour commencer.",
+    "undo": "Annuler",
+    "redo": "Rétablir"
+  },
+  "parts": {
+    "motor": "Moteur",
+    "gearbox": "Réducteur",
+    "driver": "Pilote de moteur",
+    "battery": "Batterie",
+    "wheel": "Roue",
+    "servo": "Servo",
+    "stepper": "Moteur pas à pas",
+    "encoder": "Codeur",
+    "lineSensor": "Capteur de ligne",
+    "ranger": "Capteur de distance",
+    "imu": "Capteur de mouvement",
+    "chassis": "Châssis",
+    "massValue": "{mass} g",
+    "limitingPart": "Pièce limitante : {part}",
+    "openPart": "Ouvrir {part}"
+  },
+  "checks": {
+    "title": "Vérifications du robot",
+    "status": {
+      "ok": "Réussi",
+      "warn": "Proche de la limite",
+      "fail": "Échoue"
+    },
+    "value": "Valeur",
+    "limit": "Limite",
+    "line": "{title} : {status}, {value} pour une limite de {limit}",
+    "formula": "Formule et hypothèses",
+    "margin": "Marge d'iynk : {factor} fois",
+    "none": "Lancez les vérifications pour voir les résultats.",
+    "coupling": "Couplage moteur et moteur physique",
+    "RB-C-01": {
+      "title": "Montée",
+      "asks": "La transmission peut-elle faire avancer le robot sur cette pente ?",
+      "note": "Couple disponible à la roue contre couple nécessaire, avec la marge d'iynk de 1,5."
+    },
+    "RB-C-02": {
+      "title": "Vitesse maximale",
+      "asks": "À quelle vitesse le robot peut-il aller avec ce moteur, ce réducteur et cette alimentation ?",
+      "note": "Rayon de roue fois vitesse à vide sur le rapport de réduction, à la tension d'alimentation moins la chute du pilote, puis réduite par la droite de charge."
+    },
+    "RB-C-03": {
+      "title": "Accélération",
+      "asks": "Avec quelle rapidité le robot peut-il accélérer ?",
+      "note": "Force motrice moins la résistance au roulement, sur la masse plus l'inertie en rotation des roues et du réducteur."
+    },
+    "RB-C-04": {
+      "title": "Courant de calage",
+      "asks": "Si tous les moteurs calent, le pilote et la batterie peuvent-ils fournir le courant ?",
+      "note": "Tension d'alimentation sur la résistance du bobinage de chaque moteur, sommées, contre les limites du pilote, de la batterie et des fils."
+    },
+    "RB-C-05": {
+      "title": "Chute de l'alimentation logique",
+      "asks": "L'alimentation logique reste-t-elle assez haute quand les moteurs démarrent ?",
+      "note": "Courant de pointe du moteur fois la résistance de source, contre la tension minimale acceptée par la logique. Ce calcul est fait par le solveur de circuit."
+    },
+    "RB-C-06": {
+      "title": "Autonomie",
+      "asks": "Combien de temps la batterie dure-t-elle avec ce profil d'usage ?",
+      "note": "Énergie utile de la batterie sur la puissance moyenne, pour la part de temps indiquée en croisière, en calage et au repos. Le résultat est une plage."
+    },
+    "RB-C-07": {
+      "title": "Basculement",
+      "asks": "Sur quelle pente ou à quel freinage le robot bascule-t-il ?",
+      "note": "Angle entre le centre de masse et les contacts des roues, latéral et longitudinal, contre la pente et l'accélération sur g."
+    },
+    "RB-C-08": {
+      "title": "Couple de maintien du bras",
+      "asks": "Chaque articulation peut-elle maintenir le bras et sa charge immobiles ?",
+      "note": "Couple des masses situées au-delà de chaque articulation autour de son axe, contre le couple de calage ou de maintien du servo."
+    },
+    "RB-C-09": {
+      "title": "Résolution du codeur",
+      "asks": "Un top de codeur est-il assez petit pour régler la vitesse en douceur ?",
+      "note": "Distance par top selon la taille de roue, les tops par tour et la réduction, puis le pas de vitesse par période de boucle. Au-delà de 10 pour cent de la vitesse cible, la régulation est bruitée."
+    },
+    "RB-C-10": {
+      "title": "Placement des capteurs",
+      "asks": "Les capteurs sont-ils à une hauteur et une position où ils peuvent voir ?",
+      "note": "Hauteur et empreinte d'un capteur de ligne contre la largeur de la ligne. Portée minimale d'un capteur de distance contre la pièce du robot la plus proche dans son faisceau."
+    }
+  },
+  "problems": {
+    "RB-E-TREE": "Les articulations doivent relier les corps en arbre avec un seul corps racine. Vérifiez {joint}.",
+    "RB-E-MASS": "{body} n'a pas de masse. Donnez-lui une masse supérieure à 0.",
+    "RB-E-INERTIA": "L'inertie de {body} est impossible : aucun axe ne peut dépasser la somme des deux autres.",
+    "RB-E-THIN": "{body} a un côté de {size_mm} mm. Chaque côté d'un collisionneur doit faire au moins {min_mm} mm.",
+    "RB-E-AXIS": "L'axe de {joint} est nul. Donnez-lui une direction.",
+    "RB-E-LIMITS": "Les limites de {joint} sont incorrectes : la limite basse {min} doit être inférieure à la limite haute {max}. Un tour de 360 degrés ou plus est une articulation continue.",
+    "RB-E-DRIVE": "{joint} est entraînée par {component}, qui n'est ni un moteur, ni un servo, ni un moteur pas à pas.",
+    "RB-E-WHEEL": "La roue {joint} a besoin d'une spécification de roue et d'un axe horizontal à 1 degré près.",
+    "RB-E-SURFACE": "{body} fait référence à la surface {surface}, qui n'existe pas.",
+    "RB-E-COUPLING": "Le moteur {component} serait instable avec ce pas de simulation (pas fois vitesse de réponse = {factor}, supérieur à 1). Réduisez le pas ou ajoutez de l'inertie.",
+    "RB-W-TUNNEL": "{body} pourrait traverser les parois fines : à {speed} m/s il avance de {step_mm} mm par pas, soit plus de la moitié de {thin_mm} mm.",
+    "RB-W-INERTIA-BOX": "{body} est un maillage, donc son inertie est prise sur sa boîte englobante.",
+    "RB-W-ASPECT": "{body} est {ratio} fois plus long qu'épais, ce qui rend le contact instable.",
+    "RB-W-MASSRATIO": "Les masses de part et d'autre de {joint} diffèrent d'un facteur {ratio}. Le solveur peut être instable.",
+    "RB-W-CG": "Le centre de masse est à {offset_mm} mm du milieu de la zone d'appui, plus que sa demi-largeur de {half_mm} mm. Le robot risque de basculer.",
+    "RB-W-UNDRIVEN": "{joint} n'a pas de moteur et bougera librement. Ajoutez un moteur depuis la bibliothèque de pièces.",
+    "RB-E-SENSOR": {
+      "unknown-component": "Le capteur {sensor} utilise {component}, qui n'est pas dans la bibliothèque de pièces.",
+      "not-a-sensor": "Le capteur {sensor} utilise {component}, qui ne peut pas faire ce type de mesure."
+    },
+    "RB-E-LIMIT": {
+      "bodies": "Ce robot a {count} corps mobiles, au-delà de la limite de {max}.",
+      "colliders": "Ce robot a {count} collisionneurs, au-delà de la limite de {max}.",
+      "joints": "Ce robot a {count} articulations, au-delà de la limite de {max}.",
+      "sensors": "Ce robot a {count} capteurs, au-delà de la limite de {max}.",
+      "statics": "Ce robot a {count} boîtes fixes, au-delà de la limite de {max}."
+    }
+  },
+  "run": {
+    "title": "Résultats de l'exécution",
+    "hash": "Empreinte de l'exécution : {hash}",
+    "distance": "A parcouru {distance} m en {time} s.",
+    "speed": "Vitesse maximale {speed} m/s, vitesse moyenne {mean} m/s.",
+    "lap": "Tour {n} : {time} s.",
+    "lineLost": "A perdu la ligne {count} fois.",
+    "peakCurrent": "Courant de pointe du moteur {current} A.",
+    "minSupply": "Tension minimale de la batterie {voltage} V.",
+    "resets": "La carte a redémarré {count} fois.",
+    "tipped": "Le robot a basculé à {time} s.",
+    "finished": "L'exécution s'est terminée après {time} s."
+  },
+  "pid": {
+    "title": "PID",
+    "target": "Consigne",
+    "measured": "Mesuré",
+    "error": "Erreur",
+    "output": "Sortie",
+    "riseTime": "Temps de montée",
+    "overshoot": "Dépassement",
+    "settlingTime": "Temps d'établissement",
+    "steadyError": "Erreur statique",
+    "table": "Valeurs en tableau",
+    "empty": "Aucune ligne PID n'a encore été affichée. Lancez un programme qui en affiche.",
+    "insert": "Insérer le code PID",
+    "noGains": "Le panneau montre le comportement du régulateur. Il ne modifie jamais vos gains."
+  },
+  "loop": {
+    "title": "Durée de la boucle",
+    "mean": "Moyenne {ms} ms",
+    "p95": "95e centile {ms} ms",
+    "max": "Maximum {ms} ms",
+    "jitter": "Gigue {ms} ms",
+    "histogram": "Histogramme des durées de boucle",
+    "overrun": "{percent} pour cent des boucles ont duré plus que leur période. Le code de régulation est trop lent pour cette cadence.",
+    "empty": "Pas encore de durées de boucle. Lancez d'abord le robot."
+  },
+  "home": {
+    "group": "Robot",
+    "blank": "Robot vierge",
+    "blankHint": "Partez de zéro et ajoutez vous-même les pièces.",
+    "lineFollower": "Suiveur de ligne",
+    "lineFollowerHint": "Deux roues et des capteurs de ligne suivent une piste au sol.",
+    "driveBase": "Base motrice",
+    "driveBaseHint": "Une base à deux roues avec moteurs, pilote et batterie, prête à vérifier.",
+    "speedControl": "Régulation de vitesse",
+    "speedControlHint": "Maintenez une roue à une vitesse cible avec un codeur et une boucle PID."
+  },
+  "models": {
+    "title": "Ce qui est modélisé",
+    "notYet": "Pas encore modélisé",
+    "tier": "Niveau du modèle : {tier}",
+    "notChecked": "Pas encore comparé à une référence."
+  },
+  "safety": {
+    "title": "Sécurité au laboratoire",
+    "lipo": "Chargez et rangez les batteries LiPo dans un endroit sûr, ne les laissez jamais charger sans surveillance et cessez d'utiliser une batterie gonflée ou abîmée.",
+    "pinch": "Les roues, engrenages et bras peuvent pincer les doigts. Gardez les mains à distance quand le robot est sous tension.",
+    "stall": "Un moteur calé chauffe vite. Coupez l'alimentation si un moteur ronfle sans tourner.",
+    "unattended": "Ne laissez pas un robot sous tension sans surveillance.",
+    "simulation": "La simulation peut montrer un problème, mais elle ne remplace pas la prudence avec du vrai matériel."
+  },
+  "cause": {
+    "motor-stall": {
+      "symptom": "Le moteur est calé",
+      "hint1": "Regardez la roue sous tension. Reste-t-elle immobile alors que le moteur est commandé ?",
+      "hint2": "Mesurez le courant et la vitesse du moteur. Le courant est-il élevé alors que la vitesse est proche de zéro ?",
+      "hint3": "La charge dépasse ce que le moteur peut faire tourner à cette tension. Réduisez la charge, ajoutez une réduction ou augmentez la tension."
+    },
+    "motor-direction-reversed": {
+      "symptom": "Le robot tourne dans le mauvais sens",
+      "hint1": "Commandez l'avance et observez chaque roue. L'une d'elles tourne-t-elle en arrière ?",
+      "hint2": "Vérifiez comment les deux fils de chaque moteur arrivent au pilote. Les moteurs gauche et droit sont-ils câblés dans le même sens ?",
+      "hint3": "Un moteur est câblé à l'envers. Inversez ses deux fils ou inversez son sens dans le code."
+    },
+    "encoder-channel-swapped": {
+      "symptom": "Le codeur compte à l'envers",
+      "hint1": "Faites tourner la roue vers l'avant à la main ou pendant l'exécution et observez le compte. Diminue-t-il ?",
+      "hint2": "Observez les deux voies du codeur, A et B, à l'oscilloscope. Laquelle est en avance quand la roue avance ?",
+      "hint3": "Les voies A et B sont inversées, donc l'avance compte comme un recul. Inversez les deux fils ou les deux broches dans le code."
+    },
+    "wheel-slip": {
+      "symptom": "La roue tourne mais le robot n'avance pas",
+      "hint1": "Observez la roue et le sol dessous. La roue tourne-t-elle alors que le robot reste en place ?",
+      "hint2": "Comparez la vitesse de la roue à celle du robot sur le sol, et regardez le poids sur la roue et l'adhérence du sol.",
+      "hint3": "La roue n'adhère pas. Ajoutez du poids dessus, utilisez un pneu plus adhérent ou une surface plus rugueuse, ou accélérez plus doucement."
+    },
+    "driver-undersized": {
+      "symptom": "Le pilote de moteur ne peut pas fournir assez de courant",
+      "hint1": "Touchez ou observez la puce du pilote. Chauffe-t-elle ou coupe-t-elle quand les moteurs démarrent ?",
+      "hint2": "Comparez le courant de calage du moteur au courant nominal du pilote.",
+      "hint3": "Le pilote est prévu pour moins que ce que les moteurs peuvent consommer. Utilisez un pilote plus puissant, un moteur moins gourmand ou une charge plus légère."
+    },
+    "battery-sag-reset": {
+      "symptom": "La carte redémarre quand les moteurs démarrent",
+      "hint1": "Notez quand les redémarrages se produisent. Surviennent-ils au moment où les moteurs s'allument ?",
+      "hint2": "Mesurez la tension de la batterie ou de l'alimentation logique pendant le démarrage des moteurs. Passe-t-elle sous ce dont la carte a besoin ?",
+      "hint3": "Les moteurs tirent la tension de la batterie assez bas pour redémarrer la carte. Utilisez une batterie plus puissante, ajoutez un condensateur ou alimentez la carte séparément."
+    },
+    "sensor-too-high": {
+      "symptom": "Le capteur de ligne ne voit pas la ligne",
+      "hint1": "Regardez à quelle hauteur le capteur se trouve au-dessus du sol. Est-ce beaucoup plus que ce que suggère sa fiche technique ?",
+      "hint2": "Lisez la valeur du capteur sur la ligne et sur le sol nu. Les deux valeurs sont-elles presque identiques ?",
+      "hint3": "Le capteur est trop haut pour distinguer la ligne du sol. Abaissez-le à la hauteur indiquée dans sa fiche technique."
+    },
+    "sensor-saturated": {
+      "symptom": "Le capteur de ligne lit la même valeur partout",
+      "hint1": "Déplacez le robot sur la ligne et sur le sol. La valeur du capteur reste-t-elle à son maximum ou à son minimum ?",
+      "hint2": "Vérifiez la lumière autour du capteur et sa proximité de la surface. Est-il inondé de lumière ou totalement dans l'ombre ?",
+      "hint3": "Le capteur est saturé et ne distingue plus le sombre du clair. Protégez-le de la lumière parasite, remontez-le un peu ou réduisez le courant de l'émetteur."
+    },
+    "ranger-beam-blocked": {
+      "symptom": "Le capteur de distance indique toujours proche",
+      "hint1": "Regardez ce qui se trouve juste devant le capteur. Une partie du robot est-elle dans son faisceau ?",
+      "hint2": "Comparez la distance lue à la portée minimale du capteur et à la distance de la pièce du robot la plus proche.",
+      "hint3": "Une partie du robot bloque le faisceau. Déplacez le capteur pour qu'il ait une vue dégagée, ou déplacez la pièce."
+    },
+    "tip-over": {
+      "symptom": "Le robot bascule",
+      "hint1": "Observez quand il bascule : en accélérant, en freinant, en tournant ou sur une pente ?",
+      "hint2": "Mesurez la hauteur du centre de masse et l'écartement des roues. Le robot est-il haut et étroit ?",
+      "hint3": "Le centre de masse est trop haut pour l'écartement des roues. Descendez les pièces lourdes, élargissez la voie, ou accélérez et freinez plus doucement."
+    },
+    "loop-too-slow": {
+      "symptom": "La vitesse oscille",
+      "hint1": "Tracez la vitesse en fonction du temps. Oscille-t-elle autour de la consigne avec un rythme régulier ?",
+      "hint2": "Ouvrez le panneau de durée de boucle. La boucle de régulation dure-t-elle plus que sa période, ou varie-t-elle beaucoup d'un passage à l'autre ?",
+      "hint3": "La boucle de régulation est trop lente pour suivre. Raccourcissez le travail de chaque passage, ou baissez la cadence visée ou les gains."
+    }
+  }
+}

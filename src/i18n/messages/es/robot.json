@@ -1,0 +1,267 @@
+{
+  "builder": {
+    "title": "Robot",
+    "add": "Añadir al robot",
+    "driveBase": "Base motriz",
+    "wheelPair": "Par de ruedas",
+    "caster": "Rueda loca",
+    "arm": "Eslabón de brazo",
+    "bodies": "Cuerpos",
+    "joints": "Articulaciones",
+    "sensors": "Sensores",
+    "mass": "Masa",
+    "size": "Tamaño",
+    "axis": "Eje",
+    "limits": "Límites",
+    "unit": "Unidades",
+    "unitMetric": "Métrico",
+    "unitImperial": "Imperial",
+    "problems": "Problemas",
+    "noProblems": "No se encontraron problemas en este robot.",
+    "empty": "Este robot aún no tiene piezas. Añade una base motriz para empezar.",
+    "undo": "Deshacer",
+    "redo": "Rehacer"
+  },
+  "parts": {
+    "motor": "Motor",
+    "gearbox": "Reductor",
+    "driver": "Controlador de motor",
+    "battery": "Batería",
+    "wheel": "Rueda",
+    "servo": "Servo",
+    "stepper": "Motor paso a paso",
+    "encoder": "Codificador",
+    "lineSensor": "Sensor de línea",
+    "ranger": "Sensor de distancia",
+    "imu": "Sensor de movimiento",
+    "chassis": "Chasis",
+    "massValue": "{mass} g",
+    "limitingPart": "Pieza limitante: {part}",
+    "openPart": "Abrir {part}"
+  },
+  "checks": {
+    "title": "Comprobaciones del robot",
+    "status": {
+      "ok": "Cumple",
+      "warn": "Cerca del límite",
+      "fail": "No cumple"
+    },
+    "value": "Valor",
+    "limit": "Límite",
+    "line": "{title}: {status}, {value} frente a {limit}",
+    "formula": "Fórmula y supuestos",
+    "margin": "Margen de iynk: {factor} veces",
+    "none": "Ejecuta las comprobaciones para ver resultados.",
+    "coupling": "Acoplamiento motor y motor físico",
+    "RB-C-01": {
+      "title": "Subida",
+      "asks": "¿Puede el tren motriz mover el robot en esta pendiente?",
+      "note": "Par disponible en la rueda frente al necesario, con el margen de iynk de 1,5."
+    },
+    "RB-C-02": {
+      "title": "Velocidad máxima",
+      "asks": "¿A qué velocidad puede ir el robot con este motor, reducción y alimentación?",
+      "note": "Radio de rueda por velocidad en vacío entre la reducción, con la alimentación menos la caída del controlador, reducida por la recta de carga."
+    },
+    "RB-C-03": {
+      "title": "Aceleración",
+      "asks": "¿Con qué rapidez puede acelerar el robot?",
+      "note": "Fuerza motriz menos la resistencia a la rodadura, entre la masa más la inercia giratoria de ruedas y reductor."
+    },
+    "RB-C-04": {
+      "title": "Corriente de bloqueo",
+      "asks": "Si todos los motores se bloquean, ¿pueden el controlador y la batería dar la corriente?",
+      "note": "Tensión de alimentación entre la resistencia del bobinado de cada motor, sumadas, frente a los límites del controlador, la batería y el cable."
+    },
+    "RB-C-05": {
+      "title": "Caída de la alimentación lógica",
+      "asks": "¿Se mantiene la alimentación lógica lo bastante alta cuando arrancan los motores?",
+      "note": "Corriente pico del motor por la resistencia de la fuente frente a la tensión mínima que acepta la lógica. Se calcula en el solucionador del circuito."
+    },
+    "RB-C-06": {
+      "title": "Autonomía",
+      "asks": "¿Cuánto dura la batería con este perfil de uso?",
+      "note": "Energía útil de la batería entre la potencia media, para la parte de tiempo indicada en crucero, bloqueo y reposo. El resultado es un rango."
+    },
+    "RB-C-07": {
+      "title": "Vuelco",
+      "asks": "¿En qué pendiente o frenada vuelca el robot?",
+      "note": "Ángulo desde el centro de masa hasta los contactos de las ruedas, lateral y longitudinal, frente a la pendiente y la aceleración entre g."
+    },
+    "RB-C-08": {
+      "title": "Par de sujeción del brazo",
+      "asks": "¿Puede cada articulación sostener quieto el brazo y su carga?",
+      "note": "Par de las masas más allá de cada articulación respecto a su eje, frente al par de bloqueo o sujeción del servo."
+    },
+    "RB-C-09": {
+      "title": "Resolución del codificador",
+      "asks": "¿Es una cuenta del codificador lo bastante pequeña para controlar la velocidad con suavidad?",
+      "note": "Distancia por cuenta según el tamaño de rueda, cuentas por vuelta y reducción, y luego el salto de velocidad por periodo del bucle. Por encima del 10 por ciento de la velocidad objetivo, el control es ruidoso."
+    },
+    "RB-C-10": {
+      "title": "Colocación de sensores",
+      "asks": "¿Están los sensores a una altura y posición desde donde pueden ver?",
+      "note": "Altura y huella de un sensor de línea frente al ancho de la línea. Alcance mínimo de un sensor de distancia frente a la pieza del robot más cercana en su haz."
+    }
+  },
+  "problems": {
+    "RB-E-TREE": "Las articulaciones deben conectar los cuerpos como un árbol con un único cuerpo raíz. Revisa {joint}.",
+    "RB-E-MASS": "{body} no tiene masa. Dale una masa mayor que 0.",
+    "RB-E-INERTIA": "La inercia de {body} no es posible: ningún eje puede superar la suma de los otros dos.",
+    "RB-E-THIN": "{body} tiene un lado de {size_mm} mm. Cada lado de un colisionador debe medir al menos {min_mm} mm.",
+    "RB-E-AXIS": "El eje de {joint} es cero. Dale una dirección.",
+    "RB-E-LIMITS": "Los límites de {joint} son incorrectos: el límite inferior {min} debe ser menor que el superior {max}. Un giro de 360 grados o más es una articulación continua.",
+    "RB-E-DRIVE": "{joint} es accionada por {component}, que no es un motor, servo ni motor paso a paso.",
+    "RB-E-WHEEL": "La rueda {joint} necesita una especificación de rueda y un eje horizontal con una tolerancia de 1 grado.",
+    "RB-E-SURFACE": "{body} hace referencia a la superficie {surface}, que no existe.",
+    "RB-E-COUPLING": "El motor {component} sería inestable con este paso de simulación (paso por velocidad de respuesta es {factor}, mayor que 1). Reduce el paso o añade inercia.",
+    "RB-W-TUNNEL": "{body} podría atravesar paredes finas: a {speed} m/s avanza {step_mm} mm por paso, más de la mitad de {thin_mm} mm.",
+    "RB-W-INERTIA-BOX": "{body} es una malla, así que su inercia se toma de su caja envolvente.",
+    "RB-W-ASPECT": "{body} es {ratio} veces más largo que grueso, lo que hace inestable el contacto.",
+    "RB-W-MASSRATIO": "Las masas a ambos lados de {joint} difieren {ratio} veces. El solucionador podría ser inestable.",
+    "RB-W-CG": "El centro de masa está a {offset_mm} mm del centro del área de apoyo, más que su semianchura de {half_mm} mm. Es probable que el robot vuelque.",
+    "RB-W-UNDRIVEN": "{joint} no tiene motor y se moverá libremente. Añade un motor desde la biblioteca de piezas.",
+    "RB-E-SENSOR": {
+      "unknown-component": "El sensor {sensor} usa {component}, que no está en la biblioteca de piezas.",
+      "not-a-sensor": "El sensor {sensor} usa {component}, que no puede hacer este tipo de medida."
+    },
+    "RB-E-LIMIT": {
+      "bodies": "Este robot tiene {count} cuerpos móviles, por encima del límite de {max}.",
+      "colliders": "Este robot tiene {count} colisionadores, por encima del límite de {max}.",
+      "joints": "Este robot tiene {count} articulaciones, por encima del límite de {max}.",
+      "sensors": "Este robot tiene {count} sensores, por encima del límite de {max}.",
+      "statics": "Este robot tiene {count} cajas fijas, por encima del límite de {max}."
+    }
+  },
+  "run": {
+    "title": "Resultados de la ejecución",
+    "hash": "Hash de la ejecución: {hash}",
+    "distance": "Recorrió {distance} m en {time} s.",
+    "speed": "Velocidad máxima {speed} m/s, velocidad media {mean} m/s.",
+    "lap": "Vuelta {n}: {time} s.",
+    "lineLost": "Perdió la línea {count} veces.",
+    "peakCurrent": "Corriente pico del motor {current} A.",
+    "minSupply": "Tensión mínima de la batería {voltage} V.",
+    "resets": "La placa se reinició {count} veces.",
+    "tipped": "El robot volcó a los {time} s.",
+    "finished": "La ejecución terminó tras {time} s."
+  },
+  "pid": {
+    "title": "PID",
+    "target": "Objetivo",
+    "measured": "Medido",
+    "error": "Error",
+    "output": "Salida",
+    "riseTime": "Tiempo de subida",
+    "overshoot": "Sobreimpulso",
+    "settlingTime": "Tiempo de establecimiento",
+    "steadyError": "Error estacionario",
+    "table": "Valores en tabla",
+    "empty": "Aún no se ha impreso ninguna línea PID. Ejecuta un sketch que las imprima.",
+    "insert": "Insertar código PID",
+    "noGains": "El panel muestra el comportamiento del controlador. Nunca cambia tus ganancias."
+  },
+  "loop": {
+    "title": "Tiempo del bucle",
+    "mean": "Media {ms} ms",
+    "p95": "Percentil 95 {ms} ms",
+    "max": "Máximo {ms} ms",
+    "jitter": "Fluctuación {ms} ms",
+    "histogram": "Histograma de tiempos del bucle",
+    "overrun": "El {percent} por ciento de los bucles tardó más que su periodo. El código de control es demasiado lento para esta frecuencia.",
+    "empty": "Aún no hay tiempos del bucle. Ejecuta primero el robot."
+  },
+  "home": {
+    "group": "Robot",
+    "blank": "Robot en blanco",
+    "blankHint": "Empieza desde cero y añade las piezas tú mismo.",
+    "lineFollower": "Seguidor de línea",
+    "lineFollowerHint": "Dos ruedas y sensores de línea siguen una pista en el suelo.",
+    "driveBase": "Base motriz",
+    "driveBaseHint": "Una base de dos ruedas con motores, controlador y batería, lista para comprobar.",
+    "speedControl": "Control de velocidad",
+    "speedControlHint": "Mantén una rueda a una velocidad objetivo con un codificador y un bucle PID."
+  },
+  "models": {
+    "title": "Qué modela",
+    "notYet": "Aún sin modelar",
+    "tier": "Nivel del modelo: {tier}",
+    "notChecked": "Aún no se ha contrastado con una referencia."
+  },
+  "safety": {
+    "title": "Seguridad en el laboratorio",
+    "lipo": "Carga y guarda las baterías LiPo en un lugar seguro, no las dejes cargando sin vigilancia y deja de usar una que esté hinchada o dañada.",
+    "pinch": "Las ruedas, engranajes y brazos pueden pillar los dedos. Mantén las manos lejos cuando el robot esté encendido.",
+    "stall": "Un motor bloqueado se calienta rápido. Corta la alimentación si un motor zumba y no gira.",
+    "unattended": "No dejes un robot encendido sin vigilancia.",
+    "simulation": "La simulación puede mostrar un problema, pero no sustituye el cuidado con el hardware real."
+  },
+  "cause": {
+    "motor-stall": {
+      "symptom": "El motor está bloqueado",
+      "hint1": "Mira la rueda con la alimentación encendida. ¿Está quieta mientras se acciona el motor?",
+      "hint2": "Mide la corriente y la velocidad del motor. ¿Es alta la corriente mientras la velocidad es casi cero?",
+      "hint3": "La carga es mayor de la que el motor puede mover con esta tensión. Reduce la carga, añade reducción o sube la alimentación."
+    },
+    "motor-direction-reversed": {
+      "symptom": "El robot gira en el sentido equivocado",
+      "hint1": "Ordena avanzar y observa cada rueda. ¿Alguna gira hacia atrás?",
+      "hint2": "Comprueba cómo llegan al controlador los dos cables de cada motor. ¿Están los motores izquierdo y derecho conectados en el mismo sentido?",
+      "hint3": "Un motor está conectado al revés. Intercambia sus dos cables o invierte su sentido en el código."
+    },
+    "encoder-channel-swapped": {
+      "symptom": "El codificador cuenta al revés",
+      "hint1": "Gira la rueda hacia delante a mano o en la ejecución y observa la cuenta. ¿Baja?",
+      "hint2": "Mira los dos canales del codificador, A y B, en un osciloscopio. ¿Cuál va por delante cuando la rueda avanza?",
+      "hint3": "Los canales A y B están intercambiados, así que avanzar cuenta como retroceder. Intercambia los dos cables o los dos pines en el código."
+    },
+    "wheel-slip": {
+      "symptom": "La rueda gira pero el robot no avanza",
+      "hint1": "Observa la rueda y el suelo bajo ella. ¿Gira la rueda mientras el robot se queda quieto?",
+      "hint2": "Compara la velocidad de la rueda con la del robot sobre el suelo y mira el peso sobre la rueda y el agarre del suelo.",
+      "hint3": "La rueda no agarra. Añade peso sobre ella, usa un neumático con más agarre o una superficie más rugosa, o acelera con más suavidad."
+    },
+    "driver-undersized": {
+      "symptom": "El controlador de motor no puede dar suficiente corriente",
+      "hint1": "Toca u observa el chip del controlador. ¿Se calienta o se corta cuando arrancan los motores?",
+      "hint2": "Compara la corriente de bloqueo del motor con la corriente nominal del controlador.",
+      "hint3": "El controlador está dimensionado para menos de lo que pueden consumir los motores. Usa un controlador más potente, un motor de menor corriente o una carga más ligera."
+    },
+    "battery-sag-reset": {
+      "symptom": "La placa se reinicia cuando arrancan los motores",
+      "hint1": "Anota cuándo ocurren los reinicios. ¿Llegan justo cuando se encienden los motores?",
+      "hint2": "Mide la tensión de la batería o de la alimentación lógica mientras arrancan los motores. ¿Cae por debajo de lo que necesita la placa?",
+      "hint3": "Los motores hunden la tensión de la batería lo bastante como para reiniciar la placa. Usa una batería más potente, añade un condensador o alimenta la placa con una fuente aparte."
+    },
+    "sensor-too-high": {
+      "symptom": "El sensor de línea no ve la línea",
+      "hint1": "Mira a qué altura está el sensor sobre el suelo. ¿Es mucho mayor de lo que indica su hoja de datos?",
+      "hint2": "Lee el valor del sensor sobre la línea y sobre el suelo desnudo. ¿Son las dos lecturas casi iguales?",
+      "hint3": "El sensor está demasiado alto para distinguir la línea del suelo. Bájalo a la altura que indica su hoja de datos."
+    },
+    "sensor-saturated": {
+      "symptom": "El sensor de línea lee lo mismo en todas partes",
+      "hint1": "Mueve el robot sobre la línea y sobre el suelo. ¿El valor del sensor se queda en su lectura máxima o mínima?",
+      "hint2": "Revisa la luz alrededor del sensor y lo cerca que está de la superficie. ¿Está inundado de luz o totalmente en sombra?",
+      "hint3": "El sensor está saturado y no distingue lo oscuro de lo claro. Protégelo de la luz parásita, súbelo un poco o reduce la corriente del emisor."
+    },
+    "ranger-beam-blocked": {
+      "symptom": "El sensor de distancia siempre marca cerca",
+      "hint1": "Mira qué hay justo delante del sensor. ¿Hay una parte del robot dentro de su haz?",
+      "hint2": "Compara la distancia que lee con el alcance mínimo del sensor y con la distancia a la parte del robot más cercana.",
+      "hint3": "Una parte del robot bloquea el haz. Mueve el sensor para que tenga vista despejada, o mueve la pieza."
+    },
+    "tip-over": {
+      "symptom": "El robot vuelca",
+      "hint1": "Observa cuándo vuelca: ¿al acelerar, frenar, girar o en una pendiente?",
+      "hint2": "Mide a qué altura está el centro de masa y cuánto separan las ruedas. ¿Es el robot alto y estrecho?",
+      "hint3": "El centro de masa es demasiado alto para la separación de las ruedas. Baja las piezas pesadas, ensancha la vía o acelera y frena con más suavidad."
+    },
+    "loop-too-slow": {
+      "symptom": "La velocidad oscila arriba y abajo",
+      "hint1": "Representa la velocidad en el tiempo. ¿Oscila alrededor del objetivo con un ritmo constante?",
+      "hint2": "Abre el panel de tiempo del bucle. ¿Tarda el bucle de control más que su periodo o varía mucho de una pasada a otra?",
+      "hint3": "El bucle de control es demasiado lento para seguir el ritmo. Acorta el trabajo de cada pasada, o baja la frecuencia objetivo o las ganancias."
+    }
+  }
+}
