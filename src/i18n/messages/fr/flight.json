@@ -211,6 +211,10 @@
     "silver": "médaille d'argent",
     "bronze": "médaille de bronze"
   },
+  "model": {
+    "game": "Ce modèle de vol est réglé pour le ressenti. Il ne permet pas d'apprendre le réglage d'un PID. Les temps des médailles sont fixés pour l'appareil d'usine.",
+    "rigid": "Ce modèle de vol est une simulation de corps rigide. Ses fantômes sont gardés à part, et il n'a pas de médailles."
+  },
   "ghosts": {
     "title": "Fantômes",
     "best": "Votre meilleur tour ({time} s)",
@@ -338,5 +342,11 @@
     "claimed": "Votre temps est dans le classement",
     "remove": "Me retirer du classement",
     "retry": "Réessayer"
+  },
+  "fly": {
+    "blocked": "Il manque {field} à ton montage, il ne peut donc pas encore voler. Corrige-le dans le constructeur puis reviens.",
+    "cannotLift": "Ce montage ne peut pas faire du vol stationnaire : la poussée ne soulève pas son poids. Tu peux quand même essayer, les vérifications ci-dessous disent pourquoi.",
+    "courses": "Parcours",
+    "loading": "Chargement des parcours"
   }
 }

@@ -1,0 +1,151 @@
+{
+  "$schema": "../../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.frame-65mm-whoop",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "65 mm whoop frame",
+    "generic": true,
+    "refdes_prefix": "FR",
+    "kind": "mechanical",
+    "category": "drone",
+    "description": {
+      "en": "A generic 65 mm whoop frame: four arms and a mount point, sized for props up to 1.2 inches."
+    },
+    "tags": [
+      "frame",
+      "quad",
+      "drone"
+    ]
+  },
+  "sources": [
+    {
+      "id": "estimate",
+      "kind": "own-estimate",
+      "title": "Typical value for this class of part, chosen by iynk; not read from a datasheet",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "MOUNT",
+      "name": {
+        "en": "MOUNT"
+      },
+      "designator": "MOUNT",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "en": "A drone frame. It adds mass and drag to the build; nothing runs on it."
+    },
+    "layers": [
+      {
+        "id": "body",
+        "domain": "mechanical",
+        "reads": [
+          "MOUNT"
+        ],
+        "summary": {
+          "en": "The frame body."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "A frame carries no signals; the build reads its mass and size."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Mass and drag area of the frame, read by the build."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Arm flex, vibration modes and crash damage."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "not_checked_against_real_part",
+        "text": {
+          "en": "Not checked against a real part."
+        },
+        "evidence": "iynk estimate"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "65 mm whoop frame",
+      "body_colour": "#8a8f98",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First generic descriptor.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "mechanics": {
+    "frame": {
+      "mass_g": 4,
+      "wheelbase_mm": 65,
+      "arm_count": 4,
+      "prop_max_in": 1.2,
+      "cd_area_m2": [
+        0.0006,
+        0.0006,
+        0.0018
+      ],
+      "source": {
+        "src": "estimate"
+      }
+    }
+  },
+  "x_price": {
+    "amount": 5,
+    "currency": "USD",
+    "as_of": "2026-10-27",
+    "estimate": true
+  }
+}

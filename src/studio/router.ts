@@ -4,6 +4,7 @@ export type StudioRoute =
   | { kind: "home" }
   | { kind: "project"; id: string; autorun: boolean; view?: "fly" }
   | { kind: "lessons" }
+  | { kind: "drone"; id: string }
   | { kind: "template"; id: string; run: boolean }
   | { kind: "join"; room: string; token: string }
   | { kind: "shared" }
@@ -13,6 +14,7 @@ export type StudioRoute =
 const HOME: StudioRoute = { kind: "home" };
 const PART_PAGE = /^#\/parts\/(edit|info)\/([a-z0-9][a-z0-9.-]{0,79}@[0-9]+\.[0-9]+\.[0-9]+)$/;
 const PROJECT = /^#\/(prj_[a-z0-9][a-z0-9_-]{0,63})(\/fly)?(?:\?(.*))?$/;
+const DRONE = /^#\/drone\/(prj_[a-z0-9][a-z0-9_-]{0,63})$/;
 const TEMPLATE = /^#\/t\/(prj_[a-z0-9][a-z0-9_-]{0,63})(?:\?(.*))?$/;
 const LESSONS = "#/lessons";
 const SHARED = "#share-open";
@@ -26,6 +28,8 @@ export function parseHash(hash: string): StudioRoute {
   const page = PART_PAGE.exec(hash);
   if (page) return { kind: page[1] === "edit" ? "parts-edit" : "parts-info", key: page[2] };
   if (hash === LESSONS) return { kind: "lessons" };
+  const drone = DRONE.exec(hash);
+  if (drone) return { kind: "drone", id: drone[1] };
   const template = TEMPLATE.exec(hash);
   if (template) return { kind: "template", id: template[1], run: new URLSearchParams(template[2]).get("run") === "1" };
   const match = PROJECT.exec(hash);
@@ -40,6 +44,7 @@ export function routeHash(route: StudioRoute): string {
   if (route.kind === "parts-edit") return `#/parts/edit/${route.key}`;
   if (route.kind === "parts-info") return `#/parts/info/${route.key}`;
   if (route.kind === "lessons") return LESSONS;
+  if (route.kind === "drone") return `#/drone/${route.id}`;
   if (route.kind === "template") return `#/t/${route.id}${route.run ? "?run=1" : ""}`;
   if (route.kind !== "project") return "#/";
   return `#/${route.id}${route.view === "fly" ? "/fly" : ""}${route.autorun ? "?run=1" : ""}`;

@@ -30,6 +30,7 @@ import { navigate, parseHash, readRoute, routeHash, subscribeRoute, type PartsRo
 import { createDocStore, type DocStore } from "@/studio/stores/doc";
 import { TEMPLATES } from "../../../content/projects";
 import { progressOf, tierOf, useLearnSnapshot } from "./guide/lessonProgress";
+import { DroneRoute } from "./drone/DroneRoute";
 import { Home } from "./Home";
 import { LabHost, labEntryOf } from "./lab/LabHost";
 import { PartPage } from "./PartPage";
@@ -404,6 +405,8 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
             <PartInfoRoute key={route.key} routeKey={route.key} messages={messages} lang={lang} />
           ) : route.kind === "lessons" ? (
             <LessonsRoute messages={messages} lang={lang} />
+          ) : route.kind === "drone" ? (
+            <DroneRoute key={route.id} id={route.id} lang={lang} messages={messages} />
           ) : route.kind === "template" ? (
             labEntryOf(route.id) ? (
               <LabHost key={route.id} templateId={route.id} lang={lang} messages={messages} />

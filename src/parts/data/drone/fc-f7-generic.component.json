@@ -1,0 +1,219 @@
+{
+  "$schema": "../../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.fc-f7-generic",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "Generic F7 flight controller",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "drone",
+    "description": {
+      "en": "A generic F7 flight controller board with a gyro, an accelerometer and a barometer, and four motor outputs."
+    },
+    "tags": [
+      "flight-controller",
+      "fc",
+      "drone"
+    ]
+  },
+  "sources": [
+    {
+      "id": "estimate",
+      "kind": "own-estimate",
+      "title": "Typical value for this class of part, chosen by iynk; not read from a datasheet",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "VBAT",
+      "name": {
+        "en": "VBAT"
+      },
+      "designator": "VBAT",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "polarity": "positive"
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "GND"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      },
+      "polarity": "negative"
+    },
+    {
+      "id": "M1",
+      "name": {
+        "en": "Motor 1 output"
+      },
+      "designator": "M1",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 5.08,
+        "y": 0
+      }
+    },
+    {
+      "id": "M2",
+      "name": {
+        "en": "Motor 2 output"
+      },
+      "designator": "M2",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 7.62,
+        "y": 0
+      }
+    },
+    {
+      "id": "M3",
+      "name": {
+        "en": "Motor 3 output"
+      },
+      "designator": "M3",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 10.16,
+        "y": 0
+      }
+    },
+    {
+      "id": "M4",
+      "name": {
+        "en": "Motor 4 output"
+      },
+      "designator": "M4",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 12.7,
+        "y": 0
+      }
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "en": "A flight controller board. No firmware runs on it in this version; the build reads its sensors, loop rate and mass."
+    },
+    "layers": [
+      {
+        "id": "body",
+        "domain": "digital",
+        "reads": [
+          "VBAT",
+          "GND",
+          "M1",
+          "M2",
+          "M3",
+          "M4"
+        ],
+        "summary": {
+          "en": "The board with its sensors and motor outputs."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "No firmware runs in this version of the drone builder."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing runs. The build reads the sensor names, the loop rate limit and the mass."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Firmware, sensor noise, filtering and the motor output protocol."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "not_checked_against_real_part",
+        "text": {
+          "en": "Not checked against a real part."
+        },
+        "evidence": "iynk estimate"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "F7 flight controller",
+      "body_colour": "#2f4f6f",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First generic descriptor.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "mechanics": {
+    "fc": {
+      "gyro": "ICM-42688-P",
+      "accel": "ICM-42688-P",
+      "baro": "DPS310",
+      "loop_hz_max": 8000,
+      "mass_g": 9,
+      "source": {
+        "src": "estimate"
+      }
+    }
+  },
+  "x_price": {
+    "amount": 38,
+    "currency": "USD",
+    "as_of": "2026-10-27",
+    "estimate": true
+  }
+}

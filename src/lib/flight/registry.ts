@@ -29,7 +29,7 @@ const CLASS: Record<DroneContent["flight"]["physics"], CraftClass> = {
   swarm: "swarm",
 };
 
-const DEFAULTS = {
+export const DEFAULTS = {
   drag: 0.045,
   ceiling: 12,
   angleLimit: 38,

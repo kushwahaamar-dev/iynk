@@ -211,6 +211,10 @@
     "silver": "plata",
     "bronze": "bronce"
   },
+  "model": {
+    "game": "Este modelo de vuelo está ajustado para dar buena sensación. No sirve para aprender a ajustar un PID. Los tiempos de medalla están fijados para el dron de fábrica.",
+    "rigid": "Este modelo de vuelo es una simulación de cuerpo rígido. Sus fantasmas se guardan aparte y no tiene medallas."
+  },
   "ghosts": {
     "title": "Fantasmas",
     "best": "Tu mejor vuelta ({time} s)",
@@ -338,5 +342,11 @@
     "claimed": "Tu tiempo está en la tabla",
     "remove": "Quitarme de la tabla",
     "retry": "Reintentar"
+  },
+  "fly": {
+    "blocked": "A tu montaje le falta {field}, así que aún no puede volar. Corrígelo en el constructor y vuelve.",
+    "cannotLift": "Este montaje no puede mantenerse en vuelo estacionario: el empuje no levanta su peso. Aun así puedes intentarlo, y las comprobaciones de abajo dicen por qué.",
+    "courses": "Recorridos",
+    "loading": "Cargando recorridos"
   }
 }

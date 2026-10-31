@@ -1,0 +1,115 @@
+{
+  "notice": {
+    "title": "Avant de construire ou de voler",
+    "sourceLabel": {
+      "external": "Source externe",
+      "hypothesis": "Hypothèse",
+      "iynk": "Déclaration d'iynk"
+    },
+    "SN-1": "Chargez les batteries LiPo uniquement avec un chargeur équilibreur, jamais sans surveillance, dans un sac ou une boîte ignifuge. Mettez au rebut une batterie gonflée ou abîmée. Stockez-la vers 3,8 V par élément.",
+    "SN-2": "Retirez les hélices pour chaque essai sur banc. Portez une protection des yeux en vol. N'essayez jamais d'attraper un drone en vol.",
+    "SN-3": "Une batterie peut débiter un courant très élevé dans un court-circuit. Alimentez un nouvel assemblage la première fois avec une alimentation limitée en courant ou un smoke stopper.",
+    "SN-4": "Cet appareil est stable parce que la simulation le dit. Un appareil réel avec les mêmes chiffres peut ne pas l'être.",
+    "SN-5": "Testez dans cet ordre : sans hélices, puis attaché ou en vol stationnaire très bas sur sol souple, puis en espace dégagé loin des personnes.",
+    "SN-6": "L'enregistrement, le Remote ID, les limites de hauteur, la vue directe et l'âge minimal dépendent de l'endroit où vous volez. Renseignez-vous auprès de votre autorité nationale. Ce simulateur ne rend personne en règle pour voler.",
+    "SN-7": "Les modes autonomes d'ici sont des modèles pédagogiques. Ils ne détectent ni obstacles, ni personnes, ni autres aéronefs.",
+    "SN-8": "Cette simulation est un outil pédagogique, pas une décision officielle sur un projet. Elle ne prédit pas qu'un aéronef réel volera, ni qu'il volera en sécurité.",
+    "ack": "J'ai lu ceci",
+    "acked": "Confirmé le {date}"
+  },
+  "numbers": {
+    "title": "Chiffres",
+    "auw": "Poids",
+    "thrust": "Poussée par moteur",
+    "tw": "Poussée sur poids",
+    "hoverThrottle": "Gaz en vol stationnaire",
+    "hoverAmps": "Courant en vol stationnaire",
+    "maxAmps": "Courant à plein gaz",
+    "endurance": "Durée de vol",
+    "na": "non disponible",
+    "notYet": "Pas encore calculé.",
+    "missing": "Nécessite {paths}.",
+    "range": "{low} à {high} min",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} pour 1",
+      "pct": "{value} %",
+      "a": "{value} A"
+    }
+  },
+  "band": {
+    "fit": "Dans la plage de vos lignes de fiche technique : environ 9 de vos lignes sur 10 tombent dans cette bande. Elle ne dit rien de la fidélité des lignes à une pièce réelle.",
+    "none": "Aucune ligne de fiche technique n'a été donnée, il n'y a donc rien pour le vérifier.",
+    "outside": "Ce montage est hors de la plage de vos lignes de fiche technique, la bande ne s'applique donc pas ici.",
+    "short": {
+      "fit": "Bande d'environ {value} %",
+      "none": "Aucune donnée pour vérifier",
+      "outside": "Hors de vos lignes"
+    }
+  },
+  "check": {
+    "title": "Vérifications",
+    "none": "Pas encore de vérifications. Ajoutez d'abord les pièces manquantes.",
+    "reading": "{value} {unit}",
+    "value": "Valeur",
+    "limit": "Limite",
+    "part": "Pièce",
+    "formula": "Formule",
+    "assumptions": "Hypothèses",
+    "state": {
+      "fail": "Échec",
+      "warn": "Avertissement",
+      "info": "Note",
+      "ok": "Réussi"
+    },
+    "DB-C-01": {
+      "name": "Poussée sur poids"
+    },
+    "DB-C-02": {
+      "name": "Gaz en vol stationnaire"
+    },
+    "DB-C-03": {
+      "name": "Courant du contrôleur"
+    },
+    "DB-C-04": {
+      "name": "Courant de la batterie"
+    },
+    "DB-C-05": {
+      "name": "Limites de tension"
+    },
+    "DB-C-06": {
+      "name": "Dégagement des hélices"
+    },
+    "DB-C-07": {
+      "name": "Taille d'hélice pour le cadre"
+    },
+    "DB-C-08": {
+      "name": "Centre de masse"
+    },
+    "DB-C-09": {
+      "name": "Durée de vol"
+    },
+    "DB-C-10": {
+      "name": "Tension d'élément en charge"
+    },
+    "DB-C-11": {
+      "name": "Équilibre de lacet"
+    },
+    "DB-C-12": {
+      "name": "Fréquence de la boucle de contrôle"
+    },
+    "DB-C-13": {
+      "name": "Classe de poids"
+    },
+    "DB-C-14": {
+      "name": "Valeurs du fabricant"
+    }
+  },
+  "error": {
+    "DB-E-INERTIA": "L'inertie de ce montage n'est pas valide. Vérifiez les masses et les positions des pièces.",
+    "DB-E-MIXER": "Le mixeur de moteurs ne peut pas contrôler tous les axes. Vérifiez la position et le sens des moteurs.",
+    "DB-E-MIXER-YAW": "Les moteurs ne peuvent pas contrôler le lacet. Vérifiez que les sens de rotation alternent.",
+    "DB-E-FIELD": "Une valeur manque : {path}.",
+    "DB-E-CHEMISTRY": "Le modèle ne connaît pas la chimie de la batterie ({path})."
+  }
+}

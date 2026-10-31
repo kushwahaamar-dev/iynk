@@ -1,7 +1,7 @@
 // UI string namespaces (D5). Each lives in src/i18n/messages/<lang>/<ns>.json,
 // and the English file defines the keys every other language must have.
 
-export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "aiProviders", "aiInsight", "aiEffects", "fidelity", "instruments", "run", "faults", "parteditor", "partpack", "partinfo"] as const;
+export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "drone", "dronebuild", "droneopt", "droneparts", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "aiProviders", "aiInsight", "aiEffects", "fidelity", "instruments", "run", "faults", "parteditor", "partpack", "partinfo"] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
 
@@ -11,6 +11,10 @@ export type Messages = {
   boardlab: typeof import("./messages/en/boardlab.json");
   robotics: typeof import("./messages/en/robotics.json");
   dronelab: typeof import("./messages/en/dronelab.json");
+  drone: typeof import("./messages/en/drone.json");
+  dronebuild: typeof import("./messages/en/dronebuild.json");
+  droneopt: typeof import("./messages/en/droneopt.json");
+  droneparts: typeof import("./messages/en/droneparts.json");
   flight: typeof import("./messages/en/flight.json");
   ai: typeof import("./messages/en/ai.json");
   search: typeof import("./messages/en/search.json");

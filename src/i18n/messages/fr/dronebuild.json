@@ -1,0 +1,116 @@
+{
+  "picker": {
+    "role": {
+      "motor": "Moteurs",
+      "prop": "Hélices",
+      "esc": "ESC",
+      "battery": "Batteries",
+      "frame": "Châssis",
+      "fc": "Contrôleurs de vol"
+    },
+    "search": "Rechercher {role}",
+    "list": "{role}",
+    "results": {
+      "one": "{count} pièce",
+      "other": "{count} pièces"
+    },
+    "none": "Aucune pièce ne correspond à \"{query}\".",
+    "empty": {
+      "title": "Aucune pièce de ce type dans la bibliothèque pour l'instant",
+      "body": "Ajoutez-en une avec le formulaire de pièce, puis choisissez-la ici."
+    },
+    "flag": {
+      "cellsOverMotor": "Demande {max}S ou moins",
+      "propOverFrame": "L'hélice dépasse les {maxIn} pouces que ce châssis accepte",
+      "escVolts": "Prévu pour {max} V, moins que la batterie",
+      "missing": "Manque {path}"
+    },
+    "price": "{amount} {currency}, au {date}",
+    "priceEstimate": "{amount} {currency}, estimation au {date}"
+  },
+  "slots": {
+    "title": "Emplacements moteur",
+    "col": {
+      "slot": "Emplacement",
+      "motor": "Moteur",
+      "prop": "Hélice",
+      "esc": "ESC"
+    },
+    "sameForAll": "Même moteur, hélice et ESC pour tous les emplacements",
+    "sameForAllHint": "Un choix dans une ligne change tous les emplacements.",
+    "choose": "Choisir",
+    "trigger": "{role}, emplacement {slot} : {part}",
+    "empty": "Aucun emplacement moteur pour l'instant. Choisissez une disposition pour les placer.",
+    "count": "Un drone a de 3 à 12 emplacements moteur. Celui-ci en a {count}.",
+    "refused": "{part} n'est pas un {role}.",
+    "kind": {
+      "motor": "moteur",
+      "prop": "hélice",
+      "esc": "ESC",
+      "battery": "batterie",
+      "fc": "contrôleur de vol"
+    },
+    "shared": {
+      "title": "Batterie et contrôleur",
+      "battery": "Batterie",
+      "fc": "Contrôleur de vol"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "Plus",
+    "h": "H",
+    "hex": "Hexa",
+    "octo": "Octo"
+  },
+  "header": {
+    "tier": "Niveau {tier}",
+    "figure": "Vue de dessus du drone"
+  },
+  "legacy": {
+    "title": "Cet appareil utilise le calculateur d’origine",
+    "body": "Changer une pièce fait passer tout l’appareil à vos pièces, avec de nouveaux chiffres. L’appareil d’origine reste la version d’usine dans l’onglet Voler.",
+    "confirm": "Passer à mes pièces"
+  },
+  "setup": {
+    "title": "Cadre et moteurs",
+    "hint": "Choisissez un cadre, une disposition, puis le moteur, l’hélice et le contrôleur. Au départ, tous les moteurs ont les mêmes pièces et vous pouvez les changer une par une.",
+    "label": {
+      "frame": "Cadre",
+      "layout": "Disposition",
+      "motor": "Moteur",
+      "prop": "Hélice",
+      "esc": "Contrôleur"
+    },
+    "trigger": "{role} : {part}",
+    "wheelbase": "Empattement (mm)",
+    "wheelbaseHint": "Du centre d’un moteur au centre du moteur opposé",
+    "wheelbaseBad": "Saisissez un empattement supérieur à 0 mm.",
+    "create": "Placer le cadre et les moteurs",
+    "incomplete": "Choisissez un cadre, un moteur, une hélice et un contrôleur pour continuer."
+  },
+  "actions": {
+    "title": "Actions",
+    "addPart": "Ajouter ma propre pièce",
+    "closePart": "Fermer",
+    "exportBom": "Exporter la nomenclature",
+    "exportFailed": "La nomenclature n’a pas pu être enregistrée."
+  },
+  "notDrone": {
+    "title": "Ce n’est pas un projet de drone",
+    "body": "Le constructeur ouvre les projets qui contiennent un plan de drone.",
+    "back": "Retour aux projets"
+  },
+  "readOnly": "Vous pouvez lire les chiffres ici. Choisir des pièces demande un accès en modification.",
+  "numbersTitle": "Chiffres",
+  "tabs": {
+    "label": "Sections du constructeur",
+    "numbers": "Chiffres",
+    "compare": "Comparer",
+    "optimise": "Optimiser",
+    "fly": "Voler",
+    "pin": "Épingler pour comparer",
+    "unpin": "Retirer l'épingle",
+    "pinLabel": "{title}, {time}"
+  }
+}

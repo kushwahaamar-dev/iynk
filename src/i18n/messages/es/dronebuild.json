@@ -1,0 +1,116 @@
+{
+  "picker": {
+    "role": {
+      "motor": "Motores",
+      "prop": "Hélices",
+      "esc": "ESC",
+      "battery": "Baterías",
+      "frame": "Chasis",
+      "fc": "Controladores de vuelo"
+    },
+    "search": "Buscar {role}",
+    "list": "{role}",
+    "results": {
+      "one": "{count} pieza",
+      "other": "{count} piezas"
+    },
+    "none": "Ninguna pieza coincide con \"{query}\".",
+    "empty": {
+      "title": "Aún no hay piezas de este tipo en la biblioteca",
+      "body": "Añade una con el formulario de piezas y elígela aquí."
+    },
+    "flag": {
+      "cellsOverMotor": "Necesita {max}S o menos",
+      "propOverFrame": "La hélice es mayor que las {maxIn} pulgadas que admite este chasis",
+      "escVolts": "Admite {max} V, menos que la batería",
+      "missing": "Falta {path}"
+    },
+    "price": "{amount} {currency}, a fecha de {date}",
+    "priceEstimate": "{amount} {currency}, estimación a fecha de {date}"
+  },
+  "slots": {
+    "title": "Posiciones de motor",
+    "col": {
+      "slot": "Posición",
+      "motor": "Motor",
+      "prop": "Hélice",
+      "esc": "ESC"
+    },
+    "sameForAll": "Mismo motor, hélice y ESC en todas las posiciones",
+    "sameForAllHint": "Una elección en cualquier fila cambia todas las posiciones.",
+    "choose": "Elegir",
+    "trigger": "{role}, posición {slot}: {part}",
+    "empty": "Aún no hay posiciones de motor. Elige una disposición para crearlas.",
+    "count": "Un dron tiene de 3 a 12 posiciones de motor. Este tiene {count}.",
+    "refused": "{part} no es un {role}.",
+    "kind": {
+      "motor": "motor",
+      "prop": "hélice",
+      "esc": "ESC",
+      "battery": "batería",
+      "fc": "controlador de vuelo"
+    },
+    "shared": {
+      "title": "Batería y controlador",
+      "battery": "Batería",
+      "fc": "Controlador de vuelo"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "Más",
+    "h": "H",
+    "hex": "Hexa",
+    "octo": "Octo"
+  },
+  "header": {
+    "tier": "Nivel {tier}",
+    "figure": "Vista superior del dron"
+  },
+  "legacy": {
+    "title": "Esta nave usa la calculadora original",
+    "body": "Si cambias una pieza, toda la nave pasa a usar tus piezas, con números nuevos. La nave original queda como versión de fábrica en la pestaña Volar.",
+    "confirm": "Cambiar a mis piezas"
+  },
+  "setup": {
+    "title": "Chasis y motores",
+    "hint": "Elige un chasis, una disposición y el motor, la hélice y el ESC. Al principio todos los motores llevan las mismas piezas y puedes cambiarlas una a una.",
+    "label": {
+      "frame": "Chasis",
+      "layout": "Disposición",
+      "motor": "Motor",
+      "prop": "Hélice",
+      "esc": "ESC"
+    },
+    "trigger": "{role}: {part}",
+    "wheelbase": "Distancia entre ejes (mm)",
+    "wheelbaseHint": "Del centro de un motor al centro del motor opuesto",
+    "wheelbaseBad": "Escribe una distancia mayor que 0 mm.",
+    "create": "Colocar chasis y motores",
+    "incomplete": "Elige chasis, motor, hélice y ESC para continuar."
+  },
+  "actions": {
+    "title": "Acciones",
+    "addPart": "Añadir mi propia pieza",
+    "closePart": "Cerrar",
+    "exportBom": "Exportar lista de piezas",
+    "exportFailed": "No se pudo guardar la lista de piezas."
+  },
+  "notDrone": {
+    "title": "Este no es un proyecto de dron",
+    "body": "El constructor abre proyectos que contienen un diseño de dron.",
+    "back": "Volver a los proyectos"
+  },
+  "readOnly": "Aquí puedes leer los números. Elegir piezas requiere permiso de edición.",
+  "numbersTitle": "Números",
+  "tabs": {
+    "label": "Secciones del constructor",
+    "numbers": "Cifras",
+    "compare": "Comparar",
+    "optimise": "Optimizar",
+    "fly": "Volar",
+    "pin": "Fijar para comparar",
+    "unpin": "Quitar la fijación",
+    "pinLabel": "{title}, {time}"
+  }
+}
