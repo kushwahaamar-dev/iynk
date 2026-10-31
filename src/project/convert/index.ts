@@ -1,5 +1,8 @@
 import type { Project } from "../generated/types.ts";
+import type { GuidedPlan, WireablesExt } from "../guided/plan.ts";
 import { canonicalBytes, stateHash } from "../hash.ts";
+import { PLAN_KEY } from "../guided/plan.ts";
+import { validatePlan, validateWireables } from "../guided/validate-plan.ts";
 import { netlist } from "../netlist.ts";
 import { toFileText } from "../normalize.ts";
 import { validateText } from "../validate.ts";
@@ -9,6 +12,9 @@ import { convertCraft } from "./craft.ts";
 import { convertBoardTour, convertLesson } from "./lesson.ts";
 import type { ConvertContext, ConvertResult } from "./lesson.ts";
 import { convertPracticeTask } from "./practice.ts";
+import { lessonPlan, tourPlan, wireablesOf, withPlan, withWireables } from "./plan.ts";
+import type { PlanDeps } from "./plan.ts";
+import { translator } from "./text.ts";
 import type { CatalogueItem, FigureCircuit, FigureHeader, ReportCode, ReportItem, Texts } from "./types.ts";
 
 export type ProjectKind = "tour" | "lesson" | "bench" | "task" | "craft";
@@ -33,7 +39,7 @@ export interface ConvertedProject {
 }
 
 export interface ConvertReport {
-  items: { lab: string; id: string; projects: number; status: ItemStatus; reasons: ReportItem[] }[];
+  items: { lab: string; id: string; projects: number; plans: number; status: ItemStatus; reasons: ReportItem[] }[];
   totals: {
     items: number;
     whole: number;
@@ -92,14 +98,39 @@ function inspect(project: Project): Inspection {
   return found;
 }
 
-function* convertItem(item: CatalogueItem, sources: ConvertSources, ctx: ConvertContext): Generator<{ kind: ProjectKind; result: ConvertResult }> {
+/** The guided plan and the wire-it lists of a board's tour or lesson. A plan or list that does not validate stops the conversion. */
+function planned(project: Project, plan: GuidedPlan, wireables: WireablesExt | null): Project {
+  let out = withPlan(project, plan);
+  if (wireables) {
+    const problems = validateWireables(wireables);
+    if (problems.length > 0) throw new Error(`${project.id}: the wire-it lists are invalid (${problems[0]!.path}: ${problems[0]!.message})`);
+    out = withWireables(out, wireables);
+  }
+  const error = validatePlan(plan, out).find((i) => i.severity === "error");
+  if (error) throw new Error(`${project.id}: the guided plan is invalid (${error.path}: ${error.message})`);
+  return out;
+}
+
+function* convertItem(
+  item: CatalogueItem,
+  sources: ConvertSources,
+  ctx: ConvertContext,
+  plan: PlanDeps | undefined,
+): Generator<{ kind: ProjectKind; result: ConvertResult }> {
   const texts = sources.texts(item.lab, item.id);
   if (item.lab === "board") {
     const withHeaders = { ...ctx, headers: sources.headers(item.id) };
     const circuits = sources.circuits(item.id);
-    yield { kind: "tour", result: convertBoardTour(item, texts, withHeaders) };
+    const t = translator(texts);
+    const tour = convertBoardTour(item, texts, withHeaders);
+    yield { kind: "tour", result: plan ? { ...tour, project: planned(tour.project, tourPlan(tour.project), wireablesOf(item.data.wireables, null, t)) } : tour };
     for (const lesson of item.data.lessons) {
-      yield { kind: "lesson", result: convertLesson(item, lesson.id, texts, circuits, withHeaders) };
+      const converted = convertLesson(item, lesson.id, texts, circuits, withHeaders);
+      const wired = wireablesOf(item.data.wireables, lesson.pins.map((p) => p.pin), t);
+      yield {
+        kind: "lesson",
+        result: plan ? { ...converted, project: planned(converted.project, lessonPlan(converted.project, { level: lesson.level, board: item.id }, plan), wired) } : converted,
+      };
     }
   } else if (item.lab === "robotics") {
     const figure = sources.bench(item.id);
@@ -121,11 +152,15 @@ function* convertItem(item: CatalogueItem, sources: ConvertSources, ctx: Convert
 
 const failure = (item: string, message: string, project?: string): ReportItem => ({ item, ...(project ? { project } : {}), code: "skipped", message });
 
-/** Converts every item and says, for each, whether it is whole, kept as legacy data in part, or failed. */
+/**
+ * Converts every item and says, for each, whether it is whole, kept as legacy data in part, or failed. With `plan`, the
+ * tours and lessons of boards also carry their guided plan and wire-it lists.
+ */
 export function convertAll(
   items: readonly CatalogueItem[],
   sources: ConvertSources,
   ctx: ConvertContext,
+  plan?: PlanDeps,
 ): { projects: ConvertedProject[]; report: ConvertReport } {
   const projects: ConvertedProject[] = [];
   const report: ConvertReport = {
@@ -138,10 +173,12 @@ export function convertAll(
     const name = `${item.lab}/${item.id}`;
     const reasons: ReportItem[] = [];
     let count = 0;
+    let planCount = 0;
     let failed = false;
     try {
-      for (const { kind, result } of convertItem(item, sources, ctx)) {
+      for (const { kind, result } of convertItem(item, sources, ctx, plan)) {
         count++;
+        if ((result.project.ext as Record<string, unknown> | undefined)?.[PLAN_KEY]) planCount++;
         projects.push({ id: result.project.id, kind, item: name, project: result.project });
         reasons.push(...result.report);
         const { problems } = inspect(result.project);
@@ -155,7 +192,7 @@ export function convertAll(
     for (const r of reasons) if (r.code === "no-descriptor") for (const ref of r.refs ?? []) noDescriptor.add(ref);
 
     const status: ItemStatus = failed ? "failed" : reasons.some((r) => LEGACY_CODES.has(r.code)) ? "legacy" : "whole";
-    report.items.push({ lab: item.lab, id: item.id, projects: count, status, reasons });
+    report.items.push({ lab: item.lab, id: item.id, projects: count, plans: planCount, status, reasons });
     report.totals[status]++;
   }
 
@@ -198,8 +235,8 @@ export function renderReport(r: ConvertReport): string {
   lines.push("", "## Parts with no descriptor", "");
   if (totals.noDescriptor.length === 0) lines.push("None.");
   else for (const ref of totals.noDescriptor) lines.push(`- ${ref}`);
-  lines.push("", "## All items", "", "| Item | Projects | Status |", "| --- | --- | --- |");
-  for (const i of r.items) lines.push(`| ${i.lab}/${i.id} | ${i.projects} | ${i.status} |`);
+  lines.push("", "## All items", "", "| Item | Projects | Plan | Status |", "| --- | --- | --- | --- |");
+  for (const i of r.items) lines.push(`| ${i.lab}/${i.id} | ${i.projects} | ${i.plans} | ${i.status} |`);
   return `${lines.join("\n")}\n`;
 }
 

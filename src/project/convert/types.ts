@@ -172,6 +172,14 @@ export interface ConvertPinRow {
   net: string;
 }
 
+export interface ConvertWireable {
+  part: string;
+  connections: { from: string; to: string; color: string }[];
+  supplyVolts: number;
+  caution?: string;
+  note: string;
+}
+
 export interface ConvertBoardContent {
   lab: "board";
   id: string;
@@ -179,6 +187,7 @@ export interface ConvertBoardContent {
   pinout: ConvertPinRow[];
   figure: ConvertFigureRef;
   assembly: ConvertBuildStep[];
+  wireables: ConvertWireable[];
   lessons: ConvertLesson[];
   serial: ConvertSerialSpec;
   sources: ConvertSource[];

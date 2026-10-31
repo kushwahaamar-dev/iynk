@@ -10,6 +10,9 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { canonicalize } from '../src/core/canonical.ts';
+import { sha256Hex } from '../src/core/sha256.ts';
+import { stripComments } from '../src/project/guided/substance.ts';
 import { convertAll, manifestOf, renderReport } from '../src/project/convert/index.ts';
 import { PART_REFS } from '../src/project/convert/interfaces.ts';
 import { toFileText } from '../src/project/normalize.ts';
@@ -76,7 +79,8 @@ export async function loadSources(wanted) {
     bench: (id) => benches.get(id),
   };
   const ctx = { at: AT, version: '0.1.0', headers: [], legs: await legsOfParts(), ...descriptorsOfParts() };
-  return { items: wanted.map(({ lab, id }) => items.get(key(lab, id))), sources, ctx };
+  const plan = { sha256: sha256Hex, canonical: canonicalize, codeOnly: stripComments };
+  return { items: wanted.map(({ lab, id }) => items.get(key(lab, id))), sources, ctx, plan };
 }
 
 function parseArgs(argv) {
@@ -124,8 +128,8 @@ export async function main(argv) {
     console.error('usage: node scripts/convert-catalogue.mjs [--out <dir>] [--only lab/id,lab/id | --check]');
     return 2;
   }
-  const { items, sources, ctx } = await loadSources(selected(args.only));
-  const { projects, report } = convertAll(items, sources, ctx);
+  const { items, sources, ctx, plan } = await loadSources(selected(args.only));
+  const { projects, report } = convertAll(items, sources, ctx, plan);
   const manifest = manifestOf(projects);
 
   for (const { id, kind, project } of projects) write(join(args.out, kind, `${id}.project.json`), toFileText(project));
