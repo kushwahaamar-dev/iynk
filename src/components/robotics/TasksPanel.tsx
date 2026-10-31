@@ -8,7 +8,7 @@ import { TextArea } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/icons";
 import type { PracticeTask, RoboticsContent } from "@/content/schema";
 import { allPass } from "@/lib/robotics/runner";
-import type { BenchAction, TaskSession } from "@/lib/robotics/store";
+import type { BenchAction, TaskSession } from "@/lib/robotics/session";
 import { Fold } from "./Fold";
 import type { BenchT, TextOf } from "./messages";
 

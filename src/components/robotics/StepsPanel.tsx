@@ -7,7 +7,7 @@ import { cx } from "@/components/ui/cx";
 import { IconButton } from "@/components/ui/IconButton";
 import { Icon } from "@/components/ui/icons";
 import type { RoboticsContent } from "@/content/schema";
-import type { BenchAction } from "@/lib/robotics/store";
+import type { BenchAction } from "@/lib/robotics/session";
 import { canStart, currentStepIndex, type StepsSession } from "@/lib/robotics/steps";
 import type { BenchT, TextOf } from "./messages";
 

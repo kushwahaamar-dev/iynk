@@ -4,7 +4,8 @@ import { useMemo, useSyncExternalStore } from "react";
 import type { Messages } from "@/i18n/namespaces";
 import { useLocale } from "@/i18n/client";
 import { createTranslator, type Translate } from "@/i18n/translate";
-import type { BenchState, BenchStore } from "@/lib/robotics/store";
+import type { BenchState } from "@/lib/robotics/session";
+import type { BenchStore } from "@/lib/robotics/store";
 import type { BenchTexts } from "@/lib/robotics/text";
 
 type RoboticsMessages = Messages["robotics"];
