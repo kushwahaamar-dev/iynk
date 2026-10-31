@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/icons";
 import { legacyRecord } from "@/content/faults/legacy-map";
 import type { FailureMode, RoboticsContent } from "@/content/schema";
 import { appEventLog } from "@/local/events";
-import type { BenchAction } from "@/lib/robotics/store";
+import type { BenchAction } from "@/lib/robotics/session";
 import { Fold } from "./Fold";
 import type { BenchT, TextOf } from "./messages";
 

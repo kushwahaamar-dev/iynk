@@ -8,7 +8,7 @@ import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import type { Quiz, RoboticsContent } from "@/content/schema";
 import type { QuizResult } from "@/lib/progress/storage";
-import type { BenchAction, QuizSession } from "@/lib/robotics/store";
+import type { BenchAction, QuizSession } from "@/lib/robotics/session";
 import type { BenchT, TextOf } from "./messages";
 
 type Props = {

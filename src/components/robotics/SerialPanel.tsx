@@ -3,7 +3,7 @@
 import { useEffect, type RefObject } from "react";
 import { StageDrawer } from "@/components/shell/workspace";
 import { Button } from "@/components/ui/Button";
-import type { SerialLine } from "@/lib/robotics/store";
+import type { SerialLine } from "@/lib/robotics/session";
 import type { BenchT } from "./messages";
 
 type Props = {
