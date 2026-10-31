@@ -12,11 +12,12 @@ import studioHome from "@/i18n/messages/en/studioHome.json";
 import studioInspect from "@/i18n/messages/en/studioInspect.json";
 import studioModels from "@/i18n/messages/en/studioModels.json";
 import studioRun from "@/i18n/messages/en/studioRun.json";
+import run from "@/i18n/messages/en/run.json";
 import studioWire from "@/i18n/messages/en/studioWire.json";
 import { createAnnouncer } from "@/studio/tools/keyboard";
 import { LiveRegion } from "./LiveRegion";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults, parteditor, partinfo };
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, run, faults, parteditor, partinfo };
 
 function rig() {
   const announcer = createAnnouncer();

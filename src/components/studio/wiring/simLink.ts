@@ -1,5 +1,6 @@
 import { builtinRegistry } from "@/parts/builtin";
 import type { PartRegistry } from "@/parts/registry";
+import type { RunWiring } from "@/collab/run-wiring";
 import type { Op, Project } from "@/project/generated/types";
 import type { OpImpact } from "@/project/opImpact";
 import type { SimHost } from "@/sim-host/host";
@@ -38,6 +39,28 @@ export interface SimLink {
 const LIMITS = { statements: 400_000, events: 100_000, outputBytes: 1024 * 1024 };
 const WORKER_REPLACED = ["wall-stall", "cancel-unanswered"];
 
+let target: RunWiring | null = null;
+const targetListeners = new Set<() => void>();
+
+/** Points the run controls at a room's run, or back at the local host with `null`. */
+export function setRunTarget(next: RunWiring | null) {
+  if (target === next) return;
+  target = next;
+  for (const fn of [...targetListeners]) fn();
+}
+
+export const getRunTarget = (): RunWiring | null => target;
+
+export function subscribeRunTarget(fn: () => void): () => void {
+  targetListeners.add(fn);
+  return () => void targetListeners.delete(fn);
+}
+
+/** The room's run when the controls belong to it: a private run is the member's own. */
+function sharedRun(): RunWiring | null {
+  return target && target.client.state.status !== "detached-own" ? target : null;
+}
+
 const failure = (id: string, text: string): Diagnostic => ({ id, severity: "error", text });
 
 function limitOf(message: string): LimitInfo {
@@ -54,7 +77,7 @@ function diagnosticOf(d: SimDiagnostic): Diagnostic {
 }
 
 /** The firmware of the first board that has one, with the entry resolved from its source id to a path. */
-function programOf(state: Project): ProgramImage | null {
+export function programOf(state: Project): ProgramImage | null {
   const firmware = state.boards.find((b) => b.firmware)?.firmware;
   if (!firmware) return null;
   const files = firmware.sources.flatMap((id) => {
@@ -63,6 +86,18 @@ function programOf(state: Project): ProgramImage | null {
   });
   const entry = state.sources.find((s) => s.id === firmware.entry)?.path;
   return entry === undefined || files.length === 0 ? null : { kind: "source", language: firmware.language, files, entry };
+}
+
+/** Loads the project's circuit and firmware into `host`, not started, at the speed a mirrored run needs. */
+export async function loadForRun(host: Pick<SimHost, "load">, state: Project, seed: number, reg: Pick<PartRegistry, "get"> = builtinRegistry()): Promise<void> {
+  const { net, diagnostics } = buildSimNetlist(state, reg);
+  const program = programOf(state);
+  if (!program) throw new Error("The project has no code to run.");
+  const blocked = diagnostics.find((d) => d.severity === "error");
+  if (blocked) throw new Error(String(blocked.args?.message ?? blocked.text_key));
+  const loaded = await host.load(net, { seed, speed: 0, limits: LIMITS, tier: "T1" }, program);
+  const failed = loaded.diagnostics.find((d) => d.severity === "error");
+  if (failed) throw new Error(String(failed.args?.message ?? failed.text_key));
 }
 
 export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: SimLinkDeps): SimLink {
@@ -134,12 +169,20 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: Sim
 
   return {
     async run() {
+      const shared = sharedRun();
+      if (shared) return shared.start(run.getState().speed);
       const { phase, stale } = run.getState();
       if (phase === "starting" || (phase === "running" && !stale)) return;
       await start();
     },
-    restart: start,
+    restart: async () => {
+      const shared = sharedRun();
+      if (shared) return shared.start(run.getState().speed);
+      return start();
+    },
     stop() {
+      const shared = sharedRun();
+      if (shared) return shared.client.request("stop");
       const { phase } = run.getState();
       if (phase !== "starting" && phase !== "running" && phase !== "paused") return;
       generation++;
@@ -147,21 +190,31 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: Sim
       quiet("stop");
     },
     reset() {
+      const shared = sharedRun();
+      if (shared) return shared.client.request("reset");
       generation++;
       run.reset();
       quiet("reset");
     },
     pause() {
+      const shared = sharedRun();
+      if (shared) return shared.client.request("pause");
       if (run.getState().phase === "running") void host.pause().catch(() => undefined);
     },
     resume() {
+      const shared = sharedRun();
+      if (shared) return shared.client.request("resume");
       if (run.getState().phase === "paused") void host.resume().catch(() => undefined);
     },
     step(unit, n) {
+      const shared = sharedRun();
+      if (shared) return shared.client.request("step", { unit, n });
       if (run.getState().phase === "paused") void host.step(unit, n).catch(() => undefined);
     },
     setSpeed(x) {
       run.apply({ t: "speed", speed: x });
+      const shared = sharedRun();
+      if (shared) return shared.client.request("speed", { x });
       if (run.getState().phase !== "idle") void host.setSpeed(x).catch(() => undefined);
     },
     sendSerial(text) {

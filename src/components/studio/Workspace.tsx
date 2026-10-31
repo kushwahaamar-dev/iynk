@@ -686,7 +686,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
         serial: (
           <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} lang={lang} firmware={<FirmwareControl doc={doc} messages={messages} lang={lang} />} />
+            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} roomRun={messages.run} lang={lang} firmware={<FirmwareControl doc={doc} messages={messages} lang={lang} />} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
             <InstrumentDock doc={doc} run={run} ui={ui} sim={sim} messages={messages.instruments} fidelity={messages.fidelity} faults={messages.faults} lang={lang} />
           </div>

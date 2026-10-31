@@ -6,10 +6,12 @@ import type { EditAccess } from "@/collab/authority";
 import type { RoomHandle } from "@/collab/join";
 import type { CollabInstallDeps, CollabNotice } from "@/collab/install";
 import type { LobbyClient } from "@/collab/lobby";
+import { attachRunClient, type RunWiring } from "@/collab/run-wiring";
 import { makeMyCopy, openShare, parseShareFragment, readOnlyAccess, type OpenedShare } from "@/collab/share-open";
 import { Callout, EmptyState, Skeleton, buttonClass } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
+import type { Actor } from "@/protocol";
 import { createTranslator } from "@/i18n/translate";
 import { cryptoRandom } from "@/core/ids";
 import { openDb } from "@/local/db";
@@ -19,6 +21,7 @@ import { getAppRegistry } from "@/parts/builtin";
 import { digestOf } from "@/parts/descriptor";
 import type { Descriptor, DescriptorOrigin, Trust } from "@/parts/descriptor";
 import { partFacts } from "@/parts/facts";
+import { DMATH_VERSION } from "@/sim/core/dmath";
 import { makeModelEnv } from "@/sim/models/kinds";
 import { createSession, type ProjectSession } from "@/project/session";
 import { registerCommand, runCommand, type CommandCtx } from "@/studio/commands";
@@ -27,13 +30,16 @@ import { createDocStore, type DocStore } from "@/studio/stores/doc";
 import { Home } from "./Home";
 import { PartPage } from "./PartPage";
 import { BannerArea } from "./room/BannerArea";
-import { RoomProvider, type StudioRoomsT } from "./room/RoomDock";
+import { sendCommand } from "./room/BatonControl";
+import { RoomProvider, useRoomStatus, type StudioRoomsT } from "./room/RoomDock";
 import { RoomMenuEnvProvider, type RoomMenuEnv } from "./room/RoomMenu";
+import { RunIndicator } from "./room/RunIndicator";
 import { SidePanel } from "./room/SidePanel";
 import { Toolbar } from "./room/Toolbar";
 import { ShareDialog } from "./ShareDialog";
 import { Workspace } from "./Workspace";
 import { ServicesProvider, useServices } from "./wiring/services";
+import { setRunTarget } from "./wiring/simLink";
 
 const Diagnostics = dynamic(() => import("./Diagnostics").then((m) => m.Diagnostics), {
   ssr: false,
@@ -53,6 +59,8 @@ export type CollabEnv = Omit<
   CollabInstallDeps,
   "registerCommand" | "onHandle" | "onLobby" | "readHash" | "onHash" | "navigate" | "replaceHash" | "onShare" | "onNotice" | "onNeedsEnrolment"
 >;
+
+const RUN_VERSIONS = { dmath: String(DMATH_VERSION) };
 
 const TRUST_OF_ORIGIN: Readonly<Record<DescriptorOrigin, Trust>> = { core: "core", "local-user": "local", "imported-pack": "imported" };
 
@@ -158,7 +166,7 @@ export function StudioEntry(props: StudioEntryProps) {
 }
 
 function Studio({ messages, lang, collab }: StudioEntryProps) {
-  const { library } = useServices();
+  const { library, sim } = useServices();
   const strings = messages.studio;
   const route = useSyncExternalStore(subscribeRoute, readRoute, () => HOME);
   const [opened, setOpened] = useState(false);
@@ -167,6 +175,7 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
   const [notice, setNotice] = useState<CollabNotice | null>(null);
   const [shared, setShared] = useState<SharedState | null>(null);
   const [lobby, setLobby] = useState<LobbyClient | null>(null);
+  const [wiring, setWiring] = useState<RunWiring | null>(null);
   const ctx = useRef<CommandCtx | null>(null);
   const setCtx = useCallback((next: CommandCtx | null) => {
     ctx.current = next;
@@ -198,6 +207,25 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
       uninstall();
     };
   }, [collab, lang]);
+
+  useEffect(() => {
+    if (!handle || !collab) return;
+    const attached = attachRunClient({
+      room: handle.client,
+      host: sim,
+      self: collab.me.identityId,
+      versions: RUN_VERSIONS,
+      project: () => ctx.current?.doc.getState().state ?? null,
+      confirmedSeq: () => handle.authority.getStatus().confirmedSeq,
+    });
+    setRunTarget(attached);
+    setWiring(attached);
+    return () => {
+      setRunTarget(null);
+      setWiring(null);
+      attached.dispose();
+    };
+  }, [handle, collab, sim]);
 
   const copyShared = useCallback(
     async (opened: OpenedShare) => {
@@ -254,6 +282,7 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
         <RoomProvider handle={handle} access={sharedAccess}>
           <Toolbar t={rooms} />
           <BannerArea t={rooms} />
+          {handle && wiring && collab ? <RunPanel handle={handle} wiring={wiring} self={collab.me.identityId} messages={messages} lang={lang} /> : null}
           {notice ? (
             <Callout tone="warn" live className="mb-4">
               {rooms(notice)}
@@ -300,6 +329,23 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
         />
       ) : null}
     </>
+  );
+}
+
+function RunPanel({ handle, wiring, self, messages, lang }: { handle: RoomHandle; wiring: RunWiring; self: Actor; messages: StudioMessages; lang: Locale }) {
+  const t = useMemo(() => createTranslator(lang, messages.run, `${lang}/run`), [lang, messages.run]);
+  const status = useRoomStatus();
+  const people = useMemo(() => (status?.members ?? []).map((m) => ({ actor: m.actor, name: m.name })), [status?.members]);
+  return (
+    <RunIndicator
+      store={wiring.store}
+      client={wiring.client}
+      t={t}
+      self={self}
+      host={status?.host ?? null}
+      people={people}
+      onSetRunner={(to) => sendCommand(handle, "runner.set", { to })}
+    />
   );
 }
 

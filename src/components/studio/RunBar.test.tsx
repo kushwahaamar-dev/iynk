@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import instruments from "@/i18n/messages/en/instruments.json";
+import roomRun from "@/i18n/messages/en/run.json";
 import messages from "@/i18n/messages/en/studioRun.json";
 import { runCommand, type CommandCtx } from "@/studio/commands";
 import { createRunStore } from "@/studio/stores/run";
@@ -10,7 +11,7 @@ import type { SimLink } from "./wiring/simLink";
 function rig() {
   const run = createRunStore();
   const link: SimLink = { run: vi.fn(async () => {}), stop: vi.fn(), reset: vi.fn(), pause: vi.fn(), resume: vi.fn(), step: vi.fn(), setSpeed: vi.fn(), restart: vi.fn(async () => {}), sendSerial: vi.fn(), press: vi.fn(), dispose: vi.fn() };
-  render(<RunBar run={run} link={link} messages={messages} instruments={instruments} lang="en" />);
+  render(<RunBar run={run} link={link} messages={messages} instruments={instruments} roomRun={roomRun} lang="en" />);
   return { run, link };
 }
 
@@ -46,7 +47,7 @@ describe("RunBar", () => {
   it("frees the commands when it unmounts", () => {
     const run = createRunStore();
     const link = { run: vi.fn(), stop: vi.fn(), reset: vi.fn() } as unknown as SimLink;
-    render(<RunBar run={run} link={link} messages={messages} instruments={instruments} lang="en" />).unmount();
+    render(<RunBar run={run} link={link} messages={messages} instruments={instruments} roomRun={roomRun} lang="en" />).unmount();
     expect(runCommand("sim.run", {} as CommandCtx)).toBe(false);
   });
 
