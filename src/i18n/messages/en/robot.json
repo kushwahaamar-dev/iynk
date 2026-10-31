@@ -152,6 +152,7 @@
     "measured": "Measured",
     "error": "Error",
     "output": "Output",
+    "integral": "Integral term",
     "riseTime": "Rise time",
     "overshoot": "Overshoot",
     "settlingTime": "Settling time",

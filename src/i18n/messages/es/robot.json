@@ -152,6 +152,7 @@
     "measured": "Medido",
     "error": "Error",
     "output": "Salida",
+    "integral": "Término integral",
     "riseTime": "Tiempo de subida",
     "overshoot": "Sobreimpulso",
     "settlingTime": "Tiempo de establecimiento",

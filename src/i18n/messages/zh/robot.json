@@ -152,6 +152,7 @@
     "measured": "测量值",
     "error": "误差",
     "output": "输出",
+    "integral": "积分项",
     "riseTime": "上升时间",
     "overshoot": "超调",
     "settlingTime": "调节时间",
