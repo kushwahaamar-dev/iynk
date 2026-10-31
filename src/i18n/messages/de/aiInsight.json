@@ -1,1 +1,62 @@
-{}
+{
+  "what": {
+    "title": "Was der Partner sieht",
+    "description": "Das ist der Text, der mit deiner nächsten Nachricht gesendet wird, nach Schwärzung und Größenbegrenzung.",
+    "destinationCloud": "Dadurch wird der gezeigte Inhalt mit deinem Schlüssel an {host} gesendet.",
+    "destinationLocal": "Das bleibt auf diesem Gerät.",
+    "sources": "Quellen",
+    "tokens": "Etwa {count} Tokens",
+    "hash": "Paket-Hash",
+    "total": "Etwa {count} Tokens, Paket {profile}",
+    "text": "Gesendeter Text",
+    "close": "Schließen",
+    "profile": {
+      "compact": "kompakt",
+      "standard": "Standard",
+      "extended": "erweitert"
+    },
+    "source": {
+      "S1": "Projekt",
+      "S2": "Bauteile",
+      "S3": "Verdrahtung",
+      "S4": "Code",
+      "S5": "Simulationszustand",
+      "S6": "Fehler",
+      "S7": "Auswahl",
+      "S8": "Lernziele",
+      "S9": "Unterhaltung",
+      "S10": "Datenblätter",
+      "S11": "Werkzeugdokumentation"
+    }
+  },
+  "activity": {
+    "title": "KI-Aktivität",
+    "empty": "Noch keine KI-Aufrufe",
+    "today": "Heute",
+    "month": "Dieser Monat",
+    "calls": {
+      "one": "{count} Aufruf",
+      "other": "{count} Aufrufe"
+    },
+    "of": "{used} von {limit}",
+    "models": "Modelle",
+    "priceUnknown": "Preis unbekannt, das Token-Limit gilt",
+    "cacheShare": "{percent} % aus dem Cache",
+    "stale": "Die Preise stammen vom {date} und sind möglicherweise veraltet.",
+    "callsPerMessage": "Aufrufe pro Nachricht",
+    "firstToken": "Erstes Token",
+    "p95": "95. Perzentil: {value}",
+    "toolErrors": "Werkzeugfehler",
+    "none": "Keine",
+    "policy": "Richtlinientreffer",
+    "forbiddenOps": "Verbotene Operationen",
+    "modeBlocked": "Vom Modus blockiert",
+    "injectionFlags": "Injection-Warnungen",
+    "secretsRedacted": "Geschwärzte Geheimnisse",
+    "capped": "Begrenzte Aufrufe",
+    "delete": "KI-Daten löschen",
+    "deleteConfirm": "Das KI-Protokoll, die Nutzungssummen und gespeicherte Verläufe auf diesem Gerät löschen? Deine Projekte bleiben unberührt.",
+    "deleteYes": "Löschen",
+    "cancel": "Abbrechen"
+  }
+}

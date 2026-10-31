@@ -1,1 +1,62 @@
-{}
+{
+  "what": {
+    "title": "Lo que ve el compañero",
+    "description": "Este es el texto que se envía con tu próximo mensaje, tras ocultar datos y aplicar los límites de tamaño.",
+    "destinationCloud": "Esto enviará el contenido mostrado a {host} con tu clave.",
+    "destinationLocal": "Esto se queda en este dispositivo.",
+    "sources": "Fuentes",
+    "tokens": "Unos {count} tokens",
+    "hash": "Hash del paquete",
+    "total": "Unos {count} tokens, paquete {profile}",
+    "text": "Texto enviado",
+    "close": "Cerrar",
+    "profile": {
+      "compact": "compacto",
+      "standard": "estándar",
+      "extended": "ampliado"
+    },
+    "source": {
+      "S1": "Proyecto",
+      "S2": "Componentes",
+      "S3": "Cableado",
+      "S4": "Código",
+      "S5": "Estado de la simulación",
+      "S6": "Errores",
+      "S7": "Selección",
+      "S8": "Objetivos de aprendizaje",
+      "S9": "Conversación",
+      "S10": "Hojas de datos",
+      "S11": "Documentación de herramientas"
+    }
+  },
+  "activity": {
+    "title": "Actividad de IA",
+    "empty": "Aún no hay llamadas de IA",
+    "today": "Hoy",
+    "month": "Este mes",
+    "calls": {
+      "one": "{count} llamada",
+      "other": "{count} llamadas"
+    },
+    "of": "{used} de {limit}",
+    "models": "Modelos",
+    "priceUnknown": "Precio desconocido, se aplica el límite de tokens",
+    "cacheShare": "{percent}% desde la caché",
+    "stale": "Los precios son del {date} y pueden estar desactualizados.",
+    "callsPerMessage": "Llamadas por mensaje",
+    "firstToken": "Primer token",
+    "p95": "Percentil 95: {value}",
+    "toolErrors": "Errores de herramientas",
+    "none": "Ninguno",
+    "policy": "Avisos de política",
+    "forbiddenOps": "Operaciones prohibidas",
+    "modeBlocked": "Bloqueadas por el modo",
+    "injectionFlags": "Avisos de inyección",
+    "secretsRedacted": "Secretos ocultados",
+    "capped": "Llamadas limitadas",
+    "delete": "Borrar datos de IA",
+    "deleteConfirm": "¿Borrar el registro de IA, los totales de uso y los hilos guardados en este dispositivo? Tus proyectos no se tocan.",
+    "deleteYes": "Borrar",
+    "cancel": "Cancelar"
+  }
+}

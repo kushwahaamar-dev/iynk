@@ -1,1 +1,62 @@
-{}
+{
+  "what": {
+    "title": "伙伴能看到什么",
+    "description": "这是随你下一条消息发送的文本，已完成脱敏并按大小限制截取。",
+    "destinationCloud": "这会用你的密钥把所示内容发送到 {host}。",
+    "destinationLocal": "内容只留在这台设备上。",
+    "sources": "来源",
+    "tokens": "约 {count} 个令牌",
+    "hash": "数据包哈希",
+    "total": "约 {count} 个令牌，{profile}数据包",
+    "text": "发送的文本",
+    "close": "关闭",
+    "profile": {
+      "compact": "精简",
+      "standard": "标准",
+      "extended": "扩展"
+    },
+    "source": {
+      "S1": "项目",
+      "S2": "元件",
+      "S3": "接线",
+      "S4": "代码",
+      "S5": "仿真状态",
+      "S6": "错误",
+      "S7": "选择",
+      "S8": "学习目标",
+      "S9": "对话",
+      "S10": "数据手册",
+      "S11": "工具文档"
+    }
+  },
+  "activity": {
+    "title": "AI 活动",
+    "empty": "还没有 AI 调用",
+    "today": "今天",
+    "month": "本月",
+    "calls": {
+      "one": "{count} 次调用",
+      "other": "{count} 次调用"
+    },
+    "of": "{used} / {limit}",
+    "models": "模型",
+    "priceUnknown": "价格未知，按令牌上限限制",
+    "cacheShare": "{percent}% 来自缓存",
+    "stale": "价格数据截至 {date}，可能已过时。",
+    "callsPerMessage": "每条消息的调用数",
+    "firstToken": "首个令牌",
+    "p95": "第 95 百分位：{value}",
+    "toolErrors": "工具错误",
+    "none": "无",
+    "policy": "策略命中",
+    "forbiddenOps": "被禁止的操作",
+    "modeBlocked": "被模式拦截",
+    "injectionFlags": "注入标记",
+    "secretsRedacted": "已脱敏的密钥",
+    "capped": "被限额的调用",
+    "delete": "删除 AI 数据",
+    "deleteConfirm": "删除这台设备上的 AI 日志、用量合计和已保存的对话？你的项目不受影响。",
+    "deleteYes": "删除",
+    "cancel": "取消"
+  }
+}

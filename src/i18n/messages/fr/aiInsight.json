@@ -1,1 +1,62 @@
-{}
+{
+  "what": {
+    "title": "Ce que voit le partenaire",
+    "description": "Voici le texte envoyé avec votre prochain message, après masquage et limites de taille.",
+    "destinationCloud": "Cela enverra le contenu affiché à {host} avec votre clé.",
+    "destinationLocal": "Cela reste sur cet appareil.",
+    "sources": "Sources",
+    "tokens": "Environ {count} jetons",
+    "hash": "Empreinte du paquet",
+    "total": "Environ {count} jetons, paquet {profile}",
+    "text": "Texte envoyé",
+    "close": "Fermer",
+    "profile": {
+      "compact": "compact",
+      "standard": "standard",
+      "extended": "étendu"
+    },
+    "source": {
+      "S1": "Projet",
+      "S2": "Composants",
+      "S3": "Câblage",
+      "S4": "Code",
+      "S5": "État de la simulation",
+      "S6": "Erreurs",
+      "S7": "Sélection",
+      "S8": "Objectifs d'apprentissage",
+      "S9": "Conversation",
+      "S10": "Fiches techniques",
+      "S11": "Documentation des outils"
+    }
+  },
+  "activity": {
+    "title": "Activité de l'IA",
+    "empty": "Aucun appel d'IA pour le moment",
+    "today": "Aujourd'hui",
+    "month": "Ce mois-ci",
+    "calls": {
+      "one": "{count} appel",
+      "other": "{count} appels"
+    },
+    "of": "{used} sur {limit}",
+    "models": "Modèles",
+    "priceUnknown": "Prix inconnu, la limite de jetons s'applique",
+    "cacheShare": "{percent} % depuis le cache",
+    "stale": "Les prix datent du {date} et peuvent être périmés.",
+    "callsPerMessage": "Appels par message",
+    "firstToken": "Premier jeton",
+    "p95": "95e centile : {value}",
+    "toolErrors": "Erreurs d'outils",
+    "none": "Aucune",
+    "policy": "Alertes de politique",
+    "forbiddenOps": "Opérations interdites",
+    "modeBlocked": "Bloquées par le mode",
+    "injectionFlags": "Signalements d'injection",
+    "secretsRedacted": "Secrets masqués",
+    "capped": "Appels plafonnés",
+    "delete": "Supprimer les données d'IA",
+    "deleteConfirm": "Supprimer le journal d'IA, les totaux d'usage et les fils enregistrés sur cet appareil ? Vos projets ne sont pas touchés.",
+    "deleteYes": "Supprimer",
+    "cancel": "Annuler"
+  }
+}
