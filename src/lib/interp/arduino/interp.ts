@@ -1,5 +1,5 @@
 import { InterpError, didYouMean, notModelled, type SourcePos } from '../errors';
-import { Exec, PREEMPT, type Gen, type Program } from '../exec';
+import { Exec, PAUSE, PREEMPT, type Gen, type Program } from '../exec';
 import { HeapMeter, checkElements, checkString } from '../limits';
 import type { World } from '../world';
 import { parseSketch, type Expr, type FuncDecl, type Stmt, type TypeSpec, type Unit } from './parser';
@@ -511,10 +511,13 @@ class Compiler {
         const body = s.body.map((x) => this.stmt(x));
         this.scopes.pop();
         if (!body.length) return { sync: () => 0 };
+        const marks = s.body.map((x) => (x.k === 'block' || x.k === 'empty' ? null : x.p));
         return {
           gen: function* (f) {
             for (let i = 0; i < body.length; i++) {
               if (rt.tick()) yield PREEMPT;
+              const at = marks[i];
+              if (rt.dbg !== null && at !== null && rt.dbg.check(at, rt.depth, rt.syncDepth === 0 && !rt.inIsr)) yield PAUSE;
               const b = body[i];
               const sig = b.sync ? b.sync(f) : yield* b.gen!(f);
               if (sig) return sig;

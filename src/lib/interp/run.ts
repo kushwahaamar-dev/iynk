@@ -1,6 +1,6 @@
 import { addStandardDevices, HcSr04 } from './devices';
 import { InterpError, type Diagnostic } from './errors';
-import { PREEMPT, type Program } from './exec';
+import { PAUSE, PREEMPT, type Program } from './exec';
 import { getProfile, resolvePin, type BoardId, type BoardProfile, type Language } from './profiles';
 import { World, type Snapshot, type WorldOptions } from './world';
 import { compileSketch, type ArduinoRt } from './arduino/interp';
@@ -8,6 +8,7 @@ import { DeepSleep } from './arduino/libs';
 import { PyRt, PyRaise } from './python/runtime';
 import { installBuiltins, installModules, type RosMessage } from './python/modules';
 import { compileVerilog, type VerilogSim } from './verilog/sim';
+import type { StatementDebugger } from '@/sim/debug/breakpoints';
 
 const SERIAL_CAP = 1_048_576;
 const SERIAL_MARKER = '\r\n[output truncated at 1 MB]\r\n';
@@ -28,6 +29,8 @@ export interface RunOptions {
   devices?: DeviceKind[];
   /** Statement budget per step() (C++/Python), default 400 000. FPGA: clock cycles per step, default 400 000. */
   budget?: number;
+  /** Arduino C++ only: pauses the program before statements, see {@link StatementDebugger}. */
+  debug?: StatementDebugger;
 }
 
 export type RunState = 'idle' | 'running' | 'stopped' | 'done' | 'error' | 'sleeping' | 'brownout' | 'unpowered';
@@ -182,6 +185,7 @@ class RunImpl implements Run {
         // Waking from deep sleep keeps RTC_DATA_ATTR variables; initGlobals leaves set slots alone.
         if (keepRtc && prev) for (const slot of rt.rtcSlots) rt.G[slot] = prev.G[slot];
         rt.initGlobals();
+        rt.dbg = this.opts.debug ?? null;
         this.arduino = rt;
         this.diagnostics = rt.warnings.map((x) => x.toJSON());
       } else if (this.language === 'python') {
@@ -253,6 +257,7 @@ class RunImpl implements Run {
       return;
     }
     if (this.fpga) return this.stepFpga(ms);
+    if (this.opts.debug?.paused) return;
     const exec = (this.arduino ?? this.py)!;
     const w = this.world;
     const target = w.now + Math.max(0, ms) * 1000;
@@ -276,6 +281,7 @@ class RunImpl implements Run {
           this.setState('done');
           break;
         }
+        if (r.value === PAUSE) break;
         if (r.value !== PREEMPT) this.waitUntil = r.value;
       }
     } catch (e) {

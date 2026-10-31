@@ -1,6 +1,7 @@
 import { clockRate, NS_PER_MS, type SimTime } from "@/sim/core/clock";
 import { simDiag, type SimDiagnostic } from "@/sim/core/diagnostic";
 import { StateHasher } from "@/sim/core/hash";
+import { StatementDebugger, type DebugPort } from "@/sim/debug/breakpoints";
 import {
   RANK,
   type EventSink,
@@ -36,6 +37,8 @@ export interface PinEdgeRecord {
 
 export type InterpEngine = McuEngine & {
   readonly run: Run;
+  /** Breakpoints and stepping; only the Arduino C++ interpreter pauses, the other languages ignore it. */
+  readonly debug: DebugPort;
   readonly serialLog: ReadonlyArray<{ at: SimTime; text: string }>;
   readonly edgeLog: readonly PinEdgeRecord[];
   /** Compile and runtime errors the interpreter reported, in order. */
@@ -82,6 +85,8 @@ class InterpEngineImpl implements InterpEngine {
   readonly edgeLog: PinEdgeRecord[] = [];
   readonly diagnostics: SimDiagnostic[] = [];
   private current: Run | null = null;
+  private entryPath = "";
+  readonly debug: StatementDebugger;
   private watched: World | null = null;
   private sink: EventSink | null = null;
   private serialLength = 0;
@@ -95,6 +100,13 @@ class InterpEngineImpl implements InterpEngine {
     private readonly o: InterpEngineOptions,
   ) {
     this.board = o.board;
+    this.debug = new StatementDebugger(
+      (line) => ({ file: this.entryPath, line }),
+      () => this.nowNs,
+    );
+    this.debug.onSkipped((file, line) => {
+      this.diagnostics.push(simDiag("debug-skipped-in-isr", "note", { file, line }));
+    });
     this.language = toSimLanguage(o.language);
     this.profile = o.board in PROFILES ? getProfile(o.board, o.variant) : null;
     this.costModel = this.profile?.fpga
@@ -153,12 +165,15 @@ class InterpEngineImpl implements InterpEngine {
         devices: this.o.devices,
         world: { seed: this.o.seed, ...this.o.world },
         params: this.o.params,
+        debug: this.debug,
       });
     } catch (e) {
       return failed("unsupported-language", e instanceof Error ? e.message : String(e));
     }
     const diagnostics = run.diagnostics.map((d) => compileDiagnostic(d, entry.path)).slice(0, 1000);
     const ok = !diagnostics.some((d) => d.severity === "error");
+    this.entryPath = entry.path;
+    this.debug.clearPause();
     this.current = run;
     this.watched = null;
     this.base = 0;
@@ -186,6 +201,7 @@ class InterpEngineImpl implements InterpEngine {
     if (!this.current) return;
     const at = this.nowNs;
     const driven = [...this.current.world.pins].filter(([, p]) => p.mode === "output" || p.mode === "open_drain").map(([n]) => n);
+    this.debug.clearPause();
     this.current.reset();
     this.watch();
     for (const pin of driven) this.emitPin(at, pin, "Z");
@@ -201,6 +217,7 @@ class InterpEngineImpl implements InterpEngine {
     if (!run || (state !== "running" && state !== "sleeping")) return { reached: Math.max(horizon, this.nowNs), stoppedEarly: false };
     let now = this.nowNs;
     if (horizon <= now) return { reached: now, stoppedEarly: false };
+    if (this.debug.paused) return { reached: now, stoppedEarly: true };
     // Waking from deep sleep builds a new World at the start of a step; watch it before the program runs.
     if (state === "sleeping") {
       run.step(0);
@@ -210,7 +227,7 @@ class InterpEngineImpl implements InterpEngine {
     run.step((horizon - now) / NS_PER_MS);
     this.watch();
     now = this.nowNs;
-    return { reached: now, stoppedEarly: now < horizon && run.status.throttled };
+    return { reached: now, stoppedEarly: now < horizon && (run.status.throttled || this.debug.paused !== null) };
   }
 
   onEvent(e: SimEvent): void {
