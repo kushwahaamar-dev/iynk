@@ -1,3 +1,140 @@
 {
-  "title": "Bauteil-Editor"
+  "title": "Bauteil-Editor",
+  "newTitle": "Neues Bauteil",
+  "editTitle": "{name} bearbeiten",
+  "close": "Schließen",
+  "readOnly": "Zum Bearbeiten eines Bauteils braucht es einen breiteren Bildschirm. Lesen kannst du es hier.",
+  "copyNote": "Dieses Bauteil gehört zu iynk. Beim Speichern entsteht deine eigene Kopie als {id}.",
+  "notFound": "Dieses Bauteil ist nicht in der Bibliothek, daher ist dies ein neues.",
+  "restored": "Dein ungespeicherter Entwurf wurde wiederhergestellt.",
+  "startOver": "Neu beginnen",
+  "tabs": {
+    "label": "Abschnitte des Bauteils",
+    "identity": "Identität",
+    "pins": "Pins",
+    "footprint": "Bauform",
+    "json": "JSON"
+  },
+  "identity": {
+    "name": "Name",
+    "nameHint": "Wird in der Bibliothek und auf der Arbeitsfläche angezeigt.",
+    "manufacturer": "Hersteller",
+    "model": "Teilenummer",
+    "category": "Kategorie",
+    "kind": "Art",
+    "description": "Beschreibung",
+    "savedAs": "Wird gespeichert als {id}"
+  },
+  "pins": {
+    "heading": "Pins",
+    "add": "Pin hinzufügen",
+    "empty": "Noch keine Pins. Füge den ersten hinzu.",
+    "col": {
+      "id": "Id",
+      "name": "Name",
+      "designator": "Beschriftung am Bauteil",
+      "type": "Typ",
+      "class": "Klasse",
+      "polarity": "Polarität"
+    },
+    "cell": "Pin {n}, {column}",
+    "noPolarity": "Keine",
+    "remove": "Pin {n} entfernen",
+    "removeTitle": "Diesen Pin entfernen?",
+    "removeBody": "Pin {id} verschwindet aus dem Bauteil, ebenso aus jeder Gruppe und jedem Grenzwert, die ihn nennen.",
+    "removeConfirm": "Pin entfernen",
+    "removeKeep": "Pin behalten",
+    "added": "Pin hinzugefügt. Das Bauteil hat {count} Pins.",
+    "removed": "Pin {id} entfernt. Das Bauteil hat {count} Pins.",
+    "cascade": "Wegen des Pins ebenfalls geändert: {where}",
+    "groups": {
+      "heading": "Gruppen",
+      "hint": "Pins einer Gruppe sind im Bauteil miteinander verbunden.",
+      "add": "Gruppe hinzufügen",
+      "empty": "Keine Gruppen.",
+      "kindLabel": "Wie {id} seine Pins verbindet",
+      "pinsLabel": "Pins in Gruppe {id}",
+      "remove": "Gruppe {id} entfernen",
+      "kind": {
+        "internal-short": "Innen kurzgeschlossen",
+        "strip": "Leiste",
+        "plane": "Fläche"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "Größe und Zeichnung",
+    "width": "Breite (mm)",
+    "height": "Höhe (mm)",
+    "depth": "Tiefe (mm)",
+    "accuracy": "Genauigkeit (mm)",
+    "renderer": "Zeichenstil",
+    "label": "Beschriftung der Zeichnung",
+    "colour": "Gehäusefarbe",
+    "showLabels": "Pin-Beschriftungen zeigen",
+    "positions": "Pin-Positionen",
+    "x": "Pin {id}, x (mm)",
+    "y": "Pin {id}, y (mm)",
+    "unplaced": "Noch nicht platziert",
+    "previewLabel": "Vorschau der Bauteilzeichnung",
+    "outside": "Diese Pins liegen außerhalb des gezeichneten Gehäuses: {pins}",
+    "art": {
+      "heading": "Bild",
+      "hint": "Eine SVG- oder PNG-Datei. Ohne Bild wird das Bauteil aus Größe und Pins oben gezeichnet.",
+      "upload": "Bild wählen",
+      "remove": "Bild entfernen",
+      "license": "Lizenz des Bilds",
+      "stripped": "Aus dem Bild entfernt: {what}",
+      "error": {
+        "too-big": "Die Datei ist zu groß.",
+        "not-xml": "Die Datei ist kein gültiges SVG.",
+        "doctype": "Das SVG enthält eine Dokumenttyp-Deklaration, die nicht erlaubt ist.",
+        "entity": "Das SVG definiert Entitäten, was nicht erlaubt ist.",
+        "cdata": "Das SVG enthält einen CDATA-Abschnitt, der nicht erlaubt ist.",
+        "processing-instruction": "Das SVG enthält eine Verarbeitungsanweisung, die nicht erlaubt ist.",
+        "depth": "Das SVG ist zu tief verschachtelt.",
+        "too-many-elements": "Das SVG hat zu viele Elemente.",
+        "root-not-svg": "Die Datei beginnt nicht mit einem svg-Element.",
+        "no-viewbox": "Das SVG hat keine viewBox.",
+        "empty": "Das Bild zeichnet nichts.",
+        "png-signature": "Die Datei ist keine PNG-Datei.",
+        "png-header": "Der PNG-Header ist beschädigt.",
+        "png-too-large": "Das PNG ist größer als 2048 mal 2048 Pixel.",
+        "png-truncated": "Die PNG-Datei ist abgeschnitten."
+      }
+    }
+  },
+  "json": {
+    "label": "Bauteilbeschreibung als JSON",
+    "hint": "Änderungen hier ersetzen das Formular, wenn du diesen Tab verlässt. Behebe zuerst einen Lesefehler."
+  },
+  "issues": {
+    "heading": "Probleme",
+    "none": "Keine Probleme gefunden.",
+    "count": "{count} zu beheben",
+    "sections": {
+      "identity": "Identität",
+      "pins": "Pins",
+      "footprint": "Bauform",
+      "rest": "Sonstiges"
+    }
+  },
+  "save": {
+    "button": "Bauteil speichern",
+    "saving": "Wird gespeichert",
+    "blocked": "Behebe {count} Probleme vor dem Speichern.",
+    "saved": "Gespeichert als {key}",
+    "version": "Version",
+    "because": "Gespeichert als {version}, weil {reasons}",
+    "lower": "Nimm {version} oder höher.",
+    "conflict": "Ein anderes Bauteil mit dieser Id und Version ist schon gespeichert. Gespeichert: {installed}. Deins: {incoming}. Ändere Version oder Id und speichere erneut.",
+    "full": "Der Speicher ist voll. Gib Platz frei und speichere erneut.",
+    "failed": "Das Bauteil wurde nicht gespeichert. Versuche es erneut."
+  },
+  "discard": {
+    "title": "Ohne Speichern verlassen?",
+    "body": "Deine Änderungen bleiben als Entwurf in diesem Browser, bis du neu beginnst.",
+    "confirm": "Verlassen",
+    "keep": "Weiter bearbeiten"
+  }
 }

@@ -1,3 +1,140 @@
 {
-  "title": "Editor de piezas"
+  "title": "Editor de piezas",
+  "newTitle": "Pieza nueva",
+  "editTitle": "Editar {name}",
+  "close": "Cerrar",
+  "readOnly": "Editar una pieza necesita una pantalla más ancha. Aquí puedes leerla.",
+  "copyNote": "Esta pieza viene con iynk. Al guardar se crea tu propia copia como {id}.",
+  "notFound": "Esa pieza no está en la biblioteca, así que esta es nueva.",
+  "restored": "Se recuperó tu borrador sin guardar.",
+  "startOver": "Empezar de nuevo",
+  "tabs": {
+    "label": "Secciones de la pieza",
+    "identity": "Identidad",
+    "pins": "Pines",
+    "footprint": "Huella",
+    "json": "JSON"
+  },
+  "identity": {
+    "name": "Nombre",
+    "nameHint": "Se muestra en la biblioteca y en el lienzo.",
+    "manufacturer": "Fabricante",
+    "model": "Número de pieza",
+    "category": "Categoría",
+    "kind": "Tipo",
+    "description": "Descripción",
+    "savedAs": "Se guardará como {id}"
+  },
+  "pins": {
+    "heading": "Pines",
+    "add": "Añadir pin",
+    "empty": "Aún no hay pines. Añade el primero.",
+    "col": {
+      "id": "Id",
+      "name": "Nombre",
+      "designator": "Marca en la pieza",
+      "type": "Tipo",
+      "class": "Clase",
+      "polarity": "Polaridad"
+    },
+    "cell": "Pin {n}, {column}",
+    "noPolarity": "Ninguna",
+    "remove": "Quitar el pin {n}",
+    "removeTitle": "¿Quitar este pin?",
+    "removeBody": "El pin {id} sale de la pieza, junto con todo grupo y valor nominal que lo nombre.",
+    "removeConfirm": "Quitar pin",
+    "removeKeep": "Conservar pin",
+    "added": "Pin añadido. La pieza tiene {count} pines.",
+    "removed": "Pin {id} quitado. La pieza tiene {count} pines.",
+    "cascade": "También cambió por el pin: {where}",
+    "groups": {
+      "heading": "Grupos",
+      "hint": "Los pines de un grupo están unidos dentro de la pieza.",
+      "add": "Añadir grupo",
+      "empty": "Sin grupos.",
+      "kindLabel": "Cómo {id} une sus pines",
+      "pinsLabel": "Pines del grupo {id}",
+      "remove": "Quitar el grupo {id}",
+      "kind": {
+        "internal-short": "En corto por dentro",
+        "strip": "Tira",
+        "plane": "Plano"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "Tamaño y dibujo",
+    "width": "Ancho (mm)",
+    "height": "Alto (mm)",
+    "depth": "Fondo (mm)",
+    "accuracy": "Precisión (mm)",
+    "renderer": "Estilo de dibujo",
+    "label": "Etiqueta del dibujo",
+    "colour": "Color del cuerpo",
+    "showLabels": "Mostrar etiquetas de pines",
+    "positions": "Posiciones de los pines",
+    "x": "Pin {id}, x (mm)",
+    "y": "Pin {id}, y (mm)",
+    "unplaced": "Sin colocar",
+    "previewLabel": "Vista previa del dibujo de la pieza",
+    "outside": "Estos pines caen fuera del cuerpo dibujado: {pins}",
+    "art": {
+      "heading": "Imagen",
+      "hint": "Un SVG o un PNG. Sin imagen, la pieza se dibuja con el tamaño y los pines de arriba.",
+      "upload": "Elegir imagen",
+      "remove": "Quitar imagen",
+      "license": "Licencia de la imagen",
+      "stripped": "Quitado de la imagen: {what}",
+      "error": {
+        "too-big": "El archivo es demasiado grande.",
+        "not-xml": "El archivo no es un SVG válido.",
+        "doctype": "El SVG tiene una declaración de tipo de documento, que no se permite.",
+        "entity": "El SVG define entidades, lo que no se permite.",
+        "cdata": "El SVG tiene una sección CDATA, que no se permite.",
+        "processing-instruction": "El SVG tiene una instrucción de procesamiento, que no se permite.",
+        "depth": "El SVG está anidado a demasiada profundidad.",
+        "too-many-elements": "El SVG tiene demasiados elementos.",
+        "root-not-svg": "El archivo no empieza con un elemento svg.",
+        "no-viewbox": "El SVG no tiene viewBox.",
+        "empty": "La imagen no dibuja nada.",
+        "png-signature": "El archivo no es un PNG.",
+        "png-header": "La cabecera del PNG está dañada.",
+        "png-too-large": "El PNG supera los 2048 por 2048 píxeles.",
+        "png-truncated": "El archivo PNG está cortado."
+      }
+    }
+  },
+  "json": {
+    "label": "Descriptor de la pieza en JSON",
+    "hint": "Los cambios aquí sustituyen al formulario al salir de esta pestaña. Corrige antes un error de lectura."
+  },
+  "issues": {
+    "heading": "Problemas",
+    "none": "No se encontraron problemas.",
+    "count": "{count} por corregir",
+    "sections": {
+      "identity": "Identidad",
+      "pins": "Pines",
+      "footprint": "Huella",
+      "rest": "Otros"
+    }
+  },
+  "save": {
+    "button": "Guardar pieza",
+    "saving": "Guardando",
+    "blocked": "Corrige {count} problemas antes de guardar.",
+    "saved": "Guardado como {key}",
+    "version": "Versión",
+    "because": "Guardado como {version} porque {reasons}",
+    "lower": "Usa {version} o superior.",
+    "conflict": "Ya hay guardada otra pieza distinta con este id y versión. Guardada: {installed}. La tuya: {incoming}. Cambia la versión o el id y guarda de nuevo.",
+    "full": "El almacenamiento está lleno. Libera espacio y guarda de nuevo.",
+    "failed": "No se guardó la pieza. Inténtalo de nuevo."
+  },
+  "discard": {
+    "title": "¿Salir sin guardar?",
+    "body": "Tus cambios quedan como borrador en este navegador hasta que empieces de nuevo.",
+    "confirm": "Salir",
+    "keep": "Seguir editando"
+  }
 }

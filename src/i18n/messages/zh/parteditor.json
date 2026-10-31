@@ -1,3 +1,140 @@
 {
-  "title": "零件编辑器"
+  "title": "零件编辑器",
+  "newTitle": "新零件",
+  "editTitle": "编辑 {name}",
+  "close": "关闭",
+  "readOnly": "编辑零件需要更宽的屏幕。你可以在这里查看。",
+  "copyNote": "这个零件随 iynk 提供。保存会生成你自己的副本 {id}。",
+  "notFound": "库中没有这个零件，所以这是一个新零件。",
+  "restored": "已恢复你未保存的草稿。",
+  "startOver": "重新开始",
+  "tabs": {
+    "label": "零件分区",
+    "identity": "基本信息",
+    "pins": "引脚",
+    "footprint": "封装",
+    "json": "JSON"
+  },
+  "identity": {
+    "name": "名称",
+    "nameHint": "显示在零件库和画布上。",
+    "manufacturer": "制造商",
+    "model": "零件编号",
+    "category": "类别",
+    "kind": "种类",
+    "description": "说明",
+    "savedAs": "将保存为 {id}"
+  },
+  "pins": {
+    "heading": "引脚",
+    "add": "添加引脚",
+    "empty": "还没有引脚。添加第一个。",
+    "col": {
+      "id": "编号",
+      "name": "名称",
+      "designator": "零件上的标记",
+      "type": "类型",
+      "class": "类别",
+      "polarity": "极性"
+    },
+    "cell": "引脚 {n}，{column}",
+    "noPolarity": "无",
+    "remove": "移除引脚 {n}",
+    "removeTitle": "移除这个引脚？",
+    "removeBody": "引脚 {id} 会从零件中移除，提到它的所有分组和额定值也会一并移除。",
+    "removeConfirm": "移除引脚",
+    "removeKeep": "保留引脚",
+    "added": "已添加引脚。零件现有 {count} 个引脚。",
+    "removed": "已移除引脚 {id}。零件现有 {count} 个引脚。",
+    "cascade": "因该引脚也做了更改：{where}",
+    "groups": {
+      "heading": "分组",
+      "hint": "同一分组的引脚在零件内部相连。",
+      "add": "添加分组",
+      "empty": "没有分组。",
+      "kindLabel": "{id} 连接引脚的方式",
+      "pinsLabel": "分组 {id} 的引脚",
+      "remove": "移除分组 {id}",
+      "kind": {
+        "internal-short": "内部短接",
+        "strip": "排",
+        "plane": "平面"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "尺寸与图形",
+    "width": "宽度（mm）",
+    "height": "高度（mm）",
+    "depth": "厚度（mm）",
+    "accuracy": "精度（mm）",
+    "renderer": "绘制样式",
+    "label": "图上的标注",
+    "colour": "本体颜色",
+    "showLabels": "显示引脚标签",
+    "positions": "引脚位置",
+    "x": "引脚 {id}，x（mm）",
+    "y": "引脚 {id}，y（mm）",
+    "unplaced": "尚未放置",
+    "previewLabel": "零件图形预览",
+    "outside": "这些引脚落在所绘本体之外：{pins}",
+    "art": {
+      "heading": "图片",
+      "hint": "SVG 或 PNG。没有图片时，零件按上面的尺寸和引脚绘制。",
+      "upload": "选择图片",
+      "remove": "移除图片",
+      "license": "图片许可",
+      "stripped": "已从图片中移除：{what}",
+      "error": {
+        "too-big": "文件太大。",
+        "not-xml": "文件不是有效的 SVG。",
+        "doctype": "SVG 含有文档类型声明，这是不允许的。",
+        "entity": "SVG 定义了实体，这是不允许的。",
+        "cdata": "SVG 含有 CDATA 段，这是不允许的。",
+        "processing-instruction": "SVG 含有处理指令，这是不允许的。",
+        "depth": "SVG 嵌套太深。",
+        "too-many-elements": "SVG 的元素太多。",
+        "root-not-svg": "文件不是以 svg 元素开头。",
+        "no-viewbox": "SVG 没有 viewBox。",
+        "empty": "图片什么也没画。",
+        "png-signature": "文件不是 PNG。",
+        "png-header": "PNG 文件头已损坏。",
+        "png-too-large": "PNG 超过 2048 乘 2048 像素。",
+        "png-truncated": "PNG 文件被截断。"
+      }
+    }
+  },
+  "json": {
+    "label": "零件描述（JSON）",
+    "hint": "离开此标签页时，这里的更改会替换表单。请先修正解析错误。"
+  },
+  "issues": {
+    "heading": "问题",
+    "none": "没有发现问题。",
+    "count": "{count} 项待修正",
+    "sections": {
+      "identity": "基本信息",
+      "pins": "引脚",
+      "footprint": "封装",
+      "rest": "其他"
+    }
+  },
+  "save": {
+    "button": "保存零件",
+    "saving": "正在保存",
+    "blocked": "请先修正 {count} 个问题再保存。",
+    "saved": "已保存为 {key}",
+    "version": "版本",
+    "because": "已保存为 {version}，因为{reasons}",
+    "lower": "请使用 {version} 或更高。",
+    "conflict": "已保存了另一个相同编号和版本的不同零件。已存：{installed}。你的：{incoming}。请更改版本或编号后重新保存。",
+    "full": "存储空间已满。请腾出空间后重新保存。",
+    "failed": "零件未能保存。请重试。"
+  },
+  "discard": {
+    "title": "不保存就离开？",
+    "body": "你的更改会作为草稿保留在此浏览器中，直到你重新开始。",
+    "confirm": "离开",
+    "keep": "继续编辑"
+  }
 }

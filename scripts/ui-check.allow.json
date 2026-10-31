@@ -66,6 +66,12 @@
     "reason": "The cursor arrow is a drawing, not an icon."
   },
   {
+    "file": "src/components/studio/PartEditor.tsx",
+    "code": "R9",
+    "pattern": "^<svg\\b",
+    "reason": "The part drawing preview is drawn from the pin positions, not an icon."
+  },
+  {
     "file": "src/components/home/",
     "code": "R9",
     "pattern": ".",

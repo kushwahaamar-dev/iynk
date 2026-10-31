@@ -1,3 +1,140 @@
 {
-  "title": "Éditeur de pièces"
+  "title": "Éditeur de pièces",
+  "newTitle": "Nouvelle pièce",
+  "editTitle": "Modifier {name}",
+  "close": "Fermer",
+  "readOnly": "Modifier une pièce demande un écran plus large. Vous pouvez la lire ici.",
+  "copyNote": "Cette pièce est fournie avec iynk. L'enregistrement crée votre propre copie sous {id}.",
+  "notFound": "Cette pièce n'est pas dans la bibliothèque, celle-ci est donc nouvelle.",
+  "restored": "Votre brouillon non enregistré a été restauré.",
+  "startOver": "Recommencer",
+  "tabs": {
+    "label": "Sections de la pièce",
+    "identity": "Identité",
+    "pins": "Broches",
+    "footprint": "Empreinte",
+    "json": "JSON"
+  },
+  "identity": {
+    "name": "Nom",
+    "nameHint": "Affiché dans la bibliothèque et sur le plan de travail.",
+    "manufacturer": "Fabricant",
+    "model": "Référence",
+    "category": "Catégorie",
+    "kind": "Type",
+    "description": "Description",
+    "savedAs": "Sera enregistrée sous {id}"
+  },
+  "pins": {
+    "heading": "Broches",
+    "add": "Ajouter une broche",
+    "empty": "Aucune broche pour l'instant. Ajoutez la première.",
+    "col": {
+      "id": "Id",
+      "name": "Nom",
+      "designator": "Repère sur la pièce",
+      "type": "Type",
+      "class": "Classe",
+      "polarity": "Polarité"
+    },
+    "cell": "Broche {n}, {column}",
+    "noPolarity": "Aucune",
+    "remove": "Retirer la broche {n}",
+    "removeTitle": "Retirer cette broche ?",
+    "removeBody": "La broche {id} quitte la pièce, avec tous les groupes et valeurs limites qui la nomment.",
+    "removeConfirm": "Retirer la broche",
+    "removeKeep": "Garder la broche",
+    "added": "Broche ajoutée. La pièce compte {count} broches.",
+    "removed": "Broche {id} retirée. La pièce compte {count} broches.",
+    "cascade": "Aussi modifié à cause de la broche : {where}",
+    "groups": {
+      "heading": "Groupes",
+      "hint": "Les broches d'un groupe sont reliées à l'intérieur de la pièce.",
+      "add": "Ajouter un groupe",
+      "empty": "Aucun groupe.",
+      "kindLabel": "Comment {id} relie ses broches",
+      "pinsLabel": "Broches du groupe {id}",
+      "remove": "Retirer le groupe {id}",
+      "kind": {
+        "internal-short": "Court-circuit interne",
+        "strip": "Bande",
+        "plane": "Plan"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "Taille et dessin",
+    "width": "Largeur (mm)",
+    "height": "Hauteur (mm)",
+    "depth": "Profondeur (mm)",
+    "accuracy": "Précision (mm)",
+    "renderer": "Style de dessin",
+    "label": "Légende du dessin",
+    "colour": "Couleur du boîtier",
+    "showLabels": "Afficher les noms de broches",
+    "positions": "Positions des broches",
+    "x": "Broche {id}, x (mm)",
+    "y": "Broche {id}, y (mm)",
+    "unplaced": "Pas encore placée",
+    "previewLabel": "Aperçu du dessin de la pièce",
+    "outside": "Ces broches tombent hors du boîtier dessiné : {pins}",
+    "art": {
+      "heading": "Image",
+      "hint": "Un SVG ou un PNG. Sans image, la pièce est dessinée d'après la taille et les broches ci-dessus.",
+      "upload": "Choisir une image",
+      "remove": "Retirer l'image",
+      "license": "Licence de l'image",
+      "stripped": "Retiré de l'image : {what}",
+      "error": {
+        "too-big": "Le fichier est trop volumineux.",
+        "not-xml": "Le fichier n'est pas un SVG valide.",
+        "doctype": "Le SVG contient une déclaration de type de document, ce qui n'est pas autorisé.",
+        "entity": "Le SVG définit des entités, ce qui n'est pas autorisé.",
+        "cdata": "Le SVG contient une section CDATA, ce qui n'est pas autorisé.",
+        "processing-instruction": "Le SVG contient une instruction de traitement, ce qui n'est pas autorisé.",
+        "depth": "Le SVG est imbriqué trop profondément.",
+        "too-many-elements": "Le SVG a trop d'éléments.",
+        "root-not-svg": "Le fichier ne commence pas par un élément svg.",
+        "no-viewbox": "Le SVG n'a pas de viewBox.",
+        "empty": "L'image ne dessine rien.",
+        "png-signature": "Le fichier n'est pas un PNG.",
+        "png-header": "L'en-tête du PNG est endommagé.",
+        "png-too-large": "Le PNG dépasse 2048 sur 2048 pixels.",
+        "png-truncated": "Le fichier PNG est tronqué."
+      }
+    }
+  },
+  "json": {
+    "label": "Descripteur de la pièce en JSON",
+    "hint": "Les changements ici remplacent le formulaire quand vous quittez cet onglet. Corrigez d'abord une erreur de lecture."
+  },
+  "issues": {
+    "heading": "Problèmes",
+    "none": "Aucun problème trouvé.",
+    "count": "{count} à corriger",
+    "sections": {
+      "identity": "Identité",
+      "pins": "Broches",
+      "footprint": "Empreinte",
+      "rest": "Autres"
+    }
+  },
+  "save": {
+    "button": "Enregistrer la pièce",
+    "saving": "Enregistrement",
+    "blocked": "Corrigez {count} problèmes avant d'enregistrer.",
+    "saved": "Enregistrée sous {key}",
+    "version": "Version",
+    "because": "Enregistrée sous {version} parce que {reasons}",
+    "lower": "Utilisez {version} ou plus.",
+    "conflict": "Une autre pièce avec cet id et cette version est déjà enregistrée. Enregistrée : {installed}. La vôtre : {incoming}. Changez la version ou l'id et enregistrez de nouveau.",
+    "full": "Le stockage est plein. Libérez de la place et enregistrez de nouveau.",
+    "failed": "La pièce n'a pas été enregistrée. Réessayez."
+  },
+  "discard": {
+    "title": "Quitter sans enregistrer ?",
+    "body": "Vos changements restent en brouillon dans ce navigateur jusqu'à ce que vous recommenciez.",
+    "confirm": "Quitter",
+    "keep": "Continuer à modifier"
+  }
 }
