@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import type { Bme280Cal } from "./bme280.ts";
 import { compensateH, compensateP, compensateT, parseCalibration } from "./bme280.ts";

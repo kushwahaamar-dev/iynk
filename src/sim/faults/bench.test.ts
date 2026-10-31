@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROWS, matches, simulate } from "../../../scripts/bench-check-sheet.mjs";

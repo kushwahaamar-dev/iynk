@@ -1,6 +1,6 @@
 import { utf8Length } from "../../core/canonical.ts";
 import type { Op } from "../../project/generated/types.ts";
-import { shift } from "../../project/apply/source.ts";
+import { shift } from "../../project/session.ts";
 import type { ProjectPort } from "./ports.ts";
 import type { ProposalRecord, SourceSpan } from "./types.ts";
 

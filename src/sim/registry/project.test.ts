@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import blink from "../../project/samples/uno-blink-d12.project.json" with { type: "json" };
 import type { Project } from "../../project/generated/types.ts";

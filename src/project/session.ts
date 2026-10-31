@@ -9,6 +9,10 @@ import { checkBatch } from "./semantic.ts";
 import { computeTouched } from "./touched.ts";
 import type { DocChange } from "./touched.ts";
 
+// The session is the one door to `apply` (FA-01); callers outside the project module take these from here.
+export type { ApplyOutcome, Author, Reject } from "./apply/index.ts";
+export { shift } from "./apply/source.ts";
+
 /** The retained tail is cut to `KEEP_TAIL` ops once it reaches `COMPACT_AT`, the schema limit. */
 const COMPACT_AT = 1000;
 const KEEP_TAIL = 500;

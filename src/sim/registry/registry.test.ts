@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { allEntries, loadRegistry, RegistryError } from "./entries.ts";
 import { allowedTier, CHECKED_ON_REAL_BOARD, findBanned, inRange } from "./tiers.ts";

@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import type { BusEvent } from "../bus/index.ts";
 import { loadDevice } from "./loader.ts";

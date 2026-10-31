@@ -1,5 +1,5 @@
 import type { Op, Project } from "../../project/generated/types.ts";
-import type { ApplyOutcome, Author } from "../../project/apply/types.ts";
+import type { ApplyOutcome, Author } from "../../project/session.ts";
 import type { CheckPort, ProjectPort, RuleFinding } from "./ports.ts";
 import { emptyDiff, hashDiff, summariseDiff } from "./diffsummary.ts";
 import type { DryRunReport, ProposeOpsArgs, StageReject, Tier } from "./types.ts";

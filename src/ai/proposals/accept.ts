@@ -1,5 +1,5 @@
 import type { Op } from "../../project/generated/types.ts";
-import type { Reject } from "../../project/apply/types.ts";
+import type { Reject } from "../../project/session.ts";
 import { dryRun } from "./dryrun.ts";
 import type { DryRunDeps } from "./dryrun.ts";
 import type { ClockPort, LogPort, ProjectPort, ProposalStore } from "./ports.ts";

@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { buildCsp } from "../lib/csp.ts";
 import { PRESETS, PRESET_HOSTS, PRESET_ORIGINS } from "./ai-presets.ts";

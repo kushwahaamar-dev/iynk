@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { boardPower, mcuPowered, regulatorOut } from "./power-models.ts";
 import type { BoardPowerModel } from "./power-models.ts";

@@ -68,6 +68,9 @@ function moduleOf(file: string): ModuleName {
   throw new Error(`${file} is in no module`);
 }
 
+// The part library is browser glue over storage, packs and fault models (B11): browser code, like the portable carve-out.
+const OUTSIDE_MATRIX = ["src/parts/browser"];
+
 function isExempt(file: string): boolean {
   return /\.(test|testing)\.ts$/.test(file) || inFolder(file, "src/project/testing");
 }
@@ -165,6 +168,7 @@ const FORBIDDEN_PACKAGES = ["react", "react-dom", "next"];
 function checkImport(fromFile: string, spec: string, typeOnly: boolean): string | null {
   const from = moduleOf(fromFile);
   if (!isEnforced(from) || isExempt(fromFile)) return null;
+  const outsideMatrix = OUTSIDE_MATRIX.some((entry) => inFolder(fromFile, entry));
 
   if (isPortable(fromFile)) {
     const forbidden =
@@ -185,6 +189,7 @@ function checkImport(fromFile: string, spec: string, typeOnly: boolean): string 
   const to = moduleOf(resolved);
   if (to === from) return null;
   if (from === "server" && SERVER_SHARED.has(resolved)) return null;
+  if (outsideMatrix) return null;
   if (!ALLOWED[from].has(to)) return `${from} -> ${to} is not allowed by SYSTEM 5.3 ('${spec}')`;
   if (from === "parts" && to === "project" && PARTS_TO_PROJECT_TYPE_ONLY && !typeOnly) {
     return `parts may only import types from project ('${spec}')`;
