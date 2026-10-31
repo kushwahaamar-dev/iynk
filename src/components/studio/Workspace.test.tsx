@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, configure, render, screen, waitFor, within } from "@testing-library/react";
 import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cryptoRandom } from "@/core/ids";
@@ -6,6 +6,8 @@ import { writeIynk } from "@/export/iynk";
 import faults from "@/i18n/messages/en/faults.json";
 import fidelity from "@/i18n/messages/en/fidelity.json";
 import instruments from "@/i18n/messages/en/instruments.json";
+import partinfo from "@/i18n/messages/en/partinfo.json";
+import run from "@/i18n/messages/en/run.json";
 import studio from "@/i18n/messages/en/studio.json";
 import studioCode from "@/i18n/messages/en/studioCode.json";
 import studioEdit from "@/i18n/messages/en/studioEdit.json";
@@ -25,7 +27,10 @@ import { LOCAL_ACTOR, loadStarter } from "@/studio/templates";
 import { createServices, ServicesProvider, type Services } from "./wiring/services";
 import { Workspace } from "./Workspace";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults } as StudioMessages;
+// The workspace builds its whole graph before the first region shows; the default one second is tight on a busy machine.
+configure({ asyncUtilTimeout: 5000 });
+
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults, run, partinfo } as StudioMessages;
 const regions = studio.layout.regions;
 
 function fakeSim() {

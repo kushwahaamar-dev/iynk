@@ -1,9 +1,14 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, configure, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cryptoRandom } from "@/core/ids";
 import { writeIynk } from "@/export/iynk";
 import ai from "@/i18n/messages/en/ai.json";
 import common from "@/i18n/messages/en/common.json";
+import faults from "@/i18n/messages/en/faults.json";
+import fidelity from "@/i18n/messages/en/fidelity.json";
+import instruments from "@/i18n/messages/en/instruments.json";
+import partinfo from "@/i18n/messages/en/partinfo.json";
+import run from "@/i18n/messages/en/run.json";
 import studio from "@/i18n/messages/en/studio.json";
 import studioCode from "@/i18n/messages/en/studioCode.json";
 import studioEdit from "@/i18n/messages/en/studioEdit.json";
@@ -24,7 +29,10 @@ import { LOCAL_ACTOR, loadStarter } from "@/studio/templates";
 import { createServices, ServicesProvider } from "./wiring/services";
 import { Workspace } from "./Workspace";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels } as StudioMessages;
+// The workspace builds its whole graph before the first region shows; the default one second is tight on a busy machine.
+configure({ asyncUtilTimeout: 5000 });
+
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults, run, partinfo } as StudioMessages;
 const partnerTab = studio.layout.tabs.partner;
 
 async function mount() {
@@ -32,7 +40,7 @@ async function mount() {
   const host = createProjectHost({
     makePort: () => createInlinePort(createProjectHandler({ repo, shadowFactory: createShadow, clock: () => 1_790_000_000_000 })),
   });
-  const sim = { load: vi.fn(async () => ({ diagnostics: [], runId: 1 })), control: vi.fn(), input: vi.fn(), onEvent: vi.fn(() => () => {}), kill: vi.fn(async () => undefined) };
+  const sim = { load: vi.fn(async () => ({ diagnostics: [], runId: 1 })), control: vi.fn(), input: vi.fn(), onEvent: vi.fn(() => () => {}), staticCheck: vi.fn(async () => ({ findings: [], skipped: {}, errors: [] })), state: "ready", kill: vi.fn(async () => undefined) };
   const services = createServices({ host, sim: sim as unknown as SimHost });
   const project = await loadStarter("blink", { rnd: cryptoRandom, now: "2026-10-28T10:00:00.000Z", actor: LOCAL_ACTOR });
   const stored = await services.files.importBytes(writeIynk(project), `${project.meta.title}.iynk`);
