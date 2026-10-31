@@ -162,5 +162,43 @@
     "heading": "Used in this project",
     "empty": "No placed part uses it.",
     "instance": "{label} at {version}"
+  },
+  "upgrade": {
+    "button": "Upgrade to {version}",
+    "title": "Upgrade to {version}",
+    "close": "Close",
+    "summary": "{from} to {to}, {bump} change. Placed parts that change: {count}.",
+    "bump": {
+      "major": "Major",
+      "minor": "Minor",
+      "patch": "Patch"
+    },
+    "changes": "Descriptor changes",
+    "noChanges": "No descriptor field differs.",
+    "change": {
+      "added": "Added",
+      "removed": "Removed",
+      "changed": "Changed"
+    },
+    "readByModel": "Read by the model",
+    "pinsRemoved": "Pins removed: {list}",
+    "pinsAdded": "Pins added: {list}",
+    "dropped": "Parameters dropped, their values are lost: {list}",
+    "blocked": {
+      "pins-removed-in-use": "Blocked. These wires end on a pin the new version removes: {list}.",
+      "not-newer": "Blocked. {to} is not newer than {from}."
+    },
+    "golden": {
+      "heading": "Golden trace quantities",
+      "empty": "No golden trace fixtures to compare.",
+      "fixture": "Fixture",
+      "quantity": "Quantity",
+      "before": "At {version}",
+      "after": "At {version}",
+      "missing": "None",
+      "error": "Error"
+    },
+    "apply": "Apply upgrade",
+    "cancel": "Stay on {from}"
   }
 }

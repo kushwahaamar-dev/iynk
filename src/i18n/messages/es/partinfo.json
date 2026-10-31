@@ -162,5 +162,43 @@
     "heading": "Usada en este proyecto",
     "empty": "Ninguna pieza colocada la usa.",
     "instance": "{label} en la versión {version}"
+  },
+  "upgrade": {
+    "button": "Actualizar a {version}",
+    "title": "Actualizar a {version}",
+    "close": "Cerrar",
+    "summary": "{from} a {to}, cambio {bump}. Piezas colocadas que cambian: {count}.",
+    "bump": {
+      "major": "mayor",
+      "minor": "menor",
+      "patch": "de parche"
+    },
+    "changes": "Cambios en el descriptor",
+    "noChanges": "Ningún campo del descriptor es distinto.",
+    "change": {
+      "added": "Añadido",
+      "removed": "Quitado",
+      "changed": "Cambiado"
+    },
+    "readByModel": "Lo lee el modelo",
+    "pinsRemoved": "Pines quitados: {list}",
+    "pinsAdded": "Pines añadidos: {list}",
+    "dropped": "Parámetros descartados, se pierden sus valores: {list}",
+    "blocked": {
+      "pins-removed-in-use": "Bloqueado. Estos cables terminan en un pin que la nueva versión quita: {list}.",
+      "not-newer": "Bloqueado. {to} no es más nueva que {from}."
+    },
+    "golden": {
+      "heading": "Magnitudes de la traza de referencia",
+      "empty": "No hay pruebas de traza de referencia que comparar.",
+      "fixture": "Prueba",
+      "quantity": "Magnitud",
+      "before": "En {version}",
+      "after": "En {version}",
+      "missing": "Ninguna",
+      "error": "Error"
+    },
+    "apply": "Aplicar la actualización",
+    "cancel": "Quedarse en {from}"
   }
 }

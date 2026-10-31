@@ -162,5 +162,43 @@
     "heading": "Utilisée dans ce projet",
     "empty": "Aucune pièce placée ne l’utilise.",
     "instance": "{label} en version {version}"
+  },
+  "upgrade": {
+    "button": "Passer à {version}",
+    "title": "Passer à {version}",
+    "close": "Fermer",
+    "summary": "{from} vers {to}, changement {bump}. Pièces placées qui changent : {count}.",
+    "bump": {
+      "major": "majeur",
+      "minor": "mineur",
+      "patch": "correctif"
+    },
+    "changes": "Changements du descripteur",
+    "noChanges": "Aucun champ du descripteur ne diffère.",
+    "change": {
+      "added": "Ajouté",
+      "removed": "Retiré",
+      "changed": "Modifié"
+    },
+    "readByModel": "Lu par le modèle",
+    "pinsRemoved": "Broches retirées : {list}",
+    "pinsAdded": "Broches ajoutées : {list}",
+    "dropped": "Paramètres abandonnés, leurs valeurs sont perdues : {list}",
+    "blocked": {
+      "pins-removed-in-use": "Bloqué. Ces fils aboutissent à une broche que la nouvelle version retire : {list}.",
+      "not-newer": "Bloqué. {to} n'est pas plus récente que {from}."
+    },
+    "golden": {
+      "heading": "Grandeurs des traces de référence",
+      "empty": "Aucune trace de référence à comparer.",
+      "fixture": "Jeu d'essai",
+      "quantity": "Grandeur",
+      "before": "En {version}",
+      "after": "En {version}",
+      "missing": "Aucune",
+      "error": "Erreur"
+    },
+    "apply": "Appliquer la mise à niveau",
+    "cancel": "Rester en {from}"
   }
 }

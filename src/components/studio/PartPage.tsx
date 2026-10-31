@@ -9,6 +9,7 @@ import type { Quantity, Unit } from "@/parts/generated/types";
 import type { LayerFact, PartFacts, RatingFact, SlotFact } from "@/parts/facts";
 import { ELEMENT_EQUATIONS } from "@/parts/facts";
 import type { ComponentDependency } from "@/project/generated/types";
+import { versionCompare } from "@/parts/descriptor";
 import { routeHash } from "@/studio/router";
 
 type PartInfoMessages = Messages["partinfo"];
@@ -205,11 +206,13 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export function PartPage({ facts, messages, lang, onOpenEditor, usage }: PartPageProps) {
+export function PartPage({ facts, messages, lang, onOpenEditor, usage, onUpgrade }: PartPageProps) {
   const t = createTranslator(lang, messages, `${lang}/partinfo`);
   const yesNo = (flag: boolean) => (flag ? t("labels.yes") : t("labels.no"));
   const { labels } = facts;
   const others = facts.versions.filter((v) => v !== facts.version);
+  const pinnedVersions = usage?.pinned.filter((dep) => dep.ref === facts.id).map((dep) => dep.version) ?? [];
+  const upgradable = onUpgrade ? others.filter((v) => pinnedVersions.some((pinned) => versionCompare(v, pinned) > 0)) : [];
 
   return (
     <article className="mt-8 max-w-5xl" aria-labelledby="partinfo-name">
@@ -377,6 +380,17 @@ export function PartPage({ facts, messages, lang, onOpenEditor, usage }: PartPag
             ))}
           </ul>
         )}
+        {upgradable.length > 0 ? (
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {upgradable.map((version) => (
+              <li key={version}>
+                <Button variant="primary" size="sm" onClick={() => onUpgrade?.(version)}>
+                  {t("upgrade.button", { version })}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </Section>
 
       {usage ? (

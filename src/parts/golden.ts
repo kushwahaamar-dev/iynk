@@ -281,3 +281,42 @@ export function runFixture(def: Descriptor, f: GoldenFixture, env: ModelEnv): Go
   out.ok = out.failures.length === 0;
   return out;
 }
+
+export interface GoldenDelta {
+  fixtureId: string;
+  quantity: string;
+  before: number | string | null;
+  after: number | string | null;
+  changed: boolean;
+}
+
+const ERROR_QUANTITY = "error";
+
+function goldenIds(def: Descriptor, fixtures: ReadonlyMap<string, GoldenFixture>): string[] {
+  return (def.simulation.tests ?? []).filter((t) => t.kind === "golden-trace" && fixtures.has(t.id)).map((t) => t.id);
+}
+
+function measured(def: Descriptor | undefined, f: GoldenFixture, env: ModelEnv): Record<string, number | string> | null {
+  if (def === undefined) return null;
+  const result = runFixture(def, f, env);
+  if (Object.keys(result.got).length === 0 && result.failures.length > 0) return { [ERROR_QUANTITY]: result.failures.join("; ") };
+  return result.got;
+}
+
+/** Runs every golden-trace fixture of both versions and lists each quantity the fixtures expect, old against new. */
+export async function goldenDelta(from: Descriptor, to: Descriptor, fixtures: ReadonlyMap<string, GoldenFixture>, env: ModelEnv): Promise<GoldenDelta[]> {
+  const before = new Set(goldenIds(from, fixtures));
+  const after = new Set(goldenIds(to, fixtures));
+  const rows: GoldenDelta[] = [];
+  for (const fixtureId of new Set([...before, ...after])) {
+    const f = fixtures.get(fixtureId)!;
+    const old = measured(before.has(fixtureId) ? from : undefined, f, env);
+    const next = measured(after.has(fixtureId) ? to : undefined, f, env);
+    for (const quantity of new Set([...Object.keys(old ?? {}), ...Object.keys(next ?? {})])) {
+      const b = old?.[quantity] ?? null;
+      const a = next?.[quantity] ?? null;
+      rows.push({ fixtureId, quantity, before: b, after: a, changed: quantity === ERROR_QUANTITY || !Object.is(a, b) });
+    }
+  }
+  return rows;
+}

@@ -162,5 +162,43 @@
     "heading": "在此项目中使用",
     "empty": "没有已放置的零件使用它。",
     "instance": "{label}，版本 {version}"
+  },
+  "upgrade": {
+    "button": "升级到 {version}",
+    "title": "升级到 {version}",
+    "close": "关闭",
+    "summary": "{from} 到 {to}，{bump}变更。会变化的已放置部件：{count}。",
+    "bump": {
+      "major": "重大",
+      "minor": "中等",
+      "patch": "小幅"
+    },
+    "changes": "描述文件的变化",
+    "noChanges": "描述文件没有任何字段不同。",
+    "change": {
+      "added": "新增",
+      "removed": "移除",
+      "changed": "修改"
+    },
+    "readByModel": "模型会读取",
+    "pinsRemoved": "移除的引脚：{list}",
+    "pinsAdded": "新增的引脚：{list}",
+    "dropped": "被丢弃的参数，其值会丢失：{list}",
+    "blocked": {
+      "pins-removed-in-use": "已阻止。这些连线接在新版本移除的引脚上：{list}。",
+      "not-newer": "已阻止。{to} 不比 {from} 新。"
+    },
+    "golden": {
+      "heading": "基准轨迹的量",
+      "empty": "没有可比较的基准轨迹用例。",
+      "fixture": "用例",
+      "quantity": "量",
+      "before": "在 {version}",
+      "after": "在 {version}",
+      "missing": "无",
+      "error": "错误"
+    },
+    "apply": "应用升级",
+    "cancel": "保持 {from}"
   }
 }

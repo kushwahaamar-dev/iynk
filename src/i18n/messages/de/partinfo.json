@@ -162,5 +162,43 @@
     "heading": "In diesem Projekt verwendet",
     "empty": "Kein platziertes Teil verwendet es.",
     "instance": "{label} in Version {version}"
+  },
+  "upgrade": {
+    "button": "Auf {version} aktualisieren",
+    "title": "Auf {version} aktualisieren",
+    "close": "Schließen",
+    "summary": "{from} auf {to}, {bump} Änderung. Betroffene Teile im Projekt: {count}.",
+    "bump": {
+      "major": "Große",
+      "minor": "Mittlere",
+      "patch": "Kleine"
+    },
+    "changes": "Änderungen an der Beschreibung",
+    "noChanges": "Kein Feld der Beschreibung unterscheidet sich.",
+    "change": {
+      "added": "Hinzugefügt",
+      "removed": "Entfernt",
+      "changed": "Geändert"
+    },
+    "readByModel": "Vom Modell gelesen",
+    "pinsRemoved": "Entfernte Pins: {list}",
+    "pinsAdded": "Neue Pins: {list}",
+    "dropped": "Entfallene Parameter, ihre Werte gehen verloren: {list}",
+    "blocked": {
+      "pins-removed-in-use": "Gesperrt. Diese Leitungen enden an einem Pin, den die neue Version entfernt: {list}.",
+      "not-newer": "Gesperrt. {to} ist nicht neuer als {from}."
+    },
+    "golden": {
+      "heading": "Größen der Referenzläufe",
+      "empty": "Keine Referenzläufe zum Vergleichen.",
+      "fixture": "Fixture",
+      "quantity": "Größe",
+      "before": "Bei {version}",
+      "after": "Bei {version}",
+      "missing": "Keine",
+      "error": "Fehler"
+    },
+    "apply": "Aktualisierung anwenden",
+    "cancel": "Bei {from} bleiben"
   }
 }
