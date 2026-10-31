@@ -7,8 +7,7 @@ import { solve } from './solve.ts';
 import { createStateTracker, FAILURE_IDS, roundSig } from './states.ts';
 import type { Element } from './types.ts';
 
-const data = import.meta.glob('../registry/data/*.json', { eager: true, import: 'default' });
-const reg = loadRegistry(Object.values(data));
+const reg = loadRegistry();
 const pin = (a: number): Element => ({ id: 'pin:uno:D13', kind: 'PIN', a, level: 1, vHighVolts: 5, rOutOhms: PWL_COMPAT.pinOhms, maxAmps: 0.04 });
 const led = (a: number): Element => ({ id: 'LED1', kind: 'D', a, b: 0, modelId: 'model:led.pwl@1', vf: 2, rdOhms: 0.5, maxAmps: 0.02 });
 const resistor = (a: number, b: number, ohms: number): Element => ({ id: 'R1', kind: 'R', a, b, ohms });

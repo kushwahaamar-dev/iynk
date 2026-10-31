@@ -77,7 +77,7 @@
   "performance": [],
   "labels": {
     "chip": "fidelity.tier.T1",
-    "summary": "fidelity.summary"
+    "summary": "fidelity.summary.assumed"
   },
   "status": "active",
   "supersedes": "rule:usb-sag@1"

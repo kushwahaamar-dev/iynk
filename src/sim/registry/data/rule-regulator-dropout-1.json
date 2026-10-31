@@ -55,7 +55,7 @@
   "performance": [],
   "labels": {
     "chip": "fidelity.tier.T0",
-    "summary": "fidelity.summary"
+    "summary": "fidelity.summary.assumed"
   },
   "status": "active"
 }

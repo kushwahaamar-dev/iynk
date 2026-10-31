@@ -1,0 +1,45 @@
+{
+  "id": "bus:uart@1",
+  "version": "1.0.0",
+  "kind": "bus",
+  "title": "UART link with baud check",
+  "tier": "T0",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "bytes",
+      "text": "Byte time from the baud rate and frame format 8N1, 8E1 or 8N2"
+    },
+    {
+      "id": "baud",
+      "text": "A device whose baud differs by more than 3 percent receives garbled bytes and an event"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "waveform",
+      "text": "Start and stop bit edges, framing errors and parity errors"
+    },
+    {
+      "id": "flow",
+      "text": "Hardware flow control"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test in the repository exercises the link yet"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active",
+  "supersedes": "bus:uart.unmodelled@1"
+}

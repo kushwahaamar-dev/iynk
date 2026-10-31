@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadRegistry, RegistryError } from "./entries.ts";
+import { allEntries, loadRegistry, RegistryError } from "./entries.ts";
 import { allowedTier, CHECKED_ON_REAL_BOARD, findBanned, inRange } from "./tiers.ts";
 import type { FidelityEntry } from "./types.ts";
 
@@ -10,8 +10,10 @@ const seed = (id: string): FidelityEntry => {
 };
 
 describe("fidelity registry", () => {
-  it("loads the four seed entries", () => {
-    expect(loadRegistry().all().map((e) => e.id)).toEqual(["engine:mna-dc-pwl@1.0.0", "model:led.pwl@1", "runtime:arduino-subset@1", "flight-game@1"]);
+  it("loads every data row and every derived row", () => {
+    const ids = loadRegistry().all().map((e) => e.id);
+    expect(ids).toEqual(allEntries().map((e) => e.id));
+    expect(ids).toEqual(expect.arrayContaining(["engine:mna-dc-pwl@1.0.0", "model:led.pwl@1", "runtime:arduino-subset@1", "flight-game@1"]));
   });
 
   it("[SA-17] refuses T2 without an oracle or analytic record", () => {
