@@ -65,6 +65,13 @@ export interface Repository {
     list(limit: number): Promise<unknown[]>;
     clear(): Promise<void>;
   };
+  /** Plain keyed access to one store, for stores that have no richer API. */
+  getStore(name: StoreName): {
+    get(key: string): Promise<unknown>;
+    put(key: string, value: unknown): Promise<void>;
+    delete(key: string): Promise<void>;
+    entries(): Promise<Array<[string, unknown]>>;
+  };
   setFileCopy(id: string, has: boolean): Promise<void>;
   /** Used by wipe and Delete AI data. */
   clearStores(names: readonly StoreName[]): Promise<void>;

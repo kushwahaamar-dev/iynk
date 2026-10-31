@@ -243,6 +243,13 @@ export function createRepository(backend: Backend): Repository {
       },
     },
 
+    getStore: (name) => ({
+      get: (key) => backend.transact([name], "readonly", (tx) => tx.get(name, key)),
+      put: (key, value) => backend.transact([name], "readwrite", (tx) => tx.put(name, key, value)),
+      delete: (key) => backend.transact([name], "readwrite", (tx) => tx.delete(name, key)),
+      entries: () => backend.transact([name], "readonly", (tx) => tx.entries(name, "")),
+    }),
+
     async setFileCopy(id, has) {
       await backend.transact(["index"], "readwrite", async (tx) => {
         const row = (await tx.get("index", id)) as IndexRow | undefined;
