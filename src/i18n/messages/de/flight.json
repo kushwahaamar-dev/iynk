@@ -324,5 +324,19 @@
     "shareText": "iynk-Drohnen-Challenge des Tages: {craft} auf {course}.",
     "shareBeat": "iynk-Drohnen-Challenge des Tages: {craft} auf {course}. Kannst du {time} s schlagen?",
     "board": "{course}, Challenge vom {date}"
+  },
+  "board": {
+    "title": "Buddy-Rangliste",
+    "optIn": "Mich in die Rangliste aufnehmen",
+    "optInHint": "Deine Bestzeiten sehen nur deine Buddys.",
+    "empty": "Noch keine Zeiten. Flieg eine Runde und sei der Erste.",
+    "needsServer": "Die Rangliste braucht einen Server, und dieses System hat keinen",
+    "signedOut": "Melde dich an, um die Rangliste zu sehen",
+    "you": "Du",
+    "rank": "Platz {rank}",
+    "bestOnly": "Nur die Bestzeit",
+    "claimed": "Deine Zeit steht in der Rangliste",
+    "remove": "Mich aus der Rangliste nehmen",
+    "retry": "Nochmal versuchen"
   }
 }

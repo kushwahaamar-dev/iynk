@@ -252,5 +252,135 @@
       "hint": "Los atajos de una sola tecla se pueden desactivar en los ajustes de vista.",
       "close": "Cerrar"
     }
+  },
+  "rooms": {
+    "banner": {
+      "live": "En directo",
+      "connecting": "Entrando en la sala",
+      "syncing": "Recibiendo el banco del anfitrión",
+      "reconnecting": "Conexión perdida. Reconectando",
+      "offlineKept": "La sala está sin conexión, tus cambios se conservan",
+      "queueFull": "Hay {count} cambios en espera. La edición de la sala está en pausa; tu copia local está a salvo.",
+      "ended": "La sala ha terminado",
+      "kicked": "El anfitrión te ha sacado de la sala",
+      "closed": "La sala está cerrada",
+      "readOnlyShare": "Estás viendo un enlace compartido. Puedes leerlo, pero no cambiarlo.",
+      "readOnlyRole": "Con tu rol en esta sala puedes leer, pero no cambiar el banco",
+      "unsupported": "Este navegador no puede abrir salas",
+      "serverRestarted": "El servidor se reinició. Volviendo a entrar en la sala",
+      "behind": "Poniéndote al día con la sala"
+    },
+    "members": {
+      "title": "Personas aquí",
+      "count": {
+        "one": "{count} persona aquí",
+        "other": "{count} personas aquí"
+      },
+      "you": "Tú",
+      "host": "Anfitrión",
+      "holder": "Tiene el teclado",
+      "online": "Conectado",
+      "offline": "Sin conexión",
+      "spectator": "Mirando",
+      "role": {
+        "owner": "Propietario",
+        "editor": "Editor",
+        "commenter": "Comentarista",
+        "viewer": "Lector"
+      },
+      "appVersion": "Versión de la app",
+      "cursorOf": "Puntero de {name}"
+    },
+    "baton": {
+      "youHold": "Tienes el teclado",
+      "heldBy": "{name} tiene el teclado",
+      "free": "El teclado está libre",
+      "request": "Pedir el teclado",
+      "grant": "Dar el teclado",
+      "take": "Tomar el teclado",
+      "release": "Devolver el teclado",
+      "asked": "Has pedido el teclado",
+      "denied": "El anfitrión dijo que ahora no",
+      "freeIn": "{name} se fue. El teclado queda libre en {seconds} s."
+    },
+    "host": {
+      "kick": "Sacar",
+      "kickConfirm": "¿Sacar a {name} de la sala?",
+      "mute": "Silenciar",
+      "unmute": "Quitar el silencio",
+      "lock": "Bloquear la sala",
+      "unlock": "Desbloquear la sala",
+      "close": "Cerrar la sala",
+      "closeConfirm": "¿Cerrar la sala para todos?",
+      "pass": "Pasar la sala a {name}",
+      "claim": "Asumir como anfitrión",
+      "settings": "Ajustes de la sala",
+      "runControl": "Quién ejecuta el código",
+      "spectatorCursors": "Mostrar los punteros de quienes miran"
+    },
+    "invite": {
+      "open": "Invitar",
+      "titleFor": "Invitar a {name}",
+      "hint": "Envía un enlace o elige a un amigo. La sala admite 8 personas.",
+      "roleEditor": "Puede editar",
+      "roleViewer": "Puede mirar",
+      "uses": "Usos: {count}",
+      "expires": "Caduca {when}",
+      "revoke": "Revocar la invitación",
+      "sent": "Invitación enviada",
+      "join": "Unirse",
+      "decline": "Rechazar",
+      "expired": "Esta invitación no funciona",
+      "workTogether": "Trabajar juntos",
+      "pickBuddy": "Elegir un amigo",
+      "noBuddies": "Aún no tienes amigos"
+    },
+    "chat": {
+      "title": "Chat",
+      "placeholder": "Escribe un mensaje",
+      "send": "Enviar",
+      "rateLimited": "Escribes demasiado rápido. Espera un momento.",
+      "muted": "El anfitrión te ha silenciado",
+      "system": "Sala"
+    },
+    "rebase": {
+      "title": "Mientras estabas sin conexión",
+      "dropped": "{who} borró {what} mientras estabas sin conexión, así que tu cambio en {what} se descartó",
+      "droppedGeneric": "Alguien borró una pieza mientras estabas sin conexión, así que tu cambio en ella se descartó",
+      "keepCopy": "Guardar una copia de mi versión",
+      "copyKept": "Se guardó una copia de tu versión en tus proyectos",
+      "none": "No se descartó ninguno de tus cambios"
+    },
+    "fork": {
+      "closedTitle": "Esta sala se ha cerrado",
+      "keepCopy": "Guardar una copia",
+      "kept": "Copia guardada",
+      "ffNote": "Tu copia sigue desde el último estado de la sala",
+      "separateCopy": "Esta es una copia aparte"
+    },
+    "share": {
+      "title": "Compartir este proyecto",
+      "audienceLink": "Cualquiera con el enlace",
+      "audienceBuddies": "Solo mis amigos",
+      "expiry30": "Caduca en 30 días",
+      "expiryNone": "No caduca",
+      "expiryDays": "Caduca en {count} días",
+      "linkWarning": "Cualquiera con el enlace puede ver este proyecto. Compártelo solo con gente de confianza.",
+      "create": "Crear un enlace",
+      "copy": "Copiar el enlace",
+      "revoke": "Dejar de compartir",
+      "needsServer": "Compartir necesita un servidor y este despliegue no tiene ninguno",
+      "makeCopy": "Hacer mi propia copia",
+      "copyDone": "Copia hecha",
+      "withdrawn": "El propietario dejó de compartir esto",
+      "tooLarge": "Este proyecto es demasiado grande para compartirlo",
+      "secretWarning": "Este proyecto parece contener una clave o contraseña. Quítala antes de compartir.",
+      "liveLimit": "Ya tienes {count} enlaces activos. Detén uno para crear otro.",
+      "opened": "Abierto {count} veces"
+    },
+    "unsupported": {
+      "engine": "Este navegador no puede iniciar sesión en las salas. Prueba una versión actual de Chrome, Firefox, Safari o Edge.",
+      "privateWindow": "Las salas necesitan una ventana normal, no una privada"
+    }
   }
 }

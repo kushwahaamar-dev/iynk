@@ -252,5 +252,135 @@
       "hint": "Single key shortcuts can be turned off in the view settings.",
       "close": "Close"
     }
+  },
+  "rooms": {
+    "banner": {
+      "live": "Live",
+      "connecting": "Joining the room",
+      "syncing": "Getting the bench from the host",
+      "reconnecting": "Connection lost. Reconnecting",
+      "offlineKept": "Room is offline, your changes are kept",
+      "queueFull": "{count} changes are waiting. Room editing is paused; your local copy is safe.",
+      "ended": "The room has ended",
+      "kicked": "The host removed you from the room",
+      "closed": "The room is closed",
+      "readOnlyShare": "You are looking at a shared link. You can read it but not change it.",
+      "readOnlyRole": "Your role in this room can read but not change the bench",
+      "unsupported": "This browser cannot open rooms",
+      "serverRestarted": "The server restarted. Rejoining the room",
+      "behind": "Catching up with the room"
+    },
+    "members": {
+      "title": "People here",
+      "count": {
+        "one": "{count} person here",
+        "other": "{count} people here"
+      },
+      "you": "You",
+      "host": "Host",
+      "holder": "Has the keyboard",
+      "online": "Online",
+      "offline": "Offline",
+      "spectator": "Watching",
+      "role": {
+        "owner": "Owner",
+        "editor": "Editor",
+        "commenter": "Commenter",
+        "viewer": "Viewer"
+      },
+      "appVersion": "App version",
+      "cursorOf": "{name}'s pointer"
+    },
+    "baton": {
+      "youHold": "You have the keyboard",
+      "heldBy": "{name} has the keyboard",
+      "free": "The keyboard is free",
+      "request": "Ask for the keyboard",
+      "grant": "Give the keyboard",
+      "take": "Take the keyboard",
+      "release": "Give the keyboard back",
+      "asked": "You asked for the keyboard",
+      "denied": "The host said not now",
+      "freeIn": "{name} left. The keyboard is free in {seconds} s."
+    },
+    "host": {
+      "kick": "Remove",
+      "kickConfirm": "Remove {name} from the room?",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "lock": "Lock the room",
+      "unlock": "Unlock the room",
+      "close": "Close the room",
+      "closeConfirm": "Close the room for everyone?",
+      "pass": "Hand the room to {name}",
+      "claim": "Take over as host",
+      "settings": "Room settings",
+      "runControl": "Who runs the code",
+      "spectatorCursors": "Show watchers' pointers"
+    },
+    "invite": {
+      "open": "Invite",
+      "titleFor": "Invite {name}",
+      "hint": "Send a link or pick a buddy. The room holds 8 people.",
+      "roleEditor": "Can edit",
+      "roleViewer": "Can watch",
+      "uses": "Uses: {count}",
+      "expires": "Expires {when}",
+      "revoke": "Revoke the invite",
+      "sent": "Invite sent",
+      "join": "Join",
+      "decline": "Decline",
+      "expired": "This invite does not work",
+      "workTogether": "Work together",
+      "pickBuddy": "Pick a buddy",
+      "noBuddies": "You have no buddies yet"
+    },
+    "chat": {
+      "title": "Chat",
+      "placeholder": "Write a message",
+      "send": "Send",
+      "rateLimited": "You are sending too fast. Wait a moment.",
+      "muted": "The host muted you",
+      "system": "Room"
+    },
+    "rebase": {
+      "title": "While you were offline",
+      "dropped": "{who} deleted {what} while you were offline, so your change to {what} was dropped",
+      "droppedGeneric": "Someone deleted a part while you were offline, so your change to it was dropped",
+      "keepCopy": "Keep a copy of my version",
+      "copyKept": "A copy of your version is saved in your projects",
+      "none": "None of your changes were dropped"
+    },
+    "fork": {
+      "closedTitle": "This room has closed",
+      "keepCopy": "Keep a copy",
+      "kept": "Copy saved",
+      "ffNote": "Your copy continues from the room's last state",
+      "separateCopy": "This is a separate copy"
+    },
+    "share": {
+      "title": "Share this project",
+      "audienceLink": "Anyone with the link",
+      "audienceBuddies": "Only my buddies",
+      "expiry30": "Expires in 30 days",
+      "expiryNone": "Never expires",
+      "expiryDays": "Expires in {count} days",
+      "linkWarning": "Anyone with the link can see this project. Share it only with people you trust.",
+      "create": "Make a link",
+      "copy": "Copy the link",
+      "revoke": "Stop sharing",
+      "needsServer": "Sharing needs a server, and this deployment has none",
+      "makeCopy": "Make my own copy",
+      "copyDone": "Copy made",
+      "withdrawn": "The owner stopped sharing this",
+      "tooLarge": "This project is too big to share",
+      "secretWarning": "This project seems to contain a key or password. Remove it before sharing.",
+      "liveLimit": "You already have {count} live links. Stop one to make another.",
+      "opened": "Opened {count} times"
+    },
+    "unsupported": {
+      "engine": "This browser cannot sign in to rooms. Try a current version of Chrome, Firefox, Safari or Edge.",
+      "privateWindow": "Rooms need a normal window, not a private one"
+    }
   }
 }

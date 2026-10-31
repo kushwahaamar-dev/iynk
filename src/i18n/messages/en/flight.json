@@ -324,5 +324,19 @@
     "shareText": "iynk daily drone challenge: {craft} on {course}.",
     "shareBeat": "iynk daily drone challenge: {craft} on {course}. Can you beat {time} s?",
     "board": "{course}, challenge of {date}"
+  },
+  "board": {
+    "title": "Buddies board",
+    "optIn": "Show me on the board",
+    "optInHint": "Your best times are shared with your buddies only.",
+    "empty": "No times yet. Fly a lap to be the first.",
+    "needsServer": "The board needs a server, and this deployment has none",
+    "signedOut": "Sign in to see the board",
+    "you": "You",
+    "rank": "Place {rank}",
+    "bestOnly": "Best time only",
+    "claimed": "Your time is on the board",
+    "remove": "Take me off the board",
+    "retry": "Try again"
   }
 }

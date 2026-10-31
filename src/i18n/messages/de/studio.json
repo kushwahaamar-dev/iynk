@@ -252,5 +252,135 @@
       "hint": "Tastenkürzel mit einer einzelnen Taste lassen sich in den Ansichtseinstellungen ausschalten.",
       "close": "Schließen"
     }
+  },
+  "rooms": {
+    "banner": {
+      "live": "Live",
+      "connecting": "Raum wird betreten",
+      "syncing": "Der Aufbau kommt vom Host",
+      "reconnecting": "Verbindung verloren. Verbinde neu",
+      "offlineKept": "Der Raum ist offline, deine Änderungen bleiben erhalten",
+      "queueFull": "{count} Änderungen warten. Das Bearbeiten im Raum ist pausiert; deine lokale Kopie ist sicher.",
+      "ended": "Der Raum ist beendet",
+      "kicked": "Der Host hat dich aus dem Raum entfernt",
+      "closed": "Der Raum ist geschlossen",
+      "readOnlyShare": "Du siehst einen geteilten Link. Du kannst ihn lesen, aber nicht ändern.",
+      "readOnlyRole": "Mit deiner Rolle in diesem Raum kannst du lesen, aber nichts ändern",
+      "unsupported": "Dieser Browser kann keine Räume öffnen",
+      "serverRestarted": "Der Server wurde neu gestartet. Du trittst dem Raum erneut bei",
+      "behind": "Du holst den Raum ein"
+    },
+    "members": {
+      "title": "Anwesende",
+      "count": {
+        "one": "{count} Person hier",
+        "other": "{count} Personen hier"
+      },
+      "you": "Du",
+      "host": "Host",
+      "holder": "Hat die Tastatur",
+      "online": "Online",
+      "offline": "Offline",
+      "spectator": "Schaut zu",
+      "role": {
+        "owner": "Besitzer",
+        "editor": "Bearbeiter",
+        "commenter": "Kommentator",
+        "viewer": "Betrachter"
+      },
+      "appVersion": "App-Version",
+      "cursorOf": "Zeiger von {name}"
+    },
+    "baton": {
+      "youHold": "Du hast die Tastatur",
+      "heldBy": "{name} hat die Tastatur",
+      "free": "Die Tastatur ist frei",
+      "request": "Tastatur anfragen",
+      "grant": "Tastatur abgeben",
+      "take": "Tastatur übernehmen",
+      "release": "Tastatur zurückgeben",
+      "asked": "Du hast die Tastatur angefragt",
+      "denied": "Der Host hat gerade abgelehnt",
+      "freeIn": "{name} ist gegangen. Die Tastatur ist in {seconds} s frei."
+    },
+    "host": {
+      "kick": "Entfernen",
+      "kickConfirm": "{name} aus dem Raum entfernen?",
+      "mute": "Stummschalten",
+      "unmute": "Stummschaltung aufheben",
+      "lock": "Raum sperren",
+      "unlock": "Raum entsperren",
+      "close": "Raum schließen",
+      "closeConfirm": "Den Raum für alle schließen?",
+      "pass": "Raum an {name} übergeben",
+      "claim": "Als Host übernehmen",
+      "settings": "Raumeinstellungen",
+      "runControl": "Wer den Code ausführt",
+      "spectatorCursors": "Zeiger der Zuschauer zeigen"
+    },
+    "invite": {
+      "open": "Einladen",
+      "titleFor": "{name} einladen",
+      "hint": "Sende einen Link oder wähle einen Buddy. Der Raum fasst 8 Personen.",
+      "roleEditor": "Darf bearbeiten",
+      "roleViewer": "Darf zuschauen",
+      "uses": "Nutzungen: {count}",
+      "expires": "Läuft {when} ab",
+      "revoke": "Einladung widerrufen",
+      "sent": "Einladung gesendet",
+      "join": "Beitreten",
+      "decline": "Ablehnen",
+      "expired": "Diese Einladung funktioniert nicht",
+      "workTogether": "Gemeinsam bauen",
+      "pickBuddy": "Buddy auswählen",
+      "noBuddies": "Du hast noch keine Buddys"
+    },
+    "chat": {
+      "title": "Chat",
+      "placeholder": "Nachricht schreiben",
+      "send": "Senden",
+      "rateLimited": "Du sendest zu schnell. Warte kurz.",
+      "muted": "Der Host hat dich stummgeschaltet",
+      "system": "Raum"
+    },
+    "rebase": {
+      "title": "Während du offline warst",
+      "dropped": "{who} hat {what} gelöscht, während du offline warst. Deine Änderung an {what} wurde deshalb verworfen",
+      "droppedGeneric": "Jemand hat ein Teil gelöscht, während du offline warst. Deine Änderung daran wurde deshalb verworfen",
+      "keepCopy": "Kopie meiner Version behalten",
+      "copyKept": "Eine Kopie deiner Version liegt in deinen Projekten",
+      "none": "Keine deiner Änderungen wurde verworfen"
+    },
+    "fork": {
+      "closedTitle": "Dieser Raum ist geschlossen",
+      "keepCopy": "Kopie behalten",
+      "kept": "Kopie gespeichert",
+      "ffNote": "Deine Kopie setzt beim letzten Stand des Raums an",
+      "separateCopy": "Das ist eine eigene Kopie"
+    },
+    "share": {
+      "title": "Dieses Projekt teilen",
+      "audienceLink": "Alle mit dem Link",
+      "audienceBuddies": "Nur meine Buddys",
+      "expiry30": "Läuft in 30 Tagen ab",
+      "expiryNone": "Läuft nie ab",
+      "expiryDays": "Läuft in {count} Tagen ab",
+      "linkWarning": "Alle mit dem Link können dieses Projekt sehen. Teile es nur mit Menschen, denen du vertraust.",
+      "create": "Link erstellen",
+      "copy": "Link kopieren",
+      "revoke": "Teilen beenden",
+      "needsServer": "Teilen braucht einen Server, und dieses System hat keinen",
+      "makeCopy": "Eigene Kopie anlegen",
+      "copyDone": "Kopie angelegt",
+      "withdrawn": "Der Besitzer teilt das nicht mehr",
+      "tooLarge": "Dieses Projekt ist zu groß zum Teilen",
+      "secretWarning": "Dieses Projekt enthält vermutlich einen Schlüssel oder ein Passwort. Entferne es vor dem Teilen.",
+      "liveLimit": "Du hast schon {count} aktive Links. Beende einen, um einen neuen zu erstellen.",
+      "opened": "{count}-mal geöffnet"
+    },
+    "unsupported": {
+      "engine": "Dieser Browser kann sich nicht für Räume anmelden. Nimm eine aktuelle Version von Chrome, Firefox, Safari oder Edge.",
+      "privateWindow": "Räume brauchen ein normales Fenster, kein privates"
+    }
   }
 }

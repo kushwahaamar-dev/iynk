@@ -324,5 +324,19 @@
     "shareText": "Reto diario de drones de iynk: {craft} en {course}.",
     "shareBeat": "Reto diario de drones de iynk: {craft} en {course}. ¿Puedes bajar de {time} s?",
     "board": "{course}, reto del {date}"
+  },
+  "board": {
+    "title": "Tabla de amigos",
+    "optIn": "Mostrarme en la tabla",
+    "optInHint": "Tus mejores tiempos solo los ven tus amigos.",
+    "empty": "Aún no hay tiempos. Vuela una vuelta y sé el primero.",
+    "needsServer": "La tabla necesita un servidor y este despliegue no tiene ninguno",
+    "signedOut": "Inicia sesión para ver la tabla",
+    "you": "Tú",
+    "rank": "Puesto {rank}",
+    "bestOnly": "Solo el mejor tiempo",
+    "claimed": "Tu tiempo está en la tabla",
+    "remove": "Quitarme de la tabla",
+    "retry": "Reintentar"
   }
 }

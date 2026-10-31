@@ -324,5 +324,19 @@
     "shareText": "iynk 每日无人机挑战：{craft}，赛道 {course}。",
     "shareBeat": "iynk 每日无人机挑战：{craft}，赛道 {course}。你能打败 {time} 秒吗？",
     "board": "{course}，{date} 的挑战"
+  },
+  "board": {
+    "title": "好友榜",
+    "optIn": "让我上榜",
+    "optInHint": "你的最好成绩只有你的好友能看到。",
+    "empty": "还没有成绩。飞一圈，做第一名。",
+    "needsServer": "榜单需要服务器，而此部署没有服务器",
+    "signedOut": "登录后查看榜单",
+    "you": "你",
+    "rank": "第 {rank} 名",
+    "bestOnly": "只显示最好成绩",
+    "claimed": "你的成绩已上榜",
+    "remove": "把我从榜上移除",
+    "retry": "重试"
   }
 }

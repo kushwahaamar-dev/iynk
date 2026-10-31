@@ -324,5 +324,19 @@
     "shareText": "Défi drone du jour iynk : {craft} sur {course}.",
     "shareBeat": "Défi drone du jour iynk : {craft} sur {course}. Saurez-vous battre {time} s ?",
     "board": "{course}, défi du {date}"
+  },
+  "board": {
+    "title": "Classement des amis",
+    "optIn": "M'afficher dans le classement",
+    "optInHint": "Vos meilleurs temps ne sont vus que par vos amis.",
+    "empty": "Aucun temps pour l'instant. Volez un tour pour être le premier.",
+    "needsServer": "Le classement demande un serveur, et ce déploiement n'en a pas",
+    "signedOut": "Connectez-vous pour voir le classement",
+    "you": "Vous",
+    "rank": "Place {rank}",
+    "bestOnly": "Meilleur temps seulement",
+    "claimed": "Votre temps est dans le classement",
+    "remove": "Me retirer du classement",
+    "retry": "Réessayer"
   }
 }

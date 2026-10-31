@@ -252,5 +252,135 @@
       "hint": "Les raccourcis à une seule touche se désactivent dans les réglages d'affichage.",
       "close": "Fermer"
     }
+  },
+  "rooms": {
+    "banner": {
+      "live": "En direct",
+      "connecting": "Connexion à la salle",
+      "syncing": "Récupération du banc auprès de l'hôte",
+      "reconnecting": "Connexion perdue. Reconnexion",
+      "offlineKept": "La salle est hors ligne, vos modifications sont conservées",
+      "queueFull": "{count} modifications sont en attente. La modification de la salle est en pause ; votre copie locale est à l'abri.",
+      "ended": "La salle est terminée",
+      "kicked": "L'hôte vous a retiré de la salle",
+      "closed": "La salle est fermée",
+      "readOnlyShare": "Vous regardez un lien partagé. Vous pouvez le lire, pas le modifier.",
+      "readOnlyRole": "Votre rôle dans cette salle permet de lire, pas de modifier le banc",
+      "unsupported": "Ce navigateur ne peut pas ouvrir de salles",
+      "serverRestarted": "Le serveur a redémarré. Retour dans la salle",
+      "behind": "Rattrapage de la salle"
+    },
+    "members": {
+      "title": "Personnes présentes",
+      "count": {
+        "one": "{count} personne ici",
+        "other": "{count} personnes ici"
+      },
+      "you": "Vous",
+      "host": "Hôte",
+      "holder": "A le clavier",
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "spectator": "Spectateur",
+      "role": {
+        "owner": "Propriétaire",
+        "editor": "Éditeur",
+        "commenter": "Commentateur",
+        "viewer": "Lecteur"
+      },
+      "appVersion": "Version de l'appli",
+      "cursorOf": "Pointeur de {name}"
+    },
+    "baton": {
+      "youHold": "Vous avez le clavier",
+      "heldBy": "{name} a le clavier",
+      "free": "Le clavier est libre",
+      "request": "Demander le clavier",
+      "grant": "Donner le clavier",
+      "take": "Prendre le clavier",
+      "release": "Rendre le clavier",
+      "asked": "Vous avez demandé le clavier",
+      "denied": "L'hôte a dit pas maintenant",
+      "freeIn": "{name} est parti. Le clavier sera libre dans {seconds} s."
+    },
+    "host": {
+      "kick": "Retirer",
+      "kickConfirm": "Retirer {name} de la salle ?",
+      "mute": "Couper le son",
+      "unmute": "Rétablir le son",
+      "lock": "Verrouiller la salle",
+      "unlock": "Déverrouiller la salle",
+      "close": "Fermer la salle",
+      "closeConfirm": "Fermer la salle pour tout le monde ?",
+      "pass": "Confier la salle à {name}",
+      "claim": "Devenir l'hôte",
+      "settings": "Réglages de la salle",
+      "runControl": "Qui lance le code",
+      "spectatorCursors": "Afficher les pointeurs des spectateurs"
+    },
+    "invite": {
+      "open": "Inviter",
+      "titleFor": "Inviter {name}",
+      "hint": "Envoyez un lien ou choisissez un ami. La salle accueille 8 personnes.",
+      "roleEditor": "Peut modifier",
+      "roleViewer": "Peut regarder",
+      "uses": "Utilisations : {count}",
+      "expires": "Expire {when}",
+      "revoke": "Révoquer l'invitation",
+      "sent": "Invitation envoyée",
+      "join": "Rejoindre",
+      "decline": "Refuser",
+      "expired": "Cette invitation ne fonctionne pas",
+      "workTogether": "Travailler ensemble",
+      "pickBuddy": "Choisir un ami",
+      "noBuddies": "Vous n'avez pas encore d'amis"
+    },
+    "chat": {
+      "title": "Discussion",
+      "placeholder": "Écrire un message",
+      "send": "Envoyer",
+      "rateLimited": "Vous écrivez trop vite. Patientez un instant.",
+      "muted": "L'hôte vous a mis en sourdine",
+      "system": "Salle"
+    },
+    "rebase": {
+      "title": "Pendant votre absence",
+      "dropped": "{who} a supprimé {what} pendant que vous étiez hors ligne, donc votre modification de {what} a été abandonnée",
+      "droppedGeneric": "Quelqu'un a supprimé une pièce pendant que vous étiez hors ligne, donc votre modification de cette pièce a été abandonnée",
+      "keepCopy": "Garder une copie de ma version",
+      "copyKept": "Une copie de votre version est dans vos projets",
+      "none": "Aucune de vos modifications n'a été abandonnée"
+    },
+    "fork": {
+      "closedTitle": "Cette salle est fermée",
+      "keepCopy": "Garder une copie",
+      "kept": "Copie enregistrée",
+      "ffNote": "Votre copie repart du dernier état de la salle",
+      "separateCopy": "Ceci est une copie séparée"
+    },
+    "share": {
+      "title": "Partager ce projet",
+      "audienceLink": "Toute personne ayant le lien",
+      "audienceBuddies": "Mes amis seulement",
+      "expiry30": "Expire dans 30 jours",
+      "expiryNone": "N'expire jamais",
+      "expiryDays": "Expire dans {count} jours",
+      "linkWarning": "Toute personne ayant le lien peut voir ce projet. Ne le partagez qu'avec des personnes de confiance.",
+      "create": "Créer un lien",
+      "copy": "Copier le lien",
+      "revoke": "Arrêter le partage",
+      "needsServer": "Le partage demande un serveur, et ce déploiement n'en a pas",
+      "makeCopy": "Faire ma propre copie",
+      "copyDone": "Copie faite",
+      "withdrawn": "Le propriétaire a arrêté ce partage",
+      "tooLarge": "Ce projet est trop gros pour être partagé",
+      "secretWarning": "Ce projet semble contenir une clé ou un mot de passe. Retirez-le avant de partager.",
+      "liveLimit": "Vous avez déjà {count} liens actifs. Arrêtez-en un pour en créer un autre.",
+      "opened": "Ouvert {count} fois"
+    },
+    "unsupported": {
+      "engine": "Ce navigateur ne peut pas se connecter aux salles. Essayez une version récente de Chrome, Firefox, Safari ou Edge.",
+      "privateWindow": "Les salles demandent une fenêtre normale, pas une fenêtre privée"
+    }
   }
 }

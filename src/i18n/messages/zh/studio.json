@@ -252,5 +252,135 @@
       "hint": "单键快捷键可以在视图设置中关闭。",
       "close": "关闭"
     }
+  },
+  "rooms": {
+    "banner": {
+      "live": "在线",
+      "connecting": "正在加入房间",
+      "syncing": "正在从主持人处获取工作台",
+      "reconnecting": "连接已断开。正在重新连接",
+      "offlineKept": "房间已离线，你的修改已保留",
+      "queueFull": "有 {count} 项修改在等待。房间编辑已暂停；你的本地副本是安全的。",
+      "ended": "房间已结束",
+      "kicked": "主持人已把你移出房间",
+      "closed": "房间已关闭",
+      "readOnlyShare": "你正在查看一个分享链接。可以阅读，但不能修改。",
+      "readOnlyRole": "你在这个房间的角色只能阅读，不能修改工作台",
+      "unsupported": "此浏览器无法打开房间",
+      "serverRestarted": "服务器已重启。正在重新加入房间",
+      "behind": "正在与房间同步"
+    },
+    "members": {
+      "title": "在场的人",
+      "count": {
+        "one": "这里有 {count} 个人",
+        "other": "这里有 {count} 个人"
+      },
+      "you": "你",
+      "host": "主持人",
+      "holder": "正在使用键盘",
+      "online": "在线",
+      "offline": "离线",
+      "spectator": "旁观中",
+      "role": {
+        "owner": "所有者",
+        "editor": "编辑者",
+        "commenter": "评论者",
+        "viewer": "查看者"
+      },
+      "appVersion": "应用版本",
+      "cursorOf": "{name} 的指针"
+    },
+    "baton": {
+      "youHold": "键盘在你手上",
+      "heldBy": "键盘在 {name} 手上",
+      "free": "键盘空闲",
+      "request": "申请键盘",
+      "grant": "交出键盘",
+      "take": "接过键盘",
+      "release": "归还键盘",
+      "asked": "你已申请键盘",
+      "denied": "主持人说现在不行",
+      "freeIn": "{name} 已离开。键盘将在 {seconds} 秒后空闲。"
+    },
+    "host": {
+      "kick": "移出",
+      "kickConfirm": "把 {name} 移出房间？",
+      "mute": "禁言",
+      "unmute": "取消禁言",
+      "lock": "锁定房间",
+      "unlock": "解锁房间",
+      "close": "关闭房间",
+      "closeConfirm": "为所有人关闭房间？",
+      "pass": "把房间交给 {name}",
+      "claim": "接任主持人",
+      "settings": "房间设置",
+      "runControl": "谁来运行代码",
+      "spectatorCursors": "显示旁观者的指针"
+    },
+    "invite": {
+      "open": "邀请",
+      "titleFor": "邀请 {name}",
+      "hint": "发送链接或选一位好友。房间最多容纳 8 人。",
+      "roleEditor": "可以编辑",
+      "roleViewer": "只能旁观",
+      "uses": "使用次数：{count}",
+      "expires": "{when}到期",
+      "revoke": "撤销邀请",
+      "sent": "邀请已发送",
+      "join": "加入",
+      "decline": "拒绝",
+      "expired": "此邀请无法使用",
+      "workTogether": "一起搭建",
+      "pickBuddy": "选一位好友",
+      "noBuddies": "你还没有好友"
+    },
+    "chat": {
+      "title": "聊天",
+      "placeholder": "写一条消息",
+      "send": "发送",
+      "rateLimited": "你发得太快了。请稍等。",
+      "muted": "主持人已将你禁言",
+      "system": "房间"
+    },
+    "rebase": {
+      "title": "你离线期间",
+      "dropped": "你离线期间 {who} 删除了 {what}，所以你对 {what} 的修改被丢弃了",
+      "droppedGeneric": "你离线期间有人删除了一个部件，所以你对它的修改被丢弃了",
+      "keepCopy": "保留我这个版本的副本",
+      "copyKept": "你这个版本的副本已保存在你的项目中",
+      "none": "你的修改都没有被丢弃"
+    },
+    "fork": {
+      "closedTitle": "这个房间已关闭",
+      "keepCopy": "保留副本",
+      "kept": "副本已保存",
+      "ffNote": "你的副本从房间最后的状态继续",
+      "separateCopy": "这是一个独立的副本"
+    },
+    "share": {
+      "title": "分享这个项目",
+      "audienceLink": "任何有链接的人",
+      "audienceBuddies": "仅限我的好友",
+      "expiry30": "30 天后到期",
+      "expiryNone": "永不到期",
+      "expiryDays": "{count} 天后到期",
+      "linkWarning": "任何有链接的人都能看到这个项目。只分享给你信任的人。",
+      "create": "生成链接",
+      "copy": "复制链接",
+      "revoke": "停止分享",
+      "needsServer": "分享需要服务器，而此部署没有服务器",
+      "makeCopy": "生成我自己的副本",
+      "copyDone": "副本已生成",
+      "withdrawn": "所有者已停止分享",
+      "tooLarge": "这个项目太大，无法分享",
+      "secretWarning": "这个项目似乎包含密钥或密码。分享前请先删除。",
+      "liveLimit": "你已有 {count} 个有效链接。先停用一个再生成新的。",
+      "opened": "已被打开 {count} 次"
+    },
+    "unsupported": {
+      "engine": "此浏览器无法登录房间。请试用最新版的 Chrome、Firefox、Safari 或 Edge。",
+      "privateWindow": "房间需要普通窗口，不能用隐私窗口"
+    }
   }
 }
