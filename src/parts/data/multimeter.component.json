@@ -7,11 +7,11 @@
     "manufacturer": "generic",
     "model": "Pocket digital multimeter",
     "generic": true,
-    "refdes_prefix": "PR",
     "kind": "instrument",
     "category": "instrument",
     "description": {
-      "en": "A yellow pocket digital multimeter with two test leads. It reads what its probes touch."
+      "i18n_key": "parts.multimeter.description",
+      "en": "A pocket digital multimeter with a 3 1/2 digit display, a range dial and two test probes. Touch the probes to the points to measure."
     },
     "legacy_ids": [
       "multimeter"
@@ -19,17 +19,19 @@
     "tags": [
       "multimeter",
       "instrument",
-      "meter"
+      "meter",
+      "probe",
+      "voltage"
     ]
   },
   "sources": [
     {
       "id": "figurejs",
       "kind": "own-estimate",
-      "title": "figures/parts/multimeter.js: header comment and elec()",
+      "title": "figures/parts/multimeter.js: header comment and drawing",
       "publisher": "iynk",
       "reliability": "unverified",
-      "note": "Constants in the figure code. Where the header names a maker sheet, that sheet was not read for this descriptor."
+      "note": "The readings come from the bench that uses the meter; the figure only draws them."
     }
   ],
   "pins": [
@@ -41,44 +43,30 @@
       "designator": "COM",
       "type": "passive",
       "class": "passive",
+      "polarity": "negative",
       "position": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 0,
+        "y": 0
       },
-      "connector": "probes",
       "note": {
-        "en": "Black lead tip. The tip position follows the lead on the bench."
+        "en": "The black probe tip."
       }
     },
     {
       "id": "V",
       "name": {
-        "en": "Volts probe"
+        "en": "Voltage probe"
       },
       "designator": "V",
       "type": "passive",
       "class": "passive",
+      "polarity": "positive",
       "position": {
         "x": 2.54,
-        "y": 0.0
+        "y": 0
       },
-      "connector": "probes",
       "note": {
-        "en": "Red lead tip. The tip position follows the lead on the bench."
-      }
-    }
-  ],
-  "connectors": [
-    {
-      "id": "probes",
-      "kind": "other",
-      "gender": "none",
-      "pins": [
-        "COM",
-        "V"
-      ],
-      "note": {
-        "en": "Two probe tips on flexible leads."
+        "en": "The red probe tip."
       }
     }
   ],
@@ -92,29 +80,29 @@
     "accuracy": 0.3,
     "source": {
       "src": "figurejs",
-      "loc": "figures/parts/multimeter.js:3"
+      "loc": "figures/parts/multimeter.js:23"
     }
   },
   "ratings": {},
   "behaviour": {
     "summary": {
-      "en": "The meter is a Studio instrument. The reading comes from the bench that uses it, not from a model in this part."
+      "en": "An instrument. It is not part of the circuit solve; Studio shows its reading."
     },
     "layers": [
       {
-        "id": "reading",
+        "id": "dc",
         "domain": "analog",
         "reads": [
           "COM",
           "V"
         ],
         "summary": {
-          "en": "No model."
+          "en": "No electrical model: the probes do not load the circuit."
         },
         "model": {
           "kind": "none",
           "reason": {
-            "en": "The Studio instrument component reads the circuit. This part holds the pins and the art only."
+            "en": "The meter is an instrument. Studio's Multimeter instrument reads the circuit; this part only places the probes."
           }
         }
       }
@@ -123,19 +111,26 @@
   "simulation": {
     "tier": "none",
     "status": "not-modelled-yet",
-    "what_it_models": [],
+    "what_it_models": [
+      {
+        "en": "Nothing yet: the part places two probe tips and a drawing of the meter."
+      }
+    ],
     "not_modelled": [
       {
-        "en": "Everything: the part has no model."
+        "en": "The reading, the range dial and the loading of the circuit by the meter."
+      },
+      {
+        "en": "The current ranges and the 10 A jack."
       }
     ],
     "known_gaps": [
       {
-        "id": "instrument_elsewhere",
+        "id": "reading_by_bench",
         "text": {
-          "en": "The reading is made by the Studio multimeter instrument, which is a separate component from this part."
+          "en": "The displayed reading is computed by the bench that uses the meter, not by this descriptor."
         },
-        "evidence": "figures/parts/multimeter.js:11-17"
+        "evidence": "figures/parts/multimeter.js:5-9"
       }
     ]
   },
@@ -173,6 +168,10 @@
   },
   "provenance": {
     "license": "LicenseRef-iynk-pending",
+    "license_scope": {
+      "art": "LicenseRef-iynk-pending",
+      "descriptor": "LicenseRef-iynk-pending"
+    },
     "attribution": [
       {
         "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
@@ -183,7 +182,7 @@
     ],
     "origin": "core",
     "created": "2026-10-31",
-    "third_party_content": false,
+    "third_party_content": true,
     "review": {
       "status": "ci-checked"
     },
@@ -191,7 +190,7 @@
       {
         "version": "1.0.0",
         "date": "2026-10-31",
-        "note": "First descriptor, from figures/parts/multimeter.js.",
+        "note": "First descriptor, converted from figures/parts/multimeter.js.",
         "behaviour_change": false
       }
     ]
