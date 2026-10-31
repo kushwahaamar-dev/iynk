@@ -736,14 +736,29 @@
       "showMe": "Muéstramelo",
       "refused": "Haz antes los pasos anteriores.",
       "manual": "Marcar como hecho",
-      "needsLens": "Este paso se comprueba en la vista de la figura."
+      "needsLens": "Este paso se comprueba en la vista de la figura.",
+      "break": "Averiar"
     },
     "wire": {
       "title": "Cablear",
       "lede": "Qué puede controlar esta placa y cómo cablearlo.",
       "supply": "Alimentación de {volts} V",
       "caution": "Ten cuidado",
-      "none": "Nada que cablear en esta lección."
+      "none": "Nada que cablear en esta lección.",
+      "partPin": "Pin de la pieza",
+      "boardPin": "Pin de la placa",
+      "colors": {
+        "red": "rojo",
+        "black": "negro",
+        "orange": "naranja",
+        "yellow": "amarillo",
+        "green": "verde",
+        "blue": "azul",
+        "white": "blanco",
+        "purple": "morado",
+        "brown": "marrón",
+        "grey": "gris"
+      }
     },
     "inputs": {
       "title": "Entradas",

@@ -736,14 +736,29 @@
       "showMe": "Zeig es mir",
       "refused": "Erledige zuerst die früheren Schritte.",
       "manual": "Als erledigt markieren",
-      "needsLens": "Dieser Schritt wird in der Figurenansicht geprüft."
+      "needsLens": "Dieser Schritt wird in der Figurenansicht geprüft.",
+      "break": "Kaputt machen"
     },
     "wire": {
       "title": "Verdrahten",
       "lede": "Was dieses Board ansteuern kann und wie man es verdrahtet.",
       "supply": "{volts} V Versorgung",
       "caution": "Vorsicht",
-      "none": "In dieser Lektion gibt es nichts zu verdrahten."
+      "none": "In dieser Lektion gibt es nichts zu verdrahten.",
+      "partPin": "Bauteil-Pin",
+      "boardPin": "Board-Pin",
+      "colors": {
+        "red": "rot",
+        "black": "schwarz",
+        "orange": "orange",
+        "yellow": "gelb",
+        "green": "grün",
+        "blue": "blau",
+        "white": "weiß",
+        "purple": "lila",
+        "brown": "braun",
+        "grey": "grau"
+      }
     },
     "inputs": {
       "title": "Eingaben",

@@ -736,14 +736,29 @@
       "showMe": "演示给我看",
       "refused": "请先完成前面的步骤。",
       "manual": "标记为已完成",
-      "needsLens": "此步骤在图示视图中检查。"
+      "needsLens": "此步骤在图示视图中检查。",
+      "break": "弄坏"
     },
     "wire": {
       "title": "接线",
       "lede": "这块板能驱动什么，以及怎样接线。",
       "supply": "{volts} V 供电",
       "caution": "请小心",
-      "none": "本课没有需要接线的内容。"
+      "none": "本课没有需要接线的内容。",
+      "partPin": "零件引脚",
+      "boardPin": "开发板引脚",
+      "colors": {
+        "red": "红色",
+        "black": "黑色",
+        "orange": "橙色",
+        "yellow": "黄色",
+        "green": "绿色",
+        "blue": "蓝色",
+        "white": "白色",
+        "purple": "紫色",
+        "brown": "棕色",
+        "grey": "灰色"
+      }
     },
     "inputs": {
       "title": "输入",

@@ -736,14 +736,29 @@
       "showMe": "Montrez-moi",
       "refused": "Faites d'abord les étapes précédentes.",
       "manual": "Marquer comme terminé",
-      "needsLens": "Cette étape se vérifie dans la vue de la figure."
+      "needsLens": "Cette étape se vérifie dans la vue de la figure.",
+      "break": "Casser"
     },
     "wire": {
       "title": "Câbler",
       "lede": "Ce que cette carte peut piloter et comment le câbler.",
       "supply": "Alimentation {volts} V",
       "caution": "Soyez prudent",
-      "none": "Rien à câbler dans cette leçon."
+      "none": "Rien à câbler dans cette leçon.",
+      "partPin": "Broche du composant",
+      "boardPin": "Broche de la carte",
+      "colors": {
+        "red": "rouge",
+        "black": "noir",
+        "orange": "orange",
+        "yellow": "jaune",
+        "green": "vert",
+        "blue": "bleu",
+        "white": "blanc",
+        "purple": "violet",
+        "brown": "marron",
+        "grey": "gris"
+      }
     },
     "inputs": {
       "title": "Entrées",

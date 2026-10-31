@@ -736,14 +736,29 @@
       "showMe": "Show me",
       "refused": "Do the earlier steps first.",
       "manual": "Mark as done",
-      "needsLens": "This step is checked in the figure view."
+      "needsLens": "This step is checked in the figure view.",
+      "break": "Break"
     },
     "wire": {
       "title": "Wire it",
       "lede": "What this board can drive, and how to wire it.",
       "supply": "{volts} V supply",
       "caution": "Be careful",
-      "none": "Nothing to wire for this lesson."
+      "none": "Nothing to wire for this lesson.",
+      "partPin": "Part pin",
+      "boardPin": "Board pin",
+      "colors": {
+        "red": "red",
+        "black": "black",
+        "orange": "orange",
+        "yellow": "yellow",
+        "green": "green",
+        "blue": "blue",
+        "white": "white",
+        "purple": "purple",
+        "brown": "brown",
+        "grey": "grey"
+      }
     },
     "inputs": {
       "title": "Inputs",
