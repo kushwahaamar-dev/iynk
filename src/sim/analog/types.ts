@@ -2,13 +2,25 @@ import type { SolveDiagnostic } from '../core/diagnostic.ts';
 
 export type ElementId = string;
 
-interface ElementBase { id: ElementId }
+/** What a part can take before the failure rules latch it; a rule with no figure here does not apply. */
+export interface PartRating {
+  icmaxAmps?: number;
+  tjmaxC?: number;
+  thetaCPerW?: number;
+  vabsVolts?: number;
+  pmaxWatts?: number;
+}
+
+/** A source that holds its current at `amps` by letting its voltage sag. */
+export interface SourceLimit { amps: number; mode: 'droop' }
+
+interface ElementBase { id: ElementId; rating?: PartRating }
 
 export interface ElementR extends ElementBase { kind: 'R'; a: number; b: number; ohms: number }
 export interface ElementPot extends ElementBase { kind: 'POT'; a: number; wiper: number; b: number; ohms: number; position: number }
-export interface ElementV extends ElementBase { kind: 'V'; a: number; b: number; volts: number; rSeriesOhms: number }
+export interface ElementV extends ElementBase { kind: 'V'; a: number; b: number; volts: number; rSeriesOhms: number; limit?: SourceLimit }
 export interface ElementPin extends ElementBase { kind: 'PIN'; a: number; level: 0 | 1 | 'Z'; vHighVolts: number; rOutOhms: number; maxAmps: number }
-export interface ElementPwm extends ElementBase { kind: 'PWM'; a: number; duty: number; hz: number; vHighVolts: number; rOutOhms: number; mode: 'averaged' | 'edge' | 'cycle' }
+export interface ElementPwm extends ElementBase { kind: 'PWM'; a: number; duty: number; hz: number; vHighVolts: number; rOutOhms: number; mode: 'averaged' | 'edge' | 'cycle'; maxAmps?: number }
 export interface ElementD extends ElementBase { kind: 'D'; a: number; b: number; modelId: string; vf: number; rdOhms: number; maxAmps: number }
 export interface ElementQ extends ElementBase { kind: 'Q'; c: number; b: number; e: number; polarity: 'npn' | 'pnp'; modelId: string; hfe: number; hfr: number; vbe: number; vcesat: number }
 export interface ElementM extends ElementBase { kind: 'M'; a: number; b: number; ohms: number }

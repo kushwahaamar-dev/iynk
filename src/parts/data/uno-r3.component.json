@@ -581,7 +581,33 @@
       "src": "facts"
     }
   },
-  "ratings": {},
+  "ratings": {
+    "vcc_min": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "P5V"
+        ]
+      },
+      "description": {
+        "en": "Lowest supply voltage on the 5 V rail before the chip resets."
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 2.7,
+        "confidence": "low",
+        "source": {
+          "src": "profile",
+          "loc": "figures/boards/uno-r3.js:134 (mcu.min 2.7)"
+        },
+        "rationale": {
+          "en": "The brown-out level the old figure engine used. The board's own detector level is not measured here."
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
   "behaviour": {
     "summary": {
       "en": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the uno-r3 board profile. It is not the ATmega328P chip."

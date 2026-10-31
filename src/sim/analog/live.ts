@@ -3,9 +3,23 @@ import { type SimDiagnostic, simDiag } from "../core/diagnostic.ts";
 import { RANK, type EngineSnapshot, type SimEvent, type SimNetlist, type SimPart } from "../engine.ts";
 import type { PinElectrical } from "../../lib/interp/profiles.ts";
 import { PWL_COMPAT } from "./elements.ts";
+import type { Registry } from "../registry/types.ts";
 import { UnionFind } from "./graph.ts";
+import { type Brownout, type BoardPower, type RailState, createBrownout, droopSource, isLimited, USB_LIMIT } from "./rails.ts";
 import { pwmSlices, solve } from "./solve.ts";
-import type { Element, ElementId, ElementPin, SolveOptions, SolveResult } from "./types.ts";
+import {
+  type HonestState,
+  type Solved,
+  type StateTracker,
+  brownOutState,
+  brownOutUnknownState,
+  createStateTracker,
+  floatingInputState,
+  noConvergenceState,
+  notModelledState,
+  partOf,
+} from "./states.ts";
+import type { Element, ElementId, ElementPin, PartRating, SolveOptions, SolveResult, SourceLimit } from "./types.ts";
 
 export type NetId = string;
 export type PartId = string;
@@ -65,6 +79,8 @@ export interface LiveAnalog extends AnalogSolver {
   netVolts(net: NetId): number | null;
   pinVolts(element: ElementId): number | null;
   componentResult(net: NetId): SolveResult | null;
+  /** Clears the burnt latch of a part and puts its elements back. */
+  repair(partId: PartId): void;
   /** A pure re-solve of the whole circuit. Node numbers in `extra` and `params` are the ones `buildElements` gave. */
   whatIf(o: WhatIf): SolveResult;
 }
@@ -94,7 +110,8 @@ const RGB_CHANNELS = [["R", 0, 2.0], ["G", 2, 3.1], ["B", 3, 3.1]] as const;
 const TRAFFIC_LEDS = [["R", 1, LED_VF.red], ["Y", 2, LED_VF.yellow], ["G", 3, LED_VF.green]] as const;
 const BJT_ORDER: Record<string, { c: number; b: number; e: number }> = { EBC: { e: 0, b: 1, c: 2 }, CBE: { c: 0, b: 1, e: 2 } };
 
-const RAIL_VOLTS: [RegExp, number][] = [[/^P?5V$/, 5], [/^P?3V3$/, 3.3], [/^VIN$/, USB_VOLTS]];
+/** The 5 V pin is the USB port's, which sags past its current limit. */
+const RAIL_VOLTS: [RegExp, number, SourceLimit?][] = [[/^P?5V$/, 5, USB_LIMIT], [/^P?3V3$/, 3.3], [/^VIN$/, USB_VOLTS]];
 const NOT_SIGNAL = /^(GND\w*|POWER_\d+|NC|IOREF|AREF|RESET\d?|ICSP\w*|MISO2|MOSI2|SCK2|VBUS|EN)$/;
 
 const NODE_FIELDS = {
@@ -157,8 +174,8 @@ class Builder {
     this.add({ id, kind: "D", a, b, modelId: MODEL.led, vf, rdOhms: 0.5, maxAmps });
   }
 
-  npn(id: ElementId, c: number, base: number, e: number, hfe: number, vbe: number, vcesat: number): void {
-    this.add({ id, kind: "Q", c, b: base, e, polarity: "npn", modelId: MODEL.npn, hfe, hfr: 5, vbe, vcesat });
+  npn(id: ElementId, c: number, base: number, e: number, hfe: number, vbe: number, vcesat: number, rating: PartRating): void {
+    this.add({ id, kind: "Q", c, b: base, e, polarity: "npn", modelId: MODEL.npn, hfe, hfr: 5, vbe, vcesat, rating });
   }
 }
 
@@ -189,12 +206,19 @@ const motor = (ohms: number): PartSpec => ({
   build: (b, p) => b.add({ id: p.id, kind: "M", a: b.leg(p, 0), b: b.leg(p, 1), ohms: num(p, "ohms", ohms) }),
 });
 
-function transistor(models: readonly string[], hfe: number, vbe: number, vcesat: number, order: (p: SimPart) => { c: number; b: number; e: number }): PartSpec {
+function transistor(
+  models: readonly string[],
+  hfe: number,
+  vbe: number,
+  vcesat: number,
+  rating: PartRating,
+  order: (p: SimPart) => { c: number; b: number; e: number },
+): PartSpec {
   return {
     models,
     build: (b, p) => {
       const at = order(p);
-      b.npn(p.id, b.leg(p, at.c), b.leg(p, at.b), b.leg(p, at.e), hfe, vbe, vcesat);
+      b.npn(p.id, b.leg(p, at.c), b.leg(p, at.b), b.leg(p, at.e), hfe, vbe, vcesat, rating);
     },
   };
 }
@@ -231,11 +255,11 @@ const SPECS: Record<string, PartSpec> = {
     models: [MODEL.diode],
     build: (b, p) => b.add({ id: p.id, kind: "D", a: b.leg(p, 0), b: b.leg(p, 1), modelId: MODEL.diode, vf: 0.7, rdOhms: 0.2, maxAmps: 1 }),
   },
-  "npn-2n2222": transistor([MODEL.npn], 100, 0.7, 0.2, (p) => {
+  "npn-2n2222": transistor([MODEL.npn], 100, 0.7, 0.2, { icmaxAmps: 0.6, thetaCPerW: 200, tjmaxC: 150 }, (p) => {
     const order = BJT_ORDER[text(p, "pinout", "EBC")] ?? BJT_ORDER.EBC;
     return { c: flip(p, order.c), b: flip(p, order.b), e: flip(p, order.e) };
   }),
-  tip120: transistor([MODEL.npn], 1000, 1.3, 0.9, (p) => ({ b: flip(p, 0), c: 1, e: flip(p, 2) })),
+  tip120: transistor([MODEL.npn], 1000, 1.3, 0.9, { icmaxAmps: 5, thetaCPerW: 62.5, tjmaxC: 150 }, (p) => ({ b: flip(p, 0), c: 1, e: flip(p, 2) })),
   "lipo-2s": supply(7.4),
   "aa-holder-4": supply(6),
   "push-button": {
@@ -250,7 +274,7 @@ const SPECS: Record<string, PartSpec> = {
   potentiometer: {
     models: [MODEL.pot],
     build: (b, p) =>
-      b.add({ id: p.id, kind: "POT", a: b.leg(p, 0), wiper: b.leg(p, 1), b: b.leg(p, 2), ohms: num(p, "ohms", 10000), position: num(p, "pos", 0.5) }),
+      b.add({ id: p.id, kind: "POT", a: b.leg(p, 0), wiper: b.leg(p, 1), b: b.leg(p, 2), ohms: num(p, "ohms", 10000), position: num(p, "pos", 0.5), rating: { pmaxWatts: 0.05 } }),
   },
   ldr: sensorResistor,
   fsr402: sensorResistor,
@@ -287,7 +311,7 @@ const SPECS: Record<string, PartSpec> = {
         const base = b.nodes++;
         const out = b.named(p, `OUT${n}`);
         b.resistor(`${p.id}:R${n}`, b.leg(p, n - 1), base, 2700);
-        b.npn(`${p.id}:Q${n}`, out, base, ground, 1000, 1.4, 1);
+        b.npn(`${p.id}:Q${n}`, out, base, ground, 1000, 1.4, 1, { icmaxAmps: 0.5, thetaCPerW: 70, tjmaxC: 150 });
         b.add({ id: `${p.id}:D${n}`, kind: "D", a: out, b: vcc, modelId: MODEL.diode, vf: 0.7, rdOhms: 0.2, maxAmps: 0.5 });
       }
     },
@@ -300,7 +324,7 @@ const SPECS: Record<string, PartSpec> = {
   tmp36: {
     models: [MODEL.tmp36],
     build: (b, p) =>
-      b.add({ id: p.id, kind: "TS", supplyPos: b.leg(p, 0), out: b.leg(p, 1), supplyNeg: b.leg(p, 2), outVolts: 0.5 + 0.01 * num(p, "tempC", 22) }),
+      b.add({ id: p.id, kind: "TS", supplyPos: b.leg(p, 0), out: b.leg(p, 1), supplyNeg: b.leg(p, 2), outVolts: 0.5 + 0.01 * num(p, "tempC", 22), rating: { vabsVolts: 7 } }),
   },
   "hc-sr04": noElement,
   mpu6050: noElement,
@@ -363,7 +387,15 @@ export function buildElements(net: SimNetlist, pins: PinDirectory): BuiltElement
         if (netId == null || node === undefined || node === GROUND) continue;
         const rail = RAIL_VOLTS.find(([pattern]) => pattern.test(pin));
         if (rail) {
-          b.add({ id: `rail:${part.id}:${pin}`, kind: "V", a: node, b: GROUND, volts: rail[1], rSeriesOhms: PWL_COMPAT.railOhms });
+          b.add({
+            id: `rail:${part.id}:${pin}`,
+            kind: "V",
+            a: node,
+            b: GROUND,
+            volts: rail[1],
+            rSeriesOhms: PWL_COMPAT.railOhms,
+            ...(rail[2] ? { limit: rail[2] } : {}),
+          });
         } else if (!NOT_SIGNAL.test(pin)) {
           const id = pinElementId(part.id, pin);
           b.add({ id, kind: "PIN", a: node, level: "Z", vHighVolts: board.logicVolts, rOutOhms: board.rOutOhms, maxAmps: board.maxAmps });
@@ -412,6 +444,32 @@ interface SnapshotData {
   at: SimTime;
   components: ComponentData[];
   held: [NetId, 0 | 1][];
+  tracker: unknown;
+  damaged: [ElementId, Element][];
+  floating: ElementId[];
+}
+
+interface BoardRail {
+  part: PartId;
+  net: NetId;
+  power: BoardPower;
+  detector: Brownout;
+  state: RailState;
+}
+
+export interface LiveDeps {
+  solve: typeof solve;
+  pins: PinDirectory;
+  registry: Registry;
+  /** null: the part is not a board. */
+  power: (part: SimPart) => BoardPower | null;
+}
+
+/** What a latched part becomes in later solves; null when only the latch and the message apply. */
+function openCircuit(el: Element): Element | null {
+  if (el.kind === "D") return { id: el.id, kind: "R", a: el.a, b: el.b, ohms: OPEN_OHMS };
+  if (el.kind === "Q") return { id: el.id, kind: "R", a: el.c, b: el.e, ohms: OPEN_OHMS };
+  return null;
 }
 
 class Live implements LiveAnalog {
@@ -426,12 +484,18 @@ class Live implements LiveAnalog {
   private pinBase = new Map<ElementId, ElementPin>();
   private held = new Map<NetId, 0 | 1>();
   private pending: SimDiagnostic[] = [];
+  private queued: HonestState[] = [];
   private at: SimTime = 0;
+  private tracker: StateTracker;
+  private rails: BoardRail[] = [];
+  private damaged = new Map<ElementId, Element>();
+  private floating = new Set<ElementId>();
 
-  private readonly d: { solve: typeof solve; pins: PinDirectory };
+  private readonly d: LiveDeps;
 
-  constructor(d: { solve: typeof solve; pins: PinDirectory }) {
+  constructor(d: LiveDeps) {
     this.d = d;
+    this.tracker = createStateTracker(d.registry);
   }
 
   load(net: SimNetlist, o: SolveOptions): LoadReport {
@@ -444,7 +508,12 @@ class Live implements LiveAnalog {
     this.held = new Map();
     this.pending = [];
     this.at = 0;
+    this.tracker = createStateTracker(this.d.registry);
+    this.damaged = new Map();
+    this.floating = new Set();
     this.partition(built.elements);
+    this.queued = built.unmodelled.map((u) => notModelledState(u.part, u.reason, 0));
+    this.rails = this.railsOf(net);
 
     const diagnostics = built.unmodelled.map((u) => simDiag("not-modelled-yet", "warning", { part: u.part }, { reason: u.reason }));
     return {
@@ -467,12 +536,15 @@ class Live implements LiveAnalog {
     if (!o) throw new Error("LiveAnalog.advanceTo before load");
     const diagnostics = this.pending;
     this.pending = [];
+    const states = this.queued;
+    this.queued = [];
     let solves = 0;
     let worstKclAmps = 0;
     for (const comp of this.components) {
       if (!comp.dirty) continue;
-      const result = this.d.solve({ nodes: comp.nodes.length + 1, ground: GROUND, elements: comp.elements, pwmSlices: pwmSlices(comp.elements) }, o);
+      const result = this.solveComponent(comp, o);
       comp.dirty = false;
+      if (!result.converged && comp.ok) states.push(noConvergenceState(this.d.registry, result, this.localNet(comp, result.residual.worstNode), t));
       comp.ok = result.converged;
       if (result.converged) comp.last = result;
       solves++;
@@ -480,15 +552,34 @@ class Live implements LiveAnalog {
       diagnostics.push(...result.diagnostics.map((x) => this.globalDiag(x, comp)));
     }
     this.at = t;
+    const events = this.crossings(t);
+    const settled: Solved[] = this.components.flatMap((c) => (c.ok && c.last ? [{ result: c.last, elements: c.elements }] : []));
+    states.push(...this.tracker.step(settled, t), ...this.floatingInputs(t));
+    this.openBurnt(states);
+    for (const rail of this.rails) this.stepRail(rail, t, states, events);
+    for (const state of states) events.push({ at: t, phase: 3, rank: RANK.analog, seq: 0, src: ENGINE_ID, kind: "honest-state", payload: state });
     return {
       at: t,
       converged: this.components.every((c) => c.ok),
       solves,
       skippedClean: this.components.length - solves,
-      events: this.crossings(t),
+      events,
       diagnostics,
       worstKclAmps,
     };
+  }
+
+  repair(partId: PartId): void {
+    this.tracker.repair(partId);
+    for (const [id, original] of [...this.damaged]) {
+      if (partOf(id) !== partId) continue;
+      const at = this.where.get(id);
+      if (at) {
+        at.comp.elements[at.index] = original;
+        at.comp.dirty = true;
+      }
+      this.damaged.delete(id);
+    }
   }
 
   snapshot(): EngineSnapshot {
@@ -501,6 +592,9 @@ class Live implements LiveAnalog {
         last: c.last && freeze(c.last),
       })),
       held: [...this.held],
+      tracker: this.tracker.snapshot(),
+      damaged: [...this.damaged].map(([id, el]) => [id, { ...el }]),
+      floating: [...this.floating],
     };
     return { engine: ENGINE_ID, engineVersion: "1", schema: 1, data };
   }
@@ -512,6 +606,11 @@ class Live implements LiveAnalog {
     this.at = data.at;
     this.held = new Map(data.held);
     this.pending = [];
+    this.queued = [];
+    this.tracker.restore(data.tracker);
+    this.damaged = new Map(data.damaged.map(([id, el]) => [id, { ...el }]));
+    this.floating = new Set(data.floating);
+    this.rails = this.rails.map((r) => ({ ...r, detector: this.detectorOf(r.power), state: "ok" }));
     data.components.forEach((saved, i) => {
       const comp = this.components[i];
       comp.elements = saved.elements.map((el) => ({ ...el }));
@@ -553,6 +652,90 @@ class Live implements LiveAnalog {
     }
     const merged = [...elements, ...(o.extra ?? [])].map((el) => (o.params?.[el.id] ? ({ ...el, ...o.params[el.id] } as Element) : el));
     return this.d.solve({ nodes: this.nodeCount, ground: GROUND, elements: merged }, this.o);
+  }
+
+  private detectorOf(power: BoardPower): Brownout {
+    return createBrownout({
+      thresholdVolts: power.vccMinVolts ?? 0,
+      hysteresisVolts: power.hysteresisVolts,
+      minDwellNs: power.minDwellNs,
+      resetNs: power.resetNs,
+    });
+  }
+
+  /** One detector per board that states a minimum; a board that does not is said so once. */
+  private railsOf(net: SimNetlist): BoardRail[] {
+    const rails: BoardRail[] = [];
+    for (const part of net.parts) {
+      const power = this.d.power(part);
+      if (!power) continue;
+      const railNet = power.vccMinVolts === null ? null : part.pins[power.mcuRail];
+      if (power.vccMinVolts === null) this.queued.push(brownOutUnknownState(part.id, 0));
+      else if (railNet) rails.push({ part: part.id, net: railNet, power, detector: this.detectorOf(power), state: "ok" });
+    }
+    return rails;
+  }
+
+  private stepRail(rail: BoardRail, t: SimTime, states: HonestState[], events: SimEvent[]): void {
+    const volts = this.netVolts(rail.net);
+    if (volts === null) return;
+    const next = rail.detector.step(volts, t);
+    const entered = next === "reset" && rail.state !== "reset";
+    rail.state = next;
+    if (!entered) return;
+    states.push(brownOutState(this.d.registry, rail.power, { net: rail.net, volts }, t));
+    const payload = { part: rail.part, net: rail.net, volts };
+    events.push({ at: t, phase: 4, rank: RANK.analog, seq: 0, src: ENGINE_ID, kind: "brownout", payload });
+    events.push({ at: t, phase: 4, rank: RANK.analog, seq: 0, src: ENGINE_ID, kind: "reset", payload: { ...payload, reason: "brownout" } });
+  }
+
+  /** Solves one component. A source past its current limit sags until it carries exactly the limit. */
+  private solveComponent(comp: Component, o: SolveOptions): SolveResult {
+    const run = (elements: Element[]) => this.d.solve({ nodes: comp.nodes.length + 1, ground: GROUND, elements, pwmSlices: pwmSlices(elements) }, o);
+    let elements = comp.elements;
+    let result = run(elements);
+    for (const el of comp.elements) {
+      if (el.kind !== "V" || !isLimited(el) || !result.converged || (result.branch[el.id]?.amps ?? 0) <= el.limit.amps) continue;
+      const withSeries = (ohms: number) => elements.map((x) => (x.id === el.id ? { ...el, rSeriesOhms: ohms } : x));
+      const ohms = droopSource(el, (r) => run(withSeries(r)).branch[el.id]?.amps ?? 0);
+      elements = withSeries(ohms);
+      result = run(elements);
+    }
+    return result;
+  }
+
+  private localNet(comp: Component, node: number): NetId | undefined {
+    const global = comp.nodes[node - 1];
+    return global === undefined ? undefined : this.netOf.get(global);
+  }
+
+  /** The element of a burn-out record is the one its evidence points at; it stays open in later solves. */
+  private openBurnt(states: HonestState[]): void {
+    for (const state of states) {
+      const id = state.kind === "burn-out" ? state.evidence[0]?.ref : undefined;
+      const at = id === undefined ? undefined : this.where.get(id);
+      const open = at && openCircuit(at.comp.elements[at.index]);
+      if (!at || !open) continue;
+      this.damaged.set(at.comp.elements[at.index].id, at.comp.elements[at.index]);
+      at.comp.elements[at.index] = open;
+      at.comp.dirty = true;
+    }
+  }
+
+  /** A board input on a net that nothing else touches reads noise. Said once per pin. */
+  private floatingInputs(t: SimTime): HonestState[] {
+    const out: HonestState[] = [];
+    for (const [id, input] of this.boardPins) {
+      const at = this.where.get(id);
+      const pin = at?.comp.elements[at.index];
+      if (this.floating.has(id) || !at || pin?.kind !== "PIN" || pin.level !== "Z") continue;
+      const others = at.comp.elements.some((el) => el.id !== id && nodesOf(el).includes(pin.a));
+      if (others) continue;
+      this.floating.add(id);
+      const [, board, name] = id.split(":");
+      out.push(floatingInputState(this.d.registry, board, name, input.net, t));
+    }
+    return out;
   }
 
   /** Splits the circuit into parts that share no node but ground; each is solved on its own. */
@@ -610,7 +793,9 @@ class Live implements LiveAnalog {
       case "pwm": {
         const base = this.pinBase.get(change.element);
         if (!(change.duty >= 0 && change.duty <= 1) || !(change.hz > 0)) throw new RangeError(`pwm needs a duty in 0 to 1 and hz above 0, got ${change.duty} and ${change.hz}`);
-        if (base) comp.elements[index] = { id: base.id, kind: "PWM", a: base.a, duty: change.duty, hz: change.hz, vHighVolts: base.vHighVolts, rOutOhms: base.rOutOhms, mode: "averaged" };
+        if (base) {
+          comp.elements[index] = { id: base.id, kind: "PWM", a: base.a, duty: change.duty, hz: change.hz, vHighVolts: base.vHighVolts, rOutOhms: base.rOutOhms, mode: "averaged", maxAmps: base.maxAmps };
+        }
         break;
       }
       case "source":
@@ -661,6 +846,6 @@ class Live implements LiveAnalog {
   }
 }
 
-export function createLiveAnalog(d: { solve: typeof solve; pins: PinDirectory }): LiveAnalog {
+export function createLiveAnalog(d: LiveDeps): LiveAnalog {
   return new Live(d);
 }

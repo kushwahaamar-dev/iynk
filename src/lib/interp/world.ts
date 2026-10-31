@@ -109,14 +109,16 @@ export interface WorldOptions {
   web?: Record<string, string>;
 }
 
+const DEFAULT_SEED = 0x2545f491;
+
 /** xorshift32: small, fast, deterministic. */
 export class Rng {
   private s: number;
-  constructor(seed = 0x2545f491) {
-    this.s = seed >>> 0 || 0x2545f491;
+  constructor(seed = DEFAULT_SEED) {
+    this.s = seed >>> 0 || DEFAULT_SEED;
   }
   seed(v: number): void {
-    this.s = v >>> 0 || 0x2545f491;
+    this.s = v >>> 0 || DEFAULT_SEED;
   }
   next(): number {
     let x = this.s;
@@ -132,6 +134,13 @@ export class Rng {
   }
 }
 
+/** FNV-1a over the label, started from the seed: one reproducible stream start per label. */
+function hashSeed(seed: number, label: string): number {
+  let h = (0x811c9dc5 ^ seed) >>> 0;
+  for (let i = 0; i < label.length; i++) h = Math.imul(h ^ label.charCodeAt(i), 0x01000193) >>> 0;
+  return h;
+}
+
 /**
  * The board's electrical world: pins, ADC, PWM, interrupts, serial, I²C
  * devices, displays and the Wi-Fi/HTTP sim. Interpreters talk to it; the host
@@ -141,6 +150,8 @@ export class World {
   readonly profile: BoardProfile;
   readonly clock = new VirtualClock();
   readonly rng: Rng;
+  private readonly seed: number;
+  private readonly noise = new Map<number, Rng>();
   readonly pins = new Map<number, PinState>();
   readonly i2c = new Map<number, I2CDevice>();
   /** Pending interrupt handlers, run by the interpreter between statements. */
@@ -190,7 +201,8 @@ export class World {
 
   constructor(profile: BoardProfile, opts: WorldOptions = {}) {
     this.profile = profile;
-    this.rng = new Rng(opts.seed);
+    this.seed = opts.seed ?? DEFAULT_SEED;
+    this.rng = new Rng(this.seed);
     this.adcBits = profile.adcBits;
     this.pwmBits = profile.pwmBits;
     this.supplyV = profile.logicV;
@@ -245,6 +257,16 @@ export class World {
     if (p.mode === 'input_pulldown') return 0;
     // A floating input picks up noise; deterministic per seed.
     return (this.rng.next() & 1) as 0 | 1;
+  }
+
+  /** What a floating analog input picks up. Each pin has its own stream, so reading one pin never moves the values of another. */
+  floatNoise(n: number): Rng {
+    let stream = this.noise.get(n);
+    if (!stream) {
+      stream = new Rng(hashSeed(this.seed, `noise:${n}`));
+      this.noise.set(n, stream);
+    }
+    return stream;
   }
 
   setMode(n: number, mode: PinMode): void {
@@ -340,7 +362,7 @@ export class World {
       else if (p.dac !== null) v = p.dac;
       else if (p.mode === 'output') v = this.level(n) ? this.profile.logicV : 0;
       else if (p.mode === 'input_pullup') v = this.profile.logicV;
-      else return Math.floor(this.rng.float() * max * 0.25 + max * 0.3); // floating: noise
+      else return Math.floor(this.floatNoise(n).float() * max * 0.25 + max * 0.3);
     }
     if (this.damaged.has(n)) return 0;
     if (solved !== null) return Math.max(0, Math.min(max, Math.floor((v * (max + 1)) / this.profile.adcVref)));
