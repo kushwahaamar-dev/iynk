@@ -11,7 +11,15 @@ import { createSimHandler } from "./handler";
 const boardIdOf = (descriptor: string): BoardId => descriptor.replace(/^core\./, "").replace(/@.*$/, "") as BoardId;
 
 /** The run has no analog solver in the worker yet, so a probe reads "not modelled" until one is wired in. */
-const noAnalog = { netVolts: () => null, pinVolts: () => null, componentResult: () => null };
+const noAnalog = {
+  netVolts: () => null,
+  pinVolts: () => null,
+  componentResult: () => null,
+  nodeIndex: () => null,
+  whatIf: (): never => {
+    throw new Error("no analog solver in the worker");
+  },
+};
 
 serveWorker(
   self as unknown as WorkerScopeLike,
