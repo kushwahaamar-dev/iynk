@@ -166,7 +166,13 @@ export function buddyRoutes(ctx: RouteDeps): RouteDef[] {
 
   const dropBuddy = (c: Ctx): Reply => {
     const me = c.authed as NonNullable<Ctx["authed"]>;
-    if (store.transaction((tx) => removeBuddy(tx, me, c.params["identityId"] as string))) log.info("buddy_removed");
+    const { removed, after } = store.transaction((tx) => removeBuddy(tx, me, c.params["identityId"] as string, ctx.buddyRemoval));
+    if (removed) log.info("buddy_removed");
+    try {
+      after?.();
+    } catch (error) {
+      log.error("buddy_removal_after_failed", { error: error instanceof Error ? error.message : String(error) });
+    }
     return { status: 204 };
   };
 

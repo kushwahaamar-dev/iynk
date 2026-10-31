@@ -87,8 +87,8 @@ describe("visibility", () => {
     run = await startApp();
     const { a, b } = await trio(run);
     const r = run;
-    assert.equal(r.app.store.transaction((tx) => removeBuddy(tx, a, b.identityId)), true);
-    assert.equal(r.app.store.transaction((tx) => removeBuddy(tx, a, b.identityId)), false);
+    assert.equal(r.app.store.transaction((tx) => removeBuddy(tx, a, b.identityId).removed), true);
+    assert.equal(r.app.store.transaction((tx) => removeBuddy(tx, a, b.identityId).removed), false);
     assert.equal(r.app.store.read((tx) => areBuddies(tx, a.deviceId, b.deviceId)), false);
     assert.equal(view(r, a, b.identityId), null);
     assert.equal(view(r, b, a.identityId), null);

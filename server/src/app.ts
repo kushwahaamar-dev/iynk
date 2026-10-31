@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import type { RequestListener } from "node:http";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { BuddyRemovalHook } from "./buddies/visibility.ts";
 import type { ServerConfig } from "./config.ts";
 import type { Deps } from "./deps.ts";
 import { authRoutes } from "./http/auth.ts";
@@ -26,6 +27,7 @@ export type RouteDeps = {
   log: Logger;
   limiter: Limiter;
   app: { draining(): boolean };
+  buddyRemoval?: BuddyRemovalHook;
 };
 
 export type App = {

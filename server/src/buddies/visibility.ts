@@ -15,18 +15,34 @@ export function visibleBuddy(tx: Tx, viewer: Authed, identityId: string, now: nu
   return fetchBuddies(tx, viewer.deviceId, now, identityId)[0] ?? null;
 }
 
+/** Runs inside the removal transaction, after the pair is deleted. A throw rolls the removal back; a returned function runs after COMMIT. */
+export type BuddyRemovalHook = (tx: Tx, a: string, b: string) => void | (() => void);
+
 /** Deletes the pair on both sides. Removing a buddy that is not there is not an error, so the call tells a stranger nothing. */
-export function removeBuddy(tx: Tx, viewer: Authed, identityId: string): boolean {
-  const gone = tx.run(
-    `DELETE FROM buddies WHERE rowid IN (
-       SELECT bu.rowid FROM buddies bu JOIN devices d ON d.id = CASE WHEN bu.a = ? THEN bu.b ELSE bu.a END
-        WHERE (bu.a = ? OR bu.b = ?) AND d.identity_id = ?)`,
-    viewer.deviceId,
-    viewer.deviceId,
-    viewer.deviceId,
-    identityId,
-  );
-  return gone.changes > 0;
+export function removeBuddy(
+  tx: Tx,
+  viewer: Authed,
+  identityId: string,
+  onRemoved?: BuddyRemovalHook,
+): { removed: boolean; after: (() => void) | null } {
+  const others = tx
+    .all<{ other: string }>(
+      `SELECT d.id AS other FROM buddies bu JOIN devices d ON d.id = CASE WHEN bu.a = ? THEN bu.b ELSE bu.a END
+        WHERE (bu.a = ? OR bu.b = ?) AND d.identity_id = ?`,
+      viewer.deviceId,
+      viewer.deviceId,
+      viewer.deviceId,
+      identityId,
+    )
+    .map((row) => row.other);
+  const afters: Array<() => void> = [];
+  for (const other of others) {
+    const [low, high] = pair(viewer.deviceId, other);
+    tx.run("DELETE FROM buddies WHERE a = ? AND b = ?", low, high);
+    const after = onRemoved?.(tx, viewer.deviceId, other);
+    if (after) afters.push(after);
+  }
+  return { removed: others.length > 0, after: afters.length > 0 ? () => afters.forEach((run) => run()) : null };
 }
 
 /** An empty alias clears it. */
