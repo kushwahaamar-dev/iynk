@@ -1,0 +1,19 @@
+{
+  "description": "Ein FPGA-Board Terasic DE10-Lite mit Intel-MAX-10-Chip 10M50, 10 Schaltern, 2 Tasten, 10 LEDs, sechs Siebensegmentanzeigen und einer Arduino-Leiste.",
+  "summary": "Die Platine führt dein Verilog im iynk-Zyklussimulator aus. Ports ersetzen Pins: Schalter, Tasten, LEDs, die Siebensegmentanzeigen und die Ausgänge der Arduino-Leiste. Ein Entwurf wird weder synthetisiert noch zeitlich geprüft.",
+  "layer": "Firmware-Laufzeit.",
+  "clock": "Takteingang: 50 MHz auf der Platine.",
+  "activelow": "Aktiv LOW: 0 bedeutet gedrückt oder leuchtend.",
+  "outputonly": "Im Simulator nur Ausgang.",
+  "models": {
+    "1": "Verilog-Teilmenge, die der Zyklussimulator mit den DE10-Lite-Ports ausführt, ein Pin pro Port-Bit.",
+    "2": "Schalter, Tasten (aktiv LOW), LEDs, die sechs Siebensegmentanzeigen (aktiv LOW) und die Arduino-Leiste als Ausgänge.",
+    "3": "Ein Entwurf, der CLK_HZ deklariert, läuft mit 100 kHz statt mit dem 50-MHz-Takt der Platine."
+  },
+  "not": {
+    "1": "Synthese, Timing-Abschluss und Constraint-Dateien.",
+    "2": "Der ADC, der Beschleunigungssensor, VGA und das SDRAM.",
+    "3": "Die Größe des Block-RAMs und die elektrischen Grenzen der Pins."
+  },
+  "gap": "Es sind noch keine elektrischen Grenzwerte hinterlegt, daher gibt es für diese Platine keine Prüfung auf Pin-Überlastung."
+}

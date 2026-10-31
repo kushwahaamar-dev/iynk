@@ -10,16 +10,8 @@ import { builtinRegistry } from "@/parts/builtin";
 import type { Descriptor } from "@/parts/descriptor";
 import { buildBoardDescriptor } from "@/parts/testing/board-gen";
 
-/** Boards whose component descriptor is not written yet. A board task removes its own name when it adds the descriptor. */
-const NOT_YET_BOUND: readonly BoardId[] = [
-  "pi4-pi5",
-  "basys3",
-  "de10-lite",
-];
-
 const registry = builtinRegistry();
 const descriptorOf = (id: BoardId): Descriptor | undefined => registry.latest(PROFILES[id].partId);
-const BOUND = BOARD_IDS.filter((id) => descriptorOf(id));
 
 const RESET_NAMES = new Set(["EN", "RST", "RESET", "RUN", "NRST"]);
 const LANGUAGE_OF = { "arduino-cpp": "arduino", micropython: "python", python: "python", verilog: "verilog" } as Record<string, string>;
@@ -50,13 +42,13 @@ describe("board part ids", () => {
   });
 });
 
-describe("not yet bound boards", () => {
-  it("lists exactly the boards without a descriptor", () => {
-    expect(BOARD_IDS.filter((id) => !descriptorOf(id))).toEqual(NOT_YET_BOUND);
+describe("bound boards", () => {
+  it("gives every profile a descriptor", () => {
+    expect(BOARD_IDS.filter((id) => !descriptorOf(id))).toEqual([]);
   });
 });
 
-describe.each(BOUND)("descriptor of %s agrees with its profile", (id) => {
+describe.each(BOARD_IDS)("descriptor of %s agrees with its profile", (id) => {
   const profile = PROFILES[id];
   const descriptor = descriptorOf(id) as Descriptor;
   const pins = descriptor.pins;
@@ -76,7 +68,7 @@ describe.each(BOUND)("descriptor of %s agrees with its profile", (id) => {
 
   it("resolves every digital descriptor pin into the profile", () => {
     for (const pin of pins) {
-      if (pin.class === "bus" || !pin.type.startsWith("digital_") || RESET_NAMES.has(pin.id) || RESET_NAMES.has(pin.designator ?? "")) continue;
+      if (profile.fpga || pin.class === "bus" || !pin.type.startsWith("digital_") || RESET_NAMES.has(pin.id) || RESET_NAMES.has(pin.designator ?? "")) continue;
       const n = numbers.get(pin);
       expect(n !== undefined && allowed.has(n), `${id}: pin ${pin.id} resolves to ${n}`).toBe(true);
     }

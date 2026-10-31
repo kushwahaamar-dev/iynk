@@ -1,0 +1,19 @@
+{
+  "description": "Une carte FPGA Digilent Basys 3 avec une puce Artix-7 XC7A35T, 16 interrupteurs, 5 boutons, 16 LED, un afficheur sept segments à quatre chiffres et trois ports Pmod.",
+  "summary": "La carte exécute ton Verilog dans le simulateur par cycles d'iynk. Des ports remplacent les broches : interrupteurs, boutons, LED, l'afficheur sept segments et les sorties Pmod. Elle ne synthétise pas la conception et n'en vérifie pas le timing.",
+  "layer": "Environnement d'exécution du firmware.",
+  "clock": "Entrée d'horloge : 100 MHz sur la carte.",
+  "activelow": "Actif à l'état bas : 0 signifie appuyé ou allumé.",
+  "outputonly": "Sortie seule dans le simulateur.",
+  "models": {
+    "1": "Sous-ensemble de Verilog exécuté par le simulateur par cycles avec les ports de la Basys 3, une broche par bit de port.",
+    "2": "Interrupteurs, boutons (actifs à l'état haut), LED, l'afficheur sept segments (anode commune, actif à l'état bas) et les ports Pmod JA, JB et JC en sortie.",
+    "3": "Une conception qui déclare CLK_HZ tourne à 100 kHz au lieu de l'horloge de 100 MHz de la carte."
+  },
+  "not": {
+    "1": "La synthèse, la fermeture du timing et les fichiers de contraintes.",
+    "2": "Les entrées analogiques XADC, le VGA, le PS/2, l'USB et l'UART.",
+    "3": "La taille de la RAM de blocs et les limites électriques des broches."
+  },
+  "gap": "Aucune valeur électrique maximale n'est encore indiquée, donc il n'existe pas de contrôle de surcharge des broches pour cette carte."
+}

@@ -1,0 +1,1024 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.basys3",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Digilent",
+    "model": "Basys 3",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "fpga",
+    "legacy_ids": [
+      "basys3"
+    ],
+    "description": {
+      "i18n_key": "parts.basys3.description",
+      "en": "A Digilent Basys 3 FPGA board with an Artix-7 XC7A35T chip, 16 switches, 5 buttons, 16 LEDs, a four-digit seven-segment display and three Pmod ports."
+    },
+    "chip": {
+      "manufacturer": "AMD",
+      "model": "XC7A35T"
+    },
+    "primary_source": "manual",
+    "tags": [
+      "artix-7",
+      "xc7a35t",
+      "fpga",
+      "verilog",
+      "digilent",
+      "education"
+    ]
+  },
+  "sources": [
+    {
+      "id": "manual",
+      "kind": "datasheet",
+      "title": "Digilent Basys 3 Reference Manual (rev C, DOC# 502-183)",
+      "publisher": "Digilent",
+      "url": "https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the document in full."
+    },
+    {
+      "id": "xdc",
+      "kind": "library",
+      "title": "Basys-3-Master.xdc (Digilent XDC repository)",
+      "publisher": "Digilent",
+      "url": "https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile basys3) and src/content/boards/basys3.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "FPGA",
+      "kind": "other",
+      "pins": [
+        "clk",
+        "sw0",
+        "sw1",
+        "sw2",
+        "sw3",
+        "sw4",
+        "sw5",
+        "sw6",
+        "sw7",
+        "sw8",
+        "sw9",
+        "sw10",
+        "sw11",
+        "sw12",
+        "sw13",
+        "sw14",
+        "sw15",
+        "btnC",
+        "btnU",
+        "btnL",
+        "btnR",
+        "btnD",
+        "led0",
+        "led1",
+        "led2",
+        "led3",
+        "led4",
+        "led5",
+        "led6",
+        "led7",
+        "led8",
+        "led9",
+        "led10",
+        "led11",
+        "led12",
+        "led13",
+        "led14",
+        "led15",
+        "seg0",
+        "seg1",
+        "seg2",
+        "seg3",
+        "seg4",
+        "seg5",
+        "seg6",
+        "dp",
+        "an0",
+        "an1",
+        "an2",
+        "an3"
+      ]
+    },
+    {
+      "id": "JA",
+      "kind": "header",
+      "pins": [
+        "JA0",
+        "JA1",
+        "JA2",
+        "JA3",
+        "JA4",
+        "JA5",
+        "JA6",
+        "JA7"
+      ]
+    },
+    {
+      "id": "JB",
+      "kind": "header",
+      "pins": [
+        "JB0",
+        "JB1",
+        "JB2",
+        "JB3",
+        "JB4",
+        "JB5",
+        "JB6",
+        "JB7"
+      ]
+    },
+    {
+      "id": "JC",
+      "kind": "header",
+      "pins": [
+        "JC0",
+        "JC1",
+        "JC2",
+        "JC3",
+        "JC4",
+        "JC5",
+        "JC6",
+        "JC7"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "clk",
+      "designator": "clk",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.clock",
+        "en": "Clock input: 100 MHz on the board."
+      }
+    },
+    {
+      "id": "sw0",
+      "designator": "sw[0]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw1",
+      "designator": "sw[1]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw2",
+      "designator": "sw[2]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw3",
+      "designator": "sw[3]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw4",
+      "designator": "sw[4]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw5",
+      "designator": "sw[5]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw6",
+      "designator": "sw[6]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw7",
+      "designator": "sw[7]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw8",
+      "designator": "sw[8]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw9",
+      "designator": "sw[9]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw10",
+      "designator": "sw[10]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw11",
+      "designator": "sw[11]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw12",
+      "designator": "sw[12]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw13",
+      "designator": "sw[13]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw14",
+      "designator": "sw[14]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "sw15",
+      "designator": "sw[15]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "btnC",
+      "designator": "btnC",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "btnU",
+      "designator": "btnU",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "btnL",
+      "designator": "btnL",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "btnR",
+      "designator": "btnR",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "btnD",
+      "designator": "btnD",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led0",
+      "designator": "led[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led1",
+      "designator": "led[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led2",
+      "designator": "led[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led3",
+      "designator": "led[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led4",
+      "designator": "led[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led5",
+      "designator": "led[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led6",
+      "designator": "led[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led7",
+      "designator": "led[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led8",
+      "designator": "led[8]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led9",
+      "designator": "led[9]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led10",
+      "designator": "led[10]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led11",
+      "designator": "led[11]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led12",
+      "designator": "led[12]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led13",
+      "designator": "led[13]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led14",
+      "designator": "led[14]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "led15",
+      "designator": "led[15]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "seg0",
+      "designator": "seg[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "seg1",
+      "designator": "seg[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "seg2",
+      "designator": "seg[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "seg3",
+      "designator": "seg[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "seg4",
+      "designator": "seg[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "seg5",
+      "designator": "seg[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "seg6",
+      "designator": "seg[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "dp",
+      "designator": "dp",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "an0",
+      "designator": "an[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "an1",
+      "designator": "an[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "an2",
+      "designator": "an[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "an3",
+      "designator": "an[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "JA0",
+      "designator": "JA[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA1",
+      "designator": "JA[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA2",
+      "designator": "JA[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA3",
+      "designator": "JA[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA4",
+      "designator": "JA[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA5",
+      "designator": "JA[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA6",
+      "designator": "JA[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JA7",
+      "designator": "JA[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB0",
+      "designator": "JB[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB1",
+      "designator": "JB[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB2",
+      "designator": "JB[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB3",
+      "designator": "JB[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB4",
+      "designator": "JB[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB5",
+      "designator": "JB[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB6",
+      "designator": "JB[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JB7",
+      "designator": "JB[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JB",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC0",
+      "designator": "JC[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC1",
+      "designator": "JC[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC2",
+      "designator": "JC[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC3",
+      "designator": "JC[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC4",
+      "designator": "JC[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC5",
+      "designator": "JC[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC6",
+      "designator": "JC[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "JC7",
+      "designator": "JC[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "JC",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.basys3.outputonly",
+        "en": "Output only in the simulator."
+      }
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.basys3.summary",
+      "en": "The board runs the user's Verilog in the iynk cycle simulator. Ports stand in for pins: switches, buttons, LEDs, the seven-segment display and the Pmod outputs. It does not synthesise a design or time it."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.basys3.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile basys3 in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.basys3.models.1",
+        "en": "Verilog subset run by the cycle simulator with the Basys 3 ports, one pin per port bit."
+      },
+      {
+        "i18n_key": "parts.basys3.models.2",
+        "en": "Switches, buttons (active high), LEDs, the seven-segment display (common anode, active low) and the Pmod ports JA, JB and JC as outputs."
+      },
+      {
+        "i18n_key": "parts.basys3.models.3",
+        "en": "A design that declares CLK_HZ runs at 100 kHz instead of the 100 MHz board clock."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.basys3.not.1",
+        "en": "Synthesis, timing closure and constraint files."
+      },
+      {
+        "i18n_key": "parts.basys3.not.2",
+        "en": "The XADC analog inputs, VGA, PS/2, USB and the UART."
+      },
+      {
+        "i18n_key": "parts.basys3.not.3",
+        "en": "Block RAM sizing and the electrical limits of the pins."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.basys3.gap",
+          "en": "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/verilog/verilog.test.ts",
+        "state": "present",
+        "note": "Runs a program on the basys3 profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "verilog"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "basys3",
+        "path": "public/figures/boards/basys3.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Digilent Basys 3",
+      "body_colour": "#2b6e3a",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. One pin per port bit of the basys3 profile (74 pins).",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

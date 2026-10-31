@@ -13,6 +13,9 @@ export const STARTERS: readonly StarterEntry[] = [
   { board: "pico", load: () => import("./pico.project.json").then((m) => m.default) },
   { board: "microbit-v2", load: () => import("./microbit-v2.project.json").then((m) => m.default) },
   { board: "nucleo-f401re", load: () => import("./nucleo-f401re.project.json").then((m) => m.default) },
+  { board: "pi4-pi5", load: () => import("./pi4-pi5.project.json").then((m) => m.default) },
+  { board: "basys3", load: () => import("./basys3.project.json").then((m) => m.default) },
+  { board: "de10-lite", load: () => import("./de10-lite.project.json").then((m) => m.default) },
 ];
 
 export function starterFor(board: string): StarterEntry | undefined {

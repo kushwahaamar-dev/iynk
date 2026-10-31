@@ -44,6 +44,9 @@ const BOARD_STARTERS = {
   pico: 'prj_pico-blink',
   'microbit-v2': 'prj_microbit-v2-blink',
   'nucleo-f401re': 'prj_nucleo-f401re-blink',
+  'pi4-pi5': 'prj_pi4-pi5-blink',
+  basys3: 'prj_basys3-blink',
+  'de10-lite': 'prj_de10-lite-blink',
 };
 
 const ECHO = `void setup() {
