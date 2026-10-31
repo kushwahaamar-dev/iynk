@@ -13,11 +13,13 @@
   },
   "scripts": {
     "start": "node src/main.ts",
-    "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\"",
+    "test": "node tools/build.mjs && node --test --test-concurrency=1 \"test/**/*.test.ts\"",
+    "server:build": "node tools/build.mjs",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
+    "esbuild": "0.28.2",
     "typescript": "5.9.3"
   },
   "dependencies": {
