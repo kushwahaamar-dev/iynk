@@ -13,6 +13,8 @@
     "SN-5": "In dieser Reihenfolge testen: ohne Propeller, dann angeleint oder sehr niedrig über weichem Boden schweben, dann auf freier Fläche abseits von Menschen.",
     "SN-6": "Registrierung, Remote ID, Höhengrenzen, Sichtflug und Altersregeln hängen davon ab, wo du fliegst. Frage deine nationale Behörde. Dieser Simulator macht niemanden zum rechtmäßigen Piloten.",
     "SN-7": "Die autonomen Modi hier sind Lehrmodelle. Sie erkennen keine Hindernisse, Menschen oder anderen Luftfahrzeuge.",
-    "SN-8": "Diese Simulation ist ein Lehrwerkzeug, keine offizielle Freigabe eines Entwurfs. Sie sagt nicht voraus, dass ein echtes Fluggerät fliegt oder sicher fliegt."
+    "SN-8": "Diese Simulation ist ein Lehrwerkzeug, keine offizielle Freigabe eines Entwurfs. Sie sagt nicht voraus, dass ein echtes Fluggerät fliegt oder sicher fliegt.",
+    "ack": "Ich habe das gelesen",
+    "acked": "Bestätigt am {date}"
   }
 }

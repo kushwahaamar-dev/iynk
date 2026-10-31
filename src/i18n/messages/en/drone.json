@@ -13,6 +13,8 @@
     "SN-5": "Test in this order: props off, then a tether or very low hover over soft ground, then open space away from people.",
     "SN-6": "Registration, Remote ID, height limits, line-of-sight and age rules depend on where you fly. Check your national authority. This simulator does not make anyone legal to fly.",
     "SN-7": "Autonomous modes here are teaching models. They do not detect obstacles, people or other aircraft.",
-    "SN-8": "This simulation is a teaching tool, not an official sign-off on a design. It does not predict that a real aircraft will fly, or fly safely."
+    "SN-8": "This simulation is a teaching tool, not an official sign-off on a design. It does not predict that a real aircraft will fly, or fly safely.",
+    "ack": "I have read this",
+    "acked": "Acknowledged on {date}"
   }
 }
