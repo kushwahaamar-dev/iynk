@@ -1,0 +1,453 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.bme280-module",
+  "version": "1.1.0",
+  "identity": {
+    "manufacturer": "generic (unbranded breakout)",
+    "model": "GY-BME280 breakout with Bosch BME280",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "sensor",
+    "category": "sensor",
+    "description": {
+      "i18n_key": "parts.bme280-module.description",
+      "en": "A temperature, humidity and pressure sensor on I2C. This is the 6-pin breakout with no regulator: 3.3 V only."
+    },
+    "chip": {
+      "manufacturer": "Bosch Sensortec",
+      "model": "BME280",
+      "package": "LGA-8 2.5 x 2.5 x 0.93 mm"
+    },
+    "primary_source": "facts",
+    "tags": [
+      "bme280",
+      "i2c",
+      "temperature",
+      "humidity",
+      "pressure",
+      "sensor"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 27: BME280",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It cites the Bosch datasheet BST-BME280-DS001-23 rev 1.23, read by the fact-sheet author, not by this descriptor."
+    }
+  ],
+  "pins": [
+    {
+      "id": "VCC",
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 1.27,
+        "y": 12.7
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 1.27,
+        "y": 10.16
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "SCL",
+      "designator": "SCL",
+      "type": "digital_in",
+      "class": "bus",
+      "position": {
+        "x": 1.27,
+        "y": 7.62
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SDA",
+      "designator": "SDA",
+      "type": "open_drain",
+      "class": "bus",
+      "position": {
+        "x": 1.27,
+        "y": 5.08
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CSB",
+      "designator": "CSB",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 2.54
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "en": "High selects I2C. Low selects SPI."
+      }
+    },
+    {
+      "id": "SDO",
+      "designator": "SDO",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 0
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "en": "Low gives address 0x76. High gives 0x77."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "H1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "VCC",
+        "GND",
+        "SCL",
+        "SDA",
+        "CSB",
+        "SDO"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "breakout board",
+    "body": {
+      "w": 11.5,
+      "h": 15,
+      "d": 3
+    },
+    "accuracy": 2,
+    "source": {
+      "src": "facts",
+      "loc": "section 27, Breakouts"
+    }
+  },
+  "ratings": {
+    "vdd_range": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 1.71,
+        "max": 3.6,
+        "source": {
+          "src": "facts",
+          "loc": "section 27"
+        }
+      },
+      "used_by_model": "manufacturer"
+    },
+    "supply_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 4.25,
+        "source": {
+          "src": "facts",
+          "loc": "section 27"
+        }
+      },
+      "used_by_model": "manufacturer"
+    }
+  },
+  "protocols": [
+    {
+      "id": "host_i2c",
+      "kind": "i2c",
+      "role": "slave",
+      "pins": {
+        "scl": "SCL",
+        "sda": "SDA"
+      },
+      "params": {
+        "address": 118,
+        "alt_address": 119,
+        "address_select_pin": "SDO",
+        "chip_id": 96,
+        "onboard_pullup_ohms": 10000
+      },
+      "status": "modelled"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "supply",
+        "pins": [
+          "VCC"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vdd_range"
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "address",
+      "name": {
+        "en": "I2C address"
+      },
+      "kind": "build-option",
+      "type": "number",
+      "default": 118,
+      "min": 0,
+      "max": 127,
+      "unit": "1",
+      "affects": [
+        "host_i2c"
+      ]
+    },
+    {
+      "id": "onboard_pullup_ohms",
+      "name": {
+        "en": "Onboard pull-up (assumed 10 kohm: the real value is unknown and breakouts differ)"
+      },
+      "kind": "variant",
+      "type": "number",
+      "default": 10000,
+      "min": 0,
+      "max": 100000,
+      "unit": "ohm",
+      "affects": [
+        "host_i2c"
+      ]
+    }
+  ],
+  "physical_inputs": [
+    {
+      "id": "temperature",
+      "name": {
+        "en": "Air temperature"
+      },
+      "unit": "degC",
+      "axes": 1,
+      "range": {
+        "min": -40,
+        "max": 85
+      },
+      "world_channel": "environment.temperature"
+    },
+    {
+      "id": "pressure",
+      "name": {
+        "en": "Air pressure (hPa)"
+      },
+      "unit": "1",
+      "axes": 1,
+      "range": {
+        "min": 300,
+        "max": 1100
+      },
+      "world_channel": "environment.pressure"
+    },
+    {
+      "id": "humidity",
+      "name": {
+        "en": "Relative humidity"
+      },
+      "unit": "percent",
+      "axes": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      },
+      "world_channel": "environment.humidity"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A register-level I2C slave at 0x76 (SDO low) or 0x77 (SDO high) with chip ID 0x60. It answers only with CSB high and VCC from 1.71 to 3.6 V, and returns raw words made from the temperature, pressure and humidity inputs."
+    },
+    "layers": [
+      {
+        "id": "sensor",
+        "domain": "protocol",
+        "reads": [
+          "SCL",
+          "SDA",
+          "SDO",
+          "CSB",
+          "temperature",
+          "pressure",
+          "humidity"
+        ],
+        "drives": [
+          "SDA"
+        ],
+        "summary": {
+          "en": "I2C data-only device."
+        },
+        "model": {
+          "kind": "builtin",
+          "ref": "device:i2c/bme280@1",
+          "params": {},
+          "implementation": {
+            "note": "src/sim/devices/bme280.ts with the descriptor src/sim/devices/data/bme280.device.json."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "The I2C slave answers at its address and returns raw temperature, pressure and humidity words that the Bosch integer compensation turns back into the inputs."
+      },
+      {
+        "en": "Conversion time, forced and normal mode, standby time, soft reset, and CTRL_HUM taking effect at the next CTRL_MEAS write."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "SPI mode (CSB low), the IIR filter, self-heating, sleep current, and sensor thermal lag."
+      },
+      {
+        "en": "Damage above the 4.25 V maximum."
+      },
+      {
+        "en": "A BMP280 look-alike board that reads chip ID 0x58 and has no humidity."
+      },
+      {
+        "en": "The calibration words are a synthetic set, not a dump from a real chip."
+      }
+    ],
+    "tests": [
+      {
+        "id": "chip_id",
+        "kind": "datasheet-point",
+        "file": "src/sim/devices/bme280.test.ts",
+        "state": "to-write",
+        "note": "Chip ID register 0xD0 reads 0x60."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Adafruit BME280 Library",
+            "version": "2.2.4",
+            "install": "Adafruit BME280 Library",
+            "iynk_support": "supported",
+            "note": {
+              "en": "Modelled: begin, readTemperature, readHumidity, readPressure, readAltitude and sensorID. setSampling and the Adafruit_Sensor event interface are not."
+            }
+          },
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "compatibility": {
+    "rules": [
+      {
+        "id": "supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VCC",
+          "rating": "supply_abs_max"
+        },
+        "message": {
+          "en": "This breakout has no regulator. Above 3.6 V is out of range and 4.25 V is the absolute maximum."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VCC": "top",
+        "GND": "bottom",
+        "SCL": "left",
+        "SDA": "left",
+        "CSB": "right",
+        "SDO": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "BME280",
+      "body_colour": "#6b3fa0",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-27",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-27",
+        "note": "First descriptor for the env-monitor example, from docs/facts/la-components.md section 27.",
+        "behaviour_change": false
+      },
+      {
+        "version": "1.1.0",
+        "date": "2026-10-30",
+        "note": "The device model and Adafruit_BME280 library model exist; protocol status is modelled.",
+        "behaviour_change": true
+      }
+    ]
+  }
+}

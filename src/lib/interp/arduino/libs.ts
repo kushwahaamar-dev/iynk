@@ -4,6 +4,7 @@ import type { Gen } from '../exec';
 import type { BoardProfile } from '../profiles';
 import { hasPwm, isKnownPin } from '../profiles';
 import type { ArduinoRt, Ref } from './interp';
+import { Bme280Class, SensorClass } from './lib-bme280';
 import { T, type CValue, type Ty, type TypeEnv } from './types';
 
 type Ret = string | ((ts: Ty[], env: TypeEnv) => Ty);
@@ -649,6 +650,7 @@ export function CONSTANTS(p: BoardProfile): Record<string, { v: number; t: strin
     HTTP_GET: { v: 1, t: 'int' }, HTTP_POST: { v: 3, t: 'int' }, HTTP_ANY: { v: 0, t: 'int' },
     RGB_BRIGHTNESS: { v: 64, t: 'int' }, QTR_EMITTERS_ON: { v: 1, t: 'int' },
     SERIAL_8N1: { v: 0x06, t: 'int' },
+    SENSORS_PRESSURE_SEALEVELHPA: { v: 1013.25, t: 'float' },
   };
   for (const [k, v] of Object.entries(p.aliases)) c[k] = { v, t: k === 'LED_BUILTIN' || k === 'RGB_BUILTIN' ? 'int' : 'uint8_t' };
   if (p.id === 'esp32-devkitc') delete c.LED_BUILTIN;
@@ -1471,6 +1473,8 @@ export const LIBS: Record<string, LibClass> = {
   LiquidCrystal_I2C: LcdI2CClass,
   LiquidCrystal: LcdClass,
   MPU6050: MpuClass,
+  Adafruit_BME280: Bme280Class,
+  Adafruit_Sensor: SensorClass,
   QTRSensors: QtrClass,
   WiFiClass: WiFiClass,
   IPAddress: IPAddressClass,

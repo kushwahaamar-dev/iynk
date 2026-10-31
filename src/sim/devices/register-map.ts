@@ -48,7 +48,7 @@ export interface DeviceRuntime {
 
 export type BehaviourFn = (
   d: DeviceRuntime,
-  ev: { kind: "write"; addr: number; value: number } | { kind: "tick"; nowNs: number } | { kind: "input"; name: string },
+  ev: { kind: "write"; addr: number; value: number } | { kind: "tick"; nowNs: number } | { kind: "input"; name: string; nowNs: number },
 ) => void;
 
 export type RegisterDevice = I2cDevice & { setInput(name: string, v: number): void; runtime: DeviceRuntime };
@@ -373,7 +373,7 @@ export function createRegisterDevice(d: DeviceDescriptor, ctx: DeviceContext, be
       const spec = d.inputs.find((i) => i.name === name);
       if (spec === undefined || Number.isNaN(v)) return;
       runtime.inputs[name] = Math.min(Math.max(v, spec.range[0]), spec.range[1]);
-      notify({ kind: "input", name });
+      notify({ kind: "input", name, nowNs: ctx.nowNs() });
     },
 
     runtime,
