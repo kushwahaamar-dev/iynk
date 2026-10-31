@@ -7,7 +7,7 @@ import type { BreakId } from "@/lib/flight/crash";
 import { fromCalc } from "@/lib/flight/from-calc";
 import type { CalcOutputs, CraftFaults } from "@/lib/flight/types";
 import { armingRules, canArm, type ArmRule } from "./bench";
-import type { BenchSummary } from "./store";
+import type { BenchSummary } from "./workshop";
 
 // The fly page's own store (D14b): which build flies (the learner's bench build or the factory build), which
 // course, what the learner broke on purpose (Break it) and whether today's challenge is on. The flight itself lives
