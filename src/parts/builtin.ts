@@ -1,18 +1,10 @@
-import breadboard from "./data/breadboard.component.json" with { type: "json" };
-import buzzer from "./data/buzzer-piezo.component.json" with { type: "json" };
-import led from "./data/led-5mm.component.json" with { type: "json" };
-import potentiometer from "./data/potentiometer-10k.component.json" with { type: "json" };
-import pushButton from "./data/push-button-6mm.component.json" with { type: "json" };
-import resistor from "./data/resistor.component.json" with { type: "json" };
-import ssd1306 from "./data/ssd1306.component.json" with { type: "json" };
-import uno from "./data/uno-r3.component.json" with { type: "json" };
+import { GENERATED_DESCRIPTORS } from "./data/index.generated.ts";
 import { createRegistry } from "./registry.ts";
 import type { PartRegistry } from "./registry.ts";
 
-// To add a part: drop `<name>.component.json` into ./data, import it above with `with { type: "json" }` and add it
-// to the list below. `builtinRegistry` refuses to build if any listed file fails validation, and `npm run schema:check`
-// reads every file in ./data.
-export const BUILTIN_DESCRIPTORS: readonly unknown[] = [uno, led, resistor, pushButton, buzzer, potentiometer, ssd1306, breadboard];
+// To add a part: drop `<name>.component.json` into ./data and run `npm run content`, which regenerates the barrel.
+// `builtinRegistry` refuses to build if any file fails validation, and `npm run schema:check` reads every file in ./data.
+export const BUILTIN_DESCRIPTORS: readonly unknown[] = [...GENERATED_DESCRIPTORS];
 
 /** A registry holding every part that ships with iynk. A shipped file that fails validation is a build bug, so it throws. */
 export function builtinRegistry(): PartRegistry {
@@ -25,4 +17,12 @@ export function builtinRegistry(): PartRegistry {
     }
   }
   return registry;
+}
+
+let appRegistry: PartRegistry | undefined;
+
+/** The one registry the app shares: Studio, the orchestrator and the library all read this instance. */
+export function getAppRegistry(): PartRegistry {
+  appRegistry ??= builtinRegistry();
+  return appRegistry;
 }

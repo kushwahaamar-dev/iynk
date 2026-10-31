@@ -119,6 +119,7 @@ describe("buildPartIndex", () => {
 
   it("lists the shipped parts and leaves the breadboard out", () => {
     expect(built.map((e) => e.ref).sort()).toEqual([
+      "core.bme280-module",
       "core.buzzer-piezo",
       "core.led-5mm",
       "core.potentiometer-10k",

@@ -356,7 +356,7 @@
         "id": "chip_id",
         "kind": "datasheet-point",
         "file": "src/sim/devices/bme280.test.ts",
-        "state": "to-write",
+        "state": "present",
         "note": "Chip ID register 0xD0 reads 0x60."
       }
     ]

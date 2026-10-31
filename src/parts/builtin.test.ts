@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { builtinRegistry } from "./builtin.ts";
 import { interfaceOf } from "./pins.ts";
@@ -15,17 +15,10 @@ const pinnedInterface = (ref: string) => lesson.dependencies.components.find((c:
 describe("builtinRegistry", () => {
   const registry = builtinRegistry();
 
-  it("holds the eight shipped parts", () => {
-    expect(registry.list().map((p) => p.ref)).toEqual([
-      "core.uno-r3",
-      "core.led-5mm",
-      "core.resistor",
-      "core.push-button-6mm",
-      "core.buzzer-piezo",
-      "core.potentiometer-10k",
-      "core.ssd1306",
-      "core.breadboard-half",
-    ]);
+  it("holds a part for every flat descriptor file", () => {
+    const files = readdirSync(new URL("./data/", import.meta.url)).filter((f) => f.endsWith(".component.json"));
+    const refs = files.map((f) => JSON.parse(readFileSync(new URL(`./data/${f}`, import.meta.url), "utf8")).id);
+    expect(registry.list().map((p) => p.ref).sort()).toEqual(refs.sort());
   });
 
   it.each([
