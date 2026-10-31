@@ -1,0 +1,1593 @@
+[
+  {
+    "id": "item-uno-r3-reverse-jack",
+    "base": "prj_uno-r3-knob",
+    "fault": {
+      "id": "flt_reverse_jack",
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "reverse-polarity",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "You plug in a wall adapter and nothing happens: the ON LED stays dark and nothing warms up."
+      },
+      "answer": {
+        "cause_id": "reverse-polarity",
+        "fault": "flt_reverse_jack"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        }
+      ],
+      "explanation": "The barrel jack feeds the board through a diode before anything else. Wrong way round, the diode blocks, so no current flows and nothing is harmed. That is what the diode is for.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Look at what the board does: any LED, any heat, any smell? Decide whether the board is damaged or simply not being fed."
+        },
+        {
+          "text": "Think about the path the current takes from the adapter into the board. Which kinds of part let current through in one direction only?",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A part at the entrance blocks current when the plug is the wrong way round. Compare the markings on the adapter with what the board expects.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "reverse-jack",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "item-uno-r3-overvoltage",
+    "base": "prj_uno-r3-knob",
+    "fault": {
+      "id": "flt_overvoltage",
+      "cause_id": "x-supply-overvoltage",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "wrong-voltage",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true,
+      "params": {
+        "value": 24
+      }
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "Soon after you plugged in a bigger adapter the board stopped working. One component near the jack is too hot to touch, and there was a hot smell."
+      },
+      "answer": {
+        "cause_id": "x-supply-overvoltage",
+        "fault": "flt_overvoltage"
+      },
+      "options": [
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        },
+        {
+          "cause_id": "x-supply-overvoltage",
+          "label": "The input is fed more than it is rated for"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        }
+      ],
+      "explanation": "The linear regulator on the board is rated for 20 V in, and a 24 V adapter is past that. It fails, and when it fails short it passes the input straight to the 5 V rail, taking the chips with it.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Read the output rating printed on the adapter and write it down."
+        },
+        {
+          "text": "Compare that number with the range the board's input is built for. Is the regulator sized for it?",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A regulator turns surplus input into heat. Work out how much extra it has to burn off and whether it can survive that.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "overvoltage",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "item-uno-r3-missing-resonator",
+    "base": "prj_uno-r3-knob",
+    "fault": {
+      "id": "flt_missing_resonator",
+      "cause_id": "x-missing-part",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "missing-part",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The ON LED lights and the board seems fine, but the sketch never runs, the L LED stays dark and every upload ends with a not-in-sync error."
+      },
+      "answer": {
+        "cause_id": "x-missing-part",
+        "fault": "flt_missing_resonator"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A connection in the path is broken"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two connections are swapped"
+        },
+        {
+          "cause_id": "x-missing-part",
+          "label": "A part the board needs is not fitted"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        }
+      ],
+      "explanation": "The microcontroller is set to run from an external 16 MHz clock. With nothing fitted it has no clock at all, so it never runs an instruction, not even the bootloader.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Power is clearly there. Ask what a processor needs besides power before it can run a single instruction."
+        },
+        {
+          "text": "Look at the small parts beside the chip on the board: which one gives the processor its timing?",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Compare the board with a good one and find the empty footprint next to the chip.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "missing-resonator",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "item-uno-r3-short-5v",
+    "base": "prj_uno-r3-knob",
+    "fault": {
+      "id": "flt_short_5v",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "short",
+      "target": {
+        "nets": [
+          "net_5v",
+          "net_gnd"
+        ]
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The ON LED goes out at once and a small part beside the USB socket warms up. Your computer warns that the device draws too much power."
+      },
+      "answer": {
+        "cause_id": "supply-shorted-to-ground",
+        "fault": "flt_short_5v"
+      },
+      "options": [
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs drive the same wire"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        },
+        {
+          "cause_id": "supply-shorted-to-ground",
+          "label": "The power rail is joined to ground"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "The LED is the wrong way round"
+        }
+      ],
+      "explanation": "A wire joining the 5 V and 0 V rails draws as much current as USB can give. The resettable fuse heats up and goes high-resistance, cutting power to protect the computer's port.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Disconnect the power first. Then ask which two things on the board could be touching that should never touch."
+        },
+        {
+          "text": "Look at the breadboard rails and the wires you added. Is anything bridging the two long rails?",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A meter in continuity mode between the two rails will beep if they are joined. Follow each wire from those rails until the beep stops.",
+          "focus": {
+            "nets": [
+              "net_5v",
+              "net_gnd"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "short-5v",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "item-esp32-devkitc-reverse-5v",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_reverse_5v",
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "reverse-polarity",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "You connected a bench supply to the module and nothing lights. The supply jumps into current limit and two small parts near the pin get too hot to touch within seconds."
+      },
+      "answer": {
+        "cause_id": "reverse-polarity",
+        "fault": "flt_reverse_5v"
+      },
+      "options": [
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        }
+      ],
+      "explanation": "The 5V pin has no protection diode. Reversed, current flows backwards through the protection diodes and nearly shorts the supply, and the regulator and diodes usually die.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Watch the bench supply's display: how much current does it show, and does it hold the voltage you set?"
+        },
+        {
+          "text": "A supply that hits its limit instantly means current is flowing where it should not. Check which way the leads go onto the pin.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Compare the red lead with the pin marking before you connect again, and look for any burnt part near the entrance.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "reverse-5v",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "item-esp32-devkitc-five-on-3v3",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_five_on_3v3",
+      "cause_id": "x-supply-overvoltage",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "wrong-voltage",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true,
+      "params": {
+        "value": 5
+      }
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The module gets hot and the serial monitor shows nothing. It answered fine before you added the new 5 V sensor."
+      },
+      "answer": {
+        "cause_id": "x-supply-overvoltage",
+        "fault": "flt_five_on_3v3"
+      },
+      "options": [
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        },
+        {
+          "cause_id": "x-supply-overvoltage",
+          "label": "The input is fed more than it is rated for"
+        }
+      ],
+      "explanation": "The chip's supply may not exceed 3.6 V and no pin may go much above its supply. 5 V pushed into the 3.3 V rail or a GPIO damages the chip and its flash.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Compare the voltage the new part runs on with what the module's pins allow. Do they match?"
+        },
+        {
+          "text": "Find the highest voltage the chip tolerates on its supply and I/O pins in its datasheet.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A signal higher than the chip's own rail pushes current through a protection diode into that rail. Trace where the new part's output goes.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "five-on-3v3",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "item-esp32-devkitc-missing-r17",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_missing_r17",
+      "cause_id": "open-connection",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "missing-part",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The board powers up and runs its old sketch, but every upload stops at Connecting and fails with no serial data received. The serial monitor stays silent."
+      },
+      "answer": {
+        "cause_id": "open-connection",
+        "fault": "flt_missing_r17"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A connection in the path is broken"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two connections are swapped"
+        },
+        {
+          "cause_id": "wrong-pin-in-code",
+          "label": "The sketch uses the wrong pin"
+        }
+      ],
+      "explanation": "A small resistor joins the chip's transmit line to the USB bridge. Without it nothing the chip sends reaches the computer, so the uploader never hears the bootloader answer.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "The board runs, so power and the chip are fine. Which direction of the serial link is failing: computer to board, board to computer, or both?"
+        },
+        {
+          "text": "The uploader gets no reply. Follow the transmit line from the chip towards the USB chip and look for a part in its path.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Find the tiny footprint on that line with nothing soldered in it.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "missing-r17",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "item-esp32-devkitc-low-5v",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_low_5v",
+      "cause_id": "part-not-powered",
+      "symptom_ids": [
+        "mcu-resets",
+        "part-dead"
+      ],
+      "kind": "wrong-voltage",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true,
+      "params": {
+        "value": 3.3
+      }
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "mcu-resets",
+        "text": "The red LED glows but the module keeps going through a reset, and the serial monitor repeats the boot banner."
+      },
+      "answer": {
+        "cause_id": "part-not-powered",
+        "fault": "flt_low_5v"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        }
+      ],
+      "explanation": "The regulator needs about 1.1 V of headroom. With only 3.3 V going in it can make about 2.2 V, below the chip's minimum, so the chip keeps restarting.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Look at how often it restarts and whether the LED stays on. Is the chip getting some power, but not enough?"
+        },
+        {
+          "text": "Measure the voltage on the pin you feed and on the 3.3 V rail, then compare with the minimum the chip needs.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A regulator needs its input to be higher than its output by a margin. Check how much margin you are giving it.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "low-5v",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "item-uno-r4-reverse-5v-pin",
+    "base": "prj_uno-r4-pot-pwm",
+    "fault": {
+      "id": "flt_reverse_5v_pin",
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "reverse-polarity",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "Nothing runs. The main chip gets too hot to touch and the bench supply sits at its current limit."
+      },
+      "answer": {
+        "cause_id": "reverse-polarity",
+        "fault": "flt_reverse_5v_pin"
+      },
+      "options": [
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        }
+      ],
+      "explanation": "The 5V pin feeds the rail itself, after the protection diodes. Reversed, current pours backwards through the chip's internal diodes and the chip burns.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Note which part is hot and what the bench supply shows. Large current and heat mean current is flowing where it should not."
+        },
+        {
+          "text": "Think about which way current can enter through that pin and which parts will carry it if the leads are the wrong way round.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Check the lead colours against the pin markings, and check whether anything protects that entry point.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "reverse-5v-pin",
+      "board": "uno-r4"
+    }
+  },
+  {
+    "id": "item-uno-r4-nine-volts-on-5v",
+    "base": "prj_uno-r4-pot-pwm",
+    "fault": {
+      "id": "flt_nine_volts_on_5v",
+      "cause_id": "x-supply-overvoltage",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "wrong-voltage",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true,
+      "params": {
+        "value": 9
+      }
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The ON LED stays lit but nothing runs. The main chip gets hot and a hot smell follows."
+      },
+      "answer": {
+        "cause_id": "x-supply-overvoltage",
+        "fault": "flt_nine_volts_on_5v"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "x-supply-overvoltage",
+          "label": "The input is fed more than it is rated for"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        }
+      ],
+      "explanation": "The 5V pin bypasses the converter and lands on the 5 V rail. The chip is rated for 5.5 V at most, so 9 V damages it.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "A lit LED and a hot chip: is the board short of power, or being given too much?"
+        },
+        {
+          "text": "Measure what you are feeding the pin and compare it with the maximum the chip is rated for.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A pin that goes straight to the chip's rail has no regulator in front of it. Decide what that means for a source higher than the rail.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "nine-volts-on-5v",
+      "board": "uno-r4"
+    }
+  },
+  {
+    "id": "item-uno-r4-missing-inductor",
+    "base": "prj_uno-r4-pot-pwm",
+    "fault": {
+      "id": "flt_missing_inductor",
+      "cause_id": "x-missing-part",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "missing-part",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "On the barrel jack the board is dead and the ON LED stays dark. Plugged into USB it runs as if nothing were wrong."
+      },
+      "answer": {
+        "cause_id": "x-missing-part",
+        "fault": "flt_missing_inductor"
+      },
+      "options": [
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two connections are swapped"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A connection in the path is broken"
+        },
+        {
+          "cause_id": "x-missing-part",
+          "label": "A part the board needs is not fitted"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        }
+      ],
+      "explanation": "The jack path goes through a switching converter, which needs an inductor to smooth its pulses. Without it nothing reaches the 5 V rail from the jack. USB bypasses the converter.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "The board works from one power source and not from another. What differs between the two paths?"
+        },
+        {
+          "text": "Follow the barrel jack's power path: which parts convert it to the voltage the chip needs?",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A switching converter always needs a coil-shaped part beside it. Look for an empty footprint there.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "missing-inductor",
+      "board": "uno-r4"
+    }
+  },
+  {
+    "id": "item-uno-r4-short-5v-gnd",
+    "base": "prj_uno-r4-pot-pwm",
+    "fault": {
+      "id": "flt_short_5v_gnd",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "short",
+      "target": {
+        "nets": [
+          "net_5v",
+          "net_gnd"
+        ]
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The ON LED goes out as soon as you plug the board in, and your computer says the USB device draws too much power."
+      },
+      "answer": {
+        "cause_id": "supply-shorted-to-ground",
+        "fault": "flt_short_5v_gnd"
+      },
+      "options": [
+        {
+          "cause_id": "supply-shorted-to-ground",
+          "label": "The power rail is joined to ground"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs drive the same wire"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "The LED is the wrong way round"
+        }
+      ],
+      "explanation": "Joining the 5 V and 0 V rails asks for more current than the port should give. Only the computer's own limit stops it, so the board goes dark.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Unplug first. Which two things on the board must never be joined?"
+        },
+        {
+          "text": "Check what you added since it last worked: is any wire touching both long rails of the breadboard?",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Use a meter set to continuity between the two rails; if it beeps, pull wires one at a time until it stops.",
+          "focus": {
+            "nets": [
+              "net_5v",
+              "net_gnd"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "short-5v-gnd",
+      "board": "uno-r4"
+    }
+  },
+  {
+    "id": "item-nano-reverse-vin",
+    "base": "prj_nano-fade",
+    "fault": {
+      "id": "flt_reverse_vin",
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "reverse-polarity",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "Nothing lights. The small chip on the underside gets hot fast and smells of hot epoxy."
+      },
+      "answer": {
+        "cause_id": "reverse-polarity",
+        "fault": "flt_reverse_vin"
+      },
+      "options": [
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        }
+      ],
+      "explanation": "The board has no protection on its main input. A reversed source drives current backwards through the regulator, which usually fails, sometimes taking the other chips with it.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "What do you smell and where is the heat? A hot chip right at the power entry points at the entry path."
+        },
+        {
+          "text": "This board has no diode protecting its main input. Think about what happens inside a regulator when current is forced through it backwards.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Before you try again, check the lead colours with a meter, and inspect the regulator for damage.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "reverse-vin",
+      "board": "nano"
+    }
+  },
+  {
+    "id": "item-nano-vin-overvoltage",
+    "base": "prj_nano-fade",
+    "fault": {
+      "id": "flt_vin_overvoltage",
+      "cause_id": "x-supply-overvoltage",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "wrong-voltage",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true,
+      "params": {
+        "value": 19
+      }
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "You powered the board from a laptop charger. The ON LED went dark and the chip beside the input smells burnt."
+      },
+      "answer": {
+        "cause_id": "x-supply-overvoltage",
+        "fault": "flt_vin_overvoltage"
+      },
+      "options": [
+        {
+          "cause_id": "x-supply-overvoltage",
+          "label": "The input is fed more than it is rated for"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        }
+      ],
+      "explanation": "The regulator on the board is rated for about 15 V in. A 19 V charger is past that, and the regulator fails, sometimes passing the input straight on to the chips.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Read the output rating printed on the charger and write it down."
+        },
+        {
+          "text": "Find the highest input rating of the board's regulator and compare it with that number.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Work out how much heat the regulator has to burn off at the gap between the input and the 5 V it makes.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "vin-overvoltage",
+      "board": "nano"
+    }
+  },
+  {
+    "id": "item-nano-missing-c4",
+    "base": "prj_nano-fade",
+    "fault": {
+      "id": "flt_missing_c4",
+      "cause_id": "x-missing-decoupling",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "missing-part",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The sketch keeps running, but every upload fails with programmer is not responding. Pressing the reset button just as the upload starts makes it work."
+      },
+      "answer": {
+        "cause_id": "x-missing-decoupling",
+        "fault": "flt_missing_c4"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A connection in the path is broken"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two connections are swapped"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        },
+        {
+          "cause_id": "x-missing-decoupling",
+          "label": "A small capacitor the board needs is not fitted"
+        }
+      ],
+      "explanation": "A tiny capacitor turns the USB chip's pulse into a reset so the bootloader is listening when the upload starts. Without it the chip never hears the upload.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "The sketch runs, so the chip is alive. What has to happen right before an upload starts for the bootloader to listen?"
+        },
+        {
+          "text": "The computer asks for a reset through the USB chip. Follow that signal towards the chip's reset pin and see what is in its path.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Look for a very small part in that path and compare with a working board.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "missing-c4",
+      "board": "nano"
+    }
+  },
+  {
+    "id": "item-nano-missing-d1",
+    "base": "prj_nano-fade",
+    "fault": {
+      "id": "flt_missing_d1",
+      "cause_id": "open-connection",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "missing-part",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "On USB nothing lights. On the external input the board works normally."
+      },
+      "answer": {
+        "cause_id": "open-connection",
+        "fault": "flt_missing_d1"
+      },
+      "options": [
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two connections are swapped"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A connection in the path is broken"
+        },
+        {
+          "cause_id": "wrong-pin-in-code",
+          "label": "The sketch uses the wrong pin"
+        }
+      ],
+      "explanation": "USB power reaches the 5 V rail only through a diode. Without it the USB path is broken, while the regulator still feeds the rail from the other input.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "One power source works and the other does not, so the chip and its load are fine. Where do the two paths differ?"
+        },
+        {
+          "text": "Follow the USB power path to the 5 V rail and list the parts it passes through.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A diode sits in that path. Look for an empty footprint and check which way the stripe faces on a working board.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "missing-d1",
+      "board": "nano"
+    }
+  },
+  {
+    "id": "item-pico-reverse-vsys",
+    "base": "prj_pico-fade",
+    "fault": {
+      "id": "flt_reverse_vsys",
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "reverse-polarity",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "Nothing lights, the board gets hot within seconds and smells burnt."
+      },
+      "answer": {
+        "cause_id": "reverse-polarity",
+        "fault": "flt_reverse_vsys"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part has no return path to ground"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        }
+      ],
+      "explanation": "The main power pin goes straight into the converter with no protection. Reversed, the internal diodes conduct a large current and burn.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Note the heat and the smell: how fast did they appear after you connected power?"
+        },
+        {
+          "text": "Check the lead colours at the power pin against the board's pin map.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Think about what protects this input, if anything, before it reaches the converter.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "reverse-vsys",
+      "board": "pico"
+    }
+  },
+  {
+    "id": "item-pico-overvolt-vsys",
+    "base": "prj_pico-fade",
+    "fault": {
+      "id": "flt_overvolt_vsys",
+      "cause_id": "x-supply-overvoltage",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "wrong-voltage",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true,
+      "params": {
+        "value": 9
+      }
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "A pop and a hot smell, then nothing: the LED never lights again."
+      },
+      "answer": {
+        "cause_id": "x-supply-overvoltage",
+        "fault": "flt_overvolt_vsys"
+      },
+      "options": [
+        {
+          "cause_id": "x-supply-overvoltage",
+          "label": "The input is fed more than it is rated for"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sags and the chip restarts"
+        },
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part is not getting enough power"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "Power is connected the wrong way round"
+        }
+      ],
+      "explanation": "The converter is rated for 5.5 V in and fails just above 6 V, often as a short that passes the input straight to the 3.3 V rail and kills the chip.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "What was connected to the power pin when it popped? Write down its rating."
+        },
+        {
+          "text": "Compare it with the maximum input the converter on the board is rated for.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Consider what a converter does when its input is above its limit, and whether the damage can reach the chip behind it.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "overvolt-vsys",
+      "board": "pico"
+    }
+  },
+  {
+    "id": "item-pico-no-crystal",
+    "base": "prj_pico-fade",
+    "fault": {
+      "id": "flt_no_crystal",
+      "cause_id": "x-missing-part",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "missing-part",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "The LED on the board never blinks, no program runs and the computer sees no USB device."
+      },
+      "answer": {
+        "cause_id": "x-missing-part",
+        "fault": "flt_no_crystal"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A connection in the path is broken"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two connections are swapped"
+        },
+        {
+          "cause_id": "x-missing-part",
+          "label": "A part the board needs is not fitted"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        }
+      ],
+      "explanation": "The chip starts on a rough internal oscillator, but its boot and USB code need the crystal to make a stable clock.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Power is present. What does a chip need to keep time before USB can work?"
+        },
+        {
+          "text": "Look near the chip for the metal-can part that sets the clock.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Compare the footprint beside the chip with a working board.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "no-crystal",
+      "board": "pico"
+    }
+  },
+  {
+    "id": "item-pico-short-3v3",
+    "base": "prj_pico-fade",
+    "fault": {
+      "id": "flt_short_3v3",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "kind": "short",
+      "target": {
+        "nets": [
+          "net_3v3",
+          "net_gnd"
+        ]
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "part-dead",
+        "text": "Nothing runs, a part beside the USB socket warms up and the computer reports a device drawing too much power. The LED never lights."
+      },
+      "answer": {
+        "cause_id": "supply-shorted-to-ground",
+        "fault": "flt_short_3v3"
+      },
+      "options": [
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs drive the same wire"
+        },
+        {
+          "cause_id": "supply-shorted-to-ground",
+          "label": "The power rail is joined to ground"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin is left unconnected"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "The LED is the wrong way round"
+        }
+      ],
+      "explanation": "A solder bridge or stray wire from the 3.3 V pin to ground makes the converter hit its current limit. There is no fuse on the board.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Unplug. Which pin of the board gives out 3.3 V, and what should it never touch?"
+        },
+        {
+          "text": "Inspect the soldering and any wire near that pin for a bridge.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Measure resistance between that pin and the 0 V pin with the board unpowered; a near-zero reading means a bridge.",
+          "focus": {
+            "nets": [
+              "net_3v3",
+              "net_gnd"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "short-3v3",
+      "board": "pico"
+    }
+  }
+]
