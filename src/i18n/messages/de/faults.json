@@ -67,7 +67,23 @@
       "helped": "Mit Hilfe der Hinweisleiter gelöst",
       "revealed": "Ursache nach dem Aufgeben gezeigt"
     },
-    "empty": "Noch nichts aufgezeichnet."
+    "empty": "Es wurde kein Nachweis aufgezeichnet, das war also geraten.",
+    "time": "Zeit",
+    "reference": "Bezug",
+    "kind": "Art",
+    "value": "Wert",
+    "tier": "Stufe",
+    "provenance": "Herkunft",
+    "outcomeLabel": "Ergebnis",
+    "more": "{count} weitere Einträge werden nicht angezeigt.",
+    "settings": "Einstellungen öffnen",
+    "line": "{kind} {ref} bei {ms} ms: {value} ({tier}, {provenance})",
+    "tierName": {
+      "T0": "Illustration",
+      "T1": "Lernmodell",
+      "T2": "Berechnetes Modell",
+      "T3": "Führt deine Firmware aus"
+    }
   },
   "fidelity": {
     "notChecked": "Nicht an Hardware geprüft. Das sagt das Modell, nicht eine Messung am Prüfstand.",

@@ -67,7 +67,23 @@
       "helped": "Solved with the help of the ladder",
       "revealed": "Cause shown after giving up"
     },
-    "empty": "Nothing recorded yet."
+    "empty": "No evidence was recorded, so this was a guess.",
+    "time": "Time",
+    "reference": "Reference",
+    "kind": "Kind",
+    "value": "Value",
+    "tier": "Tier",
+    "provenance": "How it was found",
+    "outcomeLabel": "Outcome",
+    "more": "{count} more entries are not shown.",
+    "settings": "Open settings",
+    "line": "{kind} {ref} at {ms} ms: {value} ({tier}, {provenance})",
+    "tierName": {
+      "T0": "Illustration",
+      "T1": "Teaching model",
+      "T2": "Calculated model",
+      "T3": "Runs your firmware"
+    }
   },
   "fidelity": {
     "notChecked": "Not checked against hardware. This is what the model says, not what a bench measured.",

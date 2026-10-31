@@ -67,7 +67,23 @@
       "helped": "Résolu avec l'aide de l'échelle",
       "revealed": "Cause montrée après abandon"
     },
-    "empty": "Rien d'enregistré pour l'instant."
+    "empty": "Aucune preuve n'a été enregistrée, c'était donc une supposition.",
+    "time": "Temps",
+    "reference": "Référence",
+    "kind": "Type",
+    "value": "Valeur",
+    "tier": "Niveau",
+    "provenance": "Comment elle a été obtenue",
+    "outcomeLabel": "Résultat",
+    "more": "{count} entrées de plus ne sont pas affichées.",
+    "settings": "Ouvrir les réglages",
+    "line": "{kind} {ref} à {ms} ms : {value} ({tier}, {provenance})",
+    "tierName": {
+      "T0": "Illustration",
+      "T1": "Modèle pédagogique",
+      "T2": "Modèle calculé",
+      "T3": "Exécute votre firmware"
+    }
   },
   "fidelity": {
     "notChecked": "Non vérifié sur du matériel. Ceci est ce que dit le modèle, pas ce qu'un banc a mesuré.",

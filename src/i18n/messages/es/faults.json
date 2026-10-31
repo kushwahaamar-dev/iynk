@@ -67,7 +67,23 @@
       "helped": "Resuelto con ayuda de la escalera",
       "revealed": "Causa mostrada tras rendirse"
     },
-    "empty": "Aún no hay nada registrado."
+    "empty": "No se registró ninguna prueba, así que fue una suposición.",
+    "time": "Tiempo",
+    "reference": "Referencia",
+    "kind": "Tipo",
+    "value": "Valor",
+    "tier": "Nivel",
+    "provenance": "Cómo se obtuvo",
+    "outcomeLabel": "Resultado",
+    "more": "No se muestran {count} entradas más.",
+    "settings": "Abrir ajustes",
+    "line": "{kind} {ref} a los {ms} ms: {value} ({tier}, {provenance})",
+    "tierName": {
+      "T0": "Ilustración",
+      "T1": "Modelo didáctico",
+      "T2": "Modelo calculado",
+      "T3": "Ejecuta tu firmware"
+    }
   },
   "fidelity": {
     "notChecked": "No comprobado con hardware real. Esto es lo que dice el modelo, no lo que midió un banco de pruebas.",

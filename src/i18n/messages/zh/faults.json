@@ -67,7 +67,23 @@
       "helped": "借助提示阶梯解决",
       "revealed": "放弃后显示原因"
     },
-    "empty": "还没有记录。"
+    "empty": "没有记录任何证据，所以这是一次猜测。",
+    "time": "时间",
+    "reference": "对象",
+    "kind": "类型",
+    "value": "数值",
+    "tier": "层级",
+    "provenance": "来源方式",
+    "outcomeLabel": "结果",
+    "more": "还有 {count} 条记录未显示。",
+    "settings": "打开设置",
+    "line": "{kind} {ref}，{ms} ms：{value}（{tier}，{provenance}）",
+    "tierName": {
+      "T0": "示意图",
+      "T1": "教学模型",
+      "T2": "计算模型",
+      "T3": "运行你的固件"
+    }
   },
   "fidelity": {
     "notChecked": "未经硬件验证。这是模型的结果，不是实验台的测量值。",
