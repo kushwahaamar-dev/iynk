@@ -126,6 +126,8 @@ describe("buildPartIndex", () => {
       "core.basys3",
       "core.bme280-module",
       "core.buzzer-piezo",
+      "core.caster-ball",
+      "core.chassis-2wd",
       "core.dc-motor",
       "core.de10-lite",
       "core.diode-1n4007",
@@ -164,9 +166,11 @@ describe("buildPartIndex", () => {
       "core.tmp36",
       "core.traffic-light",
       "core.tt-motor",
+      "core.tt-motor-encoder",
       "core.uln2003-module",
       "core.uno-r3",
       "core.uno-r4",
+      "core.wheel-65",
     ]);
   });
 

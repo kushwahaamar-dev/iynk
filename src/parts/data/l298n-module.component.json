@@ -2,7 +2,7 @@
   "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
   "schema": "iynk.component/1",
   "id": "core.l298n-module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identity": {
     "manufacturer": "generic",
     "model": "L298N dual H-bridge motor driver module (red, 43 x 43 mm)",
@@ -1078,6 +1078,19 @@
       ]
     }
   ],
+  "mechanics": {
+    "driver": {
+      "kind": "h-bridge",
+      "decay": "fast",
+      "vdrop_v": 2.55,
+      "i_max_a": 2,
+      "pwm_max_hz": 25000,
+      "source": {
+        "src": "facts",
+        "loc": "vdrop_v: section 3.3 (2.55 V typical at 1 A); i_max_a: 3.2 (2 A DC); pwm_max_hz: 3.2 (25 kHz typical); decay: 3.5 (PWM on EN)"
+      }
+    }
+  },
   "behaviour": {
     "summary": {
       "en": "Per channel: enable high and IN1 different from IN2 drives the motor, equal inputs brake, enable low lets it coast. The motor sees the supply minus the switch drop. A regulator makes 5 V from the supply when its jumper is fitted."
@@ -1682,8 +1695,15 @@
         "date": "2026-10-31",
         "note": "First descriptor, converted from figures/modules/l298n.js and docs/facts/l298n.md.",
         "behaviour_change": false
+      },
+      {
+        "version": "1.0.1",
+        "date": "2026-10-31",
+        "note": "Added the mechanics driver block for the robot engine.",
+        "behaviour_change": false
       }
-    ]
+    ],
+    "modified": "2026-10-31"
   },
   "x_legacy_model": [
     {

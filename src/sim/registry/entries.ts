@@ -35,6 +35,7 @@ import modelTmp36Rule1 from "./data/model-tmp36.rule-1.json" with { type: "json"
 import opticalPowerLawBrightness1 from "./data/optical-power-law-brightness-1.json" with { type: "json" };
 import partBreadboardHalf1 from "./data/part-breadboard-half-1.json" with { type: "json" };
 import partUnoR31 from "./data/part-uno-r3-1.json" with { type: "json" };
+import robot from "./data/robot.json" with { type: "json" };
 import ruleBrownoutThreshold1 from "./data/rule-brownout-threshold-1.json" with { type: "json" };
 import ruleRegulatorDropout1 from "./data/rule-regulator-dropout-1.json" with { type: "json" };
 import ruleUsbDroop1 from "./data/rule-usb-droop-1.json" with { type: "json" };
@@ -96,6 +97,7 @@ const DATA: readonly unknown[] = [
   opticalPowerLawBrightness1,
   partBreadboardHalf1,
   partUnoR31,
+  ...robot,
   ruleBrownoutThreshold1,
   ruleRegulatorDropout1,
   ruleUsbDroop1,

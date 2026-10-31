@@ -2,7 +2,7 @@
   "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
   "schema": "iynk.component/1",
   "id": "core.hc-sr04",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identity": {
     "manufacturer": "generic (unbranded module)",
     "model": "HC-SR04 ultrasonic ranging module",
@@ -275,6 +275,20 @@
       "used_by_model": "none"
     }
   },
+  "mechanics": {
+    "sensor": {
+      "query": "ray-fan",
+      "beam_deg": 30,
+      "range_min_mm": 20,
+      "range_max_mm": 4000,
+      "period_s": 0.06,
+      "echo_max_angle_deg": 15,
+      "source": {
+        "src": "factsheet",
+        "loc": "beam_deg: section 3.4 (30 degree full cone); range: 3.4 (2 to 400 cm); period_s: 3.2 (60 ms cycle); echo_max_angle_deg: 3.5 (iynk reading of 15 to 20 degrees)"
+      }
+    }
+  },
   "behaviour": {
     "summary": {
       "en": "A trigger pulse of 10 microseconds or more makes the board send eight cycles at 40 kHz. About 200 microseconds later Echo goes HIGH and stays HIGH for the round trip, 58 microseconds per centimetre from 2 cm to 4 m, or 38 ms when nothing returns."
@@ -471,8 +485,15 @@
         "date": "2026-10-31",
         "note": "First descriptor, converted from figures/modules/hc-sr04.js, figures/parts/hc-sr04.js, src/lib/interp/devices.ts and docs/facts/hcsr04.md.",
         "behaviour_change": false
+      },
+      {
+        "version": "1.0.1",
+        "date": "2026-10-31",
+        "note": "Added the mechanics sensor block for the robot engine.",
+        "behaviour_change": false
       }
-    ]
+    ],
+    "modified": "2026-10-31"
   },
   "x_legacy_model": [
     {
