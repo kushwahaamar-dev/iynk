@@ -1,7 +1,7 @@
 import type { SimTime } from "../core/clock.ts";
 import type { Descriptor } from "../../parts/descriptor.ts";
 import type { Evidence } from "../../project/diagnosis.ts";
-import type { Op, Pose } from "../../project/generated/types.ts";
+import type { Instrument, Op, Pose } from "../../project/generated/types.ts";
 
 export type { SimTime };
 
@@ -127,6 +127,8 @@ export interface CodeFact<T> {
   value: T;
   file: string;
   line: number;
+  /** Where the number literal behind the value sits in `file`, as a UTF-16 offset and a length. */
+  span?: { pos: number; len: number };
 }
 
 export interface CodeFacts {
@@ -214,6 +216,7 @@ export interface RuleInput {
   code?: CodeFacts;
   run?: RunFacts;
   checks?: CheckOutcome[];
+  instruments?: Instrument[];
   skipped: { add(ruleId: string, what: string): void };
 }
 
