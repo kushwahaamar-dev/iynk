@@ -342,5 +342,11 @@
     "claimed": "Your time is on the board",
     "remove": "Take me off the board",
     "retry": "Try again"
+  },
+  "fly": {
+    "blocked": "Your build is missing {field}, so it cannot fly yet. Fix it in the builder and come back.",
+    "cannotLift": "This build cannot hover: the thrust does not lift its weight. You can still try, and the checks below say why.",
+    "courses": "Courses",
+    "loading": "Loading courses"
   }
 }

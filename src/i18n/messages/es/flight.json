@@ -342,5 +342,11 @@
     "claimed": "Tu tiempo está en la tabla",
     "remove": "Quitarme de la tabla",
     "retry": "Reintentar"
+  },
+  "fly": {
+    "blocked": "A tu montaje le falta {field}, así que aún no puede volar. Corrígelo en el constructor y vuelve.",
+    "cannotLift": "Este montaje no puede mantenerse en vuelo estacionario: el empuje no levanta su peso. Aun así puedes intentarlo, y las comprobaciones de abajo dicen por qué.",
+    "courses": "Recorridos",
+    "loading": "Cargando recorridos"
   }
 }

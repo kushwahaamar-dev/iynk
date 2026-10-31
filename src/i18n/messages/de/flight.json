@@ -342,5 +342,11 @@
     "claimed": "Deine Zeit steht in der Rangliste",
     "remove": "Mich aus der Rangliste nehmen",
     "retry": "Nochmal versuchen"
+  },
+  "fly": {
+    "blocked": "Deinem Aufbau fehlt {field}, deshalb kann er noch nicht fliegen. Behebe das im Builder und komm zurück.",
+    "cannotLift": "Dieser Aufbau kann nicht schweben: Der Schub trägt sein Gewicht nicht. Du kannst es trotzdem versuchen, die Prüfungen unten sagen warum.",
+    "courses": "Strecken",
+    "loading": "Strecken werden geladen"
   }
 }

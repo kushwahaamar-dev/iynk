@@ -342,5 +342,11 @@
     "claimed": "Votre temps est dans le classement",
     "remove": "Me retirer du classement",
     "retry": "Réessayer"
+  },
+  "fly": {
+    "blocked": "Il manque {field} à ton montage, il ne peut donc pas encore voler. Corrige-le dans le constructeur puis reviens.",
+    "cannotLift": "Ce montage ne peut pas faire du vol stationnaire : la poussée ne soulève pas son poids. Tu peux quand même essayer, les vérifications ci-dessous disent pourquoi.",
+    "courses": "Parcours",
+    "loading": "Chargement des parcours"
   }
 }
