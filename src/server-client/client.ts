@@ -2,7 +2,7 @@ import { deriveIdentityId } from "../protocol/identity.ts";
 import { enrol, probeServer, request, signIn } from "./auth.ts";
 import type { Session as AuthSession } from "./auth.ts";
 import type { DeviceKeyStore } from "./keys.ts";
-import { ClientError, NeedsEnrolment, SigningInputMismatch } from "./types.ts";
+import { ClientError, NeedsEnrolment, ServerUnreachable, SigningInputMismatch } from "./types.ts";
 import type {
   Api,
   Buddy,
@@ -43,6 +43,8 @@ export type ServerClient = {
   removeBuddy(id: string): Promise<void>;
   requestDeletion(confirm: string): Promise<DeletionStatus>;
   cancelDeletion(): Promise<void>;
+  /** A raw call under `/v1` with the bearer header; signs in again once on a 401. The caller reads the response. */
+  authedFetch(path: string, init?: RequestInit): Promise<Response>;
 };
 
 function query(page: PageOptions | undefined): string {
@@ -88,6 +90,16 @@ export function createClient(o: {
   const send = <T>(method: string, path: string, body?: unknown) =>
     request<T>(api, method, path, { body, token: session?.token });
 
+  // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
+  const lapse = (e: unknown): never => {
+    const refused = e instanceof NeedsEnrolment || e instanceof SigningInputMismatch;
+    if (refused || (e instanceof ClientError && e.status === 401)) {
+      setSession(null);
+      throw new NeedsEnrolment();
+    }
+    throw e;
+  };
+
   const call = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
     try {
       return await send<T>(method, path, body);
@@ -98,14 +110,30 @@ export function createClient(o: {
       await renew();
       return await send<T>(method, path, body);
     } catch (e) {
-      // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
-      const refused = e instanceof NeedsEnrolment || e instanceof SigningInputMismatch;
-      if (refused || (e instanceof ClientError && e.status === 401)) {
-        setSession(null);
-        throw new NeedsEnrolment();
-      }
-      throw e;
+      return lapse(e);
     }
+  };
+
+  const sendRaw = async (path: string, init: RequestInit): Promise<Response> => {
+    const headers = new Headers(init.headers);
+    if (session?.token) headers.set("authorization", `Bearer ${session.token}`);
+    try {
+      return await api.fetch(`${api.base}/v1${path}`, { ...init, headers });
+    } catch (e) {
+      if ((e as { name?: string } | null)?.name === "AbortError") throw e;
+      throw new ServerUnreachable();
+    }
+  };
+
+  const authedFetch = async (path: string, init: RequestInit = {}): Promise<Response> => {
+    const first = await sendRaw(path, init);
+    if (first.status !== 401) return first;
+    try {
+      await renew();
+    } catch (e) {
+      return lapse(e);
+    }
+    return sendRaw(path, init);
   };
 
   return {
@@ -141,5 +169,6 @@ export function createClient(o: {
     removeBuddy: (id) => call("DELETE", `/buddies/${enc(id)}`),
     requestDeletion: (confirm) => call("POST", "/identities/me/deletion", { confirm }),
     cancelDeletion: () => call("DELETE", "/identities/me/deletion"),
+    authedFetch,
   };
 }

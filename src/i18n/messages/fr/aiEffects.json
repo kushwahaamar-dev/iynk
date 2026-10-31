@@ -1,1 +1,14 @@
-{}
+{
+  "tool": {
+    "search_datasheet": "Chercher une fiche technique sur le web",
+    "find_parts": "Chercher les prix de composants"
+  },
+  "argsLabel": "Exactement ce qui sera envoyé",
+  "cost": {
+    "one": "Jusqu’à {count} recherche avec ta clé",
+    "other": "Jusqu’à {count} recherches avec ta clé"
+  },
+  "allow": "Autoriser une fois",
+  "deny": "Refuser",
+  "hint": "Rien n’est envoyé avant ton accord. Échap refuse."
+}

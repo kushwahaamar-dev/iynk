@@ -1,1 +1,14 @@
-{}
+{
+  "tool": {
+    "search_datasheet": "在网上搜索数据手册",
+    "find_parts": "查询元件价格"
+  },
+  "argsLabel": "将要发送的确切内容",
+  "cost": {
+    "one": "最多使用你的密钥搜索 {count} 次",
+    "other": "最多使用你的密钥搜索 {count} 次"
+  },
+  "allow": "允许一次",
+  "deny": "拒绝",
+  "hint": "在你允许之前不会发送任何内容。按 Esc 即拒绝。"
+}

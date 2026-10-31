@@ -4,28 +4,32 @@ import { removeAllKeys, setKey } from "@/lib/keys/store";
 const tracked = vi.hoisted(() => [] as [string, unknown][]);
 vi.mock("@/lib/telemetry", () => ({ track: (kind: string, data: unknown) => tracked.push([kind, data]) }));
 
-import { fetchNearby, fetchOffers } from "./client";
+import { bindSearchServer, createSearchClient, fetchNearby, fetchOffers } from "./client";
 import type { OffersInput } from "./schema";
 
 const KEY = "iynk-canary-SEARCH-0001-do-not-use";
 const TOKEN = "iynk-canary-TOKEN-0001";
 const offersInput: OffersInput = { parts: [{ key: "motor", query: "2207 1750kv motor", qty: 4 }], country: "us" };
 
+const authedFetch = vi.fn<(path: string, init?: RequestInit) => Promise<Response>>();
+
 function answer(status: number, code: string) {
-  vi.stubGlobal("fetch", vi.fn(async () => Response.json({ error: { code } }, { status })));
+  authedFetch.mockImplementation(async () => Response.json({ error: { code } }, { status }));
 }
 
 beforeEach(() => {
   localStorage.clear();
   setKey("search", KEY);
   tracked.length = 0;
+  authedFetch.mockReset();
   answer(503, "not_configured");
+  bindSearchServer({ authedFetch });
 });
 
 afterEach(() => {
+  bindSearchServer(null);
   removeAllKeys();
   localStorage.clear();
-  vi.unstubAllGlobals();
 });
 
 describe("search client", () => {
@@ -39,33 +43,37 @@ describe("search client", () => {
     ]);
   });
 
-  it("sends the search key, and the server token only when one is set", async () => {
+  it("sends the search key in its header only, on the v1 verbs and paths", async () => {
     await fetchOffers(offersInput);
-    const fetchMock = vi.mocked(fetch);
-    let [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    let headers = new Headers(init.headers);
-    expect(headers.get("x-iynk-provider-key")).toBe(KEY);
-    expect(headers.get("x-iynk-server-token")).toBeNull();
-    expect(url).not.toContain(KEY);
-    expect(init.body).not.toContain(KEY);
+    await fetchNearby({ kind: "makerspace", near: "Austin, TX" });
+    await createSearchClient({ authedFetch }).fetchWeb({ q: "lm317 datasheet", extract: true });
+    const [post, get, web] = authedFetch.mock.calls as [string, RequestInit][];
+    expect(post[0]).toBe("/search/offers");
+    expect(post[1].method).toBe("POST");
+    expect(new Headers(post[1].headers).get("x-iynk-provider-key")).toBe(KEY);
+    expect(post[1].body).not.toContain(KEY);
+    expect(get[0]).toBe("/search/nearby?kind=makerspace&near=Austin%2C+TX");
+    expect(get[1].method).toBe("GET");
+    expect(get[0]).not.toContain(KEY);
+    expect(web[0]).toBe("/search/web?q=lm317+datasheet&extract=true");
     expect(JSON.stringify(tracked)).not.toContain(KEY);
-
-    setKey("server", TOKEN);
-    await fetchOffers(offersInput);
-    [url, init] = fetchMock.mock.calls[1] as [string, RequestInit];
-    headers = new Headers(init.headers);
-    expect(headers.get("x-iynk-server-token")).toBe(TOKEN);
   });
 
   it("with no search key returns no_key and sends nothing", async () => {
     removeAllKeys();
     expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "no_key" });
-    expect(fetch).not.toHaveBeenCalled();
+    expect(authedFetch).not.toHaveBeenCalled();
     expect(tracked).toEqual([]);
   });
 
-  it("maps 422 key_required to no_key and 501 feature_disabled to not_configured", async () => {
-    answer(422, "key_required");
+  it("with no server returns needs_server and sends nothing", async () => {
+    bindSearchServer(null);
+    expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "needs_server" });
+    expect(authedFetch).not.toHaveBeenCalled();
+  });
+
+  it("maps 422 provider_key_missing to no_key and 501 feature_disabled to not_configured", async () => {
+    answer(422, "provider_key_missing");
     expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "no_key" });
     answer(501, "feature_disabled");
     expect(await fetchOffers(offersInput)).toEqual({ ok: false, code: "not_configured" });

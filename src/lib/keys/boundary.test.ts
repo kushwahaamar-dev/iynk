@@ -17,11 +17,13 @@ const files = sources(SRC).map((path) => ({
   text: readFileSync(path, "utf8"),
 }));
 
-test("only headers.ts imports readSecret", () => {
+const READERS = ["lib/keys/headers.ts", "ai/search-key.ts"];
+
+test("only headers.ts and search-key.ts import readSecret", () => {
   const users = files
     .filter(({ name, text }) => name !== "lib/keys/store.ts" && /\breadSecret\b/.test(text))
     .map(({ name }) => name);
-  expect(users.filter((name) => name !== "lib/keys/headers.ts")).toEqual([]);
+  expect(users.filter((name) => !READERS.includes(name))).toEqual([]);
 });
 
 test("format.ts imports nothing and never touches the browser", () => {

@@ -1,1 +1,14 @@
-{}
+{
+  "tool": {
+    "search_datasheet": "Search the web for a datasheet",
+    "find_parts": "Look up prices for parts"
+  },
+  "argsLabel": "Exactly what will be sent",
+  "cost": {
+    "one": "Up to {count} search on your key",
+    "other": "Up to {count} searches on your key"
+  },
+  "allow": "Allow once",
+  "deny": "Deny",
+  "hint": "Nothing is sent until you allow it. Escape denies."
+}
