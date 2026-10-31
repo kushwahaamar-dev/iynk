@@ -1,0 +1,213 @@
+[
+  {
+    "id": "failure:led-overcurrent@1",
+    "causeId": "led-no-series-resistor",
+    "appliesTo": [
+      "family:led"
+    ],
+    "trigger": "peak(i) > 2.5 * rating.imaxAmps",
+    "outcome": {
+      "state": "open",
+      "latch": true
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the LED burns when the peak current passes 2.5 times its rated current (rule at figures/engine/bench-solve.js:317; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The 2.5 factor has no source",
+      "A real LED may survive more than 2.5 times its rating briefly"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "led-burnt",
+      "i18nKey": "faults.failure.ledOvercurrent"
+    }
+  },
+  {
+    "id": "failure:diode-overcurrent@1",
+    "causeId": "x-diode-overcurrent",
+    "appliesTo": [
+      "family:diode"
+    ],
+    "trigger": "avg(i) > rating.imaxAmps || peak(i) > rating.isurgeAmps",
+    "outcome": {
+      "state": "open",
+      "latch": true
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the diode opens when the average current passes its rating or the peak passes its surge rating (rule at figures/engine/bench-solve.js:328; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The datasheet ratings are applied as hard limits"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "part-dead",
+      "i18nKey": "faults.failure.diodeOvercurrent"
+    }
+  },
+  {
+    "id": "failure:npn-overheat@1",
+    "causeId": "x-npn-overheat",
+    "appliesTo": [
+      "family:npn"
+    ],
+    "trigger": "tj > default(rating.tjmaxC, 150) || peak(ic) > 1.5 * default(rating.icmaxAmps, 1)",
+    "outcome": {
+      "state": "open",
+      "latch": true
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the transistor opens when the junction passes its limit (default 150 C) or the collector peak passes 1.5 times the rating (default 1 A) (rule at figures/engine/bench-solve.js:341; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The 1.5 factor on the collector rating has no source",
+      "Junction temperature comes from a lumped thermal estimate"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "part-hot",
+      "i18nKey": "faults.failure.npnOverheat"
+    }
+  },
+  {
+    "id": "failure:tmp36-reverse@1",
+    "causeId": "reverse-polarity",
+    "appliesTo": [
+      "family:tmp36"
+    ],
+    "trigger": "vs < -0.5",
+    "window": {
+      "sustainNs": 3000000000
+    },
+    "outcome": {
+      "state": "open",
+      "latch": true
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the sensor opens after its supply stays below -0.5 V for 3 s (rule at figures/engine/bench-solve.js:371-372; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The -0.5 V level and the 3 s dwell are fitted, not measured"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "part-dead",
+      "i18nKey": "faults.failure.tmp36Reverse"
+    }
+  },
+  {
+    "id": "failure:tmp36-overvoltage@1",
+    "causeId": "x-supply-overvoltage",
+    "appliesTo": [
+      "family:tmp36"
+    ],
+    "trigger": "vs > default(rating.vabsVolts, 7)",
+    "outcome": {
+      "state": "open",
+      "latch": true
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the sensor opens when its supply passes the absolute maximum (default 7 V) (rule at figures/engine/bench-solve.js:372; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The datasheet absolute maximum is applied as a hard limit"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "part-dead",
+      "i18nKey": "faults.failure.tmp36Overvoltage"
+    }
+  },
+  {
+    "id": "failure:track-overpower@1",
+    "causeId": "x-pot-track-overpower",
+    "appliesTo": [
+      "family:potentiometer"
+    ],
+    "trigger": "peak(p) > rating.pmaxWatts",
+    "window": {
+      "sustainNs": 2000000000
+    },
+    "outcome": {
+      "state": "open",
+      "latch": true
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the track opens after the power in it stays above its rating for 2 s (rule at figures/engine/bench-solve.js:379; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The 2 s dwell is fitted, not measured"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "part-hot",
+      "i18nKey": "faults.failure.trackOverpower"
+    }
+  },
+  {
+    "id": "failure:usb-sag@1",
+    "causeId": "brownout",
+    "appliesTo": [
+      "family:usb-source"
+    ],
+    "trigger": "load > source.ilimAmps",
+    "window": {
+      "sustainNs": 600000000
+    },
+    "outcome": {
+      "state": "derated",
+      "params": {
+        "railFactor": 0.42
+      },
+      "latch": false
+    },
+    "derivation": {
+      "text": "datasheet-informed, hand-fitted: the rail drops to 0.42 of its value when the load stays above the source current limit for 0.6 s (rule at figures/engine/bench-bb.js:116 and bench.js:269; not tested against hardware)",
+      "sourceIds": []
+    },
+    "referenceData": [],
+    "assumptions": [
+      "The 0.42 factor and the 0.6 s sag are fitted, not measured",
+      "The rail recovers when the load falls below the limit"
+    ],
+    "evidenceRange": [],
+    "threshold": {
+      "kind": "fixed"
+    },
+    "message": {
+      "symptomId": "mcu-resets",
+      "i18nKey": "faults.failure.usbSag"
+    }
+  }
+]
