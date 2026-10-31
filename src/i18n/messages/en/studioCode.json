@@ -14,6 +14,15 @@
   "escape": "Press Esc, then Tab, to leave the editor.",
   "tooBig": "That edit would make the file larger than 256 KB, so it was not applied.",
   "failed": "The edit could not be saved. The editor shows the saved text again.",
+  "baton": {
+    "heldBy": "Held by {name}",
+    "nobody": "Nobody has the keyboard",
+    "you": "You have the keyboard",
+    "ask": "Ask for the keyboard",
+    "giveBack": "Give it back",
+    "viewer": "You can view this room but not edit",
+    "ended": "This room has ended"
+  },
   "marker": {
     "error": "Error, line {line}, column {col}:",
     "warning": "Warning, line {line}, column {col}:"

@@ -4,6 +4,9 @@ import type { Op, Project, Source } from "../../project/generated/types.ts";
 /** One text change in UTF-16 code units, the shape of a `source.edit` op. */
 export type TextEdit = { pos: number; del: number; ins: string };
 
+/** Whether this client may type into the code dock, and if not why: the room's access, the baton holder, or the room's end. */
+export type WriteGate = { writable: boolean; reason: "none" | "viewer" | "not-holder" | "ended"; holderName: string | null };
+
 export type CodeLanguage = "arduino-cpp" | "python" | "verilog";
 
 export type Marker = { line: number; col: number; message: string; severity: "error" | "warning" };

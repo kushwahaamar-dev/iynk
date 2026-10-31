@@ -14,6 +14,15 @@
   "escape": "Appuyez sur Échap, puis sur Tab, pour quitter l'éditeur.",
   "tooBig": "Cette modification rendrait le fichier plus grand que 256 Ko, elle n'a donc pas été appliquée.",
   "failed": "La modification n'a pas pu être enregistrée. L'éditeur affiche de nouveau le texte enregistré.",
+  "baton": {
+    "heldBy": "Clavier détenu par {name}",
+    "nobody": "Personne n'a le clavier",
+    "you": "Vous avez le clavier",
+    "ask": "Demander le clavier",
+    "giveBack": "Le rendre",
+    "viewer": "Vous pouvez voir cette salle mais pas la modifier",
+    "ended": "Cette salle est terminée"
+  },
   "marker": {
     "error": "Erreur, ligne {line}, colonne {col} :",
     "warning": "Avertissement, ligne {line}, colonne {col} :"

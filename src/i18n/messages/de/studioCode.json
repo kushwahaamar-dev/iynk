@@ -14,6 +14,15 @@
   "escape": "Mit Esc und dann Tab verlässt du den Editor.",
   "tooBig": "Diese Änderung würde die Datei über 256 KB groß machen, deshalb wurde sie nicht übernommen.",
   "failed": "Die Änderung konnte nicht gespeichert werden. Der Editor zeigt wieder den gespeicherten Text.",
+  "baton": {
+    "heldBy": "Tastatur bei {name}",
+    "nobody": "Niemand hat die Tastatur",
+    "you": "Du hast die Tastatur",
+    "ask": "Tastatur anfragen",
+    "giveBack": "Zurückgeben",
+    "viewer": "Du kannst diesen Raum ansehen, aber nicht bearbeiten",
+    "ended": "Dieser Raum ist beendet"
+  },
   "marker": {
     "error": "Fehler, Zeile {line}, Spalte {col}:",
     "warning": "Warnung, Zeile {line}, Spalte {col}:"

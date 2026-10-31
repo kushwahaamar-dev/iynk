@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Timers } from "@/collab/client";
+import { createSourceBatcher } from "@/collab/source-batch";
 import { CodeEditor, type EditorDiagnostic } from "@/components/boardlab/CodeEditor";
 import { Button, Chip, EmptyState, IconButton, Tabs, type TabItem } from "@/components/ui";
 import { LIMITS } from "@/core/limits";
 import type { Messages } from "@/i18n/namespaces";
 import type { Diagnostic } from "@/lib/interp/errors";
-import { editToOp, firstFirmwareSource, languageOf, markersOf, mergeEdits, type TextEdit } from "@/studio/code/sources";
+import { editToOp, firstFirmwareSource, languageOf, markersOf, type TextEdit, type WriteGate } from "@/studio/code/sources";
 import type { DocStore } from "@/studio/stores/doc";
 import { useStoreSelector } from "@/studio/stores/select";
 import type { UiStore } from "@/studio/stores/ui";
@@ -17,21 +19,32 @@ export interface CodeDockProps {
   /** What `check()` found in the firmware file. */
   diagnostics: readonly Diagnostic[];
   onRun(): void;
+  /** Set inside a room: who may type, and how to ask for or hand back the keyboard. */
+  gate?: WriteGate;
+  onRequestBaton?(): void;
+  onReleaseBaton?(): void;
   messages: Messages["studioCode"];
 }
 
 type Notice = "tooBig" | "failed";
 type Cursor = { line: number; col: number };
-type Pending = { id: string; baseSeq: number; edit: TextEdit };
 
-const COALESCE_MS = 500;
+const COALESCE_MS = 250;
+const WINDOW_TIMERS: Timers = { setTimeout: (fn, ms) => window.setTimeout(fn, ms), clearTimeout: (handle) => window.clearTimeout(handle as number) };
 const COPIED_MS = 1600;
 const NO_MARKERS: readonly EditorDiagnostic[] = [];
 
 const fill = (template: string, values: Record<string, string | number>) => template.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name]));
 
+function batonLine(gate: WriteGate, m: Messages["studioCode"]["baton"]): string {
+  if (gate.writable) return m.you;
+  if (gate.reason === "viewer") return m.viewer;
+  if (gate.reason === "ended") return m.ended;
+  return gate.holderName ? fill(m.heldBy, { name: gate.holderName }) : m.nobody;
+}
+
 /** The project's code files as tabs. Typing is committed as `source.edit` ops, a burst of keystrokes as one. */
-export function CodeDock({ doc, ui, diagnostics, onRun, messages }: CodeDockProps) {
+export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, onReleaseBaton, messages }: CodeDockProps) {
   const sources = useStoreSelector(doc, (s) => s.state.sources);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
   const height = useStoreSelector(ui, (s) => s.dockHeightPx);
@@ -40,8 +53,6 @@ export function CodeDock({ doc, ui, diagnostics, onRun, messages }: CodeDockProp
   const [notice, setNotice] = useState<Notice | null>(null);
   const [copied, setCopied] = useState(false);
   const [epoch, setEpoch] = useState(0);
-  const pending = useRef<Pending | null>(null);
-  const timer = useRef<number | undefined>(undefined);
   const footer = useRef<HTMLDivElement>(null);
 
   const firmwareId = firstFirmwareSource({ sources })?.id;
@@ -54,17 +65,33 @@ export function CodeDock({ doc, ui, diagnostics, onRun, messages }: CodeDockProp
   );
   const errorCount = markers.filter((m) => m.severity === "error").length;
 
-  const flush = useCallback(() => {
-    window.clearTimeout(timer.current);
-    const edit = pending.current;
-    pending.current = null;
-    if (!edit || (edit.edit.del === 0 && edit.edit.ins === "")) return;
-    const result = doc.commit([editToOp(edit.id, edit.baseSeq, edit.edit)], { label: "code.edit" });
-    if (!result.ok) {
-      setNotice(result.reject === "quota" ? "tooBig" : "failed");
-      setEpoch((n) => n + 1);
-    }
+  const burst = useMemo(() => {
+    const open: { baseSeq: number | null } = { baseSeq: null };
+    const batcher = createSourceBatcher({
+      flushMs: COALESCE_MS,
+      timers: WINDOW_TIMERS,
+      emit: (edits) => {
+        const base = open.baseSeq ?? doc.confirmedSeq;
+        open.baseSeq = null;
+        const result = doc.commit(
+          edits.map(({ id, ...edit }) => editToOp(id, base, edit)),
+          { label: "code.edit" },
+        );
+        if (!result.ok) {
+          setNotice(result.reject === "quota" ? "tooBig" : "failed");
+          setEpoch((n) => n + 1);
+        }
+      },
+    });
+    return {
+      flush: batcher.flush,
+      push(id: string, edit: TextEdit) {
+        open.baseSeq ??= doc.confirmedSeq;
+        batcher.push({ id, ...edit });
+      },
+    };
   }, [doc]);
+  const flush = burst.flush;
 
   useEffect(() => flush, [flush]);
 
@@ -75,16 +102,14 @@ export function CodeDock({ doc, ui, diagnostics, onRun, messages }: CodeDockProp
   }, [copied]);
 
   function record(id: string, edit: TextEdit) {
+    if (gate && !gate.writable) return;
     setNotice(null);
-    const merged = pending.current?.id === id ? mergeEdits(pending.current.edit, edit) : null;
-    if (merged && pending.current) {
-      pending.current.edit = merged;
-    } else {
-      flush();
-      pending.current = { id, baseSeq: doc.getState().revision, edit };
-    }
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(flush, COALESCE_MS);
+    burst.push(id, edit);
+  }
+
+  function giveBack() {
+    flush();
+    onReleaseBaton?.();
   }
 
   function run() {
@@ -130,7 +155,7 @@ export function CodeDock({ doc, ui, diagnostics, onRun, messages }: CodeDockProp
           language={language}
           label={fill(messages.editor, { path: source.path })}
           diagnostics={shown ? markers : NO_MARKERS}
-          readOnly={readOnly}
+          readOnly={readOnly || (gate !== undefined && !gate.writable)}
           maxBytes={LIMITS.sourceBytes}
           onTooBig={() => setNotice("tooBig")}
           onEdit={(edit) => record(source.id, edit)}
@@ -144,12 +169,29 @@ export function CodeDock({ doc, ui, diagnostics, onRun, messages }: CodeDockProp
   const cursor = cursors[activeId ?? ""] ?? { line: 1, col: 1 };
 
   return (
-    <section aria-label={messages.title} className="flex min-h-0 flex-col bg-paper" style={{ height }} onBlur={flush}>
+    <section aria-label={messages.title} className="flex min-h-0 flex-col bg-paper" style={{ height }} onBlur={flush} onCompositionEnd={flush}>
       <Tabs label={messages.files} tabs={tabs} value={activeId} onChange={setPicked} fill className="flex-1" panelClassName="bg-(--code-bg) p-0!" />
       <div ref={footer} className="flex shrink-0 flex-wrap items-center gap-3 border-t border-rule px-3 py-2">
         <p className="tabular text-sm text-muted">{fill(messages.position, cursor)}</p>
         {active && languageOf(active) === null ? <Chip>{messages.plain}</Chip> : null}
         {readOnly ? <Chip>{messages.readOnly}</Chip> : null}
+        {gate ? (
+          <>
+            <p role="status" className="text-sm text-ink">
+              {batonLine(gate, messages.baton)}
+            </p>
+            {!gate.writable && gate.reason === "not-holder" && onRequestBaton ? (
+              <Button size="sm" variant="secondary" onClick={onRequestBaton}>
+                {messages.baton.ask}
+              </Button>
+            ) : null}
+            {gate.writable && onReleaseBaton ? (
+              <Button size="sm" variant="secondary" onClick={giveBack}>
+                {messages.baton.giveBack}
+              </Button>
+            ) : null}
+          </>
+        ) : null}
         <p role="status" className={notice ? "min-w-0 flex-1 text-sm text-bad" : "min-w-0 flex-1 text-sm text-muted max-sm:sr-only"}>
           {notice ? messages[notice] : messages.escape}
         </p>

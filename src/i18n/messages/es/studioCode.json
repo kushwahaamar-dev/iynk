@@ -14,6 +14,15 @@
   "escape": "Pulsa Esc y después Tab para salir del editor.",
   "tooBig": "Ese cambio haría el archivo mayor de 256 KB, así que no se aplicó.",
   "failed": "No se pudo guardar el cambio. El editor vuelve a mostrar el texto guardado.",
+  "baton": {
+    "heldBy": "Teclado en manos de {name}",
+    "nobody": "Nadie tiene el teclado",
+    "you": "Tienes el teclado",
+    "ask": "Pedir el teclado",
+    "giveBack": "Devolverlo",
+    "viewer": "Puedes ver esta sala pero no editarla",
+    "ended": "Esta sala ha terminado"
+  },
   "marker": {
     "error": "Error, línea {line}, columna {col}:",
     "warning": "Aviso, línea {line}, columna {col}:"
