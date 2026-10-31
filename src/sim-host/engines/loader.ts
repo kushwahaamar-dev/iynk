@@ -53,8 +53,15 @@ const EXNREF_PROBE = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 4, 1, 96, 0
 export function detectFeatures(): LoaderDeps["features"] {
   const wasm = new Set<string>();
   if (typeof WebAssembly !== "undefined" && WebAssembly.validate(EXNREF_PROBE)) wasm.add("exnref");
-  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-  return { wasm, deviceMemoryGb: memory, desktop: !matchMedia("(pointer: coarse)").matches };
+  const nav = navigator as Navigator & { deviceMemory?: number; userAgentData?: { mobile?: boolean } };
+  return { wasm, deviceMemoryGb: nav.deviceMemory, desktop: !isCoarsePointer(nav) };
+}
+
+// Workers have no matchMedia, and the sim worker calls detectFeatures on load, so fall back to what navigator says.
+function isCoarsePointer(nav: Navigator & { userAgentData?: { mobile?: boolean } }): boolean {
+  if (typeof matchMedia === "function") return matchMedia("(pointer: coarse)").matches;
+  if (typeof nav.userAgentData?.mobile === "boolean") return nav.userAgentData.mobile;
+  return /Android|iPhone|iPad|Mobile/i.test(nav.userAgent);
 }
 
 const hex = (digest: ArrayBuffer): string => Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
