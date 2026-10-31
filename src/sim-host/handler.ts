@@ -4,16 +4,20 @@ import { NS_PER_MS, type SimTime } from "@/sim/core/clock";
 import { simDiag } from "@/sim/core/diagnostic";
 import type {
   DigitalLayer,
+  Engine,
   McuEngine,
   PartState,
   ProgramImage,
   SimDiagnostic,
   SimNetlist,
   SimRunOptions,
+  SliceBudget,
   SliceResult,
 } from "@/sim/engine";
 import { createOrchestrator, type Orchestrator } from "@/sim/orchestrator";
-import type { DiagnosticsReply, IgnoredReply, PinLevel, SimEv, SimReq, SimRunState } from "./protocol";
+import type { ProbeHandle, ProbeTap, TraceChunk } from "@/sim/probe/tap";
+import { classHashes } from "@/sim/replay/trace";
+import type { DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, SimEv, SimReq, SimRunState } from "./protocol";
 
 /** What the handler reads from an engine beyond `McuEngine`; the interpreter engines have both. */
 export type SimEngine = McuEngine & {
@@ -28,6 +32,8 @@ export interface SimHandlerDeps {
   schedule(fn: () => void): void;
   makeEngine(program: ProgramImage, net: SimNetlist, opts: SimRunOptions): SimEngine;
   makeDigital(): DigitalLayer;
+  /** Without it every probe is refused. The tap stays outside the orchestrator so that probes never reach a hash. */
+  makeTap?(): ProbeTap & Engine;
 }
 
 const SLICE_WALL_MS = 12;
@@ -40,6 +46,11 @@ const SPEED_WINDOW_MS = 1000;
 /** A run is behind when it achieves less than this share of the speed asked for. */
 const BEHIND_RATIO = 0.95;
 const SPEED_REPORT_MS = 250;
+/** At most 30 probe batches per wall second. */
+const PROBE_BATCH_MS = 1000 / 30;
+const MAX_CHUNK_BYTES = 512 * 1024;
+/** The tap never yields: it only copies values. */
+const NEVER_YIELD: SliceBudget = { shouldYield: () => false, work: { statements: Infinity, events: Infinity, outputBytes: Infinity } };
 const SERIAL_LINES_PER_FRAME = 500;
 const SERIAL_CAP_CHARS = 1024 * 1024;
 
@@ -63,6 +74,13 @@ interface Runtime {
   /** Wall and simulated time at the end of recent slices, oldest first. */
   progress: Array<{ wall: number; sim: SimTime }>;
   lastReportWall: number;
+  tap: (ProbeTap & Engine) | null;
+  handles: Map<string, ProbeHandle>;
+  /** Where the next chunk of a streamed probe starts. */
+  subs: Map<string, SimTime>;
+  /** The last reading sent per probe, without its time. */
+  sentReadings: Map<string, string>;
+  lastProbeWall: number;
 }
 
 const bad = (message: string) => new WorkerError({ kind: "bad_message", message });
@@ -72,6 +90,24 @@ function eventKind(d: SimDiagnostic): "diagnostic" | "output-contention" | "no-t
 }
 
 const messageOf = (d: SimDiagnostic): string => String(d.args?.message ?? d.text_key);
+
+/** Keeps the newest samples of a chunk that is over the payload cap; the rest count as dropped. */
+function fitChunk(chunk: TraceChunk): TraceChunk {
+  const arrays = [chunk.t, chunk.v, chunk.min, chunk.max].filter((a) => a !== undefined).length;
+  const room = Math.max(1, Math.floor(MAX_CHUNK_BYTES / (arrays * 8)));
+  const excess = chunk.t.length - room;
+  if (excess <= 0) return chunk;
+  const tail = (a: Float64Array) => a.slice(excess);
+  const t = tail(chunk.t);
+  return {
+    ...chunk,
+    from: t[0],
+    t,
+    v: tail(chunk.v),
+    ...(chunk.min && chunk.max ? { min: tail(chunk.min), max: tail(chunk.max) } : {}),
+    dropped: chunk.dropped + excess,
+  };
+}
 
 export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, SimEv> {
   let run = 0;
@@ -133,6 +169,62 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     }
   }
 
+  function readingKey(reading: unknown): string {
+    return JSON.stringify({ ...(reading as object), at: 0 });
+  }
+
+  function sendReading(r: Runtime, id: string, handle: ProbeHandle) {
+    const reading = r.tap!.read(handle);
+    const key = readingKey(reading);
+    if (r.sentReadings.get(id) === key) return;
+    r.sentReadings.set(id, key);
+    emit({ t: "probe.reading", run, id, reading });
+  }
+
+  /** Brings the tap to the present and, at most 30 times a second, sends the readings that changed and the new samples. */
+  function flushProbes(r: Runtime, force: boolean) {
+    if (!r.tap) return;
+    r.tap.advanceTo(r.orch.now, NEVER_YIELD);
+    const wall = deps.wallMs();
+    if (!force && wall - r.lastProbeWall < PROBE_BATCH_MS) return;
+    r.lastProbeWall = wall;
+    for (const [id, handle] of r.handles) sendReading(r, id, handle);
+    for (const [id, from] of r.subs) {
+      const chunk = r.tap.stream(r.handles.get(id)!, from);
+      if (chunk.t.length === 0) continue;
+      r.subs.set(id, chunk.t[chunk.t.length - 1] + 1);
+      emit({ t: "probe.chunk", run, chunk: fitChunk(chunk) });
+    }
+  }
+
+  function probe(r: Runtime, msg: Extract<SimReq, { t: `probe.${string}` | "hashes.request" }>): ProbeAddReply | unknown {
+    if (msg.t === "hashes.request") {
+      if (msg.tNs !== r.orch.now) {
+        throw new WorkerError({ kind: "not_at_time", message: `the run is at ${r.orch.now} ns, not ${msg.tNs} ns` });
+      }
+      return { tNs: r.orch.now, ...classHashes(r.orch) } satisfies HashesReply;
+    }
+    if (msg.t === "probe.add") {
+      if (!r.tap) return { error: "unknown-target" } satisfies ProbeAddReply;
+      const handle = r.tap.add(msg.spec);
+      if (handle.error) return { error: handle.error } satisfies ProbeAddReply;
+      r.handles.set(handle.id, handle);
+      sendReading(r, handle.id, handle);
+      return {} satisfies ProbeAddReply;
+    }
+    const handle = r.handles.get(msg.id);
+    if (!handle) throw bad(`no probe ${msg.id}`);
+    if (msg.t === "probe.read") return r.tap!.read(handle);
+    if (msg.t === "probe.sub") {
+      r.subs.set(msg.id, msg.from);
+      return;
+    }
+    r.tap!.remove(handle);
+    r.handles.delete(msg.id);
+    r.subs.delete(msg.id);
+    r.sentReadings.delete(msg.id);
+  }
+
   /** Reports what the engine and the orchestrator found since the last slice; returns how they end the run, if they do. */
   function review(r: Runtime, result: SliceResult): { state: SimRunState; limit?: { kind: string; message: string } } | null {
     const found = [
@@ -155,6 +247,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function finish(r: Runtime, result: SliceResult): boolean {
     const ended = review(r, result);
     sendFrame(r, ended !== null);
+    flushProbes(r, ended !== null);
     if (!ended) return false;
     setState(ended.state, ended.limit);
     return true;
@@ -230,6 +323,11 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       anchor: { wall: 0, sim: 0 },
       progress: [],
       lastReportWall: 0,
+      tap: deps.makeTap?.() ?? null,
+      handles: new Map(),
+      subs: new Map(),
+      sentReadings: new Map(),
+      lastProbeWall: -Infinity,
     };
     post();
     sendFrame(rt, true);
@@ -272,6 +370,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (state !== "running") return;
     stopPump();
     sendFrame(rt, true);
+    flushProbes(rt, true);
     setState("paused");
   }
 
@@ -310,6 +409,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (msg.t === "step") return step(msg);
     if (msg.t === "speed") return void setSpeed(msg.x);
     if (!rt) throw bad("nothing is loaded");
-    rt.orch.inject(msg.input);
+    if (msg.t === "input") return void rt.orch.inject(msg.input);
+    return probe(rt, msg);
   };
 }

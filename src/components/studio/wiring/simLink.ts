@@ -85,6 +85,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: Sim
       run.apply({ t: "diagnostics", append: true, diagnostics: [{ id: ev.event.kind, severity, text: ev.event.message }] });
       return;
     }
+    if (ev.t !== "state") return;
     if (ev.state === "running") run.apply({ t: "phase", phase: "running" });
     else if (ev.state === "paused") run.apply({ t: "phase", phase: "paused" });
     else if (ev.state === "done") run.apply({ t: "phase", phase: "done" });

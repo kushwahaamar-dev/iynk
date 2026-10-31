@@ -1,7 +1,9 @@
 import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
+import type { SimTime } from "@/sim/core/clock";
 import type { HostInput, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
-import type { ControlOp, DiagnosticsReply, SimEv, SimReq, SimRunState } from "./protocol";
+import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, SimEv, SimReq, SimRunState } from "./protocol";
+import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
 
 /** How often a running run is asked whether the worker's thread is still turning. */
@@ -40,6 +42,17 @@ export interface SimHostStatus {
   behindReal: boolean;
 }
 
+export interface SimHostProbes {
+  /** Rejects with the tap's error (`unknown-target`, `too-many-probes`). */
+  add(spec: ProbeSpec): Promise<void>;
+  remove(id: string): void;
+  read(id: string): Promise<Reading>;
+  /** Readings arrive when they change, not on a timer. */
+  watch(id: string, fn: (reading: Reading) => void): () => void;
+  /** Streams the samples of a probe from `from` on, at most 30 batches a second. */
+  subscribe(id: string, from: SimTime, fn: (chunk: TraceChunk) => void): () => void;
+}
+
 export interface SimHost {
   load(net: SimNetlist, opts: SimRunOptions, program: ProgramImage): Promise<{ diagnostics: SimDiagnostic[]; runId: number }>;
   control(op: ControlOp): Promise<void>;
@@ -51,6 +64,10 @@ export interface SimHost {
   step(unit: StepUnit, n: number): Promise<void>;
   input(i: HostInput): Promise<void>;
   check(job: CheckJob, budgetMs?: number): Promise<CheckOutcome>;
+  /** Probes are cleared by `load`, `reset` and `restart`; the caller adds them again. */
+  readonly probes: SimHostProbes;
+  /** The class hashes of the run at `tNs`; rejects when the run is somewhere else. */
+  hashes(tNs: SimTime): Promise<{ hb: string; hd: string }>;
   /** Events of the current run only; a late message of an older run is dropped. */
   onEvent(fn: (e: SimEv) => void): () => void;
   /** Stops the worker. Calls fail until `restart`. A stalled worker is killed and reloaded by the host itself. */
@@ -175,6 +192,35 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     return runId;
   }
 
+  function listenFor(fn: (ev: SimEv) => void): () => void {
+    listeners.add(fn);
+    return () => void listeners.delete(fn);
+  }
+
+  const probes: SimHostProbes = {
+    async add(spec) {
+      const { error } = (await port.call({ t: "probe.add", run: current(), spec })).result as ProbeAddReply;
+      if (error) throw new Error(error);
+    },
+    remove(id) {
+      port.call({ t: "probe.remove", run: current(), id }).catch(() => undefined);
+    },
+    async read(id) {
+      return (await port.call({ t: "probe.read", run: current(), id })).result as Reading;
+    },
+    watch: (id, fn) =>
+      listenFor((ev) => {
+        if (ev.t === "probe.reading" && ev.id === id) fn(ev.reading);
+      }),
+    subscribe(id, from, fn) {
+      const off = listenFor((ev) => {
+        if (ev.t === "probe.chunk" && ev.chunk.id === id) fn(ev.chunk);
+      });
+      port.call({ t: "probe.sub", run: current(), id, from }).catch(off);
+      return off;
+    },
+  };
+
   const host: SimHost = {
     async load(net, opts, program) {
       runId++;
@@ -215,6 +261,11 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     },
     async check(job, budgetMs) {
       return (await port.call({ t: "check", job, budgetMs })).result as CheckOutcome;
+    },
+    probes,
+    async hashes(tNs) {
+      const { hb, hd } = (await port.call({ t: "hashes.request", run: current(), tNs })).result as HashesReply;
+      return { hb, hd };
     },
     onEvent(fn) {
       listeners.add(fn);

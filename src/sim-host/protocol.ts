@@ -9,6 +9,7 @@ import type {
   SimRunOptions,
   StepUnit,
 } from "@/sim/engine";
+import type { ProbeHandle, ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 
 export type ControlOp = "run" | "pause" | "stop" | "reset" | "cancel";
 
@@ -26,6 +27,14 @@ export type SimReq =
   | { t: "speed"; run: number; x: number }
   | { t: "input"; run: number; input: HostInput }
   | { t: "check"; job: CheckJob; budgetMs?: number }
+  /** Probes belong to the run: a load or a reset clears them, and the UI adds them again. At most 64. */
+  | { t: "probe.add"; run: number; spec: ProbeSpec }
+  | { t: "probe.remove"; run: number; id: string }
+  | { t: "probe.read"; run: number; id: string }
+  /** Streams the samples of a probe from `from` on, as `probe.chunk` events. */
+  | { t: "probe.sub"; run: number; id: string; from: SimTime }
+  /** Answered only when the run is at `tNs`. */
+  | { t: "hashes.request"; run: number; tNs: SimTime }
   /** Busy-loops for ever so the watchdog can be tested; answered only by a worker created with `diag`. */
   | { t: "diag"; op: "stall" };
 
@@ -40,6 +49,8 @@ export type SimEv =
     }
   | { t: "state"; run: number; state: SimRunState; at: SimTime; limit?: { kind: string; message: string } }
   /** What the last second of a running run achieved, and whether that is short of the speed asked for. */
+  | { t: "probe.reading"; run: number; id: string; reading: Reading }
+  | { t: "probe.chunk"; run: number; chunk: TraceChunk }
   | { t: "speed.report"; run: number; achieved: number; behind: boolean }
   | {
       t: "event";
@@ -55,4 +66,16 @@ export interface DiagnosticsReply {
 /** A request for a run the worker no longer has is acked with this and does nothing. */
 export interface IgnoredReply {
   ignored: true;
+}
+
+/** The ack of `probe.add`. */
+export interface ProbeAddReply {
+  error?: NonNullable<ProbeHandle["error"]>;
+}
+
+/** The ack of `hashes.request`: the two class hashes of the run at `tNs`. */
+export interface HashesReply {
+  tNs: SimTime;
+  hb: string;
+  hd: string;
 }
