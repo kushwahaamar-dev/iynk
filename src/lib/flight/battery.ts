@@ -1,34 +1,7 @@
-import type { CalcOutputs, Chemistry } from "./types";
+import { LIMITS, NOMINAL_CELL, cellResistance, ocv } from "@/core/battery";
+import type { CalcOutputs } from "./types";
 
-// Open-circuit voltage per cell against state of charge, 0..1 in steps of 0.1.
-const OCV: Record<Chemistry, number[]> = {
-  lipo: [3.0, 3.6, 3.7, 3.75, 3.79, 3.83, 3.87, 3.92, 4.0, 4.08, 4.2],
-  lihv: [3.0, 3.62, 3.74, 3.8, 3.86, 3.91, 3.97, 4.04, 4.12, 4.22, 4.35],
-  liion: [2.8, 3.3, 3.45, 3.55, 3.62, 3.68, 3.75, 3.84, 3.94, 4.05, 4.2],
-};
-
-/** Warning and cut-off voltages per cell, under load. */
-export const LIMITS: Record<Chemistry, { low: number; cut: number }> = {
-  lipo: { low: 3.5, cut: 3.2 },
-  lihv: { low: 3.55, cut: 3.25 },
-  liion: { low: 3.1, cut: 2.9 },
-};
-
-/** Internal resistance per cell (ohm) times capacity (Ah): a bigger pack sags less. */
-const IR_AH: Record<Chemistry, number> = { lipo: 0.0066, lihv: 0.0066, liion: 0.08 };
-
-export const NOMINAL_CELL = 3.7;
-
-export function ocv(chem: Chemistry, soc: number): number {
-  const t = OCV[chem];
-  const s = Math.max(0, Math.min(1, soc)) * 10;
-  const i = Math.min(9, Math.floor(s));
-  return t[i] + (t[i + 1] - t[i]) * (s - i);
-}
-
-export function cellResistance(chem: Chemistry, mah: number): number {
-  return IR_AH[chem] / Math.max(0.05, mah / 1000);
-}
+export { LIMITS, NOMINAL_CELL, cellResistance, ocv };
 
 export interface BatteryState {
   used: number; // mAh
