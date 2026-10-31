@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
+import { legacyRecord } from "@/content/faults/legacy-map";
 import type { FailureMode, RoboticsContent } from "@/content/schema";
+import { appEventLog } from "@/local/events";
 import type { BenchAction } from "@/lib/robotics/store";
 import { Fold } from "./Fold";
 import type { BenchT, TextOf } from "./messages";
@@ -62,7 +64,10 @@ export function FaultsPanel({ bench, active, t, tx, dispatch, headingId }: Props
                   variant={on ? "danger" : "secondary"}
                   className="shrink-0 whitespace-nowrap"
                   aria-label={`${on ? t("faults.repair") : t("faults.trigger")}: ${title}`}
-                  onClick={() => dispatch(on ? { type: "fault/clear" } : { type: "fault/trigger", fault: fault.id })}
+                  onClick={() => {
+                    dispatch(on ? { type: "fault/clear" } : { type: "fault/trigger", fault: fault.id });
+                    if (on) void appEventLog().append("diagnosis.record", legacyRecord(bench.id, fault));
+                  }}
                 >
                   {on ? t("faults.repair") : t("faults.trigger")}
                 </Button>
