@@ -30,14 +30,14 @@ describe("Palette", () => {
     expect(screen.getByRole("heading", { name: en.palette.category["dev-board"] })).toBeTruthy();
   });
 
-  it("puts the LED first when you search led, and shows its model label", () => {
+  it("puts the 5 mm LED first when you search led, and shows its model label", () => {
     setup();
     fireEvent.change(screen.getByRole("searchbox", { name: en.palette.search }), { target: { value: "led" } });
     const [first] = items();
-    expect(first!.textContent).toContain("LED");
+    expect(first!.textContent).toContain("5 mm through-hole LED");
     expect(within(first!).getByText(en.palette.model["partly-modelled"])).toBeTruthy();
     expect(screen.queryByRole("heading")).toBeNull();
-    expect(screen.getByRole("status").textContent).toBe("1 part");
+    expect(screen.getByRole("status").textContent).toBe("4 parts");
   });
 
   it("says so when nothing matches and offers a way on", () => {
