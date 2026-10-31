@@ -87,5 +87,124 @@
       "noResult": "没有结果"
     },
     "unverified": "未核实的引用"
+  },
+  "proposal": {
+    "title": {
+      "fix": "建议的修复",
+      "scaffold": "建议的起始电路",
+      "explore": "可以试试看"
+    },
+    "base": "基于修订 {rev} 生成",
+    "changedSince": "项目在修订 {rev} 发生了变化",
+    "step": "第 {n} 步：{label}",
+    "risk": {
+      "0": "仅布局",
+      "1": "添加或编辑",
+      "2": "删除或替换"
+    },
+    "confirmStep": "我明白这会删除 {components} 个元件和 {wires} 根连线，并断开 {pins} 个引脚",
+    "accept": "全部接受",
+    "acceptSome": "接受所选步骤",
+    "acceptAnyway": "仍然接受",
+    "reject": "拒绝",
+    "undo": "撤销此建议",
+    "accepted": "已接受",
+    "rejected": "已拒绝",
+    "stale": "此建议已过期。它所修改的部分项目在其生成之后被编辑过。",
+    "redo": "请搭档在当前项目上重新生成",
+    "refreshed": "预览已变化。请检查后再次点击接受。",
+    "failing": "此更改后检查未通过",
+    "checks": {
+      "rules": "规则检查",
+      "compile": "编译",
+      "tests": "测试",
+      "run": "短时运行"
+    },
+    "skipped": "未运行：{reason}",
+    "netLine": "{net}：{change}",
+    "fileLine": "{path}：+{added} −{removed}",
+    "taint": "读取以下内容后生成：{sources}",
+    "tainted": "这一轮读取了项目之外的文本。要显示这条建议吗？",
+    "show": "显示建议",
+    "explainOnly": "我没能做出有效的更改。我会这样尝试：",
+    "forbidden": "搭档不能提出这种更改。",
+    "list": "建议",
+    "empty": "还没有建议。",
+    "ready": "建议已就绪：{title}",
+    "model": "{model}，{mode}模式",
+    "tier": "新元件的精度：{tier}",
+    "announce": {
+      "open": "有一条建议等待审阅。",
+      "accepted": "建议已接受。撤销一次即可还原。",
+      "rejected": "建议已拒绝。",
+      "stale": "建议已过期。"
+    },
+    "diff": {
+      "steps": "步骤",
+      "checks": "检查",
+      "pass": "通过",
+      "fail": "未通过",
+      "parts": "元件",
+      "nets": "网络",
+      "wires": "导线",
+      "files": "文件",
+      "tests": "测试",
+      "faults": "故障",
+      "params": "参数",
+      "cascade": "同时影响",
+      "added": "新增",
+      "removed": "删除",
+      "changed": "修改",
+      "unchanged": "{count} 行未改动",
+      "wireCounts": "新增 {added} 条，删除 {removed} 条",
+      "paramChange": "{id}：{from} 改为 {to}",
+      "cascadeCounts": "{components} 个元件、{wires} 条导线、{pins} 个引脚、{sources} 个文件",
+      "bigFile": "此文件改动过大，无法逐行比较，将显示为先删除再新增。",
+      "noChange": "没有改动"
+    }
+  },
+  "mode": {
+    "label": "模式",
+    "socratic": "苏格拉底式",
+    "beginner": "入门",
+    "direct": "直接",
+    "debugging": "调试",
+    "advanced": "进阶",
+    "hint": {
+      "socratic": "提问和提示，你开口之前不给答案",
+      "beginner": "解释术语，一次一个概念",
+      "direct": "先给答案或更改",
+      "debugging": "从证据出发，再给最小的修复",
+      "advanced": "取舍、余量和假设"
+    },
+    "switched": "从下一条消息起，模式为{mode}"
+  },
+  "ladder": {
+    "label": "提示",
+    "another": "再来一个提示",
+    "show": "给我看",
+    "fixIt": "修复它",
+    "apply": "应用",
+    "level": "第 {level} 级提示，共 3 级",
+    "holdMe": "在“给我看”之前先让我确认",
+    "confirmShow": "现在显示原因和修复吗？",
+    "codeWithheld": "代码已隐藏。请求“给我看”即可查看。"
+  },
+  "scaffold": {
+    "prompt": "描述你想要的电路",
+    "tier": "新元件按 {tier} 建模",
+    "checks": "在你看到之前已通过规则检查"
+  },
+  "draft": {
+    "title": "给伙伴的消息草稿",
+    "buddy": "收件人",
+    "copy": "复制",
+    "copied": "已复制",
+    "addLink": "添加分享链接",
+    "noLink": "分享链接需要你的服务器。",
+    "use": "使用此草稿",
+    "dismiss": "放弃",
+    "sentByYou": "点击发送之前不会发出任何内容。",
+    "noBuddies": "你还没有伙伴。复制文本，用你自己的方式发送。"
   }
 }

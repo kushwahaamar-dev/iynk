@@ -17,8 +17,11 @@ import { FINAL_ROUND_NOTE, PROMPT_VERSION, systemParts } from "../prompts.ts";
 import { checkAnswer } from "../render/checks.ts";
 import type { SeenUrls } from "../render/links.ts";
 import type { PartnerSources } from "../sources.ts";
-import { TOOL_NAMES } from "../tools/schemas.ts";
+import { opsToolSpecs } from "../tools/ops.ts";
+import type { ProposalHook } from "../tools/ops.ts";
+import { TOOLS, toolsForCall } from "../tools/registry.ts";
 import type { ToolResult } from "../tools/registry.ts";
+import { TOOL_NAMES } from "../tools/schemas.ts";
 import { newId, toMessages } from "./thread.ts";
 import type { ToolRecord, Turn, TurnFlag, Usage } from "./thread.ts";
 import type { Locale } from "../../i18n/config.ts";
@@ -64,6 +67,8 @@ export type TurnDeps = {
   projectId: string | null;
   /** Running ratio of the provider's input tokens to our estimate. */
   correction(): number;
+  /** The proposal tools. Without it a turn offers and runs only the read tools. */
+  proposals?: ProposalHook;
 };
 
 export type TurnInput = {
@@ -136,7 +141,9 @@ async function* streamCall(d: TurnDeps, req: ModelRequest, signal: AbortSignal):
 async function runCall(d: TurnDeps, call: ToolCall, n: number, ctx: { mode: Mode; round: number; signal: AbortSignal }) {
   const started = d.now();
   let result: ToolResult;
+  const proposed = n < CALLS_PER_ROUND ? (d.proposals?.run(call, ctx) ?? null) : null;
   if (n >= CALLS_PER_ROUND) result = { ok: false, code: "rate", message: `At most ${CALLS_PER_ROUND} tool calls per round.` };
+  else if (proposed) result = await proposed;
   else if ((TOOL_NAMES as string[]).includes(call.name)) result = await d.tools.run(call, ctx);
   else if (d.effects) result = await d.effects.run(call, ctx);
   else result = { ok: false, code: "not_allowed_in_mode", message: `${call.name} is not available in ${ctx.mode} mode.` };
@@ -162,7 +169,7 @@ export async function* runTurn(d: TurnDeps, i: TurnInput): AsyncGenerator<TurnEv
   const redacted = redactSecrets(i.text);
   const settings = MODE_SETTINGS[i.mode];
   const rounds = Math.max(1, Math.min(MAX_ROUNDS, d.caps.maxCallsPerMessage));
-  const specs = [...specsFor(i.mode), ...(d.effects?.specs ?? [])];
+  const effectSpecs = d.effects?.specs ?? [];
   const privacy = d.profile.caps?.privacy ?? "cloud";
   const price = priceFor(d.model, d.profile.id);
   const requestId = newId("req", d.random);
@@ -179,6 +186,20 @@ export async function* runTurn(d: TurnDeps, i: TurnInput): AsyncGenerator<TurnEv
   let unlogged = redacted.count;
 
   d.tools.resetMessage();
+
+  function specsForRound(): ToolSpec[] {
+    const hook = d.proposals;
+    if (!hook) return [...specsFor(i.mode), ...effectSpecs];
+    const offered = new Set<string>(
+      toolsForCall(i.mode, hook.gate(), hook.loaded(), hook.tainted(), { effect: d.effects !== null }).map((t) => t.name),
+    );
+    const known = new Set<string>(TOOLS.map((t) => t.name));
+    return [
+      ...specsFor(i.mode).filter((spec) => offered.has(spec.name)),
+      ...opsToolSpecs(offered, hook.loaded()),
+      ...effectSpecs.filter((spec) => !known.has(spec.name) || offered.has(spec.name)),
+    ];
+  }
 
   function packFor(): { pack: Pack; fresh: boolean } {
     const { revision, stateHash } = sources.project();
@@ -276,7 +297,8 @@ export async function* runTurn(d: TurnDeps, i: TurnInput): AsyncGenerator<TurnEv
         return;
       }
       pack = built.pack;
-      messages[0] = { role: "user", text: pack.text };
+      const ladder = d.proposals?.ladderBlock() ?? "";
+      messages[0] = { role: "user", text: ladder === "" ? pack.text : `${pack.text}\n\n${ladder}` };
       if (built.fresh) {
         const { hash8, tokensEst, profile: packProfile, level, sections, evicted, redactions } = pack;
         yield { t: "pack", pack: { hash8, tokensEst, profile: packProfile, level, sections, evicted, redactions } };
@@ -303,7 +325,7 @@ export async function* runTurn(d: TurnDeps, i: TurnInput): AsyncGenerator<TurnEv
       const request: ModelRequest = {
         system: systemParts(i.mode, d.locale),
         messages,
-        tools: final ? [] : specs,
+        tools: final ? [] : specsForRound(),
         toolChoice: final ? "none" : "auto",
         maxOutputTokens: gate.maxOutputTokens,
         requestId,

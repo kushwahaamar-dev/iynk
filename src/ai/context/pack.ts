@@ -1,5 +1,6 @@
 import { sha256Hex } from "../../core/sha256.ts";
 import type { Mode } from "../log.ts";
+import type { ExclusionCtx } from "../modes/exclusions.ts";
 import type { PartnerSources } from "../sources.ts";
 import { BUDGETS, PackTooLarge, estimateTokens } from "./budget.ts";
 import type { PackProfile } from "./budget.ts";
@@ -12,6 +13,8 @@ export type SourceId = "S1" | "S2" | "S3" | "S4" | "S5" | "S6" | "S7" | "S8" | "
 export type PackInput = {
   sources: PartnerSources;
   mode: Mode;
+  /** Drops what the mode must never show (hidden checks, quiz answers, hints past the ladder level, sealed causes). */
+  exclusions?: ExclusionCtx;
   profile: PackProfile;
   thread: { summary: string | null; turns: readonly { role: "user" | "assistant"; text: string }[] };
   userMessage: string;

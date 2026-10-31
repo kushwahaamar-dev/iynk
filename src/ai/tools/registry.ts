@@ -2,7 +2,10 @@ import type { TrustClass } from "../context/fences.ts";
 import { cleanField } from "../context/sanitize.ts";
 import { makeNonce } from "../context/fences.ts";
 import type { Mode, ToolCallRecord } from "../log.ts";
+import type { GateResult } from "../proposals/guard.ts";
+import type { OpGroup } from "../proposals/types.ts";
 import type { PartnerSources } from "../sources.ts";
+import { OPS_TOOL_DEFS } from "./ops.ts";
 import { runRead, READ_TAINT } from "./read.ts";
 import type { ReadToolName } from "./read.ts";
 import { parseRef, resolveRef } from "./refs.ts";
@@ -13,7 +16,7 @@ import type { ToolName } from "./schemas.ts";
 export { jsonSchemaOf };
 export type { ToolName };
 
-export type ToolClass = "read" | "compute" | "ui" | "effect";
+export type ToolClass = "read" | "compute" | "ui" | "effect" | "propose";
 
 export type ToolErrorCode =
   | "bad_args"
@@ -31,8 +34,10 @@ export type ToolResult =
   | { ok: true; text: string; bytes: number; taint: TrustClass[]; truncated: boolean }
   | { ok: false; code: ToolErrorCode; message: string };
 
+export type ProposeToolName = "propose_ops" | "try_ops" | "request_ops_group" | "draft_buddy_message";
+
 export type ToolDef = {
-  name: ToolName;
+  name: ToolName | ProposeToolName;
   cls: ToolClass;
   taint: TrustClass[];
   description: string;
@@ -72,10 +77,34 @@ export const TOOLS: readonly ToolDef[] = [
   def("check_rules", "compute", "Run the electrical rules check, optionally on chosen nets or components."),
   def("highlight", "ui", "Point at something in the project for the person: a part, a pin, a net or lines of a file. The reference must exist."),
   def("open_panel", "ui", "Open a tab of the dock for the person."),
+  ...OPS_TOOL_DEFS,
 ];
 
 export function toolsFor(mode: Mode, flags: { effect: boolean }): readonly ToolDef[] {
   return TOOLS.filter((t) => t.modes.includes(mode) && (flags.effect || t.cls !== "effect"));
+}
+
+const PROPOSE_TOOLS: ReadonlySet<string> = new Set(["propose_ops", "try_ops", "request_ops_group"]);
+const OP_GROUPS: readonly OpGroup[] = ["core", "board", "mech", "sim", "meta"];
+
+/** The tools one model call may see. B15 tools that are not registered yet are simply absent. */
+export function toolsForCall(
+  mode: Mode,
+  gate: GateResult,
+  loaded: ReadonlySet<OpGroup>,
+  tainted: boolean,
+  flags: { effect: boolean },
+): readonly ToolDef[] {
+  const withheld = new Set<string>(PROPOSE_TOOLS);
+  if (mode === "socratic") withheld.add("get_revision_diff");
+  if (tainted) withheld.add("draft_buddy_message");
+  const tools = toolsFor(mode, flags).filter((t) => !withheld.has(t.name));
+  if (gate.offer) {
+    const offered = new Set<string>(PROPOSE_TOOLS);
+    if (OP_GROUPS.every((g) => loaded.has(g))) offered.delete("request_ops_group");
+    tools.push(...TOOLS.filter((t) => t.modes.includes(mode) && offered.has(t.name)));
+  }
+  return tools.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 const fail = (code: ToolErrorCode, message: string): ToolResult => ({ ok: false, code, message });
@@ -139,20 +168,21 @@ export function createToolRunner(
   }
 
   function gate(call: { name: string; argsJson: string }, mode: Mode, nonce: string): ToolResult {
+    const { name } = call;
     let args: unknown;
     try {
       args = call.argsJson.trim() === "" ? {} : JSON.parse(call.argsJson);
     } catch {
       return fail("bad_args", "The arguments are not valid JSON.");
     }
-    if (!isToolName(call.name)) return fail("bad_args", `There is no tool named ${cleanField(call.name, 40).text}.`);
-    const tool = TOOLS.find((t) => t.name === call.name)!;
+    if (!isToolName(name)) return fail("bad_args", `There is no tool named ${cleanField(name, 40).text}.`);
+    const tool = TOOLS.find((t) => t.name === name)!;
     if (!tool.modes.includes(mode)) return fail("not_allowed_in_mode", `${tool.name} is not available in ${mode} mode.`);
     if (perRound >= CALLS_PER_ROUND) return fail("rate", `At most ${CALLS_PER_ROUND} tool calls per round.`);
     if (perMessage >= CALLS_PER_MESSAGE) return fail("rate", `At most ${CALLS_PER_MESSAGE} tool calls per message.`);
     perRound++;
     perMessage++;
-    return execute(tool.name, args, nonce);
+    return execute(name, args, nonce);
   }
 
   return {

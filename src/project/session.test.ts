@@ -292,3 +292,32 @@ describe("compact", () => {
     expect(kept.at(-1)!.revision).toBe(1000);
   });
 });
+
+describe("batch label and undoStackTop", () => {
+  it("makes one undo entry per call, stamps the batch and undoes in one step", () => {
+    const session = lessonSession();
+    const before = stateHash(session.state);
+    session.apply([label("A"), label("B"), label("C")], USER, { batch: "prp_a", label: "Accept" });
+    expect(session.state.history.ops.every((e) => e.batch === "prp_a")).toBe(true);
+    expect(session.undoStackTop()).toEqual({ batch: "prp_a", label: "Accept" });
+    session.undo();
+    expect(stateHash(session.state)).toBe(before);
+    expect(session.undoStackTop()).toBeUndefined();
+  });
+
+  it("redoes with the same batch", () => {
+    const session = lessonSession();
+    session.apply([label("A"), label("B")], USER, { batch: "prp_a" });
+    session.undo();
+    session.redo();
+    expect(session.state.history.ops.slice(-2).every((e) => e.batch === "prp_a")).toBe(true);
+    expect(session.undoStackTop()).toEqual({ batch: "prp_a" });
+  });
+
+  it("leaves the batch undefined without opts and rejects a bad id", () => {
+    const session = lessonSession();
+    session.apply(label("A"), USER);
+    expect(session.undoStackTop()?.batch).toBeUndefined();
+    expect(() => session.apply(label("B"), USER, { batch: "x".repeat(65) })).toThrow(RangeError);
+  });
+});

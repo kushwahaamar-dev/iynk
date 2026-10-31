@@ -6,6 +6,8 @@ import { fence } from "../context/fences.ts";
 import type { TrustClass } from "../context/fences.ts";
 import { redactSecrets } from "../context/redact.ts";
 import { cleanField, quoteField } from "../context/sanitize.ts";
+import { excludeFromProject, omittedLine } from "../modes/exclusions.ts";
+import type { ExclusionCtx } from "../modes/exclusions.ts";
 import type { PartnerSources } from "../sources.ts";
 import { TOOL_DOCS } from "./help.ts";
 import { parseRef, resolveRef, suggestIds } from "./refs.ts";
@@ -148,7 +150,7 @@ const sealedAndHidden = (s: PartnerSources): boolean => {
 
 const ms = (tNs: number): number => Math.round(tNs / 1000) / 1000;
 
-type Handlers = { [N in ReadToolName]: (a: ToolArgs<N>, s: PartnerSources) => Out };
+type Handlers = { [N in ReadToolName]: (a: ToolArgs<N>, s: PartnerSources, x?: ExclusionCtx) => Out };
 
 const handlers: Handlers = {
   get_project_summary(a, s) {
@@ -319,8 +321,9 @@ const handlers: Handlers = {
     return { lines: lines.length > 0 ? lines : ["nothing to report"], truncated };
   },
 
-  get_objectives(_a, s) {
-    const { doc } = s.project();
+  get_objectives(_a, s, x) {
+    const whole = s.project().doc;
+    const { state: doc, omitted } = x ? excludeFromProject(whole, x) : { state: whole, omitted: null };
     const locale = s.locale();
     const lines: string[] = [];
     const guide = doc.guide;
@@ -336,7 +339,8 @@ const handlers: Handlers = {
         else lines.push(`check ${field(c.id, 48)} ${c.kind} ${quoted(plain(c.label, locale), 120)} last=unknown`);
       }
     }
-    lines.push(`hidden checks: ${hidden}`);
+    const hiddenLine = omitted ? omittedLine(omitted, x!.showHiddenCount) : `hidden checks: ${hidden}`;
+    if (hiddenLine) lines.push(hiddenLine);
     return { lines };
   },
 
@@ -406,14 +410,14 @@ function render(name: ReadToolName, lines: readonly string[], cut: boolean, nonc
  * Runs one read tool: validates the arguments, checks every id against the live document, and returns the answer as
  * a fenced text of at most `budgetBytes`. A failure is data, never a throw.
  */
-export function runRead(name: ReadToolName, args: unknown, s: PartnerSources, o: { nonce: string; budgetBytes?: number }): ToolResult {
+export function runRead(name: ReadToolName, args: unknown, s: PartnerSources, o: { nonce: string; budgetBytes?: number; exclusions?: ExclusionCtx }): ToolResult {
   const parsed = toolSchemas[name].safeParse(args);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
     return fail("bad_args", `${issue.path.join(".") || "arguments"}: ${cleanField(issue.message, 120).text}`);
   }
-  const handler = handlers[name] as (a: unknown, s: PartnerSources) => Out;
-  const out = handler(parsed.data, s);
+  const handler = handlers[name] as (a: unknown, s: PartnerSources, x?: ExclusionCtx) => Out;
+  const out = handler(parsed.data, s, o.exclusions);
   if (isFailure(out)) return out;
 
   const budget = o.budgetBytes ?? RESULT_BUDGET_BYTES;

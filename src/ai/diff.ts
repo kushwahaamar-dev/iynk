@@ -3,10 +3,11 @@
 // fold into one "n unchanged lines" row.
 
 export type DiffLine = { op: "same" | "add" | "del"; text: string };
-export type DiffRow = DiffLine | { op: "skip"; count: number };
+export type NumberedLine = DiffLine & { oldNo?: number; newNo?: number };
+export type DiffRow<T extends DiffLine = DiffLine> = T | { op: "skip"; count: number };
 
 /** Above this many changed lines on a side, the middle is shown as delete-then-add. */
-const LCS_LIMIT = 800;
+export const LCS_LIMIT = 800;
 
 export function diffLines(before: string, after: string): DiffLine[] {
   const a = before === "" ? [] : before.split("\n");
@@ -57,14 +58,25 @@ export function diffLines(before: string, after: string): DiffLine[] {
   return [...head, ...middle, ...tail];
 }
 
+/** Adds 1-based line numbers: deleted lines count on the old side, added lines on the new, unchanged lines on both. */
+export function numberLines(lines: readonly DiffLine[]): NumberedLine[] {
+  let oldNo = 0;
+  let newNo = 0;
+  return lines.map((line) => {
+    if (line.op === "del") return { ...line, oldNo: ++oldNo };
+    if (line.op === "add") return { ...line, newNo: ++newNo };
+    return { ...line, oldNo: ++oldNo, newNo: ++newNo };
+  });
+}
+
 /** Keeps `context` unchanged lines around each change and folds the rest. */
-export function foldDiff(lines: DiffLine[], context = 2): DiffRow[] {
+export function foldDiff<T extends DiffLine>(lines: T[], context = 2): DiffRow<T>[] {
   const near = lines.map(() => false);
   lines.forEach((line, index) => {
     if (line.op === "same") return;
     for (let k = Math.max(0, index - context); k <= Math.min(lines.length - 1, index + context); k++) near[k] = true;
   });
-  const rows: DiffRow[] = [];
+  const rows: DiffRow<T>[] = [];
   let skipped = 0;
   lines.forEach((line, index) => {
     if (near[index]) {

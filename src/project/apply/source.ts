@@ -82,13 +82,13 @@ const sourceRename: Handler<"source.rename"> = (state, op) => {
   };
 };
 
-interface Range {
+export interface Range {
   pos: number;
   del: number;
 }
 
 /** Moves `a` to where it lands after `b` was applied first. The server order wins ties (RS-09 `doc.js` `txText`). */
-function shift(a: Range, b: Range & { ins: string }): Range {
+export function shift(a: Range, b: Range & { ins: string }): Range {
   const bEnd = b.pos + b.del;
   const start = (p: number) => (p < b.pos ? p : p >= bEnd ? p - b.del + b.ins.length : b.pos + b.ins.length);
   const end = (p: number) => (p <= b.pos ? p : p >= bEnd ? p - b.del + b.ins.length : b.pos);

@@ -28,6 +28,8 @@ export type ModelRequest = {
   /** Stable parts first. */
   system: { text: string; cacheBreakpoint?: boolean }[];
   messages: Msg[];
+  /** Message indexes that end a cacheable prefix; -1 is the system text and tools. Only explicit-cache providers use it. */
+  cacheAfter?: number[];
   tools: ToolSpec[];
   toolChoice: "auto" | "none";
   maxOutputTokens: number;

@@ -33,6 +33,22 @@ function Dots() {
   );
 }
 
+const MAX_TITLE = 80;
+
+/** Only a proposal that reached the person as a card gets the line. The title is the model's own field, not its rationale. */
+function proposalTitle(record: ToolRecord): string | null {
+  if (record.name !== "propose_ops" || !record.ok) return null;
+  try {
+    const result: unknown = JSON.parse(record.resultText);
+    const args: unknown = JSON.parse(record.argsText);
+    const shown = typeof result === "object" && result !== null && (result as { shown?: unknown }).shown === true;
+    const title = typeof args === "object" && args !== null ? (args as { title?: unknown }).title : undefined;
+    return shown && typeof title === "string" && title.trim() !== "" ? title.trim().slice(0, MAX_TITLE) : null;
+  } catch {
+    return null;
+  }
+}
+
 function policyFor(tools: readonly ToolRecord[], sources: PartnerSources, onRefClick: (raw: string) => void, t: AiT): RenderPolicy {
   const seen = createSeenUrls();
   for (const tool of tools) seen.add(tool.resultText);
@@ -87,9 +103,16 @@ function TurnViewBase({ turn, sources, onRefClick, t, streaming = false }: TurnV
           </p>
         ) : null}
 
-        {turn.tools.map((record) => (
-          <ToolCard key={record.id} record={record} t={t} />
-        ))}
+        {turn.tools.map((record) => {
+          const title = proposalTitle(record);
+          return title === null ? (
+            <ToolCard key={record.id} record={record} t={t} />
+          ) : (
+            <p key={record.id} className="break-words text-sm font-semibold">
+              {t("proposal.ready", { title })}
+            </p>
+          );
+        })}
 
         {turn.flags.includes("unverified") ? (
           <Chip tone="warn">
