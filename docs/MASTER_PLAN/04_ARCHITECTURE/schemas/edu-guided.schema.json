@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iynk:schema:edu-guided:1",
+  "title": "Guided plan, ext[\"x-iynk-guided\"]",
+  "type": "object",
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "guided",
+        "diagnose",
+        "challenge"
+      ]
+    },
+    "rung": {
+      "enum": [
+        "lesson",
+        "demo",
+        "diagnose",
+        "partial",
+        "open",
+        "capstone"
+      ]
+    },
+    "skill": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40
+      },
+      "maxItems": 8
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Gate"
+      },
+      "maxItems": 64
+    },
+    "complete": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "checks",
+          "edit",
+          "quiz",
+          "goal",
+          "steps",
+          "diagnosis"
+        ]
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "goalTest": {
+      "type": "string"
+    },
+    "starterTokensSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "starterSubstanceHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ladder": true,
+    "diagnose": true,
+    "partial": {
+      "type": "object",
+      "properties": {
+        "given": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "given"
+      ],
+      "additionalProperties": false
+    },
+    "next": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 4
+    }
+  },
+  "required": [
+    "v",
+    "mode",
+    "rung",
+    "skill",
+    "gates",
+    "complete",
+    "tests"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "PinAddr": {
+      "type": "object",
+      "properties": {
+        "c": {
+          "type": "string",
+          "minLength": 1
+        },
+        "p": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "c",
+        "p"
+      ],
+      "additionalProperties": false
+    },
+    "Gate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "manual"
+            }
+          },
+          "required": [
+            "step",
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "check"
+            },
+            "test": {
+              "type": "string"
+            },
+            "check": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "test",
+            "check"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "edit"
+            },
+            "source": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "source"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "param"
+            },
+            "parameter": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "parameter"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "net"
+            },
+            "connected": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PinAddr"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "connected"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "net"
+            },
+            "apart": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PinAddr"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "apart"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "part"
+            },
+            "definition": {
+              "type": "string"
+            },
+            "min": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "definition",
+            "min"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "quiz"
+            },
+            "quiz": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "quiz"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "fault"
+            },
+            "state": {
+              "enum": [
+                "injected",
+                "cleared"
+              ]
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "kind": {
+              "const": "legacy-state"
+            },
+            "cond": {
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          },
+          "required": [
+            "step",
+            "kind",
+            "cond"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

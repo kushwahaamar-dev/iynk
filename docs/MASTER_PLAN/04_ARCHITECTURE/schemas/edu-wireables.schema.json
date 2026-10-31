@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iynk:schema:edu-wireables:1",
+  "title": "Wire-it lists, ext[\"x-iynk-wireables\"]",
+  "type": "object",
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Item"
+      }
+    }
+  },
+  "required": [
+    "v",
+    "items"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Text": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "WireColor": {
+      "enum": [
+        "red",
+        "black",
+        "orange",
+        "yellow",
+        "green",
+        "blue",
+        "white",
+        "purple",
+        "brown",
+        "grey"
+      ]
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supplyVolts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "caution": {
+          "$ref": "#/$defs/Text"
+        },
+        "note": {
+          "$ref": "#/$defs/Text"
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "color": {
+                "$ref": "#/$defs/WireColor"
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "color"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "part",
+        "supplyVolts",
+        "note",
+        "connections"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
