@@ -5,6 +5,7 @@ import type { DroneContent } from "@/content/schema";
 import { LabDock } from "@/components/dock/LabDock";
 import type { FigureHandle } from "@/components/figure";
 import { BreakIt } from "@/components/flight/BreakIt";
+import { BuddyBoard } from "@/components/flight/BuddyBoard";
 import { DailyChallengeCard, type ChallengeEntry } from "@/components/flight/DailyChallenge";
 import { FlightRange } from "@/components/flight/FlightRange";
 import { useRoomGhosts } from "@/components/flight/room-ghosts";
@@ -17,6 +18,7 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { StatStrip } from "@/components/ui/Stat";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
+import { createTranslator } from "@/i18n/translate";
 import { calc } from "@/lib/drone/calc";
 import { designInput } from "@/lib/drone/design";
 import { canArm, droneProgressKeys, type ArmRule } from "@/lib/dronelab/bench";
@@ -29,6 +31,8 @@ import { progressKey } from "@/lib/progress/keys";
 import { markDone, recordBest } from "@/lib/progress/progress";
 import { useRoom, withRoom } from "@/lib/realtime";
 import { playSound } from "@/lib/sound";
+import { logError } from "@/lib/telemetry";
+import { lapKey, readOptIn, scoresSession, submitLap } from "@/server-client/scores";
 import { CraftProgress } from "./CraftProgress";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { contentT, droneLabT, formatNumber, type ContentT, type DroneLabMessages, type DroneLabT } from "./text";
@@ -82,6 +86,8 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
   const craft = useMemo(() => (range ? craftPatch(range.craft, { source, bench }) : null), [range, source, bench]);
   const broken = anyBreak(state);
   const [, bestSaved] = useReducer((n: number) => n + 1, 0);
+  const [boardKey, boardChanged] = useReducer((n: number) => n + 1, 0);
+  const flightT = useMemo(() => createTranslator(lang, flight, "flight"), [lang, flight]);
   // read on every render; bestSaved re-renders after a new best is saved
   const challengeBest = useSyncExternalStore(noSubscribe, () => (challenge ? loadChallengeBest(challenge.date) : null), () => null);
   const ghosts = useRoomGhosts(flightCourse?.id ?? "");
@@ -111,7 +117,18 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
       recordBest(key, done.time, "lower");
       markDone(key);
       if (broken) return;
-      if (challenge && challenge.course === flightCourse.id && saveChallengeBest(challenge.date, done.time)) bestSaved();
+      const daily = challenge?.course === flightCourse.id ? challenge : null;
+      if (daily && saveChallengeBest(daily.date, done.time)) bestSaved();
+      if (readOptIn()) {
+        void scoresSession()
+          .then(async (session) => {
+            if (session.state !== "ready") return;
+            const sent = await submitLap(session.client, lapKey(id, daily?.board ?? flightCourse.id), done.time * 1000);
+            if (sent === "sent") boardChanged();
+            else if (sent === "failed") logError("flight.board", "lap not sent");
+          })
+          .catch((e: unknown) => logError("flight.board", e instanceof Error ? e.message : "lap not sent"));
+      }
     },
     [flightCourse, id, broken, challenge],
   );
@@ -147,6 +164,16 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
             ))}
           </ul>
         </section>
+      ) : null}
+      {course && flightCourse ? (
+        <BuddyBoard
+          craftId={id}
+          courseId={challenge?.course === flightCourse.id ? challenge.board : flightCourse.id}
+          courseLabel={challenge?.course === flightCourse.id ? flightT("challenge.board", { course: ct(course.title), date: challenge.date }) : ct(course.title)}
+          lang={lang}
+          t={flightT}
+          refreshKey={boardKey}
+        />
       ) : null}
       {range ? (
         <BreakIt
