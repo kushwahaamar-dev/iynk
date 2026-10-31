@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import type { CodeLang } from "@/components/ui/highlight";
 import { unsavedCount, type CliLine } from "@/lib/dronelab/cli";
-import type { DroneLabAction, DroneLabState } from "@/lib/dronelab/store";
+import type { DroneLabAction, DroneLabState } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 const CODE_LANG: Record<DroneContent["firmware"]["emulator"]["kind"], CodeLang> = {

@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/Field";
 import { htmlLang, type Locale } from "@/i18n/config";
 import { checkLevel, tileDigits, verdicts, type DesignCheck } from "@/lib/drone/calc";
 import { evaluateDesign } from "@/lib/drone/design";
-import type { DesignKey } from "@/lib/dronelab/store";
+import type { DesignKey } from "@/lib/dronelab/workshop";
 import { formatNumber, type ContentT, type DroneLabT } from "./text";
 
 const LEVEL_TONE: Record<string, CalloutTone> = { danger: "danger", warn: "warn", info: "note" };

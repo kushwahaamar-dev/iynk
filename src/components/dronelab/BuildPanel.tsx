@@ -8,7 +8,7 @@ import { Callout } from "@/components/ui/Callout";
 import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { stepStatus, type StepStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 const STATUS_TONE: Record<StepStatus, ChipTone> = { done: "good", flipped: "bad", next: "info", todo: "neutral" };
