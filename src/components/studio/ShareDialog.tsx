@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { QrCode } from "@/components/realtime";
 import { useTogetherT } from "@/components/realtime/messages";
 import { Button, Callout, Dialog, IconButton, InlineStatus, Select, Skeleton, TextInput, Toggle } from "@/components/ui";
+import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
 import type { Translate } from "@/i18n/translate";
 import {
@@ -19,6 +20,8 @@ import {
 import type { Project } from "@/project/generated/types";
 import { scanSecrets } from "@/project/secret-scan";
 import type { ServerClient } from "@/server-client/client";
+import { noticeFor } from "@/studio/provenance-notice";
+import { UncheckedNotice } from "./UncheckedNotice";
 
 export type StudioRooms = Messages["studio"]["rooms"];
 
@@ -26,15 +29,17 @@ type Props = {
   open: boolean;
   onClose: () => void;
   doc: Project;
-  lang: string;
+  lang: Locale;
   t: Translate<StudioRooms>;
   /** The signed in client, or null when there is no server. */
   client: ServerClient | null;
   readBlob: BlobReader;
+  /** The studio strings for the unreviewed text notice. Without them a link share goes out with no notice. */
+  studio?: Messages["studio"];
 };
 
 type Server = "checking" | "none" | "ready";
-type Stage = { kind: "form" } | { kind: "creating" } | { kind: "done"; link: string; mismatch: boolean };
+type Stage = { kind: "form" } | { kind: "notice"; count: number } | { kind: "creating" } | { kind: "done"; link: string; mismatch: boolean };
 type Shares = { kind: "loading" } | { kind: "failed" } | { kind: "ready"; items: ShareView[] };
 
 const PRESET_DAYS = [7, 30, 90, 365] as const;
@@ -47,7 +52,7 @@ function expiryChoice(value: string) {
   return { kind: "days", days: Number(value) } as const;
 }
 
-export function ShareDialog({ open, onClose, doc, lang, t, client, readBlob }: Props) {
+export function ShareDialog({ open, onClose, doc, lang, t, client, readBlob, studio }: Props) {
   const id = useId();
   const together = useTogetherT();
   const hits = useMemo(() => scanSecrets(doc), [doc]);
@@ -105,6 +110,12 @@ export function ShareDialog({ open, onClose, doc, lang, t, client, readBlob }: P
     return t(keys[kind]);
   };
 
+  const review = () => {
+    const { show, count } = noticeFor(doc, "share-beyond-buddies");
+    if (studio && audience === "link" && show) setStage({ kind: "notice", count });
+    else void create();
+  };
+
   const create = async () => {
     if (client === null) return;
     setStage({ kind: "creating" });
@@ -152,6 +163,16 @@ export function ShareDialog({ open, onClose, doc, lang, t, client, readBlob }: P
     <Dialog open={open} onClose={close} title={t("share.title")} closeLabel={t("share.close")}>
       {server === "none" ? (
         <Callout tone="note">{t("share.needsServer")}</Callout>
+      ) : stage.kind === "notice" && studio ? (
+        <UncheckedNotice
+          count={stage.count}
+          action="share-beyond-buddies"
+          messages={studio}
+          lang={lang}
+          continueLabel={t("share.create")}
+          onCancel={() => setStage({ kind: "form" })}
+          onContinue={() => void create()}
+        />
       ) : stage.kind === "done" ? (
         <div className="flex flex-col gap-3">
           <InlineStatus tone="good" live>
@@ -213,7 +234,7 @@ export function ShareDialog({ open, onClose, doc, lang, t, client, readBlob }: P
               {error}
             </InlineStatus>
           ) : null}
-          <Button variant="primary" disabled={blocked || stage.kind === "creating" || server !== "ready"} aria-busy={stage.kind === "creating"} onClick={create}>
+          <Button variant="primary" disabled={blocked || stage.kind === "creating" || server !== "ready"} aria-busy={stage.kind === "creating"} onClick={review}>
             {t("share.create")}
           </Button>
           <section aria-labelledby={`${id}-list`} className="flex flex-col gap-2 border-t border-rule pt-4">

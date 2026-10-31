@@ -12,6 +12,7 @@ import { writeZip } from "@/export/zip";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator, type MessageKey } from "@/i18n/translate";
+import { noticeFor } from "@/studio/provenance-notice";
 import { navigate } from "@/studio/router";
 import type { DocStore } from "@/studio/stores/doc";
 import { useStoreSelector } from "@/studio/stores/select";
@@ -19,6 +20,7 @@ import { DEFAULT_BOARD, INO_ACCEPT, MAX_FILE_BYTES, boardOptions, projectFromIno
 import { analyserFor, inoErrorKey } from "./inoAnalyser";
 import { LossReport } from "./LossReport";
 import { ProjectMenu } from "./ProjectMenu";
+import { UncheckedNotice } from "./UncheckedNotice";
 import { onSaveToFile } from "./wiring/repositoryLink";
 import type { Services } from "./wiring/services";
 
@@ -64,6 +66,7 @@ export function useProjectActions({ doc, services, messages, lang, onVersionFail
   const [exporting, setExporting] = useState<InoExport | null>(null);
   const [review, setReview] = useState<Review | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
+  const [unchecked, setUnchecked] = useState<number | null>(null);
   const picker = useRef<HTMLInputElement>(null);
   const busy = useRef(false);
 
@@ -83,6 +86,12 @@ export function useProjectActions({ doc, services, messages, lang, onVersionFail
   }
 
   function startExport() {
+    const { show, count } = noticeFor(doc.getState().state, "export");
+    if (show) return setUnchecked(count);
+    buildExport();
+  }
+
+  function buildExport() {
     if (arduinoBoard === undefined) return setProblem(t("ino.exportBlocked"));
     const built = exportIno(doc.getState().state, arduinoBoard, { exportedAt: new Date().toISOString(), appVersion: version });
     if (!built.ok) return setProblem(t(inoErrorKey(built.error.code) as MessageKey<typeof studio>));
@@ -181,6 +190,22 @@ export function useProjectActions({ doc, services, messages, lang, onVersionFail
       ) : null}
       <Dialog open={exporting !== null} onClose={() => setExporting(null)} title={t("ino.export")} closeLabel={close} size="lg">
         {exporting ? <LossReport strings={studio} lang={lang} loss={exporting.loss} onConfirm={confirmExport} onCancel={() => setExporting(null)} confirmLabel={t("ino.export")} /> : null}
+      </Dialog>
+      <Dialog open={unchecked !== null} onClose={() => setUnchecked(null)} title={t("ino.export")} closeLabel={close}>
+        {unchecked !== null ? (
+          <UncheckedNotice
+            count={unchecked}
+            action="export"
+            messages={studio}
+            lang={lang}
+            continueLabel={t("ino.export")}
+            onCancel={() => setUnchecked(null)}
+            onContinue={() => {
+              setUnchecked(null);
+              buildExport();
+            }}
+          />
+        ) : null}
       </Dialog>
       <Dialog open={review !== null} onClose={() => setReview(null)} title={t("ino.import")} closeLabel={close} size="lg">
         {review ? (
