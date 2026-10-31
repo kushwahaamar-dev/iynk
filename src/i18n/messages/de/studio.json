@@ -634,5 +634,143 @@
     "groupMade": "{count} Elemente gruppiert.",
     "restored": "Version {label} wiederhergestellt.",
     "pinLevel": "{pin} ist {level} ({mode})"
+  },
+  "lesson": {
+    "guide": {
+      "title": "Anleitung",
+      "stepOf": "Schritt {n} von {total}",
+      "step": {
+        "state": {
+          "notStarted": "Nicht begonnen",
+          "current": "Aktueller Schritt",
+          "done": "Erledigt",
+          "blocked": "Wartet auf einen früheren Schritt"
+        }
+      },
+      "markDone": "Schritt als erledigt markieren",
+      "reset": "Lektion zurücksetzen",
+      "resetConfirm": "Die Startversion wiederherstellen? Deine Änderungen in dieser Lektion werden ersetzt. Dein Fortschritt bleibt erhalten.",
+      "hints": "Tipps",
+      "hintReveal": "Tipp {n} anzeigen",
+      "quiz": {
+        "title": "Kurzer Check",
+        "answer": "Antwort",
+        "correct": "Richtig",
+        "wrong": "Nicht ganz",
+        "why": "Warum",
+        "next": "Nächste Frage"
+      },
+      "provenance": {
+        "unchecked": "{n} Texte noch nicht geprüft",
+        "exportNote": "{n} Texte in diesem Projekt wurden noch nicht geprüft. Du kannst es trotzdem exportieren.",
+        "shareNote": "{n} Texte in diesem Projekt wurden noch nicht geprüft. Prüfe sie, bevor du das Projekt über deine Freunde hinaus teilst."
+      },
+      "tier": "Simuliert auf Stufe {tier}"
+    },
+    "completion": {
+      "open": {
+        "edit": "Ändere etwas im Projekt, um abzuschließen.",
+        "quiz": "Beantworte eine Frage, um abzuschließen.",
+        "checks": "Starte die Prüfungen und lass sie bestehen.",
+        "fault": "Ein Fehler ist aktiv. Repariere ihn, um abzuschließen.",
+        "steps": "Schließe die Schritte ab.",
+        "goal": "Erreiche den Zieltest."
+      },
+      "done": "In der Simulation auf Stufe {tier} abgeschlossen.",
+      "legacy": "Vor der Bearbeitungsregel erledigt."
+    },
+    "checks": {
+      "title": "Prüfungen",
+      "run": "Prüfen",
+      "again": "Erneut prüfen",
+      "pending": "Noch nicht ausgeführt",
+      "running": "Läuft",
+      "allPass": "Alle Prüfungen bestanden",
+      "summary": "{passed} von {total} Prüfungen bestanden",
+      "faultOn": "Die Prüfungen bestehen, aber ein Fehler ist aktiv",
+      "limit": "Der Lauf hat sein Zeitlimit erreicht",
+      "textCheck": "Textprüfung",
+      "hiddenNote": "Zusätzlich laufen {n} versteckte Prüfungen",
+      "tier": "Ergebnis auf Stufe {tier}",
+      "empty": "Diese Lektion hat keine Prüfungen."
+    },
+    "nav": {
+      "board": "Board",
+      "prev": "Vorige Lektion",
+      "next": "Nächste Lektion",
+      "count": "{done} von {total} erledigt",
+      "list": "Lektionen für dieses Board",
+      "level": {
+        "intro": "Einstieg",
+        "io": "Ein- und Ausgänge",
+        "input": "Eingänge",
+        "analog": "Analog",
+        "protocol": "Protokolle",
+        "wireless": "Funk",
+        "project": "Projekt"
+      }
+    },
+    "gallery": {
+      "title": "Lektionen und Boards",
+      "byLevel": "Nach Stufe",
+      "byBoard": "Nach Board",
+      "start": "Öffnen",
+      "startRun": "Öffnen und starten",
+      "runLength": "Die Prüfungen laufen {s} s simulierte Zeit",
+      "rung": {
+        "lesson": "Lektion",
+        "tour": "Board-Rundgang"
+      },
+      "progress": {
+        "done": "Erledigt",
+        "legacy": "Erledigt (alter Eintrag)",
+        "none": "Nicht begonnen"
+      },
+      "empty": "Keine Vorlage passt."
+    },
+    "assembly": {
+      "title": "Aufbauschritte",
+      "showMe": "Zeig es mir",
+      "refused": "Erledige zuerst die früheren Schritte.",
+      "manual": "Als erledigt markieren",
+      "needsLens": "Dieser Schritt wird in der Figurenansicht geprüft."
+    },
+    "wire": {
+      "title": "Verdrahten",
+      "lede": "Was dieses Board ansteuern kann und wie man es verdrahtet.",
+      "supply": "{volts} V Versorgung",
+      "caution": "Vorsicht",
+      "none": "In dieser Lektion gibt es nichts zu verdrahten."
+    },
+    "inputs": {
+      "title": "Eingaben",
+      "press": "Drücken",
+      "release": "Loslassen",
+      "hold": "Halten",
+      "slider": "{label}: {value}",
+      "empty": "Diese Lektion hat keine Eingaben."
+    },
+    "status": {
+      "title": "Board-Status",
+      "current": "Versorgungsstrom {ma} mA",
+      "brownout": "Brown-out: Das Board setzt sich zurück",
+      "ok": "Die Stromversorgung ist in Ordnung",
+      "unknown": "Auf dieser Stufe nicht verfügbar"
+    },
+    "lens": {
+      "open": "Abbildung anzeigen",
+      "close": "Abbildung ausblenden",
+      "readOnly": "Schreibgeschützte Ansicht der Originalabbildung",
+      "unavailable": "Keine Abbildung für diese Lektion"
+    },
+    "faults": {
+      "title": "Kaputt machen",
+      "own": "Fehler dieser Schaltung",
+      "more": "Weitere Fehler dieses Boards",
+      "trigger": "Kaputt machen",
+      "repair": "Reparieren",
+      "active": "Fehler aktiv",
+      "notModelled": "In Studio noch nicht modelliert: {title}"
+    }
   }
 }

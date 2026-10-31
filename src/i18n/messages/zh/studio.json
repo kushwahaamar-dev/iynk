@@ -634,5 +634,143 @@
     "groupMade": "已将 {count} 个对象编组。",
     "restored": "已恢复版本 {label}。",
     "pinLevel": "{pin} 为 {level}（{mode}）"
+  },
+  "lesson": {
+    "guide": {
+      "title": "指南",
+      "stepOf": "第 {n} 步，共 {total} 步",
+      "step": {
+        "state": {
+          "notStarted": "未开始",
+          "current": "当前步骤",
+          "done": "已完成",
+          "blocked": "等待前面的步骤"
+        }
+      },
+      "markDone": "标记此步骤已完成",
+      "reset": "重置课程",
+      "resetConfirm": "恢复到起始版本？你在本课中的修改会被替换，学习进度会保留。",
+      "hints": "提示",
+      "hintReveal": "显示提示 {n}",
+      "quiz": {
+        "title": "快速检查",
+        "answer": "答案",
+        "correct": "答对了",
+        "wrong": "不太对",
+        "why": "原因",
+        "next": "下一题"
+      },
+      "provenance": {
+        "unchecked": "{n} 段文字尚未审阅",
+        "exportNote": "此项目中有 {n} 段文字尚未审阅。你仍然可以导出。",
+        "shareNote": "此项目中有 {n} 段文字尚未审阅。分享给好友以外的人之前请先检查。"
+      },
+      "tier": "以 {tier} 级别模拟"
+    },
+    "completion": {
+      "open": {
+        "edit": "修改项目中的某处即可完成。",
+        "quiz": "回答一道题即可完成。",
+        "checks": "运行检查并让它们全部通过。",
+        "fault": "当前有故障。修复它即可完成。",
+        "steps": "完成所有步骤。",
+        "goal": "通过目标测试。"
+      },
+      "done": "已在 {tier} 级别的模拟中完成。",
+      "legacy": "在编辑规则之前已完成。"
+    },
+    "checks": {
+      "title": "检查",
+      "run": "运行检查",
+      "again": "再检查一次",
+      "pending": "尚未运行",
+      "running": "运行中",
+      "allPass": "所有检查都通过了",
+      "summary": "{passed}/{total} 项检查通过",
+      "faultOn": "检查通过，但仍有故障",
+      "limit": "运行达到了时间上限",
+      "textCheck": "文本检查",
+      "hiddenNote": "另外还会运行 {n} 项隐藏检查",
+      "tier": "{tier} 级别的结果",
+      "empty": "本课没有检查项。"
+    },
+    "nav": {
+      "board": "开发板",
+      "prev": "上一课",
+      "next": "下一课",
+      "count": "已完成 {done}/{total}",
+      "list": "这块板的课程",
+      "level": {
+        "intro": "入门",
+        "io": "输入与输出",
+        "input": "输入",
+        "analog": "模拟",
+        "protocol": "协议",
+        "wireless": "无线",
+        "project": "项目"
+      }
+    },
+    "gallery": {
+      "title": "课程与开发板",
+      "byLevel": "按难度",
+      "byBoard": "按开发板",
+      "start": "打开",
+      "startRun": "打开并运行",
+      "runLength": "检查会运行 {s} 秒的模拟时间",
+      "rung": {
+        "lesson": "课程",
+        "tour": "开发板导览"
+      },
+      "progress": {
+        "done": "已完成",
+        "legacy": "已完成（旧记录）",
+        "none": "未开始"
+      },
+      "empty": "没有匹配的模板。"
+    },
+    "assembly": {
+      "title": "搭建步骤",
+      "showMe": "演示给我看",
+      "refused": "请先完成前面的步骤。",
+      "manual": "标记为已完成",
+      "needsLens": "此步骤在图示视图中检查。"
+    },
+    "wire": {
+      "title": "接线",
+      "lede": "这块板能驱动什么，以及怎样接线。",
+      "supply": "{volts} V 供电",
+      "caution": "请小心",
+      "none": "本课没有需要接线的内容。"
+    },
+    "inputs": {
+      "title": "输入",
+      "press": "按下",
+      "release": "松开",
+      "hold": "按住",
+      "slider": "{label}：{value}",
+      "empty": "本课没有输入。"
+    },
+    "status": {
+      "title": "开发板状态",
+      "current": "供电电流 {ma} mA",
+      "brownout": "电压不足：开发板会复位",
+      "ok": "供电正常",
+      "unknown": "此级别不可用"
+    },
+    "lens": {
+      "open": "显示图示",
+      "close": "隐藏图示",
+      "readOnly": "原始图示的只读视图",
+      "unavailable": "本课没有图示"
+    },
+    "faults": {
+      "title": "弄坏它",
+      "own": "此电路的故障",
+      "more": "这块板的其他故障",
+      "trigger": "弄坏",
+      "repair": "修复",
+      "active": "故障已开启",
+      "notModelled": "Studio 中尚未建模：{title}"
+    }
   }
 }

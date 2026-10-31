@@ -634,5 +634,143 @@
     "groupMade": "Grouped {count} items.",
     "restored": "Restored version {label}.",
     "pinLevel": "{pin} is {level} ({mode})"
+  },
+  "lesson": {
+    "guide": {
+      "title": "Guide",
+      "stepOf": "Step {n} of {total}",
+      "step": {
+        "state": {
+          "notStarted": "Not started",
+          "current": "Current step",
+          "done": "Done",
+          "blocked": "Waiting for an earlier step"
+        }
+      },
+      "markDone": "Mark step done",
+      "reset": "Reset lesson",
+      "resetConfirm": "Restore the starting version? Your changes in this lesson are replaced. Your progress is kept.",
+      "hints": "Hints",
+      "hintReveal": "Show hint {n}",
+      "quiz": {
+        "title": "Quick check",
+        "answer": "Answer",
+        "correct": "Correct",
+        "wrong": "Not quite",
+        "why": "Why",
+        "next": "Next question"
+      },
+      "provenance": {
+        "unchecked": "{n} text items not reviewed yet",
+        "exportNote": "{n} text items in this project have not been reviewed. You can still export it.",
+        "shareNote": "{n} text items in this project have not been reviewed. Check them before you share this beyond your buddies."
+      },
+      "tier": "Simulated at {tier}"
+    },
+    "completion": {
+      "open": {
+        "edit": "Change something in the project to finish.",
+        "quiz": "Answer one question to finish.",
+        "checks": "Run the checks and make them pass.",
+        "fault": "A fault is on. Repair it to finish.",
+        "steps": "Finish the steps.",
+        "goal": "Reach the goal test."
+      },
+      "done": "Completed in simulation at {tier}.",
+      "legacy": "Done before the edit rule."
+    },
+    "checks": {
+      "title": "Checks",
+      "run": "Run checks",
+      "again": "Check again",
+      "pending": "Not run yet",
+      "running": "Running",
+      "allPass": "All checks pass",
+      "summary": "{passed} of {total} checks pass",
+      "faultOn": "Checks pass, but a fault is on",
+      "limit": "The run hit its time limit",
+      "textCheck": "Text check",
+      "hiddenNote": "{n} hidden checks also run",
+      "tier": "Result at {tier}",
+      "empty": "This lesson has no checks."
+    },
+    "nav": {
+      "board": "Board",
+      "prev": "Previous lesson",
+      "next": "Next lesson",
+      "count": "{done} of {total} done",
+      "list": "Lessons on this board",
+      "level": {
+        "intro": "Intro",
+        "io": "Inputs and outputs",
+        "input": "Inputs",
+        "analog": "Analog",
+        "protocol": "Protocols",
+        "wireless": "Wireless",
+        "project": "Project"
+      }
+    },
+    "gallery": {
+      "title": "Lessons and boards",
+      "byLevel": "By level",
+      "byBoard": "By board",
+      "start": "Open",
+      "startRun": "Open and run",
+      "runLength": "Checks run for {s} s of simulated time",
+      "rung": {
+        "lesson": "Lesson",
+        "tour": "Board tour"
+      },
+      "progress": {
+        "done": "Done",
+        "legacy": "Done (old record)",
+        "none": "Not started"
+      },
+      "empty": "No templates match."
+    },
+    "assembly": {
+      "title": "Build steps",
+      "showMe": "Show me",
+      "refused": "Do the earlier steps first.",
+      "manual": "Mark as done",
+      "needsLens": "This step is checked in the figure view."
+    },
+    "wire": {
+      "title": "Wire it",
+      "lede": "What this board can drive, and how to wire it.",
+      "supply": "{volts} V supply",
+      "caution": "Be careful",
+      "none": "Nothing to wire for this lesson."
+    },
+    "inputs": {
+      "title": "Inputs",
+      "press": "Press",
+      "release": "Release",
+      "hold": "Hold",
+      "slider": "{label}: {value}",
+      "empty": "This lesson has no inputs."
+    },
+    "status": {
+      "title": "Board status",
+      "current": "Supply current {ma} mA",
+      "brownout": "Brown-out: the board resets",
+      "ok": "Power is fine",
+      "unknown": "Not available at this tier"
+    },
+    "lens": {
+      "open": "Show the figure",
+      "close": "Hide the figure",
+      "readOnly": "Read-only view of the original figure",
+      "unavailable": "No figure for this lesson"
+    },
+    "faults": {
+      "title": "Break it",
+      "own": "Faults for this circuit",
+      "more": "More faults on this board",
+      "trigger": "Break",
+      "repair": "Repair",
+      "active": "Fault on",
+      "notModelled": "Not modelled in Studio yet: {title}"
+    }
   }
 }

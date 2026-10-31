@@ -634,5 +634,143 @@
     "groupMade": "Se agruparon {count} elementos.",
     "restored": "Versión {label} restaurada.",
     "pinLevel": "{pin} está en {level} ({mode})"
+  },
+  "lesson": {
+    "guide": {
+      "title": "Guía",
+      "stepOf": "Paso {n} de {total}",
+      "step": {
+        "state": {
+          "notStarted": "Sin empezar",
+          "current": "Paso actual",
+          "done": "Hecha",
+          "blocked": "Espera a un paso anterior"
+        }
+      },
+      "markDone": "Marcar el paso como hecho",
+      "reset": "Reiniciar la lección",
+      "resetConfirm": "¿Restaurar la versión inicial? Tus cambios en esta lección se sustituyen. Tu progreso se conserva.",
+      "hints": "Pistas",
+      "hintReveal": "Mostrar la pista {n}",
+      "quiz": {
+        "title": "Repaso rápido",
+        "answer": "Respuesta",
+        "correct": "Correcto",
+        "wrong": "No exactamente",
+        "why": "Por qué",
+        "next": "Siguiente pregunta"
+      },
+      "provenance": {
+        "unchecked": "{n} textos sin revisar todavía",
+        "exportNote": "{n} textos de este proyecto no se han revisado. Aun así puedes exportarlo.",
+        "shareNote": "{n} textos de este proyecto no se han revisado. Revísalos antes de compartirlo más allá de tus compañeros."
+      },
+      "tier": "Simulado a nivel {tier}"
+    },
+    "completion": {
+      "open": {
+        "edit": "Cambia algo del proyecto para terminar.",
+        "quiz": "Responde una pregunta para terminar.",
+        "checks": "Ejecuta las comprobaciones y haz que se superen.",
+        "fault": "Hay un fallo activo. Repáralo para terminar.",
+        "steps": "Termina los pasos.",
+        "goal": "Alcanza la prueba objetivo."
+      },
+      "done": "Completada en simulación a nivel {tier}.",
+      "legacy": "Hecha antes de la regla de edición."
+    },
+    "checks": {
+      "title": "Comprobaciones",
+      "run": "Comprobar",
+      "again": "Comprobar otra vez",
+      "pending": "Sin ejecutar todavía",
+      "running": "Ejecutando",
+      "allPass": "Todas las comprobaciones superadas",
+      "summary": "{passed} de {total} comprobaciones superadas",
+      "faultOn": "Las comprobaciones se superan, pero hay un fallo activo",
+      "limit": "La ejecución alcanzó su límite de tiempo",
+      "textCheck": "Comprobación de texto",
+      "hiddenNote": "También se ejecutan {n} comprobaciones ocultas",
+      "tier": "Resultado a nivel {tier}",
+      "empty": "Esta lección no tiene comprobaciones."
+    },
+    "nav": {
+      "board": "Placa",
+      "prev": "Lección anterior",
+      "next": "Lección siguiente",
+      "count": "{done} de {total} hechas",
+      "list": "Lecciones de esta placa",
+      "level": {
+        "intro": "Introducción",
+        "io": "Entradas y salidas",
+        "input": "Entradas",
+        "analog": "Analógico",
+        "protocol": "Protocolos",
+        "wireless": "Inalámbrico",
+        "project": "Proyecto"
+      }
+    },
+    "gallery": {
+      "title": "Lecciones y placas",
+      "byLevel": "Por nivel",
+      "byBoard": "Por placa",
+      "start": "Abrir",
+      "startRun": "Abrir y ejecutar",
+      "runLength": "Las comprobaciones corren {s} s de tiempo simulado",
+      "rung": {
+        "lesson": "Lección",
+        "tour": "Recorrido por la placa"
+      },
+      "progress": {
+        "done": "Hecha",
+        "legacy": "Hecha (registro antiguo)",
+        "none": "Sin empezar"
+      },
+      "empty": "Ninguna plantilla coincide."
+    },
+    "assembly": {
+      "title": "Pasos de montaje",
+      "showMe": "Muéstramelo",
+      "refused": "Haz antes los pasos anteriores.",
+      "manual": "Marcar como hecho",
+      "needsLens": "Este paso se comprueba en la vista de la figura."
+    },
+    "wire": {
+      "title": "Cablear",
+      "lede": "Qué puede controlar esta placa y cómo cablearlo.",
+      "supply": "Alimentación de {volts} V",
+      "caution": "Ten cuidado",
+      "none": "Nada que cablear en esta lección."
+    },
+    "inputs": {
+      "title": "Entradas",
+      "press": "Pulsar",
+      "release": "Soltar",
+      "hold": "Mantener",
+      "slider": "{label}: {value}",
+      "empty": "Esta lección no tiene entradas."
+    },
+    "status": {
+      "title": "Estado de la placa",
+      "current": "Corriente de alimentación: {ma} mA",
+      "brownout": "Caída de tensión: la placa se reinicia",
+      "ok": "La alimentación es correcta",
+      "unknown": "No disponible a este nivel"
+    },
+    "lens": {
+      "open": "Mostrar la figura",
+      "close": "Ocultar la figura",
+      "readOnly": "Vista de solo lectura de la figura original",
+      "unavailable": "Esta lección no tiene figura"
+    },
+    "faults": {
+      "title": "Averíala",
+      "own": "Fallos de este circuito",
+      "more": "Más fallos de esta placa",
+      "trigger": "Averiar",
+      "repair": "Reparar",
+      "active": "Fallo activo",
+      "notModelled": "Aún no modelado en Studio: {title}"
+    }
   }
 }

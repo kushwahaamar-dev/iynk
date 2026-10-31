@@ -634,5 +634,143 @@
     "groupMade": "{count} éléments groupés.",
     "restored": "Version {label} restaurée.",
     "pinLevel": "{pin} est à {level} ({mode})"
+  },
+  "lesson": {
+    "guide": {
+      "title": "Guide",
+      "stepOf": "Étape {n} sur {total}",
+      "step": {
+        "state": {
+          "notStarted": "Pas commencée",
+          "current": "Étape en cours",
+          "done": "Terminée",
+          "blocked": "En attente d'une étape précédente"
+        }
+      },
+      "markDone": "Marquer l'étape comme terminée",
+      "reset": "Réinitialiser la leçon",
+      "resetConfirm": "Rétablir la version de départ ? Vos modifications dans cette leçon sont remplacées. Votre progression est conservée.",
+      "hints": "Indices",
+      "hintReveal": "Afficher l'indice {n}",
+      "quiz": {
+        "title": "Petit test",
+        "answer": "Réponse",
+        "correct": "Exact",
+        "wrong": "Pas tout à fait",
+        "why": "Pourquoi",
+        "next": "Question suivante"
+      },
+      "provenance": {
+        "unchecked": "{n} textes pas encore relus",
+        "exportNote": "{n} textes de ce projet n'ont pas été relus. Vous pouvez quand même l'exporter.",
+        "shareNote": "{n} textes de ce projet n'ont pas été relus. Vérifiez-les avant de le partager au-delà de vos camarades."
+      },
+      "tier": "Simulé au niveau {tier}"
+    },
+    "completion": {
+      "open": {
+        "edit": "Modifiez quelque chose dans le projet pour terminer.",
+        "quiz": "Répondez à une question pour terminer.",
+        "checks": "Lancez les vérifications et faites-les réussir.",
+        "fault": "Une panne est active. Réparez-la pour terminer.",
+        "steps": "Terminez les étapes.",
+        "goal": "Atteignez le test final."
+      },
+      "done": "Terminée en simulation au niveau {tier}.",
+      "legacy": "Terminée avant la règle de modification."
+    },
+    "checks": {
+      "title": "Vérifications",
+      "run": "Lancer les vérifications",
+      "again": "Vérifier à nouveau",
+      "pending": "Pas encore lancées",
+      "running": "En cours",
+      "allPass": "Toutes les vérifications passent",
+      "summary": "{passed} vérifications réussies sur {total}",
+      "faultOn": "Les vérifications passent, mais une panne est active",
+      "limit": "L'exécution a atteint sa limite de temps",
+      "textCheck": "Vérification du texte",
+      "hiddenNote": "{n} vérifications masquées sont aussi lancées",
+      "tier": "Résultat au niveau {tier}",
+      "empty": "Cette leçon n'a pas de vérifications."
+    },
+    "nav": {
+      "board": "Carte",
+      "prev": "Leçon précédente",
+      "next": "Leçon suivante",
+      "count": "{done} sur {total} terminées",
+      "list": "Leçons de cette carte",
+      "level": {
+        "intro": "Initiation",
+        "io": "Entrées et sorties",
+        "input": "Entrées",
+        "analog": "Analogique",
+        "protocol": "Protocoles",
+        "wireless": "Sans fil",
+        "project": "Projet"
+      }
+    },
+    "gallery": {
+      "title": "Leçons et cartes",
+      "byLevel": "Par niveau",
+      "byBoard": "Par carte",
+      "start": "Ouvrir",
+      "startRun": "Ouvrir et lancer",
+      "runLength": "Les vérifications durent {s} s de temps simulé",
+      "rung": {
+        "lesson": "Leçon",
+        "tour": "Visite de la carte"
+      },
+      "progress": {
+        "done": "Terminée",
+        "legacy": "Terminée (ancien relevé)",
+        "none": "Pas commencée"
+      },
+      "empty": "Aucun modèle ne correspond."
+    },
+    "assembly": {
+      "title": "Étapes de montage",
+      "showMe": "Montrez-moi",
+      "refused": "Faites d'abord les étapes précédentes.",
+      "manual": "Marquer comme terminé",
+      "needsLens": "Cette étape se vérifie dans la vue de la figure."
+    },
+    "wire": {
+      "title": "Câbler",
+      "lede": "Ce que cette carte peut piloter et comment le câbler.",
+      "supply": "Alimentation {volts} V",
+      "caution": "Soyez prudent",
+      "none": "Rien à câbler dans cette leçon."
+    },
+    "inputs": {
+      "title": "Entrées",
+      "press": "Appuyer",
+      "release": "Relâcher",
+      "hold": "Maintenir",
+      "slider": "{label} : {value}",
+      "empty": "Cette leçon n'a pas d'entrées."
+    },
+    "status": {
+      "title": "État de la carte",
+      "current": "Courant d'alimentation : {ma} mA",
+      "brownout": "Chute de tension : la carte se réinitialise",
+      "ok": "L'alimentation est correcte",
+      "unknown": "Non disponible à ce niveau"
+    },
+    "lens": {
+      "open": "Afficher la figure",
+      "close": "Masquer la figure",
+      "readOnly": "Vue en lecture seule de la figure d'origine",
+      "unavailable": "Pas de figure pour cette leçon"
+    },
+    "faults": {
+      "title": "Casser",
+      "own": "Pannes de ce circuit",
+      "more": "Autres pannes de cette carte",
+      "trigger": "Casser",
+      "repair": "Réparer",
+      "active": "Panne active",
+      "notModelled": "Pas encore modélisé dans Studio : {title}"
+    }
   }
 }
