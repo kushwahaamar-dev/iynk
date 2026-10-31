@@ -2,6 +2,8 @@ import type { SimTime } from "../core/clock.ts";
 import { type SimDiagnostic, simDiag } from "../core/diagnostic.ts";
 import { RANK, type EngineSnapshot, type SimEvent, type SimNetlist, type SimPart } from "../engine.ts";
 import type { PinElectrical } from "../../lib/interp/profiles.ts";
+import type { LogicDrive } from "../digital/logic-part.ts";
+import type { ResolvedLayer } from "../models/kinds.ts";
 import { PWL_COMPAT } from "./elements.ts";
 import type { Registry } from "../registry/types.ts";
 import { UnionFind } from "./graph.ts";
@@ -60,9 +62,18 @@ export interface LoadReport {
   modelIds: string[];
 }
 
+export type ElementLayer = Extract<ResolvedLayer, { kind: "element" }>;
+
+/** What the orchestrator resolved for one placed part from its descriptor. */
+export interface PartLayers {
+  elements: readonly ElementLayer[];
+  /** The output pins a logic layer drives. */
+  drives: readonly LogicDrive[];
+}
+
 /** SIMULATION 7.2. */
 export interface AnalogSolver {
-  load(net: SimNetlist, o: SolveOptions): LoadReport;
+  load(net: SimNetlist, o: SolveOptions, layers?: ReadonlyMap<PartId, PartLayers>): LoadReport;
   apply(changes: Change[]): void;
   advanceTo(t: SimTime): AnalogStepResult;
   snapshot(): EngineSnapshot;
@@ -172,8 +183,8 @@ class Builder {
     this.add({ id, kind: "R", a, b, ohms });
   }
 
-  led(id: ElementId, a: number, b: number, vf: number, maxAmps: number): void {
-    this.add({ id, kind: "D", a, b, modelId: MODEL.led, vf, rdOhms: 0.5, maxAmps });
+  led(id: ElementId, a: number, b: number, vf: number, maxAmps: number, rdOhms = 0.5): void {
+    this.add({ id, kind: "D", a, b, modelId: MODEL.led, vf, rdOhms, maxAmps });
   }
 
   npn(id: ElementId, c: number, base: number, e: number, hfe: number, vbe: number, vcesat: number, rating: PartRating): void {
@@ -223,6 +234,70 @@ function transistor(
       b.npn(p.id, b.leg(p, at.c), b.leg(p, at.b), b.leg(p, at.e), hfe, vbe, vcesat, rating);
     },
   };
+}
+
+const LOGIC_MAX_AMPS = 1;
+
+const layerNum = (layer: ElementLayer, key: string): number | undefined => {
+  const v = layer.params[key];
+  return typeof v === "number" && Number.isFinite(v) ? v : undefined;
+};
+
+interface LayerSpec {
+  terminals: readonly string[];
+  model: string;
+  /** Adds the layer's elements from the nodes of its terminals, or returns why it cannot. */
+  build: (b: Builder, p: SimPart, layer: ElementLayer, nodes: readonly number[]) => string | void;
+}
+
+const diodeLayer = (model: string, stamp: (b: Builder, id: string, a: number, k: number, vf: number, rd: number, imax: number) => void): LayerSpec => ({
+  terminals: ["anode", "cathode"],
+  model,
+  build: (b, p, layer, [a, k]) => {
+    const vf = layerNum(layer, "vf");
+    if (vf === undefined) return "the layer has no forward voltage";
+    stamp(b, p.id, a, k, vf, layerNum(layer, "rd") ?? 0.5, layerNum(layer, "imax") ?? 0.02);
+  },
+});
+
+/** The generic path for a part with no hand-written spec: element layers of the kinds listed here. */
+const LAYER_SPECS: Record<string, LayerSpec> = {
+  res: {
+    terminals: ["a", "b"],
+    model: MODEL.resistor,
+    build: (b, p, layer, [a, c]) => {
+      const ohms = typeof p.params.ohms === "number" ? p.params.ohms : layerNum(layer, "ohms");
+      if (ohms === undefined) return "the part has no resistance value yet";
+      b.resistor(p.id, a, c, ohms);
+    },
+  },
+  led: diodeLayer(MODEL.led, (b, id, a, k, vf, rd, imax) => b.led(id, a, k, vf, imax, rd)),
+  diode: diodeLayer(MODEL.diode, (b, id, a, k, vf, rd, imax) => b.add({ id, kind: "D", a, b: k, modelId: MODEL.diode, vf, rdOhms: rd, maxAmps: imax })),
+  motor: {
+    terminals: ["a", "b"],
+    model: MODEL.motor,
+    build: (b, p, layer, [a, c]) => {
+      const ohms = layerNum(layer, "ohms");
+      if (ohms === undefined) return "the layer has no winding resistance";
+      b.add({ id: p.id, kind: "M", a, b: c, ohms });
+    },
+  },
+};
+
+function buildLayers(b: Builder, p: SimPart, layers: PartLayers, modelIds: Set<string>): string | void {
+  for (const layer of layers.elements) {
+    const spec = LAYER_SPECS[layer.element];
+    if (!spec) return `the live solver cannot build a ${layer.element} from a descriptor yet`;
+    const pins = spec.terminals.map((t) => layer.terminals[t]);
+    if (pins.some((pin) => pin === undefined)) return `the ${layer.element} layer needs terminals ${spec.terminals.join(" and ")}`;
+    const why = spec.build(b, p, layer, pins.map((pin) => b.named(p, pin!)));
+    if (why) return why;
+    modelIds.add(spec.model);
+  }
+  for (const drive of layers.drives) {
+    b.add({ id: logicElementId(p.id, drive.pinId), kind: "PIN", a: b.named(p, drive.pinId), level: "Z", vHighVolts: drive.vHighVolts, rOutOhms: drive.rOutOhms, maxAmps: LOGIC_MAX_AMPS });
+    modelIds.add(MODEL.source);
+  }
 }
 
 const flip = (p: SimPart, i: number): number => (p.params.reversed === true ? 2 - i : i);
@@ -358,6 +433,10 @@ export function pinElementId(boardPartId: string, pinName: string): ElementId {
   return `pin:${boardPartId}:${pinName}`;
 }
 
+export function logicElementId(partId: string, pinName: string): ElementId {
+  return `logic:${partId}:${pinName}`;
+}
+
 export interface BoardInput {
   net: NetId;
   vilVolts: number;
@@ -374,7 +453,7 @@ export interface BuiltElements {
   boardPins: ReadonlyMap<ElementId, BoardInput>;
 }
 
-export function buildElements(net: SimNetlist, pins: PinDirectory): BuiltElements {
+export function buildElements(net: SimNetlist, pins: PinDirectory, layers: ReadonlyMap<PartId, PartLayers> = new Map()): BuiltElements {
   const b = new Builder(net);
   const unmodelled: LoadReport["unmodelled"] = [];
   const modelIds = new Set<string>();
@@ -407,17 +486,19 @@ export function buildElements(net: SimNetlist, pins: PinDirectory): BuiltElement
       continue;
     }
     const spec = SPECS[catalogueName(part.descriptor)];
-    if (!spec) {
+    const resolved = layers.get(part.id);
+    if (!spec && !resolved) {
       unmodelled.push({ part: part.id, reason: `no analog model for ${part.descriptor}` });
       continue;
     }
     const before = b.elements.length;
-    const why = spec.build?.(b, part);
+    const added = new Set<string>(spec?.models);
+    const why = spec ? spec.build?.(b, part) : buildLayers(b, part, resolved!, added);
     if (why) {
       b.elements.length = before;
       unmodelled.push({ part: part.id, reason: why });
     } else {
-      for (const id of spec.models) modelIds.add(id);
+      for (const id of added) modelIds.add(id);
     }
   }
   return { elements: b.elements, nodeOf: b.nodeOf, nodes: b.nodes, unmodelled, modelIds: [...modelIds].sort(), boardPins };
@@ -500,8 +581,8 @@ class Live implements LiveAnalog {
     this.tracker = createStateTracker(d.registry);
   }
 
-  load(net: SimNetlist, o: SolveOptions): LoadReport {
-    const built = buildElements(net, this.d.pins);
+  load(net: SimNetlist, o: SolveOptions, layers?: ReadonlyMap<PartId, PartLayers>): LoadReport {
+    const built = buildElements(net, this.d.pins, layers);
     this.o = o;
     this.nodeOf = built.nodeOf;
     this.netOf = new Map([...built.nodeOf].map(([id, node]) => [node, id]));

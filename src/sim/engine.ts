@@ -1,5 +1,7 @@
 import type { ClockRate, SimTime } from "./core/clock.ts";
 import type { SimDiagnostic } from "./core/diagnostic.ts";
+import type { NoneReason } from "./models/kinds.ts";
+import type { PartRegistry } from "../parts/registry.ts";
 import type { FaultState } from "./faults/types.ts";
 
 export type { SimDiagnostic, SolveDiagnostic } from "./core/diagnostic.ts";
@@ -36,6 +38,8 @@ export interface SimRunOptions {
   limits: WorkLimits;
   tier: "T1" | "T3";
   endNs?: SimTime;
+  /** Where placed parts are looked up; the app registry when omitted. Never crosses to a worker. */
+  parts?: Pick<PartRegistry, "get">;
 }
 
 export interface InputEntry {
@@ -155,6 +159,14 @@ export interface PinEventPayload {
   level: 0 | 1 | "Z";
   duty?: number;
   hz?: number;
+}
+
+/** Payload of a `kind: 'not-modelled'` event: a placed part with no layer the engine can run. */
+export interface NotModelledPayload {
+  instanceId: string;
+  layerId: string;
+  reason: NoneReason;
+  detail: string;
 }
 
 export interface Engine {

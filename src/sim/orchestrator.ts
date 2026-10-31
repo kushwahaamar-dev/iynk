@@ -10,6 +10,7 @@ import {
   type HostInput,
   type InputEntry,
   type LoadResult,
+  type NotModelledPayload,
   type OrchestratorSnapshot,
   type PinEventPayload,
   type SimEvent,
@@ -19,9 +20,14 @@ import {
   type SliceResult,
   type StepUnit,
 } from "./engine.ts";
+import { getAppRegistry } from "../parts/builtin.ts";
+import type { PartRegistry } from "../parts/registry.ts";
 import { PWL_OPTIONS } from "./analog/elements.ts";
-import type { AnalogStepResult, Change, LiveAnalog } from "./analog/live.ts";
+import type { AnalogStepResult, Change, LiveAnalog, PartLayers } from "./analog/live.ts";
+import { logicElementId } from "./analog/live.ts";
+import { type LogicPart, createLogicPart, driveOf, stepLogic } from "./digital/logic-part.ts";
 import { type BoardPinOwner, analogChangeOf, boardPinOwners } from "./digital/pins.ts";
+import { makeModelEnv, resolveLayers } from "./models/kinds.ts";
 import { EventQueue } from "./queue.ts";
 import type { InterpSnapshotData } from "./replay/snapshot.ts";
 
@@ -59,6 +65,9 @@ const CHECKPOINT_NS = 1000 * NS_PER_MS;
 const NO_PROGRESS_LIMIT = 10_000_000;
 const MAX_PARTS = 2000;
 const ANALOG_ID = "engine:analog-live";
+const LOGIC_ID = "engine:logic";
+const ORCHESTRATOR_ID = "orchestrator";
+const LOGIC_RANK = RANK.mcu + 1;
 
 const NEVER_YIELD: SliceBudget = {
   shouldYield: () => false,
@@ -95,6 +104,12 @@ const isParamValue = (v: unknown): v is { path: string; value: number } =>
 const isPinPayload = (p: unknown): p is PinEventPayload =>
   typeof p === "object" && p !== null && typeof (p as PinEventPayload).pin === "string";
 
+interface LogicRun {
+  part: LogicPart;
+  /** The solver element that drives each output net. */
+  elementOf: ReadonlyMap<string, string>;
+}
+
 class SimOrchestrator implements Orchestrator, EventSink {
   private engines: Engine[];
   private queue = new EventQueue();
@@ -112,6 +127,9 @@ class SimOrchestrator implements Orchestrator, EventSink {
   private live: LiveAnalog | null;
   private owners = new Map<string, BoardPinOwner>();
   private solveAt: SimTime | null = null;
+  private logic: LogicRun[] = [];
+  private thunks = new Map<number, () => void>();
+  private thunkSeq = 0;
   now = 0;
   readonly analog = analogHook;
 
@@ -182,6 +200,9 @@ class SimOrchestrator implements Orchestrator, EventSink {
     this.problems = from.problems;
     this.owners = from.owners;
     this.solveAt = from.solveAt;
+    this.logic = from.logic;
+    this.thunks = from.thunks;
+    this.thunkSeq = from.thunkSeq;
     this.now = from.now;
     this.current = from.current === "running" ? "paused" : from.current;
     for (const engine of this.engines) engine.attach(this);
@@ -199,6 +220,9 @@ class SimOrchestrator implements Orchestrator, EventSink {
     const hasher = new StateHasher();
     for (const engine of this.engines) hasher.str(engine.id).str(engine.stateHash());
     hasher.str(this.digital.stateHash());
+    for (const { part } of this.logic) {
+      hasher.str(part.instanceId).str(JSON.stringify(part.bits)).str(JSON.stringify(part.applied)).str(JSON.stringify(part.pending));
+    }
     return hasher.hex();
   }
 
@@ -216,13 +240,20 @@ class SimOrchestrator implements Orchestrator, EventSink {
     const problems = validate(net);
     this.owners = boardPinOwners(net);
     this.solveAt = null;
+    this.logic = [];
+    this.thunks = new Map();
+    this.thunkSeq = 0;
     if (problems.length === 0) problems.push(...this.digital.load(net));
-    if (this.live && !problems.some((d) => d.severity === "error")) problems.push(...this.loadAnalog(net));
     this.problems = problems;
-    const ok = !problems.some((d) => d.severity === "error");
+    const layers = this.resolveParts(net, opts.parts ?? getAppRegistry());
+    if (this.live && !problems.some((d) => d.severity === "error")) {
+      const analog = this.loadAnalog(net, layers);
+      this.problems = [...this.problems, ...analog];
+    }
+    const ok = !this.problems.some((d) => d.severity === "error");
     this.current = ok ? "idle" : "halted";
     const models = [...new Set(net.parts.map((p) => p.descriptor))].sort();
-    return { ok, diagnostics: problems.slice(0, 1000), models };
+    return { ok, diagnostics: this.problems.slice(0, 1000), models };
   }
 
   emit(e: Omit<SimEvent, "seq">): void {
@@ -332,11 +363,74 @@ class SimOrchestrator implements Orchestrator, EventSink {
     }
   }
 
-  private loadAnalog(net: SimNetlist): SimDiagnostic[] {
+  private loadAnalog(net: SimNetlist, layers: ReadonlyMap<string, PartLayers>): SimDiagnostic[] {
     const live = this.live!;
-    const report = live.load(net, PWL_OPTIONS);
+    const report = live.load(net, PWL_OPTIONS, layers);
     this.collect(live.advanceTo(0));
+    this.stepLogic(0);
     return report.diagnostics;
+  }
+
+  /**
+   * Resolves every placed part once, in id order. Element layers and logic outputs go to the solver; a part with
+   * nothing runnable raises one `not-modelled` event. A part the registry does not hold was already reported as
+   * `unknown-part` by the netlist builder.
+   */
+  private resolveParts(net: SimNetlist, reg: Pick<PartRegistry, "get">): Map<string, PartLayers> {
+    const layers = new Map<string, PartLayers>();
+    const env = makeModelEnv((ref, version) => reg.get(ref, version));
+    const notModelled = (payload: NotModelledPayload): void => {
+      this.emit({ at: 0, phase: 3, rank: RANK.digital, src: ORCHESTRATOR_ID, kind: "not-modelled", payload });
+    };
+    for (const part of [...net.parts].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))) {
+      if (part.kind === "board") continue;
+      const at = part.descriptor.lastIndexOf("@");
+      const def = reg.get(part.descriptor.slice(0, at), part.descriptor.slice(at + 1));
+      if (def === undefined) continue;
+      const resolved = resolveLayers(def, part.params, env);
+      const first = resolved.layers.find((l) => l.kind === "none");
+      if (!resolved.runnable && first?.kind === "none") {
+        notModelled({ instanceId: part.id, layerId: first.layerId, reason: first.reason, detail: first.detail });
+        continue;
+      }
+      const nets = new Map(Object.entries(part.pins).flatMap(([pin, netId]) => (netId === null ? [] : [[pin, netId] as const])));
+      const elements = resolved.layers.filter((l) => l.kind === "element");
+      const drives: PartLayers["drives"][number][] = [];
+      for (const layer of resolved.layers) {
+        if (layer.kind !== "logic" || !this.live) continue;
+        const logicPart = createLogicPart(part.id, def, layer.model, nets);
+        const partDrives = driveOf(def, logicPart);
+        for (const pin of logicPart.refused) this.problems = [...this.problems, simDiag("logic-family-unknown", "warning", { part: part.id }, { pin })];
+        drives.push(...partDrives);
+        this.logic.push({ part: logicPart, elementOf: new Map(logicPart.outputs.map((o) => [o.netId, logicElementId(part.id, o.pinId)])) });
+      }
+      if (elements.length > 0 || drives.length > 0) layers.set(part.id, { elements, drives });
+    }
+    return layers;
+  }
+
+  /** Runs after every analog solve: reads the input nets and schedules output changes behind their delay. */
+  private stepLogic(at: SimTime): void {
+    const live = this.live!;
+    for (const { part, elementOf } of this.logic) {
+      stepLogic(
+        part,
+        at,
+        (netId) => live.netVolts(netId) ?? NaN,
+        (netId, v) => {
+          const element = elementOf.get(netId);
+          if (element !== undefined) this.applyAnalog(this.now, { kind: "pin", element, level: v === null ? "Z" : v === 0 ? 0 : 1 });
+        },
+        (atNs, fn) => {
+          const key = ++this.thunkSeq;
+          this.thunks.set(key, fn);
+          this.enqueue({ at: atNs, phase: 3, rank: LOGIC_RANK, seq: ++this.seq, src: LOGIC_ID, kind: "logic-out", payload: { key } });
+        },
+        (code, detail) => {
+          this.problems = [...this.problems, simDiag(code, "warning", { part: part.instanceId }, { detail })];
+        },
+      );
+    }
   }
 
   /** Keeps the solver's events and its diagnostics, apart from writes to pins the circuit does not have. */
@@ -358,6 +452,7 @@ class SimOrchestrator implements Orchestrator, EventSink {
     if (e.kind === "solve") {
       this.solveAt = null;
       this.collect(this.live!.advanceTo(e.at));
+      this.stepLogic(e.at);
       return;
     }
     const p = e.payload as { net: string; level: 0 | 1 };
@@ -368,6 +463,13 @@ class SimOrchestrator implements Orchestrator, EventSink {
   }
 
   private deliver(e: SimEvent): void {
+    if (e.src === LOGIC_ID) {
+      const { key } = e.payload as { key: number };
+      const run = this.thunks.get(key);
+      this.thunks.delete(key);
+      run?.();
+      return;
+    }
     if (e.src === ANALOG_ID) {
       this.deliverAnalog(e);
       return;

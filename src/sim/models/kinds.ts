@@ -1,6 +1,6 @@
 import type { Descriptor } from "../../parts/descriptor.ts";
 import type { Layer, Model, ParamMap, ParamValue } from "../../parts/generated/types.ts";
-import type { BuiltinImpl } from "./builtins.ts";
+import { BUILTINS, type BuiltinImpl } from "./builtins.ts";
 import { type LogicModel, compileLogic } from "./logic.ts";
 
 /** Code-bearing parts stay off until an RS-15 verdict. `as const` keeps any path from flipping it. */
@@ -14,6 +14,13 @@ export interface ModelEnv {
   solverElements: ReadonlySet<string>;
   builtins: ReadonlyMap<string, BuiltinImpl>;
   lookupComponent?: (ref: string, version: string) => Descriptor | undefined;
+}
+
+/** The element kinds the live solver has today (COMPONENT_SCHEMA 4.9, first group). */
+const SOLVER_ELEMENTS: ReadonlySet<string> = new Set(["wire", "res", "pot", "button", "led", "diode", "npn", "motor", "servo", "stepper", "sensor", "buzzer"]);
+
+export function makeModelEnv(lookupComponent?: ModelEnv["lookupComponent"]): ModelEnv {
+  return { solverElements: SOLVER_ELEMENTS, builtins: BUILTINS, lookupComponent };
 }
 
 export interface ResolvedInstance {
