@@ -1,0 +1,8 @@
+{
+  "id": "conformance",
+  "kind": "conformance",
+  "shape": "none",
+  "description": "device:pca9685@1 resolves to a registered hook, every layer terminal is a pin, and every rating a layer reads has its slot.",
+  "checks": ["layers-resolve", "terminals-are-pins", "ratings-have-slot", "builtin-binds"],
+  "derivation": "BUILTINS registers device:pca9685@1 as a netlist hook (src/sim/models/builtins.ts), so builtin-binds checks that make(params) returns the hook record. The register behaviour sits in class Pca9685 (src/lib/interp/devices.ts:104) and has no byte-level check here, because the golden harness binds register-map devices only."
+}

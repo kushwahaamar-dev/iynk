@@ -1,0 +1,84 @@
+{
+  "title": "Part packs",
+  "close": "Close",
+  "dialog": {
+    "title": "Add the pack {name}",
+    "description": "From {sender}. Nothing is saved until you choose."
+  },
+  "refused": {
+    "title": "This pack was refused",
+    "unchanged": "Your library and your project are unchanged."
+  },
+  "actions": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "use": "Use in this project",
+    "add": "Add to my library",
+    "addDisabled": "Add as disabled data"
+  },
+  "tier": {
+    "T0": "Illustration",
+    "T1": "Teaching model",
+    "T2": "Calculated model",
+    "T3": "Runs firmware",
+    "none": "No model"
+  },
+  "status": {
+    "modelled": "Modelled",
+    "partly-modelled": "Partly modelled",
+    "not-modelled-yet": "Not modelled yet"
+  },
+  "row": {
+    "licence": "Licence",
+    "sources": "Sources",
+    "noSources": "None listed",
+    "code": "Code",
+    "permissions": "Permissions: {list}",
+    "pins": {
+      "one": "{count} pin",
+      "other": "{count} pins"
+    },
+    "collision": "A different part with this id and version is already installed, so this one cannot be added.",
+    "codeOff": "Code parts cannot be turned on in this version. This one is stored as data and stays off.",
+    "art": "Art that was changed or dropped"
+  },
+  "labels": {
+    "schema": "Schema valid",
+    "tests": {
+      "yes": "Has tests",
+      "no": "No tests"
+    },
+    "run": {
+      "not-run": "Tests not run",
+      "pass": "Tests pass",
+      "fail": "Tests fail"
+    },
+    "reference": {
+      "yes": "Has a reference test",
+      "no": "No reference test"
+    },
+    "code": {
+      "yes": "Contains code",
+      "no": "No code"
+    },
+    "thirdParty": {
+      "yes": "Third party content",
+      "no": "No third party content"
+    }
+  },
+  "errors": {
+    "not-a-pack": "This file is not an iynk pack.",
+    "newer-pack": "This pack was made by a newer version of iynk. Update iynk to open it.",
+    "too-big-compressed": "Refused: the pack is larger than {limit}.",
+    "too-big-uncompressed": "Refused: the pack unpacks to more than {limit}.",
+    "ratio": "Refused: the pack unpacks to far more than its size, over {limit}.",
+    "too-many-files": "Refused: the pack holds more than {limit}.",
+    "path": "Refused: {path} is not a safe file name.",
+    "duplicate": "Refused: {path} appears twice.",
+    "symlink": "Refused: {path} is a symbolic link.",
+    "hash": "Refused: {path} does not match the hash in the pack's file list.",
+    "manifest": "Refused: the pack's file list does not match what is inside ({path}).",
+    "schema": "Refused: {path} is not a valid part file.",
+    "core-id": "Refused: {path} uses an id that only parts shipped with iynk may use."
+  }
+}

@@ -1,0 +1,616 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.npn-2n2222",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "2N2222A NPN transistor, TO-92",
+    "generic": true,
+    "refdes_prefix": "Q",
+    "kind": "discrete",
+    "category": "semiconductor",
+    "description": {
+      "i18n_key": "parts.npn-2n2222.description",
+      "en": "A small-signal NPN transistor in a TO-92 package, used as a switch for loads up to about 600 mA. The default pin order is emitter, base, collector."
+    },
+    "legacy_ids": [
+      "npn-2n2222"
+    ],
+    "tags": [
+      "transistor",
+      "npn",
+      "switch",
+      "2n2222",
+      "pn2222a",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/npn-2n2222.js: header comment, ratings and typical curves",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "The header cites the PN2222A and P2N2222A sheets. This descriptor did not read those sheets, so no number here is a datasheet figure."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: npn element, burn and hot rules",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "E",
+      "name": {
+        "en": "Emitter"
+      },
+      "designator": "1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "note": {
+        "en": "Leg 1 with the flat face toward you and the leads down, in the default EBC pin order."
+      }
+    },
+    {
+      "id": "B",
+      "name": {
+        "en": "Base"
+      },
+      "designator": "2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    },
+    {
+      "id": "C",
+      "name": {
+        "en": "Collector"
+      },
+      "designator": "3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 5.08,
+        "y": 0
+      },
+      "note": {
+        "en": "Leg 3 in the default EBC order. P2N2222A parts from onsemi are C B E."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "TO-92",
+    "body": {
+      "w": 4.8,
+      "h": 3.8,
+      "d": 4.8
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/parts/npn-2n2222.js:4-6"
+    }
+  },
+  "ratings": {
+    "current_gain": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "scope": {
+        "part": true
+      },
+      "description": {
+        "en": "Forward current gain used by the model."
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 100,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:20 HFE=100, header line 9"
+        },
+        "rationale": {
+          "en": "The figure uses the bottom of the 100 to 300 range it quotes for 150 mA, as a single constant for every current."
+        }
+      },
+      "used_by_model": "simulation",
+      "primary": true
+    },
+    "current_gain_reverse": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 5,
+        "confidence": "low",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:108 hfr: +e.hfr || 5"
+        },
+        "rationale": {
+          "en": "The solver falls back to 5 for the gain with collector and emitter swapped; the figure sets no value."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "base_emitter_voltage": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "B",
+          "E"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.7,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 vbe: .7"
+        },
+        "rationale": {
+          "en": "One fixed value. The figure's own curve runs 0.6 to 1.2 V with current, which the solver does not use."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "collector_emitter_saturation": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "C",
+          "E"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.2,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 vcesat: .2"
+        },
+        "rationale": {
+          "en": "One fixed value. The figure's own curve gives 0.12 V at 150 mA and 0.28 V at 500 mA, which the solver does not use."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "collector_current_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "C"
+        ]
+      },
+      "description": {
+        "en": "Continuous collector current. The model burns the part above 1.5 times this value."
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.6,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 icmax: .6"
+        },
+        "rationale": {
+          "en": "The header quotes 600 mA continuous from the sheets; taken from the header, not from a sheet read here."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "collector_emitter_voltage_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "C",
+          "E"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 40,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 vceo: 40"
+        },
+        "rationale": {
+          "en": "Quoted in the figure header as VCEO. No model reads it."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "emitter_base_voltage_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "E",
+          "B"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 6,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 vebo: 6"
+        },
+        "rationale": {
+          "en": "Quoted in the figure header as VEBO. No model reads it."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "power_max": {
+      "measure": "power",
+      "role": "abs_max",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "W",
+        "value": 0.625,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 pmax: .625"
+        },
+        "rationale": {
+          "en": "The header quotes 625 mW at 25 degC. The model reports the part hot above 0.75 times this value."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "thermal_resistance": {
+      "measure": "thermal_resistance",
+      "role": "thermal",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "C_per_W",
+        "value": 200,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:20 THETA=200"
+        },
+        "rationale": {
+          "en": "The header quotes 200 degC per watt in free air."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "junction_temperature_max": {
+      "measure": "temperature",
+      "role": "abs_max",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "degC",
+        "value": 150,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/npn-2n2222.js:43 tjmax: 150"
+        },
+        "rationale": {
+          "en": "The header quotes 150 degC."
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "A switch that closes when base current flows. It saturates when the load needs less current than the gain times the base current allows."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "B",
+          "C",
+          "E"
+        ],
+        "summary": {
+          "en": "Bipolar transistor: the base-emitter junction drops a fixed voltage, the collector current is the gain times the base current until the collector-emitter drop reaches its saturation value."
+        },
+        "model": {
+          "kind": "element",
+          "element": "npn",
+          "terminals": {
+            "b": "B",
+            "c": "C",
+            "e": "E"
+          },
+          "params": {
+            "hfe": {
+              "from_rating": "current_gain",
+              "pick": "value"
+            },
+            "hfr": {
+              "from_rating": "current_gain_reverse",
+              "pick": "value"
+            },
+            "vbe": {
+              "from_rating": "base_emitter_voltage",
+              "pick": "value"
+            },
+            "vcesat": {
+              "from_rating": "collector_emitter_saturation",
+              "pick": "value"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "overtemperature",
+      "name": {
+        "en": "Fails open when the junction gets too hot"
+      },
+      "cause_id": "x-npn-overheat",
+      "symptom_ids": [
+        "part-hot",
+        "part-dead"
+      ],
+      "when": [
+        {
+          "measure": "junction_temperature",
+          "target": "part",
+          "op": ">",
+          "threshold": {
+            "rating": "junction_temperature_max",
+            "pick": "value"
+          }
+        }
+      ],
+      "effect": {
+        "state": "open_circuit",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The transistor stops conducting and stays open."
+        }
+      },
+      "derivation": {
+        "en": "The junction temperature is 25 degC plus the thermal resistance times the power. The rule is the simulator's own and has not been tested against hardware."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:341"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "overcurrent",
+      "name": {
+        "en": "Fails open when the collector current is far too high"
+      },
+      "cause_id": "x-npn-overheat",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "when": [
+        {
+          "measure": "pin_current_peak",
+          "target": "C",
+          "op": ">",
+          "threshold": {
+            "rating": "collector_current_max",
+            "pick": "value",
+            "factor": 1.5
+          }
+        }
+      ],
+      "effect": {
+        "state": "open_circuit",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The transistor stops conducting and stays open."
+        }
+      },
+      "derivation": {
+        "en": "The solver fails the part when the peak collector current is above 1.5 times the continuous rating. The factor is iynk's own teaching rule and has no source."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:341"
+      },
+      "implemented_as": "threshold"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "reversed",
+      "kind": "reversed_part",
+      "target": {
+        "pins": [
+          "E",
+          "B",
+          "C"
+        ]
+      },
+      "cause_id": "swapped-pins",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "Fit the transistor the wrong way round, so the emitter and collector change places."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A saturating switch: a fixed base-emitter drop, a fixed gain and a fixed saturation voltage."
+      },
+      {
+        "en": "A transistor fitted backwards, with a gain of 5 from collector to emitter."
+      },
+      {
+        "en": "Failure by heat or by a collector peak above 1.5 times the current rating."
+      },
+      {
+        "en": "A hot state above 0.75 times the power rating."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The change of gain, base-emitter drop and saturation voltage with current."
+      },
+      {
+        "en": "The linear region, switching speed and capacitance."
+      },
+      {
+        "en": "Temperature effects on gain and the base-emitter drop."
+      },
+      {
+        "en": "The collector-emitter and emitter-base voltage ratings."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "collector current",
+        "min": 0,
+        "max": 0.6,
+        "unit": "A",
+        "note": {
+          "en": "Up to the continuous rating in the figure header."
+        }
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "pinout_fixed",
+        "text": {
+          "en": "The figure lets you pick the pin order EBC or CBE. A descriptor cannot swap terminals by a parameter, so this one fixes EBC and the C B E order of P2N2222A parts is not represented."
+        },
+        "evidence": "figures/parts/npn-2n2222.js:41 pinout parameter"
+      },
+      {
+        "id": "fixed_vbe_vcesat",
+        "text": {
+          "en": "The solver uses 0.7 V and 0.2 V at any current, while the figure's own curves move between 0.6 and 1.2 V and between 0.05 and 0.3 V."
+        },
+        "evidence": "figures/engine/bench-solve.js:108"
+      }
+    ],
+    "solver_requires": [
+      "npn"
+    ],
+    "tests": [
+      {
+        "id": "golden",
+        "kind": "golden-trace",
+        "file": "src/parts/data/tests/npn-2n2222.golden.json",
+        "state": "present"
+      },
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/npn-2n2222.conformance.json",
+        "state": "present"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "npn-2n2222",
+        "path": "public/figures/parts/npn-2n2222.html",
+        "sha256": "9dcfceefb4033bc0f53c32dba78098be43caed3479cc96e80b80149d1645bc4d",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "E",
+        "B",
+        "C"
+      ],
+      "span": [
+        2,
+        2
+      ]
+    },
+    "schematic": {
+      "symbol": "transistor-npn"
+    },
+    "fallback": {
+      "renderer": "generic-dip",
+      "label": "2N2222",
+      "body_colour": "#34312e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "license_scope": {
+      "art": "LicenseRef-iynk-pending",
+      "descriptor": "LicenseRef-iynk-pending"
+    },
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/parts/npn-2n2222.js.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

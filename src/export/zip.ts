@@ -11,6 +11,14 @@ export const ZIP_LIMITS = Object.freeze({
   ratioFloorBytes: 1_048_576,
 });
 
+export interface ZipLimits {
+  entries: number;
+  entryBytes: number;
+  totalBytes: number;
+  ratio: number;
+  ratioFloorBytes: number;
+}
+
 export type ZipErrorCode =
   | "not_a_zip"
   | "truncated"
@@ -39,6 +47,8 @@ export interface ZipFailure {
 export interface ZipFile {
   path: string;
   data: Uint8Array;
+  /** Set by the reader when the entry is a Unix symbolic link; its data is the link target, never followed. */
+  symlink?: true;
 }
 
 class ZipAbort extends Error {
@@ -50,6 +60,8 @@ class ZipAbort extends Error {
     this.failure = { code, message, ...extra };
   }
 }
+
+const mib = (bytes: number): string => `${bytes / 1_048_576} MiB`;
 
 const crcTable = new Uint32Array(256);
 for (let n = 0; n < 256; n++) {
@@ -356,9 +368,14 @@ interface Meta {
   csize: number;
   usize: number;
   local: number;
+  symlink: boolean;
 }
 
-function readEntries(bytes: Uint8Array): ZipFile[] {
+const UNIX = 3;
+const S_IFMT = 0o170000;
+const S_IFLNK = 0o120000;
+
+function readEntries(bytes: Uint8Array, limits: ZipLimits): ZipFile[] {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let eocd = -1;
   for (let i = bytes.length - 22; i >= Math.max(0, bytes.length - 22 - 65535); i--) {
@@ -374,9 +391,9 @@ function readEntries(bytes: Uint8Array): ZipFile[] {
   if (count === 0xffff || dirSize === 0xffffffff || dirStart === 0xffffffff) {
     throw new ZipAbort("zip64", "zip64 archives are not supported");
   }
-  if (count > ZIP_LIMITS.entries) {
-    throw new ZipAbort("too_many_entries", `${count} entries; the limit is ${ZIP_LIMITS.entries}`, {
-      limit: `${ZIP_LIMITS.entries} entries`,
+  if (count > limits.entries) {
+    throw new ZipAbort("too_many_entries", `${count} entries; the limit is ${limits.entries}`, {
+      limit: `${limits.entries} entries`,
     });
   }
   if (dirStart + dirSize > eocd) throw new ZipAbort("truncated", "the directory runs past the end of the file");
@@ -389,6 +406,7 @@ function readEntries(bytes: Uint8Array): ZipFile[] {
     if (pos + 46 > eocd || view.getUint32(pos, true) !== 0x02014b50) {
       throw new ZipAbort("truncated", "a directory record is missing or damaged");
     }
+    const madeBy = view.getUint16(pos + 4, true) >>> 8;
     const flags = view.getUint16(pos + 8, true);
     const method = view.getUint16(pos + 10, true);
     const crc = view.getUint32(pos + 16, true);
@@ -397,6 +415,7 @@ function readEntries(bytes: Uint8Array): ZipFile[] {
     const nameLength = view.getUint16(pos + 28, true);
     const skip = nameLength + view.getUint16(pos + 30, true) + view.getUint16(pos + 32, true);
     const local = view.getUint32(pos + 42, true);
+    const symlink = madeBy === UNIX && ((view.getUint32(pos + 38, true) >>> 16) & S_IFMT) === S_IFLNK;
     if (pos + 46 + skip > eocd) throw new ZipAbort("truncated", "a directory record runs past the directory");
     const name = utf8Decode(bytes.subarray(pos + 46, pos + 46 + nameLength));
     if (name === null) throw badPath("", "is not valid UTF-8");
@@ -407,25 +426,25 @@ function readEntries(bytes: Uint8Array): ZipFile[] {
     if (method !== 0 && method !== 8) {
       throw new ZipAbort("unsupported_method", `${name} uses compression method ${method}`, { path: name });
     }
-    if (usize > ZIP_LIMITS.entryBytes) {
-      throw new ZipAbort("entry_too_large", `${name} is ${usize} bytes; the limit is ${ZIP_LIMITS.entryBytes}`, {
+    if (usize > limits.entryBytes) {
+      throw new ZipAbort("entry_too_large", `${name} is ${usize} bytes; the limit is ${limits.entryBytes}`, {
         path: name,
-        limit: "16 MiB per entry",
+        limit: `${mib(limits.entryBytes)} per entry`,
       });
     }
-    if (usize > ZIP_LIMITS.ratioFloorBytes && usize > ZIP_LIMITS.ratio * csize) {
-      throw new ZipAbort("ratio", `${name} would inflate ${usize} bytes from ${csize}; the limit is ${ZIP_LIMITS.ratio} to 1`, {
+    if (usize > limits.ratioFloorBytes && usize > limits.ratio * csize) {
+      throw new ZipAbort("ratio", `${name} would inflate ${usize} bytes from ${csize}; the limit is ${limits.ratio} to 1`, {
         path: name,
-        limit: `${ZIP_LIMITS.ratio} to 1`,
+        limit: `${limits.ratio} to 1`,
       });
     }
     total += usize;
-    if (total > ZIP_LIMITS.totalBytes) {
-      throw new ZipAbort("total_too_large", `the entries add up to more than ${ZIP_LIMITS.totalBytes} bytes`, {
-        limit: "128 MiB in total",
+    if (total > limits.totalBytes) {
+      throw new ZipAbort("total_too_large", `the entries add up to more than ${limits.totalBytes} bytes`, {
+        limit: `${mib(limits.totalBytes)} in total`,
       });
     }
-    metas.push({ name, method, crc, csize, usize, local });
+    metas.push({ name, method, crc, csize, usize, local, symlink });
   }
 
   const files: ZipFile[] = [];
@@ -442,18 +461,18 @@ function readEntries(bytes: Uint8Array): ZipFile[] {
       content = bytes.slice(data, data + csize);
     } else content = inflate(bytes, data, data + csize, usize, m.name);
     if (crc32(content) !== m.crc) throw new ZipAbort("bad_crc", `${m.name} does not match its checksum`, { path: m.name });
-    files.push({ path: m.name, data: content });
+    files.push(m.symlink ? { path: m.name, data: content, symlink: true } : { path: m.name, data: content });
   }
   return files;
 }
 
 /**
- * Reads a zip made by this writer, Python `zipfile` or Info-ZIP. Every limit is checked on the directory before the
+ * Reads a zip made by this writer, Python `zipfile` or Info-ZIP. Every limit (`limits`, the container's by default) is checked on the directory before the
  * first byte is inflated, and the inflate itself stops at the size the entry declared. Directory entries are skipped.
  */
-export function readZip(bytes: Uint8Array): Result<ZipFile[], ZipFailure> {
+export function readZip(bytes: Uint8Array, limits: ZipLimits = ZIP_LIMITS): Result<ZipFile[], ZipFailure> {
   try {
-    return ok(readEntries(bytes));
+    return ok(readEntries(bytes, limits));
   } catch (error) {
     if (error instanceof ZipAbort) return fail(error.failure);
     throw error;

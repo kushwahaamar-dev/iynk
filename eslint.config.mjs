@@ -68,6 +68,8 @@ const eslintConfig = defineConfig([
     ".next-*/**",
     // Built figure pages and the vendored Colorfigures core are not app source.
     "public/figures/**",
+    // Engine files copied or bundled by scripts/build-engines.mjs.
+    "public/engines/**",
     "figures/vendor/**",
     // Test output.
     "test-results/**",

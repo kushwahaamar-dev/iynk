@@ -8,7 +8,7 @@ import type { Store } from "./select.ts";
 export type UiState = {
   leftRail: "palette" | "files" | "outline";
   rightRail: "inspector" | "problems" | "models" | "history" | "checks" | "partner";
-  dock: "code" | "serial";
+  dock: "code" | "serial" | "faults";
   dockHeightPx: number;
   artMode: "illustrated" | "simple";
   snapMm: number;
@@ -65,7 +65,7 @@ function normalise(raw: unknown): UiState {
   return {
     leftRail: oneOf(r.leftRail, ["palette", "files", "outline"], DEFAULTS.leftRail),
     rightRail: oneOf(r.rightRail, ["inspector", "problems", "models", "history", "checks", "partner"], DEFAULTS.rightRail),
-    dock: oneOf(r.dock, ["code", "serial"], DEFAULTS.dock),
+    dock: oneOf(r.dock, ["code", "serial", "faults"], DEFAULTS.dock),
     dockHeightPx: finite(r.dockHeightPx) ? Math.max(DOCK_MIN_PX, r.dockHeightPx) : DEFAULTS.dockHeightPx,
     artMode: oneOf(r.artMode, ["illustrated", "simple"], DEFAULTS.artMode),
     snapMm: finite(r.snapMm) ? Math.min(SNAP_MAX_MM, Math.max(SNAP_MIN_MM, r.snapMm)) : DEFAULTS.snapMm,

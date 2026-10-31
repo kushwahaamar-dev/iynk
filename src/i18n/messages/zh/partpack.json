@@ -1,0 +1,84 @@
+{
+  "title": "零件包",
+  "close": "关闭",
+  "dialog": {
+    "title": "添加零件包 {name}",
+    "description": "来自 {sender}。在你确认之前不会保存任何内容。"
+  },
+  "refused": {
+    "title": "这个零件包被拒绝了",
+    "unchanged": "你的库和项目没有任何变化。"
+  },
+  "actions": {
+    "close": "关闭",
+    "cancel": "取消",
+    "use": "在此项目中使用",
+    "add": "添加到我的库",
+    "addDisabled": "作为停用的数据添加"
+  },
+  "tier": {
+    "T0": "示意图",
+    "T1": "教学模型",
+    "T2": "计算模型",
+    "T3": "运行固件",
+    "none": "没有模型"
+  },
+  "status": {
+    "modelled": "已建模",
+    "partly-modelled": "部分建模",
+    "not-modelled-yet": "尚未建模"
+  },
+  "row": {
+    "licence": "许可证",
+    "sources": "来源",
+    "noSources": "未列出",
+    "code": "代码",
+    "permissions": "权限：{list}",
+    "pins": {
+      "one": "{count} 个引脚",
+      "other": "{count} 个引脚"
+    },
+    "collision": "已安装了另一个相同 id 和版本的零件，因此无法添加这个。",
+    "codeOff": "此版本无法启用带代码的零件。这个零件只作为数据保存，保持停用。",
+    "art": "被修改或移除的图片"
+  },
+  "labels": {
+    "schema": "结构有效",
+    "tests": {
+      "yes": "有测试",
+      "no": "没有测试"
+    },
+    "run": {
+      "not-run": "测试未运行",
+      "pass": "测试通过",
+      "fail": "测试失败"
+    },
+    "reference": {
+      "yes": "有参考测试",
+      "no": "没有参考测试"
+    },
+    "code": {
+      "yes": "包含代码",
+      "no": "没有代码"
+    },
+    "thirdParty": {
+      "yes": "含第三方内容",
+      "no": "无第三方内容"
+    }
+  },
+  "errors": {
+    "not-a-pack": "这个文件不是 iynk 零件包。",
+    "newer-pack": "这个零件包由更新版本的 iynk 制作。请更新 iynk 后再打开。",
+    "too-big-compressed": "已拒绝：零件包超过 {limit}。",
+    "too-big-uncompressed": "已拒绝：零件包解压后超过 {limit}。",
+    "ratio": "已拒绝：零件包解压后远大于原大小，超过 {limit}。",
+    "too-many-files": "已拒绝：零件包包含的文件超过 {limit}。",
+    "path": "已拒绝：{path} 不是安全的文件名。",
+    "duplicate": "已拒绝：{path} 出现了两次。",
+    "symlink": "已拒绝：{path} 是符号链接。",
+    "hash": "已拒绝：{path} 与零件包文件清单中的哈希不符。",
+    "manifest": "已拒绝：零件包的文件清单与实际内容不符（{path}）。",
+    "schema": "已拒绝：{path} 不是有效的零件文件。",
+    "core-id": "已拒绝：{path} 使用了只有随 iynk 发布的零件才能用的 id。"
+  }
+}

@@ -1,11 +1,11 @@
 import { PRESET_HOSTS } from "../../../src/protocol/ai-presets.ts";
-import { defineRoutes, type RouteDef } from "./classes.ts";
+import { defineRoutes, type Reply, type RouteDef } from "./classes.ts";
 import type { RouteDeps } from "../app.ts";
 
 export const PROJECT_SCHEMAS = ["1.1"];
 
 export function serverInfoRoutes(ctx: RouteDeps): RouteDef[] {
-  const { config, limits } = ctx;
+  const { config, limits, compile } = ctx;
   const body = {
     audience: config.audience,
     name: config.serverName,
@@ -23,7 +23,6 @@ export function serverInfoRoutes(ctx: RouteDeps): RouteDef[] {
       assets: true,
       aiRelay: config.aiEnable,
       searchProxy: config.searchEnable,
-      compile: false,
       tools: false,
     },
     ai: {
@@ -39,5 +38,6 @@ export function serverInfoRoutes(ctx: RouteDeps): RouteDef[] {
       storageBytesPerIdentity: limits.deviceQuotaBytes,
     },
   };
-  return defineRoutes([{ method: "GET", path: "/v1/server", operation: "getServerInfo", cls: "public", bucket: "public.read", handler: () => ({ status: 200, body }) }]);
+  const info = (): Reply => ({ status: 200, body: { ...body, features: { ...body.features, compile: config.compile.enabled && compile.reachable() } } });
+  return defineRoutes([{ method: "GET", path: "/v1/server", operation: "getServerInfo", cls: "public", bucket: "public.read", handler: info }]);
 }

@@ -42,6 +42,7 @@ export const DEFAULT_RULES: Record<BucketName, Rule[]> = {
   "search.offers": [{ limit: 20, windowMs: MINUTE }],
   "search.other": [{ limit: 30, windowMs: MINUTE }],
   tools: [{ limit: 60, windowMs: MINUTE }],
+  compile: [{ limit: 10, windowMs: MINUTE }],
 };
 
 const seconds = (ms: number) => Math.max(1, Math.ceil(ms / 1000));

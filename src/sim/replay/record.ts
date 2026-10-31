@@ -1,4 +1,9 @@
-import type { ReplayLog } from "../../project/generated/types.ts";
+import { canonicalize } from "../../core/canonical.ts";
+import { sha256Hex } from "../../core/sha256.ts";
+import type { Diagnosis } from "../../project/diagnosis.ts";
+import type { Fault, Project, ReplayLog } from "../../project/generated/types.ts";
+import { isSealed, readDiagnoseSpec, type ItemState } from "../faults/seal.ts";
+import type { CauseId } from "../faults/types.ts";
 import type { SimTime } from "../core/clock.ts";
 import type { InputEntry, SimSettings } from "../engine.ts";
 import type { Orchestrator } from "../orchestrator.ts";
@@ -18,11 +23,25 @@ export interface ReplayRecord {
   endsAt: SimTime;
   pinTraceHash: string;
   serialHash: string;
+  /** The faults switched on when the run started. Absent in records made before faults were recorded. */
+  faults?: RecordedFault[];
+  /** sha256 of the canonical `Diagnosis`, so a receiver can check a claimed diagnosis without the record naming it. */
+  diagnosisHash?: string;
+}
+
+export interface RecordedFault {
+  id: string;
+  kind: Fault["kind"];
+  target: Fault["target"];
+  params?: Fault["params"];
+  atNs: SimTime;
+  /** Left out while the item is sealed and unrevealed. */
+  causeId?: CauseId;
 }
 
 /** What a log can carry; the optional four have no place in `ReplayLog`. */
 export type ReplaySpec = Pick<ReplayRecord, "docHash" | "seed" | "versions" | "inputs" | "checkpoints"> &
-  Partial<Pick<ReplayRecord, "settings" | "endsAt" | "pinTraceHash" | "serialHash">>;
+  Partial<Pick<ReplayRecord, "settings" | "endsAt" | "pinTraceHash" | "serialHash" | "faults" | "diagnosisHash">>;
 
 export interface RecorderContext {
   docHash: string;
@@ -31,6 +50,31 @@ export interface RecorderContext {
   modelVersions?: Record<string, string>;
   /** The serial output so far, read when the record is finished. The orchestrator does not see serial text. */
   serial: () => ReadonlyArray<{ at: SimTime; text: string }>;
+  faults?: RecordedFault[];
+  diagnosisHash?: string;
+}
+
+const HIDDEN_FAULT_ID = "(hidden)";
+
+/** The faults a run starts with. Faults apply at P0, so every one is at 0. A sealed item keeps its answer out of the record. */
+export function recordFaults(doc: Project, state: ItemState): RecordedFault[] {
+  const sealed = isSealed(doc, state);
+  const spec = sealed ? readDiagnoseSpec(doc) : undefined;
+  const hidden = spec?.ok ? spec.value?.answer.fault : undefined;
+  return doc.simulation.faults
+    .filter((f) => f.enabled)
+    .map((f) => ({
+      id: f.id === hidden ? HIDDEN_FAULT_ID : f.id,
+      kind: f.kind,
+      target: f.target,
+      ...(f.params && { params: f.params }),
+      atNs: 0,
+      ...(!sealed && { causeId: f.cause_id }),
+    }));
+}
+
+export function hashDiagnosis(d: Diagnosis): string {
+  return sha256Hex(canonicalize(d));
 }
 
 export function createRecorder(o: Orchestrator, ctx: RecorderContext): { finish(endsAt: SimTime): ReplayRecord } {
@@ -46,6 +90,8 @@ export function createRecorder(o: Orchestrator, ctx: RecorderContext): { finish(
       endsAt,
       pinTraceHash: pinTraceHash(o.pinEdges()),
       serialHash: serialHash(ctx.serial()),
+      ...(ctx.faults && { faults: ctx.faults.map((f) => ({ ...f })) }),
+      ...(ctx.diagnosisHash !== undefined && { diagnosisHash: ctx.diagnosisHash }),
     }),
   };
 }
@@ -112,6 +158,15 @@ function inputOf(e: LogEvent): InputEntry | null {
   const d = e.data as Partial<InputEntry>;
   if (typeof d.seq !== "number" || typeof d.target !== "string" || !KINDS.includes(d.kind as InputEntry["kind"])) return null;
   return { at: e.tNs, seq: d.seq, kind: d.kind as InputEntry["kind"], target: d.target, value: d.value };
+}
+
+/** Whole-string compare of every engine, model and dmath version; a difference refuses and shows both sides. */
+export function refuseIfVersionsDiffer(rec: ReplayRecord, running: ReplayRecord["versions"]): { ok: true } | { ok: false; shown: string[] } {
+  const side = (v: ReplayRecord["versions"]): string =>
+    [`engines ${describeEngines(v.engines)}`, `models ${describeEngines(v.models)}`, `dmath ${v.dmath}`].join("; ");
+  const logged = side(rec.versions);
+  const here = side(running);
+  return logged === here ? { ok: true } : { ok: false, shown: [logged, here] };
 }
 
 /** Reads a log back. It refuses a log made on other engine versions than the ones running, and says both. */

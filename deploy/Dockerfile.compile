@@ -1,0 +1,34 @@
+# The sketch compiler: arduino-cli with the AVR core and the allow-listed libraries, fetched while you build the image.
+# Build it once on your own machine: docker compose -f deploy/compose.yaml --profile compile build compile
+FROM node:24-slim AS toolchain
+ARG ARDUINO_CLI_VERSION=1.5.1
+# Copy the checksum of the Linux_64bit archive from the arduino-cli release page; the build stops while it is empty.
+ARG ARDUINO_CLI_SHA256=
+ARG AVR_CORE=arduino:avr@1.8.8
+ENV ARDUINO_DIRECTORIES_DATA=/opt/arduino/data \
+    ARDUINO_DIRECTORIES_USER=/opt/arduino/user \
+    ARDUINO_DIRECTORIES_DOWNLOADS=/tmp/downloads
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/*
+RUN test -n "$ARDUINO_CLI_SHA256" \
+ && curl -fsSL -o /tmp/arduino-cli.tar.gz "https://github.com/arduino/arduino-cli/releases/download/v${ARDUINO_CLI_VERSION}/arduino-cli_${ARDUINO_CLI_VERSION}_Linux_64bit.tar.gz" \
+ && echo "${ARDUINO_CLI_SHA256}  /tmp/arduino-cli.tar.gz" | sha256sum -c - \
+ && tar -xzf /tmp/arduino-cli.tar.gz -C /usr/local/bin arduino-cli
+COPY deploy/compile/libraries.txt /tmp/libraries.txt
+RUN arduino-cli core update-index && arduino-cli core install "$AVR_CORE" \
+ && grep -v -E '^(Wire|SPI|Servo|EEPROM|SoftwareSerial)@' /tmp/libraries.txt | while IFS= read -r library; do arduino-cli lib install "$library"; done \
+ && rm -rf /tmp/downloads
+
+FROM node:24-slim
+ENV ARDUINO_DIRECTORIES_DATA=/opt/arduino/data \
+    ARDUINO_DIRECTORIES_USER=/opt/arduino/user \
+    ARDUINO_DIRECTORIES_DOWNLOADS=/tmp/downloads \
+    ARDUINO_UPDATER_ENABLE_NOTIFICATION=false \
+    HOME=/tmp \
+    IYNK_COMPILE_PORT=8788
+COPY --from=toolchain /usr/local/bin/arduino-cli /usr/local/bin/arduino-cli
+COPY --from=toolchain /opt/arduino /opt/arduino
+COPY deploy/compile/libraries.txt /opt/libraries.txt
+COPY deploy/compile/service.mjs /opt/service.mjs
+USER 10001
+EXPOSE 8788
+CMD ["node", "/opt/service.mjs"]

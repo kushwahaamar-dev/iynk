@@ -1,0 +1,60 @@
+{
+  "id": "device:pca9685@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "PCA9685 16-channel PWM driver, register level",
+  "tier": "T1",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "regs",
+      "text": "Mode registers, prescale and the 16 channel on/off registers; duty and frequency are readable by the world"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "bus-time",
+      "text": "Bus time: a transfer completes instantly; pull-ups, clock stretching and repeated start are not modelled"
+    },
+    {
+      "id": "oscillator",
+      "text": "Oscillator tolerance (the 25 MHz clock is taken as nominal)"
+    },
+    {
+      "id": "outputs",
+      "text": "Output drive and open-drain modes"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "lesson-reference",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/lessons.test.ts: the pca9685 robotics lesson",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "lesson references",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test targets the register map alone"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

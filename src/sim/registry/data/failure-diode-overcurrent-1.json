@@ -1,0 +1,84 @@
+{
+  "id": "failure:diode-overcurrent@1",
+  "version": "1.0.0",
+  "kind": "failure-model",
+  "title": "Diode burns out above its current or surge rating",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "rule",
+      "text": "The diode latches burnt when average current exceeds imax (default 1 A) or the peak exceeds isurge (default 30 A)"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "latch",
+      "text": "Once the rule fires the part stays burnt until it is repaired; the real part may survive or fail more slowly"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "thermal",
+      "text": "Thermal history; only the threshold and its dwell are checked"
+    },
+    {
+      "id": "partial",
+      "text": "Partial damage and drift"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "imax",
+      "value": 1,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:104"
+    },
+    {
+      "param": "isurge",
+      "value": 30,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:104"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: no flyback diode: the motor reports the spike; with it the diode clamps",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0.01,
+      "max": 1,
+      "unit": "A",
+      "evidence": "RS-08 C13 and C14: 12.3 and 12.4 percent at 1 to 4 mA"
+    }
+  ],
+  "knownFailureCases": [
+    "imax and isurge are the 1N4007 headline ratings; other diodes use the same defaults"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

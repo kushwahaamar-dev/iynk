@@ -1,0 +1,92 @@
+{
+  "id": "model:tmp36.rule@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "TMP36 temperature sensor, nominal function",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "transfer",
+      "text": "Output 0.5 V + 10 mV per degree C when the supply is above vmin (default 2.7 V)"
+    },
+    {
+      "id": "states",
+      "text": "Low below vmin, off at or under 0.5 V, hot when reversed"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "accuracy",
+      "text": "Accuracy, noise and self-heating"
+    },
+    {
+      "id": "load",
+      "text": "Output loading"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "offset",
+      "value": 0.5,
+      "unit": "V",
+      "type": "datasheet",
+      "ref": "figures/parts/tmp36.js",
+      "note": "0.5 V at 0 degC; datasheet page not cited"
+    },
+    {
+      "param": "slope",
+      "value": 0.01,
+      "unit": "V/degC",
+      "type": "datasheet",
+      "ref": "figures/parts/tmp36.js",
+      "note": "10 mV per degree C; datasheet page not cited"
+    },
+    {
+      "param": "vmin",
+      "value": 2.7,
+      "unit": "V",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:373"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: the TMP36 drives A0 to 0.5 V + 10 mV per degC",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "voltage_V",
+      "min": 2.7,
+      "max": 5.5,
+      "unit": "V",
+      "evidence": "supply range of the device; the model reports low below 2.7 V"
+    }
+  ],
+  "knownFailureCases": [
+    "vmin: the 2.7 V floor is a constant in the solver"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

@@ -55,6 +55,16 @@ export interface Repository {
     list(id: string): Promise<number[]>;
     remove(id: string, revision: number): Promise<void>;
   };
+  /** The opt-in learning log: a ring buffer of rows in the `events` store, and the switch that decides whether it is written. */
+  events: {
+    enabled(): Promise<boolean>;
+    setEnabled(on: boolean): Promise<void>;
+    /** Adds a row and drops the oldest ones beyond `cap`. */
+    append(row: unknown, cap: number): Promise<void>;
+    /** Newest first. */
+    list(limit: number): Promise<unknown[]>;
+    clear(): Promise<void>;
+  };
   setFileCopy(id: string, has: boolean): Promise<void>;
   /** Used by wipe and Delete AI data. */
   clearStores(names: readonly StoreName[]): Promise<void>;

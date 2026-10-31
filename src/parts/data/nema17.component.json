@@ -1,0 +1,355 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.nema17",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "SOYO",
+    "model": "NEMA 17 stepper motor (SY42STH38-1684A class)",
+    "mpn": "SY42STH38-1684A",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "A NEMA 17 bipolar stepper motor, 42.3 mm square and 38 mm long, 200 steps a turn. Black and green are one coil, red and blue the other."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "nema17"
+    ],
+    "tags": [
+      "stepper",
+      "nema17",
+      "motor",
+      "robotics",
+      "bipolar"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Pololu A4988 stepper driver carrier and NEMA 17 stepper fact sheet, sections 1 and 2.5",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/a4988.md. It quotes the SOYO SY42STH38-1684A datasheet and the Pololu #2267 page; this descriptor did not read those two documents itself."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/nema17.js",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "The figure header repeats the fact sheet numbers and adds the drawing and its see-through coil model."
+    }
+  ],
+  "pins": [
+    {
+      "id": "BLK",
+      "name": {
+        "en": "Black lead, coil A"
+      },
+      "designator": "BLK",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": -2.4,
+        "y": 0
+      },
+      "connector": "leads",
+      "note": {
+        "en": "Black and green are one coil (the A4988's 2B and 2A). Red and blue are the other coil (1A and 1B)."
+      }
+    },
+    {
+      "id": "GRN",
+      "name": {
+        "en": "Green lead, coil A"
+      },
+      "designator": "GRN",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": -0.8,
+        "y": 0
+      },
+      "connector": "leads"
+    },
+    {
+      "id": "RED",
+      "name": {
+        "en": "Red lead, coil B"
+      },
+      "designator": "RED",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0.8,
+        "y": 0
+      },
+      "connector": "leads"
+    },
+    {
+      "id": "BLU",
+      "name": {
+        "en": "Blue lead, coil B"
+      },
+      "designator": "BLU",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 2.4,
+        "y": 0
+      },
+      "connector": "leads"
+    }
+  ],
+  "ratings": {
+    "coil_current_rated": {
+      "measure": "current",
+      "role": "operating",
+      "scope": {
+        "part": true
+      },
+      "description": {
+        "en": "Rated current of each coil."
+      },
+      "manufacturer": {
+        "unit": "A",
+        "value": 1.68,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 1, motor modelled"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "coil_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "part": true
+      },
+      "description": {
+        "en": "Winding resistance of one coil, plus or minus 10 percent."
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "value": 1.65,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 1, motor modelled"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "holding_torque": {
+      "measure": "torque",
+      "role": "characteristic",
+      "scope": {
+        "part": true
+      },
+      "description": {
+        "en": "Holding torque with both coils at the rated current."
+      },
+      "manufacturer": {
+        "unit": "N_m",
+        "value": 0.36,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 1, motor modelled"
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "parameters": [
+    {
+      "id": "demo",
+      "name": {
+        "en": "Show"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "idle",
+      "values": [
+        "idle",
+        "holding",
+        "turning",
+        "microstepping",
+        "missing steps",
+        "coils mixed"
+      ],
+      "affects": [
+        "dc"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A bipolar stepper with two coils on four leads. The solver has no element for it yet, so the Studio draws it and does not run it."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "BLK",
+          "GRN",
+          "RED",
+          "BLU"
+        ],
+        "summary": {
+          "en": "Two coils: black to green and red to blue. The figure reads the driver's coil currents from a bench model and has no electrical model of its own."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The figure has no elec line and the solver has no bipolar stepper element."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing runs. The part page and the bench drawing show the shaft angle and coil currents that a driver module reports."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Coil current, step loss, pull-out torque and heating. The motor numbers are stored for the robot engine and no layer reads them yet."
+      },
+      {
+        "en": "The Studio does not run it until a bipolar stepper element exists in the solver."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_solver_element",
+        "text": {
+          "en": "No bipolar stepper element exists in the solver, so the layer is none."
+        },
+        "evidence": "figures/parts/nema17.js has no elec line"
+      },
+      {
+        "id": "numbers_from_fact_sheet",
+        "text": {
+          "en": "The motor numbers come from a fact sheet that quotes the SOYO datasheet. This descriptor did not read the datasheet."
+        },
+        "evidence": "docs/facts/a4988.md section 1"
+      },
+      {
+        "id": "no_pullout_curve",
+        "text": {
+          "en": "No pull-out torque curve is stored, because none is stated in the figure or the fact sheet."
+        }
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "nema17",
+        "path": "public/figures/parts/nema17.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "BLK",
+        "GRN",
+        "RED",
+        "BLU"
+      ],
+      "span": [
+        3,
+        30
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-dip",
+      "label": "NEMA 17 stepper motor",
+      "body_colour": "#33302d",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/nema17.js and docs/facts/a4988.md.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "connectors": [
+    {
+      "id": "leads",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pins": [
+        "BLK",
+        "GRN",
+        "RED",
+        "BLU"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "NEMA 17 flange, 42.3 mm square, 38 mm body",
+    "body": {
+      "w": 42.3,
+      "h": 42.3,
+      "d": 38
+    },
+    "accuracy": 1,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 2.5"
+    }
+  },
+  "mechanics": {
+    "stepper": {
+      "steps_per_rev": 200,
+      "holding_torque_nm": 0.36,
+      "r_ohm": 1.65,
+      "l_henry": 0.0032,
+      "i_rated_a": 1.68,
+      "mass_g": 285,
+      "source": {
+        "src": "factsheet",
+        "loc": "section 1, motor modelled"
+      }
+    }
+  }
+}

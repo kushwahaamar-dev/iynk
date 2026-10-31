@@ -1,0 +1,5756 @@
+{
+ "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice",
+ "engine": "eecircuit-engine@1.9.0",
+ "generatedBy": "scripts/gen-ngspice-fixtures.mjs --set linear",
+ "circuits": [
+  {
+   "id": "C01",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "A"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 10000
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 10000
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "5V": 4.94987625000008,
+    "A": 2.4749257503712885
+   }
+  },
+  {
+   "id": "C02",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "A",
+    "B"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1000
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 2200
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 4700
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "5V": 4.949686723449625,
+    "A": 4.323138572387109,
+    "B": 2.9447421509544314
+   }
+  },
+  {
+   "id": "C03",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D12",
+    "A"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1000
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 1000
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 1000
+    },
+    {
+     "id": "src:D12",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "D12": 4.918032652512774,
+    "A": 1.6393436710563676
+   }
+  },
+  {
+   "id": "C04",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "W"
+   ],
+   "elements": [
+    {
+     "id": "POT1.top",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 3000
+    },
+    {
+     "id": "POT1.bot",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 7000
+    },
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 2200
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "5V": 4.949470518966282,
+    "W": 1.7725991650697515
+   }
+  },
+  {
+   "id": "C05",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "A",
+    "B"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1000
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 2000
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 2000
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 3300
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 10000
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "5V": 4.948707948955399,
+    "A": 3.2869431214445477,
+    "B": 3.1040433229899813
+   }
+  },
+  {
+   "id": "C18",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "VIN",
+    "A"
+   ],
+   "elements": [
+    {
+     "id": "RINT",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 2
+    },
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 47
+    },
+    {
+     "id": "src:VIN",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 8.3,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "VIN": 8.216161608353639,
+    "A": 7.880808058200511
+   }
+  },
+  {
+   "id": "C19",
+   "group": "hand",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/cases.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "3V3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 22
+    },
+    {
+     "id": "src:3V3",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 3.3,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "3V3": 3.226666665089185
+   }
+  },
+  {
+   "id": "X00",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "5V",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 288520.8
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 1950.3
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 1.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 2.8
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X0": 0,
+    "5V": 4.94873128725356,
+    "X1": 0
+   }
+  },
+  {
+   "id": "X01",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "X4",
+    "X2",
+    "D13",
+    "5V",
+    "X1",
+    "X3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 273.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 999
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 11269.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 130651.9
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 0,
+     "b": 5,
+     "ohms": 597
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 6,
+     "ohms": 593828.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 5,
+     "b": 7,
+     "ohms": 65.1
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 6,
+     "b": 3,
+     "ohms": 8745.6
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X0": 0,
+    "X4": 0,
+    "X2": 0,
+    "D13": 4.999989517023381,
+    "5V": 4.945857942630238,
+    "X1": 0,
+    "X3": 4.945857620654907
+   }
+  },
+  {
+   "id": "X02",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X4",
+    "X3",
+    "X2",
+    "X1",
+    "D13",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 552.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 18876
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 453.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 10744.4
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 223.7
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X4": 0,
+    "X3": 0,
+    "X2": 0,
+    "X1": 0,
+    "D13": 4.999999750001356,
+    "X0": 4.999946028581246
+   }
+  },
+  {
+   "id": "X03",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "X3",
+    "X0",
+    "X4",
+    "X1",
+    "X5",
+    "5V",
+    "X2"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 126.2
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 60209.6
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 21920.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 224.7
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 14239.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 6136.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 7,
+     "b": 8,
+     "ohms": 4635.2
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 1,
+     "b": 8,
+     "ohms": 216052.4
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 7,
+     "b": 0,
+     "ohms": 47876.9
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 193904.7
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 7,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.999349588439665,
+    "X3": 4.999348957521827,
+    "X0": 0,
+    "X4": 0,
+    "X1": 0,
+    "X5": 0,
+    "5V": 4.949948412489539,
+    "X2": 4.950963540696615
+   }
+  },
+  {
+   "id": "X04",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "5V",
+    "X2",
+    "X0",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 26741.7
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 19.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 17
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 8888.2
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 4.5
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 329.9
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 500.4
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 25181.2
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 0.047217767577454176,
+    "5V": 4.454700865831265,
+    "X2": 0.011300547181795373,
+    "X0": 0.014448548082245287,
+    "D13": 4.995040777882902
+   }
+  },
+  {
+   "id": "X05",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X1",
+    "X0",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 2786
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 3765.6
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 7.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 636.5
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 1182.6
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 2,
+     "b": 4,
+     "ohms": 43.4
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 118280.9
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.945221429722133,
+    "X1": 4.897350878735852,
+    "X0": 4.897350805154875,
+    "D13": 4.896799779349522
+   }
+  },
+  {
+   "id": "X06",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "X1",
+    "X2",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 35137.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 5535.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 325.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 2,
+     "b": 4,
+     "ohms": 2.8
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X0": 4.949996758573966,
+    "X1": 4.94999994852011,
+    "X2": 4.949969356533602,
+    "5V": 4.949999990100016
+   }
+  },
+  {
+   "id": "X07",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "X3",
+    "X5",
+    "D13",
+    "X4"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 64494.9
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 3.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 38.9
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 858377.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 0,
+    "X0": 0,
+    "X3": 4.999999465009244,
+    "X5": 4.999677011340366,
+    "D13": 4.999999500008113,
+    "X4": 4.9999993055081395
+   }
+  },
+  {
+   "id": "X08",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "X2",
+    "X1",
+    "5V",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 327.2
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 99.5
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 584.8
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 1,
+     "ohms": 7955
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 11
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 2,
+     "b": 5,
+     "ohms": 12019
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 1.5
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 79
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 0,
+     "b": 5,
+     "ohms": 105.6
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.880781846445735,
+    "X2": 3.0775390158596063,
+    "X1": 0.16126345971370246,
+    "5V": 4.895573177663191,
+    "X0": 0.08984817088817797
+   }
+  },
+  {
+   "id": "X09",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "X1",
+    "X2",
+    "D13",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1309
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 15632.4
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 3.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 2,
+     "ohms": 75528.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X0": 4.999974185455338,
+    "X1": 4.999980730421546,
+    "X2": 0,
+    "D13": 4.99998308151018,
+    "5V": 4.950000328394827
+   }
+  },
+  {
+   "id": "X10",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "5V",
+    "X2",
+    "X0",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 3.5
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 67.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 174.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 1.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 13626.7
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 18292.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 128
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 5,
+     "b": 2,
+     "ohms": 7717
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 5,
+     "b": 2,
+     "ohms": 19115
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.870032224328633,
+    "5V": 4.939929503775533,
+    "X2": 1.6824300220506103,
+    "X0": 0.00034351769413753234,
+    "X1": 4.003496288264559
+   }
+  },
+  {
+   "id": "X11",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "X2",
+    "X1",
+    "5V",
+    "D13",
+    "X4",
+    "X0",
+    "X5"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 4.8
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 5.2
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 5,
+     "ohms": 870.6
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 6,
+     "b": 3,
+     "ohms": 15.8
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 7,
+     "b": 4,
+     "ohms": 2430.5
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 598404.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 8,
+     "b": 5,
+     "ohms": 689227.5
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 25
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 8,
+     "b": 5,
+     "ohms": 20066.6
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 7,
+     "b": 0,
+     "ohms": 663.3
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 8,
+     "b": 4,
+     "ohms": 2.2
+    },
+    {
+     "id": "R12",
+     "kind": "R",
+     "a": 7,
+     "b": 1,
+     "ohms": 130.4
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X3": 1.059934940244739,
+    "X2": 1.0599278033980621,
+    "X1": 4.949197617842256,
+    "5V": 4.949197669313911,
+    "D13": 4.8605391304166,
+    "X4": 4.949197539644935,
+    "X0": 1.060166188587246,
+    "X5": 4.949187656487742
+   }
+  },
+  {
+   "id": "X12",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "5V",
+    "X4",
+    "X3",
+    "X2",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 18.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 2596
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 561.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 186585.9
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 291.5
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 6,
+     "ohms": 391.9
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 6,
+     "ohms": 240.2
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 258899.9
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 5,
+     "b": 3,
+     "ohms": 42055.4
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 7,
+     "b": 1,
+     "ohms": 14.2
+    },
+    {
+     "id": "R12",
+     "kind": "R",
+     "a": 7,
+     "b": 2,
+     "ohms": 47960.2
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 7,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 1.620382076834024,
+    "X0": 1.3250955680919225,
+    "5V": 4.949981069357211,
+    "X4": 4.93967297159714,
+    "X3": 4.934321105798182,
+    "X2": 1.4400940730148517,
+    "D13": 2.844344527415109
+   }
+  },
+  {
+   "id": "X13",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "5V",
+    "X1",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 633325.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 5431
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 12.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 3.1
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 79557.2
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 1.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 64555.1
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.998047133132624,
+    "5V": 4.949544665385566,
+    "X1": 0.00019137028625472032,
+    "X0": 4.99794648266377
+   }
+  },
+  {
+   "id": "X14",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "D13",
+    "X1",
+    "X3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 16
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 53811.4
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 1.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 652.3
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X0": 0.00148554190196368,
+    "D13": 4.997678715799076,
+    "X1": 0,
+    "X3": 0
+   }
+  },
+  {
+   "id": "X15",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "5V",
+    "X1",
+    "X4",
+    "X2",
+    "X0",
+    "X5"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 1557.1
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 2934.5
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 2.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 4706.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 44770.6
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 14076.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 1,
+     "b": 7,
+     "ohms": 1.8
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X3": 1.2304837159372852,
+    "5V": 4.949604868545906,
+    "X1": 4.949561297888284,
+    "X4": 0,
+    "X2": 4.949118151029078,
+    "X0": 4.94904848525317,
+    "X5": 1.2304837137224147
+   }
+  },
+  {
+   "id": "X16",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "X2",
+    "X3",
+    "D13",
+    "X4",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 27659.7
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 30.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 483.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 1.1
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 3.2
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 7,
+     "b": 6,
+     "ohms": 50460
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 7,
+     "ohms": 4.5
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 4,
+     "b": 7,
+     "ohms": 1.8
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 22.7
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 2,
+     "b": 6,
+     "ohms": 353354.4
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 1451.2
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 7,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X1": 0.006748293373464415,
+    "X0": 0.1353701519021768,
+    "X2": 1.7227464386489137,
+    "X3": 4.938085985539285,
+    "D13": 1.7783842630528683,
+    "X4": 1.7785702846367064,
+    "5V": 4.946641471997647
+   }
+  },
+  {
+   "id": "X17",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "D13",
+    "X1",
+    "X2"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 140981.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 31176.6
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 16387.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 12.6
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X0": 4.9952893017298345,
+    "D13": 4.995993545608055,
+    "X1": 0,
+    "X2": 0
+   }
+  },
+  {
+   "id": "X18",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X1",
+    "X0",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 2.3
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 293.3
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 25.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 5635.6
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 7178.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 587.2
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 120.1
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.949655229908882,
+    "X1": 4.949655218569092,
+    "X0": 3.5526861595419805,
+    "D13": 4.241656777931673
+   }
+  },
+  {
+   "id": "X19",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "X1",
+    "5V",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 5.2
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 31840.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 8082.6
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 4,
+     "ohms": 75
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 571315.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 2852
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X0": 4.929448547908915,
+    "X1": 4.934935997341862,
+    "5V": 4.5158602077165435,
+    "D13": 4.980678038372438
+   }
+  },
+  {
+   "id": "X20",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X3",
+    "X0",
+    "X2",
+    "5V",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 9.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 196
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 191.4
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 2987.2
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 30487.9
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 635.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 1,
+     "b": 6,
+     "ohms": 441836.8
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 84148.3
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 6,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 0.0010908109112666802,
+    "X3": 0.0010339064690873393,
+    "X0": 4.949885236948323,
+    "X2": 4.949994571266813,
+    "5V": 4.94999999257506,
+    "D13": 4.999717042848689
+   }
+  },
+  {
+   "id": "X21",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X2",
+    "D13",
+    "X0",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 19
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 433990.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 18681.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 5,
+     "ohms": 419365.6
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 141
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 1.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 895.6
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 30719.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X1": 0.16422449512666376,
+    "X2": 0.16102014266055903,
+    "D13": 4.995789366665253,
+    "X0": 4.894039947932777,
+    "5V": 4.932508573516264
+   }
+  },
+  {
+   "id": "X22",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X0",
+    "D13",
+    "X1",
+    "X2"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 2.8
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1056.9
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 281.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 2,
+     "ohms": 2.4
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 25777.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 192918.5
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 118.7
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 1.3
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.198247786132141,
+    "X0": 0.0051575525494227375,
+    "D13": 4.999999750000025,
+    "X1": 4.999999332889756,
+    "X2": 0.00515755253704461
+   }
+  },
+  {
+   "id": "X23",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X2",
+    "5V",
+    "D13",
+    "X0",
+    "X3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 21
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 2.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 384377.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 3,
+     "ohms": 14484.9
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 6,
+     "b": 4,
+     "ohms": 2934.2
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 0,
+    "X2": 0,
+    "5V": 4.200000879347616,
+    "D13": 4.99994772130556,
+    "X0": 4.1999400436360785,
+    "X3": 4.999933050502003
+   }
+  },
+  {
+   "id": "X24",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X1",
+    "D13",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 310.3
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 32.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 489284.6
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 3.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 68.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 4.4
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.2992054225539595,
+    "X1": 4.286112625557486,
+    "D13": 4.624434028509572,
+    "X0": 4.604750297422581
+   }
+  },
+  {
+   "id": "X25",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X2",
+    "X0",
+    "X1",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 234521.1
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 493.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 5,
+     "b": 2,
+     "ohms": 3.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 5,
+     "ohms": 23527.8
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 5.2
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 42692.8
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 28340.7
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 517.9
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.945226668099324,
+    "X2": 4.994637205712873,
+    "X0": 4.994640988247033,
+    "X1": 4.994643422983404,
+    "D13": 4.994643474927684
+   }
+  },
+  {
+   "id": "X26",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "5V",
+    "X2",
+    "X1",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 808.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 729.5
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 3141.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 81378.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 47439
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 124
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X3": 4.930112503880848,
+    "5V": 4.930120474562437,
+    "X2": 0.061597217464945814,
+    "X1": 4.92971133235313,
+    "D13": 4.997398744388309
+   }
+  },
+  {
+   "id": "X27",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "X4",
+    "X3",
+    "X2",
+    "D13",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 24.3
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 1.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 6
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 6,
+     "ohms": 57504
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 5,
+     "b": 7,
+     "ohms": 2785
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 7,
+     "b": 0,
+     "ohms": 8.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 3669.1
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 6,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 7,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X1": 0.0019844955176552643,
+    "X0": 0.30162699266847115,
+    "X4": 0.3017739928829463,
+    "X3": 4.677995886885314,
+    "X2": 4.677995914953289,
+    "D13": 4.997958197861206,
+    "5V": 4.67802197139052
+   }
+  },
+  {
+   "id": "X28",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X4",
+    "X1",
+    "X3",
+    "X0",
+    "5V",
+    "X2",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 21713.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 1694.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 14.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 1.1
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 5,
+     "b": 3,
+     "ohms": 29.2
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 2271.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 6,
+     "b": 0,
+     "ohms": 237149.1
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 0,
+     "b": 7,
+     "ohms": 2.1
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 6,
+     "b": 0,
+     "ohms": 687647.3
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 2,
+     "b": 7,
+     "ohms": 2
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 474830.7
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 7,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X4": 0.3874458256760556,
+    "X1": 0.3874538707371541,
+    "X3": 4.949985812139439,
+    "X0": 4.949985883692066,
+    "5V": 4.949985954526346,
+    "X2": 4.949955070819262,
+    "D13": 0.3874538722869535
+   }
+  },
+  {
+   "id": "X29",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "D13",
+    "X2",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 2557.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 10.3
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 118.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 3,
+     "ohms": 1657.5
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 5,
+     "ohms": 4524.9
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 35.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 802848.5
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 1.1
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 5,
+     "b": 3,
+     "ohms": 5.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X1": 0.002119847879801893,
+    "X0": 4.9305802127495255,
+    "D13": 4.950385504949425,
+    "X2": 7.146986211070605e-8,
+    "5V": 4.950028713946203
+   }
+  },
+  {
+   "id": "X30",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X3",
+    "X2",
+    "D13",
+    "X4",
+    "X1",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1.7
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 238.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 5,
+     "b": 1,
+     "ohms": 135.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 7095.5
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 6,
+     "b": 1,
+     "ohms": 3.4
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 73716.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 7,
+     "b": 0,
+     "ohms": 149.1
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 27859.4
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 7,
+     "b": 2,
+     "ohms": 73.4
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 7,
+     "b": 4,
+     "ohms": 37.9
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 1.3
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.927369831830971,
+    "X3": 4.850530294642457,
+    "X2": 0.4524833752761763,
+    "D13": 0.2899968260551483,
+    "X4": 4.9192224486490845,
+    "X1": 4.927368820883297,
+    "X0": 1.5783666016519111
+   }
+  },
+  {
+   "id": "X31",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "X2",
+    "X1",
+    "D13",
+    "X4"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1455.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 21.4
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 89418.4
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 5,
+     "ohms": 60636.6
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X3": 0,
+    "X2": 0,
+    "X1": 4.999552698008218,
+    "D13": 4.999999750011189,
+    "X4": 0
+   }
+  },
+  {
+   "id": "X32",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X3",
+    "D13",
+    "X0",
+    "X2",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 78026.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 37.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 37905.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 6,
+     "b": 0,
+     "ohms": 1493.1
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 23.6
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 27.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 5,
+     "ohms": 862.9
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 171.9
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.935612312939872,
+    "X3": 4.999999306561482,
+    "D13": 4.9999995000000705,
+    "X0": 4.999999234798942,
+    "X2": 4.999999121919143,
+    "X1": 0
+   }
+  },
+  {
+   "id": "X33",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X2",
+    "D13",
+    "5V",
+    "X1",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 629261.7
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 202621.2
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 1125.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 42153
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 122.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 420333.7
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 0,
+     "b": 5,
+     "ohms": 2725.6
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 4814.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X2": 4.949660964879679,
+    "D13": 4.8911618810845745,
+    "5V": 4.94967293257441,
+    "X1": 4.609319875153628,
+    "X0": 1.8008359301417078
+   }
+  },
+  {
+   "id": "X34",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X2",
+    "5V",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 582208.3
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 56.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 115939.9
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 1628.9
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 34.9
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X2": 4.948026710469475,
+    "5V": 4.948508632899207,
+    "X0": 4.844708160064067
+   }
+  },
+  {
+   "id": "X35",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X4",
+    "X3",
+    "X5",
+    "5V",
+    "D13",
+    "X1",
+    "X2",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 1.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 21327.9
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 849.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 40395.2
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 6,
+     "ohms": 5.5
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 7,
+     "ohms": 1.2
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 1,
+     "b": 8,
+     "ohms": 17144.4
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 7,
+     "b": 5,
+     "ohms": 2.6
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X4": 0.23186380586474356,
+    "X3": 4.894451367574709,
+    "X5": 3.5007492007311116,
+    "5V": 4.949967319386813,
+    "D13": 0.8612084246650541,
+    "X1": 4.949967292161993,
+    "X2": 0.430604211448135,
+    "X0": 0.23185983076706096
+   }
+  },
+  {
+   "id": "X36",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "D13",
+    "5V",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 1.3
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 26.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 1.8
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 4,
+     "ohms": 21.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 76913.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 2.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X0": 1.1647370613425525,
+    "D13": 1.8118153798427783,
+    "5V": 3.3735817206955865,
+    "X1": 0.9976706417707241
+   }
+  },
+  {
+   "id": "X37",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "D13",
+    "X0",
+    "X2"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 7835.5
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 66.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 2685.6
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 7
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X3": 3.6915245332583586,
+    "D13": 4.9882213316911495,
+    "X0": 4.9567961773574964,
+    "X2": 4.9567961426599245
+   }
+  },
+  {
+   "id": "X38",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "X0",
+    "5V",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 33.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 974.6
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 2157.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 1.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 1.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 718.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 2407.9
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.999999750000018,
+    "X0": 4.9999995900079774,
+    "5V": 3.5726684088454657,
+    "X1": 0.0019278054646623586
+   }
+  },
+  {
+   "id": "X39",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X4",
+    "X2",
+    "X0",
+    "5V",
+    "X3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 60.2
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 629173.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 449988.6
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 14.7
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X4": 0,
+    "X2": 0,
+    "X0": 0,
+    "5V": 4.94999999505,
+    "X3": 4.9499999222849995
+   }
+  },
+  {
+   "id": "X40",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "X4",
+    "X2",
+    "D13",
+    "5V",
+    "X5",
+    "X1",
+    "X3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 14.8
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 8.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 136933.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 2398.6
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 140075.1
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 6,
+     "b": 4,
+     "ohms": 18903.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 6,
+     "b": 3,
+     "ohms": 1615.3
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 7,
+     "b": 1,
+     "ohms": 90203.6
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 241.8
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 8,
+     "b": 7,
+     "ohms": 15773.7
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 7,
+     "b": 8,
+     "ohms": 17.3
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X0": 0.05808444931682182,
+    "X4": 0.06163966219276879,
+    "X2": 0.06372941860747705,
+    "D13": 4.992658835776903,
+    "5V": 4.950008888116937,
+    "X5": 0.45175228047541854,
+    "X1": 0.05807397235413904,
+    "X3": 0.058073971350560014
+   }
+  },
+  {
+   "id": "X41",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X1",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 13809
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 24844.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 2.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 67907.4
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "5V": 4.949999992575078,
+    "X1": 4.94992228176262,
+    "X0": 4.949922280271844
+   }
+  },
+  {
+   "id": "X42",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "D13",
+    "X2",
+    "X3",
+    "X1",
+    "X4",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 3330.3
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 26044.9
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 2.8
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 6,
+     "b": 1,
+     "ohms": 15189
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 7,
+     "b": 3,
+     "ohms": 1660.2
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 6,
+     "b": 2,
+     "ohms": 212.9
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 5,
+     "b": 6,
+     "ohms": 1.9
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 1338.3
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 8500.9
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 309217.6
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.950009747367769,
+    "D13": 4.999107919945867,
+    "X2": 4.996695622894579,
+    "X3": 4.9949586014104685,
+    "X1": 4.995003830408532,
+    "X4": 4.995034541113808,
+    "X0": 4.9966873273942785
+   }
+  },
+  {
+   "id": "X43",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "X2",
+    "X4",
+    "X0",
+    "X1",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 476.5
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 52234
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 331391.7
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 6,
+     "b": 0,
+     "ohms": 7.6
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 6,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.999999750000073,
+    "X2": 4.999997367501328,
+    "X4": 0,
+    "X0": 0,
+    "X1": 0,
+    "5V": 4.644444442265569
+   }
+  },
+  {
+   "id": "X44",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "5V",
+    "D13",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 348414.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 12089.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 57.6
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 136985.8
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 31596.1
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 80084.4
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 526.7
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X0": 4.763444385181865,
+    "5V": 4.949986480970119,
+    "D13": 3.485259231337306,
+    "X1": 3.4338454260607163
+   }
+  },
+  {
+   "id": "X45",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X0",
+    "X1",
+    "X2",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 39017
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 127304.9
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 2,
+     "b": 1,
+     "ohms": 432.6
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 5,
+     "b": 1,
+     "ohms": 406362.2
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 2438.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 55.4
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 2310.5
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 1281.3
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 5,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.949134750252573,
+    "X0": 4.210332659348347,
+    "X1": 2.2054222305227027,
+    "X2": 2.2057029915792175,
+    "D13": 3.428892908046694
+   }
+  },
+  {
+   "id": "X46",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X2",
+    "D13",
+    "X0",
+    "5V",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 1878.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 278975.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 2.7
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 10.7
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 2,
+     "b": 5,
+     "ohms": 29.4
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 24.5
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 3652.8
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 12660.4
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X2": 4.967737708315383,
+    "D13": 4.970035536218836,
+    "X0": 0.00714892910194927,
+    "5V": 4.948402252468216,
+    "X1": 4.958000165999326
+   }
+  },
+  {
+   "id": "X47",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "5V",
+    "X1",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 6.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 25077.9
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 5.8
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 219669.1
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 2584.8
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 11547.8
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 14.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 2.4973661985325957,
+    "5V": 4.784271724205947,
+    "X1": 4.618517102718888,
+    "X0": 0.014526387586673524
+   }
+  },
+  {
+   "id": "X48",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X2",
+    "D13",
+    "5V",
+    "X1",
+    "X3",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 21
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 1132
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 250.9
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 1,
+     "ohms": 164.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 4,
+     "ohms": 113.6
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 29343.2
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 61887.8
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 6,
+     "b": 5,
+     "ohms": 1009.7
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 0,
+     "b": 6,
+     "ohms": 36765.1
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X2": 4.836906323543545,
+    "D13": 4.912235341807291,
+    "5V": 4.949582306321118,
+    "X1": 4.904017824690451,
+    "X3": 2.7599501689771895,
+    "X0": 2.6861755520082866
+   }
+  },
+  {
+   "id": "X49",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "X2",
+    "D13",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 84246.2
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 162.8
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 2,
+     "ohms": 3.2
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 77589.6
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 5,
+     "ohms": 961.1
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 42867.3
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 1676.9
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 2032.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X1": 2.3450049615958517,
+    "X0": 4.9648653871559345,
+    "X2": 2.130115048411686,
+    "D13": 4.965014384434362,
+    "5V": 4.950007727032916
+   }
+  },
+  {
+   "id": "X50",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "D13",
+    "X1",
+    "X2",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 2104.6
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 2.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 5,
+     "b": 0,
+     "ohms": 471240.5
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 62309.9
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 2,
+     "b": 4,
+     "ohms": 23.3
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X3": 4.999989312648297,
+    "D13": 4.99999950000031,
+    "X1": 4.999999249354059,
+    "X2": 4.999999263284633,
+    "X0": 0
+   }
+  },
+  {
+   "id": "X51",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X3",
+    "X4",
+    "D13",
+    "X0",
+    "X2",
+    "5V"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 1029.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 14.4
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 16.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 6,
+     "ohms": 303527.4
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 9060.8
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 1,
+     "b": 7,
+     "ohms": 7.9
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 5,
+     "ohms": 2.6
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 7,
+     "b": 6,
+     "ohms": 149433.2
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 6,
+     "b": 1,
+     "ohms": 9959.3
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 488692
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 0,
+     "b": 7,
+     "ohms": 84728.7
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 7,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X1": 4.9503568057464244,
+    "X3": 4.997547931580868,
+    "X4": 0.0001472554670421822,
+    "D13": 4.998594586371512,
+    "X0": 4.997693667164283,
+    "X2": 4.951729535775133,
+    "5V": 4.9499937694679375
+   }
+  },
+  {
+   "id": "X52",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "5V",
+    "X3",
+    "X2",
+    "X0",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 71.4
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 323.5
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 22032.1
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 4,
+     "ohms": 455.2
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 626.9
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 6,
+     "ohms": 1570.1
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 6,
+     "b": 0,
+     "ohms": 324773.2
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 6,
+     "b": 5,
+     "ohms": 75.8
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 3,
+     "b": 5,
+     "ohms": 263.2
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 43432.3
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 6,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 4.051329433966626,
+    "5V": 4.9437465424180225,
+    "X3": 4.593197227627985,
+    "X2": 2.356204449254854,
+    "X0": 4.5975473697548646,
+    "D13": 4.869806743255129
+   }
+  },
+  {
+   "id": "X53",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "5V",
+    "X1",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 7.1
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 9982.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 31827.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 2517.4
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 469545.1
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 85.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 63198.9
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X0": 4.9200880015671755,
+    "5V": 4.921178108718045,
+    "X1": 4.922745717968779,
+    "D13": 4.999703233114238
+   }
+  },
+  {
+   "id": "X54",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "X2",
+    "X4",
+    "5V",
+    "D13",
+    "X3"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 0,
+     "b": 1,
+     "ohms": 135.3
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 344810.3
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 4.4
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 3.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 4,
+     "ohms": 15558
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 113802.8
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 49.3
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 6,
+     "b": 3,
+     "ohms": 16.7
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 7,
+     "b": 6,
+     "ohms": 37108.4
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 5,
+     "b": 7,
+     "ohms": 2705.2
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 1,
+     "b": 7,
+     "ohms": 18
+    },
+    {
+     "id": "R12",
+     "kind": "R",
+     "a": 6,
+     "b": 5,
+     "ohms": 35.7
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 6,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 0.24491580084624562,
+    "X0": 0.2571223296805591,
+    "X2": 3.137649323050874,
+    "X4": 0.00019507944207261782,
+    "5V": 4.937575995316092,
+    "D13": 4.113545494667501,
+    "X3": 0.2777819709692785
+   }
+  },
+  {
+   "id": "X55",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "5V",
+    "X1",
+    "D13",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 191627.2
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 2,
+     "b": 0,
+     "ohms": 44517.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 164433.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 1155.3
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 3,
+     "ohms": 1014.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 4.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 305462.7
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 1,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "5V": 4.95001091527953,
+    "X1": 0.02891823974615435,
+    "D13": 4.9980519592409465,
+    "X0": 4.950011615954856
+   }
+  },
+  {
+   "id": "X56",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X0",
+    "5V",
+    "D13",
+    "X1"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 3.9
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 158
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 537.9
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 4,
+     "ohms": 50525.7
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 0,
+     "b": 2,
+     "ohms": 5800.9
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 31.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 43.4
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 2,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 3,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X0": 4.816305457292992,
+    "5V": 4.934333214601581,
+    "D13": 2.791519356703172,
+    "X1": 2.791519235655214
+   }
+  },
+  {
+   "id": "X57",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X1",
+    "X0",
+    "5V",
+    "D13"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 3.5
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 0,
+     "ohms": 26.4
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 3,
+     "ohms": 194.4
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 2933
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 5.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 4,
+     "b": 0,
+     "ohms": 24.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 4,
+     "b": 1,
+     "ohms": 25.2
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 3,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 4,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    }
+   ],
+   "expected": {
+    "X1": 0.33676207725824947,
+    "X0": 0.34214113270982177,
+    "5V": 4.849790604627389,
+    "D13": 1.8992412538344439
+   }
+  },
+  {
+   "id": "X58",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "D13",
+    "X4",
+    "X1",
+    "X3",
+    "5V",
+    "X2",
+    "X0"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 119149.8
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 38.7
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 4895.8
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 6,
+     "b": 2,
+     "ohms": 153.5
+    },
+    {
+     "id": "R5",
+     "kind": "R",
+     "a": 0,
+     "b": 3,
+     "ohms": 47083.3
+    },
+    {
+     "id": "R6",
+     "kind": "R",
+     "a": 2,
+     "b": 3,
+     "ohms": 42.6
+    },
+    {
+     "id": "R7",
+     "kind": "R",
+     "a": 1,
+     "b": 0,
+     "ohms": 14116.2
+    },
+    {
+     "id": "R8",
+     "kind": "R",
+     "a": 5,
+     "b": 4,
+     "ohms": 2702.3
+    },
+    {
+     "id": "R9",
+     "kind": "R",
+     "a": 6,
+     "b": 4,
+     "ohms": 2705.4
+    },
+    {
+     "id": "R10",
+     "kind": "R",
+     "a": 1,
+     "b": 7,
+     "ohms": 25845.7
+    },
+    {
+     "id": "R11",
+     "kind": "R",
+     "a": 7,
+     "b": 5,
+     "ohms": 682.7
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 1,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 5,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "D13": 4.990095751448301,
+    "X4": 0.08920681107670063,
+    "X1": 0.042445477144978976,
+    "X3": 3.1097834944566882,
+    "5V": 4.9494724831784405,
+    "X2": 0.2513875157193594,
+    "X0": 4.950514617423758
+   }
+  },
+  {
+   "id": "X59",
+   "group": "random",
+   "source": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/src/extra.mjs",
+   "revision": "eecircuit-engine@1.9.0",
+   "nodes": [
+    "GND",
+    "X3",
+    "D13",
+    "X1",
+    "5V",
+    "X0",
+    "X2"
+   ],
+   "elements": [
+    {
+     "id": "R1",
+     "kind": "R",
+     "a": 1,
+     "b": 2,
+     "ohms": 9.5
+    },
+    {
+     "id": "R2",
+     "kind": "R",
+     "a": 3,
+     "b": 2,
+     "ohms": 435652.1
+    },
+    {
+     "id": "R3",
+     "kind": "R",
+     "a": 4,
+     "b": 5,
+     "ohms": 8022.3
+    },
+    {
+     "id": "R4",
+     "kind": "R",
+     "a": 1,
+     "b": 6,
+     "ohms": 3544.8
+    },
+    {
+     "id": "src:D13",
+     "kind": "PIN",
+     "a": 2,
+     "level": 1,
+     "vHighVolts": 5,
+     "rOutOhms": 25,
+     "maxAmps": 0.04
+    },
+    {
+     "id": "src:5V",
+     "kind": "V",
+     "a": 4,
+     "b": 0,
+     "volts": 4.95,
+     "rSeriesOhms": 0.5
+    }
+   ],
+   "expected": {
+    "X3": 4.999999405055109,
+    "D13": 4.99999950005493,
+    "X1": 4.99782218832316,
+    "5V": 4.949999995050019,
+    "X0": 4.949960284983626,
+    "X2": 4.999981681120046
+   }
+  }
+ ]
+}

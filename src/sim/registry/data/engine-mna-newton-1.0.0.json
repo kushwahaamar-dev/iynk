@@ -1,0 +1,45 @@
+{
+  "id": "engine:mna-newton@1.0.0",
+  "version": "1.0.0",
+  "kind": "engine",
+  "title": "DC nodal solver with Newton iteration",
+  "tier": "T0",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "newton",
+      "text": "Newton iteration on the nodal equations with SPICE default tolerances: relative 1e-3, voltage 1 uV, current 1 pA, at most 100 iterations"
+    },
+    {
+      "id": "devices",
+      "text": "Shockley diode and LED, Gummel-Poon BJT and MOSFET stamps with junction voltage limiting"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "reactive",
+      "text": "Capacitors and inductors: DC only until a transient backend lands"
+    },
+    {
+      "id": "temperature",
+      "text": "Temperature dependence of the device parameters"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test in the repository runs this solver against a reference, so it carries no more than T0",
+    "A circuit that does not settle within the iteration cap"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

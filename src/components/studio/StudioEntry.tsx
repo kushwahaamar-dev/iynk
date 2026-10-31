@@ -6,16 +6,25 @@ import type { EditAccess } from "@/collab/authority";
 import type { RoomHandle } from "@/collab/join";
 import type { CollabInstallDeps, CollabNotice } from "@/collab/install";
 import { makeMyCopy, openShare, parseShareFragment, readOnlyAccess, type OpenedShare } from "@/collab/share-open";
-import { Callout, Skeleton } from "@/components/ui";
+import { Callout, EmptyState, Skeleton, buttonClass } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
 import { cryptoRandom } from "@/core/ids";
+import { openDb } from "@/local/db";
+import { createIndexedDbPartsRepository, partKey } from "@/local/parts-store";
+import type { PartRecord, PartsRepository } from "@/local/parts-store";
+import { getAppRegistry } from "@/parts/builtin";
+import { digestOf } from "@/parts/descriptor";
+import type { Descriptor, DescriptorOrigin, Trust } from "@/parts/descriptor";
+import { partFacts } from "@/parts/facts";
+import { makeModelEnv } from "@/sim/models/kinds";
 import { createSession, type ProjectSession } from "@/project/session";
 import { registerCommand } from "@/studio/commands";
-import { navigate, parseHash, readRoute, subscribeRoute, type StudioRoute } from "@/studio/router";
+import { navigate, parseHash, readRoute, routeHash, subscribeRoute, type PartsRoute, type StudioRoute } from "@/studio/router";
 import { createDocStore, type DocStore } from "@/studio/stores/doc";
 import { Home } from "./Home";
+import { PartPage } from "./PartPage";
 import { BannerArea } from "./room/BannerArea";
 import { RoomProvider, type StudioRoomsT } from "./room/RoomDock";
 import { SidePanel } from "./room/SidePanel";
@@ -29,6 +38,11 @@ const Diagnostics = dynamic(() => import("./Diagnostics").then((m) => m.Diagnost
   loading: () => <div className="mt-4 min-h-32" aria-busy="true" />,
 });
 
+const PartEditor = dynamic(() => import("./PartEditor").then((m) => m.PartEditor), {
+  ssr: false,
+  loading: () => <div className="mt-4 min-h-64" aria-busy="true" />,
+});
+
 const HOME: StudioRoute = { kind: "home" };
 const EDIT: EditAccess = { mode: "edit" };
 
@@ -37,6 +51,8 @@ export type CollabEnv = Omit<
   CollabInstallDeps,
   "registerCommand" | "onHandle" | "readHash" | "onHash" | "navigate" | "replaceHash" | "onShare" | "onNotice" | "onNeedsEnrolment"
 >;
+
+const TRUST_OF_ORIGIN: Readonly<Record<DescriptorOrigin, Trust>> = { core: "core", "local-user": "local", "imported-pack": "imported" };
 
 export interface StudioEntryProps {
   messages: StudioMessages;
@@ -48,6 +64,88 @@ type SharedState =
   | { status: "opening" }
   | { status: "failed"; reason: "gone" | "needs_server" | "invalid" | "network" }
   | { status: "open"; opened: OpenedShare; doc: DocStore; access: EditAccess };
+
+function PartsEditorRoute({ route, messages, lang }: { route: PartsRoute; messages: StudioMessages; lang: Locale }) {
+  const [store, setStore] = useState<{ repo: PartsRepository; records: Map<string, PartRecord> } | "failed" | null>(null);
+
+  useEffect(() => {
+    let gone = false;
+    let db: IDBDatabase | undefined;
+    openDb()
+      .then(async (opened) => {
+        db = opened;
+        const repo = createIndexedDbPartsRepository(opened);
+        const records = new Map((await repo.list()).map((rec) => [rec.key, rec]));
+        if (!gone) setStore({ repo, records });
+      })
+      .catch(() => !gone && setStore("failed"));
+    return () => {
+      gone = true;
+      db?.close();
+    };
+  }, []);
+
+  const library = useMemo(() => {
+    if (store === null || store === "failed") return null;
+    const { repo, records } = store;
+    return {
+      existingKeys: (): ReadonlySet<string> => new Set(records.keys()),
+      get: (id: string, version: string): Descriptor | undefined => records.get(partKey(id, version))?.descriptor ?? getAppRegistry().get(id, version),
+      async save(def: Descriptor, files: ReadonlyMap<string, Blob>) {
+        const assets = def.visual.assets ?? [];
+        const rec: PartRecord = {
+          key: partKey(def.id, def.version),
+          id: def.id,
+          version: def.version,
+          descriptor: def,
+          digest: digestOf(def),
+          trust: "local",
+          addedAt: new Date().toISOString(),
+          files: Object.fromEntries(assets.map((a) => [a.path, a.sha256])),
+        };
+        const blobs = new Map(assets.flatMap((a) => (files.has(a.path) ? [[a.sha256, files.get(a.path)!] as const] : [])));
+        const done = await repo.putMany([rec], blobs);
+        if (!done.ok) return "conflict" as const;
+        if (done.results[0] === "added") records.set(rec.key, rec);
+        return done.results[0];
+      },
+    };
+  }, [store]);
+
+  if (store === "failed") return <p role="alert" className="mt-4 text-base text-bad">{messages.parteditor.save.failed}</p>;
+  if (!library) return <div className="mt-4 min-h-64" aria-busy="true" />;
+  return (
+    <PartEditor
+      baseKey={route.kind === "parts-edit" ? route.key : undefined}
+      library={library}
+      onSaved={(def) => getAppRegistry().add(def, { origin: "local-user" })}
+      onClose={() => navigate({ kind: "home" })}
+      messages={messages.parteditor}
+      lang={lang}
+    />
+  );
+}
+
+function PartInfoRoute({ routeKey, messages, lang }: { routeKey: string; messages: StudioMessages; lang: Locale }) {
+  const strings = messages.partinfo;
+  const registry = getAppRegistry();
+  const at = routeKey.lastIndexOf("@");
+  const id = routeKey.slice(0, at);
+  const version = routeKey.slice(at + 1);
+  const def = registry.get(id, version);
+  const origin = registry.originOf(id, version);
+
+  if (!def || !origin) {
+    return (
+      <EmptyState title={strings.notFound.title} action={<a href="#/" className={buttonClass("secondary")}>{strings.notFound.link}</a>}>
+        {strings.notFound.body}
+      </EmptyState>
+    );
+  }
+  const trust = TRUST_OF_ORIGIN[origin];
+  const facts = partFacts(def, trust, makeModelEnv((ref, v) => registry.get(ref, v)), registry.versions(id));
+  return <PartPage facts={facts} messages={strings} lang={lang} onOpenEditor={trust === "local" ? () => navigate({ kind: "parts-edit", key: routeKey }) : undefined} />;
+}
 
 export function StudioEntry(props: StudioEntryProps) {
   return (
@@ -146,6 +244,10 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
         ) : null}
         {route.kind === "shared" ? (
           <SharedView state={shared} messages={messages} lang={lang} rooms={rooms} />
+        ) : route.kind === "parts-new" || route.kind === "parts-edit" ? (
+          <PartsEditorRoute key={routeHash(route)} route={route} messages={messages} lang={lang} />
+        ) : route.kind === "parts-info" ? (
+          <PartInfoRoute key={route.key} routeKey={route.key} messages={messages} lang={lang} />
         ) : route.kind === "project" ? (
           <Workspace projectId={route.id} autorun={route.autorun} messages={messages} lang={lang} />
         ) : (

@@ -140,7 +140,7 @@ describe("validateDescriptor", () => {
   });
 
   it("refuses a banned word in the copy, in any case", () => {
-    expect(BANNED_WORDS).toContain("validated");
+    expect(BANNED_WORDS.some((word) => word.test("validated"))).toBe(true);
     const d = load("led-5mm") as Loose;
     d.simulation.what_it_models[0].en = "Fully Validated against a bench";
     const check = validateDescriptor(d);

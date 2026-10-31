@@ -32,3 +32,22 @@ export function runCommand(id: string, ctx: CommandCtx): boolean {
 export function listCommands(): readonly Command[] {
   return [...registry.values()];
 }
+
+export const FAULT_ACTIONS = ["break", "check", "explain", "restore", "hint"] as const;
+export type FaultAction = (typeof FAULT_ACTIONS)[number];
+
+const FAULT_LABELS: Record<FaultAction, string> = {
+  break: "faults.breakIt.title",
+  check: "faults.check.run",
+  explain: "faults.breakIt.explain",
+  restore: "faults.breakIt.restore",
+  hint: "faults.hint.open",
+};
+
+/** The commands of the fault dock. They hand the action to `open`, which shows the dock and does it. */
+export function registerFaultCommands(open: (action: FaultAction) => void, enabled: () => boolean): () => void {
+  const offs = FAULT_ACTIONS.map((action) =>
+    registerCommand({ id: `faults.${action}`, labelKey: FAULT_LABELS[action], scope: "global", enabled, run: () => open(action) }),
+  );
+  return () => offs.forEach((off) => off());
+}

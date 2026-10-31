@@ -1,0 +1,110 @@
+{
+  "dock": {
+    "title": "Instruments",
+    "add": "Add instrument",
+    "remove": "Remove",
+    "empty": "No instruments yet",
+    "targetMissing": "target missing",
+    "viewerOnly": "Viewers cannot change instruments.",
+    "pickKind": "Instrument type",
+    "pickPoint": "Probe point"
+  },
+  "kind": {
+    "multimeter": "Multimeter",
+    "oscilloscope": "Oscilloscope",
+    "logicAnalyser": "Logic analyser",
+    "serialPlotter": "Serial plotter",
+    "voltmeter": "Voltmeter",
+    "ammeter": "Ammeter",
+    "serialMonitor": "Serial monitor"
+  },
+  "meter": {
+    "red": "Red probe",
+    "black": "Black probe",
+    "loading": "Meter loading (10 megohm)",
+    "burden": "Meter burden (ohms)",
+    "open": "Open circuit",
+    "connected": "Connected, below {ohms} ohms",
+    "notConnected": "Not connected",
+    "reading": "Reading",
+    "mode": {
+      "dcVolts": "DC volts",
+      "dcAmps": "DC amps",
+      "resistance": "Resistance, power off",
+      "continuity": "Continuity",
+      "diode": "Diode test",
+      "frequency": "Frequency",
+      "duty": "Duty"
+    },
+    "notBuilt": "{mode} is not modelled yet",
+    "cond": {
+      "ideal": "Ideal meter, no loading",
+      "powerOff": "Power off, junctions read as open at the test level",
+      "loaded": "Meter loading 10 megohm"
+    }
+  },
+  "scope": {
+    "timeBase": "Time base",
+    "trigger": "Trigger",
+    "cursor": "Cursor",
+    "table": "Table view",
+    "export": "Export CSV",
+    "summary": "{n} edges, last at {t} ms",
+    "rising": "Rising edge",
+    "falling": "Falling edge",
+    "level": "Level",
+    "pwm": "{duty} percent duty, {hz} Hz",
+    "delta": "Delta: {dt} ms"
+  },
+  "cap": "{kept} samples kept, {dropped} dropped",
+  "staircase": "No waveform between events: shown as steps",
+  "decoders": "Bus decoding is not modelled yet",
+  "costModel": "Edge times follow the statement cost model",
+  "plotter": {
+    "empty": "Print numbers on a line to plot them",
+    "window": "Window",
+    "clear": "Clear",
+    "columnsIgnored": "Only the first 8 columns are drawn. Further columns are ignored.",
+    "legend": "Legend",
+    "latest": "Latest: {value}",
+    "col": "col{n}",
+    "dropped": "{n} rows dropped"
+  },
+  "tolerance": {
+    "label": "Part tolerance",
+    "nominal": "Nominal",
+    "seeded": "Seeded spread",
+    "runActive": "Stop the shared run to change part tolerance."
+  },
+  "speed": {
+    "label": "Speed",
+    "max": "As fast as possible",
+    "behind": "Running at {x} times real time on this device.",
+    "preset": "{x}x"
+  },
+  "run": {
+    "pause": "Pause",
+    "resume": "Resume",
+    "step": "Step",
+    "stepUnit": "Step by",
+    "cycleNeedsFirmware": "needs firmware mode",
+    "unit": {
+      "ns": "ns",
+      "event": "Event",
+      "statement": "Statement",
+      "line": "Line",
+      "cycle": "Cycle"
+    },
+    "notPaused": "Pause the run first to step."
+  },
+  "band": {
+    "corners": "Range from part tolerance corners",
+    "monteCarlo": "Range from {n} random draws",
+    "noTolerance": "{part} has no tolerance data and is used at its nominal value"
+  },
+  "channel": "Channel {n}",
+  "capSet": "Sample limit",
+  "column": {
+    "time": "Time"
+  }
+}

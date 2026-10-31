@@ -1,0 +1,12 @@
+{
+  "id": "conformance",
+  "kind": "conformance",
+  "shape": "none",
+  "description": "stepper-28byj48 layers resolve and every pin and rating is wired.",
+  "checks": [
+    "layers-resolve",
+    "terminals-are-pins",
+    "ratings-have-slot"
+  ],
+  "derivation": "No numeric expectation: four res layers share one coil resistance rating."
+}

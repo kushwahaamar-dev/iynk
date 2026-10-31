@@ -223,5 +223,7 @@ export function measureElement(el: Element, st: PwlState, v: NodeVolts): Measure
       const ic = st.sat ? Math.max(0, (v(y) - v(x) - el.vcesat) / PWL_COMPAT.rsatOhms) : beta * ib;
       return measured(ic, vce, ic * Math.abs(vce) + ib * el.vbe);
     }
+    case 'MOS':
+      return measured(0, v(el.d) - v(el.s), 0);
   }
 }

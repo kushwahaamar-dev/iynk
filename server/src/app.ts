@@ -9,6 +9,8 @@ import { DEFAULT_COLLAB_LIMITS, type CollabLimits } from "./collab-config.ts";
 import type { ServerConfig } from "./config.ts";
 import type { Deps } from "./deps.ts";
 import { authRoutes } from "./http/auth.ts";
+import { compileRoutes } from "./compile/routes.ts";
+import { COMPILE_LIMITS, createHttpClient, createRunner, type CompileClient, type CompileRunner } from "./compile/runner.ts";
 import { buddyRoutes } from "./http/buddies.ts";
 import type { Authed, RouteDef } from "./http/classes.ts";
 import { deletionRoutes } from "./http/deletion.ts";
@@ -35,6 +37,7 @@ export type RouteDeps = {
   authenticate: (token: string) => Authed | null;
   app: { draining(): boolean };
   buddyRemoval?: BuddyRemovalHook;
+  compile: CompileRunner;
 };
 
 export type App = {
@@ -50,7 +53,7 @@ export type App = {
 };
 
 export type { TestHooks };
-export type CreateAppOptions = { store?: ServerStore; log?: Logger; collab?: CollabLimits; hooks?: TestHooks };
+export type CreateAppOptions = { store?: ServerStore; log?: Logger; collab?: CollabLimits; hooks?: TestHooks; compileClient?: CompileClient };
 
 const MIGRATIONS_DIR = fileURLToPath(new URL("../migrations", import.meta.url));
 
@@ -67,6 +70,7 @@ export function allRoutes(ctx: RouteDeps & { challenges: ChallengeStore }, colla
     ...identityRoutes(ctx),
     ...deletionRoutes(ctx),
     ...buddyRoutes(ctx),
+    ...compileRoutes(ctx),
     ...collab.routes,
     ...moduleRoutes(ctx),
   ];
@@ -108,7 +112,16 @@ export function createApp(config: ServerConfig, deps: Deps, opts: CreateAppOptio
     return authed;
   };
 
-  const base = { config, store, deps, log, limiter, limits: opts.collab ?? DEFAULT_COLLAB_LIMITS, authenticate, app: { draining: () => draining } };
+  const compile = createRunner({
+    client: opts.compileClient ?? createHttpClient(config.compile.url),
+    now: () => deps.clock.now(),
+    ids: deps.ids,
+    log,
+    limits: COMPILE_LIMITS,
+  });
+  if (config.compile.enabled) void compile.probe();
+
+  const base = { config, store, deps, log, limiter, limits: opts.collab ?? DEFAULT_COLLAB_LIMITS, authenticate, compile, app: { draining: () => draining } };
   const collab = mountCollab(base, opts.hooks ? { hooks: opts.hooks } : {});
   collab.jobs.start();
   const routes = allRoutes({ ...base, challenges, buddyRemoval: collab.buddyRemoval }, collab);

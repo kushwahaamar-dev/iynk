@@ -1,0 +1,1067 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.tb6612fng-module",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "SparkFun Electronics (board design)",
+    "model": "Motor Driver - Dual TB6612FNG (1A), ROB-14451, board v1.1c",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "motor-driver",
+    "description": {
+      "en": "A small square board with a Toshiba TB6612FNG: two MOSFET H-bridges for two brushed DC motors, motors on VM and logic on VCC, with three capacitors and no regulator."
+    },
+    "chip": {
+      "manufacturer": "Toshiba",
+      "model": "TB6612FNG",
+      "package": "SSOP24"
+    },
+    "primary_source": "facts",
+    "legacy_ids": [
+      "tb6612fng"
+    ],
+    "tags": [
+      "motor-driver",
+      "h-bridge",
+      "dc-motor",
+      "robotics",
+      "tb6612"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Fact sheet docs/facts/tb6612.md",
+      "publisher": "iynk",
+      "reliability": "secondary",
+      "note": "It cites the Toshiba TB6612FNG datasheet (2008-05-09) and SparkFun's Eagle board file v11c, both read by the fact-sheet author, not by this descriptor. Positions come from that board file."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/tb6612fng.js: constants and model code",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "VM",
+      "name": {
+        "en": "Motor supply"
+      },
+      "designator": "VM",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 2.54,
+        "y": 19.05
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "VCC",
+      "name": {
+        "en": "Logic supply"
+      },
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 2.54,
+        "y": 16.51
+      },
+      "note": {
+        "en": "The input thresholds follow VCC, so power it from the controller's logic rail."
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 2.54,
+        "y": 13.97
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "A01",
+      "name": {
+        "en": "Motor A, lead 1"
+      },
+      "designator": "A01",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 2.54,
+        "y": 11.43
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "A02",
+      "name": {
+        "en": "Motor A, lead 2"
+      },
+      "designator": "A02",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 2.54,
+        "y": 8.89
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "B02",
+      "name": {
+        "en": "Motor B, lead 2"
+      },
+      "designator": "B02",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 2.54,
+        "y": 6.35
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "B01",
+      "name": {
+        "en": "Motor B, lead 1"
+      },
+      "designator": "B01",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 2.54,
+        "y": 3.81
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "GND2",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 2.54,
+        "y": 1.27
+      },
+      "connector": "JP1"
+    },
+    {
+      "id": "PWMA",
+      "designator": "PWMA",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 19.05
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "AIN2",
+      "designator": "AIN2",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 16.51
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "AIN1",
+      "designator": "AIN1",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 13.97
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "STBY",
+      "designator": "STBY",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 11.43
+      },
+      "note": {
+        "en": "Low or floating puts every output in standby."
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "BIN1",
+      "designator": "BIN1",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 8.89
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "BIN2",
+      "designator": "BIN2",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 6.35
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "PWMB",
+      "designator": "PWMB",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 17.78,
+        "y": 3.81
+      },
+      "connector": "JP2",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "input_pulldown"
+      }
+    },
+    {
+      "id": "GND3",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 17.78,
+        "y": 1.27
+      },
+      "connector": "JP2"
+    }
+  ],
+  "groups": [
+    {
+      "id": "ground",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "GND2",
+        "GND3"
+      ],
+      "note": {
+        "en": "All three GND holes and the chip's ground pins are one net."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "JP1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "VM",
+        "VCC",
+        "GND",
+        "A01",
+        "A02",
+        "B02",
+        "B01",
+        "GND2"
+      ],
+      "note": {
+        "en": "Power and motor outputs, top to bottom."
+      }
+    },
+    {
+      "id": "JP2",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "PWMA",
+        "AIN2",
+        "AIN1",
+        "STBY",
+        "BIN1",
+        "BIN2",
+        "PWMB",
+        "GND3"
+      ],
+      "note": {
+        "en": "Control inputs, top to bottom."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "module",
+    "body": {
+      "w": 20.32,
+      "h": 20.32,
+      "d": 10
+    },
+    "board": {
+      "w": 20.32,
+      "h": 20.32,
+      "thickness": 1.6,
+      "corner_radius": 0
+    },
+    "height_total": 10,
+    "accuracy": 0.3,
+    "source": {
+      "src": "facts",
+      "loc": "section 2.1 and 2.2, Eagle file v11c"
+    }
+  },
+  "ratings": {
+    "vm_operating": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VM"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 2.5,
+        "typ": 5,
+        "max": 13.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, VM operating"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vm_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VM"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 15,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, VM absolute max"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vcc_operating": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 2.7,
+        "typ": 3,
+        "max": 5.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, VCC operating"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vcc_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 6,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, VCC absolute max"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "input_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "PWMA",
+          "AIN1",
+          "AIN2",
+          "STBY",
+          "BIN1",
+          "BIN2",
+          "PWMB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": -0.2,
+        "max": 6,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, input pins"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "input_pulldown": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "PWMA",
+          "AIN1",
+          "AIN2",
+          "STBY",
+          "BIN1",
+          "BIN2",
+          "PWMB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 200000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, internal pull-downs"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "logic_high_fraction": {
+      "measure": "ratio",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "PWMA",
+          "AIN1",
+          "AIN2",
+          "STBY",
+          "BIN1",
+          "BIN2",
+          "PWMB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ratio",
+        "min": 0.7,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, logic thresholds"
+        },
+        "conditions": "VIH is 0.7 x VCC at least; VIL is 0.3 x VCC at most."
+      },
+      "used_by_model": "none"
+    },
+    "uvlo_detect": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 1.9,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, UVLO"
+        },
+        "conditions": "A designed value, not a tested one."
+      },
+      "used_by_model": "none"
+    },
+    "uvlo_recover": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 2.2,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, UVLO"
+        },
+        "conditions": "A designed value, not a tested one."
+      },
+      "used_by_model": "none"
+    },
+    "channel_current_avg": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "A01",
+          "A02",
+          "B01",
+          "B02"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 1.2,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, IOUT average"
+        },
+        "conditions": "Per channel."
+      },
+      "used_by_model": "none"
+    },
+    "channel_current_peak": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "A01",
+          "A02",
+          "B01",
+          "B02"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 3.2,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, IOUT peak"
+        },
+        "conditions": "A single 10 ms pulse; 2 A for a 20 ms pulse at 20 percent duty."
+      },
+      "used_by_model": "none"
+    },
+    "channel_current_operating": {
+      "measure": "current",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "A01",
+          "A02",
+          "B01",
+          "B02"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 1,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, IOUT operating range"
+        },
+        "conditions": "At VM of 4.5 V or more; 0.4 A from 2.5 V to 4.5 V."
+      },
+      "used_by_model": "none"
+    },
+    "bridge_on_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Upper plus lower switch together."
+      },
+      "scope": {
+        "layer": "bridges"
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 0.5,
+        "max": 0.7,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, Vsat(U+L)"
+        }
+      },
+      "used_by_model": "none",
+      "simulation": {
+        "unit": "ohm",
+        "value": 0.5,
+        "confidence": "medium",
+        "derived_from": [
+          "bridge_on_resistance.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/tb6612fng.js:20"
+        },
+        "rationale": {
+          "en": "The figure drops I x 0.5 ohm across the bridge, the typical figure. Nothing in the Studio reads it yet."
+        }
+      }
+    },
+    "pwm_frequency_max": {
+      "measure": "frequency",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "PWMA",
+          "PWMB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "Hz",
+        "max": 100000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, PWM frequency"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "thermal_shutdown": {
+      "measure": "temperature",
+      "role": "thermal",
+      "scope": {
+        "part": true
+      },
+      "manufacturer": {
+        "unit": "degC",
+        "typ": 175,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, thermal shutdown"
+        },
+        "conditions": "A designed value; hysteresis is 20 degC."
+      },
+      "used_by_model": "none"
+    },
+    "run_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.15,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/tb6612fng.js:21"
+        },
+        "rationale": {
+          "en": "Constant in figures/modules/tb6612fng.js:21, no source found. A TT gear motor running light at 6 to 7.4 V; it belongs to the motor, not to the driver."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "protocols": [
+    {
+      "id": "direction",
+      "kind": "gpio",
+      "role": "peripheral",
+      "pins": {
+        "ain1": "AIN1",
+        "ain2": "AIN2",
+        "bin1": "BIN1",
+        "bin2": "BIN2",
+        "stby": "STBY"
+      },
+      "status": "not-modelled-yet"
+    },
+    {
+      "id": "speed_pwm",
+      "kind": "pwm",
+      "role": "peripheral",
+      "pins": {
+        "pwma": "PWMA",
+        "pwmb": "PWMB"
+      },
+      "speed_max": "pwm_frequency_max",
+      "status": "not-modelled-yet"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "motor_supply",
+        "pins": [
+          "VM"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vm_operating"
+      },
+      {
+        "id": "logic_supply",
+        "pins": [
+          "VCC"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vcc_operating"
+      }
+    ],
+    "protection": [
+      {
+        "kind": "reverse-polarity",
+        "present": false,
+        "note": {
+          "en": "None on VM or VCC. Only three capacitors are fitted."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, Protection on the SparkFun board"
+        }
+      },
+      {
+        "kind": "overcurrent",
+        "present": false,
+        "note": {
+          "en": "The chip has no current sense and no current limit."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, Over-current limit"
+        }
+      },
+      {
+        "kind": "overtemperature",
+        "present": true,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, Thermal shutdown"
+        }
+      },
+      {
+        "kind": "undervoltage-lockout",
+        "present": true,
+        "note": {
+          "en": "On VCC."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, UVLO"
+        }
+      }
+    ]
+  },
+  "behaviour": {
+    "summary": {
+      "en": "Per channel, IN1 and IN2 pick forward, reverse, short brake or stop, and PWM high drives while PWM low short-brakes, so speed follows duty. STBY low turns every output off. The Studio does not run this yet."
+    },
+    "layers": [
+      {
+        "id": "bridges",
+        "domain": "analog",
+        "reads": [
+          "AIN1",
+          "AIN2",
+          "PWMA",
+          "BIN1",
+          "BIN2",
+          "PWMB",
+          "STBY",
+          "VM",
+          "VCC"
+        ],
+        "drives": [
+          "A01",
+          "A02",
+          "B01",
+          "B02"
+        ],
+        "summary": {
+          "en": "Two H-bridges as a function of the input levels."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The bridge model is a function in the figure page, and the Studio solver has no bridge element yet."
+          }
+        }
+      }
+    ]
+  },
+  "injectable_faults": [
+    {
+      "id": "driver_missing",
+      "kind": "missing_part",
+      "target": {
+        "pins": [
+          "A01",
+          "A02",
+          "B01",
+          "B02"
+        ]
+      },
+      "legacy_id": "missing:U1",
+      "cause_id": "x-tb6612fng-driver-missing",
+      "symptom_ids": [
+        "x-motors-dead"
+      ],
+      "description": {
+        "en": "Leave the driver chip out of its footprint, so the motor pins never move."
+      }
+    },
+    {
+      "id": "bulk_cap_missing",
+      "kind": "missing_part",
+      "target": {
+        "pins": [
+          "VM"
+        ]
+      },
+      "legacy_id": "missing:C3",
+      "cause_id": "x-tb6612fng-bulk-cap-missing",
+      "symptom_ids": [
+        "x-motor-supply-noisy"
+      ],
+      "description": {
+        "en": "Leave the 10 uF capacitor off the motor supply."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing runs in the Studio yet. The page lists the limits of the board and the truth table of one channel for reading."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The two H-bridges: drive, reverse, short brake, stop and standby."
+      },
+      {
+        "en": "The voltage lost in the bridge, about 0.5 ohm, which the figure applies to a fixed running current."
+      },
+      {
+        "en": "Thermal shutdown at 175 degC, and the 1 A operating limit."
+      },
+      {
+        "en": "Damage from a reversed or too high supply."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "bridge_in_figure",
+        "text": {
+          "en": "The bridge truth table and the 0.5 ohm drop live in the figure page and are not available to the Studio solver."
+        },
+        "evidence": "figures/modules/tb6612fng.js:33-39"
+      },
+      {
+        "id": "fixed_motor_current",
+        "text": {
+          "en": "The figure assumes a motor running current of 0.15 A instead of reading the attached motor."
+        },
+        "evidence": "figures/modules/tb6612fng.js:21"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks the bridge against the datasheet."
+        },
+        "evidence": "src/content/robotics/tb6612fng.test.ts"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": []
+      },
+      {
+        "language": "micropython",
+        "libraries": []
+      }
+    ]
+  },
+  "compatibility": {
+    "works_with": [
+      "core.uno-r3"
+    ],
+    "rules": [
+      {
+        "id": "motor_supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VM",
+          "rating": "vm_operating"
+        },
+        "message": {
+          "en": "The motor supply is outside 2.5 V to 13.5 V."
+        }
+      },
+      {
+        "id": "logic_supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VCC",
+          "rating": "vcc_operating"
+        },
+        "message": {
+          "en": "The logic supply is outside 2.7 V to 5.5 V."
+        }
+      },
+      {
+        "id": "common_ground",
+        "kind": "needs_common_ground",
+        "severity": "warning",
+        "params": {
+          "pin": "GND"
+        },
+        "message": {
+          "en": "Join the controller ground to a GND pin, or the inputs have no reference."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "module",
+        "id": "tb6612fng",
+        "path": "public/figures/modules/tb6612fng.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "GND",
+        "B01",
+        "B02",
+        "A02",
+        "A01",
+        "VCC",
+        "VM",
+        "PWMA",
+        "AIN2",
+        "AIN1",
+        "STBY",
+        "BIN1",
+        "BIN2",
+        "PWMB"
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VM": "top",
+        "VCC": "top",
+        "GND": "bottom",
+        "GND2": "bottom",
+        "GND3": "bottom",
+        "A01": "right",
+        "A02": "right",
+        "B01": "right",
+        "B02": "right",
+        "PWMA": "left",
+        "AIN1": "left",
+        "AIN2": "left",
+        "STBY": "left",
+        "BIN1": "left",
+        "BIN2": "left",
+        "PWMB": "left"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "TB6612FNG",
+      "body_colour": "#c8363a",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Board geometry: SparkFun Eagle file v11c (CC BY-SA 4.0), cited through docs/facts/tb6612.md."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/tb6612fng.js and docs/facts/tb6612.md.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_legacy_model": [
+    {
+      "ref": "module:tb6612fng-bridge@1",
+      "path": "figures/modules/tb6612fng.js",
+      "lines": "33-39"
+    }
+  ]
+}

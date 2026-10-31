@@ -11,6 +11,8 @@ export interface FallbackSpec {
   bodyColour?: string;
   showPinLabels: boolean;
   body_mm: { w: number; h: number };
+  /** The body and every pin, measured from the origin. */
+  bounds_mm: { w: number; h: number };
   pins: { id: string; x_mm: number; y_mm: number; side?: FallbackSide }[];
 }
 
@@ -103,7 +105,7 @@ function layOut(
   pins: LayoutPin[],
   sides: Record<string, FallbackSide | undefined>,
   dims: { w: number; h: number } | undefined,
-): Pick<FallbackSpec, "body_mm" | "pins"> {
+): Pick<FallbackSpec, "body_mm" | "bounds_mm" | "pins"> {
   const auto = autoLayout(renderer, pins, sides, dims);
   const placed = pins.map((p, i) => {
     const slot = auto.slots[i];
@@ -113,13 +115,11 @@ function layOut(
     return side ? { id: p.id, x_mm: x, y_mm: y, side } : { id: p.id, x_mm: x, y_mm: y };
   });
   const explicit = pins.some((p) => p.position);
-  const reach = {
-    w: Math.max(...placed.map((p) => p.x_mm), 0) + PITCH,
-    h: Math.max(...placed.map((p) => p.y_mm), 0) + PITCH,
-  };
-  const computed = explicit ? { w: Math.max(reach.w, auto.body.w), h: Math.max(reach.h, auto.body.h) } : auto.body;
+  const far = { w: Math.max(...placed.map((p) => p.x_mm), 0), h: Math.max(...placed.map((p) => p.y_mm), 0) };
+  const computed = explicit ? { w: Math.max(far.w + PITCH, auto.body.w), h: Math.max(far.h + PITCH, auto.body.h) } : auto.body;
   const body = renderer === "generic-box" ? auto.body : (dims ?? computed);
-  return { body_mm: { w: body.w, h: body.h }, pins: placed };
+  const bounds = { w: Math.max(body.w, far.w), h: Math.max(body.h, far.h) };
+  return { body_mm: { w: body.w, h: body.h }, bounds_mm: bounds, pins: placed };
 }
 
 /**
@@ -145,4 +145,46 @@ export function fallbackSpec(d: Descriptor): FallbackSpec {
 export function placeholderSpec(iface: InterfaceSnapshot, label: string = PLACEHOLDER_LABEL): FallbackSpec {
   const renderer: FallbackRenderer = iface.pins.length <= 2 ? "generic-two-lead" : "generic-box";
   return { renderer, label, showPinLabels: true, ...layOut(renderer, iface.pins, {}, undefined) };
+}
+
+const DEFAULT_ACCURACY_MM = 0.3;
+const EPSILON = 1e-9;
+
+/**
+ * Whether the fallback drawing puts every pin where the descriptor says: each pin is in the spec, an explicit position
+ * is within `dimensions.accuracy` of the spec's, and the spec's pin lies inside the bounds grown by the same amount.
+ */
+export function pinsCovered(def: Descriptor, spec: FallbackSpec): { ok: boolean; outside: string[] } {
+  const accuracy = (def.dimensions?.accuracy ?? DEFAULT_ACCURACY_MM) + EPSILON;
+  const drawn = new Map(spec.pins.map((p) => [p.id, p]));
+  const outside = def.pins
+    .filter((pin) => {
+      const spot = drawn.get(pin.id);
+      if (!spot) return true;
+      if (pin.position && Math.hypot(pin.position.x - spot.x_mm, pin.position.y - spot.y_mm) > accuracy) return true;
+      return spot.x_mm < -accuracy || spot.y_mm < -accuracy || spot.x_mm > spec.bounds_mm.w + accuracy || spot.y_mm > spec.bounds_mm.h + accuracy;
+    })
+    .map((pin) => pin.id);
+  return { ok: outside.length === 0, outside };
+}
+
+export type Trust = "core" | "local" | "imported";
+
+export type ArtChoice =
+  | { kind: "figure"; figure: { kind: "part" | "module" | "board"; id: string; path: string } }
+  | { kind: "asset"; mediaType: "image/svg+xml" | "image/png"; sha256: string; path: string }
+  | { kind: "fallback"; spec: FallbackSpec };
+
+export type HasAsset = (sha256: string) => boolean;
+
+/** Only a core part may name a figure page; any other part gets its first stored SVG or PNG, else the generic drawing. */
+export function selectArt(def: Descriptor, trust: Trust, hasAsset: HasAsset): ArtChoice {
+  const figure = def.visual.breadboard?.figure;
+  if (trust === "core" && figure) return { kind: "figure", figure: { kind: figure.kind, id: figure.id, path: figure.path } };
+  for (const a of def.visual.assets ?? []) {
+    if ((a.media_type === "image/svg+xml" || a.media_type === "image/png") && hasAsset(a.sha256)) {
+      return { kind: "asset", mediaType: a.media_type, sha256: a.sha256, path: a.path };
+    }
+  }
+  return { kind: "fallback", spec: fallbackSpec(def) };
 }

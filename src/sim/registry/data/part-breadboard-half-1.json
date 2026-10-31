@@ -1,0 +1,54 @@
+{
+  "id": "part:breadboard-half@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Half-size breadboard",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "strips",
+      "text": "Each column half of five holes and each power rail is one conductor; the nets in the document join them"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "contact",
+      "text": "Contact resistance and stray capacitance between strips"
+    },
+    {
+      "id": "rail-gap",
+      "text": "The break in the middle of the power rail on some boards: the rails are continuous here"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "breadboard-data-tests",
+      "kind": "self-consistency",
+      "dataset": "src/parts/breadboard-data.test.ts",
+      "result": {
+        "n": 7,
+        "passed": 7,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

@@ -1,6 +1,11 @@
 import type { Project as ProjectState } from "../../project/generated/types.ts";
 import type { Descriptor } from "../../parts/descriptor.ts";
 import { PROFILES } from "../../lib/interp/profiles.ts";
+import type { BoardId } from "../../lib/interp/profiles.ts";
+import { modelIdsOf } from "../../sim/analog/live.ts";
+import { projectFidelity } from "../../sim/registry/project.ts";
+import type { ProjectFidelity } from "../../sim/registry/project.ts";
+import type { Registry } from "../../sim/registry/types.ts";
 
 export type Tier = "T0" | "T1" | "T2" | "T3" | "none";
 export type ModelStatus = "modelled" | "partly-modelled" | "not-modelled-yet";
@@ -52,6 +57,11 @@ function rowOf(c: string, definition: { ref: string; version: string }, registry
 /** One row per board and component, in document order. */
 export function modelRows(state: ProjectState, registry: PartLookup): ModelRow[] {
   return [...state.boards, ...state.components].map((item) => rowOf(item.id, item.definition, registry));
+}
+
+/** The tier of each layer of the project and the lowest of them, all read from the fidelity registry. */
+export function staticTier(doc: ProjectState, reg: Registry): ProjectFidelity {
+  return projectFidelity(doc, reg, modelIdsOf);
 }
 
 /** B4 runs one engine; `boardNotes` come from the profile of each board that has one. */

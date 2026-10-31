@@ -1,0 +1,79 @@
+{
+  "id": "failure:led-overcurrent@1",
+  "version": "1.0.0",
+  "kind": "failure-model",
+  "title": "LED burns out above 2.5 times its rated current",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "rule",
+      "text": "The LED latches burnt when the peak current exceeds 2.5 times imax (default 20 mA, so 50 mA); the message names the computed current"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "latch",
+      "text": "Once the rule fires the part stays burnt until it is repaired; the real part may survive or fail more slowly"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "thermal",
+      "text": "Thermal history; only the threshold and its dwell are checked"
+    },
+    {
+      "id": "partial",
+      "text": "Partial damage and drift"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "imax",
+      "value": 0.02,
+      "unit": "A",
+      "type": "fit",
+      "ref": "figures/parts/led.js",
+      "note": "burn threshold 2.5 x imax, bench-solve.js:317"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: an LED straight on a pin burns and stays burnt",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0.001,
+      "max": 0.03,
+      "unit": "A",
+      "evidence": "RS-08 C06 to C12: 12.5 percent off a realistic card at 0.3 mA"
+    }
+  ],
+  "knownFailureCases": [
+    "A real LED may survive more than 2.5 x imax briefly",
+    "The 2.5 factor has no source"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

@@ -5,7 +5,9 @@ import { describe, expect, it } from "vitest";
 import { LOCALES } from "../i18n/config.ts";
 import { messageAt } from "../i18n/translate.ts";
 import type { Diagnostic } from "../lib/interp/errors.ts";
-import { collectProblems, nextProblem, type Problem, type ProblemInput } from "./problems.ts";
+import type { Finding } from "../sim/faults/types.ts";
+import { addResistor, projectWithBreadboard } from "./testing/breadboard-fixture.ts";
+import { collectProblems, nextProblem, staticProblems, type Problem, type ProblemInput } from "./problems.ts";
 
 const diag = (over: Partial<Diagnostic>): Diagnostic => ({ kind: "compile", message: "'x' was not declared", line: 3, col: 5, ...over });
 
@@ -65,6 +67,51 @@ describe("collectProblems", () => {
 
   it("is empty when nothing is wrong", () => {
     expect(collectProblems({ diagnostics: [], run: none, flags: [] })).toEqual([]);
+  });
+});
+
+describe("staticProblems", () => {
+  const { project } = projectWithBreadboard(() => addResistor());
+  const board = project.boards[0]!.id;
+  const ledFinding: Finding = {
+    ruleId: "rule:led-series@1",
+    causeId: "led-no-series-resistor",
+    symptomId: "led-burnt",
+    severity: "error",
+    targets: [{ kind: "pin", id: board, pin: "D13" }, { kind: "part", id: "cmp_r1" }],
+    evidence: [],
+    messageKey: "check.found",
+    args: { led: "cmp_r1" },
+  };
+
+  it("maps a finding to a problem with the diagnosis at hint level 3", () => {
+    const { problems, dropped } = staticProblems(project, [ledFinding], { sealedUnrevealed: false });
+    expect(dropped).toBe(0);
+    expect(problems).toEqual([
+      {
+        id: `rule:led-series@1:${["cmp_r1", `${board}/D13`].sort().join(":")}`,
+        severity: "error",
+        source: "static",
+        titleKey: "check.found",
+        args: { led: "cmp_r1" },
+        rule: "rule:led-series@1",
+        targets: ledFinding.targets,
+        diagnosis: { cause_id: "led-no-series-resistor", symptom_id: "led-burnt", evidence: [], hint_level: 3 },
+      },
+    ]);
+  });
+
+  it("marks a finding of a run with the run source", () => {
+    expect(staticProblems(project, [ledFinding], { sealedUnrevealed: false, source: "run" }).problems[0]?.source).toBe("run");
+  });
+
+  it("returns nothing while a sealed item is unrevealed", () => {
+    expect(staticProblems(project, [ledFinding], { sealedUnrevealed: true })).toEqual({ problems: [], dropped: 0 });
+  });
+
+  it("drops and counts a finding whose target is not in the document", () => {
+    const stray: Finding = { ...ledFinding, targets: [{ kind: "part", id: "cmp_gone" }] };
+    expect(staticProblems(project, [stray, ledFinding], { sealedUnrevealed: false })).toMatchObject({ dropped: 1, problems: [{ rule: "rule:led-series@1" }] });
   });
 });
 

@@ -1,6 +1,8 @@
 import { diag } from "../core/result.ts";
-import type { Diagnostic } from "../core/result.ts";
-import type { Component as Descriptor, Condition, ParamMap } from "./generated/types.ts";
+import type { Diagnostic, Severity } from "../core/result.ts";
+import { ORIGIN_OF_TRUST } from "./descriptor.ts";
+import type { ValidateContext } from "./descriptor.ts";
+import type { Component as Descriptor, Condition, ParamMap, Text } from "./generated/types.ts";
 
 type Slot = "manufacturer" | "simulation" | "measured";
 type Pick = "min" | "typ" | "max" | "value";
@@ -15,10 +17,13 @@ const pointer = (...segments: (string | number)[]): string =>
  * `schemas/tools/semantic.mjs`. Expects a descriptor that already passed the schema. Each finding is one
  * `P-S-nn` error whose path points into the descriptor.
  */
-export function semanticChecks(d: Descriptor): Diagnostic[] {
+export function semanticChecks(d: Descriptor, ctx?: ValidateContext): Diagnostic[] {
   const out: Diagnostic[] = [];
   const bad = (rule: string, path: string, message: string): void => {
     out.push(diag(`P-${rule}`, "error", path, message));
+  };
+  const report = (code: string, severity: Severity, path: string, message: string): void => {
+    out.push(diag(code, severity, path, message));
   };
 
   const uniqueIds = (ids: readonly string[], list: string, what: string): Set<string> => {
@@ -182,6 +187,9 @@ export function semanticChecks(d: Descriptor): Diagnostic[] {
         });
         break;
       case "builtin":
+        if (ctx?.trust === "imported" && ctx.builtinRefs && !ctx.builtinRefs.has(model.ref)) {
+          report("P-BUILTIN-UNKNOWN", "warning", `${modelAt}/ref`, `this iynk has no behaviour ${model.ref}; the layer will load as not modelled`);
+        }
         checkParams(model.params, `${modelAt}/params`);
         break;
       case "extension":
@@ -203,6 +211,13 @@ export function semanticChecks(d: Descriptor): Diagnostic[] {
   const required = new Set<string>(d.simulation.solver_requires ?? []);
   for (const element of usedElements) {
     if (!required.has(element)) bad("S-10", pointer("simulation", "solver_requires"), `solver_requires lacks ${element}`);
+  }
+  if (ctx?.solverElements) {
+    (d.simulation.solver_requires ?? []).forEach((element, i) => {
+      if (!ctx.solverElements?.has(element)) {
+        bad("S-10", pointer("simulation", "solver_requires", i), `the solver of this iynk has no element ${element}`);
+      }
+    });
   }
 
   (d.failure_modes ?? []).forEach((f, i) => {
@@ -297,10 +312,12 @@ export function semanticChecks(d: Descriptor): Diagnostic[] {
     bad("S-10", pointer("simulation", "status"), "status is not-modelled-yet but a layer has a model");
   }
 
-  const nonCore = d.provenance.origin !== "core";
+  const nonCore = ctx ? ctx.trust !== "core" : d.provenance.origin !== "core";
   if (nonCore) {
     const shape = (id: string, path: string): void => {
-      if (!id.startsWith("x-")) bad("S-17", path, `id ${id} is not in the core registry and does not start with x-`);
+      if (!id.startsWith("x-") && !ctx?.causeIds?.has(id)) {
+        bad("S-17", path, `id ${id} is not in the core registry and does not start with x-`);
+      }
     };
     (d.failure_modes ?? []).forEach((f, i) => {
       shape(f.cause_id, pointer("failure_modes", i, "cause_id"));
@@ -312,5 +329,74 @@ export function semanticChecks(d: Descriptor): Diagnostic[] {
     });
   }
 
+  if (ctx) contextChecks(d, ctx, report);
   return out;
+}
+
+type Report = (code: string, severity: Severity, path: string, message: string) => void;
+
+const quantityPicks = ["min", "typ", "max", "value"] as const;
+
+function outsideManufacturer(d: Descriptor, key: string): boolean {
+  const rating = d.ratings[key];
+  const maker = rating?.manufacturer;
+  const sim = rating?.simulation;
+  if (!maker || !sim) return false;
+  const low = maker.min ?? maker.value;
+  const high = maker.max ?? maker.value;
+  return quantityPicks.some((pick) => {
+    const v = sim[pick];
+    return typeof v === "number" && ((low !== undefined && v < low) || (high !== undefined && v > high));
+  });
+}
+
+const mentionsMaker = (text: Text | undefined): boolean =>
+  Object.values(text ?? {}).some((line) => typeof line === "string" && /manufacturer|data ?sheet/i.test(line));
+
+function todoPaths(value: unknown, path: string, found: string[]): void {
+  if (typeof value === "string") {
+    if (value.includes("TODO")) found.push(path);
+  } else if (Array.isArray(value)) {
+    value.forEach((item, i) => todoPaths(item, `${path}/${i}`, found));
+  } else if (value && typeof value === "object") {
+    for (const [k, v] of Object.entries(value)) todoPaths(v, `${path}/${k.replace(/~/g, "~0").replace(/\//g, "~1")}`, found);
+  }
+}
+
+/** The rules that depend on who is asking and on what the app has installed. */
+function contextChecks(d: Descriptor, ctx: ValidateContext, report: Report): void {
+  const error = (code: string, path: string, message: string): void => report(code, "error", path, message);
+
+  const key = `${d.id}@${d.version}`;
+  const installed = ctx.installed?.get(key);
+  if (installed !== undefined && ctx.candidateDigest !== undefined && installed !== ctx.candidateDigest) {
+    error("P-S-15", "/version", `${key} is already installed with other bytes (installed ${installed}, this file ${ctx.candidateDigest})`);
+  }
+
+  for (const rating of Object.keys(d.ratings)) {
+    if (outsideManufacturer(d, rating) && !mentionsMaker(d.ratings[rating]?.simulation?.rationale)) {
+      report("P-S-12", "warning", pointer("ratings", rating, "simulation"), `rating ${rating}: the simulation value lies outside the manufacturer range and the rationale does not say why`);
+    }
+  }
+
+  if (d.simulation.tier === "none" && d.behaviour.layers.some((l) => l.model.kind !== "none")) {
+    error("P-STATUS-LAYERS", "/simulation/tier", "tier is none but a layer has a model");
+  }
+
+  if (!d.provenance.license.trim()) error("P-LICENSE", "/provenance/license", "the part has no licence");
+
+  const todos: string[] = [];
+  todoPaths(d, "", todos);
+  for (const path of todos) error("P-TODO", path, "this text is still a TODO");
+
+  const expected = ORIGIN_OF_TRUST[ctx.trust];
+  if (d.provenance.origin !== expected) {
+    error("P-TRUST-ORIGIN", "/provenance/origin", `a ${ctx.trust} part must have origin ${expected}, not ${d.provenance.origin}`);
+  }
+
+  (d.simulation.tests ?? []).forEach((t, i) => {
+    if (t.state === "to-write") {
+      report("P-TEST-TO-WRITE", ctx.trust === "core" ? "error" : "warning", pointer("simulation", "tests", i, "state"), `test ${t.id} is still to be written`);
+    }
+  });
 }

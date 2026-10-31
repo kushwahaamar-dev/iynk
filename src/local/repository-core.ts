@@ -33,6 +33,16 @@ interface BackupRow {
 
 const SHA256_HEX = /^[0-9a-f]{64}$/;
 
+const EVENTS_ENABLED_KEY = "events:enabled";
+const EVENTS_RANGE_KEY = "events:range";
+
+interface EventRange {
+  first: number;
+  next: number;
+}
+
+const eventKey = (n: number) => String(n).padStart(10, "0");
+
 const prevKey = (id: string) => `${id}~prev`;
 
 function intact(value: unknown): value is ProjectRecord {
@@ -201,6 +211,35 @@ export function createRepository(backend: Backend): Repository {
       },
       async remove(id, revision) {
         await backend.transact(["revisions"], "readwrite", (tx) => tx.delete("revisions", `${id}:${revision}`));
+      },
+    },
+
+    events: {
+      async enabled() {
+        return (await backend.transact(["progress"], "readonly", (tx) => tx.get("progress", EVENTS_ENABLED_KEY))) === true;
+      },
+      async setEnabled(on) {
+        await backend.transact(["progress"], "readwrite", (tx) => tx.put("progress", EVENTS_ENABLED_KEY, on));
+      },
+      async append(row, cap) {
+        await backend.transact(["events", "progress"], "readwrite", async (tx) => {
+          const range = (await tx.get("progress", EVENTS_RANGE_KEY)) as EventRange | undefined;
+          let { first, next } = range ?? { first: 0, next: 0 };
+          await tx.put("events", eventKey(next), row);
+          next += 1;
+          for (; next - first > cap; first += 1) await tx.delete("events", eventKey(first));
+          await tx.put("progress", EVENTS_RANGE_KEY, { first, next });
+        });
+      },
+      async list(limit) {
+        const rows = await backend.transact(["events"], "readonly", (tx) => tx.entries("events", ""));
+        return rows.slice(-limit).reverse().map(([, row]) => row);
+      },
+      async clear() {
+        await backend.transact(["events", "progress"], "readwrite", async (tx) => {
+          await tx.clear("events");
+          await tx.delete("progress", EVENTS_RANGE_KEY);
+        });
       },
     },
 

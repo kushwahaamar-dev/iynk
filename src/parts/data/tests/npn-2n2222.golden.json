@@ -1,0 +1,9 @@
+{
+  "id": "golden",
+  "kind": "golden-trace",
+  "shape": "npn-switch",
+  "description": "A 2N2222 switches a 100 ohm load on 5 V with 1 kilohm in the base: fully on.",
+  "circuit": { "supply_v": 5, "series_ohm": 100, "base_ohm": 1000 },
+  "expect": [{ "quantity": "v_collector_v", "value": 0.2, "tol": { "abs": 0.05 } }],
+  "derivation": "The base takes (5 - 0.7) / 1000 = 4.3 mA, so the gain of 100 allows 430 mA. The load needs only (5 - 0.2) / 100 = 48 mA, so the transistor saturates and the collector sits at the saturation voltage of 0.2 V."
+}

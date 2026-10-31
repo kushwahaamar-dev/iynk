@@ -1,0 +1,45 @@
+{
+  "id": "library:adafruit-bme280@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "Adafruit_BME280 library in the interpreter",
+  "tier": "T0",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "api",
+      "text": "begin, readTemperature, readPressure and readHumidity over the I2C bus model against the BME280 register device"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "calls",
+      "text": "Library calls are native functions in the interpreter, not the library's C++ source"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "settings",
+      "text": "setSampling and the other configuration calls beyond their register writes"
+    },
+    {
+      "id": "bmp280",
+      "text": "The BMP280 variant that reports chip id 0x58"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test in the repository exercises the library calls yet"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

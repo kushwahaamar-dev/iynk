@@ -1,10 +1,12 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import type { Project } from "../../project/generated/types.ts";
+import { netlist } from "../../project/netlist.ts";
 import { buildDrawList } from "../engine/draw-list.ts";
 import type { ArtProvider, ResolvedPartShape, Scene, Viewport } from "../engine/types.ts";
 import { addResistor, projectWithBreadboard, registry } from "../testing/breadboard-fixture.ts";
-import { focusNetOverlay } from "./netlist.ts";
+import type { Problem } from "../problems.ts";
+import { focusNetOverlay, problemOverlays } from "./netlist.ts";
 
 const viewport: Viewport = { cx_mm: 50, cy_mm: 40, k: 8, w: 1000, h: 600, dpr: 1 };
 const art: ArtProvider = { get: () => [] };
@@ -73,5 +75,44 @@ describe("focusNetOverlay", () => {
     expect(focusNetOverlay(project, "vw_bb", null, scene)).toEqual([]);
     expect(focusNetOverlay(project, "vw_bb", "net_missing", scene)).toEqual([]);
     expect(focusNetOverlay(project, "vw_none", "net_n1", scene)).toEqual([]);
+  });
+});
+
+describe("problemOverlays", () => {
+  const problem = (targets: NonNullable<Problem["targets"]>): Problem => ({
+    id: "p1",
+    severity: "warning",
+    source: "static",
+    titleKey: "check.found",
+    args: {},
+    targets,
+  });
+
+  it("rings a pin target and outlines a part target, each with a cue that is not colour", () => {
+    const { project } = circuit();
+    const found = problemOverlays(project, "vw_bb", [problem([{ kind: "pin", id: "cmp_r1", pin: "P1" }, { kind: "part", id: "cmp_r1" }])], sceneOf(project), "Check");
+    expect(found.map((o) => o.id)).toEqual(["problem:p1:pin:cmp_r1/P1", "problem:p1:part:cmp_r1"]);
+    expect(found[0]!.elements.some((e) => e.t === "text" && e.s === "Check")).toBe(true);
+    for (const o of found) expect(o.elements.some((e) => e.t !== "text" && e.stroke !== undefined && e.fill === "none")).toBe(true);
+  });
+
+  it("marks the pins and wires of a net target", () => {
+    const { project } = circuit();
+    const scene = sceneOf(project);
+    const node = netlist(project).nodes.find((n) => n.nets.includes("net_n1"))!;
+    const found = problemOverlays(project, "vw_bb", [problem([{ kind: "net", id: node.id }])], scene, "Check");
+    expect(found.map((o) => o.id).sort()).toEqual(
+      focusNetOverlay(project, "vw_bb", "net_n1", scene)
+        .map((o) => o.id.replace("focus:", `problem:p1:net:${node.id}:`))
+        .sort(),
+    );
+  });
+
+  it("is empty once the problems are gone, and for targets that are not on screen", () => {
+    const { project } = circuit();
+    const scene = sceneOf(project);
+    expect(problemOverlays(project, "vw_bb", [], scene, "Check")).toEqual([]);
+    expect(problemOverlays(project, "vw_bb", [problem([{ kind: "part", id: "cmp_gone" }])], scene, "Check")).toEqual([]);
+    expect(problemOverlays(project, "vw_none", [problem([{ kind: "part", id: "cmp_r1" }])], scene, "Check")).toEqual([]);
   });
 });

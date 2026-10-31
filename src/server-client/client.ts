@@ -6,6 +6,9 @@ import { ClientError, NeedsEnrolment, ServerUnreachable, SigningInputMismatch } 
 import type {
   Api,
   Buddy,
+  CompileArtifact,
+  CompileJob,
+  CompileJobCreate,
   DeletionStatus,
   Identity,
   IdentityPatch,
@@ -45,6 +48,9 @@ export type ServerClient = {
   cancelDeletion(): Promise<void>;
   fetchAuthed(path: string, init?: RequestInit): Promise<Response>;
   fetchAnon(path: string, init?: RequestInit): Promise<Response>;
+  createCompileJob(job: CompileJobCreate, idempotencyKey: string): Promise<CompileJob>;
+  getCompileJob(id: string): Promise<CompileJob>;
+  getCompileArtifact(id: string, kind: "hex" | "elf"): Promise<CompileArtifact>;
 };
 
 function query(page: PageOptions | undefined): string {
@@ -87,8 +93,8 @@ export function createClient(o: {
     return renewing;
   };
 
-  const send = <T>(method: string, path: string, body?: unknown) =>
-    request<T>(api, method, path, { body, token: session?.token });
+  const send = <T>(method: string, path: string, body?: unknown, headers?: Record<string, string>) =>
+    request<T>(api, method, path, { body, token: session?.token, headers });
 
   // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
   const lapse = (e: unknown): never => {
@@ -117,8 +123,8 @@ export function createClient(o: {
     }
   };
 
-  const call = <T>(method: string, path: string, body?: unknown): Promise<T> =>
-    withRenewal(() => send<T>(method, path, body), () => false);
+  const call = <T>(method: string, path: string, body?: unknown, headers?: Record<string, string>): Promise<T> =>
+    withRenewal(() => send<T>(method, path, body, headers), () => false);
 
   const rawFetch = async (path: string, init: RequestInit, token: string | null): Promise<Response> => {
     const headers = new Headers(init.headers);
@@ -168,5 +174,8 @@ export function createClient(o: {
     fetchAuthed: (path, init = {}) =>
       withRenewal(() => rawFetch(path, init, session?.token ?? null), (r) => r.status === 401),
     fetchAnon: (path, init = {}) => rawFetch(path, init, null),
+    createCompileJob: (job, idempotencyKey) => call("POST", "/compile/jobs", job, { "idempotency-key": idempotencyKey }),
+    getCompileJob: (id) => call("GET", `/compile/jobs/${enc(id)}`),
+    getCompileArtifact: (id, kind) => call("GET", `/compile/jobs/${enc(id)}/artifact?kind=${kind}`),
   };
 }

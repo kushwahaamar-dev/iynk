@@ -1,0 +1,144 @@
+{
+  "id": "model:diode.pwl@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Diode (1N4007, signal diode), piecewise linear",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "forward",
+      "text": "Off below 0.7 V; above it current = (V - 0.7) / 0.2 ohm"
+    },
+    {
+      "id": "clamp",
+      "text": "A diode across a switched inductive motor reports a clamp"
+    },
+    {
+      "id": "burn",
+      "text": "Latches burnt when average current exceeds imax (default 1 A) or the peak exceeds isurge (default 30 A)"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "shockley",
+      "text": "Shockley curve: the part file carries is, n and rs but the solver ignores them"
+    },
+    {
+      "id": "recovery",
+      "text": "Reverse recovery and capacitance"
+    },
+    {
+      "id": "breakdown",
+      "text": "Reverse breakdown"
+    },
+    {
+      "id": "temperature",
+      "text": "Temperature"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "vf",
+      "value": 0.7,
+      "unit": "V",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:104"
+    },
+    {
+      "param": "rd",
+      "value": 0.2,
+      "unit": "ohm",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:104"
+    },
+    {
+      "param": "imax",
+      "value": 1,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:104",
+      "note": "default when the part states none"
+    },
+    {
+      "param": "isurge",
+      "value": 30,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:104"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-diode",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 C13, C14",
+      "flavour": "realistic exponential card, author's choice",
+      "result": {
+        "n": 2,
+        "passed": 0,
+        "metric": "worst relative error",
+        "worst": 0.124,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "partial"
+    },
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: no flyback diode: the motor reports the spike; with it the diode clamps",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [
+    {
+      "name": "1N4007 diode current, D13 through 1k to 3V3",
+      "value": 12.3,
+      "unit": "percent",
+      "condition": "C13 vs realistic ngspice"
+    },
+    {
+      "name": "1N4007 in series with 1k from 5V",
+      "value": 12.4,
+      "unit": "percent",
+      "condition": "C14 node voltage vs realistic ngspice"
+    }
+  ],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0.01,
+      "max": 1,
+      "unit": "A",
+      "evidence": "RS-08 C13 and C14: 12.3 and 12.4 percent at 1 to 4 mA"
+    }
+  ],
+  "knownFailureCases": [
+    "Low-current drop is about 0.5 V on a real 1N4007, not 0.7 V",
+    "Shockley parameters in the part file are ignored (diode-1n4007.js:31)"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

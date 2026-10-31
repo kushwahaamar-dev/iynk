@@ -1,0 +1,84 @@
+{
+  "id": "device:bme280.regs@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "BME280 environment sensor, register level",
+  "tier": "T1",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "regs",
+      "text": "Chip id 0x60, the control, config and status registers, and the temperature, pressure and humidity words at 0xF7 to 0xFE"
+    },
+    {
+      "id": "compensation",
+      "text": "Raw words made by inverting the Bosch integer compensation, so the library's calculation returns the inputs"
+    },
+    {
+      "id": "timing",
+      "text": "Conversion time from the oversampling, forced and normal mode, standby time and soft reset"
+    },
+    {
+      "id": "address",
+      "text": "Address 0x76 with SDO low and 0x77 with SDO high; it answers only with CSB high and VCC from 1.71 to 3.6 V"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "spi",
+      "text": "SPI mode with CSB low"
+    },
+    {
+      "id": "filter",
+      "text": "The IIR filter, self-heating, sleep current and thermal lag"
+    },
+    {
+      "id": "calibration",
+      "text": "Calibration words are a synthetic set, not a dump from a real chip"
+    },
+    {
+      "id": "damage",
+      "text": "Damage above the 4.25 V maximum"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "bme280-tests",
+      "kind": "self-consistency",
+      "dataset": "src/sim/devices/bme280.test.ts",
+      "result": {
+        "n": 2,
+        "passed": 2,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "supply",
+      "min": 1.71,
+      "max": 3.6,
+      "unit": "V",
+      "evidence": "src/sim/devices/data/bme280.device.json requires.supply"
+    }
+  ],
+  "knownFailureCases": [
+    "Not compared with a real chip"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

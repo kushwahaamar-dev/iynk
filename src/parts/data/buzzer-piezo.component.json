@@ -196,10 +196,10 @@
     ],
     "not_modelled": [
       {
-        "en": "Real sound output, loudness against frequency beyond the resonance curve in the figure, and the buzzer's own current draw over time."
+        "en": "Sound output, loudness against frequency beyond the resonance curve in the figure, and the buzzer's own current draw over time."
       },
       {
-        "en": "The magnetic 16 ohm kind, which needs a transistor on a real board."
+        "en": "The magnetic 16 ohm kind, which needs a transistor on a board."
       }
     ],
     "known_gaps": [

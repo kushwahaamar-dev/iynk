@@ -9,6 +9,8 @@ const index: PartEntry[] = Array.from({ length: 200 }, (_, i) => ({
   category: `category-${i % 9}`,
   keywords: ["alpha", "beta", `kw${i}`],
   model: "partly-modelled",
+  trust: "core",
+  tier: "T1",
   widthMm: 5,
   heightMm: 5,
 }));

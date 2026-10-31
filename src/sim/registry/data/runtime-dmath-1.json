@@ -1,0 +1,44 @@
+{
+  "id": "runtime:dmath@1",
+  "version": "1.0.0",
+  "kind": "runtime",
+  "title": "dmath: sin, cos, atan2, exp, log and pow that give the same bits everywhere",
+  "tier": "T0",
+  "layers": [
+    "L1"
+  ],
+  "implements": [
+    {
+      "id": "kernels",
+      "text": "Ports of the fdlibm kernels (FreeBSD msun) built on + - * /, sqrt, floor and abs, so every JavaScript engine returns the same Float64 bits"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "other",
+      "text": "Every other math function: tan, asin, acos, sinh and the rest use the built-in versions"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "algorithm",
+      "value": "fdlibm, Copyright (C) 1993 Sun Microsystems, Inc.",
+      "type": "numerical",
+      "ref": "src/sim/core/dmath.ts header",
+      "note": "licence: free to use, copy, modify and distribute with the notice kept"
+    }
+  ],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test in the repository compares the results with fdlibm or across engines yet"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

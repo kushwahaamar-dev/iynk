@@ -1,4 +1,4 @@
-import { AI_STORES, DB_NAME, DB_VERSION, STORES, STORE_NAMES, type StoreName } from "./stores";
+import { AI_STORES, DB_NAME, DB_VERSION, STORES, STORE_NAMES, type StoreName, type StoreSpec } from "./stores";
 
 export type DbErrorKind = "unavailable" | "db_too_new" | "blocked" | "quota" | "aborted";
 
@@ -26,14 +26,15 @@ export function toDbError(cause: unknown): DbError {
 
 function createStores(db: IDBDatabase): void {
   for (const name of STORE_NAMES) {
-    const spec = STORES[name];
-    const store = db.createObjectStore(name, { autoIncrement: spec.autoIncrement });
+    if (db.objectStoreNames.contains(name)) continue;
+    const spec: StoreSpec = STORES[name];
+    const store = db.createObjectStore(name, { autoIncrement: spec.autoIncrement, keyPath: spec.keyPath });
     for (const [indexName, keyPath] of Object.entries(spec.indexes)) store.createIndex(indexName, keyPath);
   }
 }
 
 /**
- * Opens database `iynk`, creating the stores on first use. `onClosed` runs when a newer tab asks this one to let go,
+ * Opens database `iynk`, creating the stores that are missing. `onClosed` runs when a newer tab asks this one to let go,
  * after the connection is closed.
  */
 export function openDb(onClosed?: () => void): Promise<IDBDatabase> {
@@ -46,9 +47,7 @@ export function openDb(onClosed?: () => void): Promise<IDBDatabase> {
       reject(toDbError(cause));
       return;
     }
-    request.onupgradeneeded = (event) => {
-      if (event.oldVersion < 1) createStores(request.result);
-    };
+    request.onupgradeneeded = () => createStores(request.result);
     request.onblocked = () => reject(new DbError("blocked", "another tab holds an older version of the database open"));
     request.onerror = () => reject(toDbError(request.error));
     request.onsuccess = () => {

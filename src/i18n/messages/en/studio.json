@@ -246,7 +246,8 @@
       "models": "Models",
       "partner": "Partner",
       "code": "Code",
-      "serial": "Serial"
+      "serial": "Serial",
+      "faults": "Faults"
     },
     "separator": "Resize the bottom panel",
     "narrow": "Phone layout comes later; view and run work",

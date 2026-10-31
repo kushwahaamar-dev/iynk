@@ -1,10 +1,11 @@
-import { InterpError, didYouMean, type SourcePos } from '../errors';
-import { Exec, PREEMPT, type Gen, type Program } from '../exec';
+import type { VarInfo, VariableReader } from '@/sim/debug/breakpoints';
+import { InterpError, didYouMean, notModelled, type SourcePos } from '../errors';
+import { Exec, PAUSE, PREEMPT, type Gen, type Program } from '../exec';
 import { HeapMeter, checkElements, checkString } from '../limits';
 import type { World } from '../world';
 import { parseSketch, type Expr, type FuncDecl, type Stmt, type TypeSpec, type Unit } from './parser';
 import { T, TypeEnv, isNumeric, tyName, wrapper, type CValue, type Ty } from './types';
-import { BUILTINS, CONSTANTS, GLOBAL_OBJECTS, LIBS, charsToString, fmtValue, type Builtin } from './libs';
+import { BUILTINS, CONSTANTS, GLOBAL_OBJECTS, LIBRARY_HEADERS, LIBS, charsToString, fmtValue, knownHeaders, type Builtin } from './libs';
 
 /** A variable's storage location, passed for reference parameters and &x. */
 export interface Ref {
@@ -62,12 +63,71 @@ interface ObjSym {
 type Sym = VarSym | FnSym | ObjSym;
 
 const MAX_DEPTH = 120;
+const WHOLE_SKETCH = Number.MAX_SAFE_INTEGER;
+
+/** One declared variable, kept for the debugger. Lines are in the combined source, like statement positions. */
+export interface VarEntry {
+  name: string;
+  type: string;
+  /** Lives in `rt.G`: file-scope variables and function statics. */
+  global: boolean;
+  slot: number;
+  scopeStartLine: number;
+  scopeEndLine: number;
+  /** The function a local or static belongs to; empty at file scope. */
+  fn: string;
+  ty: Ty;
+  ref: boolean;
+}
+
+/** The name a maker wrote for the type, not the width-based name the type checker prints. */
+export function declaredTypeName(t: Ty, intBits: number): string {
+  switch (t.k) {
+    case 'int':
+      if (t.char) return 'char';
+      if (t.bits === 8) return t.signed ? 'int8_t' : 'uint8_t';
+      if (t.bits === 64) return t.signed ? 'long long' : 'unsigned long long';
+      if (t.bits === intBits) return t.signed ? 'int' : 'unsigned int';
+      return t.signed ? (t.bits === 32 ? 'long' : 'short') : t.bits === 32 ? 'unsigned long' : 'unsigned short';
+    case 'array':
+      return `${declaredTypeName(t.el, intBits)}[${t.n}]`;
+    default:
+      return tyName(t);
+  }
+}
+
+const MAX_SHOWN_ELEMENTS = 16;
+const MAX_SHOWN_CHARS = 64;
+
+/** The text a debugger shows for a value: scalars as Serial.print would, arrays cut at 16 elements, String at 64 characters. */
+export function describeValue(v: CValue, t: Ty): string {
+  switch (t.k) {
+    case 'string':
+    case 'cstr': {
+      const text = fmtValue(v, t);
+      return `"${text.length > MAX_SHOWN_CHARS ? `${text.slice(0, MAX_SHOWN_CHARS)}...` : text}"`;
+    }
+    case 'array': {
+      if (t.el.k === 'int' && t.el.char) return `"${fmtValue(v, t)}"`;
+      const items = Array.from(v as ArrayLike<CValue>);
+      const shown = items.slice(0, MAX_SHOWN_ELEMENTS).map((x) => describeValue(x, t.el));
+      const more = items.length - shown.length;
+      return `[${shown.join(', ')}${more > 0 ? `, ... ${more} more` : ''}]`;
+    }
+    case 'struct':
+      return `{${[...t.fields].map(([name, ft]) => `${name}: ${describeValue((v as Record<string, CValue>)[name], ft)}`).join(', ')}}`;
+    case 'int':
+      return t.char ? `'${fmtValue(v, t)}' (${v})` : fmtValue(v, t);
+    default:
+      return fmtValue(v, t);
+  }
+}
 
 /**
  * Compiled sketch: a typed closure tree plus the runtime state it runs on.
  * Create with {@link compileSketch}, then drive {@link ArduinoRt.program}.
  */
-export class ArduinoRt extends Exec {
+export class ArduinoRt extends Exec implements VariableReader {
   readonly env: TypeEnv;
   readonly G: unknown[] = [];
   readonly includes: Set<string>;
@@ -79,6 +139,12 @@ export class ArduinoRt extends Exec {
   /** Microseconds to sleep before rebooting from deep sleep; -1 when none. */
   wakeAfter = -1;
   rtcSlots: number[] = [];
+  /** Every variable the sketch declares, in declaration order. */
+  readonly varTable: VarEntry[] = [];
+  /** Where the debugger last looked: the running frame, its function and the statement about to run. */
+  hereFrame: Frame | null = null;
+  hereFn = '';
+  hereLine = 0;
   initGlobals: () => void = () => {};
   private fns = new Map<string, FnSym>();
   warnings: InterpError[] = [];
@@ -91,6 +157,29 @@ export class ArduinoRt extends Exec {
 
   setFns(fns: Map<string, FnSym>): void {
     this.fns = fns;
+  }
+
+  functionName(): string {
+    return this.hereFn;
+  }
+
+  globals(): VarInfo[] {
+    return this.varTable.filter((e) => e.global && e.fn === '').map((e) => this.read(e, null));
+  }
+
+  locals(): VarInfo[] {
+    const frame = this.hereFrame;
+    if (!frame) return [];
+    const inScope = this.varTable.filter((e) => e.fn === this.hereFn && e.scopeStartLine < this.hereLine && this.hereLine <= e.scopeEndLine);
+    const innermost = new Map<string, VarEntry>();
+    for (const e of inScope) innermost.set(e.name, e);
+    return [...innermost.values()].map((e) => this.read(e, frame));
+  }
+
+  private read(e: VarEntry, frame: Frame | null): VarInfo {
+    let v = e.global ? this.G[e.slot] : frame?.v[e.slot];
+    if (e.ref && v) v = (v as Ref).get();
+    return { name: e.name, type: e.type, value: v === undefined ? '' : describeValue(v as CValue, e.ty) };
   }
 
   /** Call a user function by name, if the sketch defines it. */
@@ -145,14 +234,7 @@ export interface CompiledSketch {
   unit: Unit;
 }
 
-/** Headers of the Arduino core and the C library that need no simulated library behind them. */
-const KNOWN_BUILTIN_HEADERS = ['Arduino.h', 'stdint.h', 'stdlib.h', 'string.h', 'math.h', 'stdio.h', 'avr/pgmspace.h', 'avr/io.h'];
-
-const LIBRARY_HEADERS: readonly string[] = [
-  ...new Set([...Object.values(LIBS).flatMap((l) => l.headers), ...Object.values(GLOBAL_OBJECTS).flatMap((g) => g.headers ?? [])]),
-].sort();
-
-export const ALLOWED_HEADERS: ReadonlySet<string> = new Set([...LIBRARY_HEADERS, ...KNOWN_BUILTIN_HEADERS]);
+export const ALLOWED_HEADERS: ReadonlySet<string> = knownHeaders();
 
 function checkIncludes(unit: Unit): void {
   for (const { name, line } of unit.includes) {
@@ -186,6 +268,8 @@ class Compiler {
   private structs = new Map<string, Ty>();
   private loopDepth = 0;
   private switchDepth = 0;
+  private lastLine = 0;
+  private scopeMarks: number[] = [];
 
   constructor(
     private rt: ArduinoRt,
@@ -336,6 +420,31 @@ class Compiler {
     return [...names];
   }
 
+  private openScope(): void {
+    this.scopes.push(new Map());
+    this.scopeMarks.push(this.rt.varTable.length);
+  }
+
+  private closeScope(): void {
+    this.scopes.pop();
+    const table = this.rt.varTable;
+    for (let i = this.scopeMarks.pop()!; i < table.length; i++) if (table[i].scopeEndLine === WHOLE_SKETCH) table[i].scopeEndLine = this.lastLine;
+  }
+
+  private track(name: string, sym: VarSym, startLine: number): void {
+    this.rt.varTable.push({
+      name,
+      type: declaredTypeName(sym.t, this.env.int.k === 'int' ? this.env.int.bits : 16),
+      global: sym.global,
+      slot: sym.slot,
+      scopeStartLine: startLine,
+      scopeEndLine: WHOLE_SKETCH,
+      fn: this.fn?.decl.name ?? '',
+      ty: sym.t,
+      ref: sym.ref,
+    });
+  }
+
   private newSlot(global: boolean): number {
     if (global) return this.nGlobals++;
     return this.fn!.slots++;
@@ -397,6 +506,7 @@ class Compiler {
       }
       // Declare after compiling the initialiser: "int x = x;" must not see itself.
       scope.set(dc.name, sym);
+      this.track(dc.name, sym, dc.p.line);
       const rt = this.rt;
       if (g) {
         const fn = init;
@@ -468,16 +578,18 @@ class Compiler {
   private compileFunction(sym: FnSym, d: FuncDecl): void {
     const outer = this.fn;
     this.fn = sym;
-    this.scopes.push(new Map());
+    this.openScope();
     const paramSlots: number[] = [];
     d.params.forEach((p, i) => {
       if (!p.name) return;
       const slot = sym.slots++;
       paramSlots.push(slot);
-      this.scopes[this.scopes.length - 1].set(p.name, { kind: 'var', t: sym.params[i].t, global: false, slot, isConst: p.ty.isConst, ref: sym.params[i].ref, rtc: false });
+      const param: VarSym = { kind: 'var', t: sym.params[i].t, global: false, slot, isConst: p.ty.isConst, ref: sym.params[i].ref, rtc: false };
+      this.scopes[this.scopes.length - 1].set(p.name, param);
+      this.track(p.name, param, d.p.line);
     });
     const body = this.stmt(d.body!);
-    this.scopes.pop();
+    this.closeScope();
     this.fn = outer;
     sym.body = body;
     const rt = this.rt;
@@ -510,18 +622,28 @@ class Compiler {
 
   private stmt(s: Stmt): CS {
     const rt = this.rt;
+    this.lastLine = Math.max(this.lastLine, s.p.line);
     switch (s.k) {
       case 'empty':
         return { sync: () => 0 };
       case 'block': {
-        this.scopes.push(new Map());
+        this.openScope();
         const body = s.body.map((x) => this.stmt(x));
-        this.scopes.pop();
+        this.closeScope();
         if (!body.length) return { sync: () => 0 };
+        const marks = s.body.map((x) => (x.k === 'block' || x.k === 'empty' ? null : x.p));
+        const fnName = this.fn?.decl.name ?? '';
         return {
           gen: function* (f) {
             for (let i = 0; i < body.length; i++) {
               if (rt.tick()) yield PREEMPT;
+              const at = marks[i];
+              if (rt.dbg !== null && at !== null) {
+                rt.hereFrame = f;
+                rt.hereFn = fnName;
+                rt.hereLine = at.line;
+                if (rt.dbg.check(at, rt.depth, rt.syncDepth === 0 && !rt.inIsr, rt)) yield PAUSE;
+              }
               const b = body[i];
               const sig = b.sync ? b.sync(f) : yield* b.gen!(f);
               if (sig) return sig;
@@ -591,14 +713,14 @@ class Compiler {
       case 'while':
       case 'do':
       case 'for': {
-        this.scopes.push(new Map());
+        this.openScope();
         const init = s.k === 'for' && s.init ? this.stmt(s.init) : null;
         const c = s.c ? this.cond(s.c) : () => true;
         const u = s.k === 'for' && s.u ? this.expr(s.u).ev : null;
         this.loopDepth++;
         const body = this.stmt(s.body);
         this.loopDepth--;
-        this.scopes.pop();
+        this.closeScope();
         const testFirst = s.k !== 'do';
         const w = rt.world;
         return {
@@ -629,9 +751,9 @@ class Compiler {
         const e = this.expr(s.e);
         if (e.t.k !== 'int' && e.t.k !== 'bool') this.err('switch needs a whole-number value (int, char, enum)', s.e.p);
         this.switchDepth++;
-        this.scopes.push(new Map());
+        this.openScope();
         const cases = s.cases.map((cs) => ({ tests: cs.tests?.map((t) => this.constEval(t)) ?? null, body: cs.body.map((x) => this.stmt(x)) }));
-        this.scopes.pop();
+        this.closeScope();
         this.switchDepth--;
         const ev = e.ev;
         return {
@@ -1170,7 +1292,7 @@ class Compiler {
           t: ret,
           ev: (f) => {
             const self = { v: oe(f) as string };
-            const r = m.fn!(rt, self, evs.map((x) => x(f)), types);
+            const r = positioned(e.p, () => m.fn!(rt, self, evs.map((x) => x(f)), types));
             if (lv && self.v !== oe(f)) lv.set(f, self.v);
             return r;
           },
@@ -1180,6 +1302,7 @@ class Compiler {
       const lib = LIBS[obj.t.cls];
       const m = lib?.methods[name];
       if (!m) {
+        if (lib?.unmodelledMethods?.includes(name)) throw notModelled(`${obj.t.cls}.${name}()`, 'library-method-not-modelled', e.fn.p);
         const guess = lib ? didYouMean(name, Object.keys(lib.methods)) : undefined;
         this.err(`${obj.t.cls} has no method ${name}()`, e.fn.p, guess ? `did you mean ${guess}()?` : undefined);
       }
@@ -1189,16 +1312,21 @@ class Compiler {
       const ret = typeof m.ret === 'function' ? m.ret(types, env) : env.named(m.ret) ?? T.void;
       const oe = obj.ev;
       const evs = args.map((a) => a.ev);
+      const p = e.p;
       if (m.gen) {
         const mg = m.gen;
         const run = function* (f: Frame): Gen<CValue> {
-          return yield* mg(rt, oe(f), evs.map((x) => x(f)), types);
+          try {
+            return yield* mg(rt, oe(f), evs.map((x) => x(f)), types);
+          } catch (err) {
+            throw atCall(err, p);
+          }
         };
         return { t: ret, ev: (f) => rt.runSync(run(f)), gen: run };
       }
       const mf = m.fn!;
-      if (m.pure) return { t: ret, ev: (f) => mf(rt, oe(f), evs.map((x) => x(f)), types) };
-      return { t: ret, ev: (f) => { rt.fx++; return mf(rt, oe(f), evs.map((x) => x(f)), types); } };
+      if (m.pure) return { t: ret, ev: (f) => positioned(p, () => mf(rt, oe(f), evs.map((x) => x(f)), types)) };
+      return { t: ret, ev: (f) => { rt.fx++; return positioned(p, () => mf(rt, oe(f), evs.map((x) => x(f)), types)); } };
     }
     if (e.fn.k !== 'id') this.err('only named functions can be called', e.p);
     const name = e.fn.name;
@@ -1238,6 +1366,12 @@ class Compiler {
       if (e.args.length !== 1) this.err(`${name}(…) takes one value`, e.p);
       return this.coerce(this.expr(e.args[0]), asType, e.p);
     }
+    const ctor = LIBS[name];
+    if (ctor && !sym) {
+      const ty = this.type({ base: name, ptr: 0, isConst: false, isStatic: false, isVolatile: false, rtc: false, ref: false }, e.p);
+      const args = e.args.map((a) => this.expr(a));
+      return { t: ty, ev: (f) => ctor.create(rt, args.map((a) => a.ev(f)), args.map((a) => a.t)) };
+    }
     const b = BUILTINS[name];
     if (!b) {
       if (sym) this.err(`'${name}' is a variable, not a function`, e.p);
@@ -1273,14 +1407,6 @@ class Compiler {
     const evs = args.map((a, i) => (b.fnArgs?.includes(i) && a.t.k !== 'fn' ? this.err(`argument ${i + 1} of ${name}() must be a function name`, e.args[i].p) : a.ev));
     const fine = b.fineClock;
     const p = e.p;
-    const wrapErr = <R>(run: () => R): R => {
-      try {
-        return run();
-      } catch (err) {
-        if (err instanceof InterpError && !err.line) throw new InterpError(err.kind, err.message, p, err.hint);
-        throw err;
-      }
-    };
     if (b.gen) {
       const bg = b.gen;
       const run = function* (f: Frame): Gen<CValue> {
@@ -1288,7 +1414,7 @@ class Compiler {
         if (fine) rt.fineClock++;
         return yield* bg(rt, vals, types);
       };
-      return { t: ret, ev: (f) => wrapErr(() => rt.runSync(run(f))), gen: run };
+      return { t: ret, ev: (f) => positioned(p, () => rt.runSync(run(f))), gen: run };
     }
     const bf = b.fn!;
     const pure = b.pure;
@@ -1301,13 +1427,26 @@ class Compiler {
         const vals = evs.map((x) => x(f));
         if (fine) rt.fineClock++;
         if (!pure) rt.fx++;
-        return wrapErr(() => bf(rt, vals, types));
+        return positioned(p, () => bf(rt, vals, types));
       },
     };
   }
 }
 
 // Helpers ------------------------------------------------------------------------
+
+/** An error a library raised without a line gets the line of the call. */
+function atCall(err: unknown, p: SourcePos): unknown {
+  return err instanceof InterpError && !err.line ? err.at(p) : err;
+}
+
+function positioned<R>(p: SourcePos, run: () => R): R {
+  try {
+    return run();
+  } catch (err) {
+    throw atCall(err, p);
+  }
+}
 
 function truthy(c: CE): (f: Frame) => boolean {
   const ev = c.ev;

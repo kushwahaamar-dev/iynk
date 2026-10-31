@@ -246,7 +246,8 @@
       "models": "Modèles",
       "partner": "Partenaire",
       "code": "Code",
-      "serial": "Série"
+      "serial": "Série",
+      "faults": "Pannes"
     },
     "separator": "Redimensionner le panneau du bas",
     "narrow": "La disposition pour téléphone viendra plus tard ; voir et lancer fonctionnent",

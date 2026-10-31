@@ -1,0 +1,60 @@
+{
+  "id": "device:mpu6050.regs@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "MPU-6050 IMU, register map from data",
+  "tier": "T1",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "regs",
+      "text": "WHO_AM_I 0x68, PWR_MGMT_1 sleep bit, acceleration, temperature and gyro words, address 0x68 or 0x69 from AD0"
+    },
+    {
+      "id": "burst",
+      "text": "A burst read returns one sample"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "noise",
+      "text": "Noise, bias and temperature drift"
+    },
+    {
+      "id": "fifo",
+      "text": "FIFO, interrupts and the digital motion processor"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "loader-tests",
+      "kind": "self-consistency",
+      "dataset": "src/sim/devices/loader.test.ts",
+      "result": {
+        "n": 7,
+        "passed": 7,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "Not compared with a real chip"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

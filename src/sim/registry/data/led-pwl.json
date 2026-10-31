@@ -1,0 +1,120 @@
+{
+  "id": "model:led.pwl@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "LED, piecewise linear",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "forward",
+      "text": "Off below Vf; above it current = (V - Vf) / 0.5 ohm"
+    },
+    {
+      "id": "burn",
+      "text": "Latches burnt when peak current exceeds 2.5 times the part's imax (default 20 mA)"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "exp-iv",
+      "text": "Exponential current-voltage curve; low-current glow and the dim region"
+    },
+    {
+      "id": "variation",
+      "text": "Unit variation and temperature"
+    },
+    {
+      "id": "brightness",
+      "text": "Measured brightness against current"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "Vf red",
+      "value": 2.0,
+      "unit": "V",
+      "type": "fit",
+      "ref": "figures/parts/led.js:9",
+      "note": "colour table: red 2.0, yellow 2.1, green 2.2, blue 3.0, white 3.1; datasheet page not cited"
+    },
+    {
+      "param": "rd",
+      "value": 0.5,
+      "unit": "ohm",
+      "type": "assumption"
+    },
+    {
+      "param": "imax",
+      "value": 0.02,
+      "unit": "A",
+      "type": "fit",
+      "ref": "figures/parts/led.js",
+      "note": "burn threshold 2.5 x imax, bench-solve.js:303"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-led",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 C06-C12",
+      "flavour": "realistic exponential card anchored at 20 mA, N = 2 (author's choice)",
+      "result": {
+        "n": 7,
+        "passed": 3,
+        "metric": "worst relative error",
+        "worst": 0.125,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "partial"
+    }
+  ],
+  "errorMetrics": [
+    {
+      "name": "LED at 0.3 mA (10k from D13)",
+      "value": 12.5,
+      "unit": "percent",
+      "condition": "node voltage vs realistic ngspice"
+    },
+    {
+      "name": "LED 220 ohm from 5 V rail",
+      "value": 2.5,
+      "unit": "percent",
+      "condition": "current vs realistic ngspice"
+    },
+    {
+      "name": "LED with no resistor, first solve",
+      "value": 3.7,
+      "unit": "percent",
+      "condition": "pin voltage; 117.65 mA solver vs 114.46 mA realistic"
+    }
+  ],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0.001,
+      "max": 0.03,
+      "unit": "A",
+      "evidence": "RS-08 C06 to C12: 12.5 percent off a realistic card at 0.3 mA"
+    }
+  ],
+  "knownFailureCases": [
+    "Two identical LEDs in parallel split current 50/50; real units differ by tens of mV",
+    "A real LED may survive more than 2.5 x imax briefly"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

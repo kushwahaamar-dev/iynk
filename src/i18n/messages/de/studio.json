@@ -246,7 +246,8 @@
       "models": "Modelle",
       "partner": "Partner",
       "code": "Code",
-      "serial": "Seriell"
+      "serial": "Seriell",
+      "faults": "Fehler"
     },
     "separator": "Größe des unteren Bereichs ändern",
     "narrow": "Das Layout für Handys kommt später; Ansehen und Starten funktionieren",

@@ -1,0 +1,494 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.hc-sr04",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic (unbranded module)",
+    "model": "HC-SR04 ultrasonic ranging module",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "sensor",
+    "description": {
+      "i18n_key": "parts.hc-sr04.description",
+      "en": "A 40 kHz ultrasonic ranger with four pins: a 10 microsecond pulse on Trig starts a ping and Echo stays HIGH for the round trip, 58 microseconds per centimetre."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "hc-sr04"
+    ],
+    "tags": [
+      "ultrasonic",
+      "distance",
+      "ranger",
+      "robotics",
+      "sensor"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "HC-SR04 ultrasonic rangefinder (and HC-SR04P 3.3 V variant): fact sheet",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/hcsr04.md. It quotes the ElecFreaks and Cytron manuals; this descriptor cites the fact sheet, not those documents."
+    },
+    {
+      "id": "modulejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/hc-sr04.js: board model and elec block",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "devicets",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/devices.ts: class HcSr04",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "VCC",
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 18.74,
+        "y": 1.25
+      },
+      "connector": "J1",
+      "note": {
+        "en": "5 V only. No regulator and no reverse-polarity diode."
+      }
+    },
+    {
+      "id": "TRIG",
+      "designator": "TRIG",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 21.28,
+        "y": 1.25
+      },
+      "name": {
+        "en": "Trigger"
+      },
+      "connector": "J1",
+      "logic_family": "ttl",
+      "note": {
+        "en": "A HIGH pulse of 10 microseconds or more starts a ping. A 10 k pull-up on the board holds it HIGH when it floats."
+      }
+    },
+    {
+      "id": "ECHO",
+      "designator": "ECHO",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 23.82,
+        "y": 1.25
+      },
+      "name": {
+        "en": "Echo"
+      },
+      "connector": "J1",
+      "logic_family": "ttl",
+      "note": {
+        "en": "HIGH for the round trip of the sound. It is a 5 V output: divide it for a 3.3 V board."
+      }
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 26.36,
+        "y": 1.25
+      },
+      "connector": "J1"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "VCC",
+        "TRIG",
+        "ECHO",
+        "GND"
+      ],
+      "note": {
+        "en": "A right-angle header whose plastic sits on the back of the board."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "module, 45 x 20 mm",
+    "body": {
+      "w": 45,
+      "h": 20,
+      "d": 15
+    },
+    "board": {
+      "w": 45,
+      "h": 20,
+      "thickness": 1.6,
+      "corner_radius": 0,
+      "mounting_holes": [
+        {
+          "x": 2.2,
+          "y": 1.9,
+          "diameter": 2
+        },
+        {
+          "x": 43.2,
+          "y": 18.3,
+          "diameter": 2
+        }
+      ]
+    },
+    "accuracy": 0.5,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 2.1"
+    }
+  },
+  "ratings": {
+    "supply_range": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 4.5,
+        "max": 5.5,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 1 item 2 and section 3.1"
+        },
+        "rationale": {
+          "en": "The fact sheet quotes 4.5 to 5.5 V from the Cytron manual. The module is 5 V only."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "supply_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 6,
+        "confidence": "low",
+        "source": {
+          "src": "modulejs",
+          "loc": "figures/modules/hc-sr04.js: elec.pins.VCC max: 6"
+        },
+        "rationale": {
+          "en": "The figure burns the board above 6 V. The fact sheet says the MAX232-class driver tops out at 6 V from memory of its datasheet."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "supply_current_active": {
+      "measure": "current",
+      "role": "consumption",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.015,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3.1, power tree"
+        },
+        "rationale": {
+          "en": "10 to 20 mA while ranging in the fact sheet; the figure uses 15 mA."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "echo_timeout": {
+      "measure": "time",
+      "role": "timing",
+      "scope": {
+        "pins": [
+          "ECHO"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.038,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3.2, No echo"
+        },
+        "rationale": {
+          "en": "Echo falls after about 38 ms when nothing comes back. Some clones stay HIGH."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "ping_interval_min": {
+      "measure": "time",
+      "role": "timing",
+      "scope": {
+        "pins": [
+          "TRIG"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.06,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3.2, Measurement cycle"
+        },
+        "rationale": {
+          "en": "At least 60 ms between triggers so a late echo is not read as the next one."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "A trigger pulse of 10 microseconds or more makes the board send eight cycles at 40 kHz. About 200 microseconds later Echo goes HIGH and stays HIGH for the round trip, 58 microseconds per centimetre from 2 cm to 4 m, or 38 ms when nothing returns."
+    },
+    "layers": [
+      {
+        "id": "ranger",
+        "domain": "protocol",
+        "reads": [
+          "TRIG",
+          "VCC"
+        ],
+        "summary": {
+          "en": "Pulse-width ranging on two pins."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The ping and echo timing is class HcSr04 in src/lib/interp/devices.ts, which the sketch interpreter wires to two pins by its class name. It is not a registered device, so the Studio does not bind it to this descriptor yet."
+          }
+        },
+        "drives": [
+          "ECHO"
+        ]
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing in the Studio yet. The sketch interpreter runs class HcSr04: a 10 microsecond trigger starts a ping and Echo is HIGH for 58.3 microseconds per centimetre."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The transmit driver, the receive amplifier and the comparator: the board is treated as two pins."
+      },
+      {
+        "en": "Soft and angled targets, the 15 degree beam and the speed of sound changing with temperature."
+      },
+      {
+        "en": "A clone whose Echo stays HIGH after a missed ping, and the HC-SR04P 3.3 V variant."
+      },
+      {
+        "en": "Damage from reversed or too high a supply."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "device_not_registered",
+        "text": {
+          "en": "The card for this part expected a registered device, but only the register-map devices mpu6050, bme280, ssd1306 and pca9685 are registered. HcSr04 is a class the interpreter picks by name."
+        },
+        "evidence": "src/sim/models/builtins.ts and src/lib/interp/devices.ts:281-305"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks the echo width against the 58 microseconds per centimetre rule."
+        },
+        "evidence": "src/content/robotics/hc-sr04.test.ts"
+      }
+    ],
+    "solver_requires": []
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "hc-sr04",
+        "path": "public/figures/parts/hc-sr04.html",
+        "sha256": "2ce7d6bef48db92d063da71f721f644bc890c81c1fbb1d41c2d2360b4cbbe532",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "VCC",
+        "TRIG",
+        "ECHO",
+        "GND"
+      ],
+      "span": [
+        3,
+        3
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VCC": "top",
+        "GND": "bottom",
+        "TRIG": "left",
+        "ECHO": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "HC-SR04",
+      "body_colour": "#2d6cc0",
+      "show_pin_labels": true
+    }
+  },
+  "injectable_faults": [
+    {
+      "id": "cold_echo",
+      "kind": "cold_joint",
+      "legacy_id": "cold:J1.3",
+      "cause_id": "open-connection",
+      "symptom_ids": [
+        "x-ranger-no-echo"
+      ],
+      "description": {
+        "en": "A cracked joint on the Echo pin, so some pings read as no echo."
+      },
+      "target": {
+        "pins": [
+          "ECHO"
+        ]
+      }
+    },
+    {
+      "id": "no_receiver",
+      "kind": "missing_part",
+      "legacy_id": "missing:R",
+      "cause_id": "x-hc-sr04.no-receiver",
+      "symptom_ids": [
+        "x-ranger-no-echo"
+      ],
+      "description": {
+        "en": "Leave out the receiver transducer, so Echo never hears anything and times out."
+      },
+      "target": {
+        "pins": [
+          "ECHO"
+        ]
+      }
+    },
+    {
+      "id": "no_crystal",
+      "kind": "missing_part",
+      "legacy_id": "missing:Y1",
+      "cause_id": "x-hc-sr04.no-crystal",
+      "symptom_ids": [
+        "x-ranger-no-echo"
+      ],
+      "description": {
+        "en": "Leave out the 4 MHz crystal, so the board never sends a burst."
+      },
+      "target": {
+        "pins": [
+          "TRIG"
+        ]
+      }
+    },
+    {
+      "id": "short_supply",
+      "kind": "short_pins",
+      "legacy_id": "short:VCC:GND",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "Short the supply to ground."
+      },
+      "target": {
+        "pins": [
+          "VCC",
+          "GND"
+        ]
+      }
+    }
+  ],
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/hc-sr04.js, figures/parts/hc-sr04.js, src/lib/interp/devices.ts and docs/facts/hcsr04.md.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_legacy_model": [
+    {
+      "ref": "module:hc-sr04-ranging@1",
+      "path": "src/lib/interp/devices.ts",
+      "lines": "281-305, class HcSr04"
+    },
+    {
+      "ref": "module:hc-sr04-readout@1",
+      "path": "figures/modules/hc-sr04.js",
+      "lines": "41-60, reading() and the ranging block at 213-215"
+    }
+  ],
+  "x_module_figure": {
+    "id": "hc-sr04",
+    "path": "public/figures/modules/hc-sr04.html",
+    "sha256": "70672ad28d295293c9665baf071ab62532f3269547cbe398a02f69b15286f698"
+  }
+}

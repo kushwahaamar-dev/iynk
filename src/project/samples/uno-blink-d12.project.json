@@ -614,7 +614,7 @@
         "kind": "reversed-part",
         "note": "Turn on to flip the LED and see why it stays dark.",
         "symptom_ids": [
-          "led.dark"
+          "led-dark"
         ],
         "target": {
           "component": "cmp_led1"

@@ -106,17 +106,37 @@ export type Buddy = {
   activity?: { roomId: string; title: string } | null;
 };
 
+export type CompileJob = {
+  id: string;
+  status: "queued" | "running" | "succeeded" | "failed" | "timed_out";
+  createdAt: string;
+  finishedAt: string | null;
+  cacheHit: boolean;
+  messages: { severity: "error" | "warning" | "note"; file?: string; line?: number; column?: number; text: string }[];
+};
+
+export type CompileArtifact = { mediaType: string; encoding: "text" | "base64"; data: string };
+
+export type CompileJobCreate = {
+  board: string;
+  files: { path: string; text: string }[];
+  libraries: { name: string; version: string }[];
+  debug: boolean;
+};
+
 export class ClientError extends Error {
   readonly code: string;
   readonly status: number;
   readonly requestId: string | null;
+  readonly retryAfterSeconds: number | null;
 
-  constructor(code: string, status: number, requestId: string | null = null) {
+  constructor(code: string, status: number, requestId: string | null = null, retryAfterSeconds: number | null = null) {
     super(code);
     this.name = "ClientError";
     this.code = code;
     this.status = status;
     this.requestId = requestId;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 

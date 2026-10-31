@@ -1818,7 +1818,7 @@
         "kind": "brownout",
         "note": "Weak pack: the Uno resets when both motors start.",
         "symptom_ids": [
-          "robot-resets-at-start"
+          "x-robot-resets-at-start"
         ],
         "target": {
           "net": "net_vbat"
@@ -1831,7 +1831,7 @@
         "kind": "wrong-connection",
         "note": "Swaps the left motor leads: the robot steers away from the line.",
         "symptom_ids": [
-          "robot-turns-wrong-way"
+          "x-robot-turns-wrong-way"
         ],
         "target": {
           "nets": [
@@ -1850,7 +1850,7 @@
           "height_mm": 15
         },
         "symptom_ids": [
-          "line-not-detected"
+          "x-line-not-detected"
         ],
         "target": {
           "component": "cmp_qtr"

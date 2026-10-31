@@ -22,6 +22,7 @@ export const BUCKET_NAMES = [
   "search.offers",
   "search.other",
   "tools",
+  "compile",
 ] as const;
 export type BucketName = (typeof BUCKET_NAMES)[number];
 

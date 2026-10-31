@@ -364,6 +364,8 @@ export interface RunTrace {
   inputs: WorldEvent[];
   /** HTTP requests the world's network inputs sent to the sketch's web server, with the answers. */
   http?: { t: number; method: string; path: string; status: number; body: string }[];
+  /** Solved node readings by net id, sorted by time: volts, and the supply current in amps where the net is a source. */
+  nodes?: Record<string, { tMs: number; v: number; i?: number }[]>;
 }
 
 /** A completion check, evaluated on a RunTrace (src/lib/interp/checks.ts). */
@@ -377,7 +379,9 @@ export type Check =
   | { kind: 'servo'; pin: string; deg: [number, number]; atMs: number; label: TextKey }
   | { kind: 'responds'; after: WorldEvent; pin: string; withinMs: number; mode: PinMode; v: [number, number]; label: TextKey }
   | { kind: 'code'; must: string[]; mustNot: string[]; label: TextKey }
-  | { kind: 'state'; atMs: number; equals: StateCond; label: TextKey };
+  | { kind: 'state'; atMs: number; equals: StateCond; label: TextKey }
+  | { kind: 'node-voltage'; net: string; volts: [number, number]; atMs: number; label: TextKey }
+  | { kind: 'supply-current'; net: string; amps: [number, number]; atMs: number; label: TextKey };
 
 export interface SerialSpec {
   baud: number;

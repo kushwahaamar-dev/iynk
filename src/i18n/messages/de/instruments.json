@@ -1,0 +1,110 @@
+{
+  "dock": {
+    "title": "Messgeräte",
+    "add": "Messgerät hinzufügen",
+    "remove": "Entfernen",
+    "empty": "Noch keine Messgeräte",
+    "targetMissing": "Ziel fehlt",
+    "viewerOnly": "Zuschauer können Messgeräte nicht ändern.",
+    "pickKind": "Messgerätetyp",
+    "pickPoint": "Messpunkt"
+  },
+  "kind": {
+    "multimeter": "Multimeter",
+    "oscilloscope": "Oszilloskop",
+    "logicAnalyser": "Logikanalysator",
+    "serialPlotter": "Serieller Plotter",
+    "voltmeter": "Voltmeter",
+    "ammeter": "Amperemeter",
+    "serialMonitor": "Serieller Monitor"
+  },
+  "meter": {
+    "red": "Rote Messspitze",
+    "black": "Schwarze Messspitze",
+    "loading": "Belastung durch das Messgerät (10 Megaohm)",
+    "burden": "Bürde des Messgeräts (Ohm)",
+    "open": "Offener Stromkreis",
+    "connected": "Verbunden, unter {ohms} Ohm",
+    "notConnected": "Nicht verbunden",
+    "reading": "Messwert",
+    "mode": {
+      "dcVolts": "Gleichspannung",
+      "dcAmps": "Gleichstrom",
+      "resistance": "Widerstand, ohne Spannung",
+      "continuity": "Durchgang",
+      "diode": "Diodentest",
+      "frequency": "Frequenz",
+      "duty": "Tastgrad"
+    },
+    "notBuilt": "{mode} ist noch nicht abgebildet",
+    "cond": {
+      "ideal": "Ideales Messgerät, keine Belastung",
+      "powerOff": "Ohne Spannung, Übergänge gelten auf Prüfebene als offen",
+      "loaded": "Messgerätebelastung 10 Megaohm"
+    }
+  },
+  "scope": {
+    "timeBase": "Zeitbasis",
+    "trigger": "Trigger",
+    "cursor": "Cursor",
+    "table": "Tabellenansicht",
+    "export": "CSV exportieren",
+    "summary": "{n} Flanken, letzte bei {t} ms",
+    "rising": "Steigende Flanke",
+    "falling": "Fallende Flanke",
+    "level": "Pegel",
+    "pwm": "{duty} Prozent Tastverhältnis, {hz} Hz",
+    "delta": "Differenz: {dt} ms"
+  },
+  "cap": "{kept} Messwerte behalten, {dropped} verworfen",
+  "staircase": "Keine Kurve zwischen den Ereignissen: als Stufen dargestellt",
+  "decoders": "Die Busdekodierung ist noch nicht abgebildet",
+  "costModel": "Flankenzeiten folgen dem Kostenmodell der Anweisungen",
+  "plotter": {
+    "empty": "Gib Zahlen in einer Zeile aus, um sie zu zeichnen",
+    "window": "Fenster",
+    "clear": "Leeren",
+    "columnsIgnored": "Es werden nur die ersten 8 Spalten gezeichnet. Weitere Spalten werden ignoriert.",
+    "legend": "Legende",
+    "latest": "Aktuell: {value}",
+    "col": "Sp{n}",
+    "dropped": "{n} Zeilen verworfen"
+  },
+  "tolerance": {
+    "label": "Bauteiltoleranz",
+    "nominal": "Nennwert",
+    "seeded": "Reproduzierbare Streuung",
+    "runActive": "Beende den gemeinsamen Lauf, um die Bauteiltoleranz zu ändern."
+  },
+  "speed": {
+    "label": "Geschwindigkeit",
+    "max": "So schnell wie möglich",
+    "behind": "Läuft auf diesem Gerät mit dem {x}-Fachen der Echtzeit.",
+    "preset": "{x}x"
+  },
+  "run": {
+    "pause": "Pause",
+    "resume": "Fortsetzen",
+    "step": "Schritt",
+    "stepUnit": "Schrittweite",
+    "cycleNeedsFirmware": "benötigt den Firmware-Modus",
+    "unit": {
+      "ns": "ns",
+      "event": "Ereignis",
+      "statement": "Anweisung",
+      "line": "Zeile",
+      "cycle": "Takt"
+    },
+    "notPaused": "Pausiere zuerst den Lauf, um schrittweise vorzugehen."
+  },
+  "band": {
+    "corners": "Bereich aus den Toleranzgrenzen der Bauteile",
+    "monteCarlo": "Bereich aus {n} Zufallsziehungen",
+    "noTolerance": "{part} hat keine Toleranzangaben und wird mit dem Nennwert verwendet"
+  },
+  "channel": "Kanal {n}",
+  "capSet": "Messwertgrenze",
+  "column": {
+    "time": "Zeit"
+  }
+}

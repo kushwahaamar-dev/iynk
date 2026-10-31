@@ -1,0 +1,360 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.soil-moisture",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "Capacitive soil moisture sensor v1.2",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "sensor",
+    "category": "sensor",
+    "description": {
+      "i18n_key": "parts.soil-moisture.description",
+      "en": "A capacitive soil moisture probe with a 3-pin cable: AOUT, VCC and GND. The reading falls as the soil gets wetter."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "soil-moisture"
+    ],
+    "tags": [
+      "soil",
+      "moisture",
+      "capacitive",
+      "analog",
+      "sensor"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 16: Capacitive soil moisture sensor v1.2",
+      "publisher": "iynk",
+      "revision": "2026-10-31",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It marks the board size and the output range as community figures, unverified."
+    },
+    {
+      "id": "partjs",
+      "kind": "own-estimate",
+      "title": "figures/parts/soil-moisture.js and figures/modules/soil-moisture.js",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "AOUT",
+      "name": {
+        "en": "Analog output"
+      },
+      "designator": "AOUT",
+      "type": "analog_out",
+      "class": "analog",
+      "position": {
+        "x": 4.5,
+        "y": 9.5
+      },
+      "connector": "J1"
+    },
+    {
+      "id": "VCC",
+      "name": {
+        "en": "Supply"
+      },
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 4.5,
+        "y": 11.5
+      },
+      "connector": "J1"
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "Ground"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 4.5,
+        "y": 13.5
+      },
+      "connector": "J1"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J1",
+      "kind": "jst",
+      "gender": "male",
+      "pitch": 2,
+      "pins": [
+        "AOUT",
+        "VCC",
+        "GND"
+      ],
+      "note": {
+        "en": "White JST-PH socket. The cable plugs onto it and ends in the three header pins the breadboard takes."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "probe board",
+    "body": {
+      "w": 98,
+      "h": 23,
+      "d": 7.6
+    },
+    "accuracy": 2,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 16, Board"
+    }
+  },
+  "ratings": {
+    "supply_range": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 3.3,
+        "max": 5.5,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 16, Supply"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "aout_dry": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "AOUT"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 2.6,
+        "confidence": "low",
+        "rationale": {
+          "en": "Constant AIR_V in figures/modules/soil-moisture.js:27 for dry air on a 5 V supply. The fact sheet gives 2.5 to 3.0 V and no maker figure."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "aout_water": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "AOUT"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 1.4,
+        "confidence": "low",
+        "rationale": {
+          "en": "Constant WATER_V in figures/modules/soil-moisture.js:27 for the probe in water on a 5 V supply. The fact sheet gives 1.2 to 1.5 V and no maker figure."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "parameters": [
+    {
+      "id": "moisture",
+      "name": {
+        "en": "Soil moisture (%)"
+      },
+      "kind": "environment",
+      "type": "number",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "unit": "percent",
+      "affects": [
+        "dc"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "An analog level on AOUT that falls from about 2.6 V in dry air to about 1.4 V in water, from a 3.3 to 5.5 V supply. The Studio does not run it yet."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "VCC",
+          "GND",
+          "moisture"
+        ],
+        "drives": [
+          "AOUT"
+        ],
+        "summary": {
+          "en": "A 555 oscillator and a copper pad turned into a DC level. No solver element holds it."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The reading comes from a lesson world input and the board's own oscillator, peak detector and bleed resistor. The solver has no element for a pad that loads a timer, so this layer does nothing."
+          }
+        }
+      }
+    ]
+  },
+  "injectable_faults": [
+    {
+      "id": "cold_socket",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "AOUT",
+          "VCC",
+          "GND"
+        ]
+      },
+      "legacy_id": "cold:J1",
+      "cause_id": "x-connection.cold-joint",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "A cracked joint on the sensor socket."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing is solved. The figure draws the probe, the pot and the cable, and the moisture setting darkens the soil."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The 555 oscillator, the pad as one plate of a capacitor, the peak detector and the bleed resistor."
+      },
+      {
+        "en": "The AOUT level that falls as the soil gets wetter."
+      },
+      {
+        "en": "The NE555 clone that never starts on 3.3 V, and the clone without a bleed resistor."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "reading_in_figure",
+        "text": {
+          "en": "The AOUT level, the NE555 and bleed-resistor variants and the watering cycle live in the module page only."
+        },
+        "evidence": "figures/modules/soil-moisture.js:32-45"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks the AOUT level against a measurement. The 2.6 V and 1.4 V ends are the figure's constants, not maker figures."
+        },
+        "evidence": "figures/modules/soil-moisture.js:27"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "soil-moisture",
+        "path": "public/figures/parts/soil-moisture.html",
+        "sha256": "7f6b7d6ee0a9496d7177fdcbda0175927e34cc6656894b2d38f7278aa2a8afc8",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "AOUT",
+        "VCC",
+        "GND"
+      ],
+      "span": [
+        2,
+        2
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VCC": "top",
+        "GND": "bottom",
+        "AOUT": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "Soil moisture",
+      "body_colour": "#2b2927",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/parts/soil-moisture.js, figures/modules/soil-moisture.js and docs/facts/la-components.md section 16.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_module_figure": {
+    "kind": "module",
+    "id": "soil-moisture",
+    "path": "public/figures/modules/soil-moisture.html",
+    "sha256": "d1311fb7632beb7710815dc95ab2501ed988c3294357c865ed656a303602d817"
+  },
+  "x_legacy_model": [
+    {
+      "ref": "aoutNow",
+      "path": "figures/modules/soil-moisture.js",
+      "lines": "32-45"
+    }
+  ]
+}

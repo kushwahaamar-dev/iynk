@@ -6,7 +6,7 @@ import { AI_STORES, DB_NAME, STORES, STORE_NAMES } from "./stores";
 
 const TABLE_ORDER = [
   "projects", "index", "trash", "backups", "assets", "revisions", "progress", "proposals", "keys", "events",
-  "errors", "server", "ai_threads", "ai_log", "ai_usage", "ai_memo", "ai_debug", "journal", "identity",
+  "errors", "server", "ai_threads", "ai_log", "ai_usage", "ai_memo", "ai_debug", "journal", "identity", "parts",
 ];
 
 function put(db: IDBDatabase, store: string, value: unknown, key?: IDBValidKey): Promise<void> {
@@ -35,17 +35,17 @@ afterEach(() => {
 });
 
 describe("openDb", () => {
-  it("creates the 19 stores of SYSTEM 8.1 with their key shapes", async () => {
+  it("creates the 19 stores of SYSTEM 8.1 and `parts` with their key shapes", async () => {
     const db = await openDb();
     expect(db.name).toBe(DB_NAME);
-    expect(db.version).toBe(1);
+    expect(db.version).toBe(2);
     expect([...db.objectStoreNames].sort()).toEqual([...TABLE_ORDER].sort());
     expect(STORE_NAMES).toEqual(TABLE_ORDER);
 
     const tx = db.transaction(TABLE_ORDER, "readonly");
     for (const name of TABLE_ORDER) {
       const store = tx.objectStore(name);
-      expect(store.keyPath, name).toBeNull();
+      expect(store.keyPath, name).toBe(name === "parts" ? "key" : null);
       expect(store.autoIncrement, name).toBe(name === "events" || name === "errors");
     }
     expect([...tx.objectStore("index").indexNames]).toEqual(["updatedAt"]);
@@ -64,9 +64,27 @@ describe("openDb", () => {
     first.close();
 
     const second = await openDb();
-    expect(second.objectStoreNames.length).toBe(19);
+    expect(second.objectStoreNames.length).toBe(20);
     expect(await count(second, "progress")).toBe(1);
     second.close();
+  });
+
+  it("adds the parts store to a version 1 database and keeps what it holds", async () => {
+    const old = await new Promise<IDBDatabase>((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        for (const name of TABLE_ORDER.filter((n) => n !== "parts")) req.result.createObjectStore(name);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    await put(old, "progress", { done: true }, "lesson-1");
+    old.close();
+
+    const db = await openDb();
+    expect(db.objectStoreNames.contains("parts")).toBe(true);
+    expect(await count(db, "progress")).toBe(1);
+    db.close();
   });
 
   it("refuses a database written by a newer version with db_too_new", async () => {
@@ -101,7 +119,7 @@ describe("openDb", () => {
     const db = await openDb(onClosed);
     const closeSpy = vi.spyOn(db, "close");
     await new Promise<void>((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, 2);
+      const req = indexedDB.open(DB_NAME, 3);
       req.onsuccess = () => {
         req.result.close();
         resolve();

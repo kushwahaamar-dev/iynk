@@ -1,0 +1,144 @@
+{
+  "id": "runtime:arduino-subset@1",
+  "version": "1.0.0",
+  "kind": "runtime",
+  "title": "Arduino C++ subset interpreter",
+  "tier": "T1",
+  "layers": [
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "closure-tree",
+      "text": "Hand-written lexer, parser, type checker and closure-tree executor; generator statements so delay() can suspend"
+    },
+    {
+      "id": "builtins",
+      "text": "89 built-in functions: pin I/O, analog, timing, math, bits, strings, random, interrupts, ESP32 LEDC/DAC/touch/deep sleep"
+    },
+    {
+      "id": "libs",
+      "text": "Serial, String, Wire (I2C), Servo, AccelStepper, Adafruit_NeoPixel, Adafruit_SSD1306, Adafruit_PWMServoDriver, LiquidCrystal(_I2C), MPU6050, QTRSensors, WiFi, WebServer, ArduinoLEDMatrix, ESP"
+    },
+    {
+      "id": "ints",
+      "text": "Integer widths from the board profile (int wraps at 16 bits on Uno, 32 on ESP32)"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "wifi",
+      "text": "Wi-Fi scan and connect with a fixed 1.2 s DHCP and a fake web table"
+    },
+    {
+      "id": "spi",
+      "text": "SPI is a stub: transfer returns 0 (to be replaced by section 9)"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "lang",
+      "text": "class, template, typedef, goto, try, new/delete, range-for, default arguments, struct methods, pointers other than const char*, #if/#ifdef, overloading"
+    },
+    {
+      "id": "hw",
+      "text": "Registers (TCCR1A, PORTB), timers, SRAM size, ISR latency, EEPROM, SoftwareSerial, DHT, HTTPClient, OneWire"
+    },
+    {
+      "id": "timing",
+      "text": "Cycle timing: every statement costs the same fixed time"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "opUs uno",
+      "value": 1,
+      "unit": "us",
+      "type": "assumption",
+      "ref": "profiles.ts:108",
+      "note": "real digitalWrite about 3.4 to 4 us (forum measurements)"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs03-diff",
+      "kind": "differential",
+      "oracle": {
+        "name": "avr8js",
+        "version": "0.21.1"
+      },
+      "dataset": "uno-r3 blink, motor, knob",
+      "result": {
+        "n": 3,
+        "passed": 3,
+        "metric": "max duty difference",
+        "worst": 0.004,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "src/lib/interp@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-03-avr8js-differential/REPORT.md"
+    },
+    {
+      "id": "unit-tests",
+      "kind": "self-consistency",
+      "dataset": "189 vitest cases; 102 of 102 lesson references pass",
+      "result": {
+        "n": 189,
+        "passed": 189,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-26",
+      "engineVersion": "src/lib/interp@bb546d6",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [
+    {
+      "name": "toggle period vs avr8js",
+      "value": 0.138,
+      "unit": "ms",
+      "condition": "blink, after 8 s; interpreter charges no time per statement"
+    },
+    {
+      "name": "serial line time drift vs avr8js",
+      "value": 25.3,
+      "unit": "ms",
+      "condition": "knob, over 4 s"
+    }
+  ],
+  "operatingRange": [
+    {
+      "quantity": "program",
+      "min": 0,
+      "max": 0,
+      "unit": "n/a",
+      "evidence": "sketches inside the subset; 10 of 17 probe sketches compiled"
+    }
+  ],
+  "knownFailureCases": [
+    "Loop timing is about 2 times too fast for tight digitalWrite loops (estimated)",
+    "Idle skip jumps virtual time when an iteration has no visible effect",
+    "Pin edge trace silently truncates at 20,000 edges",
+    "Memory bombs abort the process (no heap cap)"
+  ],
+  "performance": [
+    {
+      "benchId": "interp-throughput",
+      "metric": "statements per second, Uno busy loop",
+      "value": 15000000,
+      "unit": "1/s",
+      "machine": "Apple silicon Mac, Node, shared load",
+      "date": "2026-10-26",
+      "label": "MEASURED"
+    }
+  ],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

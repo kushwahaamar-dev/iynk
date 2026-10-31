@@ -191,7 +191,7 @@ describe("sim handler", () => {
 
   it("splits a burst of serial lines over frames", async () => {
     const r = rig();
-    await r.load(`void setup() { Serial.begin(9600); for (int i = 0; i < 3000; i++) Serial.println(i); }\nvoid loop() { }\n`, opts({ endNs: 1_000_000_000 }));
+    await r.load(`void setup() { Serial.begin(2000000); for (int i = 0; i < 3000; i++) Serial.println(i); }\nvoid loop() { }\n`, opts({ endNs: 1_000_000_000 }));
     await r.send({ t: "control", run: 1, op: "run" });
     r.drain();
     const sizes = r.of("frame").map((f) => f.serial.length);

@@ -1,0 +1,45 @@
+{
+  "id": "bus:spi@1",
+  "version": "1.0.0",
+  "kind": "bus",
+  "title": "SPI bus with chip select",
+  "tier": "T0",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "transfer",
+      "text": "Byte transfers per chip select at the bus clock, modes 0 to 3, most or least significant bit first"
+    },
+    {
+      "id": "missing",
+      "text": "A transfer to a chip select with no device answers 0xFF with an event, or fails under the fail policy"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "waveform",
+      "text": "Edge shapes and setup and hold times"
+    },
+    {
+      "id": "devices",
+      "text": "SPI parts: none ships yet"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "Only the no-device paths have a test; a transfer to an attached device has none"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active",
+  "supersedes": "bus:spi.unmodelled@1"
+}

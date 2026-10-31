@@ -1,0 +1,31 @@
+{
+  "id": "bus:spi.unmodelled@1",
+  "version": "1.0.0",
+  "kind": "bus",
+  "title": "SPI, not modelled yet",
+  "tier": "T0",
+  "layers": [
+    "L6"
+  ],
+  "implements": [],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "all",
+      "text": "SPI to a second device: nothing is modelled, a sketch that uses it must fail loudly instead of reading a stub"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "Today a transfer on this bus returns 0 without an error"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "planned"
+}

@@ -1,0 +1,145 @@
+{
+  "tier": {
+    "T0": "Illustration. Not a calculation.",
+    "T1": "Teaching model",
+    "T2": "Calculated model",
+    "T3": "Runs your compiled firmware",
+    "none": "Not modelled yet",
+    "T3.note": "Peripherals not listed in the panel are not modelled."
+  },
+  "layer": {
+    "execution": "Execution",
+    "circuit": "Circuit",
+    "protocols": "Protocols",
+    "mechanics": "Mechanics"
+  },
+  "summary": "Overall: {tier}",
+  "panel": {
+    "title": "What it models",
+    "modelled": "Modelled",
+    "mocked": "Mocked",
+    "unmodelled": "Not modelled yet",
+    "stale": "The reference is older than this model",
+    "staleTag": "stale"
+  },
+  "validation": {
+    "none": "Not checked against a reference.",
+    "oracle": "Within {pct} percent of {oracle} on {n} circuits ({date})",
+    "bench": "Measured on hardware: {n} circuits, error table"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, computed from {model}",
+    "approx": "approximate, {why}",
+    "notModelled": "not modelled yet",
+    "outsideRange": "outside the range this model was checked over",
+    "knownGap": "this model has a known gap here: {why}",
+    "noResult": "no result"
+  },
+  "notice": {
+    "part": "{part} is not modelled yet. The rest of the circuit still runs.",
+    "model": "{model} is not modelled yet"
+  },
+  "states": {
+    "led": "{name} burned out: {n} mA is far above its {imax} mA.",
+    "diode": "{name} burned out: {n} mA is more than it can carry.",
+    "npn": "{name} overheated and failed.",
+    "tmp36": "{name} overheated and failed.",
+    "pot": "{name} burned out: {w} W is too much for its track.",
+    "pin": "Pin {pin} supplies {n} mA, above the {max} mA this board allows.",
+    "brownout": "The supply fell to {v} V, below the {min} V this chip needs, so it resets.",
+    "brownoutUnknown": "The brownout level of this board is not known, so no reset is simulated.",
+    "floating": "{pin} is not connected to anything, so its reading is noise.",
+    "noconv": "The circuit did not settle. Last state: {net} at {v} V."
+  },
+  "chip": {
+    "aria": "{layer}: {tier}. Open details"
+  },
+  "inspect": {
+    "title": "Inspect the synthesised design",
+    "intro": "Load the Yosys netlist of your design to see its gates and wires. This runs in your browser; nothing is uploaded.",
+    "size": "Download {wire} (unpacked {raw})",
+    "memory": "Peak memory about {peak}",
+    "refuse": "This device reports 4 GB of memory or less, so the Yosys engine is not loaded here.",
+    "unknown": "This browser does not report device memory, so the engine may not fit. Load it only if you accept that.",
+    "load": "Load Yosys",
+    "cancel": "Cancel",
+    "loading": "Loading Yosys",
+    "failed": "Yosys could not be loaded",
+    "result": "Inspected: {cells} cells, {wires} wires",
+    "lint": {
+      "implicitWire": "A signal is used without being declared. Yosys made it a 1-bit wire."
+    }
+  },
+  "firmware": {
+    "mode": "Mode",
+    "interpreter": "Interpreter",
+    "firmware": "Firmware",
+    "tier": "Runs your firmware",
+    "desktopNote": "Firmware mode needs the desktop app. On this device the interpreter keeps running.",
+    "onlyAvr": "Firmware mode runs AVR boards only (Uno, Nano).",
+    "importHex": "Import a .hex file",
+    "importElf": "Import an .elf file",
+    "noImage": "No firmware image loaded",
+    "imageLoaded": "Loaded {bytes} bytes of firmware",
+    "notModelled": "not modelled yet"
+  },
+  "import": {
+    "error": {
+      "hex-too-large": "This hex file is too large.",
+      "hex-bad-record": "A line in the hex file is not a valid record.",
+      "hex-bad-checksum": "A line in the hex file has a wrong checksum.",
+      "hex-out-of-flash": "The hex file writes outside the flash of this board.",
+      "hex-overlap": "The hex file writes to the same address twice.",
+      "hex-no-eof": "The hex file has no end-of-file record.",
+      "elf-too-large": "This ELF file is too large.",
+      "elf-unsupported": "This ELF file is not a 32-bit AVR executable.",
+      "elf-too-many-sections": "This ELF file has too many sections.",
+      "elf-bad-section": "A section of this ELF file is malformed.",
+      "dwarf-too-large": "The DWARF debug data is too large, so source lines are not available.",
+      "dwarf-bad-line-program": "The DWARF line table is malformed, so source lines are not available.",
+      "import-timeout": "Importing took too long and was stopped."
+    }
+  },
+  "debug": {
+    "toggle": "Debugger",
+    "step": "Step into",
+    "over": "Step over",
+    "out": "Step out",
+    "continue": "Continue",
+    "pausedAt": "Paused at {file}:{line}",
+    "running": "Running",
+    "variables": "Variables",
+    "watch": "Watch",
+    "addWatch": "Add watch",
+    "noSymbols": "No debug symbols in this image. Rebuild with -g.",
+    "inlineOnly": "The debugger works on global variables only.",
+    "gutter": "Click the gutter to set a breakpoint"
+  },
+  "compile": {
+    "build": "Build",
+    "building": "Building",
+    "ok": "Built in {ms} ms",
+    "failed": "Build failed",
+    "off": "Compiling is turned off by the operator",
+    "tooLarge": "The sketch is too large to compile",
+    "timeout": "The build took too long and was stopped",
+    "size": "Flash {flash}, RAM {ram}",
+    "cached": "From cache",
+    "tool": "Toolchain",
+    "importInstead": "Import a .hex file instead",
+    "offHint": "Ask whoever runs the server to set IYNK_COMPILE_ENABLE=1.",
+    "noServer": "Compiling needs your own iynk server.",
+    "notReachable": "Compiling is turned on but the compiler is not reachable",
+    "rateLimited": "Too many builds. Try again in {seconds} s",
+    "stale": "The sketch changed since this build",
+    "flash": "Flash {flash} of {max} bytes",
+    "debugBuild": "Build for debugging",
+    "cancel": "Cancel",
+    "needsSignIn": "Sign in to your server to build",
+    "severity": {
+      "error": "Error",
+      "warning": "Warning",
+      "note": "Note"
+    }
+  }
+}

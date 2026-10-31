@@ -1,0 +1,110 @@
+{
+  "id": "flight-game@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Flight game model (point mass, angle-lag attitude)",
+  "tier": "T1",
+  "layers": [
+    "L8"
+  ],
+  "implements": [
+    {
+      "id": "point-mass",
+      "text": "3-D translation with semi-implicit Euler at a fixed 100 Hz; thrust from the calculator's static thrust; one isotropic drag law"
+    },
+    {
+      "id": "battery",
+      "text": "Open-circuit curve (11 points per chemistry), internal resistance sag, low-voltage cut-off"
+    },
+    {
+      "id": "wind",
+      "text": "Mean wind plus two sine terms of the step counter"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "attitude",
+      "text": "Attitude is first-order lag toward the stick target; no inertia tensor, no rate loop"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "sensors",
+      "text": "IMU, barometer, GPS, noise, latency"
+    },
+    {
+      "id": "pid",
+      "text": "PID tuning, filters, mixer saturation"
+    },
+    {
+      "id": "aero",
+      "text": "Advance-ratio thrust loss, ground effect, per-axis drag"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "drag",
+      "value": 0.045,
+      "unit": "1/m",
+      "type": "fit",
+      "ref": "types.ts:93",
+      "note": "'the original's 0.045 for a 5-inch'; tuned to feel right"
+    }
+  ],
+  "validation": [
+    {
+      "id": "hover",
+      "kind": "analytic",
+      "dataset": "flight.test.ts hover throttle equals calculator",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "relative difference",
+        "worst": 0,
+        "unit": "fraction"
+      },
+      "date": "2026-10-26",
+      "engineVersion": "src/lib/flight@bb546d6",
+      "status": "pass"
+    },
+    {
+      "id": "replay",
+      "kind": "self-consistency",
+      "dataset": "A12 60,000-step scenarios, Node/Chromium/WebKit",
+      "flavour": "frameOf equal; raw state differs by 1 ulp from step 12",
+      "result": {
+        "n": 100,
+        "passed": 100,
+        "metric": "sampled frame hashes equal",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "src/lib/flight@bb546d6",
+      "status": "partial"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "Faults are scripted rotations (900, 500, 400, 300 deg/s) not consequences of dynamics: see model:flight.faults-scripted@1, tier T0",
+    "Sphere-against-box collision may tunnel at 20 m/s (hypothesis)",
+    "Wing top speed overstated (static thrust used at speed)"
+  ],
+  "performance": [
+    {
+      "benchId": "flight-step",
+      "metric": "us per stepSim, quad5 bando course",
+      "value": 0.6,
+      "unit": "us",
+      "machine": "Node 24, load 4.3",
+      "date": "2026-10-27",
+      "label": "MEASURED"
+    }
+  ],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

@@ -5,6 +5,7 @@ import { readZip, utf8Decode } from "@/export/zip";
 import { stateHash } from "@/project/hash";
 import { startProject } from "@/project/testing/generators";
 import { exportAll } from "./export-all";
+import { createMemoryPartsRepository, partKey } from "./parts-store";
 import { createMemoryRepository, emptyRows } from "./memory-repository";
 import type { IndexRow, ProjectRecord, Repository } from "./repository";
 
@@ -45,6 +46,21 @@ function open(bytes: Uint8Array) {
 const manifestOf = (files: Map<string, Uint8Array>) => JSON.parse(utf8Decode(files.get("manifest.json")!)!);
 
 afterEach(() => vi.unstubAllGlobals());
+
+describe("exportAll library parts", () => {
+  it("adds each part's descriptor and files and lists them in the manifest", async () => {
+    const parts = createMemoryPartsRepository();
+    const descriptor = { id: "led", version: "1.0.0" } as never;
+    await parts.putMany(
+      [{ key: partKey("led", "1.0.0"), id: "led", version: "1.0.0", descriptor, digest: "sha256:led", trust: "local", addedAt: "t", files: { "art.svg": "aa" } }],
+      new Map([["aa", new Blob(["<svg/>"])]]),
+    );
+    const files = open(await exportAll({ repo: createMemoryRepository(), parts, settingsJson: null, now: () => NOW }));
+    expect([...files.keys()].sort()).toEqual(["manifest.json", "parts/led@1.0.0.component.json", "parts/led@1.0.0/art.svg"]);
+    expect(utf8Decode(files.get("parts/led@1.0.0/art.svg")!)).toBe("<svg/>");
+    expect(manifestOf(files).parts).toEqual([{ key: "led@1.0.0", digest: "sha256:led", file: "parts/led@1.0.0.component.json" }]);
+  });
+});
 
 describe("exportAll", () => {
   it("holds one .iynk per project whose hash equals the stored one, and the given settings", async () => {

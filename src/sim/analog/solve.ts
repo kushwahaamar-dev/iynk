@@ -2,6 +2,7 @@ import { simDiag, type SolveDiagnostic } from '../core/diagnostic.ts';
 import { deviceState, freshState, isModelled, measureElement, PWL_COMPAT, stampElement, updateState, type Measured, type PwlState } from './elements.ts';
 import { UnionFind } from './graph.ts';
 import { conditionEstimate, linsolve } from './linsolve.ts';
+import { newtonSolve } from './newton.ts';
 import type { DeviceState, Element, ElementId, SolveOptions, SolveResult } from './types.ts';
 
 export interface PwmSlice { weight: number; high: (el: Element) => boolean }
@@ -36,6 +37,7 @@ function nodesOf(el: Element): number[] {
     case 'POT': return [el.a, el.wiper, el.b];
     case 'PIN': case 'PWM': return [el.a];
     case 'Q': return [el.c, el.b, el.e];
+    case 'MOS': return [el.d, el.g, el.s];
     case 'SV': return [el.gnd, el.vplus, el.sig];
     case 'TS': return [el.supplyPos, el.supplyNeg, el.out];
   }
@@ -54,7 +56,7 @@ function ohmsOf(el: Element): number[] {
 function validate(input: SolveInput, o: SolveOptions): void {
   const { nodes, ground, elements } = input;
   const inRange = (n: number) => Number.isInteger(n) && n >= 0 && n < nodes;
-  if (o.mode !== 'pwl') throw new RangeError(`solve: mode ${o.mode} is not available yet`);
+  if (o.mode !== 'pwl' && o.mode !== 'newton') throw new RangeError(`solve: unknown mode ${o.mode}`);
   if (!Number.isInteger(o.maxIter) || o.maxIter < 1) throw new RangeError(`solve: maxIter must be a positive integer, got ${o.maxIter}`);
   if (!inRange(ground)) throw new RangeError(`solve: ground ${ground} is outside 0..${nodes - 1}`);
   for (const el of elements) {
@@ -155,6 +157,7 @@ const largest = (rs: SliceResult[]) => rs.reduce<SliceResult | null>((a, r) => (
 
 export function solve(input: SolveInput, o: SolveOptions): SolveResult {
   validate(input, o);
+  if (o.mode === 'newton') return newtonSolve(input, { reltol: o.reltol, vabstol: o.vabstol, iabstol: o.iabstol, maxIter: o.maxIter, gmin: o.gminSiemens });
   const { nodes, ground, curve } = input;
   const diagnostics: SolveDiagnostic[] = [];
   const els = input.elements.filter((el) => {

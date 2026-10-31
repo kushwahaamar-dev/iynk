@@ -1,0 +1,284 @@
+{
+  "title": "Part editor",
+  "newTitle": "New part",
+  "editTitle": "Edit {name}",
+  "close": "Close",
+  "readOnly": "Editing a part needs a wider screen. You can read it here.",
+  "copyNote": "This part ships with iynk. Saving makes your own copy as {id}.",
+  "notFound": "That part is not in the library, so this is a new one.",
+  "restored": "Your unsaved draft was restored.",
+  "startOver": "Start over",
+  "tabs": {
+    "label": "Part sections",
+    "identity": "Identity",
+    "pins": "Pins",
+    "footprint": "Footprint",
+    "json": "JSON",
+    "ratings": "Ratings",
+    "model": "Model"
+  },
+  "identity": {
+    "name": "Name",
+    "nameHint": "Shown in the library and on the canvas.",
+    "manufacturer": "Manufacturer",
+    "model": "Part number",
+    "category": "Category",
+    "kind": "Kind",
+    "description": "Description",
+    "savedAs": "Saved as {id}"
+  },
+  "pins": {
+    "heading": "Pins",
+    "add": "Add pin",
+    "empty": "No pins yet. Add the first one.",
+    "col": {
+      "id": "Id",
+      "name": "Name",
+      "designator": "Label on the part",
+      "type": "Type",
+      "class": "Class",
+      "polarity": "Polarity"
+    },
+    "cell": "Pin {n}, {column}",
+    "noPolarity": "None",
+    "remove": "Remove pin {n}",
+    "removeTitle": "Remove this pin?",
+    "removeBody": "Pin {id} leaves the part, along with every group and rating that names it.",
+    "removeConfirm": "Remove pin",
+    "removeKeep": "Keep pin",
+    "added": "Pin added. The part has {count} pins.",
+    "removed": "Pin {id} removed. The part has {count} pins.",
+    "cascade": "Also changed because of the pin: {where}",
+    "groups": {
+      "heading": "Groups",
+      "hint": "Pins in a group are joined inside the part.",
+      "add": "Add group",
+      "empty": "No groups.",
+      "kindLabel": "How {id} joins its pins",
+      "pinsLabel": "Pins in group {id}",
+      "remove": "Remove group {id}",
+      "kind": {
+        "internal-short": "Shorted inside",
+        "strip": "Strip",
+        "plane": "Plane"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "Size and drawing",
+    "width": "Width (mm)",
+    "height": "Height (mm)",
+    "depth": "Depth (mm)",
+    "accuracy": "Accuracy (mm)",
+    "renderer": "Drawing style",
+    "label": "Label on the drawing",
+    "colour": "Body colour",
+    "showLabels": "Show pin labels",
+    "positions": "Pin positions",
+    "x": "Pin {id}, x (mm)",
+    "y": "Pin {id}, y (mm)",
+    "unplaced": "Not placed yet",
+    "previewLabel": "Preview of the part drawing",
+    "outside": "These pins fall outside the drawn body: {pins}",
+    "art": {
+      "heading": "Picture",
+      "hint": "An SVG or a PNG. Without one, the part is drawn from the size and pins above.",
+      "upload": "Choose a picture",
+      "remove": "Remove picture",
+      "license": "Picture licence",
+      "stripped": "Removed from the picture: {what}",
+      "error": {
+        "too-big": "The file is too large.",
+        "not-xml": "The file is not valid SVG.",
+        "doctype": "The SVG has a document type declaration, which is not allowed.",
+        "entity": "The SVG defines entities, which is not allowed.",
+        "cdata": "The SVG has a CDATA section, which is not allowed.",
+        "processing-instruction": "The SVG has a processing instruction, which is not allowed.",
+        "depth": "The SVG is nested too deeply.",
+        "too-many-elements": "The SVG has too many elements.",
+        "root-not-svg": "The file does not start with an svg element.",
+        "no-viewbox": "The SVG has no viewBox.",
+        "empty": "The picture draws nothing.",
+        "png-signature": "The file is not a PNG.",
+        "png-header": "The PNG header is damaged.",
+        "png-too-large": "The PNG is larger than 2048 by 2048 pixels.",
+        "png-truncated": "The PNG file is cut short."
+      }
+    }
+  },
+  "json": {
+    "label": "Part descriptor as JSON",
+    "hint": "Changes here replace the form when you leave this tab. Fix a parse error first."
+  },
+  "issues": {
+    "heading": "Problems",
+    "none": "No problems found.",
+    "count": "{count} to fix",
+    "sections": {
+      "identity": "Identity",
+      "pins": "Pins",
+      "footprint": "Footprint",
+      "rest": "Other",
+      "ratings": "Ratings",
+      "model": "Model"
+    }
+  },
+  "save": {
+    "button": "Save part",
+    "saving": "Saving",
+    "blocked": "Fix {count} problems before saving.",
+    "saved": "Saved as {key}",
+    "version": "Version",
+    "because": "Saved as {version} because {reasons}",
+    "lower": "Use {version} or higher.",
+    "conflict": "A different part with this id and version is already saved. Stored: {installed}. Yours: {incoming}. Change the version or the id and save again.",
+    "full": "Storage is full. Free some space and save again.",
+    "failed": "The part was not saved. Try again."
+  },
+  "discard": {
+    "title": "Leave without saving?",
+    "body": "Your changes to this part are kept as a draft in this browser until you start over.",
+    "confirm": "Leave",
+    "keep": "Keep editing"
+  },
+  "ratings": {
+    "heading": "Ratings",
+    "hint": "Limits and typical values. Each can come from the maker, from your own assumption or from a bench measurement. The simulation reads one of them.",
+    "empty": "No ratings yet. Choosing a model writes the ones it needs, and you can add more.",
+    "descriptionHint": "What this rating is for",
+    "remove": "Remove rating {key}",
+    "slot": {
+      "manufacturer": "Stated by the maker",
+      "simulation": "iynk's assumption",
+      "measured": "Bench-measured"
+    },
+    "usedBy": "Used by the simulation",
+    "add": {
+      "manufacturer": "Add a maker's number",
+      "simulation": "Add an assumption"
+    },
+    "measuredNote": "Bench measurements are added in the JSON view.",
+    "reads": "The simulation reads, {key}",
+    "readsNone": "Nothing",
+    "value": "{key}, value in {unit}",
+    "source": "{key}, where the number comes from",
+    "why": "{key}, why this number",
+    "range": "min {min}, typical {typ}, max {max} {unit}",
+    "needSource": "Choose where the number for {key} comes from.",
+    "chooseSource": "Choose a source",
+    "confidence": "Confidence: low",
+    "removeSlot": "Remove the {slot} value of {key}",
+    "measure": "Quantity",
+    "measures": {
+      "voltage": "Voltage",
+      "current": "Current",
+      "power": "Power",
+      "resistance": "Resistance",
+      "time": "Time",
+      "temperature": "Temperature",
+      "frequency": "Frequency",
+      "ratio": "Ratio"
+    },
+    "addRating": "Add rating",
+    "sources": {
+      "heading": "Sources",
+      "hint": "Where your numbers come from. A number from a maker's datasheet needs one of these.",
+      "empty": "No sources yet.",
+      "title": "Title of {id}",
+      "url": "Link for {id}",
+      "kind": "Kind of {id}",
+      "reliability": "How far to trust {id}",
+      "levels": {
+        "primary": "The maker's own document",
+        "secondary": "Second hand",
+        "unverified": "Not checked"
+      },
+      "remove": "Remove source {id}",
+      "add": "Add source"
+    }
+  },
+  "model": {
+    "heading": "Model",
+    "hint": "Pick how the part behaves. A model here is a teaching model, a starting point you can refine in the JSON view.",
+    "sequentialNote": "A truth table has no memory, so flip-flops and counters are not offered here.",
+    "template": "Model template",
+    "choose": "Choose a template",
+    "names": {
+      "resistor-like": "Resistor-like",
+      "switch": "Switch",
+      "led-like": "LED-like",
+      "truth-table": "Truth table",
+      "analog-sensor": "Analog sensor",
+      "not-modelled": "Not modelled"
+    },
+    "current": "Current model: {name}",
+    "apply": "Use this model",
+    "replaces": "This replaces the layer, test and ratings the previous model wrote. Ratings you added yourself stay.",
+    "fields": {
+      "ohms": "Resistance (ohm)",
+      "momentary": "Springs back when released",
+      "vf": "Forward voltage (V)",
+      "imax": "Highest current (mA)",
+      "unit": "Unit of the value",
+      "min": "Lowest value",
+      "max": "Highest value",
+      "reason": "Why it is not modelled",
+      "inputs": "Input pins",
+      "outputs": "Output pins",
+      "delay": "Delay (ns)",
+      "drive": "Output resistance (ohm)"
+    },
+    "problems": {
+      "range": "Enter a number from {min} to {max}.",
+      "pins": "This model needs at least {need} pins. Add them in the Pins tab.",
+      "empty": {
+        "inputs": "Pick at least one input pin.",
+        "outputs": "Pick at least one output pin.",
+        "rows": "Add at least one row."
+      },
+      "tooMany": {
+        "inputs": "A table takes at most {max} inputs.",
+        "outputs": "A table takes at most {max} outputs.",
+        "rows": "A table takes at most {max} rows."
+      },
+      "overlap": "A pin cannot be both an input and an output.",
+      "order": "The lowest value must be below the highest.",
+      "reason": "Say why it is not modelled."
+    },
+    "table": {
+      "caption": "Truth table rows, the first matching row wins",
+      "row": "Row",
+      "cell": "Row {n}, {name}",
+      "add": "Add row",
+      "complete": "Complete the table",
+      "remove": "Remove row {n}",
+      "count": "{count} of {max} rows",
+      "limit": "A table holds at most {max} rows.",
+      "noColumns": "Pick the input and output pins first.",
+      "shadowed": "Row {n} is never reached: an earlier row covers it.",
+      "moreShadowed": "{count} more rows are never reached.",
+      "added": "Row added. The table has {count} rows.",
+      "removed": "Row {n} removed. The table has {count} rows.",
+      "completed": "Added {count} rows for the missing input combinations."
+    }
+  },
+  "palette": {
+    "mine": "Mine",
+    "from": "From {sender}",
+    "imported": "Imported",
+    "addPart": "Add part",
+    "importPack": "Import pack",
+    "addNamed": "Add {name} as a new part",
+    "notSaved": "Parts will not be saved in this browser mode.",
+    "reading": "Reading the pack",
+    "importFailed": "The pack could not be added. Nothing was changed.",
+    "conflict": "A different part with the same id and version is already saved. Nothing was changed.",
+    "added": {
+      "one": "{count} part added to your library.",
+      "other": "{count} parts added to your library."
+    },
+    "used": "Added to this project.",
+    "pickPack": "Choose a part pack",
+    "readFailed": "That file could not be read."
+  }
+}

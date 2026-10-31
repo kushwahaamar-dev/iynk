@@ -50,6 +50,6 @@ describe("createArtProvider", () => {
   it("draws an unknown definition as the unknown part", () => {
     const art = provider.get("core.mystery", 2, "illustrated");
     expect(art.some((e) => e.t === "text" && e.s === "Unknown part")).toBe(true);
-    expect(art).toHaveLength(unknownPartArt({ renderer: "generic-box", label: "", showPinLabels: false, body_mm: { w: 10.16, h: 10.16 }, pins: [] }, "").length);
+    expect(art).toHaveLength(unknownPartArt({ renderer: "generic-box", label: "", showPinLabels: false, body_mm: { w: 10.16, h: 10.16 }, bounds_mm: { w: 10.16, h: 10.16 }, pins: [] }, "").length);
   });
 });

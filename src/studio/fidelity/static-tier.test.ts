@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import { blankProject } from "../../project/blank.ts";
 import type { Project } from "../../project/generated/types.ts";
 import { builtinRegistry } from "../../parts/builtin.ts";
-import { engineLine, lowestTier, modelRows, UNKNOWN_PART } from "./static-tier.ts";
+import { loadRegistry } from "../../sim/registry/entries.ts";
+import { engineLine, lowestTier, modelRows, staticTier, UNKNOWN_PART } from "./static-tier.ts";
 import type { ModelRow } from "./static-tier.ts";
 
 const registry = builtinRegistry();
@@ -63,5 +64,13 @@ describe("engineLine", () => {
     const p = project();
     p.boards[0].definition = { ref: "core.mystery", version: "1.0.0" };
     expect(engineLine(p).boardNotes).toEqual([]);
+  });
+});
+
+describe("staticTier", () => {
+  it("gives the engine and circuit layers of a blank project and the lowest as the summary", () => {
+    const fidelity = staticTier(project(), loadRegistry());
+    expect(fidelity.layers.map((l) => l.layer)).toEqual(["execution", "circuit"]);
+    expect(fidelity.summary).toBe("T1");
   });
 });

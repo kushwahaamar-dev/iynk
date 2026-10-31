@@ -57,6 +57,7 @@ describe("wipeStores", () => {
     const report = await wipeStores(repo, WIPE_PHRASE);
     expect(report).toEqual({ stores: STORE_NAMES, errors: [] });
     expect(STORE_NAMES.every((name) => rows[name].size === 0)).toBe(true);
+    expect(rows.parts.size).toBe(0);
   });
 
   it("goes on after a store fails and lists it", async () => {

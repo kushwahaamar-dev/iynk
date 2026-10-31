@@ -1,0 +1,77 @@
+{
+  "id": "failure:pot-track-overpower@1",
+  "version": "1.0.0",
+  "kind": "failure-model",
+  "title": "Potentiometer track burns out when it dissipates too much",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "rule",
+      "text": "The potentiometer latches burnt when track power exceeds pmax (default 0.05 W) for 2 s"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "latch",
+      "text": "Once the rule fires the part stays burnt until it is repaired; the real part may survive or fail more slowly"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "thermal",
+      "text": "Thermal history; only the threshold and its dwell are checked"
+    },
+    {
+      "id": "partial",
+      "text": "Partial damage and drift"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "pmax",
+      "value": 0.05,
+      "unit": "W",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:96"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: a potentiometer divides 5 V and A0 reads the wiper",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "power_W",
+      "min": 0,
+      "max": 0.05,
+      "unit": "W",
+      "evidence": "default pmax in bench-solve.js:96"
+    }
+  ],
+  "knownFailureCases": [
+    "The 2 s window and the 0.05 W default have no source"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

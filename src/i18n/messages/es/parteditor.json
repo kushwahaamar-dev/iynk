@@ -1,0 +1,284 @@
+{
+  "title": "Editor de piezas",
+  "newTitle": "Pieza nueva",
+  "editTitle": "Editar {name}",
+  "close": "Cerrar",
+  "readOnly": "Editar una pieza necesita una pantalla más ancha. Aquí puedes leerla.",
+  "copyNote": "Esta pieza viene con iynk. Al guardar se crea tu propia copia como {id}.",
+  "notFound": "Esa pieza no está en la biblioteca, así que esta es nueva.",
+  "restored": "Se recuperó tu borrador sin guardar.",
+  "startOver": "Empezar de nuevo",
+  "tabs": {
+    "label": "Secciones de la pieza",
+    "identity": "Identidad",
+    "pins": "Pines",
+    "footprint": "Huella",
+    "json": "JSON",
+    "ratings": "Valores",
+    "model": "Modelo"
+  },
+  "identity": {
+    "name": "Nombre",
+    "nameHint": "Se muestra en la biblioteca y en el lienzo.",
+    "manufacturer": "Fabricante",
+    "model": "Número de pieza",
+    "category": "Categoría",
+    "kind": "Tipo",
+    "description": "Descripción",
+    "savedAs": "Se guardará como {id}"
+  },
+  "pins": {
+    "heading": "Pines",
+    "add": "Añadir pin",
+    "empty": "Aún no hay pines. Añade el primero.",
+    "col": {
+      "id": "Id",
+      "name": "Nombre",
+      "designator": "Marca en la pieza",
+      "type": "Tipo",
+      "class": "Clase",
+      "polarity": "Polaridad"
+    },
+    "cell": "Pin {n}, {column}",
+    "noPolarity": "Ninguna",
+    "remove": "Quitar el pin {n}",
+    "removeTitle": "¿Quitar este pin?",
+    "removeBody": "El pin {id} sale de la pieza, junto con todo grupo y valor nominal que lo nombre.",
+    "removeConfirm": "Quitar pin",
+    "removeKeep": "Conservar pin",
+    "added": "Pin añadido. La pieza tiene {count} pines.",
+    "removed": "Pin {id} quitado. La pieza tiene {count} pines.",
+    "cascade": "También cambió por el pin: {where}",
+    "groups": {
+      "heading": "Grupos",
+      "hint": "Los pines de un grupo están unidos dentro de la pieza.",
+      "add": "Añadir grupo",
+      "empty": "Sin grupos.",
+      "kindLabel": "Cómo {id} une sus pines",
+      "pinsLabel": "Pines del grupo {id}",
+      "remove": "Quitar el grupo {id}",
+      "kind": {
+        "internal-short": "En corto por dentro",
+        "strip": "Tira",
+        "plane": "Plano"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "Tamaño y dibujo",
+    "width": "Ancho (mm)",
+    "height": "Alto (mm)",
+    "depth": "Fondo (mm)",
+    "accuracy": "Precisión (mm)",
+    "renderer": "Estilo de dibujo",
+    "label": "Etiqueta del dibujo",
+    "colour": "Color del cuerpo",
+    "showLabels": "Mostrar etiquetas de pines",
+    "positions": "Posiciones de los pines",
+    "x": "Pin {id}, x (mm)",
+    "y": "Pin {id}, y (mm)",
+    "unplaced": "Sin colocar",
+    "previewLabel": "Vista previa del dibujo de la pieza",
+    "outside": "Estos pines caen fuera del cuerpo dibujado: {pins}",
+    "art": {
+      "heading": "Imagen",
+      "hint": "Un SVG o un PNG. Sin imagen, la pieza se dibuja con el tamaño y los pines de arriba.",
+      "upload": "Elegir imagen",
+      "remove": "Quitar imagen",
+      "license": "Licencia de la imagen",
+      "stripped": "Quitado de la imagen: {what}",
+      "error": {
+        "too-big": "El archivo es demasiado grande.",
+        "not-xml": "El archivo no es un SVG válido.",
+        "doctype": "El SVG tiene una declaración de tipo de documento, que no se permite.",
+        "entity": "El SVG define entidades, lo que no se permite.",
+        "cdata": "El SVG tiene una sección CDATA, que no se permite.",
+        "processing-instruction": "El SVG tiene una instrucción de procesamiento, que no se permite.",
+        "depth": "El SVG está anidado a demasiada profundidad.",
+        "too-many-elements": "El SVG tiene demasiados elementos.",
+        "root-not-svg": "El archivo no empieza con un elemento svg.",
+        "no-viewbox": "El SVG no tiene viewBox.",
+        "empty": "La imagen no dibuja nada.",
+        "png-signature": "El archivo no es un PNG.",
+        "png-header": "La cabecera del PNG está dañada.",
+        "png-too-large": "El PNG supera los 2048 por 2048 píxeles.",
+        "png-truncated": "El archivo PNG está cortado."
+      }
+    }
+  },
+  "json": {
+    "label": "Descriptor de la pieza en JSON",
+    "hint": "Los cambios aquí sustituyen al formulario al salir de esta pestaña. Corrige antes un error de lectura."
+  },
+  "issues": {
+    "heading": "Problemas",
+    "none": "No se encontraron problemas.",
+    "count": "{count} por corregir",
+    "sections": {
+      "identity": "Identidad",
+      "pins": "Pines",
+      "footprint": "Huella",
+      "rest": "Otros",
+      "ratings": "Valores",
+      "model": "Modelo"
+    }
+  },
+  "save": {
+    "button": "Guardar pieza",
+    "saving": "Guardando",
+    "blocked": "Corrige {count} problemas antes de guardar.",
+    "saved": "Guardado como {key}",
+    "version": "Versión",
+    "because": "Guardado como {version} porque {reasons}",
+    "lower": "Usa {version} o superior.",
+    "conflict": "Ya hay guardada otra pieza distinta con este id y versión. Guardada: {installed}. La tuya: {incoming}. Cambia la versión o el id y guarda de nuevo.",
+    "full": "El almacenamiento está lleno. Libera espacio y guarda de nuevo.",
+    "failed": "No se guardó la pieza. Inténtalo de nuevo."
+  },
+  "discard": {
+    "title": "¿Salir sin guardar?",
+    "body": "Tus cambios quedan como borrador en este navegador hasta que empieces de nuevo.",
+    "confirm": "Salir",
+    "keep": "Seguir editando"
+  },
+  "ratings": {
+    "heading": "Valores",
+    "hint": "Límites y valores típicos. Cada uno puede venir del fabricante, de tu propia suposición o de una medición en el banco. La simulación lee uno de ellos.",
+    "empty": "Aún no hay valores. Al elegir un modelo se escriben los que necesita, y puedes añadir más.",
+    "descriptionHint": "Para qué sirve este valor",
+    "remove": "Quitar el valor {key}",
+    "slot": {
+      "manufacturer": "Indicado por el fabricante",
+      "simulation": "Suposición de iynk",
+      "measured": "Medido en el banco"
+    },
+    "usedBy": "Lo usa la simulación",
+    "add": {
+      "manufacturer": "Añadir un número del fabricante",
+      "simulation": "Añadir una suposición"
+    },
+    "measuredNote": "Las mediciones de banco se añaden en la vista JSON.",
+    "reads": "La simulación lee, {key}",
+    "readsNone": "Nada",
+    "value": "{key}, valor en {unit}",
+    "source": "{key}, de dónde sale el número",
+    "why": "{key}, por qué este número",
+    "range": "mín. {min}, típico {typ}, máx. {max} {unit}",
+    "needSource": "Elige de dónde sale el número de {key}.",
+    "chooseSource": "Elegir una fuente",
+    "confidence": "Confianza: baja",
+    "removeSlot": "Quitar el valor {slot} de {key}",
+    "measure": "Magnitud",
+    "measures": {
+      "voltage": "Tensión",
+      "current": "Corriente",
+      "power": "Potencia",
+      "resistance": "Resistencia",
+      "time": "Tiempo",
+      "temperature": "Temperatura",
+      "frequency": "Frecuencia",
+      "ratio": "Razón"
+    },
+    "addRating": "Añadir valor",
+    "sources": {
+      "heading": "Fuentes",
+      "hint": "De dónde salen tus números. Un número de la hoja de datos de un fabricante necesita una de estas.",
+      "empty": "Aún no hay fuentes.",
+      "title": "Título de {id}",
+      "url": "Enlace de {id}",
+      "kind": "Tipo de {id}",
+      "reliability": "Cuánto fiarse de {id}",
+      "levels": {
+        "primary": "El documento del propio fabricante",
+        "secondary": "De segunda mano",
+        "unverified": "Sin comprobar"
+      },
+      "remove": "Quitar la fuente {id}",
+      "add": "Añadir fuente"
+    }
+  },
+  "model": {
+    "heading": "Modelo",
+    "hint": "Elige cómo se comporta la pieza. Un modelo aquí es un modelo didáctico, un punto de partida que puedes afinar en la vista JSON.",
+    "sequentialNote": "Una tabla de verdad no tiene memoria, así que aquí no se ofrecen biestables ni contadores.",
+    "template": "Plantilla de modelo",
+    "choose": "Elegir una plantilla",
+    "names": {
+      "resistor-like": "Tipo resistencia",
+      "switch": "Interruptor",
+      "led-like": "Tipo LED",
+      "truth-table": "Tabla de verdad",
+      "analog-sensor": "Sensor analógico",
+      "not-modelled": "Sin modelar"
+    },
+    "current": "Modelo actual: {name}",
+    "apply": "Usar este modelo",
+    "replaces": "Esto sustituye la capa, la prueba y los valores que escribió el modelo anterior. Los valores que añadiste tú se quedan.",
+    "fields": {
+      "ohms": "Resistencia (ohmios)",
+      "momentary": "Vuelve a su sitio al soltarlo",
+      "vf": "Tensión directa (V)",
+      "imax": "Corriente máxima (mA)",
+      "unit": "Unidad del valor",
+      "min": "Valor más bajo",
+      "max": "Valor más alto",
+      "reason": "Por qué no está modelada",
+      "inputs": "Pines de entrada",
+      "outputs": "Pines de salida",
+      "delay": "Retardo (ns)",
+      "drive": "Resistencia de salida (ohmios)"
+    },
+    "problems": {
+      "range": "Escribe un número de {min} a {max}.",
+      "pins": "Este modelo necesita al menos {need} pines. Añádelos en la pestaña Pines.",
+      "empty": {
+        "inputs": "Elige al menos un pin de entrada.",
+        "outputs": "Elige al menos un pin de salida.",
+        "rows": "Añade al menos una fila."
+      },
+      "tooMany": {
+        "inputs": "Una tabla admite como máximo {max} entradas.",
+        "outputs": "Una tabla admite como máximo {max} salidas.",
+        "rows": "Una tabla admite como máximo {max} filas."
+      },
+      "overlap": "Un pin no puede ser entrada y salida a la vez.",
+      "order": "El valor más bajo debe ser menor que el más alto.",
+      "reason": "Di por qué no está modelada."
+    },
+    "table": {
+      "caption": "Filas de la tabla de verdad, gana la primera que coincide",
+      "row": "Fila",
+      "cell": "Fila {n}, {name}",
+      "add": "Añadir fila",
+      "complete": "Completar la tabla",
+      "remove": "Quitar la fila {n}",
+      "count": "{count} de {max} filas",
+      "limit": "Una tabla admite como máximo {max} filas.",
+      "noColumns": "Elige primero los pines de entrada y de salida.",
+      "shadowed": "La fila {n} nunca se alcanza: una fila anterior la cubre.",
+      "moreShadowed": "Otras {count} filas nunca se alcanzan.",
+      "added": "Fila añadida. La tabla tiene {count} filas.",
+      "removed": "Fila {n} quitada. La tabla tiene {count} filas.",
+      "completed": "Se añadieron {count} filas para las combinaciones de entrada que faltaban."
+    }
+  },
+  "palette": {
+    "mine": "Mía",
+    "from": "De {sender}",
+    "imported": "Importada",
+    "addPart": "Añadir pieza",
+    "importPack": "Importar paquete",
+    "addNamed": "Añadir {name} como pieza nueva",
+    "notSaved": "En este modo del navegador las piezas no se guardarán.",
+    "reading": "Leyendo el paquete",
+    "importFailed": "No se pudo añadir el paquete. No se cambió nada.",
+    "conflict": "Ya hay guardada otra pieza con el mismo id y la misma versión. No se cambió nada.",
+    "added": {
+      "one": "{count} pieza añadida a tu biblioteca.",
+      "other": "{count} piezas añadidas a tu biblioteca."
+    },
+    "used": "Añadido a este proyecto.",
+    "pickPack": "Elige un paquete de piezas",
+    "readFailed": "No se pudo leer ese archivo."
+  }
+}

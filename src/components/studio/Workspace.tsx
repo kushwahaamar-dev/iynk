@@ -9,14 +9,18 @@ import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
 import { check } from "@/lib/interp";
+import { appEventLog } from "@/local/events";
 import type { Diagnostic } from "@/lib/interp/errors";
 import type { PinRef } from "@/project/generated/types";
 import { buildPartIndex } from "@/parts/search";
 import { builtinRegistry } from "@/parts/builtin";
 import { fallbackSpec } from "@/parts/fallback";
 import { classifyImpact } from "@/project/opImpact";
+import { readDiagnoseSpec } from "@/sim/faults/seal";
+import { loadRegistry } from "@/sim/registry/entries";
+import { staticTier } from "@/studio/fidelity/static-tier";
 import { createArtProvider } from "@/studio/art/figure-art";
-import { registerCommand, runCommand } from "@/studio/commands";
+import { registerCommand, registerFaultCommands, runCommand, type FaultAction } from "@/studio/commands";
 import { STUDIO_KEYS, installKeymap } from "@/studio/commands/keymap";
 import { registerHistoryCommands } from "@/studio/commands/history";
 import { firstFirmwareSource } from "@/studio/code/sources";
@@ -29,11 +33,13 @@ import { createSvgRenderer } from "@/studio/engine/svg-renderer";
 import { focusNetOverlay } from "@/studio/overlays/netlist";
 import { stateOverlays } from "@/studio/overlays/state";
 import { resolvePart } from "@/studio/parts-view";
-import { collectProblems, nextProblem, type Problem } from "@/studio/problems";
+import { problemOverlays } from "@/studio/overlays/netlist";
+import { collectProblems, nextProblem, staticProblems, type Problem } from "@/studio/problems";
 import { staticFlags, type WireEndRef } from "@/studio/rules/connect";
 import { CHECKPOINT_POLICY } from "@/studio/history/revisions";
 import { navigate } from "@/studio/router";
-import type { DocStore } from "@/studio/stores/doc";
+import { createDiagnoseStore, type DiagnoseStore } from "@/studio/stores/diagnose";
+import type { DocStore, SaveChip } from "@/studio/stores/doc";
 import { createRunStore, type RunStore } from "@/studio/stores/run";
 import { useStoreSelector } from "@/studio/stores/select";
 import { createSessionStore, type SessionStore } from "@/studio/stores/session";
@@ -48,12 +54,15 @@ import type { ToolCtx } from "@/studio/tools/types";
 import { createWireTool } from "@/studio/tools/wire";
 import { CanvasView } from "./CanvasView";
 import { CodeDock } from "./CodeDock";
+import type { FaultDockProps, FaultRequest } from "./FaultDock";
 import { Inspector } from "./Inspector";
 import { LiveRegion } from "./LiveRegion";
+import { InstrumentDock } from "./InstrumentDock";
 import { ModelsPanel } from "./ModelsPanel";
 import { Outline } from "./Outline";
 import { Palette } from "./Palette";
 import { PinPicker } from "./PinPicker";
+import { FirmwareMode, type RuntimeView } from "./FirmwareMode";
 import { Problems } from "./Problems";
 import { useProjectActions, type ProjectActions } from "./ProjectActions";
 import { ChecksTab, HistoryTab, useChecksRun, type ChecksRun } from "./ProjectTabs";
@@ -63,12 +72,14 @@ import { ViewTabs } from "./ViewTabs";
 import { SerialPane } from "./SerialPane";
 import { StatusLine } from "./StatusLine";
 import { StudioSettings, useReducedMotion } from "./StudioSettings";
+import { TierChips, TierSummaryChip } from "./TierChips";
 import { TopBar } from "./TopBar";
 import { installDebugHook } from "./wiring/debugHook";
 import { linkPartner, studioUi } from "./wiring/partnerLink";
 import { openPartnerParts } from "./wiring/partnerParts";
 import { useOpenProject, type OpenStatus } from "./wiring/openProject";
 import { createPageRevisionPort, linkRepository, onRunStart, type LinkNotice } from "./wiring/repositoryLink";
+import { checkBlock, linkFaults, type FaultLink } from "./wiring/faultLink";
 import { linkSim, type SimLink } from "./wiring/simLink";
 import { useServices, type Services } from "./wiring/services";
 
@@ -88,6 +99,13 @@ const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), {
 
 const registry = builtinRegistry();
 const SCENE_ERROR = "views.sceneError";
+
+const FaultDock = dynamic(() => import("./FaultDock").then((m) => m.FaultDock), {
+  ssr: false,
+  loading: () => <div className="min-h-32" aria-busy="true" />,
+});
+
+const fidelityEntries = loadRegistry();
 const EDITABLE = ".cm-editor, input, textarea, select, [contenteditable='true']";
 const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
 
@@ -100,6 +118,8 @@ type Graph = {
   place: PlaceTool;
   announcer: Announcer;
   link: SimLink;
+  diagnose: DiagnoseStore;
+  faults: FaultLink;
   controller: SceneController;
   toolCtx(): ToolCtx;
   dispose(): void;
@@ -201,9 +221,40 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
         },
       };
 
+  let chipBeforeLock: SaveChip | null = null;
+  const unlock = () => {
+    if (chipBeforeLock !== null) doc.setSaveChip(chipBeforeLock);
+    chipBeforeLock = null;
+  };
+  const diagnose = createDiagnoseStore({
+    log: appEventLog(),
+    clock: () => Math.round(performance.now()),
+    setReadOnly(reason) {
+      if (reason === null) return unlock();
+      chipBeforeLock ??= doc.getState().saveChip;
+      doc.setSaveChip("read-only");
+    },
+    applyOps(ops) {
+      const done = doc.commit(ops, { label: "Fix" });
+      return done.ok ? { ok: true } : { ok: false, message: done.message };
+    },
+    fault: (id) => doc.getState().state.simulation.faults.find((f) => f.id === id),
+  });
+  const item = readDiagnoseSpec(state);
+  if (item.ok && item.value) diagnose.start({ spec: item.value, projectId: state.id });
+  const faults = linkFaults({ doc, sim: services.sim, diagnose });
+
   const viewId = () => session.getState().viewId;
+  const faultLabel = createTranslator(lang, messages.faults, `${lang}/faults`)("check.title");
   const overlays: OverlayProviders = {
-    net: () => focusNetOverlay(doc.getState().state, viewId(), session.getState().focusNet, engine.scene()),
+    net: () => {
+      const current = doc.getState().state;
+      const found = staticProblems(current, faults.store.getState().findings, { sealedUnrevealed: diagnose.isSealedUnrevealed() });
+      return [
+        ...focusNetOverlay(current, viewId(), session.getState().focusNet, engine.scene()),
+        ...problemOverlays(current, viewId(), found.problems, engine.scene(), faultLabel),
+      ];
+    },
     state: () => {
       const { frame } = run.getState();
       if (!frame) return [];
@@ -232,9 +283,13 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
     place,
     announcer,
     link,
+    diagnose,
+    faults,
     controller,
     toolCtx,
     dispose() {
+      faults.dispose();
+      unlock();
       link.stop();
       link.dispose();
       offRepository();
@@ -252,12 +307,66 @@ function useFirmwareDiagnostics(doc: DocStore): Diagnostic[] {
   return useMemo(() => (content === undefined || language !== "arduino-cpp" ? [] : check({ board: "uno-r3", language: "arduino", source: content })), [content, language]);
 }
 
-function useProblems(doc: DocStore, run: RunStore, diagnostics: Diagnostic[]): Problem[] {
+function useProblems(doc: DocStore, run: RunStore, diagnostics: Diagnostic[], faults: FaultLink, diagnose: DiagnoseStore): Problem[] {
   const state = useDeferredValue(useStoreSelector(doc, (s) => s.state));
   const limit = useStoreSelector(run, (s) => s.limit);
   const frame = useStoreSelector(run, (s) => s.frame);
+  const findings = useStoreSelector(faults.store, (s) => s.findings);
+  const sealedUnrevealed = useStoreSelector(diagnose, () => diagnose.isSealedUnrevealed());
   const flags = useMemo(() => staticFlags(state, state.nets.map((n) => n.id)), [state]);
-  return useMemo(() => collectProblems({ diagnostics, run: { limit, frame }, flags }), [diagnostics, limit, frame, flags]);
+  return useMemo(
+    () => [...collectProblems({ diagnostics, run: { limit, frame }, flags }), ...staticProblems(state, findings, { sealedUnrevealed }).problems],
+    [diagnostics, limit, frame, flags, state, findings, sealedUnrevealed],
+  );
+}
+
+function useFaultCommands(ui: UiStore): FaultRequest | null {
+  const [request, setRequest] = useState<FaultRequest | null>(null);
+  useEffect(
+    () =>
+      registerFaultCommands(
+        (action: FaultAction) => {
+          ui.set("dock", "faults");
+          setRequest((now) => ({ action, n: (now?.n ?? 0) + 1 }));
+        },
+        () => true,
+      ),
+    [ui],
+  );
+  return request;
+}
+
+/** Mounts the fault dock the first time its tab is opened, so the chunk costs nothing before that. */
+function FaultsPanel(props: FaultDockProps) {
+  const open = useStoreSelector(props.ui, (s) => s.dock === "faults");
+  const [seen, setSeen] = useState(open);
+  if (open && !seen) setSeen(true);
+  return seen ? <FaultDock {...props} /> : null;
+}
+
+function FidelityChips({ doc, ui, messages, lang }: { doc: DocStore; ui: UiStore; messages: StudioMessages; lang: Locale }) {
+  const state = useDeferredValue(useStoreSelector(doc, (s) => s.state));
+  const fidelity = useMemo(() => staticTier(state, fidelityEntries), [state]);
+  const t = useMemo(() => createTranslator(lang, messages.fidelity, `${lang}/fidelity`), [lang, messages.fidelity]);
+  if (fidelity.layers.length === 0) return null;
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2" data-testid="tier-chips">
+      <TierSummaryChip fidelity={fidelity} t={t} />
+      <TierChips fidelity={fidelity} t={t} onOpenLayer={() => ui.set("rightRail", "models")} />
+    </div>
+  );
+}
+
+function FirmwareControl({ doc, messages, lang }: { doc: DocStore; messages: StudioMessages; lang: Locale }) {
+  const runtimes = useStoreSelector(doc, (s) => s.state.simulation.runtimes);
+  const boards = useStoreSelector(doc, (s) => s.state.boards);
+  const assets = useStoreSelector(doc, (s) => s.state.assets);
+  const t = useMemo(() => createTranslator(lang, messages.fidelity, `${lang}/fidelity`), [lang, messages.fidelity]);
+  const runtime = runtimes[0];
+  const board = boards.find((b) => b.id === runtime?.board);
+  if (!runtime || !board) return null;
+  const view: RuntimeView = { id: runtime.id, board: runtime.board, boardRef: board.definition.ref, engine: runtime.engine, options: runtime.options };
+  return <FirmwareMode runtime={view} assets={assets} t={t} onChange={(ops) => doc.commit(ops, { label: t("firmware.firmware") })} />;
 }
 
 /**
@@ -459,6 +568,7 @@ type RegionsProps = {
   graph: Graph;
   doc: DocStore;
   partner: PartnerHost | null;
+  sim: Services["sim"];
   messages: StudioMessages;
   lang: Locale;
   notices: readonly LinkNotice[];
@@ -474,7 +584,7 @@ type RegionsProps = {
   versionWarning: string | null;
 };
 
-function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning }: RegionsProps) {
+function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning }: RegionsProps) {
   const { ui, session, run, engine, tools, place, link, controller, announcer } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
@@ -483,7 +593,10 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
   const activeView = useStoreSelector(ui, (s) => s.activeView);
   const sceneFailed = useStoreSelector(session, (s) => s.status?.key === SCENE_ERROR);
   const diagnostics = useFirmwareDiagnostics(doc);
-  const problems = useProblems(doc, run, diagnostics);
+  const problems = useProblems(doc, run, diagnostics, graph.faults, graph.diagnose);
+  const faultsView = useStoreSelector(graph.faults.store, (s) => s);
+  const sealed = useStoreSelector(graph.diagnose, () => graph.diagnose.isSealedUnrevealed());
+  const faultRequest = useFaultCommands(ui);
   const partIndex = useMemo(() => buildPartIndex(registry), []);
 
   useEffect(() => {
@@ -497,6 +610,7 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
       top={
         <>
           <TopBar doc={doc} run={run} link={link} menu={projectMenu} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
+          <FidelityChips doc={doc} ui={ui} messages={messages} lang={lang} />
           {readOnly ? (
             <Callout tone="note" title={t.workspace.readOnlyTitle} className="mt-2">
               {t.workspace.readOnly}
@@ -554,7 +668,11 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
               ui.set("dock", "code");
             }}
             messages={messages.studioCode}
+            faultMessages={messages.faults}
             lang={lang}
+            onCheck={() => void graph.faults.check()}
+            checkDisabled={checkBlock(sealed, faultsView)}
+            counts={{ skipped: Object.values(faultsView.skipped).reduce((n, reasons) => n + Object.values(reasons).reduce((a, b) => a + b, 0), 0), errors: faultsView.errors.length }}
           />
         ),
         models: <ModelsTab doc={doc} messages={messages} />,
@@ -565,10 +683,24 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
       dock={{
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
         serial: (
-          <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <RunBar run={run} link={link} messages={messages.studioRun} lang={lang} />
+          <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
+            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} lang={lang} firmware={<FirmwareControl doc={doc} messages={messages} lang={lang} />} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
+            <InstrumentDock doc={doc} run={run} ui={ui} sim={sim} messages={messages.instruments} fidelity={messages.fidelity} faults={messages.faults} lang={lang} />
           </div>
+        ),
+        faults: (
+          <FaultsPanel
+            ui={ui}
+            doc={doc}
+            run={run}
+            diagnose={graph.diagnose}
+            faults={graph.faults}
+            restart={() => void link.restart()}
+            request={faultRequest}
+            messages={messages.faults}
+            lang={lang}
+          />
         ),
       }}
     />
@@ -633,6 +765,9 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
     };
 
     graph.controller.start();
+    const redraw = () => graph.controller.rebuild();
+    const offFaults = graph.faults.store.subscribe(redraw);
+    const offDiagnose = graph.diagnose.subscribe(redraw);
     const rail = (id: UiState["rightRail"], then?: () => void) => () => {
       graph.ui.set("rightRail", id);
       then?.();
@@ -724,6 +859,8 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
       cancelAnimationFrame(frame);
       offKeys();
       offCommands.forEach((off) => off());
+      offFaults();
+      offDiagnose();
       graph.controller.stop();
     };
   }, [graph, doc, autorun, messages.studio.layout]);
@@ -780,6 +917,7 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
             graph={graph}
             doc={doc}
             partner={partner}
+            sim={services.sim}
             messages={messages}
             lang={lang}
             notices={notices}

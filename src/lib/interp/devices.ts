@@ -1,3 +1,4 @@
+import type { I2cDevice } from '../../sim/bus/i2c.ts';
 import type { World } from './world';
 
 /** A device on the I²C bus, modelled at register level. */
@@ -8,6 +9,25 @@ export interface I2CDevice {
   write(bytes: number[]): void;
   read(n: number): number[];
   view?(): { pca9685: { hz: number; duty: number[] } } | Record<string, unknown>;
+}
+
+/** Lets a bus-level device sit in `World.addDevice`, which still speaks whole transactions. */
+export function toLegacyDevice(d: I2cDevice, kind: string, address: number): I2CDevice {
+  return {
+    address,
+    kind,
+    write(bytes) {
+      if (d.start(address, false) !== 'ack') return;
+      for (const b of bytes) if (d.write(b) !== 'ack') break;
+      d.stop();
+    },
+    read(n) {
+      if (d.start(address, true) !== 'ack') return [];
+      const out = Array.from({ length: n }, (_, i) => d.read(i === n - 1));
+      d.stop();
+      return out;
+    },
+  };
 }
 
 const clamp16 = (v: number) => Math.max(-32768, Math.min(32767, Math.round(v)));

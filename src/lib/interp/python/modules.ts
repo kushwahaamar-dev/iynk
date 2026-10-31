@@ -1,4 +1,5 @@
 import type { Gen } from '../exec';
+import { isKnownPin } from '../profiles';
 import { installMicrobit } from './microbit';
 import { mod, nat, natGen, nclass, sleepGen } from './native';
 import {
@@ -19,13 +20,12 @@ const ms = (rt: PyRt) => Math.floor(rt.world.now / 1000);
 /** Pin number from an int, "GP25", "LED", "P0" or a Pin object. */
 function pinNo(rt: PyRt, v: PyValue): number {
   if (v instanceof PyInstance && v.native && 'pin' in v.native) return v.native.pin;
-  if (isInt(v)) return Number(toBig(v));
-  if (typeof v === 'string') {
-    const n = rt.world.profile.aliases[v] ?? rt.world.profile.aliases[v.toUpperCase()];
-    if (n !== undefined) return n;
-    if (/^\d+$/.test(v)) return Number(v);
-  }
-  throw pyErr('ValueError', `invalid pin ${typeof v === 'string' ? `'${v}'` : rt.repr(v)}`);
+  let n: number | undefined;
+  if (isInt(v)) n = Number(toBig(v));
+  else if (typeof v === 'string') n = rt.world.profile.aliases[v] ?? rt.world.profile.aliases[v.toUpperCase()] ?? (/^\d+$/.test(v) ? Number(v) : undefined);
+  if (n === undefined) throw pyErr('ValueError', `invalid pin ${typeof v === 'string' ? `'${v}'` : rt.repr(v)}`, 'invalid-pin');
+  if (!isKnownPin(rt.world.profile, n)) throw pyErr('ValueError', `invalid pin ${n}`, 'invalid-pin');
+  return n;
 }
 
 export function installBuiltins(rt: PyRt): void {
@@ -357,16 +357,26 @@ export function installModules(rt: PyRt, onRos: (m: RosMessage) => void): void {
       const v = 0.706 - ((w.onboard.get('temperature') ?? 24) - 27) * 0.001721;
       return Math.max(0, Math.min(4095, Math.round((v / 3.3) * 4095)));
     };
+    /** One bus transaction that takes the time it would on the wire. */
+    const i2cTransfer = (addr: PyValue, write: number[], readN: number) => {
+      const r = w.i2cTransfer(Number(toBig(addr)), write, readN);
+      rt.advance(w.now + r.costUs);
+      return r;
+    };
     const I2C = nclass('I2C', {
       __init__: (self) => { self.native = {}; return null; },
-      scan: () => new PyList([...w.i2c.keys()].sort((a, b) => a - b).map((a) => BigInt(a))),
-      writeto: (_s, [addr, buf]) => { if (!w.i2cWrite(Number(toBig(addr)), bytesOf(buf))) throw pyErr('OSError', '[Errno 5] EIO'); return BigInt(bytesOf(buf).length); },
-      readfrom: (_s, [addr, n]) => new PyBytes(w.i2cRead(Number(toBig(addr)), Number(toBig(n)))),
-      writeto_mem: (_s, [addr, reg, buf]) => { if (!w.i2cWrite(Number(toBig(addr)), [Number(toBig(reg)), ...bytesOf(buf)])) throw pyErr('OSError', '[Errno 5] EIO'); return null; },
+      scan: () => {
+        const found: bigint[] = [];
+        for (let a = 0x08; a < 0x78; a++) if (i2cTransfer(BigInt(a), [], 0).ack) found.push(BigInt(a));
+        return new PyList(found);
+      },
+      writeto: (_s, [addr, buf]) => { if (!i2cTransfer(addr, bytesOf(buf), 0).ack) throw pyErr('OSError', '[Errno 5] EIO'); return BigInt(bytesOf(buf).length); },
+      readfrom: (_s, [addr, n]) => new PyBytes(i2cTransfer(addr, [], Number(toBig(n))).bytes),
+      writeto_mem: (_s, [addr, reg, buf]) => { if (!i2cTransfer(addr, [Number(toBig(reg)), ...bytesOf(buf)], 0).ack) throw pyErr('OSError', '[Errno 5] EIO'); return null; },
       readfrom_mem: (_s, [addr, reg, n]) => {
-        const a = Number(toBig(addr));
-        if (!w.i2cWrite(a, [Number(toBig(reg))])) throw pyErr('OSError', '[Errno 5] EIO');
-        return new PyBytes(w.i2cRead(a, Number(toBig(n))));
+        const r = i2cTransfer(addr, [Number(toBig(reg))], Number(toBig(n)));
+        if (!r.ack) throw pyErr('OSError', '[Errno 5] EIO');
+        return new PyBytes(r.bytes);
       },
     });
     const bytesOf = (b: PyValue): number[] => (b instanceof PyBytes ? b.data : [...rt.iter(b)].map((x) => Number(toBig(x)) & 255));
@@ -389,8 +399,11 @@ export function installModules(rt: PyRt, onRos: (m: RosMessage) => void): void {
       w.clock.after(periodUs, fire);
       self.native.cancel = () => (live = false);
     };
+    const unmodelledBus = (name: string) => nclass(name, {
+      __init__: () => { throw pyErr('NotImplementedError', `machine.${name}() is not modelled yet. Your code is not wrong.`, 'bus-device-not-modelled'); },
+    });
     M.set('machine', () => mod('machine', {
-      Pin, PWM, ADC, I2C, SoftI2C: I2C, Timer,
+      Pin, PWM, ADC, I2C, SoftI2C: I2C, Timer, SPI: unmodelledBus('SPI'), SoftSPI: unmodelledBus('SoftSPI'), UART: unmodelledBus('UART'),
       freq: nat('freq', () => BigInt(prof.clockHz)),
       reset: nat('reset', () => { throw pyErr('SystemExit', 'machine.reset()'); }),
       unique_id: nat('unique_id', () => new PyBytes([0xe6, 0x61, 0x38, 0x52, 0x83, 0x3a, 0x2c, 0x2f])),

@@ -4864,7 +4864,7 @@
     ],
     "not_modelled": [
       {
-        "en": "Contact resistance, stray capacitance between strips and the break in the middle of a real power rail."
+        "en": "Contact resistance, stray capacitance between strips and the break in the middle of a long power rail."
       }
     ],
     "known_gaps": [

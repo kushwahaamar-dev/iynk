@@ -1,0 +1,951 @@
+{
+  "version": 1,
+  "cleanCount": 22,
+  "clean": [
+    {
+      "file": "clean/prj_task-uno-r3-build-fade-pwm.project.json",
+      "source": "task:robotics/uno-r3-build",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.resistor",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_task-uno-r3-build-reaction-timer.project.json",
+      "source": "task:robotics/uno-r3-build",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.push-button-6mm",
+        "core.resistor",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_uno-r3-blink.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.resistor",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_uno-r3-button.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.push-button-6mm",
+        "core.resistor",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_uno-r3-distance.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.hc-sr04",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-force.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.buzzer-piezo",
+        "core.fsr402",
+        "core.resistor",
+        "core.servo-sg90",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-heat.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.diode-1n4007",
+        "core.fan",
+        "core.resistor",
+        "core.tip120",
+        "core.tmp36",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-knob.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.potentiometer-10k",
+        "core.resistor",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_uno-r3-light.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.ldr",
+        "core.led-5mm",
+        "core.resistor",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-motor.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.dc-motor",
+        "core.diode-1n4007",
+        "core.resistor",
+        "core.tip120",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-parking.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.hc-sr04",
+        "core.traffic-light",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-piano.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.buzzer-piezo",
+        "core.push-button-6mm",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_uno-r3-plant.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.soil-moisture",
+        "core.ssd1306",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-rgb.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.resistor",
+        "core.rgb-led",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-servo.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.servo-sg90",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r3-sound.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.buzzer-piezo",
+        "core.uno-r3"
+      ],
+      "described": true
+    },
+    {
+      "file": "clean/prj_uno-r3-stepper.project.json",
+      "source": "lesson:board/uno-r3",
+      "parts": [
+        "core.breadboard-half",
+        "core.push-button-6mm",
+        "core.resistor",
+        "core.stepper-28byj48",
+        "core.uln2003",
+        "core.uno-r3"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r4-blink.project.json",
+      "source": "lesson:board/uno-r4",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.resistor",
+        "core.uno-r4"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r4-button.project.json",
+      "source": "lesson:board/uno-r4",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.push-button-6mm",
+        "core.resistor",
+        "core.uno-r4"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r4-dac-wave.project.json",
+      "source": "lesson:board/uno-r4",
+      "parts": [
+        "core.breadboard-half",
+        "core.uno-r4"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r4-i2c-scan.project.json",
+      "source": "lesson:board/uno-r4",
+      "parts": [
+        "core.breadboard-half",
+        "core.mpu6050",
+        "core.uno-r4"
+      ],
+      "described": false
+    },
+    {
+      "file": "clean/prj_uno-r4-pot-pwm.project.json",
+      "source": "lesson:board/uno-r4",
+      "parts": [
+        "core.breadboard-half",
+        "core.led-5mm",
+        "core.potentiometer-10k",
+        "core.resistor",
+        "core.uno-r4"
+      ],
+      "described": false
+    }
+  ],
+  "broken": [
+    {
+      "file": "broken/slot-01-led-no-series-resistor.project.json",
+      "base": "clean/prj_uno-r3-blink.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_led1",
+            "p": "A"
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_d13",
+          "pin": {
+            "c": "cmp_led1",
+            "p": "A"
+          },
+          "move": true
+        },
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_res1",
+            "p": "P1"
+          }
+        },
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_res1",
+            "p": "P2"
+          }
+        },
+        {
+          "k": "component.remove",
+          "id": "cmp_res1"
+        }
+      ],
+      "expectedCauseId": "led-no-series-resistor",
+      "expectedRule": "rule:led-series@1",
+      "slot": 1
+    },
+    {
+      "file": "broken/slot-02-led-reversed.project.json",
+      "base": "clean/prj_uno-r3-blink.project.json",
+      "ops": [
+        {
+          "k": "net.connect",
+          "net": "net_gnd",
+          "pin": {
+            "c": "cmp_led1",
+            "p": "A"
+          },
+          "move": true
+        },
+        {
+          "k": "net.connect",
+          "net": "net_led1a_res1p2",
+          "pin": {
+            "c": "cmp_led1",
+            "p": "K"
+          },
+          "move": true
+        },
+        {
+          "k": "view.place",
+          "view": "vw_bb",
+          "placement": {
+            "c": "cmp_led1",
+            "x_mm": 0,
+            "y_mm": 0,
+            "legs": {
+              "A": "c15",
+              "K": "c14"
+            }
+          }
+        }
+      ],
+      "expectedCauseId": "led-reversed",
+      "expectedRule": "rule:led-polarity@1",
+      "slot": 2
+    },
+    {
+      "file": "broken/slot-03-output-contention.project.json",
+      "base": "clean/prj_uno-r3-rgb.project.json",
+      "ops": [
+        {
+          "k": "net.merge",
+          "into": "net_d9",
+          "from": "net_d10"
+        }
+      ],
+      "expectedCauseId": "output-contention",
+      "expectedRule": "rule:contention@1",
+      "slot": 3
+    },
+    {
+      "file": "broken/slot-04-supply-shorted-to-ground.project.json",
+      "base": "clean/prj_uno-r3-button.project.json",
+      "ops": [
+        {
+          "k": "net.merge",
+          "into": "net_gnd",
+          "from": "net_5v"
+        }
+      ],
+      "expectedCauseId": "supply-shorted-to-ground",
+      "expectedRule": "rule:rail-short@1",
+      "slot": 4
+    },
+    {
+      "file": "broken/slot-05-floating-input.project.json",
+      "base": "clean/prj_uno-r3-knob.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_pot1",
+            "p": "W"
+          }
+        }
+      ],
+      "expectedCauseId": "floating-input",
+      "expectedRule": "rule:floating-input@1",
+      "slot": 5
+    },
+    {
+      "file": "broken/slot-06-part-not-powered.project.json",
+      "base": "clean/prj_uno-r3-distance.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_us1",
+            "p": "VCC"
+          }
+        },
+        {
+          "k": "wire.remove",
+          "view": "vw_bb",
+          "id": "wir_1"
+        },
+        {
+          "k": "wire.add",
+          "view": "vw_bb",
+          "wire": {
+            "id": "wir_1",
+            "net": "net_3v3",
+            "color": "orange",
+            "from": {
+              "kind": "pin",
+              "c": "brd_main",
+              "p": "P3V3"
+            },
+            "to": {
+              "kind": "hole",
+              "surface": "cmp_bb",
+              "hole": "e10"
+            }
+          }
+        },
+        {
+          "k": "net.create",
+          "net": {
+            "id": "net_3v3",
+            "name": "3V3",
+            "class": "power",
+            "connections": [
+              {
+                "c": "brd_main",
+                "p": "P3V3"
+              },
+              {
+                "c": "cmp_us1",
+                "p": "VCC"
+              }
+            ]
+          }
+        }
+      ],
+      "expectedCauseId": "part-not-powered",
+      "expectedRule": "rule:part-supply@1",
+      "slot": 6
+    },
+    {
+      "file": "broken/slot-07-button-no-pulldown.project.json",
+      "base": "clean/prj_uno-r3-button.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_res1",
+            "p": "P1"
+          }
+        },
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_res1",
+            "p": "P2"
+          }
+        },
+        {
+          "k": "component.remove",
+          "id": "cmp_res1"
+        }
+      ],
+      "expectedCauseId": "button-no-pulldown",
+      "expectedRule": "rule:button-no-pull@1",
+      "slot": 7
+    },
+    {
+      "file": "broken/slot-08-open-connection.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_oled1",
+            "p": "VCC"
+          }
+        }
+      ],
+      "expectedCauseId": "open-connection",
+      "expectedRule": "rule:open-pin@1",
+      "slot": 8
+    },
+    {
+      "file": "broken/slot-09-swapped-pins.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "wire.remove",
+          "view": "vw_bb",
+          "id": "wir_3"
+        },
+        {
+          "k": "wire.remove",
+          "view": "vw_bb",
+          "id": "wir_4"
+        },
+        {
+          "k": "net.connect",
+          "net": "net_scl",
+          "pin": {
+            "c": "brd_main",
+            "p": "SDA"
+          },
+          "move": true
+        },
+        {
+          "k": "net.connect",
+          "net": "net_sda",
+          "pin": {
+            "c": "brd_main",
+            "p": "SCL"
+          },
+          "move": true
+        },
+        {
+          "k": "wire.add",
+          "view": "vw_bb",
+          "wire": {
+            "id": "wir_3",
+            "net": "net_scl",
+            "color": "blue",
+            "from": {
+              "kind": "pin",
+              "c": "brd_main",
+              "p": "SDA"
+            },
+            "to": {
+              "kind": "hole",
+              "surface": "cmp_bb",
+              "hole": "j6"
+            }
+          }
+        },
+        {
+          "k": "wire.add",
+          "view": "vw_bb",
+          "wire": {
+            "id": "wir_4",
+            "net": "net_sda",
+            "color": "purple",
+            "from": {
+              "kind": "pin",
+              "c": "brd_main",
+              "p": "SCL"
+            },
+            "to": {
+              "kind": "hole",
+              "surface": "cmp_bb",
+              "hole": "j7"
+            }
+          }
+        }
+      ],
+      "expectedCauseId": "swapped-pins",
+      "expectedRule": "rule:i2c-roles@1",
+      "slot": 9
+    },
+    {
+      "file": "broken/slot-10-wrong-pin-in-code.project.json",
+      "base": "clean/prj_uno-r3-blink.project.json",
+      "ops": [
+        {
+          "k": "source.edit",
+          "id": "src_sketch",
+          "baseSeq": 0,
+          "pos": 20,
+          "del": 2,
+          "ins": "12"
+        }
+      ],
+      "expectedCauseId": "wrong-pin-in-code",
+      "expectedRule": "code:pin-mismatch@1",
+      "slot": 10
+    },
+    {
+      "file": "broken/slot-11-i2c-missing-pullup.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "dep.set",
+          "dependency": {
+            "ref": "core.resistor",
+            "version": "1.0.0",
+            "origin": "builtin",
+            "interface": {
+              "params": [
+                {
+                  "default": 220,
+                  "id": "ohms",
+                  "max": 1000000000,
+                  "min": 0.001,
+                  "type": "number",
+                  "unit": "ohm"
+                }
+              ],
+              "pins": [
+                {
+                  "class": "passive",
+                  "designator": "1",
+                  "id": "P1",
+                  "type": "passive"
+                },
+                {
+                  "class": "passive",
+                  "designator": "2",
+                  "id": "P2",
+                  "type": "passive"
+                }
+              ],
+              "role": "part"
+            }
+          }
+        },
+        {
+          "k": "component.add",
+          "component": {
+            "id": "cmp_rpu1",
+            "refdes": "RPU1",
+            "definition": {
+              "ref": "core.resistor",
+              "version": "1.0.0"
+            },
+            "params": {
+              "ohms": 10000
+            }
+          }
+        },
+        {
+          "k": "component.add",
+          "component": {
+            "id": "cmp_rpu2",
+            "refdes": "RPU2",
+            "definition": {
+              "ref": "core.resistor",
+              "version": "1.0.0"
+            },
+            "params": {
+              "ohms": 10000
+            }
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_sda",
+          "pin": {
+            "c": "cmp_rpu1",
+            "p": "P1"
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_scl",
+          "pin": {
+            "c": "cmp_rpu2",
+            "p": "P1"
+          }
+        }
+      ],
+      "expectedCauseId": "i2c-missing-pullup",
+      "expectedRule": "rule:i2c-pullup@1",
+      "slot": 11
+    },
+    {
+      "file": "broken/slot-12-pin-overcurrent.project.json",
+      "base": "clean/prj_uno-r3-blink.project.json",
+      "ops": [
+        {
+          "k": "component.set",
+          "id": "cmp_res1",
+          "params": {
+            "ohms": 10
+          }
+        }
+      ],
+      "expectedCauseId": "pin-overcurrent",
+      "expectedRule": "solve:pin-overcurrent@1",
+      "slot": 12
+    },
+    {
+      "file": "broken/slot-13-brownout.project.json",
+      "base": "clean/prj_uno-r3-blink.project.json",
+      "ops": [
+        {
+          "k": "sim.set",
+          "key": "environment",
+          "value": {
+            "supply_V": 2
+          }
+        }
+      ],
+      "expectedCauseId": "brownout",
+      "expectedRule": "solve:brownout@1",
+      "slot": 13
+    },
+    {
+      "file": "broken/slot-14-reverse-polarity.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "net.connect",
+          "net": "net_gnd",
+          "pin": {
+            "c": "cmp_oled1",
+            "p": "VCC"
+          },
+          "move": true
+        },
+        {
+          "k": "net.connect",
+          "net": "net_3v3",
+          "pin": {
+            "c": "cmp_oled1",
+            "p": "GND"
+          },
+          "move": true
+        },
+        {
+          "k": "view.place",
+          "view": "vw_bb",
+          "placement": {
+            "c": "cmp_oled1",
+            "x_mm": 0,
+            "y_mm": 0,
+            "legs": {
+              "GND": "g5",
+              "SCL": "g6",
+              "SDA": "g7",
+              "VCC": "g4"
+            }
+          }
+        }
+      ],
+      "expectedCauseId": "reverse-polarity",
+      "expectedRule": "rule:supply-polarity@1",
+      "slot": 14
+    },
+    {
+      "file": "broken/slot-15-wrong-value.project.json",
+      "base": "clean/prj_uno-r3-blink.project.json",
+      "ops": [
+        {
+          "k": "component.set",
+          "id": "cmp_res1",
+          "params": {
+            "ohms": 100000
+          }
+        }
+      ],
+      "expectedCauseId": "wrong-value",
+      "expectedRule": "solve:value-band@1",
+      "slot": 15
+    },
+    {
+      "file": "broken/slot-16-missing-ground.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_oled1",
+            "p": "GND"
+          }
+        }
+      ],
+      "expectedCauseId": "missing-ground",
+      "expectedRule": "rule:missing-ground@1",
+      "slot": 16
+    },
+    {
+      "file": "broken/slot-17-open-connection.project.json",
+      "base": "clean/prj_uno-r4-pot-pwm.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_pot1",
+            "p": "W"
+          }
+        }
+      ],
+      "expectedCauseId": "open-connection",
+      "expectedRule": "rule:open-pin@1",
+      "slot": 17
+    },
+    {
+      "file": "broken/slot-18-swapped-pins.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "net.connect",
+          "net": "net_scl",
+          "pin": {
+            "c": "cmp_oled1",
+            "p": "SDA"
+          },
+          "move": true
+        },
+        {
+          "k": "net.connect",
+          "net": "net_sda",
+          "pin": {
+            "c": "cmp_oled1",
+            "p": "SCL"
+          },
+          "move": true
+        },
+        {
+          "k": "view.place",
+          "view": "vw_bb",
+          "placement": {
+            "c": "cmp_oled1",
+            "x_mm": 0,
+            "y_mm": 0,
+            "legs": {
+              "GND": "g4",
+              "SCL": "g7",
+              "SDA": "g6",
+              "VCC": "g5"
+            }
+          }
+        }
+      ],
+      "expectedCauseId": "swapped-pins",
+      "expectedRule": "rule:i2c-roles@1",
+      "slot": 18
+    },
+    {
+      "file": "broken/slot-19-wrong-value.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "dep.set",
+          "dependency": {
+            "ref": "core.resistor",
+            "version": "1.0.0",
+            "origin": "builtin",
+            "interface": {
+              "params": [
+                {
+                  "default": 220,
+                  "id": "ohms",
+                  "max": 1000000000,
+                  "min": 0.001,
+                  "type": "number",
+                  "unit": "ohm"
+                }
+              ],
+              "pins": [
+                {
+                  "class": "passive",
+                  "designator": "1",
+                  "id": "P1",
+                  "type": "passive"
+                },
+                {
+                  "class": "passive",
+                  "designator": "2",
+                  "id": "P2",
+                  "type": "passive"
+                }
+              ],
+              "role": "part"
+            }
+          }
+        },
+        {
+          "k": "component.add",
+          "component": {
+            "id": "cmp_rpu1",
+            "refdes": "RPU1",
+            "definition": {
+              "ref": "core.resistor",
+              "version": "1.0.0"
+            },
+            "params": {
+              "ohms": 1000000
+            }
+          }
+        },
+        {
+          "k": "component.add",
+          "component": {
+            "id": "cmp_rpu2",
+            "refdes": "RPU2",
+            "definition": {
+              "ref": "core.resistor",
+              "version": "1.0.0"
+            },
+            "params": {
+              "ohms": 1000000
+            }
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_sda",
+          "pin": {
+            "c": "cmp_rpu1",
+            "p": "P1"
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_scl",
+          "pin": {
+            "c": "cmp_rpu2",
+            "p": "P1"
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_3v3",
+          "pin": {
+            "c": "cmp_rpu1",
+            "p": "P2"
+          }
+        },
+        {
+          "k": "net.connect",
+          "net": "net_3v3",
+          "pin": {
+            "c": "cmp_rpu2",
+            "p": "P2"
+          }
+        }
+      ],
+      "expectedCauseId": "wrong-value",
+      "expectedRule": "rule:i2c-pullup-value@1",
+      "slot": 19
+    },
+    {
+      "file": "broken/slot-20-missing-ground.project.json",
+      "base": "clean/prj_uno-r3-plant.project.json",
+      "ops": [
+        {
+          "k": "net.disconnect",
+          "pin": {
+            "c": "cmp_soil1",
+            "p": "GND"
+          }
+        }
+      ],
+      "expectedCauseId": "missing-ground",
+      "expectedRule": "rule:missing-ground@1",
+      "slot": 20
+    }
+  ]
+}

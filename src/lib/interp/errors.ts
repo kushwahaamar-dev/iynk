@@ -6,10 +6,17 @@ export interface SourcePos {
 
 export type ErrorKind = 'syntax' | 'compile' | 'runtime' | 'unsupported' | 'limit';
 
+/** Codes that mark a feature the simulator does not model, so the Problems pane can say so. */
+export type DiagnosticCode =
+  | 'bus-device-not-modelled' | 'invalid-pin'
+  | 'include-not-found' | 'include-cycle' | 'include-depth-limit' | 'include-file-limit'
+  | 'library-not-modelled-yet' | 'library-method-not-modelled';
+
 /** A stable identifier for an error the Studio words itself, with the values its text needs. */
 export interface ErrorInfo {
   code: string;
   args?: Record<string, string | number>;
+  file?: string;
 }
 
 /**
@@ -23,6 +30,7 @@ export class InterpError extends Error {
   readonly hint?: string;
   readonly code?: string;
   readonly args?: Record<string, string | number>;
+  readonly file?: string;
 
   constructor(kind: ErrorKind, message: string, pos?: SourcePos | null, hint?: string, info?: ErrorInfo) {
     super(message);
@@ -33,6 +41,12 @@ export class InterpError extends Error {
     this.hint = hint;
     this.code = info?.code;
     this.args = info?.args;
+    this.file = info?.file;
+  }
+
+  /** A copy of this error pointing at `pos`. */
+  at(pos: SourcePos): InterpError {
+    return new InterpError(this.kind, this.message, pos, this.hint, this.code ? { code: this.code, args: this.args, file: this.file } : undefined);
   }
 
   /** "3:14 error: 'x' was not declared" style text for the serial monitor or a log. */
@@ -43,7 +57,7 @@ export class InterpError extends Error {
   }
 
   toJSON(): Diagnostic {
-    return { kind: this.kind, message: this.message, line: this.line, col: this.col, hint: this.hint, code: this.code, args: this.args };
+    return { kind: this.kind, message: this.message, line: this.line, col: this.col, hint: this.hint, code: this.code, args: this.args, file: this.file };
   }
 }
 
@@ -56,6 +70,7 @@ export interface Diagnostic {
   hint?: string;
   code?: string;
   args?: Record<string, string | number>;
+  file?: string;
 }
 
 export function syntaxError(message: string, pos: SourcePos, hint?: string): InterpError {
@@ -64,6 +79,10 @@ export function syntaxError(message: string, pos: SourcePos, hint?: string): Int
 
 export function unsupported(feature: string, pos: SourcePos | null, hint?: string): InterpError {
   return new InterpError('unsupported', `${feature} is not supported by the iynk simulator`, pos, hint);
+}
+
+export function notModelled(what: string, code: DiagnosticCode, pos: SourcePos | null, hint?: string): InterpError {
+  return new InterpError('unsupported', `${what} is not modelled yet. Your code is not wrong.`, pos, hint, { code });
 }
 
 /** Levenshtein distance, used for "did you mean" hints. */

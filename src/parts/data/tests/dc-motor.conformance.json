@@ -1,0 +1,12 @@
+{
+  "id": "conformance",
+  "kind": "conformance",
+  "shape": "none",
+  "description": "dc-motor layers resolve and every pin and rating is wired.",
+  "checks": [
+    "layers-resolve",
+    "terminals-are-pins",
+    "ratings-have-slot"
+  ],
+  "derivation": "No numeric expectation: the motor element has no golden-trace shape."
+}

@@ -246,7 +246,8 @@
       "models": "模型",
       "partner": "搭档",
       "code": "代码",
-      "serial": "串口"
+      "serial": "串口",
+      "faults": "故障"
     },
     "separator": "调整底部面板大小",
     "narrow": "手机布局稍后推出；查看和运行可用",

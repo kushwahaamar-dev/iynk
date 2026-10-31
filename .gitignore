@@ -80,3 +80,6 @@ docs/MASTER_PLAN/**/node_modules/
 
 # the server's bundled catalogue tools
 /server/dist/
+
+# Engine files built from node_modules by scripts/build-engines.mjs
+public/engines/

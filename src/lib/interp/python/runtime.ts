@@ -1,4 +1,4 @@
-import { InterpError, didYouMean, type SourcePos } from '../errors';
+import { InterpError, didYouMean, type DiagnosticCode, type SourcePos } from '../errors';
 import { Exec, PREEMPT, type Gen, type Program } from '../exec';
 import { HeapMeter, checkElements, checkString } from '../limits';
 import type { World } from '../world';
@@ -160,9 +160,10 @@ EXC.UnboundLocalError = exc('UnboundLocalError', EXC.NameError);
 EXC.ModuleNotFoundError = exc('ModuleNotFoundError', EXC.ImportError);
 EXC.RecursionError = exc('RecursionError', EXC.RuntimeError);
 
-export function pyErr(cls: string, msg: string): PyRaise {
+export function pyErr(cls: string, msg: string, code?: DiagnosticCode): PyRaise {
   const e = new PyInstance(EXC[cls] ?? Exception);
   e.dict.set('args', new PyTuple([msg]));
+  if (code) e.dict.set('code', code);
   return new PyRaise(e);
 }
 
@@ -268,7 +269,8 @@ export class PyRt extends Exec {
       const msg = excMessage(e.exc);
       const p = e.pos ?? this.line;
       const hint = name === 'NameError' ? (e.exc.dict.get('hint') as string | undefined) : name === 'KeyboardInterrupt' ? undefined : undefined;
-      return new InterpError('runtime', `${name}${msg ? `: ${msg}` : ''}`, p, hint);
+      const code = e.exc.dict.get('code') as DiagnosticCode | undefined;
+      return new InterpError('runtime', `${name}${msg ? `: ${msg}` : ''}`, p, hint, code && { code });
     }
     return e;
   }
