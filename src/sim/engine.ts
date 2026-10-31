@@ -111,6 +111,13 @@ export const RANK = {
   probe: 90,
 } as const;
 
+/** Total order `(at, phase, rank, seq)`. Two distinct events never share a key, so equal keys mean a bug. */
+export function compareEvents(a: SimEvent, b: SimEvent): number {
+  const d = a.at - b.at || a.phase - b.phase || a.rank - b.rank || a.seq - b.seq;
+  if (d === 0 && a !== b) throw new Error(`events ${a.src}/${a.kind} and ${b.src}/${b.kind} share the key (${a.at}, ${a.phase}, ${a.rank}, ${a.seq})`);
+  return d;
+}
+
 export interface SliceBudget {
   shouldYield(): boolean;
   work: WorkLimits;

@@ -31,8 +31,8 @@ export interface PinEdge {
 
 export interface Orchestrator {
   load(net: SimNetlist, opts: SimRunOptions): LoadResult;
-  /** Never reads a wall clock. */
-  runUntil(target: SimTime, budget: SliceBudget): SliceResult;
+  /** Never reads a wall clock. `exclusive` stops at `target - 1` ns and leaves the events at `target` queued. */
+  runUntil(target: SimTime, budget: SliceBudget, o?: { exclusive?: boolean }): SliceResult;
   step(unit: StepUnit, n: number): SliceResult;
   /** Stamped with `now` and the next `seq`, appended to `inputs`. */
   inject(input: HostInput): void;
@@ -109,6 +109,8 @@ class SimOrchestrator implements Orchestrator, EventSink {
   constructor(engines: Engine[], digital: DigitalLayer, live: LiveAnalog | null) {
     this.digital = digital;
     this.live = live;
+    const ids = new Set(engines.map((e) => e.id));
+    if (ids.size !== engines.length) throw new Error("two engines share an id");
     this.engines = [...engines].sort((a, b) => a.rank - b.rank || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
     for (const engine of this.engines) engine.attach(this);
   }
@@ -178,12 +180,13 @@ class SimOrchestrator implements Orchestrator, EventSink {
     });
   }
 
-  runUntil(target: SimTime, budget: SliceBudget): SliceResult {
+  runUntil(target: SimTime, budget: SliceBudget, o?: { exclusive?: boolean }): SliceResult {
     const early = this.settled();
     if (early) return early;
-    if (target <= this.now) return { reason: "target", now: this.now };
+    const stop = o?.exclusive ? target - 1 : target;
+    if (stop <= this.now) return { reason: "target", now: this.now };
     this.current = "running";
-    const end = this.opts?.endNs === undefined ? target : Math.min(target, this.opts.endNs);
+    const end = this.opts?.endNs === undefined ? stop : Math.min(stop, this.opts.endNs);
     let delivered = 0;
     while (this.now < end) {
       const horizon = Math.min(end, this.now + SLICE_NS, this.nextCheckpoint, this.nextWake());

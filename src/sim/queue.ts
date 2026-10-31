@@ -1,14 +1,9 @@
-import type { SimEvent } from "./engine.ts";
+import { compareEvents, type SimEvent } from "./engine.ts";
 
 export const QUEUE_CAP = 1_000_000;
 
 /** True when `a` runs before `b` in the total order `(at, phase, rank, seq)`. */
-export function before(a: SimEvent, b: SimEvent): boolean {
-  if (a.at !== b.at) return a.at < b.at;
-  if (a.phase !== b.phase) return a.phase < b.phase;
-  if (a.rank !== b.rank) return a.rank < b.rank;
-  return a.seq < b.seq;
-}
+export const before = (a: SimEvent, b: SimEvent): boolean => compareEvents(a, b) < 0;
 
 /** Binary min-heap on `(at, phase, rank, seq)`. */
 export class EventQueue {
