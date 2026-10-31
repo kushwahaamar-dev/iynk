@@ -1,3 +1,166 @@
 {
-  "title": "零件详情"
+  "title": "零件详情",
+  "back": "返回工作室",
+  "edit": "编辑此零件",
+  "notFound": {
+    "title": "没有这个零件",
+    "body": "库里没有这个 id 和版本的零件。",
+    "link": "返回零件面板"
+  },
+  "tier": {
+    "T0": "示意图",
+    "T1": "教学模型",
+    "T2": "计算模型",
+    "T3": "运行固件",
+    "none": "无模型"
+  },
+  "status": {
+    "modelled": "已建模",
+    "partly-modelled": "部分建模",
+    "not-modelled-yet": "尚未建模"
+  },
+  "trust": {
+    "core": "随 iynk 附带",
+    "local": "你自己的零件",
+    "imported": "导入的包"
+  },
+  "thirdParty": "含第三方内容",
+  "models": "它模拟了什么",
+  "notModelled": "它没有模拟什么",
+  "ratings": {
+    "heading": "额定值",
+    "empty": "没有声明额定值。",
+    "rating": "额定值",
+    "readBy": "模型读取此项",
+    "readByNone": "仅显示，没有模型读取",
+    "notGiven": "未给出",
+    "confidence": "可信度：{level}",
+    "measure": {
+      "voltage": "电压",
+      "current": "电流",
+      "power": "功率",
+      "temperature": "温度",
+      "frequency": "频率",
+      "resistance": "电阻",
+      "capacitance": "电容",
+      "time": "时间",
+      "thermal_resistance": "热阻",
+      "torque": "扭矩",
+      "rate": "速率",
+      "acceleration": "加速度",
+      "ratio": "比值",
+      "misc": "其他"
+    },
+    "role": {
+      "abs_max": "绝对最大值",
+      "abs_min": "绝对最小值",
+      "operating": "工作范围",
+      "recommended": "推荐值",
+      "threshold": "阈值",
+      "characteristic": "特性值",
+      "consumption": "消耗",
+      "thermal": "热参数",
+      "timing": "时序"
+    }
+  },
+  "slot": {
+    "manufacturer": "厂商给出",
+    "simulation": "iynk 的假设",
+    "measured": "台架实测"
+  },
+  "confidence": {
+    "low": "低",
+    "medium": "中",
+    "high": "高"
+  },
+  "unsourced": "假设值，无来源",
+  "unsourcedSummary": {
+    "heading": "没有来源的数值",
+    "count": "没有来源的假设数值：{count}",
+    "none": "这个零件的每个数值都有来源。"
+  },
+  "sources": {
+    "heading": "来源",
+    "empty": "没有列出来源。",
+    "open": "打开来源",
+    "retrieved": "查阅于 {date}",
+    "reliability": {
+      "primary": "一手",
+      "secondary": "二手",
+      "unverified": "未核对"
+    },
+    "kind": {
+      "datasheet": "数据手册",
+      "application-note": "应用笔记",
+      "schematic": "原理图",
+      "product-page": "产品页面",
+      "reseller-guide": "经销商指南",
+      "library": "库",
+      "photo": "照片",
+      "measurement": "测量",
+      "fact-sheet": "资料表",
+      "lesson": "课程",
+      "standard": "标准",
+      "own-estimate": "我们自己的估计"
+    }
+  },
+  "validity": "有效范围",
+  "gaps": {
+    "heading": "已知缺口",
+    "evidence": "依据：{text}"
+  },
+  "layers": {
+    "heading": "层",
+    "equation": "公式",
+    "notModelledYet": "尚未建模",
+    "kind": {
+      "element": "求解器元件",
+      "subcircuit": "子电路",
+      "logic": "逻辑",
+      "builtin": "内置行为",
+      "extension": "代码",
+      "none": "无"
+    },
+    "reason": {
+      "declared": "由零件自己声明",
+      "solver-lacks-element": "求解器没有这种元件",
+      "unknown-builtin": "这个版本没有该行为",
+      "extension-disabled": "带代码的零件已关闭",
+      "subcircuit-invalid": "子电路无法解析"
+    }
+  },
+  "labels": {
+    "heading": "质量标签",
+    "schemaValid": "符合零件格式",
+    "hasTests": "声明了测试",
+    "testsRun": "测试运行",
+    "hasReferenceTest": "有参考测试",
+    "code": "运行代码",
+    "permissions": "代码权限",
+    "thirdPartyContent": "第三方内容",
+    "yes": "是",
+    "no": "否",
+    "none": "无",
+    "run": {
+      "not-run": "未运行",
+      "pass": "通过",
+      "fail": "失败"
+    }
+  },
+  "tests": {
+    "heading": "零件声明的测试",
+    "empty": "没有声明测试。",
+    "present": "已有",
+    "to-write": "待编写"
+  },
+  "license": "许可证",
+  "versions": {
+    "heading": "其他版本",
+    "only": "这是唯一的版本。"
+  },
+  "usage": {
+    "heading": "在此项目中使用",
+    "empty": "没有已放置的零件使用它。",
+    "instance": "{label}，版本 {version}"
+  }
 }

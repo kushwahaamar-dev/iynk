@@ -2,6 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import faults from "@/i18n/messages/en/faults.json";
 import parteditor from "@/i18n/messages/en/parteditor.json";
+import partinfo from "@/i18n/messages/en/partinfo.json";
 import fidelity from "@/i18n/messages/en/fidelity.json";
 import instruments from "@/i18n/messages/en/instruments.json";
 import studio from "@/i18n/messages/en/studio.json";
@@ -15,7 +16,7 @@ import studioWire from "@/i18n/messages/en/studioWire.json";
 import { createAnnouncer } from "@/studio/tools/keyboard";
 import { LiveRegion } from "./LiveRegion";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults, parteditor };
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults, parteditor, partinfo };
 
 function rig() {
   const announcer = createAnnouncer();

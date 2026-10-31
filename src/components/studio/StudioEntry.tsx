@@ -9,9 +9,13 @@ import { createIndexedDbPartsRepository, partKey } from "@/local/parts-store";
 import type { PartRecord, PartsRepository } from "@/local/parts-store";
 import { getAppRegistry } from "@/parts/builtin";
 import { digestOf } from "@/parts/descriptor";
-import type { Descriptor } from "@/parts/descriptor";
+import type { Descriptor, DescriptorOrigin, Trust } from "@/parts/descriptor";
+import { partFacts } from "@/parts/facts";
+import { makeModelEnv } from "@/sim/models/kinds";
 import { navigate, readRoute, routeHash, subscribeRoute, type PartsRoute, type StudioRoute } from "@/studio/router";
+import { EmptyState, buttonClass } from "@/components/ui";
 import { Home } from "./Home";
+import { PartPage } from "./PartPage";
 import { Workspace } from "./Workspace";
 import { ServicesProvider } from "./wiring/services";
 
@@ -26,6 +30,8 @@ const PartEditor = dynamic(() => import("./PartEditor").then((m) => m.PartEditor
 });
 
 const HOME: StudioRoute = { kind: "home" };
+
+const TRUST_OF_ORIGIN: Readonly<Record<DescriptorOrigin, Trust>> = { core: "core", "local-user": "local", "imported-pack": "imported" };
 
 export interface StudioEntryProps {
   messages: StudioMessages;
@@ -93,6 +99,27 @@ function PartsEditorRoute({ route, messages, lang }: { route: PartsRoute; messag
   );
 }
 
+function PartInfoRoute({ routeKey, messages, lang }: { routeKey: string; messages: StudioMessages; lang: Locale }) {
+  const strings = messages.partinfo;
+  const registry = getAppRegistry();
+  const at = routeKey.lastIndexOf("@");
+  const id = routeKey.slice(0, at);
+  const version = routeKey.slice(at + 1);
+  const def = registry.get(id, version);
+  const origin = registry.originOf(id, version);
+
+  if (!def || !origin) {
+    return (
+      <EmptyState title={strings.notFound.title} action={<a href="#/" className={buttonClass("secondary")}>{strings.notFound.link}</a>}>
+        {strings.notFound.body}
+      </EmptyState>
+    );
+  }
+  const trust = TRUST_OF_ORIGIN[origin];
+  const facts = partFacts(def, trust, makeModelEnv((ref, v) => registry.get(ref, v)), registry.versions(id));
+  return <PartPage facts={facts} messages={strings} lang={lang} onOpenEditor={trust === "local" ? () => navigate({ kind: "parts-edit", key: routeKey }) : undefined} />;
+}
+
 export function StudioEntry({ messages, lang }: StudioEntryProps) {
   const strings = messages.studio;
   const route = useSyncExternalStore(subscribeRoute, readRoute, () => HOME);
@@ -102,6 +129,8 @@ export function StudioEntry({ messages, lang }: StudioEntryProps) {
     <ServicesProvider>
       {route.kind === "parts-new" || route.kind === "parts-edit" ? (
         <PartsEditorRoute key={routeHash(route)} route={route} messages={messages} lang={lang} />
+      ) : route.kind === "parts-info" ? (
+        <PartInfoRoute key={route.key} routeKey={route.key} messages={messages} lang={lang} />
       ) : route.kind === "project" ? (
         <Workspace projectId={route.id} autorun={route.autorun} messages={messages} lang={lang} />
       ) : (

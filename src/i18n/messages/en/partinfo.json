@@ -1,3 +1,166 @@
 {
-  "title": "Part details"
+  "title": "Part details",
+  "back": "Back to the studio",
+  "edit": "Edit this part",
+  "notFound": {
+    "title": "No such part",
+    "body": "The library has no part with this id and version.",
+    "link": "Back to the palette"
+  },
+  "tier": {
+    "T0": "Illustration",
+    "T1": "Teaching model",
+    "T2": "Calculated model",
+    "T3": "Runs firmware",
+    "none": "No model"
+  },
+  "status": {
+    "modelled": "Modelled",
+    "partly-modelled": "Partly modelled",
+    "not-modelled-yet": "Not modelled yet"
+  },
+  "trust": {
+    "core": "Ships with iynk",
+    "local": "Your own part",
+    "imported": "Imported pack"
+  },
+  "thirdParty": "Contains third party content",
+  "models": "What it models",
+  "notModelled": "What it does not model",
+  "ratings": {
+    "heading": "Ratings",
+    "empty": "No ratings declared.",
+    "rating": "Rating",
+    "readBy": "Read by the model",
+    "readByNone": "Shown only, no model reads it",
+    "notGiven": "Not given",
+    "confidence": "Confidence: {level}",
+    "measure": {
+      "voltage": "Voltage",
+      "current": "Current",
+      "power": "Power",
+      "temperature": "Temperature",
+      "frequency": "Frequency",
+      "resistance": "Resistance",
+      "capacitance": "Capacitance",
+      "time": "Time",
+      "thermal_resistance": "Thermal resistance",
+      "torque": "Torque",
+      "rate": "Rate",
+      "acceleration": "Acceleration",
+      "ratio": "Ratio",
+      "misc": "Other"
+    },
+    "role": {
+      "abs_max": "Absolute maximum",
+      "abs_min": "Absolute minimum",
+      "operating": "Operating",
+      "recommended": "Recommended",
+      "threshold": "Threshold",
+      "characteristic": "Characteristic",
+      "consumption": "Consumption",
+      "thermal": "Thermal",
+      "timing": "Timing"
+    }
+  },
+  "slot": {
+    "manufacturer": "Stated by the maker",
+    "simulation": "iynk's assumption",
+    "measured": "Bench-measured"
+  },
+  "confidence": {
+    "low": "low",
+    "medium": "medium",
+    "high": "high"
+  },
+  "unsourced": "Assumed, no source",
+  "unsourcedSummary": {
+    "heading": "Numbers without a source",
+    "count": "Assumed numbers with no source: {count}",
+    "none": "Every number in this part points to a source."
+  },
+  "sources": {
+    "heading": "Sources",
+    "empty": "No sources listed.",
+    "open": "Open source",
+    "retrieved": "Retrieved {date}",
+    "reliability": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "unverified": "Unverified"
+    },
+    "kind": {
+      "datasheet": "Datasheet",
+      "application-note": "Application note",
+      "schematic": "Schematic",
+      "product-page": "Product page",
+      "reseller-guide": "Reseller guide",
+      "library": "Library",
+      "photo": "Photo",
+      "measurement": "Measurement",
+      "fact-sheet": "Fact sheet",
+      "lesson": "Lesson",
+      "standard": "Standard",
+      "own-estimate": "Our own estimate"
+    }
+  },
+  "validity": "Validity range",
+  "gaps": {
+    "heading": "Known gaps",
+    "evidence": "Evidence: {text}"
+  },
+  "layers": {
+    "heading": "Layers",
+    "equation": "Equation",
+    "notModelledYet": "Not modelled yet",
+    "kind": {
+      "element": "Solver element",
+      "subcircuit": "Subcircuit",
+      "logic": "Logic",
+      "builtin": "Built in behaviour",
+      "extension": "Code",
+      "none": "None"
+    },
+    "reason": {
+      "declared": "Declared by the part",
+      "solver-lacks-element": "The solver lacks this element",
+      "unknown-builtin": "This build lacks this behaviour",
+      "extension-disabled": "Code parts are switched off",
+      "subcircuit-invalid": "The subcircuit does not resolve"
+    }
+  },
+  "labels": {
+    "heading": "Quality labels",
+    "schemaValid": "Passes the part schema",
+    "hasTests": "Declares tests",
+    "testsRun": "Tests run",
+    "hasReferenceTest": "Has a reference test",
+    "code": "Runs code",
+    "permissions": "Code permissions",
+    "thirdPartyContent": "Third party content",
+    "yes": "Yes",
+    "no": "No",
+    "none": "None",
+    "run": {
+      "not-run": "Not run",
+      "pass": "Pass",
+      "fail": "Fail"
+    }
+  },
+  "tests": {
+    "heading": "Tests the part declares",
+    "empty": "No tests declared.",
+    "present": "Present",
+    "to-write": "Still to write"
+  },
+  "license": "License",
+  "versions": {
+    "heading": "Other versions",
+    "only": "This is the only version."
+  },
+  "usage": {
+    "heading": "Used in this project",
+    "empty": "No placed part uses it.",
+    "instance": "{label} at {version}"
+  }
 }

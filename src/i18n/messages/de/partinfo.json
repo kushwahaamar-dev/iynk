@@ -1,3 +1,166 @@
 {
-  "title": "Bauteil-Details"
+  "title": "Teiledetails",
+  "back": "Zurück zum Studio",
+  "edit": "Dieses Teil bearbeiten",
+  "notFound": {
+    "title": "Kein solches Teil",
+    "body": "Die Bibliothek hat kein Teil mit dieser ID und Version.",
+    "link": "Zurück zur Palette"
+  },
+  "tier": {
+    "T0": "Illustration",
+    "T1": "Lehrmodell",
+    "T2": "Berechnetes Modell",
+    "T3": "Führt Firmware aus",
+    "none": "Kein Modell"
+  },
+  "status": {
+    "modelled": "Modelliert",
+    "partly-modelled": "Teilweise modelliert",
+    "not-modelled-yet": "Noch nicht modelliert"
+  },
+  "trust": {
+    "core": "Gehört zu iynk",
+    "local": "Dein eigenes Teil",
+    "imported": "Importiertes Paket"
+  },
+  "thirdParty": "Enthält Inhalte Dritter",
+  "models": "Was es modelliert",
+  "notModelled": "Was es nicht modelliert",
+  "ratings": {
+    "heading": "Kennwerte",
+    "empty": "Keine Kennwerte angegeben.",
+    "rating": "Kennwert",
+    "readBy": "Vom Modell gelesen",
+    "readByNone": "Nur angezeigt, kein Modell liest ihn",
+    "notGiven": "Nicht angegeben",
+    "confidence": "Vertrauen: {level}",
+    "measure": {
+      "voltage": "Spannung",
+      "current": "Strom",
+      "power": "Leistung",
+      "temperature": "Temperatur",
+      "frequency": "Frequenz",
+      "resistance": "Widerstand",
+      "capacitance": "Kapazität",
+      "time": "Zeit",
+      "thermal_resistance": "Wärmewiderstand",
+      "torque": "Drehmoment",
+      "rate": "Rate",
+      "acceleration": "Beschleunigung",
+      "ratio": "Verhältnis",
+      "misc": "Sonstiges"
+    },
+    "role": {
+      "abs_max": "Absolutes Maximum",
+      "abs_min": "Absolutes Minimum",
+      "operating": "Betrieb",
+      "recommended": "Empfohlen",
+      "threshold": "Schwelle",
+      "characteristic": "Kennlinie",
+      "consumption": "Verbrauch",
+      "thermal": "Thermisch",
+      "timing": "Zeitverhalten"
+    }
+  },
+  "slot": {
+    "manufacturer": "Vom Hersteller angegeben",
+    "simulation": "Annahme von iynk",
+    "measured": "Am Prüfstand gemessen"
+  },
+  "confidence": {
+    "low": "niedrig",
+    "medium": "mittel",
+    "high": "hoch"
+  },
+  "unsourced": "Angenommen, keine Quelle",
+  "unsourcedSummary": {
+    "heading": "Zahlen ohne Quelle",
+    "count": "Angenommene Zahlen ohne Quelle: {count}",
+    "none": "Jede Zahl dieses Teils verweist auf eine Quelle."
+  },
+  "sources": {
+    "heading": "Quellen",
+    "empty": "Keine Quellen angegeben.",
+    "open": "Quelle öffnen",
+    "retrieved": "Abgerufen am {date}",
+    "reliability": {
+      "primary": "Primär",
+      "secondary": "Sekundär",
+      "unverified": "Ungeprüft"
+    },
+    "kind": {
+      "datasheet": "Datenblatt",
+      "application-note": "Applikationsschrift",
+      "schematic": "Schaltplan",
+      "product-page": "Produktseite",
+      "reseller-guide": "Händleranleitung",
+      "library": "Bibliothek",
+      "photo": "Foto",
+      "measurement": "Messung",
+      "fact-sheet": "Faktenblatt",
+      "lesson": "Lektion",
+      "standard": "Norm",
+      "own-estimate": "Eigene Schätzung"
+    }
+  },
+  "validity": "Gültigkeitsbereich",
+  "gaps": {
+    "heading": "Bekannte Lücken",
+    "evidence": "Beleg: {text}"
+  },
+  "layers": {
+    "heading": "Ebenen",
+    "equation": "Gleichung",
+    "notModelledYet": "Noch nicht modelliert",
+    "kind": {
+      "element": "Solver-Element",
+      "subcircuit": "Teilschaltung",
+      "logic": "Logik",
+      "builtin": "Eingebautes Verhalten",
+      "extension": "Code",
+      "none": "Keine"
+    },
+    "reason": {
+      "declared": "Vom Teil so angegeben",
+      "solver-lacks-element": "Dem Solver fehlt dieses Element",
+      "unknown-builtin": "Diese Version kennt dieses Verhalten nicht",
+      "extension-disabled": "Code-Teile sind abgeschaltet",
+      "subcircuit-invalid": "Die Teilschaltung lässt sich nicht auflösen"
+    }
+  },
+  "labels": {
+    "heading": "Qualitätsangaben",
+    "schemaValid": "Besteht das Teile-Schema",
+    "hasTests": "Gibt Tests an",
+    "testsRun": "Tests ausgeführt",
+    "hasReferenceTest": "Hat einen Referenztest",
+    "code": "Führt Code aus",
+    "permissions": "Code-Rechte",
+    "thirdPartyContent": "Inhalte Dritter",
+    "yes": "Ja",
+    "no": "Nein",
+    "none": "Keine",
+    "run": {
+      "not-run": "Nicht ausgeführt",
+      "pass": "Bestanden",
+      "fail": "Fehlgeschlagen"
+    }
+  },
+  "tests": {
+    "heading": "Tests, die das Teil angibt",
+    "empty": "Keine Tests angegeben.",
+    "present": "Vorhanden",
+    "to-write": "Noch zu schreiben"
+  },
+  "license": "Lizenz",
+  "versions": {
+    "heading": "Andere Versionen",
+    "only": "Das ist die einzige Version."
+  },
+  "usage": {
+    "heading": "In diesem Projekt verwendet",
+    "empty": "Kein platziertes Teil verwendet es.",
+    "instance": "{label} in Version {version}"
+  }
 }
