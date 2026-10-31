@@ -21,7 +21,11 @@ export interface ElementPot extends ElementBase { kind: 'POT'; a: number; wiper:
 export interface ElementV extends ElementBase { kind: 'V'; a: number; b: number; volts: number; rSeriesOhms: number; limit?: SourceLimit }
 export interface ElementPin extends ElementBase { kind: 'PIN'; a: number; level: 0 | 1 | 'Z'; vHighVolts: number; rOutOhms: number; maxAmps: number }
 export interface ElementPwm extends ElementBase { kind: 'PWM'; a: number; duty: number; hz: number; vHighVolts: number; rOutOhms: number; mode: 'averaged' | 'edge' | 'cycle'; maxAmps?: number }
-export interface ElementD extends ElementBase { kind: 'D'; a: number; b: number; modelId: string; vf: number; rdOhms: number; maxAmps: number }
+/** The Shockley parameters of a junction; `vbrVolts` is the reverse breakdown voltage as a positive number. */
+export interface DiodeParams { kind: 'shockley'; isAmps: number; n: number; rsOhms: number; vbrVolts?: number }
+
+/** `junction` is what `mode: 'newton'` solves; `pwl` reads `vf` and `rdOhms`. */
+export interface ElementD extends ElementBase { kind: 'D'; a: number; b: number; modelId: string; vf: number; rdOhms: number; maxAmps: number; junction?: DiodeParams }
 export interface ElementQ extends ElementBase { kind: 'Q'; c: number; b: number; e: number; polarity: 'npn' | 'pnp'; modelId: string; hfe: number; hfr: number; vbe: number; vcesat: number }
 export interface ElementM extends ElementBase { kind: 'M'; a: number; b: number; ohms: number }
 export interface ElementSv extends ElementBase { kind: 'SV'; gnd: number; vplus: number; sig: number }

@@ -234,7 +234,7 @@ describe('solve, validation', () => {
   });
 
   it('throws a RangeError for options it cannot run', () => {
-    expect(() => solve({ nodes: 2, ground: 0, elements: [] }, { ...PWL_OPTIONS, mode: 'newton' })).toThrow(RangeError);
+    expect(() => solve({ nodes: 2, ground: 0, elements: [] }, { ...PWL_OPTIONS, mode: 'spice' as 'pwl' })).toThrow(RangeError);
     expect(() => solve({ nodes: 2, ground: 0, elements: [] }, { ...PWL_OPTIONS, maxIter: 0 })).toThrow(RangeError);
   });
 });
