@@ -121,6 +121,8 @@ export interface NetView {
   /** True when the two parts are joined by wires and internal-short groups only. */
   wireOnly(a: string, b: string): boolean;
   resistorsOn(net: string): PinInfo[];
+  /** A setting of the placed part, or the default its descriptor gives. */
+  param(part: string, id: string): number | string | boolean | undefined;
 }
 
 export interface CodeFact<T> {

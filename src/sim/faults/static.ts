@@ -2,7 +2,7 @@ import type { Descriptor } from "../../parts/descriptor.ts";
 import type { Evidence } from "../../project/diagnosis.ts";
 import type { CodeFacts, Finding, NetView, PinInfo, ProblemTarget, Rule, RuleInput } from "./types.ts";
 
-const evidence = (ref: string, value: string): Evidence => ({
+export const evidence = (ref: string, value: string): Evidence => ({
   kind: "state",
   ref,
   at: 0,
@@ -12,9 +12,9 @@ const evidence = (ref: string, value: string): Evidence => ({
   modelIds: [],
 });
 
-const pinTarget = (p: PinInfo): ProblemTarget => ({ kind: "pin", id: p.part, pin: p.pin });
+export const pinTarget = (p: PinInfo): ProblemTarget => ({ kind: "pin", id: p.part, pin: p.pin });
 
-const pinsOfPart = (view: NetView, part: string): PinInfo[] =>
+export const pinsOfPart = (view: NetView, part: string): PinInfo[] =>
   (view.descriptor(part)?.pins ?? []).flatMap((p) => view.pin(part, p.id) ?? []);
 
 const isSwitch = (d: Descriptor | undefined): boolean =>
@@ -59,10 +59,10 @@ const isDriver = (view: NetView, p: PinInfo, code?: CodeFacts): boolean => {
   return modes.length > 0 && modes.every((m) => m === "OUTPUT");
 };
 
-const isSupply = (view: NetView, p: PinInfo): boolean =>
+export const isSupply = (view: NetView, p: PinInfo): boolean =>
   p.cls === "power" && (p.type === "power_out" || (p.type === "power_io" && view.isBoard(p.part)));
 
-function make(
+export function make(
   def: Pick<Rule, "id" | "causeId" | "symptomId" | "needs">,
   check: (input: RuleInput, finding: (f: Omit<Finding, "ruleId" | "causeId" | "symptomId" | "severity">) => Finding) => Finding[],
 ): Rule {

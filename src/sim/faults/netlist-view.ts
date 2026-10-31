@@ -114,5 +114,7 @@ export function buildNetView(
       return [...(byPart.get(b)?.values() ?? [])].some((p) => p.net !== null && nets.has(p.net));
     },
     resistorsOn: (id) => pinsOn(id).filter((p) => hasElement(descriptors.get(p.part), "res")),
+    param: (part, id) =>
+      net.parts.find((p) => p.id === part)?.params[id] ?? descriptors.get(part)?.parameters?.find((q) => q.id === id)?.default,
   };
 }
