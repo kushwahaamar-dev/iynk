@@ -1,0 +1,694 @@
+[
+  {
+    "slot": 1,
+    "base": "prj_uno-r3-blink",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_led1",
+          "p": "A"
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_d13",
+        "pin": {
+          "c": "cmp_led1",
+          "p": "A"
+        },
+        "move": true
+      },
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_res1",
+          "p": "P1"
+        }
+      },
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_res1",
+          "p": "P2"
+        }
+      },
+      {
+        "k": "component.remove",
+        "id": "cmp_res1"
+      }
+    ],
+    "expectedCauseId": "led-no-series-resistor",
+    "expectedRule": "rule:led-series@1",
+    "note": "The series resistor is gone and the LED hangs straight on D13."
+  },
+  {
+    "slot": 2,
+    "base": "prj_uno-r3-blink",
+    "ops": [
+      {
+        "k": "net.connect",
+        "net": "net_gnd",
+        "pin": {
+          "c": "cmp_led1",
+          "p": "A"
+        },
+        "move": true
+      },
+      {
+        "k": "net.connect",
+        "net": "net_led1a_res1p2",
+        "pin": {
+          "c": "cmp_led1",
+          "p": "K"
+        },
+        "move": true
+      },
+      {
+        "k": "view.place",
+        "view": "vw_bb",
+        "placement": {
+          "c": "cmp_led1",
+          "x_mm": 0,
+          "y_mm": 0,
+          "legs": {
+            "A": "c15",
+            "K": "c14"
+          }
+        }
+      }
+    ],
+    "expectedCauseId": "led-reversed",
+    "expectedRule": "rule:led-polarity@1",
+    "note": "The LED is in backwards: anode on GND, cathode on the resistor."
+  },
+  {
+    "slot": 3,
+    "base": "prj_uno-r3-rgb",
+    "ops": [
+      {
+        "k": "net.merge",
+        "into": "net_d9",
+        "from": "net_d10"
+      }
+    ],
+    "expectedCauseId": "output-contention",
+    "expectedRule": "rule:contention@1",
+    "note": "D9 and D10 are wired together and the sketch drives both as OUTPUT."
+  },
+  {
+    "slot": 4,
+    "base": "prj_uno-r3-button",
+    "ops": [
+      {
+        "k": "net.merge",
+        "into": "net_gnd",
+        "from": "net_5v"
+      }
+    ],
+    "expectedCauseId": "supply-shorted-to-ground",
+    "expectedRule": "rule:rail-short@1",
+    "note": "A wire joins the 5V rail to GND."
+  },
+  {
+    "slot": 5,
+    "base": "prj_uno-r3-knob",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_pot1",
+          "p": "W"
+        }
+      }
+    ],
+    "expectedCauseId": "floating-input",
+    "expectedRule": "rule:floating-input@1",
+    "note": "The wiper wire is off, so A0 is a stub that the sketch reads with analogRead."
+  },
+  {
+    "slot": 6,
+    "base": "prj_uno-r3-distance",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_us1",
+          "p": "VCC"
+        }
+      },
+      {
+        "k": "wire.remove",
+        "view": "vw_bb",
+        "id": "wir_1"
+      },
+      {
+        "k": "wire.add",
+        "view": "vw_bb",
+        "wire": {
+          "id": "wir_1",
+          "net": "net_3v3",
+          "color": "orange",
+          "from": {
+            "kind": "pin",
+            "c": "brd_main",
+            "p": "P3V3"
+          },
+          "to": {
+            "kind": "hole",
+            "surface": "cmp_bb",
+            "hole": "e10"
+          }
+        }
+      },
+      {
+        "k": "net.create",
+        "net": {
+          "id": "net_3v3",
+          "name": "3V3",
+          "class": "power",
+          "connections": [
+            {
+              "c": "brd_main",
+              "p": "P3V3"
+            },
+            {
+              "c": "cmp_us1",
+              "p": "VCC"
+            }
+          ]
+        }
+      }
+    ],
+    "expectedCauseId": "part-not-powered",
+    "expectedRule": "rule:part-supply@1",
+    "note": "The HC-SR04 needs 5 V and its VCC is on the 3V3 pin."
+  },
+  {
+    "slot": 7,
+    "base": "prj_uno-r3-button",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_res1",
+          "p": "P1"
+        }
+      },
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_res1",
+          "p": "P2"
+        }
+      },
+      {
+        "k": "component.remove",
+        "id": "cmp_res1"
+      }
+    ],
+    "expectedCauseId": "button-no-pulldown",
+    "expectedRule": "rule:button-no-pull@1",
+    "note": "The 10 kOhm pull-down is missing and the sketch reads D2 with INPUT."
+  },
+  {
+    "slot": 8,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_oled1",
+          "p": "VCC"
+        }
+      }
+    ],
+    "expectedCauseId": "open-connection",
+    "expectedRule": "rule:open-pin@1",
+    "note": "The display VCC leg is not connected."
+  },
+  {
+    "slot": 9,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "wire.remove",
+        "view": "vw_bb",
+        "id": "wir_3"
+      },
+      {
+        "k": "wire.remove",
+        "view": "vw_bb",
+        "id": "wir_4"
+      },
+      {
+        "k": "net.connect",
+        "net": "net_scl",
+        "pin": {
+          "c": "brd_main",
+          "p": "SDA"
+        },
+        "move": true
+      },
+      {
+        "k": "net.connect",
+        "net": "net_sda",
+        "pin": {
+          "c": "brd_main",
+          "p": "SCL"
+        },
+        "move": true
+      },
+      {
+        "k": "wire.add",
+        "view": "vw_bb",
+        "wire": {
+          "id": "wir_3",
+          "net": "net_scl",
+          "color": "blue",
+          "from": {
+            "kind": "pin",
+            "c": "brd_main",
+            "p": "SDA"
+          },
+          "to": {
+            "kind": "hole",
+            "surface": "cmp_bb",
+            "hole": "j6"
+          }
+        }
+      },
+      {
+        "k": "wire.add",
+        "view": "vw_bb",
+        "wire": {
+          "id": "wir_4",
+          "net": "net_sda",
+          "color": "purple",
+          "from": {
+            "kind": "pin",
+            "c": "brd_main",
+            "p": "SCL"
+          },
+          "to": {
+            "kind": "hole",
+            "surface": "cmp_bb",
+            "hole": "j7"
+          }
+        }
+      }
+    ],
+    "expectedCauseId": "swapped-pins",
+    "expectedRule": "rule:i2c-roles@1",
+    "note": "SDA and SCL are exchanged at the board."
+  },
+  {
+    "slot": 10,
+    "base": "prj_uno-r3-blink",
+    "ops": [
+      {
+        "k": "source.edit",
+        "id": "src_sketch",
+        "baseSeq": 0,
+        "pos": 20,
+        "del": 2,
+        "ins": "12"
+      }
+    ],
+    "expectedCauseId": "wrong-pin-in-code",
+    "expectedRule": "code:pin-mismatch@1",
+    "note": "The sketch writes pin 12 and the LED is on pin 13."
+  },
+  {
+    "slot": 11,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "dep.set",
+        "dependency": {
+          "ref": "core.resistor",
+          "version": "1.0.0",
+          "origin": "builtin",
+          "interface": {
+            "params": [
+              {
+                "default": 220,
+                "id": "ohms",
+                "max": 1000000000,
+                "min": 0.001,
+                "type": "number",
+                "unit": "ohm"
+              }
+            ],
+            "pins": [
+              {
+                "class": "passive",
+                "designator": "1",
+                "id": "P1",
+                "type": "passive"
+              },
+              {
+                "class": "passive",
+                "designator": "2",
+                "id": "P2",
+                "type": "passive"
+              }
+            ],
+            "role": "part"
+          }
+        }
+      },
+      {
+        "k": "component.add",
+        "component": {
+          "id": "cmp_rpu1",
+          "refdes": "RPU1",
+          "definition": {
+            "ref": "core.resistor",
+            "version": "1.0.0"
+          },
+          "params": {
+            "ohms": 10000
+          }
+        }
+      },
+      {
+        "k": "component.add",
+        "component": {
+          "id": "cmp_rpu2",
+          "refdes": "RPU2",
+          "definition": {
+            "ref": "core.resistor",
+            "version": "1.0.0"
+          },
+          "params": {
+            "ohms": 10000
+          }
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_sda",
+        "pin": {
+          "c": "cmp_rpu1",
+          "p": "P1"
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_scl",
+        "pin": {
+          "c": "cmp_rpu2",
+          "p": "P1"
+        }
+      }
+    ],
+    "expectedCauseId": "i2c-missing-pullup",
+    "expectedRule": "rule:i2c-pullup@1",
+    "note": "Two pull-ups are fitted on SDA and SCL but their other ends are not connected to 3V3."
+  },
+  {
+    "slot": 12,
+    "base": "prj_uno-r3-blink",
+    "ops": [
+      {
+        "k": "component.set",
+        "id": "cmp_res1",
+        "params": {
+          "ohms": 10
+        }
+      }
+    ],
+    "expectedCauseId": "pin-overcurrent",
+    "expectedRule": "solve:pin-overcurrent@1",
+    "note": "A 10 Ohm resistor lets D13 source far more than the pin limit."
+  },
+  {
+    "slot": 13,
+    "base": "prj_uno-r3-blink",
+    "ops": [
+      {
+        "k": "sim.set",
+        "key": "environment",
+        "value": {
+          "supply_V": 2
+        }
+      }
+    ],
+    "expectedCauseId": "brownout",
+    "expectedRule": "solve:brownout@1",
+    "note": "The supply is 2 V, below the 2.7 V the board needs."
+  },
+  {
+    "slot": 14,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "net.connect",
+        "net": "net_gnd",
+        "pin": {
+          "c": "cmp_oled1",
+          "p": "VCC"
+        },
+        "move": true
+      },
+      {
+        "k": "net.connect",
+        "net": "net_3v3",
+        "pin": {
+          "c": "cmp_oled1",
+          "p": "GND"
+        },
+        "move": true
+      },
+      {
+        "k": "view.place",
+        "view": "vw_bb",
+        "placement": {
+          "c": "cmp_oled1",
+          "x_mm": 0,
+          "y_mm": 0,
+          "legs": {
+            "GND": "g5",
+            "SCL": "g6",
+            "SDA": "g7",
+            "VCC": "g4"
+          }
+        }
+      }
+    ],
+    "expectedCauseId": "reverse-polarity",
+    "expectedRule": "rule:supply-polarity@1",
+    "note": "The display VCC is on GND and its GND is on 3V3."
+  },
+  {
+    "slot": 15,
+    "base": "prj_uno-r3-blink",
+    "ops": [
+      {
+        "k": "component.set",
+        "id": "cmp_res1",
+        "params": {
+          "ohms": 100000
+        }
+      }
+    ],
+    "expectedCauseId": "wrong-value",
+    "expectedRule": "solve:value-band@1",
+    "note": "A 100 kOhm resistor leaves the LED too dim."
+  },
+  {
+    "slot": 16,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_oled1",
+          "p": "GND"
+        }
+      }
+    ],
+    "expectedCauseId": "missing-ground",
+    "expectedRule": "rule:missing-ground@1",
+    "note": "The display GND leg is not connected."
+  },
+  {
+    "slot": 17,
+    "base": "prj_uno-r4-pot-pwm",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_pot1",
+          "p": "W"
+        }
+      }
+    ],
+    "expectedCauseId": "open-connection",
+    "expectedRule": "rule:open-pin@1",
+    "note": "The potentiometer wiper leg is not connected."
+  },
+  {
+    "slot": 18,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "net.connect",
+        "net": "net_scl",
+        "pin": {
+          "c": "cmp_oled1",
+          "p": "SDA"
+        },
+        "move": true
+      },
+      {
+        "k": "net.connect",
+        "net": "net_sda",
+        "pin": {
+          "c": "cmp_oled1",
+          "p": "SCL"
+        },
+        "move": true
+      },
+      {
+        "k": "view.place",
+        "view": "vw_bb",
+        "placement": {
+          "c": "cmp_oled1",
+          "x_mm": 0,
+          "y_mm": 0,
+          "legs": {
+            "GND": "g4",
+            "SCL": "g7",
+            "SDA": "g6",
+            "VCC": "g5"
+          }
+        }
+      }
+    ],
+    "expectedCauseId": "swapped-pins",
+    "expectedRule": "rule:i2c-roles@1",
+    "note": "SDA and SCL are exchanged on the display side."
+  },
+  {
+    "slot": 19,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "dep.set",
+        "dependency": {
+          "ref": "core.resistor",
+          "version": "1.0.0",
+          "origin": "builtin",
+          "interface": {
+            "params": [
+              {
+                "default": 220,
+                "id": "ohms",
+                "max": 1000000000,
+                "min": 0.001,
+                "type": "number",
+                "unit": "ohm"
+              }
+            ],
+            "pins": [
+              {
+                "class": "passive",
+                "designator": "1",
+                "id": "P1",
+                "type": "passive"
+              },
+              {
+                "class": "passive",
+                "designator": "2",
+                "id": "P2",
+                "type": "passive"
+              }
+            ],
+            "role": "part"
+          }
+        }
+      },
+      {
+        "k": "component.add",
+        "component": {
+          "id": "cmp_rpu1",
+          "refdes": "RPU1",
+          "definition": {
+            "ref": "core.resistor",
+            "version": "1.0.0"
+          },
+          "params": {
+            "ohms": 1000000
+          }
+        }
+      },
+      {
+        "k": "component.add",
+        "component": {
+          "id": "cmp_rpu2",
+          "refdes": "RPU2",
+          "definition": {
+            "ref": "core.resistor",
+            "version": "1.0.0"
+          },
+          "params": {
+            "ohms": 1000000
+          }
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_sda",
+        "pin": {
+          "c": "cmp_rpu1",
+          "p": "P1"
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_scl",
+        "pin": {
+          "c": "cmp_rpu2",
+          "p": "P1"
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_3v3",
+        "pin": {
+          "c": "cmp_rpu1",
+          "p": "P2"
+        }
+      },
+      {
+        "k": "net.connect",
+        "net": "net_3v3",
+        "pin": {
+          "c": "cmp_rpu2",
+          "p": "P2"
+        }
+      }
+    ],
+    "expectedCauseId": "wrong-value",
+    "expectedRule": "rule:i2c-pullup-value@1",
+    "note": "The pull-ups are 1 MOhm, 100 times too large for the bus."
+  },
+  {
+    "slot": 20,
+    "base": "prj_uno-r3-plant",
+    "ops": [
+      {
+        "k": "net.disconnect",
+        "pin": {
+          "c": "cmp_soil1",
+          "p": "GND"
+        }
+      }
+    ],
+    "expectedCauseId": "missing-ground",
+    "expectedRule": "rule:missing-ground@1",
+    "note": "The soil sensor GND leg is not connected; the display keeps its ground."
+  }
+]
