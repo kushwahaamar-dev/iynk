@@ -20,6 +20,12 @@ export type ServerConfig = {
   deletionGraceHours: number;
   serverName: string;
   minClient: string;
+  aiEnable: boolean;
+  searchEnable: boolean;
+  aiAllowedHosts: readonly string[];
+  aiAllowPrivate: boolean;
+  aiDailyRequests: number;
+  searchMonthly: number | null;
 };
 
 export type FsProbe = {
@@ -53,6 +59,11 @@ const REMOVED_VARIABLES = [
   "MAX_CONNECTIONS",
   "MAX_CONNECTIONS_PER_IP",
 ];
+const RENAMED_VARIABLES: Record<string, string> = {
+  IYNK_AI_ALLOW_PRIVATE: "was renamed; use IYNK_AI_RELAY_ALLOW_PRIVATE.",
+  IYNK_AI_RELAY_HOSTS: "was renamed; use IYNK_AI_ALLOWED_HOSTS.",
+};
+const HOST_PATTERN = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/;
 const ORIGIN_PATTERN = /^(https?):\/\/([^/?#@\s]+)$/i;
 
 const nodeProbe: FsProbe = {
@@ -100,6 +111,18 @@ function parseOrigin(raw: string): { origin: string } | { problem: string } {
   return { problem: `"${entry}" is not an exact origin; use scheme://host[:port] like https://iynk.example.` };
 }
 
+function parseHost(raw: string): { host: string } | { problem: string } {
+  const entry = raw.trim().toLowerCase();
+  if (entry.includes("*")) {
+    return { problem: '"*" is not allowed; list exact hosts like models.example or models.example:8443.' };
+  }
+  const port = entry.split(":")[1];
+  if (!HOST_PATTERN.test(entry) || (port !== undefined && (Number(port) < 1 || Number(port) > 65535))) {
+    return { problem: `"${entry}" is not a host; use host or host:port with no scheme or path, like models.example.` };
+  }
+  return { host: entry };
+}
+
 function evaluate(env: Env, probe: FsProbe): { config: ServerConfig | null; problems: string[] } {
   const problems: string[] = [];
   const fail = (message: string) => {
@@ -143,7 +166,12 @@ function evaluate(env: Env, probe: FsProbe): { config: ServerConfig | null; prob
 
   for (const name of Object.keys(env)) {
     if (env[name] === undefined) continue;
-    if (REMOVED_VARIABLES.includes(name) || name.startsWith("REALTIME_")) {
+    const renamed = RENAMED_VARIABLES[name];
+    if (renamed !== undefined) {
+      fail(`${name}: ${renamed}`);
+    } else if (name.startsWith("IYNK_AI_KEY_")) {
+      fail(`${name}: server-held provider keys are not supported; each person sends their own key from the app.`);
+    } else if (REMOVED_VARIABLES.includes(name) || name.startsWith("REALTIME_")) {
       fail(`${name}: this setting was removed with the old relay; delete it from the environment.`);
     }
   }
@@ -208,6 +236,20 @@ function evaluate(env: Env, probe: FsProbe): { config: ServerConfig | null; prob
   const minClient = text("IYNK_MIN_CLIENT", "0.0.0");
   if (!/^\d+\.\d+\.\d+$/.test(minClient)) fail(`IYNK_MIN_CLIENT: "${minClient}" is not a version; use something like 0.1.0.`);
 
+  const aiAllowedHosts: string[] = [];
+  const rawHosts = env["IYNK_AI_ALLOWED_HOSTS"]?.trim();
+  if (rawHosts !== undefined && rawHosts !== "") {
+    for (const entry of rawHosts.split(",")) {
+      if (entry.trim() === "") continue;
+      const parsed = parseHost(entry);
+      if ("problem" in parsed) fail(`IYNK_AI_ALLOWED_HOSTS: ${parsed.problem}`);
+      else if (!aiAllowedHosts.includes(parsed.host)) aiAllowedHosts.push(parsed.host);
+    }
+  }
+
+  const rawMonthly = env["IYNK_SEARCH_MONTHLY"]?.trim();
+  const searchMonthly = rawMonthly === undefined || rawMonthly === "" ? null : integer("IYNK_SEARCH_MONTHLY", 0, 0, 10_000_000);
+
   const config: ServerConfig = {
     dataDir,
     publicUrl,
@@ -227,6 +269,12 @@ function evaluate(env: Env, probe: FsProbe): { config: ServerConfig | null; prob
     deletionGraceHours: integer("IYNK_DELETION_GRACE_HOURS", 24, 0, 720),
     serverName,
     minClient,
+    aiEnable: flag("IYNK_AI_ENABLE"),
+    searchEnable: flag("IYNK_SEARCH_ENABLE"),
+    aiAllowedHosts,
+    aiAllowPrivate: flag("IYNK_AI_RELAY_ALLOW_PRIVATE"),
+    aiDailyRequests: integer("IYNK_AI_DAILY_REQUESTS", 200, 0, 100_000),
+    searchMonthly,
   };
 
   return { config: problems.length === 0 ? config : null, problems };

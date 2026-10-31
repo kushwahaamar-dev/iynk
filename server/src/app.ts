@@ -15,6 +15,7 @@ import { createRouter } from "./http/router.ts";
 import { serverInfoRoutes } from "./http/server-info.ts";
 import { createChallengeStore, type ChallengeStore } from "./identity/challenge.ts";
 import { touchSession, verifyToken } from "./identity/tokens.ts";
+import { moduleRoutes } from "./modules/index.ts";
 import { createLogger, type Logger } from "./ops/log.ts";
 import type { ServerStore } from "./store/port.ts";
 import { openStore } from "./store/sqlite.ts";
@@ -46,7 +47,7 @@ function serverVersion(): string {
 }
 
 export function allRoutes(ctx: RouteDeps & { challenges: ChallengeStore }): RouteDef[] {
-  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx), ...deletionRoutes(ctx), ...buddyRoutes(ctx)];
+  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx), ...deletionRoutes(ctx), ...buddyRoutes(ctx), ...moduleRoutes(ctx)];
 }
 
 export function createApp(config: ServerConfig, deps: Deps, opts: { store?: ServerStore; log?: Logger } = {}): App {
@@ -66,6 +67,10 @@ export function createApp(config: ServerConfig, deps: Deps, opts: { store?: Serv
   const limiter = createLimiter(deps);
   let draining = false;
   let closed = false;
+
+  const modules = ["tools", ...(config.aiEnable ? ["ai"] : []), ...(config.searchEnable ? ["search"] : [])];
+  log.info("modules on", { modules: modules.join(",") });
+  if (config.aiAllowPrivate && !config.aiEnable) log.warn("IYNK_AI_RELAY_ALLOW_PRIVATE has no effect while IYNK_AI_ENABLE is 0");
 
   const challenges = createChallengeStore(deps, config.audience);
 

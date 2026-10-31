@@ -1,3 +1,4 @@
+import { PRESET_HOSTS } from "../../../src/protocol/ai-presets.ts";
 import { defineRoutes, type RouteDef } from "./classes.ts";
 import type { RouteDeps } from "../app.ts";
 
@@ -20,10 +21,15 @@ export function serverInfoRoutes(ctx: RouteDeps): RouteDef[] {
       shares: false,
       rooms: false,
       assets: false,
-      aiRelay: false,
-      searchProxy: false,
+      aiRelay: config.aiEnable,
+      searchProxy: config.searchEnable,
       compile: false,
       tools: false,
+    },
+    ai: {
+      relayHosts: config.aiEnable ? [...PRESET_HOSTS, ...config.aiAllowedHosts] : [],
+      relayAllowPrivate: config.aiAllowPrivate,
+      serverKey: [],
     },
     limits: { documentBytes: 5_242_880, assetBytes: 16_777_216, peersPerRoom: 8, buddiesPerIdentity: 64 },
   };
