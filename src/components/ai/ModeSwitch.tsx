@@ -16,9 +16,9 @@ export function ModeSwitch({ mode, onChange, t }: { mode: Mode; onChange: (mode:
         stretch
         value={mode}
         onChange={onChange}
-        options={MODES.map((value) => ({ value, label: t(`partner.mode.${value}.name`) }))}
+        options={MODES.map((value) => ({ value, label: t(`mode.${value}`) }))}
       />
-      <p className="text-xs text-muted">{t(`partner.mode.${mode}.hint`)}</p>
+      <p className="text-xs text-muted">{t(`mode.hint.${mode}`)}</p>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import type { ToolSpec } from "./adapters/types.ts";
 import { TOOLS, jsonSchemaOf } from "./tools/registry.ts";
 import type { ToolName } from "./tools/registry.ts";
 
-export type Mode = "direct" | "debugging" | "beginner";
+export type Mode = "direct" | "debugging" | "beginner" | "socratic" | "advanced";
 
 type ModeSettings = {
   tier: "fast" | "standard" | "strong";
@@ -33,6 +33,8 @@ export const MODE_SETTINGS: Record<Mode, ModeSettings> = {
   direct: { tier: "standard", outputTokens: 500, readTools: ALL_TOOLS, quiz: false },
   debugging: { tier: "strong", outputTokens: 600, readTools: ALL_TOOLS, quiz: false },
   beginner: { tier: "fast", outputTokens: 350, readTools: BEGINNER_TOOLS, quiz: true },
+  socratic: { tier: "fast", outputTokens: 180, readTools: BEGINNER_TOOLS, quiz: true },
+  advanced: { tier: "standard", outputTokens: 900, readTools: ALL_TOOLS, quiz: false },
 };
 
 /** Socratic mode replaces the beginner default for lessons and challenges in B15. */

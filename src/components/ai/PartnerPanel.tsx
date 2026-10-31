@@ -218,7 +218,7 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
   function changeMode(next: Mode) {
     if (next === mode) return;
     host.mode.set(next);
-    addNote(`${t(`partner.mode.${next}.name`)}. ${t(`partner.mode.${next}.hint`)}`);
+    addNote(`${t(`mode.${next}`)}. ${t(`mode.hint.${next}`)}`);
     rerender();
   }
 
