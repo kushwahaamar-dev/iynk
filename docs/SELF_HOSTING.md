@@ -116,6 +116,7 @@ Run these the same way as `init` (the examples drop the `docker compose ... exec
 | `iynk-server compact` | Shrinks the database file. Needs free disk space about the size of the database. |
 | `iynk-server diagnostics` | Writes a tarball with versions, settings (secrets shown as set or unset), migration state, table row counts and an integrity check. Safe to attach to a bug report. |
 | `iynk-server check-config` | Reads the environment and lists every unsafe or missing setting. Exit code 2 means a problem. |
+| `iynk-server mcp-key [--revoke] [--json]` | Prints a new key for MCP and REST tool clients once and stores only its hash. A second run revokes the first key. `--revoke` ends the key at once. `--json` prints it as JSON. |
 
 ### Back up and restore
 
