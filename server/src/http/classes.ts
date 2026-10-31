@@ -11,6 +11,11 @@ export const BUCKET_NAMES = [
   "pairing.guess",
   "read",
   "write",
+  "ai.relay",
+  "search.web",
+  "search.offers",
+  "search.other",
+  "tools",
 ] as const;
 export type BucketName = (typeof BUCKET_NAMES)[number];
 
@@ -33,9 +38,16 @@ export type Ctx = {
   address: string;
   authed: Authed | null;
   requestId: string;
+  signal: AbortSignal;
 };
 
-export type Reply = { status: number; body?: unknown; headers?: Record<string, string> };
+export type Reply = {
+  status: number;
+  body?: unknown;
+  headers?: Record<string, string>;
+  stream?: AsyncIterable<Uint8Array>;
+  onFinish?: (info: { bytes: number; aborted: boolean }) => void;
+};
 
 export type RouteDef = {
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";

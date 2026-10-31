@@ -23,7 +23,7 @@ const REQUEST_ID_PATTERN = /^[A-Za-z0-9._-]{8,64}$/;
 const CLIENT_PATTERN = /^[^/\s]+\/(\d+)\.(\d+)\.(\d+)/;
 const PROBES = new Set(["GET /v1/server", "GET /v1/healthz", "GET /healthz", "GET /v1/readyz", "GET /readyz"]);
 const ALLOW_HEADERS = "authorization, content-type, idempotency-key, if-none-match, iynk-client, x-request-id, x-iynk-provider-key";
-const EXPOSE_HEADERS = "etag, retry-after, ratelimit-limit, ratelimit-remaining, ratelimit-reset, x-request-id, iynk-api-version, idempotent-replay";
+const EXPOSE_HEADERS = "etag, retry-after, ratelimit-limit, ratelimit-remaining, ratelimit-reset, x-request-id, iynk-api-version, idempotent-replay, x-iynk-upstream-status";
 const ALLOW_METHODS = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
 
 type Compiled = { def: RouteDef; segments: string[] };
@@ -150,8 +150,16 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
       "cache-control": "no-store",
       "cross-origin-resource-policy": "same-site",
     };
+    const aborter = new AbortController();
+    res.on("close", () => {
+      if (!res.writableFinished) aborter.abort();
+    });
     let route: RouteDef | null = null;
     let deviceId: string | undefined;
+
+    const logRequest = (status: number): void => {
+      log.info("request", { route: route ? `${route.method} ${route.path}` : "unmatched", status, ms: deps.clock.now() - started, req: reqId, dev: deviceId });
+    };
 
     const send = (status: number, extra: Record<string, string> = {}, body?: unknown): void => {
       const out = { ...headers, ...extra };
@@ -163,7 +171,37 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
       out["content-length"] = String(payload === undefined ? 0 : Buffer.byteLength(payload));
       res.writeHead(status, out);
       res.end(payload);
-      log.info("request", { route: route ? `${route.method} ${route.path}` : "unmatched", status, ms: deps.clock.now() - started, req: reqId, dev: deviceId });
+      logRequest(status);
+    };
+
+    const sendStream = async (reply: Reply, stream: AsyncIterable<Uint8Array>): Promise<void> => {
+      res.writeHead(reply.status, { ...headers, ...reply.headers });
+      let bytes = 0;
+      try {
+        for await (const chunk of stream) {
+          if (aborter.signal.aborted) break;
+          bytes += chunk.length;
+          if (!res.write(chunk) && !aborter.signal.aborted) {
+            await new Promise<void>((resolve) => {
+              const done = (): void => {
+                res.off("drain", done);
+                res.off("close", done);
+                resolve();
+              };
+              res.once("drain", done);
+              res.once("close", done);
+            });
+          }
+          if (aborter.signal.aborted) break;
+        }
+      } catch (error) {
+        log.error("stream", { req: reqId, error: error instanceof Error ? error.message : String(error) });
+        res.destroy();
+      }
+      const aborted = aborter.signal.aborted || res.destroyed;
+      if (!aborted) res.end();
+      logRequest(reply.status);
+      reply.onFinish?.({ bytes, aborted });
     };
     const fail = (e: ApiError, extra?: Record<string, string>): void => send(e.status, extra, errorBody(e, reqId));
 
@@ -235,7 +273,7 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
       let body: unknown;
       const length = req.headers["content-length"];
       if ((length !== undefined && length !== "0") || req.headers["transfer-encoding"] !== undefined) {
-        const bytes = await readBody(req, Math.min(route.maxBodyBytes ?? DEFAULT_BODY_BYTES, DEFAULT_BODY_BYTES));
+        const bytes = await readBody(req, route.maxBodyBytes ?? DEFAULT_BODY_BYTES);
         if (bytes.length > 0) {
           if (!/^application\/json\s*(;|$)/i.test(req.headers["content-type"] ?? "")) {
             return fail(new ApiError(415, "unsupported_media_type", "Send the body as application/json."));
@@ -245,9 +283,10 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
       }
 
       const url = new URL(req.url as string, "http://localhost");
-      const ctx: Ctx = { method: route.method, path: url.pathname, params, query: url.searchParams, headers: toHeaders(req), body, address, authed, requestId: reqId };
+      const ctx: Ctx = { method: route.method, path: url.pathname, params, query: url.searchParams, headers: toHeaders(req), body, address, authed, requestId: reqId, signal: aborter.signal };
       const reply: Reply = await (route.handler as NonNullable<RouteDef["handler"]>)(ctx);
-      send(reply.status, reply.headers, reply.body);
+      if (reply.stream !== undefined) await sendStream(reply, reply.stream);
+      else send(reply.status, reply.headers, reply.body);
     } catch (error) {
       if (error instanceof ApiError) return fail(error, error.status === 413 ? { connection: "close" } : undefined);
       log.error("unhandled", { req: reqId, error: error instanceof Error ? error.message : String(error) });

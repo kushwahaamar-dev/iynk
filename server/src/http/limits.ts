@@ -28,6 +28,11 @@ export const DEFAULT_RULES: Record<BucketName, Rule[]> = {
   ],
   read: [{ limit: 300, windowMs: MINUTE }],
   write: [{ limit: 120, windowMs: MINUTE }],
+  "ai.relay": [{ limit: 20, windowMs: MINUTE }],
+  "search.web": [{ limit: 15, windowMs: MINUTE }],
+  "search.offers": [{ limit: 20, windowMs: MINUTE }],
+  "search.other": [{ limit: 30, windowMs: MINUTE }],
+  tools: [{ limit: 60, windowMs: MINUTE }],
 };
 
 const seconds = (ms: number) => Math.max(1, Math.ceil(ms / 1000));
