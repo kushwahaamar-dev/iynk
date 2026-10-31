@@ -27,5 +27,40 @@
     },
     "price": "{amount} {currency}，截至 {date}",
     "priceEstimate": "{amount} {currency}，估计值，截至 {date}"
+  },
+  "slots": {
+    "title": "电机位",
+    "col": {
+      "slot": "位置",
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "ESC"
+    },
+    "sameForAll": "所有电机位使用相同的电机、螺旋桨和 ESC",
+    "sameForAllHint": "在任一行中选择，会更改所有电机位。",
+    "choose": "选择",
+    "trigger": "{role}，电机位 {slot}：{part}",
+    "empty": "还没有电机位。选择一种布局来放置它们。",
+    "count": "一架无人机有 3 到 12 个电机位。这架有 {count} 个。",
+    "refused": "{part} 不是{role}。",
+    "kind": {
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "ESC",
+      "battery": "电池",
+      "fc": "飞控"
+    },
+    "shared": {
+      "title": "电池和飞控",
+      "battery": "电池",
+      "fc": "飞控"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "十字",
+    "h": "H",
+    "hex": "六轴",
+    "octo": "八轴"
   }
 }

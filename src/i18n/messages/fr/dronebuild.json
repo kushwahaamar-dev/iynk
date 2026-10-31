@@ -27,5 +27,40 @@
     },
     "price": "{amount} {currency}, au {date}",
     "priceEstimate": "{amount} {currency}, estimation au {date}"
+  },
+  "slots": {
+    "title": "Emplacements moteur",
+    "col": {
+      "slot": "Emplacement",
+      "motor": "Moteur",
+      "prop": "Hélice",
+      "esc": "ESC"
+    },
+    "sameForAll": "Même moteur, hélice et ESC pour tous les emplacements",
+    "sameForAllHint": "Un choix dans une ligne change tous les emplacements.",
+    "choose": "Choisir",
+    "trigger": "{role}, emplacement {slot} : {part}",
+    "empty": "Aucun emplacement moteur pour l'instant. Choisissez une disposition pour les placer.",
+    "count": "Un drone a de 3 à 12 emplacements moteur. Celui-ci en a {count}.",
+    "refused": "{part} n'est pas un {role}.",
+    "kind": {
+      "motor": "moteur",
+      "prop": "hélice",
+      "esc": "ESC",
+      "battery": "batterie",
+      "fc": "contrôleur de vol"
+    },
+    "shared": {
+      "title": "Batterie et contrôleur",
+      "battery": "Batterie",
+      "fc": "Contrôleur de vol"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "Plus",
+    "h": "H",
+    "hex": "Hexa",
+    "octo": "Octo"
   }
 }

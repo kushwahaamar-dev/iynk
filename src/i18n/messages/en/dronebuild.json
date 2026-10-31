@@ -27,5 +27,40 @@
     },
     "price": "{amount} {currency}, as of {date}",
     "priceEstimate": "{amount} {currency}, estimate as of {date}"
+  },
+  "slots": {
+    "title": "Motor slots",
+    "col": {
+      "slot": "Slot",
+      "motor": "Motor",
+      "prop": "Prop",
+      "esc": "ESC"
+    },
+    "sameForAll": "Same motor, prop and ESC for all slots",
+    "sameForAllHint": "A pick in any row changes every slot.",
+    "choose": "Choose",
+    "trigger": "{role}, slot {slot}: {part}",
+    "empty": "No motor slots yet. Choose a layout to place them.",
+    "count": "A drone takes 3 to 12 motor slots. This one has {count}.",
+    "refused": "{part} is not a {role}.",
+    "kind": {
+      "motor": "motor",
+      "prop": "prop",
+      "esc": "ESC",
+      "battery": "battery",
+      "fc": "flight controller"
+    },
+    "shared": {
+      "title": "Pack and controller",
+      "battery": "Battery",
+      "fc": "Flight controller"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "Plus",
+    "h": "H",
+    "hex": "Hexa",
+    "octo": "Octo"
   }
 }

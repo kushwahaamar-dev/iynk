@@ -27,5 +27,40 @@
     },
     "price": "{amount} {currency}, Stand {date}",
     "priceEstimate": "{amount} {currency}, Schätzung, Stand {date}"
+  },
+  "slots": {
+    "title": "Motorplätze",
+    "col": {
+      "slot": "Platz",
+      "motor": "Motor",
+      "prop": "Propeller",
+      "esc": "ESC"
+    },
+    "sameForAll": "Gleicher Motor, Propeller und ESC für alle Plätze",
+    "sameForAllHint": "Eine Wahl in einer Zeile ändert jeden Platz.",
+    "choose": "Wählen",
+    "trigger": "{role}, Platz {slot}: {part}",
+    "empty": "Noch keine Motorplätze. Wähle ein Layout, um sie zu setzen.",
+    "count": "Eine Drohne hat 3 bis 12 Motorplätze. Diese hat {count}.",
+    "refused": "{part} ist kein {role}.",
+    "kind": {
+      "motor": "Motor",
+      "prop": "Propeller",
+      "esc": "ESC",
+      "battery": "Akku",
+      "fc": "Flugcontroller"
+    },
+    "shared": {
+      "title": "Akku und Controller",
+      "battery": "Akku",
+      "fc": "Flugcontroller"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "Plus",
+    "h": "H",
+    "hex": "Hexa",
+    "octo": "Octo"
   }
 }

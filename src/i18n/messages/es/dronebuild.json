@@ -27,5 +27,40 @@
     },
     "price": "{amount} {currency}, a fecha de {date}",
     "priceEstimate": "{amount} {currency}, estimación a fecha de {date}"
+  },
+  "slots": {
+    "title": "Posiciones de motor",
+    "col": {
+      "slot": "Posición",
+      "motor": "Motor",
+      "prop": "Hélice",
+      "esc": "ESC"
+    },
+    "sameForAll": "Mismo motor, hélice y ESC en todas las posiciones",
+    "sameForAllHint": "Una elección en cualquier fila cambia todas las posiciones.",
+    "choose": "Elegir",
+    "trigger": "{role}, posición {slot}: {part}",
+    "empty": "Aún no hay posiciones de motor. Elige una disposición para crearlas.",
+    "count": "Un dron tiene de 3 a 12 posiciones de motor. Este tiene {count}.",
+    "refused": "{part} no es un {role}.",
+    "kind": {
+      "motor": "motor",
+      "prop": "hélice",
+      "esc": "ESC",
+      "battery": "batería",
+      "fc": "controlador de vuelo"
+    },
+    "shared": {
+      "title": "Batería y controlador",
+      "battery": "Batería",
+      "fc": "Controlador de vuelo"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "Más",
+    "h": "H",
+    "hex": "Hexa",
+    "octo": "Octo"
   }
 }
