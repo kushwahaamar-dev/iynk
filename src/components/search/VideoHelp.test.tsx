@@ -4,6 +4,7 @@ import type { LabStore } from "@/components/dock/types";
 import common from "@/i18n/messages/en/common.json";
 import { I18nProvider } from "@/i18n/client";
 import { removeAllKeys, setKey } from "@/lib/keys/store";
+import { bindSearchServer } from "@/lib/search/client";
 import { VideoHelp } from "./VideoHelp";
 
 const features = vi.hoisted(() => ({ search: true }));
@@ -17,14 +18,13 @@ const store: LabStore = { getState: () => null, subscribe: () => () => undefined
 
 function server() {
   return vi.fn(async (input: string | URL | Request) => {
-    const path = String(input);
-    if (path === "/config.json") return Response.json({ server: null, protocol: 1 });
-    if (path === "/api/search/videos") return Response.json({ videos: [] });
+    const path = String(input).split("?")[0];
+    if (path === "/search/videos") return Response.json({ videos: [] });
     return new Response("not found", { status: 404 });
   });
 }
 
-const searchCalls = (fetchMock: ReturnType<typeof server>) => fetchMock.mock.calls.filter(([path]) => String(path).startsWith("/api/search"));
+const searchCalls = (fetchMock: ReturnType<typeof server>) => fetchMock.mock.calls.filter(([path]) => String(path).startsWith("/search"));
 
 const renderPanel = () =>
   render(
@@ -40,14 +40,14 @@ beforeEach(() => {
 afterEach(() => {
   removeAllKeys();
   localStorage.clear();
-  vi.unstubAllGlobals();
+  bindSearchServer(null);
 });
 
 describe("VideoHelp", () => {
   it("shows the suggested query but sends nothing until Find videos is pressed", async () => {
     setKey("search", "iynk-canary-SEARCH-0001-do-not-use");
     const fetchMock = server();
-    vi.stubGlobal("fetch", fetchMock);
+    bindSearchServer({ fetchAuthed: fetchMock });
     renderPanel();
 
     const box = (await screen.findByRole("searchbox", { name: "Search videos" })) as HTMLInputElement;
@@ -64,7 +64,7 @@ describe("VideoHelp", () => {
 
   it("with no search key shows the needs-key box and makes no search request", async () => {
     const fetchMock = server();
-    vi.stubGlobal("fetch", fetchMock);
+    bindSearchServer({ fetchAuthed: fetchMock });
     renderPanel();
 
     expect((await screen.findByTestId("not-set-up")).getAttribute("data-reason")).toBe("needs_key");

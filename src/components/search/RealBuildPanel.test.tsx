@@ -5,6 +5,7 @@ import type { DesignPick, DroneContent, DroneDesign } from "@/content/schema";
 import common from "@/i18n/messages/en/common.json";
 import { I18nProvider } from "@/i18n/client";
 import { removeAllKeys, setKey } from "@/lib/keys/store";
+import { bindSearchServer } from "@/lib/search/client";
 import type { Offer, PartOffers } from "@/lib/search/types";
 
 const features = vi.hoisted(() => ({ search: true }));
@@ -53,12 +54,11 @@ const offer = (title: string, price: number, extra: Partial<Offer> = {}): Offer 
   ...extra,
 });
 
-/** The fake server: /config.json says search is on; offers answer per key from `prices`. */
+/** The fake server the search client calls with its token; offers answer per key from `prices`. */
 function server(prices: Record<string, PartOffers["offers"]>) {
   return vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
     const path = String(input);
-    if (path === "/config.json") return Response.json({ server: null, protocol: 1 });
-    if (path === "/api/search/offers") {
+    if (path === "/search/offers") {
       const body = JSON.parse(String(init?.body)) as { parts: { key: string }[] };
       return Response.json({
         parts: body.parts.map((p) => (prices[p.key] ? { key: p.key, offers: prices[p.key], best: 0 } : { key: p.key, offers: [] })),
@@ -93,24 +93,22 @@ beforeEach(() => {
   features.search = true;
   localStorage.clear();
   setKey("search", "iynk-canary-SEARCH-0001-do-not-use");
-  vi.stubGlobal("fetch", server({}));
+  bindSearchServer({ fetchAuthed: server({}) });
 });
 afterEach(() => {
   removeAllKeys();
   localStorage.clear();
   vi.unstubAllGlobals();
+  bindSearchServer(null);
 });
 
 describe("RealBuildPanel", () => {
   it("prices a robotics bench and adds up the cheapest total", async () => {
-    vi.stubGlobal(
-      "fetch",
-      server({
+    bindSearchServer({ fetchAuthed: server({
         "board:nano": [offer("Arduino Nano", 24.9, { inStock: true })],
         "part:l298n": [offer("L298N motor driver 2pcs", 7, { pack: 2 }), offer("L298N driver", 9)],
         "part:tt-motor": [offer("TT gear motor", 3)],
-      }),
-    );
+      }) });
     const { store } = storeOf(null);
     renderPanel({ lab: "robotics", itemId: "l298n", store, figure: null });
 
@@ -133,17 +131,14 @@ describe("RealBuildPanel", () => {
   });
 
   it("runs the optimiser on a drone and applies the pick to the lab", async () => {
-    vi.stubGlobal(
-      "fetch",
-      server({
+    bindSearchServer({ fetchAuthed: server({
         "fixed:FRAME": [offer("5 inch frame", 40)],
         "batt:6s1100": [offer("6S 1100mAh LiPo", 40)],
         "batt:4s1500": [offer("4S 1500mAh LiPo", 25)],
         "motor:2306-1750": [offer("2306 1750KV 4pcs", 90, { pack: 4 })],
         "motor:2306-2450": [offer("2306 2450KV 4pcs", 60, { pack: 4 })],
         "prop:5x4.3x3": [offer("5x4.3x3 props 4pcs", 5, { pack: 4 })],
-      }),
-    );
+      }) });
     const { store, dispatch } = storeOf(design.default);
     renderPanel({ lab: "drone", itemId: "quad5", store, figure: null });
 
@@ -203,8 +198,8 @@ describe("RealBuildPanel", () => {
 
   it("asks for no prices until Check prices is pressed, then again on each later press", async () => {
     const fetchMock = server({ "board:nano": [offer("Arduino Nano", 24.9)] });
-    vi.stubGlobal("fetch", fetchMock);
-    const offerCalls = () => fetchMock.mock.calls.filter(([path]) => String(path) === "/api/search/offers").length;
+    bindSearchServer({ fetchAuthed: fetchMock });
+    const offerCalls = () => fetchMock.mock.calls.filter(([path]) => String(path) === "/search/offers").length;
     renderPanel({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
 
     const check = await screen.findByRole("button", { name: "Check prices" });
@@ -224,14 +219,14 @@ describe("RealBuildPanel", () => {
   it("with no search key shows the needs-key box and makes no search request", async () => {
     removeAllKeys();
     const fetchMock = server({});
-    vi.stubGlobal("fetch", fetchMock);
+    bindSearchServer({ fetchAuthed: fetchMock });
     renderPanel({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
 
     const box = await screen.findByTestId("not-set-up");
     expect(box.getAttribute("data-reason")).toBe("needs_key");
     expect(screen.queryByRole("button", { name: "Check prices" })).toBeNull();
     expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
-    expect(fetchMock.mock.calls.some(([path]) => String(path).startsWith("/api/search"))).toBe(false);
+    expect(fetchMock.mock.calls.some(([path]) => String(path).startsWith("/search"))).toBe(false);
   });
 
   it("says when an item's parts list isn't published", async () => {
