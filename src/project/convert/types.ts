@@ -68,7 +68,9 @@ export type ConvertCheck =
       label: string;
     }
   | { kind: "code"; must: string[]; mustNot: string[]; label: string }
-  | { kind: "state"; atMs: number; equals: ConvertStateCond; label: string };
+  | { kind: "state"; atMs: number; equals: ConvertStateCond; label: string }
+  | { kind: "node-voltage"; net: string; volts: [number, number]; atMs: number; label: string }
+  | { kind: "supply-current"; net: string; amps: [number, number]; atMs: number; label: string };
 
 export interface ConvertWorldInput {
   id: string;
