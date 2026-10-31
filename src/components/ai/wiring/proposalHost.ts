@@ -28,6 +28,8 @@ export interface ProposalView {
 
 export interface ProposalHost {
   list(threadId: string): readonly ProposalView[];
+  /** The card the canvas ghost follows: the newest open one that has a dry run. */
+  selected(): ProposalView | null;
   subscribe(l: () => void): () => void;
   accept(id: string, sel: AcceptSelection): Promise<AcceptResult>;
   reject(id: string): Promise<void>;
@@ -180,17 +182,23 @@ export function createProposalHost(d: ProposalHostDeps): ProposalHost {
     return entry;
   }
 
+  const viewOf = (entry: Entry): ProposalView => ({ ...entry, undoable: undoable(entry.record), pendingTaint: false });
+
   return {
     list(threadId) {
-      const views: ProposalView[] = [...entries.values()]
-        .filter((entry) => entry.record.threadId === threadId)
-        .map((entry) => ({ ...entry, undoable: undoable(entry.record), pendingTaint: false }));
+      const views: ProposalView[] = [...entries.values()].filter((entry) => entry.record.threadId === threadId).map(viewOf);
       for (const held of pending.values()) {
         if (held.record.threadId === threadId) {
           views.push({ record: held.record, report: held.report, notice: null, changedSince: null, undoable: false, pendingTaint: true });
         }
       }
       return views.sort((a, b) => b.record.createdAt - a.record.createdAt);
+    },
+
+    selected() {
+      const open = [...entries.values()].filter((entry) => entry.record.state === "open" && entry.report !== undefined);
+      const newest = open.reduce<Entry | undefined>((best, entry) => (best && best.record.createdAt >= entry.record.createdAt ? best : entry), undefined);
+      return newest ? viewOf(newest) : null;
     },
 
     subscribe(listener) {
