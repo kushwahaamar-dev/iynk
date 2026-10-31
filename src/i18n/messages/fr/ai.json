@@ -130,6 +130,7 @@
     "forbidden": "Le partenaire ne peut pas proposer ce changement.",
     "list": "Propositions",
     "empty": "Aucune proposition pour l'instant.",
+    "ready": "Proposition prête : {title}",
     "model": "{model}, mode {mode}",
     "tier": "Fidélité des nouveaux composants : {tier}",
     "announce": {

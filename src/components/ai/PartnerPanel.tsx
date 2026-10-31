@@ -14,6 +14,8 @@ import { Button, Callout, EmptyState, Icon, Skeleton, TextArea } from "@/compone
 import { useLocale } from "@/i18n/client";
 import { EffectCard } from "./EffectCard";
 import { ModeSwitch } from "./ModeSwitch";
+import { ProposalList } from "./ProposalList";
+import type { ProposalHost } from "./wiring/proposalHost";
 import { TurnView } from "./TurnView";
 import { WhatItSees } from "./WhatItSees";
 
@@ -36,6 +38,8 @@ export type PartnerHost = {
   /** The search the partner wants to run and is waiting on; the panel shows it and reports the choice. */
   effects: { pending(): EffectRequest | null; answer(decision: "allow" | "deny"): void };
   ui: UiHost;
+  /** The proposal cards of the open thread. Absent where the partner cannot change the project. */
+  proposals?: { host: ProposalHost; threadId: string };
   preview(): PackPreview;
   toggleSource(id: SourceId, on: boolean): void;
   destination(): { host: string; local: boolean };
@@ -267,6 +271,7 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
             <TurnView key={item.id} turn={item.turn} sources={host.sources} onRefClick={onRefClick} t={t} />
           ),
         )}
+        {host.proposals ? <ProposalList host={host.proposals.host} threadId={host.proposals.threadId} t={t} /> : null}
         {live ? (
           <TurnView turn={assistantTurn("live", live)} sources={host.sources} onRefClick={onRefClick} t={t} streaming />
         ) : null}

@@ -130,6 +130,7 @@
     "forbidden": "Diese Änderung kann der Partner nicht vorschlagen.",
     "list": "Vorschläge",
     "empty": "Noch keine Vorschläge.",
+    "ready": "Vorschlag bereit: {title}",
     "model": "{model}, Modus {mode}",
     "tier": "Genauigkeit neuer Bauteile: {tier}",
     "announce": {

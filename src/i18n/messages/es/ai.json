@@ -130,6 +130,7 @@
     "forbidden": "El compañero no puede proponer ese cambio.",
     "list": "Propuestas",
     "empty": "Aún no hay propuestas.",
+    "ready": "Propuesta lista: {title}",
     "model": "{model}, modo {mode}",
     "tier": "Fidelidad de las piezas nuevas: {tier}",
     "announce": {

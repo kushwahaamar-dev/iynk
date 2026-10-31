@@ -130,6 +130,7 @@
     "forbidden": "That change is not something the partner can propose.",
     "list": "Proposals",
     "empty": "No proposals yet.",
+    "ready": "Proposal ready: {title}",
     "model": "{model}, {mode} mode",
     "tier": "Fidelity of new parts: {tier}",
     "announce": {

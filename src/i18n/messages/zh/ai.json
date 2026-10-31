@@ -130,6 +130,7 @@
     "forbidden": "搭档不能提出这种更改。",
     "list": "建议",
     "empty": "还没有建议。",
+    "ready": "建议已就绪：{title}",
     "model": "{model}，{mode}模式",
     "tier": "新元件的精度：{tier}",
     "announce": {
