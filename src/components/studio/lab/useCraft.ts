@@ -6,7 +6,7 @@ import type { DroneContent } from "@/content/schema";
 import { isDesignPick } from "@/lib/drone/design";
 import { buildComplete, testStatus } from "@/lib/dronelab/bench";
 import { initialFly, reduceFly, type FlyAction, type FlyState } from "@/lib/dronelab/fly";
-import { benchSummary, initialState, reduce, type DroneLabAction, type DroneLabState } from "@/lib/dronelab/store";
+import { benchSummary, initialState, reduce, type DroneLabAction, type DroneLabState } from "@/lib/dronelab/workshop";
 import { craftComplete, completeLab } from "@/lib/learn/lab-completion";
 import { droneMoments } from "@/lib/sound/moments";
 import { useFigureSound, useLabMoments } from "@/lib/sound/react";

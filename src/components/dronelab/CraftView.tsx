@@ -13,7 +13,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import type { Locale } from "@/i18n/config";
 import { droneProgressKeys, isEngineTest } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
-import { figureInitial, type DroneLabAction, type DroneLabState, type DroneTab } from "@/lib/dronelab/store";
+import { figureInitial, type DroneLabAction, type DroneLabState, type DroneTab } from "@/lib/dronelab/workshop";
 import { BuildPanel } from "./BuildPanel";
 import { CliConsole } from "./CliConsole";
 import { CraftProgress } from "./CraftProgress";

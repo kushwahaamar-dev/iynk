@@ -53,9 +53,7 @@ export type DroneLabAction =
   | { type: "cli/run"; line: string }
   | { type: "cli/clear" }
   | { type: "quiz/answer"; quiz: string; question: string; option: number }
-  | { type: "quiz/reset"; quiz: string }
-  /** Hands the state of another screen to this one; it is rebuilt from the saved fields that still fit the content. */
-  | { type: "sync/hydrate"; state: unknown };
+  | { type: "quiz/reset"; quiz: string };
 
 export type Step = { state: DroneLabState; send: HostCommand[] };
 
@@ -101,35 +99,6 @@ export function cliContext(content: DroneContent, s: DroneLabState): CliContext 
 }
 
 const set = (state: Record<string, unknown>): HostCommand => ({ type: "set", state });
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
-/**
- * Takes a room host's design, view, tests run and CLI, and builds this screen's figure to the same
- * step: the parts placed in build order from the start (the figure's `step`). Reversed parts, a
- * plugged battery and passed bench tests aren't replayed; the next shared action carries on from there.
- */
-function hydrate(content: DroneContent, s: DroneLabState, raw: unknown): Step {
-  if (!isRecord(raw) || raw.id !== content.id) return { state: s, send: [] };
-  const pick = isRecord(raw.pick) && isDesignPick(content.design, raw.pick) ? (raw.pick as DesignPick) : s.pick;
-  const sheet = raw.sheet === "wiring" ? "wiring" : null;
-  const exploded = raw.exploded === true;
-  const sel = typeof raw.sel === "string" ? raw.sel : null;
-  const attempted: Record<string, true> = {};
-  if (isRecord(raw.attempted)) for (const test of content.tests) if (raw.attempted[test.id] === true) attempted[test.id] = true;
-  const cli = raw.cli;
-  const cliOk = isRecord(cli) && isRecord(cli.session) && Array.isArray(cli.lines) && Array.isArray(cli.history) && isRecord(cli.flight);
-
-  const placed = isRecord(raw.figure) && isRecord(raw.figure.placed) ? raw.figure.placed : {};
-  let step = 0;
-  while (step < content.build.length && content.build[step].part in placed) step += 1;
-
-  return {
-    state: { ...s, pick, sheet, exploded, sel, attempted, cli: cliOk ? (cli as DroneLabState["cli"]) : s.cli },
-    send: [set({ design: pick, calc: calcPatch(content, pick), sheet, exploded, sel, ...(step > 0 ? { step } : {}) })],
-  };
-}
 
 export function reduce(content: DroneContent, s: DroneLabState, action: DroneLabAction): Step {
   switch (action.type) {
@@ -228,8 +197,6 @@ export function reduce(content: DroneContent, s: DroneLabState, action: DroneLab
       delete quiz[action.quiz];
       return { state: { ...s, quiz }, send: [] };
     }
-    case "sync/hydrate":
-      return hydrate(content, s, action.state);
   }
 }
 

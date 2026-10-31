@@ -1,5 +1,4 @@
 // @vitest-environment node
-import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { quad5Fixture as content } from "./__fixtures__/quad5";
 import { calcPatch, figureInitial, initialState, quizScore, reduce } from "./workshop";
@@ -30,20 +29,5 @@ describe("workshop reducer", () => {
       option: question.answer,
     }).state;
     expect(quizScore(content, s, quiz.id).score).toBe(1);
-  });
-
-  test("sync/hydrate takes a saved state and ignores another craft's", () => {
-    const s = initialState(content);
-    const host = reduce(content, s, { type: "sheet", sheet: "wiring" }).state;
-    const step = reduce(content, s, { type: "sync/hydrate", state: JSON.parse(JSON.stringify(host)) });
-    expect(step.state.sheet).toBe("wiring");
-    expect(reduce(content, s, { type: "sync/hydrate", state: { ...s, id: "whoop" } })).toEqual({ state: s, send: [] });
-  });
-});
-
-describe("layering", () => {
-  test("workshop.ts does not import the store", () => {
-    const source = readFileSync(new URL("./workshop.ts", import.meta.url), "utf8");
-    expect(source).not.toContain('from "./store"');
   });
 });
