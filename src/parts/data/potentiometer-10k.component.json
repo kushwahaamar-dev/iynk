@@ -221,7 +221,7 @@
         "en": "Wiper contact resistance and noise."
       },
       {
-        "en": "Log taper and tolerance: the end-to-end value is exact."
+        "en": "Log taper and tolerance: the end-to-end value is the stated value."
       },
       {
         "en": "The 300 degree sweep: the position is a number from 0 to 1."
@@ -231,7 +231,7 @@
       {
         "id": "wiper_floor",
         "text": {
-          "en": "At either end the solver keeps 0.5 ohm between the wiper and the end, so a pot turned fully over is never an exact short."
+          "en": "At either end the solver keeps 0.5 ohm between the wiper and the end, so a pot turned fully over is never a perfect short."
         }
       }
     ],

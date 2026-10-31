@@ -40,9 +40,8 @@ describe.each(descriptors.map((d) => [d.id, d] as const))("%s", (_id, d) => {
   });
 
   it("keeps banned words out of the model copy", () => {
-    const words = new RegExp(`\\b(${BANNED_WORDS.join("|")})\\b`, "i");
     const copy = [...d.simulation.what_it_models, ...d.simulation.not_modelled].flatMap((t) => Object.values(t));
-    for (const line of copy) expect(line).not.toMatch(words);
+    for (const line of copy) for (const word of BANNED_WORDS) expect(line).not.toMatch(word);
   });
 
   it("claims a modelled status only with a test that exists", () => {

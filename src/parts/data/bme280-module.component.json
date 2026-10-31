@@ -348,7 +348,7 @@
         "en": "A BMP280 look-alike board that reads chip ID 0x58 and has no humidity."
       },
       {
-        "en": "The calibration words are a synthetic set, not a dump from a real chip."
+        "en": "The calibration words are a synthetic set, not a dump from a physical chip."
       }
     ],
     "tests": [

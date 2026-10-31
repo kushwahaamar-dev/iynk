@@ -11,8 +11,9 @@
     "#project/*": "./src/project/*.ts"
   },
   "scripts": {
-    "content": "node -e \"const f='scripts/gen-content-index.mjs';if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f],{stdio:'inherit'});else console.log('skipped: '+f+' is not written yet')\"",
-    "content:check": "node scripts/gen-content-index.mjs --check",
+    "content": "node -e \"for(const f of ['scripts/gen-content-index.mjs','scripts/gen-parts-index.mjs']){if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f],{stdio:'inherit'});else console.log('skipped: '+f+' is not written yet')}\"",
+    "content:check": "node scripts/gen-content-index.mjs --check && node -e \"const f='scripts/gen-parts-index.mjs';if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f,'--check'],{stdio:'inherit'})\"",
+    "parts:check": "node scripts/validate-part.mjs --all",
     "engines:build": "node scripts/build-engines.mjs --if-present",
     "schema:gen": "node scripts/schema-gen.mjs",
     "schema:check": "node scripts/schema-gen.mjs --check",
@@ -40,7 +41,7 @@
     "measure:apply": "node scripts/measure-apply.mjs",
     "icons": "node scripts/gen-icons.mjs",
     "ui:check": "node scripts/ui-check.mjs",
-    "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run ui:check && npm run server:typecheck && npm run server:test && npm run test && npm run test:perf && npm run e2e"
+    "check": "npm run content:check && npm run schema:check && npm run parts:check && npm run typecheck && npm run lint && npm run ui:check && npm run server:typecheck && npm run server:test && npm run test && npm run test:perf && npm run e2e"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",

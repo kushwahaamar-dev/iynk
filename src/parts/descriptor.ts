@@ -5,11 +5,37 @@ import type { Diagnostic } from "../core/result.ts";
 import { sha256Hex } from "../core/sha256.ts";
 import type { Component } from "./generated/types.ts";
 import { validateComponent } from "./generated/validate.mjs";
+import { BANNED_WORDS, copyCheck } from "./copy-check.ts";
 import { semanticChecks } from "./semantic.ts";
+
+export { BANNED_WORDS };
 
 export type Descriptor = Component;
 
 export type DescriptorOrigin = "core" | "local-user" | "imported-pack";
+
+export type Trust = "core" | "local" | "imported";
+
+export const ORIGIN_OF_TRUST: Readonly<Record<Trust, DescriptorOrigin>> = {
+  core: "core",
+  local: "local-user",
+  imported: "imported-pack",
+};
+
+/** What the caller knows about the app and the library. A check that needs a missing set is skipped. */
+export interface ValidateContext {
+  trust: Trust;
+  /** Digest of the descriptor being added, compared with `installed`. */
+  candidateDigest?: string;
+  /** Digest of every installed part, keyed by `id@version`. */
+  installed?: ReadonlyMap<string, string>;
+  /** Element kinds the running solver provides. */
+  solverElements?: ReadonlySet<string>;
+  /** Builtin behaviour refs the app ships. */
+  builtinRefs?: ReadonlySet<string>;
+  /** Cause and symptom ids of the core registry. */
+  causeIds?: ReadonlySet<string>;
+}
 
 export interface DescriptorCheck {
   ok: boolean;
@@ -21,16 +47,12 @@ export interface DescriptorOptions {
   origin?: DescriptorOrigin;
   /** Size of the file as read, when the caller has it. Otherwise the canonical form is measured. */
   bytes?: number;
+  /** Who is asking. Sets the origin and switches on the rules that need to know. */
+  ctx?: ValidateContext;
 }
-
-/** Words a part description must not use (D-007). */
-export const BANNED_WORDS: readonly string[] = ["validated"];
 
 const MAX_DIAGNOSTICS = 20;
 const NEWER_SCHEMA = /^iynk\.component\/([0-9]+)$/;
-
-const pointer = (...segments: (string | number)[]): string =>
-  segments.map((s) => "/" + String(s).replace(/~/g, "~0").replace(/\//g, "~1")).join("");
 
 const refused = (diagnostics: Diagnostic[]): DescriptorCheck => ({
   ok: false,
@@ -62,10 +84,10 @@ function sizeOf(value: unknown, bytes: number | undefined): number | Diagnostic 
   }
 }
 
-function idChecks(d: Descriptor, origin: DescriptorOrigin): Diagnostic[] {
+function idChecks(d: Descriptor, origin: DescriptorOrigin, claimChecked: boolean): Diagnostic[] {
   const out: Diagnostic[] = [];
   const namespace = d.id.split(".")[0];
-  if (d.provenance.origin !== origin) {
+  if (!claimChecked && d.provenance.origin !== origin) {
     out.push(diag("P-S-15", "error", "/provenance/origin", `the file claims origin ${d.provenance.origin} but was loaded as ${origin}`));
   }
   if (namespace === "core" && origin !== "core") {
@@ -76,22 +98,6 @@ function idChecks(d: Descriptor, origin: DescriptorOrigin): Diagnostic[] {
   }
   if (origin === "local-user" && namespace !== "local") {
     out.push(diag("P-S-15", "error", "/id", "a part you made yourself needs an id that starts with local."));
-  }
-  return out;
-}
-
-function copyChecks(d: Descriptor): Diagnostic[] {
-  const out: Diagnostic[] = [];
-  const banned = new RegExp(`\\b(${BANNED_WORDS.join("|")})\\b`, "i");
-  for (const field of ["what_it_models", "not_modelled"] as const) {
-    d.simulation[field].forEach((text, i) => {
-      for (const [lang, line] of Object.entries(text)) {
-        const word = line?.match(banned)?.[1];
-        if (word) {
-          out.push(diag("P-COPY", "error", pointer("simulation", field, i, lang), `the word "${word.toLowerCase()}" may not be used about a part`));
-        }
-      }
-    });
   }
   return out;
 }
@@ -124,7 +130,31 @@ export function validateDescriptor(value: unknown, opts: DescriptorOptions = {})
     );
   }
 
-  const origin = opts.origin ?? value.provenance.origin;
-  const diagnostics = [...semanticChecks(value), ...idChecks(value, origin), ...copyChecks(value)];
-  return { ok: diagnostics.length === 0, diagnostics: diagnostics.slice(0, MAX_DIAGNOSTICS) };
+  const { ctx } = opts;
+  const origin = ctx ? ORIGIN_OF_TRUST[ctx.trust] : (opts.origin ?? value.provenance.origin);
+  const diagnostics = [...semanticChecks(value, ctx), ...idChecks(value, origin, ctx !== undefined), ...copyCheck(value)];
+  return { ok: diagnostics.every((x) => x.severity !== "error"), diagnostics: diagnostics.slice(0, MAX_DIAGNOSTICS) };
+}
+
+/** Like `validateDescriptor` for a file's text: checks the byte length, parses, and never throws. */
+export function validateDescriptorText(text: string, opts: DescriptorOptions = {}): DescriptorCheck {
+  const bytes = utf8Length(text);
+  if (bytes > LIMITS.descriptorBytes) {
+    return refused([diag("P-SIZE", "error", "", `the descriptor is ${bytes} bytes; the limit is ${LIMITS.descriptorBytes}`)]);
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch (e) {
+    return refused([diag("P-SCHEMA", "error", "", `the file is not valid JSON: ${e instanceof Error ? e.message : String(e)}`)]);
+  }
+  return validateDescriptor(value, { ...opts, bytes });
+}
+
+/** One line per finding, `code path message`, at most `max` of them. */
+export function formatDiagnostics(r: DescriptorCheck, max = MAX_DIAGNOSTICS): string {
+  const lines = r.diagnostics.slice(0, max).map((x) => `${x.code} ${x.path || "/"} ${x.message}`);
+  const more = r.diagnostics.length - max;
+  if (more > 0) lines.push(`and ${more} more`);
+  return lines.join("\n");
 }
