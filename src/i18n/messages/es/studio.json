@@ -218,7 +218,8 @@
       "problems": "Problemas",
       "models": "Modelos",
       "code": "Código",
-      "serial": "Serie"
+      "serial": "Serie",
+      "faults": "Fallos"
     },
     "separator": "Cambiar el tamaño del panel inferior",
     "narrow": "El diseño para teléfono llegará más tarde; ver y ejecutar funcionan",

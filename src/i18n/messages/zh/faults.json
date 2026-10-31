@@ -150,7 +150,11 @@
     "run": "检查电路",
     "none": "没有发现问题。",
     "found": "发现的问题",
-    "skipped": "已跳过：检查无法看到这个元件或网络的足够信息。"
+    "skipped": "已跳过：检查无法看到这个元件或网络的足够信息。",
+    "footer": "已跳过：{skipped}。失败的规则：{errors}。",
+    "disabledSealed": "题目未解答时不可用，因为检查会泄露答案。",
+    "disabledRunning": "正在检查。",
+    "disabledWorker": "模拟器尚未就绪。"
   },
   "scan": {
     "title": "I2C 扫描",
@@ -325,5 +329,9 @@
       "2": "看看 {part} 的数值。",
       "3": "检查 {value} {unit} 是否适合 {part}，预期约为 {expected} {unit}。"
     }
+  },
+  "dock": {
+    "title": "故障",
+    "noWorker": "此浏览器无法运行模拟器，因此无法使用故障功能。"
   }
 }

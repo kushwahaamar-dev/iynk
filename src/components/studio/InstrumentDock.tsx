@@ -11,6 +11,7 @@ import type { ToleranceMode } from "@/sim/analog/tolerance";
 import type { CsvMeta } from "@/sim/probe/capture";
 import type { Reading, TraceChunk } from "@/sim/probe/tap";
 import type { SimHost } from "@/sim-host/host";
+import { I2cScan } from "./instruments/I2cScan";
 import { listProbePoints, makeInstrumentOp, MAX_INSTRUMENTS, removeInstrumentOp, setToleranceOp, type InstrumentKind, type ProbePoint } from "@/studio/instruments/placement";
 import { createPlotStore, type PlotStore } from "@/studio/run/plot";
 import { createProbeClient } from "@/studio/run/probes";
@@ -34,6 +35,8 @@ export interface InstrumentDockProps {
   sim: SimHost;
   messages: Messages["instruments"];
   fidelity: Messages["fidelity"];
+  /** The strings of the I2C scan; the scan is left out without them. */
+  faults?: Messages["faults"];
   lang: Locale;
   /** True while a shared run in a room is running or paused; changing the tolerance would halt it. */
   sharedRunActive?: boolean;
@@ -284,11 +287,12 @@ function AddInstrument({ points, disabled, reason, messages, lang, onAdd }: { po
   );
 }
 
-export function InstrumentDock({ doc, run, ui, sim, messages, fidelity, lang, sharedRunActive = false }: InstrumentDockProps) {
+export function InstrumentDock({ doc, run, ui, sim, messages, fidelity, faults, lang, sharedRunActive = false }: InstrumentDockProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/instruments`), [lang, messages]);
   const state = useStoreSelector(doc, (s) => s.state);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
   const startedAtMs = useStoreSelector(run, (s) => s.startedAtMs);
+  const hasRun = useStoreSelector(run, (s) => s.phase !== "idle" && s.phase !== "starting");
   const client = useMemo(() => createProbeClient(sim), [sim]);
   const points = useMemo(() => listProbePoints(state), [state]);
   const [failure, setFailure] = useState<string | null>(null);
@@ -361,6 +365,7 @@ export function InstrumentDock({ doc, run, ui, sim, messages, fidelity, lang, sh
           ))}
         </ul>
       )}
+      {faults ? <I2cScan scan={() => sim.i2cScan()} disabled={!hasRun} messages={faults} lang={lang} /> : null}
     </section>
   );
 }

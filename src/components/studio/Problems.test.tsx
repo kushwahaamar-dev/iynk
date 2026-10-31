@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import faultMessages from "@/i18n/messages/en/faults.json";
 import messages from "@/i18n/messages/en/studioCode.json";
 import type { Problem } from "@/studio/problems";
 import { Problems } from "./Problems";
@@ -18,7 +19,7 @@ const plain: Problem = { id: "code:1", severity: "warning", source: "code", titl
 const flag: Problem = { id: "static:short-circuit:net_a", severity: "error", source: "static", titleKey: "problem.static.short-circuit", args: { net: "net_a", count: 2 } };
 
 const view = (problems: Problem[], onJump = vi.fn()) => {
-  render(<Problems problems={problems} onJump={onJump} messages={messages} lang="en" />);
+  render(<Problems problems={problems} onJump={onJump} messages={messages} faultMessages={faultMessages} lang="en" onCheck={() => {}} checkDisabled={false} counts={{ skipped: 0, errors: 0 }} />);
   return onJump;
 };
 
@@ -26,12 +27,12 @@ describe("Problems", () => {
   it("says so when there is nothing wrong", () => {
     view([]);
     expect(screen.getByText(messages.problems.empty)).toBeTruthy();
-    expect(screen.queryByRole("button")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Error|Warning/ })).toBeNull();
   });
 
   it("shows each problem as a button named by its severity, line and text", () => {
     view([include, plain, flag]);
-    const rows = screen.getAllByRole("button");
+    const rows = screen.getAllByRole("button").filter((b) => b.dataset.severity);
     expect(rows).toHaveLength(3);
     expect(rows[0]!.textContent).toContain("Error");
     expect(rows[0]!.textContent).toContain("Line 2");
@@ -50,7 +51,7 @@ describe("Problems", () => {
 
   it("jumps to the problem that was pressed", () => {
     const onJump = view([include, plain]);
-    fireEvent.click(screen.getAllByRole("button")[1]!);
+    fireEvent.click(screen.getAllByRole("button").filter((b) => b.dataset.severity)[1]!);
     expect(onJump).toHaveBeenCalledWith(plain);
   });
 });

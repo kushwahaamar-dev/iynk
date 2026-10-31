@@ -150,7 +150,11 @@
     "run": "Schaltung prüfen",
     "none": "Es wurde nichts Falsches gefunden.",
     "found": "Gefundene Probleme",
-    "skipped": "Übersprungen: Die Prüfung sah nicht genug von diesem Bauteil oder Netz."
+    "skipped": "Übersprungen: Die Prüfung sah nicht genug von diesem Bauteil oder Netz.",
+    "footer": "Übersprungen: {skipped}. Fehlgeschlagene Regeln: {errors}.",
+    "disabledSealed": "Nicht verfügbar, solange die Aufgabe ungelöst ist, weil die Prüfung die Antwort verraten würde.",
+    "disabledRunning": "Eine Prüfung läuft.",
+    "disabledWorker": "Der Simulator ist noch nicht bereit."
   },
   "scan": {
     "title": "I2C-Scan",
@@ -325,5 +329,9 @@
       "2": "Sieh dir den Wert von {part} an.",
       "3": "Prüfe, ob {value} {unit} zu {part} passt; erwartet werden etwa {expected} {unit}."
     }
+  },
+  "dock": {
+    "title": "Fehler",
+    "noWorker": "Dieser Browser kann den Simulator nicht ausführen, daher sind Fehler nicht verfügbar."
   }
 }

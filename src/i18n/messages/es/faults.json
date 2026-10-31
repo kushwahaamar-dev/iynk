@@ -150,7 +150,11 @@
     "run": "Revisar el circuito",
     "none": "No se encontró nada mal.",
     "found": "Problemas encontrados",
-    "skipped": "Omitido: la revisión no vio lo bastante de esta pieza o red."
+    "skipped": "Omitido: la revisión no vio lo bastante de esta pieza o red.",
+    "footer": "Omitidas: {skipped}. Reglas que fallaron: {errors}.",
+    "disabledSealed": "No disponible mientras el reto siga sin resolver, porque la revisión daría la respuesta.",
+    "disabledRunning": "Hay una revisión en curso.",
+    "disabledWorker": "El simulador todavía no está listo."
   },
   "scan": {
     "title": "Escaneo I2C",
@@ -325,5 +329,9 @@
       "2": "Mira el valor de {part}.",
       "3": "Comprueba que {value} {unit} encaja con {part}; se espera cerca de {expected} {unit}."
     }
+  },
+  "dock": {
+    "title": "Fallos",
+    "noWorker": "Este navegador no puede ejecutar el simulador, así que los fallos no están disponibles."
   }
 }

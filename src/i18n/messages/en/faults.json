@@ -150,7 +150,11 @@
     "run": "Check the circuit",
     "none": "Nothing wrong was found.",
     "found": "Problems found",
-    "skipped": "Skipped: the check could not see enough of this part or net."
+    "skipped": "Skipped: the check could not see enough of this part or net.",
+    "footer": "Skipped: {skipped}. Rules that failed: {errors}.",
+    "disabledSealed": "Not available while a puzzle is unsolved, because the check would give the answer away.",
+    "disabledRunning": "A check is running.",
+    "disabledWorker": "The simulator is not ready yet."
   },
   "scan": {
     "title": "I2C scan",
@@ -325,5 +329,9 @@
       "2": "Look at the value of {part}.",
       "3": "Check that {value} {unit} suits {part}; about {expected} {unit} is expected."
     }
+  },
+  "dock": {
+    "title": "Faults",
+    "noWorker": "This browser cannot run the simulator, so faults are not available."
   }
 }

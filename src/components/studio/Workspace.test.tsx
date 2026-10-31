@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cryptoRandom } from "@/core/ids";
 import { writeIynk } from "@/export/iynk";
+import faults from "@/i18n/messages/en/faults.json";
 import fidelity from "@/i18n/messages/en/fidelity.json";
 import instruments from "@/i18n/messages/en/instruments.json";
 import studio from "@/i18n/messages/en/studio.json";
@@ -24,7 +25,7 @@ import { LOCAL_ACTOR, loadStarter } from "@/studio/templates";
 import { createServices, ServicesProvider, type Services } from "./wiring/services";
 import { Workspace } from "./Workspace";
 
-const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments } as StudioMessages;
+const messages = { studio, studioHome, studioEdit, studioInspect, studioWire, studioCode, studioRun, studioModels, fidelity, instruments, faults } as StudioMessages;
 const regions = studio.layout.regions;
 
 function fakeSim() {
@@ -38,6 +39,8 @@ function fakeSim() {
       subscribed();
       return unsubscribed;
     }),
+    staticCheck: vi.fn(async () => ({ findings: [], skipped: {}, errors: [] })),
+    state: "ready",
     kill: vi.fn(async () => undefined),
   };
   return { sim: sim as unknown as SimHost, load: sim.load, subscribed, unsubscribed };
@@ -111,10 +114,11 @@ describe("Workspace", () => {
   });
 
   it("leaves one live graph after Strict Mode mounts it twice", async () => {
+    // One listener for the run link and one for the fault link.
     const { mount, sim } = await rig();
     mount({ strict: true });
     await screen.findByRole("region", { name: regions.canvas });
-    expect(sim.subscribed.mock.calls.length - sim.unsubscribed.mock.calls.length).toBe(1);
+    expect(sim.subscribed.mock.calls.length - sim.unsubscribed.mock.calls.length).toBe(2);
   });
 
   it("removes every listener it added to the window and the document", async () => {

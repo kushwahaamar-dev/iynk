@@ -150,7 +150,11 @@
     "run": "Vérifier le circuit",
     "none": "Aucun problème trouvé.",
     "found": "Problèmes trouvés",
-    "skipped": "Ignoré : la vérification n'a pas vu assez de cette pièce ou de ce réseau."
+    "skipped": "Ignoré : la vérification n'a pas vu assez de cette pièce ou de ce réseau.",
+    "footer": "Ignorées : {skipped}. Règles en échec : {errors}.",
+    "disabledSealed": "Indisponible tant que l'énigme n'est pas résolue, car la vérification donnerait la réponse.",
+    "disabledRunning": "Une vérification est en cours.",
+    "disabledWorker": "Le simulateur n'est pas encore prêt."
   },
   "scan": {
     "title": "Scan I2C",
@@ -325,5 +329,9 @@
       "2": "Regarde la valeur de {part}.",
       "3": "Vérifie que {value} {unit} convient à {part} ; environ {expected} {unit} est attendu."
     }
+  },
+  "dock": {
+    "title": "Pannes",
+    "noWorker": "Ce navigateur ne peut pas lancer le simulateur, les pannes ne sont donc pas disponibles."
   }
 }
