@@ -39,9 +39,9 @@ export function runStoreContract(name: string, makeStore: MakeStore): void {
       }
     }
 
-    test("migration 0001 leaves an intact database at version 1", () => {
+    test("the migrations leave an intact database at version 2", () => {
       withStore((store) => {
-        assert.equal(store.schemaVersion(), 1);
+        assert.equal(store.schemaVersion(), 2);
         assert.equal(store.integrityCheck(), "ok");
         assert.equal(store.ping(), true);
       });

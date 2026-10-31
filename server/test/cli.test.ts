@@ -46,7 +46,7 @@ describe("init", () => {
     assert.equal(t.out.filter((line) => line.startsWith("Enrolment link: http://localhost:8787/together#enrol=")).length, 1);
     assert.equal(t.out.filter((line) => /^Typed code: [0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(line)).length, 1);
     const db = new DatabaseSync(join(t.dataDir, "iynk.db"), { readOnly: true });
-    assert.equal((db.prepare("SELECT MAX(version) AS v FROM schema_migrations").get() as { v: number }).v, 1);
+    assert.equal((db.prepare("SELECT MAX(version) AS v FROM schema_migrations").get() as { v: number }).v, 2);
     db.close();
   });
 
