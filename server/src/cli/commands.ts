@@ -4,6 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import { checkConfig, loadConfig, type ServerConfig } from "../config.ts";
 import { realDeps, type Deps } from "../deps.ts";
+import { issueMcpKey, revokeMcpKey } from "../identity/api-tokens.ts";
 import { createEnrolmentCode } from "../identity/enrol.ts";
 import { getDevice, listDevices, revokeDevice } from "../identity/devices.ts";
 import { createLogger } from "../ops/log.ts";
@@ -25,6 +26,7 @@ export const COMMANDS: readonly string[] = [
   "check-config",
   "compact",
   "diagnostics",
+  "mcp-key",
 ];
 
 const EXIT_OK = 0;
@@ -35,15 +37,16 @@ const BACKUPS_KEPT = 7;
 const BACKUP_PATTERN = /^iynk-(\d+)\.db$/;
 const MIGRATIONS_DIR = fileURLToPath(new URL("../../migrations", import.meta.url));
 
-type Parsed = { positional: string[]; json: boolean; name: string | null };
+type Parsed = { positional: string[]; json: boolean; name: string | null; revoke: boolean };
 
 class UsageError extends Error {}
 
 function parseArgs(args: string[]): Parsed {
-  const parsed: Parsed = { positional: [], json: false, name: null };
+  const parsed: Parsed = { positional: [], json: false, name: null, revoke: false };
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i] ?? "";
     if (arg === "--json") parsed.json = true;
+    else if (arg === "--revoke") parsed.revoke = true;
     else if (arg === "--name") {
       const value = args[(i += 1)];
       if (value === undefined) throw new UsageError("--name needs a value.");
@@ -113,6 +116,22 @@ function revoke(store: ServerStore, args: Parsed, deps: Deps, io: Io): void {
   if (!device) throw new Error("no such device");
   if (device.revokedAt !== null) throw new Error(`${device.name} (${device.id}) is already revoked.`);
   io.out(`Revoked ${device.name} (${device.id}); ended ${ended} ${ended === 1 ? "session" : "sessions"}.`);
+}
+
+function mcpKey(config: ServerConfig, store: ServerStore, args: Parsed, deps: Deps, io: Io): void {
+  if (args.revoke) {
+    const ended = store.transaction((tx) => revokeMcpKey(tx, deps));
+    io.out(args.json ? JSON.stringify({ revoked: ended }) : `Revoked ${ended} MCP ${ended === 1 ? "key" : "keys"}.`);
+    return;
+  }
+  const { id, key } = store.transaction((tx) => issueMcpKey(tx, deps));
+  createLogger({ level: config.logLevel, write: io.err }).info(`mcp key issued id=${id}`);
+  if (args.json) {
+    io.out(JSON.stringify({ key, id }));
+    return;
+  }
+  io.out(`MCP key: ${key}`);
+  io.out("Paste it into your client now. It is shown once and cannot be recovered.");
 }
 
 function backup(config: ServerConfig, store: ServerStore, deps: Deps, io: Io): void {
@@ -217,6 +236,8 @@ function dispatch(command: string, args: Parsed, config: ServerConfig, deps: Dep
       return withStore(config, deps, (store) => backup(config, store, deps, io));
     case "diagnostics":
       return withStore(config, deps, (store) => diagnostics(config, store, deps, io));
+    case "mcp-key":
+      return withStore(config, deps, (store) => mcpKey(config, store, args, deps, io));
     case "restore":
       return restore(config, args, io);
     case "compact":

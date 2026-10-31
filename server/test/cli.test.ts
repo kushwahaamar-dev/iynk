@@ -124,6 +124,43 @@ describe("enrol --json", () => {
   });
 });
 
+describe("mcp-key", () => {
+  test("prints a key once, stores only its hash and logs without the key", async () => {
+    const t = setup();
+    assert.equal(await t.exec(["mcp-key"]), 0);
+    const key = /MCP key: (iynk_mcp_[A-Za-z0-9_-]{43})/.exec(t.out.join("\n"))?.[1];
+    assert.ok(key);
+    assert.equal(t.out.filter((line) => line.includes(key)).length, 1);
+    assert.ok(t.err.some((line) => line.includes("mcp key issued id=tok_")));
+    assert.ok(!t.err.join("\n").includes(key));
+    assert.ok(!readFileSync(join(t.dataDir, "iynk.db")).includes(key));
+  });
+
+  test("--json prints the key and id, and a second run revokes the first", async () => {
+    const t = setup();
+    await t.exec(["mcp-key", "--json"]);
+    const first = JSON.parse(t.out[0] ?? "") as { key: string; id: string };
+    t.out.length = 0;
+    t.deps.advance(1000);
+    await t.exec(["mcp-key", "--json"]);
+    const second = JSON.parse(t.out[0] ?? "") as { key: string; id: string };
+    assert.notEqual(second.id, first.id);
+    const live = t.store().read((tx) => tx.all<{ id: string }>("SELECT id FROM api_tokens WHERE revoked_at IS NULL"));
+    assert.deepEqual(live.map((row) => row.id), [second.id]);
+  });
+
+  test("--revoke prints the count", async () => {
+    const t = setup();
+    await t.exec(["mcp-key"]);
+    t.out.length = 0;
+    assert.equal(await t.exec(["mcp-key", "--revoke"]), 0);
+    assert.deepEqual(t.out, ["Revoked 1 MCP key."]);
+    t.out.length = 0;
+    await t.exec(["mcp-key", "--revoke"]);
+    assert.deepEqual(t.out, ["Revoked 0 MCP keys."]);
+  });
+});
+
 describe("devices and revoke", () => {
   async function withDevice() {
     const t = setup();
