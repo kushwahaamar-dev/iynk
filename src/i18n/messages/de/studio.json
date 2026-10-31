@@ -375,6 +375,7 @@
       "makeCopy": "Eigene Kopie anlegen",
       "copyDone": "Kopie angelegt",
       "withdrawn": "Der Besitzer teilt das nicht mehr",
+      "gone": "Dieser Link funktioniert nicht mehr",
       "tooLarge": "Dieses Projekt ist zu groß zum Teilen",
       "secretWarning": "Dieses Projekt enthält vermutlich einen Schlüssel oder ein Passwort. Entferne es vor dem Teilen.",
       "liveLimit": "Du hast schon {count} aktive Links. Beende einen, um einen neuen zu erstellen.",

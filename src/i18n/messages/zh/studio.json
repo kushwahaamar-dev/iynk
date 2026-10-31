@@ -375,6 +375,7 @@
       "makeCopy": "生成我自己的副本",
       "copyDone": "副本已生成",
       "withdrawn": "所有者已停止分享",
+      "gone": "此链接已失效",
       "tooLarge": "这个项目太大，无法分享",
       "secretWarning": "这个项目似乎包含密钥或密码。分享前请先删除。",
       "liveLimit": "你已有 {count} 个有效链接。先停用一个再生成新的。",

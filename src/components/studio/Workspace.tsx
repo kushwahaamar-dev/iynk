@@ -64,6 +64,8 @@ export interface WorkspaceProps {
   autorun: boolean;
   messages: StudioMessages;
   lang: Locale;
+  /** A read only project that lives in memory only, such as a share: it is not loaded from or saved to the library. */
+  shared?: DocStore;
 }
 
 const registry = builtinRegistry();
@@ -91,6 +93,7 @@ type GraphInput = {
   lang: Locale;
   messages: StudioMessages;
   reduceMotion: () => boolean;
+  ephemeral: boolean;
   onNotice: (notice: LinkNotice) => void;
 };
 
@@ -105,7 +108,7 @@ function focusKind(): "canvas" | "code" | "other" {
  * Creates the stores, the engine and the links for one open project. `dispose` undoes them in the reverse order. The
  * keymap and the scene controller need the mounted canvas, so the workspace starts them once it is on the page.
  */
-function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, onNotice }: GraphInput): Graph {
+function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ephemeral, onNotice }: GraphInput): Graph {
   const state = doc.getState().state;
   const session = createSessionStore((state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const ui = createUiStore(projectId);
@@ -149,7 +152,7 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, on
   const announcer = createAnnouncer();
   const offHistory = registerHistoryCommands({ doc, focus: focusKind });
   const debug = installDebugHook({ doc, run, announcer, tools: tools.recent });
-  const offRepository = linkRepository(doc, debug.wrapHost(services.host), { onNotice });
+  const offRepository = ephemeral ? () => {} : linkRepository(doc, debug.wrapHost(services.host), { onNotice });
   const link = linkSim({ doc, run, host: services.sim, impact: classifyImpact });
 
   const viewId = () => session.getState().viewId;
@@ -399,7 +402,7 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
 
 type OpenWorkspaceProps = WorkspaceProps & { doc: DocStore; recovered: boolean };
 
-function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: OpenWorkspaceProps) {
+function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, lang }: OpenWorkspaceProps) {
   const services = useServices();
   const reduceMotion = useReducedMotion();
   const reduceMotionNow = useRef(reduceMotion);
@@ -499,11 +502,12 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
       lang,
       messages,
       reduceMotion: () => reduceMotionNow.current,
+      ephemeral: shared !== undefined,
       onNotice: (notice) => setNotices((now) => (now.includes(notice) ? now : [...now, notice])),
     });
     setGraph(made);
     return made.dispose;
-  }, [doc, services, projectId, lang, messages]);
+  }, [doc, shared, services, projectId, lang, messages]);
 
   function placeAtCentre(ref: string) {
     if (!graph) return;
@@ -556,7 +560,9 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
 
 export function Workspace(props: WorkspaceProps) {
   const { host } = useServices();
-  const opened = useOpenProject(props.projectId, { host });
+  const opened = useOpenProject(props.shared ? null : props.projectId, { host });
+
+  if (props.shared) return <OpenWorkspace key={props.projectId} {...props} doc={props.shared} recovered={false} />;
 
   if (opened.status === "loading") {
     return (
