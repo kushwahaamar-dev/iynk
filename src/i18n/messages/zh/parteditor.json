@@ -13,7 +13,9 @@
     "identity": "基本信息",
     "pins": "引脚",
     "footprint": "封装",
-    "json": "JSON"
+    "json": "JSON",
+    "ratings": "额定值",
+    "model": "模型"
   },
   "identity": {
     "name": "名称",
@@ -116,7 +118,9 @@
       "identity": "基本信息",
       "pins": "引脚",
       "footprint": "封装",
-      "rest": "其他"
+      "rest": "其他",
+      "ratings": "额定值",
+      "model": "模型"
     }
   },
   "save": {
@@ -136,5 +140,126 @@
     "body": "你的更改会作为草稿保留在此浏览器中，直到你重新开始。",
     "confirm": "离开",
     "keep": "继续编辑"
+  },
+  "ratings": {
+    "heading": "额定值",
+    "hint": "限值和典型值。每个值可以来自厂商、你自己的假设或台架测量。仿真会读取其中一个。",
+    "empty": "还没有额定值。选择模型会写入它需要的值，你也可以再添加。",
+    "descriptionHint": "这个额定值的用途",
+    "remove": "移除额定值 {key}",
+    "slot": {
+      "manufacturer": "厂商给出",
+      "simulation": "iynk 的假设",
+      "measured": "台架实测"
+    },
+    "usedBy": "仿真读取这个值",
+    "add": {
+      "manufacturer": "添加厂商给出的数值",
+      "simulation": "添加假设"
+    },
+    "measuredNote": "台架实测值请在 JSON 视图中添加。",
+    "reads": "仿真读取，{key}",
+    "readsNone": "无",
+    "value": "{key}，数值，单位 {unit}",
+    "source": "{key}，数值的来源",
+    "why": "{key}，为什么是这个数",
+    "range": "最小 {min}，典型 {typ}，最大 {max} {unit}",
+    "needSource": "请选择 {key} 这个数的来源。",
+    "chooseSource": "选择来源",
+    "confidence": "可信度：低",
+    "removeSlot": "移除 {key} 的{slot}值",
+    "measure": "物理量",
+    "measures": {
+      "voltage": "电压",
+      "current": "电流",
+      "power": "功率",
+      "resistance": "电阻",
+      "time": "时间",
+      "temperature": "温度",
+      "frequency": "频率",
+      "ratio": "比值"
+    },
+    "addRating": "添加额定值",
+    "sources": {
+      "heading": "来源",
+      "hint": "你的数值从哪里来。取自厂商数据手册的数值需要选择其中一个来源。",
+      "empty": "还没有来源。",
+      "title": "{id} 的标题",
+      "url": "{id} 的链接",
+      "kind": "{id} 的类型",
+      "reliability": "对 {id} 的信任程度",
+      "levels": {
+        "primary": "厂商自己的文档",
+        "secondary": "二手资料",
+        "unverified": "未核对"
+      },
+      "remove": "移除来源 {id}",
+      "add": "添加来源"
+    }
+  },
+  "model": {
+    "heading": "模型",
+    "hint": "选择零件的行为方式。这里的模型是教学模型，是一个起点，你可以在 JSON 视图中继续细化。",
+    "sequentialNote": "真值表没有记忆，所以这里不提供触发器和计数器。",
+    "template": "模型模板",
+    "choose": "选择模板",
+    "names": {
+      "resistor-like": "类似电阻",
+      "switch": "开关",
+      "led-like": "类似 LED",
+      "truth-table": "真值表",
+      "analog-sensor": "模拟传感器",
+      "not-modelled": "未建模"
+    },
+    "current": "当前模型：{name}",
+    "apply": "使用此模型",
+    "replaces": "这会替换上一个模型写入的层、测试和额定值。你自己添加的额定值会保留。",
+    "fields": {
+      "ohms": "电阻（欧）",
+      "momentary": "松开后弹回",
+      "vf": "正向电压（V）",
+      "imax": "最大电流（mA）",
+      "unit": "数值的单位",
+      "min": "最小值",
+      "max": "最大值",
+      "reason": "为什么未建模",
+      "inputs": "输入引脚",
+      "outputs": "输出引脚",
+      "delay": "延迟（ns）",
+      "drive": "输出电阻（欧）"
+    },
+    "problems": {
+      "range": "请输入 {min} 到 {max} 之间的数。",
+      "pins": "此模型至少需要 {need} 个引脚。请在“引脚”标签页添加。",
+      "empty": {
+        "inputs": "请至少选择一个输入引脚。",
+        "outputs": "请至少选择一个输出引脚。",
+        "rows": "请至少添加一行。"
+      },
+      "tooMany": {
+        "inputs": "一张表最多有 {max} 个输入。",
+        "outputs": "一张表最多有 {max} 个输出。",
+        "rows": "一张表最多有 {max} 行。"
+      },
+      "overlap": "一个引脚不能同时是输入和输出。",
+      "order": "最小值必须小于最大值。",
+      "reason": "请说明为什么未建模。"
+    },
+    "table": {
+      "caption": "真值表的行，第一个匹配的行生效",
+      "row": "行",
+      "cell": "第 {n} 行，{name}",
+      "add": "添加行",
+      "complete": "补全表格",
+      "remove": "移除第 {n} 行",
+      "count": "{count} / {max} 行",
+      "limit": "一张表最多容纳 {max} 行。",
+      "noColumns": "请先选择输入和输出引脚。",
+      "shadowed": "第 {n} 行永远不会被用到：前面的某一行已经覆盖了它。",
+      "moreShadowed": "另有 {count} 行永远不会被用到。",
+      "added": "已添加一行。表中共有 {count} 行。",
+      "removed": "已移除第 {n} 行。表中共有 {count} 行。",
+      "completed": "已为缺少的输入组合添加 {count} 行。"
+    }
   }
 }

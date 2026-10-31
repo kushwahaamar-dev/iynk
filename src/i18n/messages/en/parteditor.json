@@ -13,7 +13,9 @@
     "identity": "Identity",
     "pins": "Pins",
     "footprint": "Footprint",
-    "json": "JSON"
+    "json": "JSON",
+    "ratings": "Ratings",
+    "model": "Model"
   },
   "identity": {
     "name": "Name",
@@ -116,7 +118,9 @@
       "identity": "Identity",
       "pins": "Pins",
       "footprint": "Footprint",
-      "rest": "Other"
+      "rest": "Other",
+      "ratings": "Ratings",
+      "model": "Model"
     }
   },
   "save": {
@@ -136,5 +140,126 @@
     "body": "Your changes to this part are kept as a draft in this browser until you start over.",
     "confirm": "Leave",
     "keep": "Keep editing"
+  },
+  "ratings": {
+    "heading": "Ratings",
+    "hint": "Limits and typical values. Each can come from the maker, from your own assumption or from a bench measurement. The simulation reads one of them.",
+    "empty": "No ratings yet. Choosing a model writes the ones it needs, and you can add more.",
+    "descriptionHint": "What this rating is for",
+    "remove": "Remove rating {key}",
+    "slot": {
+      "manufacturer": "Stated by the maker",
+      "simulation": "iynk's assumption",
+      "measured": "Bench-measured"
+    },
+    "usedBy": "Used by the simulation",
+    "add": {
+      "manufacturer": "Add a maker's number",
+      "simulation": "Add an assumption"
+    },
+    "measuredNote": "Bench measurements are added in the JSON view.",
+    "reads": "The simulation reads, {key}",
+    "readsNone": "Nothing",
+    "value": "{key}, value in {unit}",
+    "source": "{key}, where the number comes from",
+    "why": "{key}, why this number",
+    "range": "min {min}, typical {typ}, max {max} {unit}",
+    "needSource": "Choose where the number for {key} comes from.",
+    "chooseSource": "Choose a source",
+    "confidence": "Confidence: low",
+    "removeSlot": "Remove the {slot} value of {key}",
+    "measure": "Quantity",
+    "measures": {
+      "voltage": "Voltage",
+      "current": "Current",
+      "power": "Power",
+      "resistance": "Resistance",
+      "time": "Time",
+      "temperature": "Temperature",
+      "frequency": "Frequency",
+      "ratio": "Ratio"
+    },
+    "addRating": "Add rating",
+    "sources": {
+      "heading": "Sources",
+      "hint": "Where your numbers come from. A number from a maker's datasheet needs one of these.",
+      "empty": "No sources yet.",
+      "title": "Title of {id}",
+      "url": "Link for {id}",
+      "kind": "Kind of {id}",
+      "reliability": "How far to trust {id}",
+      "levels": {
+        "primary": "The maker's own document",
+        "secondary": "Second hand",
+        "unverified": "Not checked"
+      },
+      "remove": "Remove source {id}",
+      "add": "Add source"
+    }
+  },
+  "model": {
+    "heading": "Model",
+    "hint": "Pick how the part behaves. A model here is a teaching model, a starting point you can refine in the JSON view.",
+    "sequentialNote": "A truth table has no memory, so flip-flops and counters are not offered here.",
+    "template": "Model template",
+    "choose": "Choose a template",
+    "names": {
+      "resistor-like": "Resistor-like",
+      "switch": "Switch",
+      "led-like": "LED-like",
+      "truth-table": "Truth table",
+      "analog-sensor": "Analog sensor",
+      "not-modelled": "Not modelled"
+    },
+    "current": "Current model: {name}",
+    "apply": "Use this model",
+    "replaces": "This replaces the layer, test and ratings the previous model wrote. Ratings you added yourself stay.",
+    "fields": {
+      "ohms": "Resistance (ohm)",
+      "momentary": "Springs back when released",
+      "vf": "Forward voltage (V)",
+      "imax": "Highest current (mA)",
+      "unit": "Unit of the value",
+      "min": "Lowest value",
+      "max": "Highest value",
+      "reason": "Why it is not modelled",
+      "inputs": "Input pins",
+      "outputs": "Output pins",
+      "delay": "Delay (ns)",
+      "drive": "Output resistance (ohm)"
+    },
+    "problems": {
+      "range": "Enter a number from {min} to {max}.",
+      "pins": "This model needs at least {need} pins. Add them in the Pins tab.",
+      "empty": {
+        "inputs": "Pick at least one input pin.",
+        "outputs": "Pick at least one output pin.",
+        "rows": "Add at least one row."
+      },
+      "tooMany": {
+        "inputs": "A table takes at most {max} inputs.",
+        "outputs": "A table takes at most {max} outputs.",
+        "rows": "A table takes at most {max} rows."
+      },
+      "overlap": "A pin cannot be both an input and an output.",
+      "order": "The lowest value must be below the highest.",
+      "reason": "Say why it is not modelled."
+    },
+    "table": {
+      "caption": "Truth table rows, the first matching row wins",
+      "row": "Row",
+      "cell": "Row {n}, {name}",
+      "add": "Add row",
+      "complete": "Complete the table",
+      "remove": "Remove row {n}",
+      "count": "{count} of {max} rows",
+      "limit": "A table holds at most {max} rows.",
+      "noColumns": "Pick the input and output pins first.",
+      "shadowed": "Row {n} is never reached: an earlier row covers it.",
+      "moreShadowed": "{count} more rows are never reached.",
+      "added": "Row added. The table has {count} rows.",
+      "removed": "Row {n} removed. The table has {count} rows.",
+      "completed": "Added {count} rows for the missing input combinations."
+    }
   }
 }

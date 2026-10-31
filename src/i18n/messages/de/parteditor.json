@@ -13,7 +13,9 @@
     "identity": "Identität",
     "pins": "Pins",
     "footprint": "Bauform",
-    "json": "JSON"
+    "json": "JSON",
+    "ratings": "Kennwerte",
+    "model": "Modell"
   },
   "identity": {
     "name": "Name",
@@ -116,7 +118,9 @@
       "identity": "Identität",
       "pins": "Pins",
       "footprint": "Bauform",
-      "rest": "Sonstiges"
+      "rest": "Sonstiges",
+      "ratings": "Kennwerte",
+      "model": "Modell"
     }
   },
   "save": {
@@ -136,5 +140,126 @@
     "body": "Deine Änderungen bleiben als Entwurf in diesem Browser, bis du neu beginnst.",
     "confirm": "Verlassen",
     "keep": "Weiter bearbeiten"
+  },
+  "ratings": {
+    "heading": "Kennwerte",
+    "hint": "Grenzwerte und typische Werte. Jeder kann vom Hersteller, aus deiner eigenen Annahme oder aus einer Labormessung stammen. Die Simulation liest einen davon.",
+    "empty": "Noch keine Kennwerte. Ein Modell schreibt die, die es braucht, und du kannst weitere ergänzen.",
+    "descriptionHint": "Wofür dieser Kennwert steht",
+    "remove": "Kennwert {key} entfernen",
+    "slot": {
+      "manufacturer": "Vom Hersteller angegeben",
+      "simulation": "Annahme von iynk",
+      "measured": "Am Messplatz gemessen"
+    },
+    "usedBy": "Von der Simulation verwendet",
+    "add": {
+      "manufacturer": "Herstellerwert ergänzen",
+      "simulation": "Annahme ergänzen"
+    },
+    "measuredNote": "Messwerte vom Messplatz ergänzt du in der JSON-Ansicht.",
+    "reads": "Die Simulation liest, {key}",
+    "readsNone": "Nichts",
+    "value": "{key}, Wert in {unit}",
+    "source": "{key}, Herkunft der Zahl",
+    "why": "{key}, Begründung der Zahl",
+    "range": "min {min}, typisch {typ}, max {max} {unit}",
+    "needSource": "Wähle, woher die Zahl für {key} stammt.",
+    "chooseSource": "Quelle wählen",
+    "confidence": "Vertrauen: gering",
+    "removeSlot": "Wert {slot} von {key} entfernen",
+    "measure": "Größe",
+    "measures": {
+      "voltage": "Spannung",
+      "current": "Strom",
+      "power": "Leistung",
+      "resistance": "Widerstand",
+      "time": "Zeit",
+      "temperature": "Temperatur",
+      "frequency": "Frequenz",
+      "ratio": "Verhältnis"
+    },
+    "addRating": "Kennwert hinzufügen",
+    "sources": {
+      "heading": "Quellen",
+      "hint": "Woher deine Zahlen stammen. Eine Zahl aus dem Datenblatt eines Herstellers braucht eine davon.",
+      "empty": "Noch keine Quellen.",
+      "title": "Titel von {id}",
+      "url": "Link zu {id}",
+      "kind": "Art von {id}",
+      "reliability": "Wie sehr {id} zu trauen ist",
+      "levels": {
+        "primary": "Das Dokument des Herstellers",
+        "secondary": "Aus zweiter Hand",
+        "unverified": "Nicht geprüft"
+      },
+      "remove": "Quelle {id} entfernen",
+      "add": "Quelle hinzufügen"
+    }
+  },
+  "model": {
+    "heading": "Modell",
+    "hint": "Wähle, wie sich das Bauteil verhält. Ein Modell hier ist ein Lehrmodell, ein Ausgangspunkt, den du in der JSON-Ansicht verfeinern kannst.",
+    "sequentialNote": "Eine Wahrheitstabelle hat kein Gedächtnis, deshalb gibt es hier keine Flipflops und Zähler.",
+    "template": "Modellvorlage",
+    "choose": "Vorlage wählen",
+    "names": {
+      "resistor-like": "Widerstandsähnlich",
+      "switch": "Schalter",
+      "led-like": "LED-ähnlich",
+      "truth-table": "Wahrheitstabelle",
+      "analog-sensor": "Analogsensor",
+      "not-modelled": "Nicht modelliert"
+    },
+    "current": "Aktuelles Modell: {name}",
+    "apply": "Dieses Modell verwenden",
+    "replaces": "Das ersetzt Schicht, Test und Kennwerte des vorherigen Modells. Kennwerte, die du selbst ergänzt hast, bleiben.",
+    "fields": {
+      "ohms": "Widerstand (Ohm)",
+      "momentary": "Springt beim Loslassen zurück",
+      "vf": "Flussspannung (V)",
+      "imax": "Höchster Strom (mA)",
+      "unit": "Einheit des Werts",
+      "min": "Niedrigster Wert",
+      "max": "Höchster Wert",
+      "reason": "Warum es nicht modelliert ist",
+      "inputs": "Eingangspins",
+      "outputs": "Ausgangspins",
+      "delay": "Verzögerung (ns)",
+      "drive": "Ausgangswiderstand (Ohm)"
+    },
+    "problems": {
+      "range": "Gib eine Zahl von {min} bis {max} ein.",
+      "pins": "Dieses Modell braucht mindestens {need} Pins. Lege sie im Reiter Pins an.",
+      "empty": {
+        "inputs": "Wähle mindestens einen Eingangspin.",
+        "outputs": "Wähle mindestens einen Ausgangspin.",
+        "rows": "Füge mindestens eine Zeile hinzu."
+      },
+      "tooMany": {
+        "inputs": "Eine Tabelle hat höchstens {max} Eingänge.",
+        "outputs": "Eine Tabelle hat höchstens {max} Ausgänge.",
+        "rows": "Eine Tabelle hat höchstens {max} Zeilen."
+      },
+      "overlap": "Ein Pin kann nicht Eingang und Ausgang zugleich sein.",
+      "order": "Der niedrigste Wert muss unter dem höchsten liegen.",
+      "reason": "Sag, warum es nicht modelliert ist."
+    },
+    "table": {
+      "caption": "Zeilen der Wahrheitstabelle, die erste passende Zeile gilt",
+      "row": "Zeile",
+      "cell": "Zeile {n}, {name}",
+      "add": "Zeile hinzufügen",
+      "complete": "Tabelle vervollständigen",
+      "remove": "Zeile {n} entfernen",
+      "count": "{count} von {max} Zeilen",
+      "limit": "Eine Tabelle fasst höchstens {max} Zeilen.",
+      "noColumns": "Wähle zuerst die Ein- und Ausgangspins.",
+      "shadowed": "Zeile {n} wird nie erreicht: Eine frühere Zeile deckt sie ab.",
+      "moreShadowed": "{count} weitere Zeilen werden nie erreicht.",
+      "added": "Zeile hinzugefügt. Die Tabelle hat {count} Zeilen.",
+      "removed": "Zeile {n} entfernt. Die Tabelle hat {count} Zeilen.",
+      "completed": "{count} Zeilen für die fehlenden Eingangskombinationen hinzugefügt."
+    }
   }
 }

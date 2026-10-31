@@ -13,7 +13,9 @@
     "identity": "Identité",
     "pins": "Broches",
     "footprint": "Empreinte",
-    "json": "JSON"
+    "json": "JSON",
+    "ratings": "Valeurs",
+    "model": "Modèle"
   },
   "identity": {
     "name": "Nom",
@@ -116,7 +118,9 @@
       "identity": "Identité",
       "pins": "Broches",
       "footprint": "Empreinte",
-      "rest": "Autres"
+      "rest": "Autres",
+      "ratings": "Valeurs",
+      "model": "Modèle"
     }
   },
   "save": {
@@ -136,5 +140,126 @@
     "body": "Vos changements restent en brouillon dans ce navigateur jusqu'à ce que vous recommenciez.",
     "confirm": "Quitter",
     "keep": "Continuer à modifier"
+  },
+  "ratings": {
+    "heading": "Valeurs",
+    "hint": "Limites et valeurs typiques. Chacune peut venir du fabricant, de votre propre hypothèse ou d'une mesure au banc. La simulation en lit une.",
+    "empty": "Aucune valeur pour l'instant. Choisir un modèle écrit celles dont il a besoin, et vous pouvez en ajouter.",
+    "descriptionHint": "À quoi sert cette valeur",
+    "remove": "Retirer la valeur {key}",
+    "slot": {
+      "manufacturer": "Indiqué par le fabricant",
+      "simulation": "Hypothèse d'iynk",
+      "measured": "Mesuré au banc"
+    },
+    "usedBy": "Lu par la simulation",
+    "add": {
+      "manufacturer": "Ajouter un chiffre du fabricant",
+      "simulation": "Ajouter une hypothèse"
+    },
+    "measuredNote": "Les mesures au banc s'ajoutent dans la vue JSON.",
+    "reads": "La simulation lit, {key}",
+    "readsNone": "Rien",
+    "value": "{key}, valeur en {unit}",
+    "source": "{key}, d'où vient le chiffre",
+    "why": "{key}, pourquoi ce chiffre",
+    "range": "min {min}, typique {typ}, max {max} {unit}",
+    "needSource": "Choisissez d'où vient le chiffre de {key}.",
+    "chooseSource": "Choisir une source",
+    "confidence": "Confiance : faible",
+    "removeSlot": "Retirer la valeur {slot} de {key}",
+    "measure": "Grandeur",
+    "measures": {
+      "voltage": "Tension",
+      "current": "Courant",
+      "power": "Puissance",
+      "resistance": "Résistance",
+      "time": "Temps",
+      "temperature": "Température",
+      "frequency": "Fréquence",
+      "ratio": "Rapport"
+    },
+    "addRating": "Ajouter une valeur",
+    "sources": {
+      "heading": "Sources",
+      "hint": "D'où viennent vos chiffres. Un chiffre tiré de la fiche technique d'un fabricant en demande une.",
+      "empty": "Aucune source pour l'instant.",
+      "title": "Titre de {id}",
+      "url": "Lien de {id}",
+      "kind": "Type de {id}",
+      "reliability": "Confiance à accorder à {id}",
+      "levels": {
+        "primary": "Le document du fabricant lui-même",
+        "secondary": "De seconde main",
+        "unverified": "Non vérifié"
+      },
+      "remove": "Retirer la source {id}",
+      "add": "Ajouter une source"
+    }
+  },
+  "model": {
+    "heading": "Modèle",
+    "hint": "Choisissez le comportement de la pièce. Un modèle ici est un modèle pédagogique, un point de départ à affiner dans la vue JSON.",
+    "sequentialNote": "Une table de vérité n'a pas de mémoire : bascules et compteurs ne sont donc pas proposés ici.",
+    "template": "Modèle de départ",
+    "choose": "Choisir un modèle de départ",
+    "names": {
+      "resistor-like": "Type résistance",
+      "switch": "Interrupteur",
+      "led-like": "Type LED",
+      "truth-table": "Table de vérité",
+      "analog-sensor": "Capteur analogique",
+      "not-modelled": "Non modélisé"
+    },
+    "current": "Modèle actuel : {name}",
+    "apply": "Utiliser ce modèle",
+    "replaces": "Cela remplace la couche, le test et les valeurs écrits par le modèle précédent. Les valeurs que vous avez ajoutées restent.",
+    "fields": {
+      "ohms": "Résistance (ohms)",
+      "momentary": "Revient en place au relâchement",
+      "vf": "Tension directe (V)",
+      "imax": "Courant maximal (mA)",
+      "unit": "Unité de la valeur",
+      "min": "Valeur la plus basse",
+      "max": "Valeur la plus haute",
+      "reason": "Pourquoi il n'est pas modélisé",
+      "inputs": "Broches d'entrée",
+      "outputs": "Broches de sortie",
+      "delay": "Délai (ns)",
+      "drive": "Résistance de sortie (ohms)"
+    },
+    "problems": {
+      "range": "Saisissez un nombre de {min} à {max}.",
+      "pins": "Ce modèle demande au moins {need} broches. Ajoutez-les dans l'onglet Broches.",
+      "empty": {
+        "inputs": "Choisissez au moins une broche d'entrée.",
+        "outputs": "Choisissez au moins une broche de sortie.",
+        "rows": "Ajoutez au moins une ligne."
+      },
+      "tooMany": {
+        "inputs": "Une table accepte au plus {max} entrées.",
+        "outputs": "Une table accepte au plus {max} sorties.",
+        "rows": "Une table accepte au plus {max} lignes."
+      },
+      "overlap": "Une broche ne peut pas être à la fois entrée et sortie.",
+      "order": "La valeur la plus basse doit être sous la plus haute.",
+      "reason": "Dites pourquoi il n'est pas modélisé."
+    },
+    "table": {
+      "caption": "Lignes de la table de vérité, la première qui correspond l'emporte",
+      "row": "Ligne",
+      "cell": "Ligne {n}, {name}",
+      "add": "Ajouter une ligne",
+      "complete": "Compléter la table",
+      "remove": "Retirer la ligne {n}",
+      "count": "{count} lignes sur {max}",
+      "limit": "Une table contient au plus {max} lignes.",
+      "noColumns": "Choisissez d'abord les broches d'entrée et de sortie.",
+      "shadowed": "La ligne {n} n'est jamais atteinte : une ligne plus haut la couvre.",
+      "moreShadowed": "{count} autres lignes ne sont jamais atteintes.",
+      "added": "Ligne ajoutée. La table compte {count} lignes.",
+      "removed": "Ligne {n} retirée. La table compte {count} lignes.",
+      "completed": "{count} lignes ajoutées pour les combinaisons d'entrée manquantes."
+    }
   }
 }

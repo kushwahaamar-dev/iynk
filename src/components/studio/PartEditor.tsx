@@ -19,8 +19,10 @@ import { fallbackSpec, pinsCovered } from "@/parts/fallback";
 import { classifyChange, requiredNextVersion } from "@/parts/versions";
 import { draftFromDescriptor, draftIssues, newDraft, reduceDraft, slugFor, toDescriptor } from "@/studio/parts/draft";
 import type { DraftAction, DraftGroup, PartDraft } from "@/studio/parts/draft";
+import { ModelForm } from "./ModelForm";
 import { PinTable } from "./PinTable";
 import type { PartEditorT } from "./PinTable";
+import { RatingsForm } from "./RatingsForm";
 
 export interface PartEditorProps {
   baseKey?: string;
@@ -54,12 +56,14 @@ const RENDERERS: readonly PartDraft["fallback"]["renderer"][] = [
 ];
 const GROUP_KINDS: readonly DraftGroup["kind"][] = ["internal-short", "strip", "plane"];
 
-type Section = "identity" | "pins" | "footprint" | "rest";
+type Section = "identity" | "pins" | "footprint" | "ratings" | "model" | "rest";
 
 const sectionOf = (path: string): Section => {
   const head = path.split("/")[1];
   if (head === "pins" || head === "groups") return "pins";
   if (head === "dimensions" || head === "visual") return "footprint";
+  if (head === "ratings" || head === "sources") return "ratings";
+  if (head === "behaviour" || head === "simulation" || head === "parameters" || head === "physical_inputs") return "model";
   if (head === "id" || head === "version" || head === "identity" || head === "provenance") return "identity";
   return "rest";
 };
@@ -394,6 +398,18 @@ export function PartEditor({ baseKey, library, onSaved, onClose, messages, lang 
           : null,
     },
     {
+      id: "ratings",
+      label: t("tabs.ratings"),
+      badge: badge("ratings"),
+      content: body(<RatingsForm draft={draft} dispatch={edit} issues={analysis.issues} t={t} />),
+    },
+    {
+      id: "model",
+      label: t("tabs.model"),
+      badge: badge("model"),
+      content: body(<ModelForm draft={draft} dispatch={edit} t={t} />),
+    },
+    {
       id: "json",
       label: t("tabs.json"),
       content: body(
@@ -502,7 +518,7 @@ function SaveStatus({ status, t }: { status: Status; t: PartEditorT }) {
 }
 
 function IssueList({ issues, t }: { issues: Diagnostic[]; t: PartEditorT }) {
-  const sections: Section[] = ["identity", "pins", "footprint", "rest"];
+  const sections: Section[] = ["identity", "pins", "footprint", "ratings", "model", "rest"];
   const errorCount = issues.filter((i) => i.severity === "error").length;
   return (
     <section aria-label={t("issues.heading")} className="flex flex-col gap-2">
