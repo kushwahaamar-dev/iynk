@@ -4,10 +4,12 @@ import { parseSse } from "./wire.ts";
 
 const MAX_CACHE_BREAKPOINTS = 4;
 
+type CacheControl = { cache_control?: { type: "ephemeral" } };
+
 type Block =
-  | { type: "text"; text: string }
+  | ({ type: "text"; text: string } & CacheControl)
   | { type: "tool_use"; id: string; name: string; input: unknown }
-  | { type: "tool_result"; tool_use_id: string; content: string };
+  | ({ type: "tool_result"; tool_use_id: string; content: string } & CacheControl);
 
 type WireMessage = { role: "user" | "assistant"; content: string | Block[] };
 
@@ -19,9 +21,16 @@ function parseArgs(argsJson: string): unknown {
   }
 }
 
-function toMessages(messages: Msg[]): WireMessage[] {
+function markLast(message: WireMessage | undefined): void {
+  if (!message) return;
+  if (typeof message.content === "string") message.content = [{ type: "text", text: message.content }];
+  const last = message.content[message.content.length - 1];
+  if (last && last.type !== "tool_use") last.cache_control = { type: "ephemeral" };
+}
+
+function toMessages(messages: Msg[], marks: ReadonlySet<number>): WireMessage[] {
   const out: WireMessage[] = [];
-  for (const msg of messages) {
+  for (const [index, msg] of messages.entries()) {
     if (msg.role === "user") {
       out.push({ role: "user", content: msg.text });
     } else if (msg.role === "tool") {
@@ -38,20 +47,25 @@ function toMessages(messages: Msg[]): WireMessage[] {
       for (const call of msg.toolCalls ?? []) content.push({ type: "tool_use", id: call.id, name: call.name, input: parseArgs(call.argsJson) });
       out.push({ role: "assistant", content: content.length ? content : msg.text });
     }
+    if (marks.has(index)) markLast(out[out.length - 1]);
   }
   return out;
 }
 
 function buildBody(req: ModelRequest, o: { stream: boolean }): Record<string, unknown> {
   // Anthropic allows four breakpoints: when there are more, the earliest ones go.
-  let surplus = req.system.filter((part) => part.cacheBreakpoint).length - MAX_CACHE_BREAKPOINTS;
-  const system = req.system.map((part) => {
-    const marked = part.cacheBreakpoint && surplus-- <= 0;
-    return { type: "text", text: part.text, ...(marked ? { cache_control: { type: "ephemeral" } } : {}) };
+  const marks = new Set(req.cacheAfter ?? []);
+  const messageMarks = new Set([...marks].filter((index) => index >= 0));
+  const marked = req.system.map((part) => part.cacheBreakpoint === true);
+  if (marks.has(-1) && req.system.length > 0 && !marked.includes(true)) marked[req.system.length - 1] = true;
+  let surplus = marked.filter(Boolean).length + messageMarks.size - MAX_CACHE_BREAKPOINTS;
+  const system = req.system.map((part, i) => {
+    const mark = marked[i] && surplus-- <= 0;
+    return { type: "text", text: part.text, ...(mark ? { cache_control: { type: "ephemeral" } } : {}) };
   });
   const body: Record<string, unknown> = {
     max_tokens: req.maxOutputTokens,
-    messages: toMessages(req.messages),
+    messages: toMessages(req.messages, messageMarks),
   };
   if (system.length) body["system"] = system;
   if (req.tools.length) {
