@@ -263,5 +263,17 @@
       "hint2": "Öffne das Panel für die Schleifenzeit. Braucht die Regelschleife länger als ihre Periode oder schwankt sie stark von Durchlauf zu Durchlauf?",
       "hint3": "Die Regelschleife läuft zu langsam. Verkürze die Arbeit pro Durchlauf oder senke die Zielrate oder die Verstärkungen."
     }
+  },
+  "topdown": {
+    "title": "Draufsicht",
+    "canvas": "Draufsicht auf den Roboter und seine Strecke",
+    "readout": "Pose jedes Körpers",
+    "groundTruth": "Referenzwerte",
+    "noFrame": "Kein Lauf. Die Körper stehen in ihrer Startpose.",
+    "skipped": "Nicht gezeichnet, keine Form: {names}",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "fit": "An Arena anpassen",
+    "empty": "Dieser Roboter hat keine Körper zum Zeichnen."
   }
 }

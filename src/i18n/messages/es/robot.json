@@ -263,5 +263,17 @@
       "hint2": "Abre el panel de tiempo del bucle. ¿Tarda el bucle de control más que su periodo o varía mucho de una pasada a otra?",
       "hint3": "El bucle de control es demasiado lento para seguir el ritmo. Acorta el trabajo de cada pasada, o baja la frecuencia objetivo o las ganancias."
     }
+  },
+  "topdown": {
+    "title": "Vista superior",
+    "canvas": "Vista superior del robot sobre su pista",
+    "readout": "Pose de cada cuerpo",
+    "groundTruth": "Valor real",
+    "noFrame": "Sin ejecución. Los cuerpos se muestran en su pose inicial.",
+    "skipped": "No se dibuja, sin forma: {names}",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "fit": "Ajustar a la arena",
+    "empty": "Este robot no tiene cuerpos que dibujar."
   }
 }

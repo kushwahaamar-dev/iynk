@@ -263,5 +263,17 @@
       "hint2": "Open the loop timing panel. Does the control loop take longer than its period, or vary a lot from one pass to the next?",
       "hint3": "The control loop runs too slowly to keep up. Shorten the work done in each pass, or lower the target rate or the gains."
     }
+  },
+  "topdown": {
+    "title": "Top view",
+    "canvas": "Top view of the robot on its track",
+    "readout": "Pose of each body",
+    "groundTruth": "Ground truth",
+    "noFrame": "Not running. Bodies are shown at their start pose.",
+    "skipped": "Not drawn, no shape: {names}",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit to arena",
+    "empty": "This robot has no bodies to draw."
   }
 }

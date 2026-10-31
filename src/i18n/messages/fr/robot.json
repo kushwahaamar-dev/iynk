@@ -263,5 +263,17 @@
       "hint2": "Ouvrez le panneau de durée de boucle. La boucle de régulation dure-t-elle plus que sa période, ou varie-t-elle beaucoup d'un passage à l'autre ?",
       "hint3": "La boucle de régulation est trop lente pour suivre. Raccourcissez le travail de chaque passage, ou baissez la cadence visée ou les gains."
     }
+  },
+  "topdown": {
+    "title": "Vue de dessus",
+    "canvas": "Vue de dessus du robot sur sa piste",
+    "readout": "Pose de chaque corps",
+    "groundTruth": "Valeur de référence",
+    "noFrame": "Pas d'exécution. Les corps sont montrés dans leur pose de départ.",
+    "skipped": "Non dessiné, sans forme : {names}",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "fit": "Ajuster à l'arène",
+    "empty": "Ce robot n'a aucun corps à dessiner."
   }
 }

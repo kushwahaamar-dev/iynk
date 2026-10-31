@@ -124,5 +124,11 @@
     "code": "R16",
     "pattern": ".",
     "reason": "Trace colours are data colours on the dark console surface."
+  },
+  {
+    "file": "src/components/studio/robot/TopDownView.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The plan view is the robot's drawing, not an icon."
   }
 ]
