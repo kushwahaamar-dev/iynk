@@ -269,7 +269,10 @@
       "unsupported": "This browser cannot open rooms",
       "serverRestarted": "The server restarted. Rejoining the room",
       "behind": "Catching up with the room",
-      "pending": { "one": "{count} change waiting", "other": "{count} changes waiting" }
+      "pending": {
+        "one": "{count} change waiting",
+        "other": "{count} changes waiting"
+      }
     },
     "members": {
       "title": "People here",
@@ -343,7 +346,12 @@
       "send": "Send",
       "rateLimited": "You are sending too fast. Wait a moment.",
       "muted": "The host muted you",
-      "system": "Room"
+      "system": "Room",
+      "new": "{count} new",
+      "counter": "{count}/{max}",
+      "label": "Message",
+      "empty": "No messages yet",
+      "someone": "Someone"
     },
     "rebase": {
       "title": "While you were offline",

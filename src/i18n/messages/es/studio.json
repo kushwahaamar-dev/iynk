@@ -269,7 +269,10 @@
       "unsupported": "Este navegador no puede abrir salas",
       "serverRestarted": "El servidor se reinició. Volviendo a entrar en la sala",
       "behind": "Poniéndote al día con la sala",
-      "pending": { "one": "{count} cambio en espera", "other": "{count} cambios en espera" }
+      "pending": {
+        "one": "{count} cambio en espera",
+        "other": "{count} cambios en espera"
+      }
     },
     "members": {
       "title": "Personas aquí",
@@ -343,7 +346,12 @@
       "send": "Enviar",
       "rateLimited": "Escribes demasiado rápido. Espera un momento.",
       "muted": "El anfitrión te ha silenciado",
-      "system": "Sala"
+      "system": "Sala",
+      "new": "{count} nuevos",
+      "counter": "{count}/{max}",
+      "label": "Mensaje",
+      "empty": "Aún no hay mensajes",
+      "someone": "Alguien"
     },
     "rebase": {
       "title": "Mientras estabas sin conexión",

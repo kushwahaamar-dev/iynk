@@ -269,7 +269,10 @@
       "unsupported": "Dieser Browser kann keine Räume öffnen",
       "serverRestarted": "Der Server wurde neu gestartet. Du trittst dem Raum erneut bei",
       "behind": "Du holst den Raum ein",
-      "pending": { "one": "{count} Änderung wartet", "other": "{count} Änderungen warten" }
+      "pending": {
+        "one": "{count} Änderung wartet",
+        "other": "{count} Änderungen warten"
+      }
     },
     "members": {
       "title": "Anwesende",
@@ -343,7 +346,12 @@
       "send": "Senden",
       "rateLimited": "Du sendest zu schnell. Warte kurz.",
       "muted": "Der Host hat dich stummgeschaltet",
-      "system": "Raum"
+      "system": "Raum",
+      "new": "{count} neu",
+      "counter": "{count}/{max}",
+      "label": "Nachricht",
+      "empty": "Noch keine Nachrichten",
+      "someone": "Jemand"
     },
     "rebase": {
       "title": "Während du offline warst",

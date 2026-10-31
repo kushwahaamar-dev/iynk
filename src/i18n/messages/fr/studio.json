@@ -269,7 +269,10 @@
       "unsupported": "Ce navigateur ne peut pas ouvrir de salles",
       "serverRestarted": "Le serveur a redémarré. Retour dans la salle",
       "behind": "Rattrapage de la salle",
-      "pending": { "one": "{count} modification en attente", "other": "{count} modifications en attente" }
+      "pending": {
+        "one": "{count} modification en attente",
+        "other": "{count} modifications en attente"
+      }
     },
     "members": {
       "title": "Personnes présentes",
@@ -343,7 +346,12 @@
       "send": "Envoyer",
       "rateLimited": "Vous écrivez trop vite. Patientez un instant.",
       "muted": "L'hôte vous a mis en sourdine",
-      "system": "Salle"
+      "system": "Salle",
+      "new": "{count} nouveaux",
+      "counter": "{count}/{max}",
+      "label": "Message",
+      "empty": "Aucun message pour l'instant",
+      "someone": "Quelqu'un"
     },
     "rebase": {
       "title": "Pendant votre absence",

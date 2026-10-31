@@ -269,7 +269,10 @@
       "unsupported": "此浏览器无法打开房间",
       "serverRestarted": "服务器已重启。正在重新加入房间",
       "behind": "正在与房间同步",
-      "pending": { "one": "{count} 项更改等待中", "other": "{count} 项更改等待中" }
+      "pending": {
+        "one": "{count} 项更改等待中",
+        "other": "{count} 项更改等待中"
+      }
     },
     "members": {
       "title": "在场的人",
@@ -343,7 +346,12 @@
       "send": "发送",
       "rateLimited": "你发得太快了。请稍等。",
       "muted": "主持人已将你禁言",
-      "system": "房间"
+      "system": "房间",
+      "new": "{count} 条新消息",
+      "counter": "{count}/{max}",
+      "label": "消息",
+      "empty": "还没有消息",
+      "someone": "某人"
     },
     "rebase": {
       "title": "你离线期间",
