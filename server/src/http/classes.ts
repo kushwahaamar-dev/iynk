@@ -36,12 +36,13 @@ export type Ctx = {
   query: URLSearchParams;
   headers: Headers;
   body: unknown;
+  raw?: Buffer;
   address: string;
   authed: Authed | null;
   requestId: string;
 };
 
-export type Reply = { status: number; body?: unknown; headers?: Record<string, string> };
+export type Reply = { status: number; body?: unknown; bytes?: Uint8Array; headers?: Record<string, string> };
 
 export type RouteDef = {
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
@@ -50,6 +51,7 @@ export type RouteDef = {
   cls: RouteClass;
   bucket: BucketName;
   maxBodyBytes?: number;
+  rawBody?: boolean;
   handler?: (ctx: Ctx) => Promise<Reply> | Reply;
 };
 

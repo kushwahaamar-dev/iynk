@@ -153,14 +153,14 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
     let route: RouteDef | null = null;
     let deviceId: string | undefined;
 
-    const send = (status: number, extra: Record<string, string> = {}, body?: unknown): void => {
+    const send = (status: number, extra: Record<string, string> = {}, body?: unknown, bytes?: Uint8Array): void => {
       const out = { ...headers, ...extra };
-      let payload: string | undefined;
-      if (body !== undefined && status !== 204) {
+      let payload: string | Uint8Array | undefined = bytes;
+      if (bytes === undefined && body !== undefined && status !== 204) {
         payload = JSON.stringify(body);
         out["content-type"] = "application/json; charset=utf-8";
       }
-      out["content-length"] = String(payload === undefined ? 0 : Buffer.byteLength(payload));
+      out["content-length"] = String(payload === undefined ? 0 : typeof payload === "string" ? Buffer.byteLength(payload) : payload.byteLength);
       res.writeHead(status, out);
       res.end(payload);
       log.info("request", { route: route ? `${route.method} ${route.path}` : "unmatched", status, ms: deps.clock.now() - started, req: reqId, dev: deviceId });
@@ -233,8 +233,11 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
       }
 
       let body: unknown;
+      let raw: Buffer | undefined;
       const length = req.headers["content-length"];
-      if ((length !== undefined && length !== "0") || req.headers["transfer-encoding"] !== undefined) {
+      if (route.rawBody) {
+        if (length !== undefined) raw = await readBody(req, route.maxBodyBytes ?? DEFAULT_BODY_BYTES);
+      } else if ((length !== undefined && length !== "0") || req.headers["transfer-encoding"] !== undefined) {
         const bytes = await readBody(req, Math.min(route.maxBodyBytes ?? DEFAULT_BODY_BYTES, DEFAULT_BODY_BYTES));
         if (bytes.length > 0) {
           if (!/^application\/json\s*(;|$)/i.test(req.headers["content-type"] ?? "")) {
@@ -245,9 +248,9 @@ export function createRouter(o: RouterOptions): (req: IncomingMessage, res: Serv
       }
 
       const url = new URL(req.url as string, "http://localhost");
-      const ctx: Ctx = { method: route.method, path: url.pathname, params, query: url.searchParams, headers: toHeaders(req), body, address, authed, requestId: reqId };
+      const ctx: Ctx = { method: route.method, path: url.pathname, params, query: url.searchParams, headers: toHeaders(req), body, ...(raw && { raw }), address, authed, requestId: reqId };
       const reply: Reply = await (route.handler as NonNullable<RouteDef["handler"]>)(ctx);
-      send(reply.status, reply.headers, reply.body);
+      send(reply.status, reply.headers, reply.body, reply.bytes);
     } catch (error) {
       if (error instanceof ApiError) return fail(error, error.status === 413 ? { connection: "close" } : undefined);
       log.error("unhandled", { req: reqId, error: error instanceof Error ? error.message : String(error) });
