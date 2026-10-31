@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { BENCH_MAX_BYTES, applyChange, benchFacts, describeBench, renderBench } from "./bench";
 import { genericFacts, summarise } from "./bench/generic";
-import { diffLines, foldDiff } from "./diff";
-import { parseInline, parseMarkdown } from "./markdown";
+import { diffLines, foldDiff } from "@/ai/diff";
+import { parseInline, parseMarkdown } from "@/ai/render/markdown";
 import { suggestions } from "./suggest";
 
 const blinkBench = {
@@ -115,9 +115,11 @@ describe("diff", () => {
   });
 });
 
+const ALLOW = { allowUrl: (url: string) => url.startsWith("https://docs.arduino.cc") };
+
 describe("markdown subset", () => {
   test("parses inline marks and only http(s) links", () => {
-    expect(parseInline("Use **pin `13`** and [the docs](https://docs.arduino.cc) not [this](javascript:x)")).toEqual([
+    expect(parseInline("Use **pin `13`** and [the docs](https://docs.arduino.cc) not [this](javascript:x)", ALLOW)).toEqual([
       { t: "text", v: "Use " },
       { t: "bold", c: [{ t: "text", v: "pin " }, { t: "code", v: "13" }] },
       { t: "text", v: " and " },
@@ -127,12 +129,12 @@ describe("markdown subset", () => {
   });
 
   test("parses blocks, including a code fence still streaming in", () => {
-    expect(parseMarkdown("## Check\n- one\n- two\n\n1. first\n2. second\n\n```cpp\nint x;")).toEqual([
+    expect(parseMarkdown("## Check\n- one\n- two\n\n1. first\n2. second\n\n```cpp\nint x;", ALLOW)).toEqual([
       { t: "h", c: [{ t: "text", v: "Check" }] },
       { t: "ul", items: [[{ t: "text", v: "one" }], [{ t: "text", v: "two" }]] },
       { t: "ol", start: 1, items: [[{ t: "text", v: "first" }], [{ t: "text", v: "second" }]] },
       { t: "code", lang: "cpp", v: "int x;" },
     ]);
-    expect(parseMarkdown("line one\nline two")).toEqual([{ t: "p", lines: [[{ t: "text", v: "line one" }], [{ t: "text", v: "line two" }]] }]);
+    expect(parseMarkdown("line one\nline two", ALLOW)).toEqual([{ t: "p", lines: [[{ t: "text", v: "line one" }], [{ t: "text", v: "line two" }]] }]);
   });
 });

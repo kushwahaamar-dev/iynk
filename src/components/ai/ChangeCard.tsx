@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button, Chip, cx } from "@/components/ui";
-import { diffLines, foldDiff } from "@/lib/ai/diff";
+import { diffLines, foldDiff } from "@/ai/diff";
 import type { AiT } from "@/lib/ai/messages";
 import type { ToolCard } from "@/lib/ai/run-tools";
 
