@@ -1,0 +1,196 @@
+{
+  "id": "engine:mna-dc-pwl@1.0.0",
+  "version": "1.0.0",
+  "kind": "engine",
+  "title": "DC nodal solver, piecewise-linear devices",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "dc-nodal",
+      "text": "DC steady state of resistive networks by nodal analysis with partial-pivot Gaussian elimination"
+    },
+    {
+      "id": "pwl-devices",
+      "text": "LED, diode and NPN as off / on / saturated junction states, re-solved until the states agree (at most 40 rounds)"
+    },
+    {
+      "id": "rail-pin-sources",
+      "text": "Rails as a voltage behind 0.5 ohm; output pins as a voltage behind 25 ohm"
+    },
+    {
+      "id": "pwm-slices",
+      "text": "PWM solved per duty slice and time-averaged"
+    },
+    {
+      "id": "motor-conductance",
+      "text": "DC motor as a conductance from the part's steady-state curve, up to 6 passes"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "supply-rules",
+      "text": "Regulators, dropout, current limit and brown-out are rules in the power tree, not part of the solve"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "reactive",
+      "text": "Capacitors and inductors; no transient analysis"
+    },
+    {
+      "id": "devices-missing",
+      "text": "PNP, MOSFET, op-amp, Zener, regulators as devices"
+    },
+    {
+      "id": "unit-variation",
+      "text": "Unit-to-unit variation: identical LEDs share the same forward voltage, so parallel LEDs split current evenly"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "PIN_R",
+      "value": 25,
+      "unit": "ohm",
+      "type": "assumption",
+      "note": "typical AVR pin figure; applied to every board; no citation in bench-solve.js:10"
+    },
+    {
+      "param": "RAIL_R",
+      "value": 0.5,
+      "unit": "ohm",
+      "type": "assumption"
+    },
+    {
+      "param": "RBE",
+      "value": 2,
+      "unit": "ohm",
+      "type": "assumption"
+    },
+    {
+      "param": "RSAT",
+      "value": 0.01,
+      "unit": "ohm",
+      "type": "assumption"
+    },
+    {
+      "param": "GMIN",
+      "value": 1e-09,
+      "unit": "S",
+      "type": "numerical"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-matched",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 20 circuits",
+      "flavour": "matched",
+      "result": {
+        "n": 20,
+        "passed": 20,
+        "metric": "worst relative error",
+        "worst": 0.0026,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md"
+    },
+    {
+      "id": "rs08-random",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 60 random resistor networks",
+      "flavour": "linear",
+      "result": {
+        "n": 320,
+        "passed": 320,
+        "metric": "worst relative error",
+        "worst": 8.7e-13,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass"
+    },
+    {
+      "id": "rs08-realistic",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 20 circuits",
+      "flavour": "realistic (author-chosen exponential LED, diode, generic BJT cards)",
+      "result": {
+        "n": 20,
+        "passed": 10,
+        "metric": "worst relative error",
+        "worst": 2.296,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "fail"
+    }
+  ],
+  "errorMetrics": [
+    {
+      "name": "worst node or branch error vs matched ngspice",
+      "value": 0.26,
+      "unit": "percent",
+      "condition": "20 circuits, motor conductance stopping rule"
+    }
+  ],
+  "operatingRange": [
+    {
+      "quantity": "analog nodes",
+      "min": 2,
+      "max": 14,
+      "unit": "nodes",
+      "evidence": "largest circuit in tests/fixtures/fault-corpus/ (clean/ and broken/) has 14 nodes"
+    }
+  ],
+  "knownFailureCases": [
+    "Exits after 40 junction rounds or 6 motor passes without a flag (bench-solve.js:213, 264)",
+    "Pin resistance 25 ohm on 3.3 V boards",
+    "1N4007 Shockley parameters in the part file are ignored (diode-1n4007.js:31)",
+    "Floating subcircuits solve to 0 V without a warning"
+  ],
+  "performance": [
+    {
+      "benchId": "rs08-timing",
+      "metric": "ms per solve, largest catalogue circuit",
+      "value": 0.0715,
+      "unit": "ms",
+      "machine": "Apple M4 Pro, Chromium 156",
+      "date": "2026-10-27",
+      "label": "MEASURED"
+    },
+    {
+      "benchId": "rs08-timing-6x",
+      "metric": "ms per solve, same, 6x CPU throttle",
+      "value": 0.4463,
+      "unit": "ms",
+      "machine": "Apple M4 Pro, Chromium 156",
+      "date": "2026-10-27",
+      "label": "MEASURED"
+    }
+  ],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}
