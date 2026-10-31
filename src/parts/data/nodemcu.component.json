@@ -385,7 +385,7 @@
     ]
   },
   "simulation": {
-    "tier": "T1",
+    "tier": "T0",
     "status": "partly-modelled",
     "what_it_models": [
       {
