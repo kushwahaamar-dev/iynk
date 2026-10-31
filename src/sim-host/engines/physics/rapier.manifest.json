@@ -1,0 +1,43 @@
+{
+  "id": "rapier",
+  "version": "0.21.0",
+  "form": "split-derived",
+  "files": [
+    {
+      "path": "rapier@0.21.0/rapier.split.mjs",
+      "sha256": "103fa5899fe4eebe7dc738d34b661fda034c26f130c46f3c4fb92303277abe86",
+      "bytes": 230888,
+      "brotliBytes": 32984,
+      "kind": "js"
+    },
+    {
+      "path": "rapier@0.21.0/rapier_wasm3d_bg.wasm",
+      "sha256": "4e9890fd2df60072f9db06a33e4030221249c1b3687b722b2388c21f09e97551",
+      "bytes": 3105893,
+      "brotliBytes": 855167,
+      "kind": "wasm"
+    },
+    {
+      "path": "rapier@0.21.0/LICENSE",
+      "sha256": "4c05555705e3efde601fb1252ae48f1d63992af8a8fb8947745b7fa834e8f519",
+      "bytes": 11343,
+      "brotliBytes": 3062,
+      "kind": "data"
+    }
+  ],
+  "requires": {},
+  "license": {
+    "spdx": "Apache-2.0",
+    "reviewed": false
+  },
+  "budget": {
+    "wireBytes": 1000000,
+    "rawBytes": 3348124
+  },
+  "pins": {
+    "npm": "@dimforge/rapier3d-deterministic-compat",
+    "integrity": "sha512-n7JuU62Obljlgq+OeH2DHhTmRSjRzwuJPl54tS9pFIzVQyvXsO5CH+a5KkIRBtnFWDbg1Zicv9BulG0jfBAopA==",
+    "wasmSha256": "4e9890fd2df60072f9db06a33e4030221249c1b3687b722b2388c21f09e97551",
+    "jsSha256": "103fa5899fe4eebe7dc738d34b661fda034c26f130c46f3c4fb92303277abe86"
+  }
+}
