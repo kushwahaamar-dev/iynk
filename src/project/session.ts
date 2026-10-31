@@ -15,6 +15,7 @@ const KEEP_TAIL = 500;
 const MAX_CHECKPOINTS = 256;
 const MAX_EXPORTS = 32;
 const DEFAULT_MAX_UNDO = 100;
+const BATCH_ID = /^[a-z0-9_-]{1,64}$/;
 
 export interface SessionOptions {
   state: Project;
@@ -23,6 +24,18 @@ export interface SessionOptions {
   maxUndo?: number;
   /** Called when `compact` drops old ops, so the store can keep the snapshot the new checkpoint stands for. */
   onCompact?: (snapshot: { revision: number; state: Project; stateHash: string }) => void;
+}
+
+export interface ApplyOptions {
+  /** Stamped on every envelope of the call, replacing the id the authority gives a multi-op batch. */
+  batch?: string;
+  /** Kept on the undo entry. */
+  label?: string;
+}
+
+export interface UndoTop {
+  batch?: string;
+  label?: string;
 }
 
 export type ApplyResult =
@@ -35,7 +48,10 @@ export interface ProjectSession {
   readonly revision: number;
   /** Head of the hash chain over the retained ops. */
   readonly chain: string;
-  apply(op: Op | readonly Op[], author: Author): ApplyResult;
+  /** One call is one undo entry. A `batch` outside `[a-z0-9_-]{1,64}` throws a `RangeError`. */
+  apply(op: Op | readonly Op[], author: Author, opts?: ApplyOptions): ApplyResult;
+  /** The batch and label of the entry `undo()` would revert for the latest actor, or undefined when there is none. */
+  undoStackTop(): UndoTop | undefined;
   /**
    * `actor` defaults to the actor of the latest `apply`. With a `filter`, entries holding an op it rejects are
    * skipped whole and stay on their stack. Null when there is nothing to undo.
@@ -59,10 +75,15 @@ export interface ProjectSession {
 
 export type OpFilter = (op: Op) => boolean;
 
-interface Entry {
+interface Entry extends UndoTop {
   ops: Op[];
   author: Author;
 }
+
+const tagOf = ({ batch, label }: UndoTop): UndoTop => ({
+  ...(batch !== undefined && { batch }),
+  ...(label !== undefined && { label }),
+});
 
 type Stacks = Map<string, Entry[]>;
 
@@ -130,13 +151,14 @@ export function createSession(opts: SessionOptions): ProjectSession {
     opts.onCompact?.({ revision: state.revision, state, stateHash: checkpoint.stateHash });
   }
 
-  function commit(ops: readonly Op[], author: Author, origin: DocChange["origin"]): ApplyResult {
+  function commit(ops: readonly Op[], author: Author, origin: DocChange["origin"], batch?: string): ApplyResult {
     const outcome = applyBatch(state, ops, { author, at: now(), invariants: checkBatch });
     if (!outcome.ok) {
       const { code, message, refs } = outcome.reject;
       return refs ? { ok: false, reject: code, message, refs } : { ok: false, reject: code, message };
     }
     const envelopes = authority.stamp(ops, author);
+    if (batch !== undefined) for (const envelope of envelopes) envelope.batch = batch;
     for (const envelope of envelopes) chain = chainNext(chain, envelope);
     const before = state;
     state = { ...outcome.state, history: { ...before.history, ops: [...before.history.ops, ...envelopes] } };
@@ -155,8 +177,8 @@ export function createSession(opts: SessionOptions): ProjectSession {
     const at = stack?.findLastIndex((e) => allowed(e, filter)) ?? -1;
     const entry = at < 0 ? undefined : stack?.splice(at, 1)[0];
     if (!key || !entry) return null;
-    const result = commit(entry.ops, entry.author, origin);
-    if (result.ok) push(to, key, { ops: result.inverse, author: entry.author });
+    const result = commit(entry.ops, entry.author, origin, origin === "redo" ? entry.batch : undefined);
+    if (result.ok) push(to, key, { ops: result.inverse, author: entry.author, ...tagOf(entry) });
     return result;
   }
 
@@ -175,14 +197,22 @@ export function createSession(opts: SessionOptions): ProjectSession {
     get chain() {
       return chain;
     },
-    apply(op, author) {
-      const result = commit("k" in op ? [op] : op, author, originOf(author));
+    apply(op, author, applyOpts = {}) {
+      if (applyOpts.batch !== undefined && !BATCH_ID.test(applyOpts.batch)) {
+        throw new RangeError(`batch must match ${BATCH_ID}`);
+      }
+      const result = commit("k" in op ? [op] : op, author, originOf(author), applyOpts.batch);
       if (result.ok) {
         lastActor = author.actor;
-        push(undoStacks, author.actor, { ops: result.inverse, author });
+        push(undoStacks, author.actor, { ops: result.inverse, author, ...tagOf(applyOpts) });
         redoStacks.delete(author.actor);
       }
       return result;
+    },
+    undoStackTop() {
+      const stack = lastActor === undefined ? undefined : undoStacks.get(lastActor);
+      const top = stack?.at(-1);
+      return top && tagOf(top);
     },
     undo: (actor, filter) => step(undoStacks, redoStacks, actor, "undo", filter),
     redo: (actor, filter) => step(redoStacks, undoStacks, actor, "redo", filter),
