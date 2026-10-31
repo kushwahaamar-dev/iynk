@@ -1,3 +1,5 @@
+import { LAB_TEMPLATES } from "../../content/projects";
+import type { LabTemplateEntry } from "../../content/projects";
 import { newId, newProjectId } from "../core/ids.ts";
 import type { RandomSource } from "../core/ids.ts";
 import type { PartRegistry } from "../parts/registry.ts";
@@ -95,6 +97,15 @@ export function listTemplates(entries: readonly TemplateEntry[], q: TemplateQuer
   return entries.filter(
     (e) => (q.board === undefined || e.board === q.board) && (q.level === undefined || e.level === q.level) && (q.kind === undefined || e.kind === q.kind),
   );
+}
+
+export interface LabTemplateQuery {
+  lab?: LabTemplateEntry["lab"];
+  kind?: LabTemplateEntry["kind"];
+}
+
+export function listLabTemplates(q: LabTemplateQuery = {}): readonly LabTemplateEntry[] {
+  return LAB_TEMPLATES.filter((e) => (q.lab === undefined || e.lab === q.lab) && (q.kind === undefined || e.kind === q.kind));
 }
 
 export type OpenDeps = ForkDeps & {

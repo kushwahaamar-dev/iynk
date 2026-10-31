@@ -729,7 +729,16 @@
       },
       "empty": "Keine Vorlage passt.",
       "all": "Alle",
-      "level": "Stufe"
+      "level": "Stufe",
+      "labs": {
+        "bench": "Robotik-Werkbänke",
+        "craft": "Drohnen",
+        "task": "Übungsaufgaben",
+        "steps": {
+          "one": "{count} Schritt",
+          "other": "{count} Schritte"
+        }
+      }
     },
     "assembly": {
       "title": "Aufbauschritte",

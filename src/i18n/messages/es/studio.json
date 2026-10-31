@@ -729,7 +729,16 @@
       },
       "empty": "Ninguna plantilla coincide.",
       "all": "Todos",
-      "level": "Nivel"
+      "level": "Nivel",
+      "labs": {
+        "bench": "Bancos de robótica",
+        "craft": "Drones",
+        "task": "Tareas de práctica",
+        "steps": {
+          "one": "{count} paso",
+          "other": "{count} pasos"
+        }
+      }
     },
     "assembly": {
       "title": "Pasos de montaje",

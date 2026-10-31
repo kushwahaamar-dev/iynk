@@ -729,7 +729,16 @@
       },
       "empty": "没有匹配的模板。",
       "all": "全部",
-      "level": "级别"
+      "level": "级别",
+      "labs": {
+        "bench": "机器人工作台",
+        "craft": "无人机",
+        "task": "练习任务",
+        "steps": {
+          "one": "{count} 个步骤",
+          "other": "{count} 个步骤"
+        }
+      }
     },
     "assembly": {
       "title": "搭建步骤",

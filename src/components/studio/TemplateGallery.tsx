@@ -8,7 +8,8 @@ import type { Messages } from "@/i18n/namespaces";
 import { createTranslator, type MessageKey } from "@/i18n/translate";
 import { PROFILES, type BoardId } from "@/lib/interp/profiles";
 import type { TemplateEntry, TemplateKind } from "@/project/guided/plan";
-import { listTemplates } from "@/studio/templates";
+import { listLabTemplates, listTemplates } from "@/studio/templates";
+import type { LabTemplateEntry } from "../../../content/projects";
 
 export type LessonProgress = "done" | "legacy" | "none";
 type Level = NonNullable<TemplateEntry["level"]>;
@@ -26,6 +27,8 @@ export interface TemplateGalleryProps {
 }
 
 type Group = { key: string; label: string; entries: TemplateEntry[] };
+
+const LAB_KINDS: readonly LabTemplateEntry["kind"][] = ["bench", "craft", "task"];
 
 const ALL = "all";
 const byOrder = (a: TemplateEntry, b: TemplateEntry) => a.order - b.order;
@@ -62,6 +65,24 @@ function TemplateCard({ entry, lang, progress, tier, onOpen, t }: { entry: Templ
   );
 }
 
+function LabCard({ entry, lang, onOpen, t }: { entry: LabTemplateEntry } & Pick<TemplateGalleryProps, "lang" | "onOpen"> & { t: (key: MessageKey<Studio>, params?: { count: number }) => string }) {
+  const title = entry.title[lang] ?? entry.title.en ?? entry.id;
+  return (
+    <li className="flex flex-col gap-2 rounded-2xl border border-rule bg-surface p-4" data-testid="lab-card" data-kind={entry.kind}>
+      <h4 className="text-base font-semibold text-balance">{title}</h4>
+      <p className="flex flex-wrap items-center gap-2">
+        {entry.board ? <Chip>{boardName(entry.board)}</Chip> : null}
+        {entry.stepCount > 0 ? <Chip>{t("lesson.gallery.labs.steps", { count: entry.stepCount })}</Chip> : null}
+      </p>
+      <div className="mt-auto pt-2">
+        <Button size="sm" variant="secondary" aria-label={`${t("lesson.gallery.start")}: ${title}`} onClick={() => onOpen(entry.id, { run: false })}>
+          {t("lesson.gallery.start")}
+        </Button>
+      </div>
+    </li>
+  );
+}
+
 export function TemplateGallery({ templates, lang, progress, tier, onOpen, messages }: TemplateGalleryProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studio`), [lang, messages]);
   const [view, setView] = useState<"level" | "board">("level");
@@ -87,6 +108,16 @@ export function TemplateGallery({ templates, lang, progress, tier, onOpen, messa
         : boards.map((id) => ({ key: id, label: boardName(id), entries: sorted.filter((e) => e.board === id) }));
     return all.filter((group) => group.entries.length > 0);
   }, [templates, board, level, rung, view, boards, t]);
+
+  const labGroups = useMemo(() => {
+    if (level !== ALL || rung !== ALL) return [];
+    return LAB_KINDS.map((kind) => ({
+      kind,
+      entries: listLabTemplates({ kind })
+        .filter((e) => board === ALL || e.board === board)
+        .toSorted((a, b) => a.order - b.order),
+    })).filter((group) => group.entries.length > 0);
+  }, [board, level, rung]);
 
   return (
     <section aria-labelledby="template-gallery" className="flex flex-col gap-6">
@@ -125,7 +156,7 @@ export function TemplateGallery({ templates, lang, progress, tier, onOpen, messa
           <option value="tour">{t("lesson.gallery.rung.tour")}</option>
         </Select>
       </div>
-      {groups.length === 0 ? (
+      {groups.length === 0 && labGroups.length === 0 ? (
         <EmptyState title={t("lesson.gallery.empty")} />
       ) : (
         groups.map((group) => (
@@ -141,6 +172,18 @@ export function TemplateGallery({ templates, lang, progress, tier, onOpen, messa
           </section>
         ))
       )}
+      {labGroups.map((group) => (
+        <section key={group.kind} aria-labelledby={`gallery-lab-${group.kind}`} data-testid="gallery-group" data-group={`lab-${group.kind}`}>
+          <h3 id={`gallery-lab-${group.kind}`} className="mb-3 text-lg font-semibold">
+            {t(`lesson.gallery.labs.${group.kind}`)} <span className="tabular-nums text-muted">{group.entries.length}</span>
+          </h3>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {group.entries.map((entry) => (
+              <LabCard key={entry.id} entry={entry} lang={lang} onOpen={onOpen} t={t} />
+            ))}
+          </ul>
+        </section>
+      ))}
     </section>
   );
 }

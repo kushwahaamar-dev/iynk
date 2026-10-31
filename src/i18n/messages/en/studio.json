@@ -729,7 +729,16 @@
       },
       "empty": "No templates match.",
       "all": "All",
-      "level": "Level"
+      "level": "Level",
+      "labs": {
+        "bench": "Robotics benches",
+        "craft": "Drone craft",
+        "task": "Practice tasks",
+        "steps": {
+          "one": "{count} step",
+          "other": "{count} steps"
+        }
+      }
     },
     "assembly": {
       "title": "Build steps",

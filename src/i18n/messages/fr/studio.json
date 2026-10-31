@@ -729,7 +729,16 @@
       },
       "empty": "Aucun modèle ne correspond.",
       "all": "Tous",
-      "level": "Niveau"
+      "level": "Niveau",
+      "labs": {
+        "bench": "Établis de robotique",
+        "craft": "Drones",
+        "task": "Exercices pratiques",
+        "steps": {
+          "one": "{count} étape",
+          "other": "{count} étapes"
+        }
+      }
     },
     "assembly": {
       "title": "Étapes de montage",
