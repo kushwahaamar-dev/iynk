@@ -13,6 +13,7 @@ import type {
 } from "../../../src/protocol/frames.ts";
 import { CAPS, OP_SCHEMA, WIRE_PROTOCOL } from "../../../src/protocol/frames.ts";
 import { CLOSE, closeCodeFor, isRetryable } from "../../../src/protocol/close-codes.ts";
+import { RUN_LIMITS } from "../../../src/protocol/run-ops.ts";
 import { parseClientFrame } from "../../../src/protocol/validate.ts";
 import type { CollabLimits } from "../collab-config.ts";
 import type { Logger } from "../ops/log.ts";
@@ -21,6 +22,8 @@ import type { createCommandRegistry } from "../rooms/commands.ts";
 import type { RoomCore } from "../rooms/core.ts";
 import type { RoomRegistry } from "../rooms/registry.ts";
 import { decideResume } from "../rooms/resume.ts";
+import type { RunOutcome } from "../rooms/run-channel.ts";
+import { createRunHub } from "../rooms/run-hub.ts";
 import type { Subject } from "../rooms/permissions.ts";
 import type { MemberRef, Outbound } from "../rooms/types.ts";
 import type { MemberRow, RoomsRepo } from "../store/rooms.ts";
@@ -128,9 +131,19 @@ const isSpectator = (row: MemberRow): boolean => row.spectator || row.role === "
 class RoomHub {
   readonly #d: WsDeps;
   readonly #channels = new WeakMap<RoomCore, Channel>();
+  readonly runs: ReturnType<typeof createRunHub>;
 
   constructor(d: WsDeps) {
     this.#d = d;
+    this.runs = createRunHub({
+      clock: d.clock,
+      repo: d.repo,
+      bucket: () => new TokenBucket(RUN_LIMITS.reqPerSec, RUN_LIMITS.reqPerSec, d.clock()),
+    });
+  }
+
+  emitRun(core: RoomCore, outcome: RunOutcome): void {
+    this.emit(core, this.runs.toOutbound(core, outcome));
   }
 
   channel(core: RoomCore): Channel {
@@ -161,6 +174,7 @@ class RoomHub {
     if (ch.peers.get(ref.m) === undefined) return;
     ch.peers.delete(ref.m);
     core.removeMember(ref.m);
+    this.emitRun(core, this.runs.forRoom(core).onLeave(ref));
     ch.presence.leave(ref.m);
     ch.cursors.leave(ref.m);
     ch.chat.leave(ref.m);
@@ -479,9 +493,9 @@ export class SocketSession implements Peer {
 
     const plan = decideResume(repo, { id: room, epoch: core.epoch, seq: core.seq, chain: core.chain }, hello, limits);
     const backlog = this.#hub.channel(core).chat.backlog();
-    const welcome = this.#welcome(core, ref, plan.kind, plan.epochBreak, backlog.length);
-    this.#write(welcome);
-    for (const frame of [...plan.frames, ...backlog]) this.#write(frame);
+    const { run, runner, log } = this.#hub.runs.forRoom(core).welcome();
+    this.#write(this.#welcome(core, ref, plan.kind, plan.epochBreak, backlog.length, { run, runner }));
+    for (const frame of [...plan.frames, ...backlog, ...log]) this.#write(frame);
     this.#write({ t: "ready", seq: core.seq });
     core.markReady(ref.m);
     this.#state = "ready";
@@ -497,7 +511,14 @@ export class SocketSession implements Peer {
     this.#hub.emit(core, this.#d.commands.memberBack(core, ref));
   }
 
-  #welcome(core: RoomCore, ref: MemberRef, resume: Welcome["resume"], epochBreak: boolean, chat: number): Welcome {
+  #welcome(
+    core: RoomCore,
+    ref: MemberRef,
+    resume: Welcome["resume"],
+    epochBreak: boolean,
+    chat: number,
+    running: Pick<Welcome, "run" | "runner">,
+  ): Welcome {
     const { repo, limits } = this.#d;
     const presence = this.#hub.channel(core).presence;
     const members: Member[] = core.members().map((member) => {
@@ -512,7 +533,7 @@ export class SocketSession implements Peer {
         online: true,
         host: member.actor === core.host,
         baton: member.actor === core.baton,
-        runner: false,
+        runner: member.actor === running.runner,
         ...(view?.status === undefined ? {} : { status: view.status }),
         ...(view?.app === undefined ? {} : { app: view.app }),
       };
@@ -535,10 +556,10 @@ export class SocketSession implements Peer {
       members,
       host: core.host,
       baton: core.baton,
-      runner: null,
+      runner: running.runner,
       resume,
       ...(epochBreak ? { epochBreak: true as const } : {}),
-      run: null,
+      run: running.run,
       chat,
       limits: { submitPerSec: limits.submitPerSec, maxEnvelopeBytes: CAPS.envelope, maxPending: limits.pendingPerSocket },
     };
@@ -576,7 +597,18 @@ export class SocketSession implements Peer {
         this.#hub.emit(core, core.resync(ref.m, frame));
         break;
       case "cmd":
-        this.#hub.emit(core, core.command(ref.m, frame));
+        if (frame.name === "runner.set" || frame.name === "run.detach") {
+          const outcome = this.#hub.runs.forRoom(core).onCmd(ref, frame.name, frame.args);
+          this.#hub.emitRun(core, { ...outcome, errors: outcome.errors.map((e) => ({ ...e, error: { ...e.error, ref: frame.id } })) });
+        } else {
+          this.#hub.emit(core, core.command(ref.m, frame));
+        }
+        break;
+      case "run.req":
+      case "run.ev":
+      case "run.tick":
+      case "run.check":
+        this.#hub.emitRun(core, this.#hub.runs.forRoom(core).onFrame(ref, frame));
         break;
       case "cursor": {
         const verdict = ch.cursors.push(this.#subject(core, ref), ref.m, frame, core.settings.spectatorCursors);

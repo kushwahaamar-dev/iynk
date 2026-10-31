@@ -129,6 +129,9 @@ export function createCommandRegistry(d: {
         if (d.repo.getRoom(core.id)?.state === "closed") rooms.delete(core.id);
         return out;
       }
+      case "runner.set":
+      case "run.detach":
+        return [refuse(m, "bad_frame", "run commands belong to the run channel")];
       case "room.pin":
         return [{ to: { kind: "member", m: m.m }, frame: { t: "error", code: "bad_type", message: "pinning is not built yet", retryable: false } }];
     }

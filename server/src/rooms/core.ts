@@ -71,6 +71,7 @@ export class RoomCore {
   readonly #buckets = new Map<number, Bucket>();
   readonly #rejections = new Map<number, number[]>();
   readonly #pending = new Set<string>();
+  readonly #committed = new Set<(writes: readonly CommitWrite[]) => Outbound[]>();
   #queue: Job[] = [];
   #doc: Project;
   #seq: number;
@@ -169,6 +170,12 @@ export class RoomCore {
 
   commitSystem(by: Actor, ops: Op[], why: string): Outbound[] {
     return this.#commitGroup([{ kind: "system", by, ops, why }]).out;
+  }
+
+  /** Runs after every group COMMIT; what it returns is delivered after the commit frames. */
+  onCommitted(fn: (writes: readonly CommitWrite[]) => Outbound[]): () => void {
+    this.#committed.add(fn);
+    return () => this.#committed.delete(fn);
   }
 
   tick(): Outbound[] {
@@ -384,7 +391,19 @@ export class RoomCore {
     this.#deps.afterCommit?.(group);
     this.#deps.checkpointer?.afterCommit(this, group);
 
-    return { out: [...out, ...this.#frames(group, answers), ...this.#applyRoles(group)], left };
+    return { out: [...out, ...this.#frames(group, answers), ...this.#applyRoles(group), ...this.#notifyCommitted(group)], left };
+  }
+
+  #notifyCommitted(group: CommitWrite[]): Outbound[] {
+    const out: Outbound[] = [];
+    for (const fn of this.#committed) {
+      try {
+        out.push(...fn(group));
+      } catch (error) {
+        this.#deps.log?.error("room.committed_listener", { room: this.id, error: String(error) });
+      }
+    }
+    return out;
   }
 
   #authorDevice(by: Actor): DeviceId {

@@ -6,7 +6,8 @@ export type CmdName =
   | "baton.request" | "baton.grant" | "baton.release" | "baton.take"
   | "host.pass" | "host.claim"
   | "member.kick" | "member.mute"
-  | "room.lock" | "room.settings" | "room.close" | "room.pin";
+  | "room.lock" | "room.settings" | "room.close" | "room.pin"
+  | "runner.set" | "run.detach";
 
 export type Subject = {
   role: Role;
