@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { IconButton, cx } from "@/components/ui";
-import type { AiT } from "@/lib/ai/messages";
+import type { AiT } from "@/ai/messages";
 import type { VoiceProblem, VoiceState } from "./useVoice";
 
 /** Held this long, a press is push-to-talk: letting go sends. Shorter is a tap that toggles. */

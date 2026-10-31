@@ -1,99 +1,23 @@
 "use client";
 
-import { Button, Callout, Chip, Icon, cx } from "@/components/ui";
-import type { Citation, ToolRecord, Turn } from "@/lib/ai/conversation";
-import type { AiT } from "@/lib/ai/messages";
-import { ChangeCard } from "./ChangeCard";
-import { Markdown } from "./Markdown";
+import { memo, useMemo } from "react";
+import type { AiT } from "@/ai/messages";
+import type { ToolRecord, Turn } from "@/ai/host/thread";
+import { createSeenUrls } from "@/ai/render/links";
+import type { PartnerSources } from "@/ai/sources";
+import { parseRef, resolveRef } from "@/ai/tools/refs";
+import { Chip, Icon } from "@/components/ui";
+import { Markdown, type RenderPolicy } from "./Markdown";
+import { ToolCard } from "./ToolCard";
 
-type TurnProps = {
+type TurnViewProps = {
   turn: Turn;
-  /** First partner turn after a question: shows the avatar. */
-  first: boolean;
+  sources: PartnerSources;
+  onRefClick(raw: string): void;
   t: AiT;
-  busy: boolean;
-  onRetry(): void;
-  onDecide(toolId: string, accept: boolean): void;
-  onPeer(toolId: string, send: boolean): void;
-  onFlash(partId: string, note: string): void;
-  onInvite(): void;
+  /** The reply is still arriving: show the caret, or the dots while nothing has come yet. */
+  streaming?: boolean;
 };
-
-export function TurnView({ turn, first, t, busy, onRetry, onDecide, onPeer, onFlash, onInvite }: TurnProps) {
-  if (turn.role === "user") {
-    return (
-      <div className="flex justify-end ps-8 motion-safe:animate-rise-in">
-        <p className="max-w-full whitespace-pre-wrap break-words rounded-2xl bg-hover px-4 py-3 text-sm">
-          <span className="sr-only">{t("panel.you")}: </span>
-          {turn.via === "voice" ? (
-            <span className="me-1 inline-block align-[-3px]" aria-hidden="true">
-              <Icon name="mic" size={16} />
-            </span>
-          ) : null}
-          {turn.text}
-        </p>
-      </div>
-    );
-  }
-
-  if (turn.role === "note") {
-    const kind = t(`panel.kinds.${turn.kind}`);
-    return (
-      <p className="text-center text-xs text-muted">
-        {t(turn.decision === "accepted" ? "panel.accepted" : "panel.rejected", { kind })}
-      </p>
-    );
-  }
-
-  const streaming = turn.status === "streaming";
-  const labels = { code: t("panel.code"), copy: t("tools.copy"), copied: t("tools.copied") };
-  return (
-    <div className="flex gap-2 pe-2 motion-safe:animate-rise-in">
-      <span
-        aria-hidden="true"
-        className={cx(
-          "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-sunken",
-          !first && "invisible",
-        )}
-      >
-        <Icon name="spark" size={16} />
-      </span>
-      <div className="min-w-0 flex-1 space-y-2" aria-busy={streaming}>
-        <span className="sr-only">{t("panel.partner")}: </span>
-        {turn.text ? (
-          <div className="py-1 text-sm leading-relaxed">
-            <Markdown text={turn.text} labels={labels} />
-            {streaming ? <span aria-hidden="true" className="ms-0.5 inline-block h-4 w-0.5 animate-pulse bg-ink align-middle motion-reduce:animate-none" /> : null}
-          </div>
-        ) : streaming && !turn.tools.length ? (
-          <p className="flex items-center gap-2 py-2 text-sm text-muted">
-            <Dots />
-            {t("panel.thinking")}
-          </p>
-        ) : null}
-
-        {turn.citations.length ? <Citations citations={turn.citations} label={t("panel.sources")} /> : null}
-
-        {turn.tools.map((tool) => (
-          <ToolView key={tool.id} tool={tool} t={t} onDecide={onDecide} onPeer={onPeer} onFlash={onFlash} onInvite={onInvite} />
-        ))}
-
-        {turn.status === "stopped" ? <p className="text-xs text-muted">{t("panel.stopped")}</p> : null}
-        {turn.status === "error" && turn.error ? (
-          <Callout tone={turn.error === "not_configured" ? "note" : "warn"} live>
-            {t(`errors.${turn.error}`)}
-            {turn.error !== "not_configured" ? (
-              <Button size="sm" variant="secondary" className="mt-2 flex" onClick={onRetry} disabled={busy}>
-                <Icon name="refresh" size={16} />
-                {t("panel.retry")}
-              </Button>
-            ) : null}
-          </Callout>
-        ) : null}
-      </div>
-    </div>
-  );
-}
 
 function Dots() {
   return (
@@ -109,116 +33,73 @@ function Dots() {
   );
 }
 
-function host(url: string) {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
+function policyFor(tools: readonly ToolRecord[], sources: PartnerSources, onRefClick: (raw: string) => void, t: AiT): RenderPolicy {
+  const seen = createSeenUrls();
+  for (const tool of tools) seen.add(tool.resultText);
+  return {
+    seenUrls: seen,
+    resolveRef(raw) {
+      const ref = parseRef(raw);
+      if (!ref) return null;
+      const found = resolveRef(ref, sources);
+      return found.ok ? found.label : null;
+    },
+    onHighlight: onRefClick,
+    // Links open only after a confirmation the partner strings do not cover yet, so none is offered.
+    labels: { confirmTitle: "", confirmBody: "", confirm: "", cancel: "", close: "", unverified: t("partner.unverified") },
+  };
 }
 
-function Citations({ citations, label }: { citations: Citation[]; label: string }) {
+/** One message in the thread. Tool output is shown as text only, and a reference renders as a chip only when it points at something in the project. */
+function TurnViewBase({ turn, sources, onRefClick, t, streaming = false }: TurnViewProps) {
+  const policy = useMemo(() => policyFor(turn.tools, sources, onRefClick, t), [turn.tools, sources, onRefClick, t]);
+
+  if (turn.role === "user") {
+    return (
+      <div className="flex justify-end ps-8 motion-safe:animate-rise-in">
+        <p className="max-w-full whitespace-pre-wrap break-words rounded-2xl bg-hover px-4 py-3 text-sm">
+          <span className="sr-only">{t("panel.you")}: </span>
+          {turn.text}
+        </p>
+      </div>
+    );
+  }
+
+  const labels = { code: t("panel.code"), copy: t("tools.copy"), copied: t("tools.copied") };
   return (
-    <div>
-      <p className="kicker mb-1">{label}</p>
-      <ul className="grid gap-2">
-        {citations.map((citation, i) => (
-          <li key={citation.url}>
-            <a
-              href={citation.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex gap-2 rounded-lg bg-sunken p-2 no-underline motion-fade hover:bg-hover"
-            >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-info-bg text-xs font-semibold text-info tabular">
-                {i + 1}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-ink">{citation.title}</span>
-                <span className="block truncate text-xs text-muted">{host(citation.url)}</span>
-                {citation.snippet ? <span className="line-clamp-2 text-xs text-muted">{citation.snippet}</span> : null}
-              </span>
-            </a>
-          </li>
+    <div className="flex gap-2 pe-2 motion-safe:animate-rise-in">
+      <span aria-hidden="true" className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-sunken">
+        <Icon name="spark" size={16} />
+      </span>
+      <div className="min-w-0 flex-1 space-y-2" aria-busy={streaming}>
+        <span className="sr-only">{t("panel.partner")}: </span>
+        {turn.text ? (
+          <div className="py-1 text-sm leading-relaxed">
+            <Markdown text={turn.text} labels={labels} policy={policy} />
+            {streaming ? (
+              <span aria-hidden="true" className="ms-0.5 inline-block h-4 w-0.5 animate-pulse bg-ink align-middle motion-reduce:animate-none" />
+            ) : null}
+          </div>
+        ) : streaming && turn.tools.length === 0 ? (
+          <p className="flex items-center gap-2 py-2 text-sm text-muted">
+            <Dots />
+            {t("panel.thinking")}
+          </p>
+        ) : null}
+
+        {turn.tools.map((record) => (
+          <ToolCard key={record.id} record={record} t={t} />
         ))}
-      </ul>
+
+        {turn.flags.includes("unverified") ? (
+          <Chip tone="warn">
+            <Icon name="warn" size={16} />
+            {t("partner.unverified")}
+          </Chip>
+        ) : null}
+      </div>
     </div>
   );
 }
 
-function ToolView({
-  tool,
-  t,
-  onDecide,
-  onPeer,
-  onFlash,
-  onInvite,
-}: {
-  tool: ToolRecord;
-  t: AiT;
-  onDecide(toolId: string, accept: boolean): void;
-  onPeer(toolId: string, send: boolean): void;
-  onFlash(partId: string, note: string): void;
-  onInvite(): void;
-}) {
-  const card = tool.card;
-  if (!card) return null;
-  switch (card.kind) {
-    case "highlight":
-      return (
-        <Callout tone="tip" title={t("tools.highlight", { part: card.partId })}>
-          {card.note ? <p>{card.note}</p> : null}
-          {card.shown ? (
-            <Button size="sm" variant="ghost" className="mt-1 -ms-2" onClick={() => onFlash(card.partId, card.note)}>
-              {t("tools.showAgain")}
-            </Button>
-          ) : (
-            <p className="text-xs text-muted">{t("tools.highlightOff")}</p>
-          )}
-        </Callout>
-      );
-    case "change":
-      return <ChangeCard card={card} t={t} onDecide={(accept) => onDecide(tool.id, accept)} />;
-    case "peer":
-      switch (card.status) {
-        case "pending":
-          return (
-            <Callout tone="note" title={t("tools.askPeerPending", { name: card.peer })}>
-              <p className="text-muted">{t("tools.question", { question: card.question })}</p>
-              <div className="mt-2 flex gap-2">
-                <Button size="sm" variant="primary" onClick={() => onPeer(tool.id, true)}>
-                  {t("tools.askPeerSend")}
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => onPeer(tool.id, false)}>
-                  {t("tools.askPeerDecline")}
-                </Button>
-              </div>
-            </Callout>
-          );
-        case "sent":
-          return (
-            <Callout tone="note" title={t("tools.askPeer", { name: card.peer })}>
-              <p className="text-muted">{t("tools.question", { question: card.question })}</p>
-            </Callout>
-          );
-        case "declined":
-          return (
-            <Callout tone="note">
-              <p className="text-sm text-muted">{t("tools.askPeerDeclined", { name: card.peer })}</p>
-            </Callout>
-          );
-        case "no_peer":
-          return (
-            <Callout tone="note">
-              <p>{t("tools.askPeerNoRoom")}</p>
-              <Button size="sm" variant="primary" className="mt-2" onClick={onInvite}>
-                <Icon name="people" size={16} />
-                {t("tools.invite")}
-              </Button>
-            </Callout>
-          );
-      }
-    case "panel":
-      return <Chip tone="info">{t("tools.opened", { tab: t(`tools.tabs.${card.tab}`) })}</Chip>;
-  }
-}
+export const TurnView = memo(TurnViewBase);

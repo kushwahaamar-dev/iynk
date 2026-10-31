@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import type { LabDockProps, LabKind } from "@/components/dock/types";
 import { setPointing, usePointing } from "@/components/realtime/pointing";
 import { PanelSkeleton, useSearchAvailability } from "@/components/search/shared";
+import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
 import { DOCK_TAB_EVENT } from "@/lib/ai/run-tools";
@@ -60,7 +61,6 @@ function roomInAddress() {
 }
 
 const loading = () => <PanelSkeleton />;
-const PartnerPanel = dynamic(() => import("@/components/ai/PartnerPanel").then((m) => m.PartnerPanel), { loading });
 const TogetherPanel = dynamic(() => import("@/components/realtime/TogetherPanel").then((m) => m.TogetherPanel), { loading });
 const HardwareTwinPanel = dynamic(() => import("@/components/hw/HardwareTwinPanel").then((m) => m.HardwareTwinPanel), { loading });
 const RealBuildPanel = dynamic(() => import("@/components/search/RealBuildPanel").then((m) => m.RealBuildPanel), { loading });
@@ -83,7 +83,8 @@ function RealTab(lab: LabDockProps) {
 }
 
 function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
-  if (tab === "partner") return <PartnerPanel {...lab} />;
+  const t = useCommonT();
+  if (tab === "partner") return <NotSetUp what={t("dock.tabs.partner")} reason="needs_key" fix="ai" />;
   if (tab === "together") return <TogetherPanel {...lab} />;
   if (tab === "hardware") return <HardwareTwinPanel {...lab} />;
   return <RealTab {...lab} />;
