@@ -78,6 +78,8 @@ export interface WhatIf {
 export interface LiveAnalog extends AnalogSolver {
   netVolts(net: NetId): number | null;
   pinVolts(element: ElementId): number | null;
+  /** The node a net has in a `whatIf` result, or null for an unknown net. */
+  nodeIndex(net: NetId): number | null;
   componentResult(net: NetId): SolveResult | null;
   /** Clears the burnt latch of a part and puts its elements back. */
   repair(partId: PartId): void;
@@ -632,6 +634,10 @@ class Live implements LiveAnalog {
   pinVolts(element: ElementId): number | null {
     const input = this.boardPins.get(element);
     return input ? this.netVolts(input.net) : null;
+  }
+
+  nodeIndex(net: NetId): number | null {
+    return this.nodeOf.get(net) ?? null;
   }
 
   componentResult(net: NetId): SolveResult | null {

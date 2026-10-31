@@ -3,7 +3,8 @@ import { StateHasher } from "../core/hash.ts";
 import { type Engine, type EventSink, RANK, type SimEvent } from "../engine.ts";
 import type { LiveAnalog } from "../analog/live.ts";
 import { partOf } from "../analog/states.ts";
-import type { DeviceState } from "../analog/types.ts";
+import { type Tol, type ToleranceMode, band, hasTolerance, seededParams, toleranceStreams } from "../analog/tolerance.ts";
+import type { DeviceState, SolveResult } from "../analog/types.ts";
 import type { Registry, Tier } from "../registry/types.ts";
 import { provenanceFor } from "./provenance.ts";
 import { createRing, type Ring } from "./ring.ts";
@@ -17,7 +18,6 @@ export interface Reading {
   provenance: Provenance;
   tier: Tier;
   modelIds: string[];
-  /** Filled by the tolerance run (T-B8-28). */
   band?: [number, number];
   conditions?: string;
   noteKey?: string;
@@ -59,9 +59,18 @@ export interface ProbeTap {
 }
 
 export interface ProbeTapDeps {
-  analog: Pick<LiveAnalog, "netVolts" | "pinVolts" | "componentResult">;
+  analog: Pick<LiveAnalog, "netVolts" | "pinVolts" | "componentResult" | "nodeIndex" | "whatIf">;
   registry: Registry;
   modelOf(partId: string): string[];
+  /** Read when a reading is asked for, so a mode change shows at once. */
+  tolerance?: () => ToleranceSetup;
+}
+
+export interface ToleranceSetup {
+  mode: ToleranceMode;
+  seed: number;
+  /** Every part that could carry a tolerance, by element id. */
+  parts: Record<string, Tol>;
 }
 
 export const MAX_PROBES = 64;
@@ -69,6 +78,8 @@ export const PROBE_ENGINE_ID = "engine:probe-tap";
 const SOLVER_ID = "engine:mna-dc-pwl@1.0.0";
 const NET_SEPARATOR = "|";
 const NO_RESULT = "no result";
+const BAND_KEY = { corners: "instruments.band.corners", "monte-carlo": "instruments.band.monteCarlo" } as const;
+const NO_TOLERANCE_KEY = "instruments.band.noTolerance";
 
 interface Source {
   value: number | null;
@@ -78,11 +89,21 @@ interface Source {
   quantities: Record<string, number>;
 }
 
+interface Spread {
+  result: SolveResult;
+  mode: ToleranceMode;
+  seed: number;
+  value?: number;
+  band?: [number, number];
+  conditions: string;
+}
+
 interface Probe {
   spec: ProbeSpec;
   ring: Ring;
   nextSample: SimTime | null;
   last: number | null;
+  spread?: Spread;
 }
 
 const hasSource = (kind: ProbeSpec["kind"]): boolean => kind === "voltage" || kind === "current" || kind === "power" || kind === "pin";
@@ -115,7 +136,10 @@ class Tap implements ProbeTap, Engine {
     if (source.value === null) return this.notModelled(source.modelIds, NO_RESULT);
     const { provenance, tier, noteKey } = provenanceFor(source.modelIds, source, this.d.registry);
     if (provenance === "not-modelled") return { value: null, at: this.horizon, provenance, tier, modelIds: source.modelIds, noteKey };
-    return { value: source.value, unit: source.unit, at: this.horizon, provenance, tier, modelIds: source.modelIds, ...(noteKey ? { noteKey } : {}) };
+    const reading: Reading = { value: source.value, unit: source.unit, at: this.horizon, provenance, tier, modelIds: source.modelIds, ...(noteKey ? { noteKey } : {}) };
+    const spread = this.spreadOf(probe);
+    if (!spread) return reading;
+    return { ...reading, value: spread.value ?? reading.value, ...(spread.band ? { band: spread.band } : {}), conditions: spread.conditions };
   }
 
   stream(h: ProbeHandle, from: SimTime): TraceChunk {
@@ -156,6 +180,43 @@ class Tap implements ProbeTap, Engine {
   /** Observers never change state, so every tap hashes alike. */
   stateHash(): string {
     return new StateHasher().hex();
+  }
+
+  /** Computed when asked and kept until the component re-solves, the mode or the seed changes. */
+  private spreadOf(probe: Probe): Spread | null {
+    const setup = this.d.tolerance?.();
+    const { kind, target } = probe.spec;
+    if (!setup || setup.mode === "nominal" || kind === "pin" || !hasSource(kind)) return null;
+    const [net, element] = target.split(NET_SEPARATOR);
+    const result = this.d.analog.componentResult(net);
+    if (!result?.converged) return null;
+    const cached = probe.spread;
+    if (cached && cached.result === result && cached.mode === setup.mode && cached.seed === setup.seed) return cached;
+    const inside = Object.entries(setup.parts).filter(([id]) => id in result.branch);
+    const parts = Object.fromEntries(inside.filter(([, t]) => hasTolerance(t)));
+    const pick = this.picker(kind, net, element);
+    const seeded = setup.mode === "seeded";
+    const drawn = seeded ? this.d.analog.whatIf({ params: seededParams(parts, setup.seed, toleranceStreams(setup.seed)) }) : null;
+    const spread = band(this.d.analog, pick, parts, setup.seed, seeded);
+    const notes = [spread ? `${BAND_KEY[spread.method]}:${spread.draws}` : null, inside.length > Object.keys(parts).length ? NO_TOLERANCE_KEY : null];
+    const next: Spread = {
+      result,
+      mode: setup.mode,
+      seed: setup.seed,
+      ...(drawn?.converged ? { value: pick(drawn) } : {}),
+      ...(spread ? { band: spread.band } : {}),
+      conditions: notes.filter((n) => n !== null).join(" "),
+    };
+    probe.spread = next;
+    return next;
+  }
+
+  private picker(kind: ProbeSpec["kind"], net: string, element: string): (r: SolveResult) => number {
+    if (kind === "voltage") {
+      const node = this.d.analog.nodeIndex(net) ?? 0;
+      return (r) => r.v[node];
+    }
+    return (r) => r.branch[element]?.[kind === "current" ? "amps" : "watts"] ?? 0;
   }
 
   private notModelled(modelIds: string[], conditions: string): Reading {
