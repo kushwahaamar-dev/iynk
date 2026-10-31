@@ -124,7 +124,7 @@ export type CommitWrite = {
   state_hash: string;
   at: number;
   events?: { kind: string; actor: Actor | null; data: object }[];
-  acl?: { device: DeviceId; patch: MemberPatch }[];
+  acl?: ({ device: DeviceId; patch: MemberPatch } | { device: DeviceId; remove: true })[];
 };
 
 export interface RoomsRepo {
@@ -349,7 +349,10 @@ function appendOne(tx: Tx, w: CommitWrite, expectedSeq0: number): number {
     w.device_id,
   );
   for (const e of w.events ?? []) insertEvent(tx, w.room_id, w.at, e.kind, e.actor, e.data);
-  for (const a of w.acl ?? []) patchColumns(tx, "room_members", "room_id = ? AND device_id = ?", [w.room_id, a.device], memberColumns(a.patch));
+  for (const a of w.acl ?? []) {
+    if ("remove" in a) tx.run("DELETE FROM room_members WHERE room_id = ? AND device_id = ?", w.room_id, a.device);
+    else patchColumns(tx, "room_members", "room_id = ? AND device_id = ?", [w.room_id, a.device], memberColumns(a.patch));
+  }
   return seq1;
 }
 
