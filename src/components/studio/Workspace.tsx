@@ -211,7 +211,7 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
   const offHistory = registerHistoryCommands({ doc, focus: focusKind });
   const debug = installDebugHook({ doc, run, announcer, tools: tools.recent });
   const offRepository = ephemeral ? () => {} : linkRepository(doc, debug.wrapHost(services.host), { onNotice, revisions: createPageRevisionPort() });
-  const sim = linkSim({ doc, run, host: services.sim, impact: classifyImpact });
+  const sim = linkSim({ doc, run, host: services.sim, impact: classifyImpact, breakpoints: () => ui.getState().breakpoints });
   const link: SimLink = ephemeral
     ? sim
     : {
@@ -683,7 +683,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         partner: partner ? <PartnerPanel host={partner} /> : <Skeleton className="h-28 rounded-xl" />,
       }}
       dock={{
-        code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
+        code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} debug={{ sim, run, messages: messages.fidelity.debug }} />,
         serial: (
           <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
             <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} roomRun={messages.run} lang={lang} firmware={<FirmwareControl doc={doc} messages={messages} lang={lang} />} />

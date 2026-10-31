@@ -1,17 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { Timers } from "@/collab/client";
 import { createSourceBatcher } from "@/collab/source-batch";
-import { CodeEditor, type EditorDiagnostic } from "@/components/boardlab/CodeEditor";
+import { CodeEditor, type DebugKey, type DebugMarks, type EditorDiagnostic } from "@/components/boardlab/CodeEditor";
 import { Button, Chip, EmptyState, IconButton, Tabs, type TabItem } from "@/components/ui";
 import { LIMITS } from "@/core/limits";
 import type { Messages } from "@/i18n/namespaces";
 import type { Diagnostic } from "@/lib/interp/errors";
+import type { PausedEvent, SimHost } from "@/sim-host/host";
 import { editToOp, firstFirmwareSource, languageOf, markersOf, type TextEdit, type WriteGate } from "@/studio/code/sources";
+import { MAX_BREAKPOINTS_PER_FILE } from "@/sim/debug/breakpoints";
 import type { DocStore } from "@/studio/stores/doc";
+import type { RunPhase, RunStore } from "@/studio/stores/run";
 import { useStoreSelector } from "@/studio/stores/select";
 import type { UiStore } from "@/studio/stores/ui";
+import { DebugPanel, type DebugState } from "./DebugPanel";
 
 export interface CodeDockProps {
   doc: DocStore;
@@ -24,6 +28,8 @@ export interface CodeDockProps {
   onRequestBaton?(): void;
   onReleaseBaton?(): void;
   messages: Messages["studioCode"];
+  /** Turns on the breakpoint gutter, the debug keys and the panel. */
+  debug?: { sim: Pick<SimHost, "debug" | "onPause">; run: RunStore; messages: Messages["fidelity"]["debug"] };
 }
 
 type Notice = "tooBig" | "failed";
@@ -33,6 +39,10 @@ const COALESCE_MS = 250;
 const WINDOW_TIMERS: Timers = { setTimeout: (fn, ms) => window.setTimeout(fn, ms), clearTimeout: (handle) => window.clearTimeout(handle as number) };
 const COPIED_MS = 1600;
 const NO_MARKERS: readonly EditorDiagnostic[] = [];
+const NO_LINES: readonly number[] = [];
+const NO_UPDATES = () => () => {};
+
+const debugStateOf = (phase: RunPhase): DebugState => (phase === "paused" ? "paused" : phase === "running" || phase === "starting" ? "running" : "stopped");
 
 const fill = (template: string, values: Record<string, string | number>) => template.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name]));
 
@@ -44,7 +54,7 @@ function batonLine(gate: WriteGate, m: Messages["studioCode"]["baton"]): string 
 }
 
 /** The project's code files as tabs. Typing is committed as `source.edit` ops, a burst of keystrokes as one. */
-export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, onReleaseBaton, messages }: CodeDockProps) {
+export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, onReleaseBaton, messages, debug }: CodeDockProps) {
   const sources = useStoreSelector(doc, (s) => s.state.sources);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
   const height = useStoreSelector(ui, (s) => s.dockHeightPx);
@@ -53,6 +63,15 @@ export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, on
   const [notice, setNotice] = useState<Notice | null>(null);
   const [copied, setCopied] = useState(false);
   const [epoch, setEpoch] = useState(0);
+  const [stoppedAt, setStoppedAt] = useState<PausedEvent | null>(null);
+  const breakpoints = useStoreSelector(ui, (s) => s.breakpoints);
+  const phase = useSyncExternalStore<RunPhase>(
+    debug?.run.subscribe ?? NO_UPDATES,
+    () => debug?.run.getState().phase ?? "idle",
+    () => "idle",
+  );
+  const debugState = debugStateOf(phase);
+  const pausedAt = debugState === "paused" ? stoppedAt : null;
   const footer = useRef<HTMLDivElement>(null);
 
   const firmwareId = firstFirmwareSource({ sources })?.id;
@@ -63,6 +82,16 @@ export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, on
     () => markersOf(diagnostics).map((m) => ({ ...m, message: `${fill(messages.marker[m.severity], { line: m.line, col: m.col })} ${m.message}` })),
     [diagnostics, messages],
   );
+  const debugMarks = useMemo(() => {
+    const marks = new Map<string, DebugMarks>();
+    for (const { path } of sources) {
+      const lines = breakpoints[path] ?? NO_LINES;
+      const here = pausedAt?.file === path ? pausedAt : null;
+      const bound = pausedAt?.bound?.filter((b) => b.file === path).map((b) => b.line);
+      marks.set(path, { lines, unbound: bound ? lines.filter((n) => !bound.includes(n)) : NO_LINES, paused: here?.line ?? null });
+    }
+    return marks;
+  }, [sources, breakpoints, pausedAt]);
   const errorCount = markers.filter((m) => m.severity === "error").length;
 
   const burst = useMemo(() => {
@@ -95,6 +124,9 @@ export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, on
 
   useEffect(() => flush, [flush]);
 
+  const sim = debug?.sim;
+  useEffect(() => sim?.onPause(setStoppedAt), [sim]);
+
   useEffect(() => {
     if (!copied) return;
     const t = window.setTimeout(() => setCopied(false), COPIED_MS);
@@ -114,7 +146,36 @@ export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, on
 
   function run() {
     flush();
+    setStoppedAt(null);
     onRun();
+  }
+
+  function toggleBreakpoint(path: string, line: number) {
+    const all = ui.getState().breakpoints;
+    const lines = all[path] ?? [];
+    const next = lines.includes(line) ? lines.filter((n) => n !== line) : [...lines, line].sort((a, z) => a - z);
+    if (next.length > MAX_BREAKPOINTS_PER_FILE) return;
+    const others = Object.fromEntries(Object.entries(all).filter(([name]) => name !== path));
+    ui.set("breakpoints", next.length > 0 ? { ...others, [path]: next } : others);
+    const live = debug?.run.getState().phase;
+    if (live === "running" || live === "paused") void sim?.debug({ op: "set-breakpoints", file: path, lines: next }).catch(() => undefined);
+  }
+
+  function resume() {
+    if (debugState !== "paused") return;
+    setStoppedAt(null);
+    void sim?.debug({ op: "continue" }).catch(() => undefined);
+  }
+
+  function step(unit: "line" | "over" | "out") {
+    if (debugState !== "paused") return;
+    setStoppedAt(null);
+    void sim?.debug({ op: "step", unit }).catch(() => undefined);
+  }
+
+  function debugKey(key: DebugKey) {
+    if (key === "continue") resume();
+    else step(key === "step" ? "line" : key);
   }
 
   async function copy() {
@@ -162,6 +223,12 @@ export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, on
           onCursor={(at) => setCursors((prev) => (prev[source.id]?.line === at.line && prev[source.id]?.col === at.col ? prev : { ...prev, [source.id]: at }))}
           escapeToNext={escapeToNext}
           onRun={run}
+          {...(debug && {
+            onBreakpoint: (line: number) => toggleBreakpoint(source.path, line),
+            debug: debugMarks.get(source.path),
+            breakpointLabel: (line: number, bound: boolean) => fill(bound ? debug.messages.breakpoint : debug.messages.breakpointUnbound, { line }),
+            onDebugKey: debugKey,
+          })}
         />
       ),
     };
@@ -171,6 +238,11 @@ export function CodeDock({ doc, ui, diagnostics, onRun, gate, onRequestBaton, on
   return (
     <section aria-label={messages.title} className="flex min-h-0 flex-col bg-paper" style={{ height }} onBlur={flush} onCompositionEnd={flush}>
       <Tabs label={messages.files} tabs={tabs} value={activeId} onChange={setPicked} fill className="flex-1" panelClassName="bg-(--code-bg) p-0!" />
+      {debug ? (
+        <div className="shrink-0 border-t border-rule px-3 py-2">
+          <DebugPanel state={debugState} at={pausedAt} onStep={step} onResume={resume} strings={debug.messages} />
+        </div>
+      ) : null}
       <div ref={footer} className="flex shrink-0 flex-wrap items-center gap-3 border-t border-rule px-3 py-2">
         <p className="tabular text-sm text-muted">{fill(messages.position, cursor)}</p>
         {active && languageOf(active) === null ? <Chip>{messages.plain}</Chip> : null}

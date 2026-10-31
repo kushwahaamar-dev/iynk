@@ -53,6 +53,9 @@ function fakeHost() {
     async setSpeed(x) {
       calls.push(`speed:${x}`);
     },
+    async debug(op) {
+      calls.push(`debug:${op.op}`);
+    },
     onEvent(fn) {
       listeners.push(fn);
       return () => void listeners.splice(listeners.indexOf(fn), 1);

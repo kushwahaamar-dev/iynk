@@ -1,5 +1,6 @@
 import { ZOOM_MAX, ZOOM_MIN } from "../engine/constants.ts";
 import type { Viewport } from "../engine/types.ts";
+import { MAX_BREAKPOINTS_PER_FILE } from "../../sim/debug/breakpoints.ts";
 import { VIEW_KINDS } from "../views/registry.ts";
 import type { ViewKind } from "../views/registry.ts";
 import { createStore } from "./select.ts";
@@ -16,6 +17,8 @@ export type UiState = {
   singleKeyShortcuts: boolean;
   viewports: Record<string, Viewport>;
   activeView: ViewKind;
+  /** Breakpoint lines by source path. They stay on this device and out of the project document. */
+  breakpoints: Record<string, number[]>;
 };
 
 export type UiStore = Store<UiState> & { set<K extends keyof UiState>(key: K, value: UiState[K]): void };
@@ -24,6 +27,7 @@ const MAX_VIEWPORTS = 16;
 const SNAP_MIN_MM = 0.1;
 const SNAP_MAX_MM = 25.4;
 const DOCK_MIN_PX = 80;
+const MAX_BREAKPOINT_FILES = 16;
 
 const DEFAULTS: UiState = {
   leftRail: "palette",
@@ -36,6 +40,7 @@ const DEFAULTS: UiState = {
   singleKeyShortcuts: true,
   viewports: {},
   activeView: "breadboard",
+  breakpoints: {},
 };
 
 const finite = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
@@ -59,6 +64,18 @@ function viewportsOf(raw: unknown): Record<string, Viewport> {
   return out;
 }
 
+function breakpointsOf(raw: unknown): Record<string, number[]> {
+  const out: Record<string, number[]> = {};
+  if (typeof raw !== "object" || raw === null) return out;
+  for (const [path, value] of Object.entries(raw)) {
+    if (Object.keys(out).length >= MAX_BREAKPOINT_FILES) break;
+    if (!Array.isArray(value)) continue;
+    const lines = [...new Set(value.filter((n): n is number => Number.isInteger(n) && n >= 1))].sort((a, z) => a - z).slice(0, MAX_BREAKPOINTS_PER_FILE);
+    if (lines.length > 0) out[path] = lines;
+  }
+  return out;
+}
+
 /** Keeps the known keys with a valid value and falls back to the default for the rest. */
 function normalise(raw: unknown): UiState {
   const r = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
@@ -73,6 +90,7 @@ function normalise(raw: unknown): UiState {
     singleKeyShortcuts: typeof r.singleKeyShortcuts === "boolean" ? r.singleKeyShortcuts : DEFAULTS.singleKeyShortcuts,
     viewports: viewportsOf(r.viewports),
     activeView: oneOf(r.activeView, VIEW_KINDS, DEFAULTS.activeView),
+    breakpoints: breakpointsOf(r.breakpoints),
   };
 }
 

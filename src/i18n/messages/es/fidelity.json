@@ -113,7 +113,10 @@
     "addWatch": "Añadir observación",
     "noSymbols": "Esta imagen no tiene símbolos de depuración. Recompila con -g.",
     "inlineOnly": "El depurador solo funciona con variables globales.",
-    "gutter": "Haz clic en el margen para poner un punto de interrupción"
+    "gutter": "Haz clic en el margen para poner un punto de interrupción",
+    "paused": "En pausa",
+    "breakpoint": "Punto de interrupción en la línea {line}",
+    "breakpointUnbound": "No hay código en la línea {line}, así que este punto de interrupción no detendrá la ejecución"
   },
   "compile": {
     "build": "Compilar",

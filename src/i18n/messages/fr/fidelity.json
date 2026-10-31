@@ -113,7 +113,10 @@
     "addWatch": "Ajouter une surveillance",
     "noSymbols": "Cette image n'a pas de symboles de débogage. Recompile avec -g.",
     "inlineOnly": "Le débogueur ne fonctionne que sur les variables globales.",
-    "gutter": "Clique dans la gouttière pour poser un point d'arrêt"
+    "gutter": "Clique dans la gouttière pour poser un point d'arrêt",
+    "paused": "En pause",
+    "breakpoint": "Point d'arrêt à la ligne {line}",
+    "breakpointUnbound": "Il n'y a pas de code à la ligne {line}, donc ce point d'arrêt n'arrêtera pas l'exécution"
   },
   "compile": {
     "build": "Compiler",

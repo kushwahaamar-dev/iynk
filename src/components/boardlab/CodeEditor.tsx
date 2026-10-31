@@ -21,8 +21,16 @@ export type EditorDiagnostic = { line: number; col: number; message: string; sev
 /** One text change in UTF-16 code units, positions in the document as it was before this change. */
 export type EditorEdit = { pos: number; del: number; ins: string };
 
+export type DebugKey = "continue" | "step" | "over" | "out";
+
+/** Breakpoint lines, the ones the engine could not bind, and the line the run is stopped on. */
+export type DebugMarks = { lines: readonly number[]; unbound: readonly number[]; paused: number | null };
+
 type Marks = { chips: ChipRange[]; errorLine: number | null; selected: string[]; diagnostics: readonly EditorDiagnostic[] };
 const setMarks = StateEffect.define<Marks>();
+const setDebug = StateEffect.define<DebugMarks>();
+
+const NO_DEBUG: DebugMarks = { lines: [], unbound: [], paused: null };
 
 const NO_CHIPS: ChipRange[] = [];
 const NO_SELECTED: string[] = [];
@@ -80,6 +88,44 @@ function problemGutter(state: EditorState, diagnostics: readonly EditorDiagnosti
     b.add(at, at, new ProblemMarker(problem.severity, problem.message));
   }
   return b.finish();
+}
+
+class BreakpointMarker extends GutterMarker {
+  constructor(
+    readonly bound: boolean,
+    readonly label: string,
+  ) {
+    super();
+  }
+
+  eq(other: GutterMarker) {
+    return other instanceof BreakpointMarker && other.bound === this.bound && other.label === this.label;
+  }
+
+  toDOM() {
+    const el = document.createElement("span");
+    el.className = this.bound ? "cm-breakpoint" : "cm-breakpoint cm-breakpoint-unbound";
+    el.title = this.label;
+    el.setAttribute("aria-label", this.label);
+    return el;
+  }
+}
+
+function breakpointGutter(state: EditorState, m: DebugMarks, label: (line: number, bound: boolean) => string): RangeSet<GutterMarker> {
+  const b = new RangeSetBuilder<GutterMarker>();
+  for (const number of [...new Set(m.lines)].sort((a, z) => a - z)) {
+    if (number < 1 || number > state.doc.lines) continue;
+    const bound = !m.unbound.includes(number);
+    const at = state.doc.line(number).from;
+    b.add(at, at, new BreakpointMarker(bound, label(number, bound)));
+  }
+  return b.finish();
+}
+
+function pausedLine(state: EditorState, line: number | null): DecorationSet {
+  if (line === null || line < 1 || line > state.doc.lines) return Decoration.none;
+  const at = state.doc.line(line).from;
+  return Decoration.set([Decoration.line({ class: "cm-paused-line" }).range(at)]);
 }
 
 function buildMarks(state: EditorState, m: Marks, chipTitle: (id: string) => string): DecorationSet {
@@ -141,6 +187,10 @@ const theme = EditorView.theme({
   ".cm-chip-marked": { outline: "2px solid var(--code-str)", outlineOffset: "1px" },
   ".cm-error-line": { backgroundColor: "var(--bad-bg)", boxShadow: "inset 3px 0 0 var(--bad)" },
   ".cm-warning-line": { backgroundColor: "var(--warn-bg)", boxShadow: "inset 3px 0 0 var(--warn)" },
+  ".cm-breakpoints": { minWidth: "1.25em", cursor: "pointer" },
+  ".cm-breakpoint": { display: "inline-block", width: "0.7em", height: "0.7em", borderRadius: "50%", backgroundColor: "var(--bad)", border: "1.5px solid var(--bad)", verticalAlign: "middle" },
+  ".cm-breakpoint-unbound": { backgroundColor: "transparent" },
+  ".cm-paused-line": { backgroundColor: "var(--info-bg)", boxShadow: "inset 3px 0 0 var(--info)" },
   ".cm-problems": { minWidth: "1.25em" },
   ".cm-problem": { display: "inline-block", minWidth: "1em", fontWeight: "600", textAlign: "center" },
   ".cm-problem-error": { color: "var(--bad)" },
@@ -171,6 +221,11 @@ type Props = {
   onTooBig?: () => void;
   /** Escape then Tab hands focus on instead of indenting; without it Escape just leaves the editor. */
   escapeToNext?: () => void;
+  /** Gives the editor a breakpoint gutter and the debug keys. Fixed for the life of the editor, like `diagnostics`. */
+  onBreakpoint?: (line: number) => void;
+  debug?: DebugMarks;
+  breakpointLabel?: (line: number, bound: boolean) => string;
+  onDebugKey?: (key: DebugKey) => void;
 };
 
 /** The lesson editor: CodeMirror 6 with the Colorfigures ink palette and clickable parameter chips. */
@@ -192,13 +247,17 @@ export function CodeEditor({
   maxBytes,
   onTooBig,
   escapeToNext,
+  onBreakpoint,
+  debug = NO_DEBUG,
+  breakpointLabel = () => "",
+  onDebugKey,
 }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   const applied = useRef(code);
-  const handlers = useRef({ onChange, onChip, onRun, chipTitle, onEdit, onCursor, maxBytes, onTooBig, escapeToNext });
+  const handlers = useRef({ onChange, onChip, onRun, chipTitle, onEdit, onCursor, maxBytes, onTooBig, escapeToNext, onBreakpoint, breakpointLabel, onDebugKey });
   useEffect(() => {
-    handlers.current = { onChange, onChip, onRun, chipTitle, onEdit, onCursor, maxBytes, onTooBig, escapeToNext };
+    handlers.current = { onChange, onChip, onRun, chipTitle, onEdit, onCursor, maxBytes, onTooBig, escapeToNext, onBreakpoint, breakpointLabel, onDebugKey };
   });
   const shown = diagnostics ?? NO_DIAGNOSTICS;
 
@@ -222,6 +281,29 @@ export function CodeEditor({
         return next;
       },
     });
+    const breakpoints = StateField.define<RangeSet<GutterMarker>>({
+      create: () => RangeSet.empty,
+      update(set, tr) {
+        let next = set.map(tr.changes);
+        for (const e of tr.effects) if (e.is(setDebug)) next = breakpointGutter(tr.state, e.value, (n, bound) => handlers.current.breakpointLabel(n, bound));
+        return next;
+      },
+    });
+    const stopped = StateField.define<DecorationSet>({
+      create: () => Decoration.none,
+      update(deco, tr) {
+        let next = deco.map(tr.changes);
+        for (const e of tr.effects) if (e.is(setDebug)) next = pausedLine(tr.state, e.value.paused);
+        return next;
+      },
+      provide: (f) => EditorView.decorations.from(f),
+    });
+    const debugKey = (key: DebugKey) => () => {
+      const send = handlers.current.onDebugKey;
+      if (!send) return false;
+      send(key);
+      return true;
+    };
     const wrap = new Compartment();
     const phone = window.matchMedia(PHONE);
     let escaped = false;
@@ -231,6 +313,23 @@ export function CodeEditor({
         doc: code,
         extensions: [
           diagnostics ? [problems, gutter({ class: "cm-problems", markers: (view) => view.state.field(problems) })] : [],
+          onBreakpoint
+            ? [
+                breakpoints,
+                stopped,
+                gutter({
+                  class: "cm-breakpoints",
+                  markers: (view) => view.state.field(breakpoints),
+                  initialSpacer: () => new BreakpointMarker(true, ""),
+                  domEventHandlers: {
+                    mousedown(view, block) {
+                      handlers.current.onBreakpoint?.(view.state.doc.lineAt(block.from).number);
+                      return true;
+                    },
+                  },
+                }),
+              ]
+            : [],
           lineNumbers(),
           history(),
           drawSelection(),
@@ -255,6 +354,19 @@ export function CodeEditor({
           EditorView.contentAttributes.of({ "aria-label": label, "aria-multiline": "true", tabindex: "0" }),
           keymap.of([
             { key: "Mod-Enter", run: () => (handlers.current.onRun(), true) },
+            {
+              key: "F9",
+              run: (ev) => {
+                const toggle = handlers.current.onBreakpoint;
+                if (!toggle) return false;
+                toggle(ev.state.doc.lineAt(ev.state.selection.main.head).number);
+                return true;
+              },
+            },
+            { key: "F5", run: debugKey("continue"), preventDefault: true },
+            { key: "F10", run: debugKey("over"), preventDefault: true },
+            { key: "F11", run: debugKey("step"), preventDefault: true },
+            { key: "Shift-F11", run: debugKey("out"), preventDefault: true },
             {
               key: "Escape",
               run: (ev) => {
@@ -337,6 +449,10 @@ export function CodeEditor({
     const changes = replace ? { from: 0, to: current.length, insert: code } : undefined;
     v.dispatch({ changes, effects: setMarks.of({ chips, errorLine, selected: selectedChips, diagnostics: shown }), annotations: external.of(true) });
   }, [code, chips, errorLine, selectedChips, shown]);
+
+  useEffect(() => {
+    view.current?.dispatch({ effects: setDebug.of(debug), annotations: external.of(true) });
+  }, [debug, code, language, label]);
 
   return (
     <div ref={host} className="boardlab-code min-h-48" data-testid="code-editor">

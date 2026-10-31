@@ -113,7 +113,10 @@
     "addWatch": "Add watch",
     "noSymbols": "No debug symbols in this image. Rebuild with -g.",
     "inlineOnly": "The debugger works on global variables only.",
-    "gutter": "Click the gutter to set a breakpoint"
+    "gutter": "Click the gutter to set a breakpoint",
+    "paused": "Paused",
+    "breakpoint": "Breakpoint on line {line}",
+    "breakpointUnbound": "No code on line {line}, so this breakpoint will not stop the run"
   },
   "compile": {
     "build": "Build",

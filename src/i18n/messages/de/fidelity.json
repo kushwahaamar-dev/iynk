@@ -113,7 +113,10 @@
     "addWatch": "Überwachung hinzufügen",
     "noSymbols": "Keine Debug-Symbole in diesem Abbild. Mit -g neu bauen.",
     "inlineOnly": "Der Debugger arbeitet nur mit globalen Variablen.",
-    "gutter": "In den Rand klicken, um einen Haltepunkt zu setzen"
+    "gutter": "In den Rand klicken, um einen Haltepunkt zu setzen",
+    "paused": "Angehalten",
+    "breakpoint": "Haltepunkt in Zeile {line}",
+    "breakpointUnbound": "In Zeile {line} steht kein Code, deshalb hält dieser Haltepunkt den Lauf nicht an"
   },
   "compile": {
     "build": "Bauen",

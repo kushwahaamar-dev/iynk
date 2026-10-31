@@ -113,7 +113,10 @@
     "addWatch": "添加监视",
     "noSymbols": "此映像没有调试符号。请加 -g 重新构建。",
     "inlineOnly": "调试器只支持全局变量。",
-    "gutter": "点击边栏以设置断点"
+    "gutter": "点击边栏以设置断点",
+    "paused": "已暂停",
+    "breakpoint": "第 {line} 行的断点",
+    "breakpointUnbound": "第 {line} 行没有代码，所以这个断点不会让运行停下"
   },
   "compile": {
     "build": "构建",

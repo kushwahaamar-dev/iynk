@@ -2,7 +2,7 @@ import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
 import type { SimTime } from "@/sim/core/clock";
 import type { HostInput, InputEntry, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
-import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
+import type { ControlOp, DebugOp, DiagnosticsReply, HashesReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
 
@@ -42,6 +42,16 @@ export interface SimHostStatus {
   behindReal: boolean;
 }
 
+/** A run stopped on a breakpoint, a step or a watch. `bound` lists the lines the breakpoints of the engine landed on. */
+export interface PausedEvent {
+  runtime: string;
+  reason: "breakpoint" | "step" | "watch";
+  file: string;
+  line: number;
+  atNs: SimTime;
+  bound?: Array<{ file: string; line: number }>;
+}
+
 export interface SimHostProbes {
   /** Rejects with the tap's error (`unknown-target`, `too-many-probes`). */
   add(spec: ProbeSpec): Promise<void>;
@@ -63,6 +73,10 @@ export interface SimHost {
   /** Only a paused or idle run steps; a running one refuses with `not_paused`. */
   step(unit: StepUnit, n: number): Promise<void>;
   input(i: HostInput): Promise<void>;
+  /** Sends a debugger op to the board of the run. `continue` and `step` restart the run and the pump together, so they are not `resume()`. */
+  debug(op: DebugOp): Promise<void>;
+  /** Called each time the run stops on a breakpoint, a step or a watch. */
+  onPause(fn: (e: PausedEvent) => void): () => void;
   /** Room runs: the run never simulates past `t`, and this resolves once it is there. `null` lifts the clamp. */
   horizon(t: SimTime | null): Promise<void>;
   /** Room runs: a runner-stamped input, injected once the run is at the instant just before `e.at`. */
@@ -276,6 +290,16 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     async input(input) {
       await port.call({ t: "input", run: current(), input });
     },
+    async debug(op) {
+      const run = current();
+      const board = lastLoad?.net.parts.find((p) => p.kind === "board");
+      if (!board) throw new Error("the run has no board to debug");
+      await port.call({ t: "debug", run, runtime: board.id, op });
+    },
+    onPause: (fn) =>
+      listenFor((ev) => {
+        if (ev.t === "event" && ev.event.kind === "paused") fn(ev.event);
+      }),
     async horizon(t) {
       const run = current();
       if (t === null) {

@@ -10,7 +10,7 @@ import type { ProgramImage, SimDiagnostic, SimRunOptions, StepUnit } from "@/sim
 import type { DocStore } from "@/studio/stores/doc";
 import type { Diagnostic, LimitInfo, RunStore } from "@/studio/stores/run";
 
-export type SimHostLike = Pick<SimHost, "load" | "control" | "input" | "onEvent" | "pause" | "resume" | "step" | "setSpeed">;
+export type SimHostLike = Pick<SimHost, "load" | "control" | "input" | "debug" | "onEvent" | "pause" | "resume" | "step" | "setSpeed">;
 
 export interface SimLinkDeps {
   doc: DocStore;
@@ -18,6 +18,8 @@ export interface SimLinkDeps {
   host: SimHostLike;
   impact: (ops: Op[]) => OpImpact;
   reg?: Pick<PartRegistry, "get">;
+  /** The breakpoint lines by source path, read each time a run starts. */
+  breakpoints?: () => Readonly<Record<string, readonly number[]>>;
 }
 
 export interface SimLink {
@@ -100,7 +102,7 @@ export async function loadForRun(host: Pick<SimHost, "load">, state: Project, se
   if (failed) throw new Error(String(failed.args?.message ?? failed.text_key));
 }
 
-export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: SimLinkDeps): SimLink {
+export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), breakpoints = () => ({}) }: SimLinkDeps): SimLink {
   // A newer start, stop or reset makes the answers of an older start irrelevant.
   let generation = 0;
 
@@ -139,6 +141,15 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: Sim
     if (change.origin === "load" || impact(change.ops) !== "none") run.markStale();
   });
 
+  /** A board that cannot be debugged refuses the op; its run just goes without breakpoints. */
+  async function armBreakpoints(program: ProgramImage): Promise<void> {
+    const marked = breakpoints();
+    for (const { path } of program.files) {
+      const lines = marked[path];
+      if (lines?.length) await host.debug({ op: "set-breakpoints", file: path, lines: [...lines] }).catch(() => undefined);
+    }
+  }
+
   async function start(): Promise<void> {
     const mine = ++generation;
     run.apply({ t: "phase", phase: "starting" });
@@ -159,6 +170,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry() }: Sim
       const errors = loaded.diagnostics.filter((d) => d.severity === "error").map(diagnosticOf);
       if (errors.length > 0) return fail(errors);
       run.apply({ t: "diagnostics", diagnostics: [...netDiagnostics, ...loaded.diagnostics].map(diagnosticOf) });
+      await armBreakpoints(program);
       await host.control("run");
     } catch (err) {
       if (mine === generation) fail([failure("host-failed", err instanceof Error ? err.message : String(err))]);
