@@ -197,6 +197,7 @@ export function createProjectHost({
     create: (o) => request({ t: "lib", call: { op: "create", ...o } }),
     rename: (id, title) => request({ t: "lib", call: { op: "rename", id, title } }),
     fork: (id, o) => request({ t: "lib", call: { op: "fork", id, title: o?.title } }),
+    forkDocument: (doc, o) => request({ t: "lib", call: { op: "forkDocument", doc, title: o?.title, origin: o?.origin } }),
     trash: (id) => request({ t: "lib", call: { op: "trash", id } }),
     restore: (id) => request({ t: "lib", call: { op: "restore", id } }),
     emptyTrash: () => request({ t: "lib", call: { op: "emptyTrash" } }),

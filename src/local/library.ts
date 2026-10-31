@@ -2,6 +2,7 @@ import type { Clock, RandomSource } from "@/core/ids";
 import { newProjectId } from "@/core/ids";
 import { blankProject } from "@/project/blank";
 import { forkProject } from "@/project/fork";
+import type { ForkOptions } from "@/project/fork";
 import type { Project } from "@/project/generated/types";
 import { canonicalBytes, stateHash } from "@/project/hash";
 import { createSession } from "@/project/session";
@@ -37,6 +38,8 @@ export interface Library {
   rename(id: string, title: string): Promise<void>;
   /** Duplicate is fork. */
   fork(id: string, o?: { title?: string }): Promise<string>;
+  /** Stores a fork of a document that is not the saved one, such as the local view before a rebase dropped work. */
+  forkDocument(doc: Project, o?: { title?: string; origin?: ForkOptions["origin"] }): Promise<string>;
   trash(id: string): Promise<void>;
   restore(id: string): Promise<void>;
   emptyTrash(): Promise<number>;
@@ -97,6 +100,15 @@ export function createLibrary({ repo, clock, rnd, actor }: LibraryDeps): Library
     return found.rec;
   }
 
+  async function forkDocument(doc: Project, o: { title?: string; origin?: ForkOptions["origin"] } = {}): Promise<string> {
+    const title = o.title === undefined ? `Copy of ${doc.meta.title}`.slice(0, MAX_TITLE) : checkTitle(o.title);
+    const source = validateValue(doc);
+    if (!source.ok) throw new LibraryError("invalid", "the source document does not validate");
+    const fork = forkProject(doc, { id: await freshId(), now: stamp(), actor, title, ...(o.origin && { origin: o.origin }) });
+    await store(fork, null);
+    return fork.id;
+  }
+
   return {
     async list() {
       const rows = await repo.list();
@@ -121,13 +133,10 @@ export function createLibrary({ repo, clock, rnd, actor }: LibraryDeps): Library
 
     async fork(id, o = {}) {
       const { doc } = await open(id);
-      const title = o.title === undefined ? `Copy of ${doc.meta.title}`.slice(0, MAX_TITLE) : checkTitle(o.title);
-      const source = validateValue(doc);
-      if (!source.ok) throw new LibraryError("invalid", "the source document does not validate");
-      const fork = forkProject(doc, { id: await freshId(), now: stamp(), actor, title });
-      await store(fork, null);
-      return fork.id;
+      return forkDocument(doc, o);
     },
+
+    forkDocument,
 
     async trash(id) {
       await repo.remove(id, clock());

@@ -18,6 +18,9 @@ export type DocView = {
   readOnly: boolean;
 };
 
+/** Whether this member may edit. Declared here, structurally, so the store never imports the collab module. */
+export type DocAccess = { mode: "edit" } | { mode: "readonly"; reason: string };
+
 export type CommitResult = { ok: true; revision: number } | { ok: false; reject: RejectCode; message: string };
 
 /**
@@ -27,6 +30,9 @@ export type CommitResult = { ok: true; revision: number } | { ok: false; reject:
  */
 export interface DocStore extends Store<DocView> {
   readonly session: ProjectSession;
+  /** The last revision the authority has confirmed; a plain read, so it never causes a render. */
+  readonly confirmedSeq: number;
+  readonly access: DocAccess;
   commit(batch: Op[], opts: { label: string; author?: Author }): CommitResult;
   /** Canvas scope: entries holding a `source.edit` stay on the stack. */
   undo(): CommitResult | null;
@@ -35,6 +41,12 @@ export interface DocStore extends Store<DocView> {
   replaceSession(next: ProjectSession): void;
   onChange(fn: (change: DocChange) => void): () => void;
   setSaveChip(chip: SaveChip): void;
+  /** Other members' ops, applied as they were authored. The authority link wraps the call so they are not sent back. */
+  applyRemote(envelopes: readonly OpEnvelope[]): void;
+  /** The visible state replaced in place (confirmed plus pending after a rebase); undo history is dropped. */
+  resync(snapshot: ProjectState): void;
+  setAccess(access: DocAccess): void;
+  setConfirmedSeq(seq: number): void;
 }
 
 /** Canvas undo leaves text edits to the code editor's own history (STUDIO 11.2). */
@@ -45,14 +57,17 @@ const READ_ONLY_REFUSAL = { ok: false, reject: "permission", message: "This proj
 export function createDocStore(initial: ProjectSession): DocStore {
   let session = initial;
   let chip: SaveChip = "saved";
+  let access: DocAccess = { mode: "edit" };
+  let confirmedSeq = initial.revision;
   const listeners = new Set<(change: DocChange) => void>();
+  const locked = () => chip === "read-only" || access.mode === "readonly";
   const view = () => ({
     revision: session.revision,
     state: session.state,
     canUndo: session.canUndo(undefined, canvasOp),
     canRedo: session.canRedo(undefined, canvasOp),
     saveChip: chip,
-    readOnly: chip === "read-only",
+    readOnly: locked(),
   });
   const store = createStore<DocView>(view());
   let unsubscribe = () => {};
@@ -61,7 +76,7 @@ export function createDocStore(initial: ProjectSession): DocStore {
   function sync() {
     const current = store.getState();
     const next = view();
-    if (next.revision !== current.revision || next.state !== current.state || next.saveChip !== current.saveChip || next.canUndo !== current.canUndo || next.canRedo !== current.canRedo) {
+    if (next.revision !== current.revision || next.state !== current.state || next.saveChip !== current.saveChip || next.readOnly !== current.readOnly || next.canUndo !== current.canUndo || next.canRedo !== current.canRedo) {
       store.setState(next);
     }
   }
@@ -76,7 +91,7 @@ export function createDocStore(initial: ProjectSession): DocStore {
   }
   follow();
 
-  const refused = (): CommitResult | null => (chip === "read-only" ? READ_ONLY_REFUSAL : null);
+  const refused = (): CommitResult | null => (locked() ? READ_ONLY_REFUSAL : null);
   function settle(r: ApplyResult): CommitResult {
     sync();
     return r.ok ? { ok: true, revision: r.revision } : { ok: false, reject: r.reject, message: r.message };
@@ -87,6 +102,12 @@ export function createDocStore(initial: ProjectSession): DocStore {
     subscribe: store.subscribe,
     get session() {
       return session;
+    },
+    get confirmedSeq() {
+      return confirmedSeq;
+    },
+    get access() {
+      return access;
     },
     commit(batch, opts) {
       const refusal = refused();
@@ -127,6 +148,21 @@ export function createDocStore(initial: ProjectSession): DocStore {
       if (next === chip) return;
       chip = next;
       sync();
+    },
+    applyRemote(envelopes) {
+      for (const envelope of envelopes) session.apply(envelope.op, envelope.author);
+      sync();
+    },
+    resync(snapshot) {
+      session.replace(snapshot);
+      sync();
+    },
+    setAccess(next) {
+      access = next;
+      sync();
+    },
+    setConfirmedSeq(seq) {
+      confirmedSeq = seq;
     },
   };
 }

@@ -1,6 +1,7 @@
 import type { Clock, RandomSource } from "../core/ids.ts";
 import { newId } from "../core/ids.ts";
-import type { Op, OpEnvelope } from "./generated/types.ts";
+import type { Op, OpEnvelope, Project } from "./generated/types.ts";
+import type { ApplyResult } from "./session.ts";
 
 /** Gives accepted ops their place in the history. The one place that assigns `seq`. */
 export interface LocalAuthority {
@@ -30,4 +31,26 @@ export function createLocalAuthority(opts: LocalAuthorityOptions): LocalAuthorit
       return envelopes;
     },
   };
+}
+
+/** A batch the session has already applied locally and the authority now has to get accepted. */
+export interface PendingBatch {
+  batchId: string;
+  /** The revision of the visible document the batch was applied on. */
+  base: number;
+  author: OpEnvelope["author"];
+  ops: Op[];
+}
+
+export type SubmitResult =
+  | { ok: true; envelopes: OpEnvelope[]; inverse: Op[] }
+  | { ok: false; reject: Extract<ApplyResult, { ok: false }>["reject"] | "not_baton" };
+
+/** Where batches go once they are applied locally and where other people's batches come from. The `DocStore` never learns which kind it has. */
+export interface Authority {
+  readonly mode: string;
+  submit(batch: PendingBatch): Promise<SubmitResult>;
+  onRemote(handler: (envelopes: OpEnvelope[]) => void): () => void;
+  /** The visible state replaced as a whole: the confirmed document plus whatever is still pending. */
+  onResync(handler: (snapshot: Project) => void): () => void;
 }

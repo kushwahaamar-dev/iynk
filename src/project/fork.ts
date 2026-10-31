@@ -6,6 +6,8 @@ export interface ForkOptions {
   now: string;
   actor: string;
   title?: string;
+  /** What `provenance.origin` records when the source is not the state the fork stands for (a room's last revision, not the local copy). */
+  origin?: { project: string; revision: number; stateHash: string };
 }
 
 /** A new project from any document: new id and owner, revision 0, an empty history, and the source named in `provenance.origin`. The source is not touched. */
@@ -24,7 +26,7 @@ export function forkProject(src: Project, o: ForkOptions): Project {
   fork.provenance = {
     ...fork.provenance,
     createdBy: o.actor,
-    origin: { kind: "fork", project: src.id, revision: src.revision, stateHash: sourceHash },
+    origin: { kind: "fork", ...(o.origin ?? { project: src.id, revision: src.revision, stateHash: sourceHash }) },
   };
   return fork;
 }

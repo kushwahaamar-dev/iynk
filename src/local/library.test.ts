@@ -138,7 +138,7 @@ describe("Library", () => {
   it("is a Library", () => {
     const library: Library = setup().library;
     expect(Object.keys(library).sort()).toEqual(
-      ["create", "emptyTrash", "fork", "list", "purgeExpired", "rename", "restore", "trash", "trashList"],
+      ["create", "emptyTrash", "fork", "forkDocument", "list", "purgeExpired", "rename", "restore", "trash", "trashList"],
     );
   });
 });

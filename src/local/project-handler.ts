@@ -218,6 +218,8 @@ export function createProjectHandler(deps: ProjectHandlerDeps): WorkerHandler<Pr
         return library.rename(call.id, call.title);
       case "fork":
         return library.fork(call.id, call.title === undefined ? undefined : { title: call.title });
+      case "forkDocument":
+        return library.forkDocument(call.doc, { title: call.title, origin: call.origin });
       case "trash":
         return library.trash(call.id);
       case "restore":

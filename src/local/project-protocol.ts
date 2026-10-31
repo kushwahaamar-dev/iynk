@@ -1,4 +1,5 @@
 import type { OpEnvelope, Project } from "@/project/generated/types";
+import type { ForkOptions } from "@/project/fork";
 import type { ImportError } from "@/export/iynk";
 import type { RecordLoad } from "./repository";
 
@@ -37,6 +38,7 @@ export type LibCall =
   | { op: "create"; board: "uno"; title?: string }
   | { op: "rename"; id: string; title: string }
   | { op: "fork"; id: string; title?: string }
+  | { op: "forkDocument"; doc: Project; title?: string; origin?: ForkOptions["origin"] }
   | { op: "trash"; id: string }
   | { op: "restore"; id: string }
   | { op: "emptyTrash" }
