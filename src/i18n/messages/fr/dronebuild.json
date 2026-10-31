@@ -1,1 +1,31 @@
-{}
+{
+  "picker": {
+    "role": {
+      "motor": "Moteurs",
+      "prop": "Hélices",
+      "esc": "ESC",
+      "battery": "Batteries",
+      "frame": "Châssis",
+      "fc": "Contrôleurs de vol"
+    },
+    "search": "Rechercher {role}",
+    "list": "{role}",
+    "results": {
+      "one": "{count} pièce",
+      "other": "{count} pièces"
+    },
+    "none": "Aucune pièce ne correspond à \"{query}\".",
+    "empty": {
+      "title": "Aucune pièce de ce type dans la bibliothèque pour l'instant",
+      "body": "Ajoutez-en une avec le formulaire de pièce, puis choisissez-la ici."
+    },
+    "flag": {
+      "cellsOverMotor": "Demande {max}S ou moins",
+      "propOverFrame": "L'hélice dépasse les {maxIn} pouces que ce châssis accepte",
+      "escVolts": "Prévu pour {max} V, moins que la batterie",
+      "missing": "Manque {path}"
+    },
+    "price": "{amount} {currency}, au {date}",
+    "priceEstimate": "{amount} {currency}, estimation au {date}"
+  }
+}

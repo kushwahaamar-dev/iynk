@@ -1,1 +1,31 @@
-{}
+{
+  "picker": {
+    "role": {
+      "motor": "मोटर",
+      "prop": "प्रोपेलर",
+      "esc": "ESC",
+      "battery": "बैटरी",
+      "frame": "फ्रेम",
+      "fc": "फ़्लाइट कंट्रोलर"
+    },
+    "search": "{role} खोजें",
+    "list": "{role}",
+    "results": {
+      "one": "{count} पुर्ज़ा",
+      "other": "{count} पुर्ज़े"
+    },
+    "none": "\"{query}\" से कोई पुर्ज़ा नहीं मिलता।",
+    "empty": {
+      "title": "लाइब्रेरी में इस तरह का कोई पुर्ज़ा अभी नहीं है",
+      "body": "पुर्ज़ा फ़ॉर्म से एक जोड़ें, फिर उसे यहाँ चुनें।"
+    },
+    "flag": {
+      "cellsOverMotor": "{max}S या कम चाहिए",
+      "propOverFrame": "प्रोपेलर उस {maxIn} इंच से बड़ा है जो यह फ्रेम लेता है",
+      "escVolts": "{max} V के लिए बना है, पैक से कम",
+      "missing": "{path} नहीं है"
+    },
+    "price": "{amount} {currency}, {date} तक",
+    "priceEstimate": "{amount} {currency}, अनुमान, {date} तक"
+  }
+}

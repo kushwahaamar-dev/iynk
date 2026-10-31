@@ -1,1 +1,31 @@
-{}
+{
+  "picker": {
+    "role": {
+      "motor": "Motoren",
+      "prop": "Propeller",
+      "esc": "ESCs",
+      "battery": "Akkus",
+      "frame": "Rahmen",
+      "fc": "Flugcontroller"
+    },
+    "search": "{role} durchsuchen",
+    "list": "{role}",
+    "results": {
+      "one": "{count} Teil",
+      "other": "{count} Teile"
+    },
+    "none": "Kein Teil passt zu \"{query}\".",
+    "empty": {
+      "title": "Noch keine Teile dieser Art in der Bibliothek",
+      "body": "Lege eines mit dem Teileformular an und wähle es dann hier."
+    },
+    "flag": {
+      "cellsOverMotor": "Braucht {max}S oder weniger",
+      "propOverFrame": "Propeller ist größer als die {maxIn} Zoll, die dieser Rahmen aufnimmt",
+      "escVolts": "Ausgelegt für {max} V, weniger als der Akku",
+      "missing": "Fehlt: {path}"
+    },
+    "price": "{amount} {currency}, Stand {date}",
+    "priceEstimate": "{amount} {currency}, Schätzung, Stand {date}"
+  }
+}

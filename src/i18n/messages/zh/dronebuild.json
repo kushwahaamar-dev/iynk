@@ -1,1 +1,31 @@
-{}
+{
+  "picker": {
+    "role": {
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "电调",
+      "battery": "电池",
+      "frame": "机架",
+      "fc": "飞控"
+    },
+    "search": "搜索{role}",
+    "list": "{role}",
+    "results": {
+      "one": "{count} 个零件",
+      "other": "{count} 个零件"
+    },
+    "none": "没有零件匹配“{query}”。",
+    "empty": {
+      "title": "库里还没有这类零件",
+      "body": "用零件录入表单添加一个，然后在这里选择。"
+    },
+    "flag": {
+      "cellsOverMotor": "最多 {max}S",
+      "propOverFrame": "螺旋桨大于此机架可装的 {maxIn} 英寸",
+      "escVolts": "额定 {max} V，低于电池电压",
+      "missing": "缺少 {path}"
+    },
+    "price": "{amount} {currency}，截至 {date}",
+    "priceEstimate": "{amount} {currency}，估计值，截至 {date}"
+  }
+}

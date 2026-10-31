@@ -1,1 +1,31 @@
-{}
+{
+  "picker": {
+    "role": {
+      "motor": "Motors",
+      "prop": "Props",
+      "esc": "ESCs",
+      "battery": "Batteries",
+      "frame": "Frames",
+      "fc": "Flight controllers"
+    },
+    "search": "Search {role}",
+    "list": "{role}",
+    "results": {
+      "one": "{count} part",
+      "other": "{count} parts"
+    },
+    "none": "No part matches \"{query}\".",
+    "empty": {
+      "title": "No parts of this kind in the library yet",
+      "body": "Add one with the part entry form, then pick it here."
+    },
+    "flag": {
+      "cellsOverMotor": "Needs {max}S or fewer",
+      "propOverFrame": "Prop is larger than the {maxIn} in this frame takes",
+      "escVolts": "Rated for {max} V, below the pack",
+      "missing": "Missing {path}"
+    },
+    "price": "{amount} {currency}, as of {date}",
+    "priceEstimate": "{amount} {currency}, estimate as of {date}"
+  }
+}
