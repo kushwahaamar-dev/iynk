@@ -87,5 +87,99 @@
       "noResult": "Aucun résultat"
     },
     "unverified": "Référence non vérifiée"
+  },
+  "proposal": {
+    "title": {
+      "fix": "Correction proposée",
+      "scaffold": "Circuit de départ proposé",
+      "explore": "Une piste à essayer"
+    },
+    "base": "Établi à partir de la révision {rev}",
+    "changedSince": "Le projet a changé à la révision {rev}",
+    "step": "Étape {n} : {label}",
+    "risk": {
+      "0": "Disposition seulement",
+      "1": "Ajoute ou modifie",
+      "2": "Supprime ou remplace"
+    },
+    "confirmStep": "Je comprends que cela supprime {components} composants et {wires} fils, et détache {pins} broches",
+    "accept": "Tout accepter",
+    "acceptSome": "Accepter les étapes choisies",
+    "acceptAnyway": "Accepter quand même",
+    "reject": "Refuser",
+    "undo": "Annuler cette proposition",
+    "accepted": "Acceptée",
+    "rejected": "Refusée",
+    "stale": "Cette proposition est périmée. Des parties du projet qu'elle modifie ont été éditées après sa création.",
+    "redo": "Demande au partenaire de la refaire sur le projet actuel",
+    "refreshed": "L'aperçu a changé. Vérifie-le, puis appuie de nouveau sur Accepter.",
+    "failing": "Les vérifications échouent après ce changement",
+    "checks": {
+      "rules": "Vérification des règles",
+      "compile": "Compilation",
+      "tests": "Tests",
+      "run": "Courte exécution"
+    },
+    "skipped": "Non exécuté : {reason}",
+    "netLine": "{net} : {change}",
+    "fileLine": "{path} : +{added} −{removed}",
+    "taint": "Faite après lecture de : {sources}",
+    "tainted": "Ce tour a lu du texte venant de l'extérieur de ton projet. Afficher la proposition ?",
+    "show": "Afficher la proposition",
+    "explainOnly": "Je n'ai pas pu faire de changement valide. Voici ce que j'essaierais :",
+    "forbidden": "Le partenaire ne peut pas proposer ce changement.",
+    "list": "Propositions",
+    "empty": "Aucune proposition pour l'instant.",
+    "model": "{model}, mode {mode}",
+    "tier": "Fidélité des nouveaux composants : {tier}",
+    "announce": {
+      "open": "Une proposition est prête à être examinée.",
+      "accepted": "Proposition acceptée. Une seule annulation la défait.",
+      "rejected": "Proposition refusée.",
+      "stale": "La proposition est périmée."
+    }
+  },
+  "mode": {
+    "label": "Mode",
+    "socratic": "Socratique",
+    "beginner": "Débutant",
+    "direct": "Direct",
+    "debugging": "Débogage",
+    "advanced": "Avancé",
+    "hint": {
+      "socratic": "Questions et indices, pas de réponse tant que tu n'en demandes pas",
+      "beginner": "Termes expliqués, une idée à la fois",
+      "direct": "La réponse ou le changement d'abord",
+      "debugging": "Part des preuves, puis le plus petit correctif",
+      "advanced": "Compromis, marges et hypothèses"
+    },
+    "switched": "Le mode est {mode} dès le prochain message"
+  },
+  "ladder": {
+    "label": "Indices",
+    "another": "Un autre indice",
+    "show": "Montre-moi",
+    "fixIt": "Corrige",
+    "apply": "Applique",
+    "level": "Indice {level} sur 3",
+    "holdMe": "Me demander de confirmer avant Montre-moi",
+    "confirmShow": "Montrer la cause et le correctif maintenant ?",
+    "codeWithheld": "Code masqué. Demande « Montre-moi » pour le voir."
+  },
+  "scaffold": {
+    "prompt": "Décris le circuit que tu veux",
+    "tier": "Les nouveaux composants sont modélisés au niveau {tier}",
+    "checks": "A passé la vérification des règles avant que tu le voies"
+  },
+  "draft": {
+    "title": "Brouillon de message à un ami",
+    "buddy": "À",
+    "copy": "Copier",
+    "copied": "Copié",
+    "addLink": "Ajouter un lien de partage",
+    "noLink": "Les liens de partage ont besoin de ton serveur.",
+    "send": "Envoyer à {name}",
+    "sentByYou": "Rien n'est envoyé tant que tu n'appuies pas sur Envoyer.",
+    "noBuddies": "Tu n'as pas encore d'amis. Copie le texte et envoie-le à ta façon."
   }
 }

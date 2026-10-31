@@ -87,5 +87,99 @@
       "noResult": "Sin resultado"
     },
     "unverified": "Referencia sin verificar"
+  },
+  "proposal": {
+    "title": {
+      "fix": "Arreglo propuesto",
+      "scaffold": "Circuito inicial propuesto",
+      "explore": "Algo que probar"
+    },
+    "base": "Hecho a partir de la revisión {rev}",
+    "changedSince": "El proyecto cambió en la revisión {rev}",
+    "step": "Paso {n}: {label}",
+    "risk": {
+      "0": "Solo disposición",
+      "1": "Añade o edita",
+      "2": "Quita o reemplaza"
+    },
+    "confirmStep": "Entiendo que esto quita {components} piezas, {wires} cables y desconecta {pins} pines",
+    "accept": "Aceptar todo",
+    "acceptSome": "Aceptar los pasos elegidos",
+    "acceptAnyway": "Aceptar de todos modos",
+    "reject": "Rechazar",
+    "undo": "Deshacer esta propuesta",
+    "accepted": "Aceptada",
+    "rejected": "Rechazada",
+    "stale": "Esta propuesta está desactualizada. Partes del proyecto que cambia se editaron después de crearla.",
+    "redo": "Pide al compañero que lo rehaga sobre el proyecto actual",
+    "refreshed": "La vista previa cambió. Revísala y vuelve a pulsar Aceptar.",
+    "failing": "Las comprobaciones fallan tras este cambio",
+    "checks": {
+      "rules": "Comprobación de reglas",
+      "compile": "Compilación",
+      "tests": "Pruebas",
+      "run": "Ejecución corta"
+    },
+    "skipped": "No se ejecutó: {reason}",
+    "netLine": "{net}: {change}",
+    "fileLine": "{path}: +{added} −{removed}",
+    "taint": "Hecho tras leer: {sources}",
+    "tainted": "Este turno leyó texto de fuera de tu proyecto. ¿Mostrar la propuesta?",
+    "show": "Mostrar la propuesta",
+    "explainOnly": "No pude hacer un cambio válido. Esto es lo que probaría:",
+    "forbidden": "El compañero no puede proponer ese cambio.",
+    "list": "Propuestas",
+    "empty": "Aún no hay propuestas.",
+    "model": "{model}, modo {mode}",
+    "tier": "Fidelidad de las piezas nuevas: {tier}",
+    "announce": {
+      "open": "Hay una propuesta lista para revisar.",
+      "accepted": "Propuesta aceptada. Un solo deshacer la revierte.",
+      "rejected": "Propuesta rechazada.",
+      "stale": "La propuesta está desactualizada."
+    }
+  },
+  "mode": {
+    "label": "Modo",
+    "socratic": "Socrático",
+    "beginner": "Principiante",
+    "direct": "Directo",
+    "debugging": "Depuración",
+    "advanced": "Avanzado",
+    "hint": {
+      "socratic": "Preguntas y pistas, sin respuesta hasta que la pidas",
+      "beginner": "Términos explicados, una idea a la vez",
+      "direct": "Primero la respuesta o el cambio",
+      "debugging": "Parte de la evidencia y luego el arreglo más pequeño",
+      "advanced": "Compromisos, márgenes y supuestos"
+    },
+    "switched": "El modo es {mode} desde el próximo mensaje"
+  },
+  "ladder": {
+    "label": "Pistas",
+    "another": "Otra pista",
+    "show": "Muéstrame",
+    "fixIt": "Arréglalo",
+    "apply": "Aplícalo",
+    "level": "Pista {level} de 3",
+    "holdMe": "Pídeme confirmar antes de Muéstrame",
+    "confirmShow": "¿Mostrar ahora la causa y el arreglo?",
+    "codeWithheld": "Código oculto. Pide “Muéstrame” para verlo."
+  },
+  "scaffold": {
+    "prompt": "Describe el circuito que quieres",
+    "tier": "Las piezas nuevas se modelan a nivel {tier}",
+    "checks": "Pasó la comprobación de reglas antes de que lo vieras"
+  },
+  "draft": {
+    "title": "Borrador de mensaje para un colega",
+    "buddy": "Para",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "addLink": "Añadir un enlace para compartir",
+    "noLink": "Los enlaces para compartir necesitan tu servidor.",
+    "send": "Enviar a {name}",
+    "sentByYou": "No se envía nada hasta que pulses Enviar.",
+    "noBuddies": "Aún no tienes colegas. Copia el texto y envíalo a tu manera."
   }
 }

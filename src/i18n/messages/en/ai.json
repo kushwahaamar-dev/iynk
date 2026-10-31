@@ -87,5 +87,99 @@
       "noResult": "No result"
     },
     "unverified": "Unverified reference"
+  },
+  "proposal": {
+    "title": {
+      "fix": "Proposed fix",
+      "scaffold": "Proposed starting circuit",
+      "explore": "Something to try"
+    },
+    "base": "Made from revision {rev}",
+    "changedSince": "The project changed at revision {rev}",
+    "step": "Step {n}: {label}",
+    "risk": {
+      "0": "Layout only",
+      "1": "Adds or edits",
+      "2": "Removes or replaces"
+    },
+    "confirmStep": "I understand this removes {components} parts, {wires} wires and detaches {pins} pins",
+    "accept": "Accept all",
+    "acceptSome": "Accept selected steps",
+    "acceptAnyway": "Accept anyway",
+    "reject": "Reject",
+    "undo": "Undo this proposal",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "stale": "This proposal is out of date. Parts of the project it changes were edited after it was made.",
+    "redo": "Ask the partner to redo this on the current project",
+    "refreshed": "The preview changed. Check it, then press Accept again.",
+    "failing": "Checks fail after this change",
+    "checks": {
+      "rules": "Rules check",
+      "compile": "Compile",
+      "tests": "Tests",
+      "run": "Short run"
+    },
+    "skipped": "Not run: {reason}",
+    "netLine": "{net}: {change}",
+    "fileLine": "{path}: +{added} −{removed}",
+    "taint": "Made after reading: {sources}",
+    "tainted": "This turn read text from outside your project. Show the proposal?",
+    "show": "Show the proposal",
+    "explainOnly": "I could not make a valid change. Here is what I would try:",
+    "forbidden": "That change is not something the partner can propose.",
+    "list": "Proposals",
+    "empty": "No proposals yet.",
+    "model": "{model}, {mode} mode",
+    "tier": "Fidelity of new parts: {tier}",
+    "announce": {
+      "open": "A proposal is ready to review.",
+      "accepted": "Proposal accepted. One undo reverses it.",
+      "rejected": "Proposal rejected.",
+      "stale": "Proposal is out of date."
+    }
+  },
+  "mode": {
+    "label": "Mode",
+    "socratic": "Socratic",
+    "beginner": "Beginner",
+    "direct": "Direct",
+    "debugging": "Debugging",
+    "advanced": "Advanced",
+    "hint": {
+      "socratic": "Questions and hints, no answer until you ask",
+      "beginner": "Terms explained, one idea at a time",
+      "direct": "The answer or the change first",
+      "debugging": "Works from the evidence, then a smallest fix",
+      "advanced": "Trade-offs, margins and assumptions"
+    },
+    "switched": "Mode is now {mode} from the next message"
+  },
+  "ladder": {
+    "label": "Hints",
+    "another": "Another hint",
+    "show": "Show me",
+    "fixIt": "Fix it",
+    "apply": "Apply it",
+    "level": "Hint level {level} of 3",
+    "holdMe": "Ask me to confirm before Show me",
+    "confirmShow": "Show the cause and the fix now?",
+    "codeWithheld": "Code withheld. Ask “Show me” to see it."
+  },
+  "scaffold": {
+    "prompt": "Describe the circuit you want",
+    "tier": "New parts are modelled at {tier}",
+    "checks": "Passed the rules check before you saw it"
+  },
+  "draft": {
+    "title": "Draft message to a buddy",
+    "buddy": "To",
+    "copy": "Copy",
+    "copied": "Copied",
+    "addLink": "Add a share link",
+    "noLink": "Share links need your server.",
+    "send": "Send to {name}",
+    "sentByYou": "Nothing is sent until you press Send.",
+    "noBuddies": "You have no buddies yet. Copy the text and send it your own way."
   }
 }
