@@ -128,7 +128,7 @@ describe("linkPartner", () => {
 
     vi.stubGlobal("navigator", { onLine: false });
     expect((await rig()).partner.status()).toBe("offline");
-    const local = await rig({ profile: { ...PROFILE, keyId: null, caps: { tools: true, parallelTools: false, usageInStream: true, promptCache: false, structuredOutput: false, contextTokens: 8_000, maxOutputTokens: 1_000, browserDirect: "yes", privacy: "local" } } });
+    const local = await rig({ profile: { ...PROFILE, keyId: null, caps: { tools: "native", parallelTools: false, usageInStream: true, promptCache: "none", structuredOutput: false, contextTokens: 8_000, maxOutputTokens: 1_000, browserDirect: "yes", privacy: "local" } } });
     expect(local.partner.status()).toBe("ready");
   });
 
