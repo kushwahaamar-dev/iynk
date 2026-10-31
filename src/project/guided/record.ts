@@ -22,6 +22,8 @@ export interface LearnerRecord {
   startedAt: string;
   /** Key: step index as a string. */
   steps: Record<string, { doneAt: string; by: "gate" | "manual" }>;
+  /** Lab parts that have no step index: "build", "test:<id>", "course:<id>", "task:<id>". */
+  items?: Record<string, { doneAt: string; by: "gate" | "manual" }>;
   /** testId -> checkId -> ok */
   lastRun?: { at: string; tier: Tier; tests: Record<string, Record<string, boolean>> };
   quiz: Record<string, { answers: Record<string, number>; correct: number; total: number }>;
@@ -59,6 +61,7 @@ export interface LessonRun {
 
 export const MAX_STEPS = 64;
 export const MAX_QUIZZES = 8;
+export const MAX_ITEMS = 128;
 
 export function emptyRecord(projectId: string, now: string, templateId?: string): LearnerRecord {
   const record: LearnerRecord = { v: 1, projectId, startedAt: now, steps: {}, quiz: {}, hintsMax: 0, picks: 0 };
@@ -73,6 +76,15 @@ export function withStep(r: LearnerRecord, index: number, by: "gate" | "manual",
   const key = String(index);
   if (r.steps[key]) return r;
   return { ...r, steps: { ...r.steps, [key]: { doneAt: now, by } } };
+}
+
+/** An item that is already done keeps its first stamp. */
+export function withItem(r: LearnerRecord, key: string, by: "gate" | "manual", now: string): LearnerRecord {
+  if (r.items?.[key]) return r;
+  if (Object.keys(r.items ?? {}).length >= MAX_ITEMS) {
+    throw new RangeError(`a record holds at most ${MAX_ITEMS} items`);
+  }
+  return { ...r, items: { ...r.items, [key]: { doneAt: now, by } } };
 }
 
 /** Only the first answer to a question counts towards `correct`; a later answer replaces the stored choice. */

@@ -2,7 +2,7 @@
 // settings together. Reads are cached by the raw string, so React's
 // useSyncExternalStore gets the same object until something is written.
 
-import { boardDone, facadeActive, learnStore, startLegacyImport } from "../learn/facade";
+import { boardDone, facadeActive, labDone, labQuiz, labsActive, learnStore, startLegacyImport } from "../learn/facade";
 
 export const STORAGE_KEY = "iynk:v1";
 export const STORAGE_VERSION = 1;
@@ -141,15 +141,21 @@ function readStored(): Saved {
 let overlay: { base: Saved; snapshot: ReadonlyMap<string, unknown>; saved: Saved } | null = null;
 
 /**
- * Once the import has run and the records are loaded, they answer for the board keys. The old keys stay in the
+ * Once the imports have run and the records are loaded, they answer for the board, bench and craft keys. The old keys stay in the
  * answer too, so a lesson whose template is missing never reads as not done.
  */
 export function getSaved(): Saved {
   const base = readStored();
-  if (!facadeActive()) return base;
+  const boards = facadeActive();
+  const labs = labsActive();
+  if (!boards && !labs) return base;
   const snapshot = learnStore().snapshot();
   if (overlay?.base === base && overlay.snapshot === snapshot) return overlay.saved;
-  const saved = { ...base, done: { ...base.done, ...boardDone(snapshot) } };
+  const saved = {
+    ...base,
+    done: { ...base.done, ...(boards ? boardDone(snapshot) : {}), ...(labs ? labDone(snapshot) : {}) },
+    quiz: labs ? labQuiz(snapshot, base.quiz) : base.quiz,
+  };
   overlay = { base, snapshot, saved };
   return saved;
 }
