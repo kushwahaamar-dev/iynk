@@ -57,3 +57,38 @@ describe("line follower template", () => {
     expect(run.diagnostics).toEqual([]);
   });
 });
+
+describe("drive base template", () => {
+  const doc = loadTemplate("drive-base");
+
+  it("passes the schema and the robotics cross-references", () => {
+    const report = validateValue(doc);
+    expect(report.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+    expect(validateRoboticsRefs(doc)).toEqual([]);
+  });
+
+  it("has no robot validator error", () => {
+    const errors = validateRobot(doc, { describe: describePart, dmath: Math }).filter((p) => p.severity === "error");
+    expect(errors).toEqual([]);
+  });
+
+  it("has five faults with registry cause ids, all off", () => {
+    const faults = doc.simulation.faults ?? [];
+    expect(faults.map((f) => f.cause_id).sort()).toEqual(["battery-sag-reset", "driver-undersized", "motor-direction-reversed", "motor-stall", "wheel-slip"]);
+    for (const fault of faults) {
+      expect(isCauseId(fault.cause_id), fault.cause_id).toBe(true);
+      expect(fault.enabled).toBe(false);
+    }
+  });
+
+  it("passes the robot checks", () => {
+    const checks = runChecks({ doc, describe: describePart, slopeDeg: 0, supplyV: 7.4 });
+    expect(checks.filter((c) => c.result === "fail")).toEqual([]);
+  });
+
+  it("compiles in the interpreter without a diagnostic", () => {
+    const source = doc.sources.find((s) => s.role === "firmware")!.content;
+    const run = createRun({ board: "uno-r3", source });
+    expect(run.diagnostics).toEqual([]);
+  });
+});
