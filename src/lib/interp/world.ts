@@ -2,6 +2,7 @@ import type { DeviceModel } from '@/content/schema';
 import { VirtualClock } from './clock';
 import { type BoardProfile, hasPwm } from './profiles';
 import type { I2CDevice } from './devices';
+import { createInterpBus, type InterpBus } from '@/sim/mcu/bus-port';
 
 type OnboardSensor = Extract<DeviceModel, { kind: 'onboard' }>['sensor'];
 
@@ -159,6 +160,14 @@ export class World {
   private readonly noise = new Map<number, Rng>();
   readonly pins = new Map<number, PinState>();
   readonly i2c = new Map<number, I2CDevice>();
+  readonly bus: InterpBus = createInterpBus({
+    nowUs: () => this.clock.now,
+    onEvent: (e) => {
+      if (e.kind === 'rise-time' || e.kind === 'spi-mode') this.warn(e.detail);
+    },
+  });
+  /** Who answers a library call: `library` devices the sketch attached, or only the devices wired in the netlist. */
+  deviceSource: 'library' | 'netlist' = 'library';
   /** Pending interrupt handlers, run by the interpreter between statements. */
   readonly irqQueue: Array<() => void> = [];
   private irqs: IrqHandler[] = [];
@@ -474,23 +483,29 @@ export class World {
 
   addDevice(dev: I2CDevice): void {
     this.i2c.set(dev.address, dev);
+    this.bus.attachLegacy(dev);
     dev.attach?.(this);
     this.touch();
   }
 
+  /** One I²C transaction on the bus model. The caller advances virtual time by `costUs`. */
+  i2cTransfer(addr7: number, write: number[], readN: number): ReturnType<InterpBus['i2c']> {
+    const result = this.bus.i2c(addr7, write, readN);
+    this.touch();
+    return result;
+  }
+
+  spiTransfer(byte: number): ReturnType<InterpBus['spi']> {
+    return this.bus.spi(byte);
+  }
+
   /** Write bytes to a device; returns false (NACK) when nothing answers. */
   i2cWrite(addr: number, bytes: number[]): boolean {
-    const d = this.i2c.get(addr);
-    if (!d) return false;
-    d.write(bytes);
-    this.touch();
-    return true;
+    return this.i2cTransfer(addr, bytes, 0).ack;
   }
 
   i2cRead(addr: number, n: number): number[] {
-    const d = this.i2c.get(addr);
-    if (!d) return [];
-    return d.read(n);
+    return this.i2cTransfer(addr, [], n).bytes;
   }
 
   // Wi-Fi -----------------------------------------------------------------------

@@ -761,13 +761,21 @@ const StringClass: LibClass = {
   },
 };
 
+/** Wire.endTransmission() return codes: 0 ok, 2 NACK on address, 3 NACK on data, 4 other. */
+const WIRE_STATUS = { ok: 0, 'nack-address': 2, 'nack-data': 3, 'stuck-low': 4 } as const;
 const TWI = { tx: -1, buf: [] as number[], rx: [] as number[] };
 const WireClass: LibClass = {
   headers: ['Wire.h'],
   create: () => ({ ...TWI, buf: [], rx: [] }),
   methods: {
     begin: { ret: 'void', fn: () => undefined },
-    setClock: { ret: 'void', fn: () => undefined },
+    setClock: {
+      ret: 'void',
+      fn: (rt, _self, [hz]) => {
+        const applied = rt.world.bus.setClock(hz);
+        if (applied !== Math.round(hz)) rt.warn(`Wire.setClock(${hz}) is outside what I²C allows: using ${applied} Hz`);
+      },
+    },
     beginTransmission: { ret: 'void', fn: (_rt, self, [addr]) => { self.tx = addr & 0x7f; self.buf = []; } },
     write: {
       ret: 'size_t',
@@ -783,15 +791,18 @@ const WireClass: LibClass = {
     endTransmission: {
       ret: 'uint8_t',
       fn: (rt, self) => {
-        const ok = rt.world.i2cWrite(self.tx, self.buf);
+        const r = rt.world.i2cTransfer(self.tx, self.buf, 0);
         self.buf = [];
-        return ok ? 0 : 2; // 2 = NACK on address
+        rt.advance(rt.world.now + r.costUs);
+        return WIRE_STATUS[r.error ?? 'ok'];
       },
     },
     requestFrom: {
       ret: 'uint8_t',
       fn: (rt, self, [addr, n]) => {
-        self.rx = rt.world.i2cRead(addr & 0x7f, n);
+        const r = rt.world.i2cTransfer(addr & 0x7f, [], n);
+        rt.advance(rt.world.now + r.costUs);
+        self.rx = r.bytes;
         return self.rx.length;
       },
     },
@@ -808,7 +819,17 @@ const SpiClass: LibClass = {
     end: { ret: 'void', fn: () => undefined },
     beginTransaction: { ret: 'void', fn: () => undefined },
     endTransaction: { ret: 'void', fn: () => undefined },
-    transfer: { ret: 'uint8_t', fn: () => { throw notModelled('SPI.transfer()', 'bus-device-not-modelled', null); } },
+    transfer: {
+      ret: 'uint8_t',
+      fn: (rt, _self, [v]) => {
+        const r = rt.world.spiTransfer(v & 0xff);
+        if ('notModelled' in r) {
+          throw notModelled('SPI.transfer()', r.causeId, null, 'No device is selected on this bus (SPI devices are not modelled yet). Add a chip-select pin and a part that has an SPI model, or use I²C.');
+        }
+        rt.advance(rt.world.now + r.costUs);
+        return r.byte;
+      },
+    },
     setClockDivider: { ret: 'void', fn: () => undefined },
   },
 };

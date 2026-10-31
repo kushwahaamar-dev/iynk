@@ -357,16 +357,26 @@ export function installModules(rt: PyRt, onRos: (m: RosMessage) => void): void {
       const v = 0.706 - ((w.onboard.get('temperature') ?? 24) - 27) * 0.001721;
       return Math.max(0, Math.min(4095, Math.round((v / 3.3) * 4095)));
     };
+    /** One bus transaction that takes the time it would on the wire. */
+    const i2cTransfer = (addr: PyValue, write: number[], readN: number) => {
+      const r = w.i2cTransfer(Number(toBig(addr)), write, readN);
+      rt.advance(w.now + r.costUs);
+      return r;
+    };
     const I2C = nclass('I2C', {
       __init__: (self) => { self.native = {}; return null; },
-      scan: () => new PyList([...w.i2c.keys()].sort((a, b) => a - b).map((a) => BigInt(a))),
-      writeto: (_s, [addr, buf]) => { if (!w.i2cWrite(Number(toBig(addr)), bytesOf(buf))) throw pyErr('OSError', '[Errno 5] EIO'); return BigInt(bytesOf(buf).length); },
-      readfrom: (_s, [addr, n]) => new PyBytes(w.i2cRead(Number(toBig(addr)), Number(toBig(n)))),
-      writeto_mem: (_s, [addr, reg, buf]) => { if (!w.i2cWrite(Number(toBig(addr)), [Number(toBig(reg)), ...bytesOf(buf)])) throw pyErr('OSError', '[Errno 5] EIO'); return null; },
+      scan: () => {
+        const found: bigint[] = [];
+        for (let a = 0x08; a < 0x78; a++) if (i2cTransfer(BigInt(a), [], 0).ack) found.push(BigInt(a));
+        return new PyList(found);
+      },
+      writeto: (_s, [addr, buf]) => { if (!i2cTransfer(addr, bytesOf(buf), 0).ack) throw pyErr('OSError', '[Errno 5] EIO'); return BigInt(bytesOf(buf).length); },
+      readfrom: (_s, [addr, n]) => new PyBytes(i2cTransfer(addr, [], Number(toBig(n))).bytes),
+      writeto_mem: (_s, [addr, reg, buf]) => { if (!i2cTransfer(addr, [Number(toBig(reg)), ...bytesOf(buf)], 0).ack) throw pyErr('OSError', '[Errno 5] EIO'); return null; },
       readfrom_mem: (_s, [addr, reg, n]) => {
-        const a = Number(toBig(addr));
-        if (!w.i2cWrite(a, [Number(toBig(reg))])) throw pyErr('OSError', '[Errno 5] EIO');
-        return new PyBytes(w.i2cRead(a, Number(toBig(n))));
+        const r = i2cTransfer(addr, [Number(toBig(reg))], Number(toBig(n)));
+        if (!r.ack) throw pyErr('OSError', '[Errno 5] EIO');
+        return new PyBytes(r.bytes);
       },
     });
     const bytesOf = (b: PyValue): number[] => (b instanceof PyBytes ? b.data : [...rt.iter(b)].map((x) => Number(toBig(x)) & 255));
