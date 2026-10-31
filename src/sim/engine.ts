@@ -1,5 +1,6 @@
 import type { ClockRate, SimTime } from "./core/clock.ts";
 import type { SimDiagnostic } from "./core/diagnostic.ts";
+import type { FaultState } from "./faults/types.ts";
 
 export type { SimDiagnostic, SolveDiagnostic } from "./core/diagnostic.ts";
 
@@ -88,6 +89,7 @@ export interface SimPart {
   params: Record<string, number | string | boolean>;
   pins: Record<string, string | null>;
   kind: PartKind;
+  faults?: FaultState[];
 }
 
 export type PartKind = "board" | "led" | "resistor" | "button" | "buzzer" | "pot" | "display" | "other";
