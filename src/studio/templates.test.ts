@@ -116,6 +116,7 @@ describe("module graph", () => {
   it("never reaches the catalogue converter or lesson content", () => {
     const source = readFileSync(join(__dirname, "templates.ts"), "utf8");
     expect(source).not.toMatch(/project\/convert/);
-    expect(source).not.toMatch(/src\/content|@\/content|\/content\//);
+    // The lab template sets at the repository root (`../../content/projects`) are the one content import it has; lesson content is src/content.
+    expect(source).not.toMatch(/src\/content|@\/content|["']\.\.\/content/);
   });
 });
