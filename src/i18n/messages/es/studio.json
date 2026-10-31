@@ -790,5 +790,8 @@
       "active": "Fallo activo",
       "notModelled": "Aún no modelado en Studio: {title}"
     }
+  },
+  "lab": {
+    "roomLinkNote": "Este era un enlace de sala. Las salas necesitan un servidor y ahora viven en Studio, así que el laboratorio se abre solo."
   }
 }

@@ -790,5 +790,8 @@
       "active": "Panne active",
       "notModelled": "Pas encore modélisé dans Studio : {title}"
     }
+  },
+  "lab": {
+    "roomLinkNote": "C'était un lien de salle. Les salles ont besoin d'un serveur et vivent désormais dans Studio, alors le labo s'ouvre seul."
   }
 }

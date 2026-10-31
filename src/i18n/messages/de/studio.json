@@ -790,5 +790,8 @@
       "active": "Fehler aktiv",
       "notModelled": "In Studio noch nicht modelliert: {title}"
     }
+  },
+  "lab": {
+    "roomLinkNote": "Das war ein Raumlink. Räume brauchen einen Server und leben jetzt im Studio, deshalb öffnet sich das Labor allein."
   }
 }

@@ -790,5 +790,8 @@
       "active": "Fault on",
       "notModelled": "Not modelled in Studio yet: {title}"
     }
+  },
+  "lab": {
+    "roomLinkNote": "This was a room link. Rooms need a server and live in Studio now, so the lab opens on its own."
   }
 }

@@ -790,5 +790,8 @@
       "active": "故障已开启",
       "notModelled": "Studio 中尚未建模：{title}"
     }
+  },
+  "lab": {
+    "roomLinkNote": "这是一个房间链接。房间需要服务器，现在位于 Studio 中，所以实验室会单独打开。"
   }
 }

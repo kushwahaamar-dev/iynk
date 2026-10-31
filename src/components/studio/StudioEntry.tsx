@@ -13,9 +13,8 @@ import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import type { Actor } from "@/protocol";
 import { createTranslator } from "@/i18n/translate";
-import { cryptoRandom, newProjectId } from "@/core/ids";
-import { writeIynk } from "@/export/iynk";
-import { learnStore, startLegacyImport } from "@/lib/learn/facade";
+import { cryptoRandom } from "@/core/ids";
+import { startLegacyImport } from "@/lib/learn/facade";
 import { openDb } from "@/local/db";
 import { createIndexedDbPartsRepository, partKey } from "@/local/parts-store";
 import type { PartRecord, PartsRepository } from "@/local/parts-store";
@@ -23,18 +22,16 @@ import { getAppRegistry } from "@/parts/builtin";
 import { digestOf } from "@/parts/descriptor";
 import type { Descriptor, DescriptorOrigin, Trust } from "@/parts/descriptor";
 import { partFacts } from "@/parts/facts";
-import { chainStart, stateHash } from "@/project/hash";
-import { emptyRecord } from "@/project/guided/record";
 import { DMATH_VERSION } from "@/sim/core/dmath";
 import { makeModelEnv } from "@/sim/models/kinds";
 import { createSession, type ProjectSession } from "@/project/session";
 import { registerCommand, runCommand, type CommandCtx } from "@/studio/commands";
 import { navigate, parseHash, readRoute, routeHash, subscribeRoute, type PartsRoute, type StudioRoute } from "@/studio/router";
-import { LOCAL_ACTOR, openTemplate } from "@/studio/templates";
 import { createDocStore, type DocStore } from "@/studio/stores/doc";
-import { TEMPLATES, loadTemplate } from "../../../content/projects";
-import { forksOf, progressOf, tierOf, useLearnSnapshot } from "./guide/lessonProgress";
+import { TEMPLATES } from "../../../content/projects";
+import { progressOf, tierOf, useLearnSnapshot } from "./guide/lessonProgress";
 import { Home } from "./Home";
+import { LabHost, labEntryOf } from "./lab/LabHost";
 import { PartPage } from "./PartPage";
 import { BannerArea } from "./room/BannerArea";
 import { sendCommand } from "./room/BatonControl";
@@ -47,6 +44,7 @@ import { ShareDialog } from "./ShareDialog";
 import { TemplateGallery } from "./TemplateGallery";
 import { Workspace } from "./Workspace";
 import { ServicesProvider, useServices } from "./wiring/services";
+import { openTemplateProject } from "./wiring/templateProject";
 import { setRunTarget } from "./wiring/simLink";
 
 const Diagnostics = dynamic(() => import("./Diagnostics").then((m) => m.Diagnostics), {
@@ -190,39 +188,15 @@ function LessonsRoute({ messages, lang }: { messages: StudioMessages; lang: Loca
 
 /** Opens the learner's copy of a template, making it on the first visit, and goes on to the project. */
 function TemplateRoute({ route, messages }: { route: Extract<StudioRoute, { kind: "template" }>; messages: StudioMessages }) {
-  const { library, files } = useServices();
+  const services = useServices();
   const [failed, setFailed] = useState(false);
-  const opening = useRef<ReturnType<typeof openTemplate> | null>(null);
+  const opening = useRef<Promise<string> | null>(null);
 
   useEffect(() => {
     let live = true;
-    const store = learnStore();
-    opening.current ??= openTemplate(route.id, {
-      newId: () => newProjectId(Date.now(), cryptoRandom),
-      now: () => new Date().toISOString(),
-      actor: LOCAL_ACTOR,
-      genesis: chainStart,
-      stateHash,
-      load: loadTemplate,
-      library: {
-        async create(project) {
-          const outcome = await files.importBytes(writeIynk(project), `${project.meta.title}.iynk`);
-          if (!outcome.ok) throw new Error(outcome.error.message);
-          return outcome.id;
-        },
-      },
-      async findFork(templateId) {
-        await store.ready;
-        const alive = new Set((await library.list()).map((row) => row.id));
-        return forksOf(store.snapshot(), templateId).find((id) => alive.has(id));
-      },
-    });
+    opening.current ??= openTemplateProject(route.id, services);
     opening.current.then(
-      ({ projectId, created }) => {
-        if (created) {
-          const at = new Date().toISOString();
-          store.update(projectId, (r) => r ?? emptyRecord(projectId, at, route.id), at);
-        }
+      (projectId) => {
         if (live) navigate({ kind: "project", id: projectId, autorun: route.run }, "replace");
       },
       () => live && setFailed(true),
@@ -230,7 +204,7 @@ function TemplateRoute({ route, messages }: { route: Extract<StudioRoute, { kind
     return () => {
       live = false;
     };
-  }, [route, files, library]);
+  }, [route, services]);
 
   const { workspace } = messages.studio;
   if (failed) {
@@ -252,6 +226,43 @@ function TemplateRoute({ route, messages }: { route: Extract<StudioRoute, { kind
       <Skeleton className="h-96 w-full" />
     </div>
   );
+}
+
+/** The bench or craft template a stored project was forked from; null for any other project, undefined while it is read. */
+function useLabTemplateOf(projectId: string): string | null | undefined {
+  const { host } = useServices();
+  const [found, setFound] = useState<{ projectId: string; template: string | null } | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    host.load(projectId).then(
+      ({ state }) => {
+        const origin = state?.provenance.origin;
+        const forked = state && (state.meta.kind === "bench" || state.meta.kind === "craft") && origin?.kind === "fork" ? origin.project : null;
+        if (live) setFound({ projectId, template: forked !== null && labEntryOf(forked) ? forked : null });
+      },
+      () => live && setFound({ projectId, template: null }),
+    );
+    return () => {
+      live = false;
+    };
+  }, [host, projectId]);
+
+  return found?.projectId === projectId ? found.template : undefined;
+}
+
+/** A bench or craft project opens in the lab host, any other project in the editor. */
+function ProjectRoute({ route, messages, lang, onCtx }: { route: Extract<StudioRoute, { kind: "project" }>; messages: StudioMessages; lang: Locale; onCtx: (ctx: CommandCtx | null) => void }) {
+  const lab = useLabTemplateOf(route.id);
+  if (lab === undefined) {
+    return (
+      <div role="status" aria-busy="true" aria-label={messages.studio.workspace.loading} className="p-4">
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+  if (lab !== null) return <LabHost templateId={lab} lang={lang} view={route.view === "fly" ? "fly" : "workshop"} messages={messages} />;
+  return <Workspace projectId={route.id} autorun={route.autorun} messages={messages} lang={lang} onCtx={onCtx} />;
 }
 
 export function StudioEntry(props: StudioEntryProps) {
@@ -394,9 +405,13 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
           ) : route.kind === "lessons" ? (
             <LessonsRoute messages={messages} lang={lang} />
           ) : route.kind === "template" ? (
-            <TemplateRoute key={routeHash(route)} route={route} messages={messages} />
+            labEntryOf(route.id) ? (
+              <LabHost key={route.id} templateId={route.id} lang={lang} messages={messages} />
+            ) : (
+              <TemplateRoute key={routeHash(route)} route={route} messages={messages} />
+            )
           ) : route.kind === "project" ? (
-            <Workspace projectId={route.id} autorun={route.autorun} messages={messages} lang={lang} onCtx={setCtx} />
+            <ProjectRoute route={route} messages={messages} lang={lang} onCtx={setCtx} />
           ) : (
             <>
               <Home

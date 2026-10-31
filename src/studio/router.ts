@@ -2,7 +2,7 @@ export type PartsRoute = { kind: "parts-new" } | { kind: "parts-edit"; key: stri
 
 export type StudioRoute =
   | { kind: "home" }
-  | { kind: "project"; id: string; autorun: boolean }
+  | { kind: "project"; id: string; autorun: boolean; view?: "fly" }
   | { kind: "lessons" }
   | { kind: "template"; id: string; run: boolean }
   | { kind: "join"; room: string; token: string }
@@ -12,7 +12,7 @@ export type StudioRoute =
 
 const HOME: StudioRoute = { kind: "home" };
 const PART_PAGE = /^#\/parts\/(edit|info)\/([a-z0-9][a-z0-9.-]{0,79}@[0-9]+\.[0-9]+\.[0-9]+)$/;
-const PROJECT = /^#\/(prj_[a-z0-9][a-z0-9_-]{0,63})(?:\?(.*))?$/;
+const PROJECT = /^#\/(prj_[a-z0-9][a-z0-9_-]{0,63})(\/fly)?(?:\?(.*))?$/;
 const TEMPLATE = /^#\/t\/(prj_[a-z0-9][a-z0-9_-]{0,63})(?:\?(.*))?$/;
 const LESSONS = "#/lessons";
 const SHARED = "#share-open";
@@ -30,7 +30,7 @@ export function parseHash(hash: string): StudioRoute {
   if (template) return { kind: "template", id: template[1], run: new URLSearchParams(template[2]).get("run") === "1" };
   const match = PROJECT.exec(hash);
   if (!match) return HOME;
-  return { kind: "project", id: match[1], autorun: new URLSearchParams(match[2]).get("run") === "1" };
+  return { kind: "project", id: match[1], autorun: new URLSearchParams(match[3]).get("run") === "1", ...(match[2] ? { view: "fly" as const } : {}) };
 }
 
 /** A join route prints as home: the invite token is read once from the address bar and never written back. A shared route prints as the marker that replaces the share fragment. */
@@ -42,7 +42,7 @@ export function routeHash(route: StudioRoute): string {
   if (route.kind === "lessons") return LESSONS;
   if (route.kind === "template") return `#/t/${route.id}${route.run ? "?run=1" : ""}`;
   if (route.kind !== "project") return "#/";
-  return `#/${route.id}${route.autorun ? "?run=1" : ""}`;
+  return `#/${route.id}${route.view === "fly" ? "/fly" : ""}${route.autorun ? "?run=1" : ""}`;
 }
 
 let cached: { hash: string; route: StudioRoute } = { hash: "", route: HOME };
