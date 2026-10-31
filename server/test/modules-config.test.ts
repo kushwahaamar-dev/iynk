@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { PRESET_HOSTS } from "../../src/protocol/ai-presets.ts";
 import { ApiError } from "../src/http/errors.ts";
-import { moduleRoutes } from "../src/modules/index.ts";
 import { providerKey, requireEnabled } from "../src/modules/guard.ts";
 import { startApp, testConfig } from "./http-helpers.ts";
 
@@ -107,10 +106,13 @@ test("the probe follows the switches", async () => {
   }
 });
 
-test("no module routes are registered yet", async () => {
+test("the AI module registers the relay route, switched on or off", async () => {
   const running = await startApp();
   try {
-    assert.deepEqual(moduleRoutes({} as never), []);
+    assert.deepEqual(
+      running.app.routes.filter((route) => route.path.startsWith("/v1/ai/")).map((route) => `${route.method} ${route.path}`),
+      ["POST /v1/ai/relay"],
+    );
   } finally {
     await running.stop();
   }
