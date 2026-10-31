@@ -6,6 +6,7 @@ import { hasPwm, isKnownPin } from '../profiles';
 import type { ArduinoRt, Ref } from './interp';
 import { Bme280Class, SensorClass } from './lib-bme280';
 import { T, type CValue, type Ty, type TypeEnv } from './types';
+import { costUs } from '@/sim/mcu/cost-table';
 
 type Ret = string | ((ts: Ty[], env: TypeEnv) => Ty);
 
@@ -214,7 +215,22 @@ function* sleepMs(rt: ArduinoRt, ms: number): Gen<void> {
 }
 
 function serialObj() {
-  return { baud: 0, timeout: 1000 };
+  return { baud: 0, timeout: 1000, txFreeAt: 0 };
+}
+
+const AVR_TX_BUFFER = 64;
+
+/** Send text out of a serial port; on an AVR board the 64-byte buffer fills and the sketch waits for bytes to leave. */
+function serialSend(rt: ArduinoRt, self: Record<string, number>, s: string): void {
+  rt.world.print(s);
+  if (!self.baud || !isAvr(rt.world.profile)) return;
+  const byteUs = 1e7 / self.baud;
+  for (let i = 0; i < s.length; i++) {
+    const now = rt.world.now;
+    const queued = Math.max(0, Math.ceil((self.txFreeAt - now) / byteUs));
+    if (queued >= AVR_TX_BUFFER) rt.advance(self.txFreeAt - (AVR_TX_BUFFER - 1) * byteUs);
+    self.txFreeAt = Math.max(self.txFreeAt, rt.world.now) + byteUs;
+  }
 }
 
 // Builtin functions ----------------------------------------------------------------
@@ -232,9 +248,16 @@ export const BUILTINS: Record<string, Builtin> = {
         throw new InterpError('runtime', `INPUT_PULLDOWN does not exist on ${rt.world.profile.name}`, null, 'use INPUT with an external 10 kΩ resistor to GND, or INPUT_PULLUP');
       }
       rt.world.setMode(n, m);
+      rt.chargeUs(costUs('pinMode', rt.world.profile.id));
     },
   },
-  digitalWrite: { ret: 'void', min: 2, max: 2, fn: (rt, [pin, v]) => rt.world.digitalWrite(pinArg(rt, pin), v) },
+  digitalWrite: {
+    ret: 'void', min: 2, max: 2,
+    fn: (rt, [pin, v]) => {
+      rt.world.digitalWrite(pinArg(rt, pin), v);
+      rt.chargeUs(costUs('digitalWrite', rt.world.profile.id));
+    },
+  },
   digitalRead: {
     ret: 'int', min: 1, max: 1, pure: true,
     fn: (rt, [pin]) => {
@@ -243,6 +266,7 @@ export const BUILTINS: Record<string, Builtin> = {
         rt.warn(`${rt.world.pinName(n)} is analog only: digitalRead() always returns 0 there; use analogRead()`);
         return 0;
       }
+      rt.chargeUs(costUs('digitalRead', rt.world.profile.id));
       return rt.world.level(n);
     },
   },
@@ -262,6 +286,7 @@ export const BUILTINS: Record<string, Builtin> = {
           return 0;
         }
       }
+      rt.chargeUs(costUs('analogRead', p.id));
       return rt.world.analogRead(n);
     },
   },
@@ -288,6 +313,7 @@ export const BUILTINS: Record<string, Builtin> = {
       }
       const max = rt.objects.has('__pwmRange') ? (rt.objects.get('__pwmRange') as number) : (1 << rt.world.pwmBits) - 1;
       rt.world.analogWrite(n, Math.trunc(v), max, isAvr(p) && (n === 5 || n === 6) ? 980 : isAvr(p) ? 490 : isEsp(p) ? 1000 : 500);
+      rt.chargeUs(costUs('analogWrite', p.id));
     },
   },
   analogReadResolution: {
@@ -689,18 +715,18 @@ const SerialClass: LibClass = {
   methods: {
     begin: { ret: 'void', fn: (_rt, self, [baud]) => void (self.baud = baud) },
     end: { ret: 'void', fn: (_rt, self) => void (self.baud = 0) },
-    print: { ret: 'size_t', fn: (rt, _s, a, ts) => { const s = fmtArgs(rt, a, ts); rt.world.print(s); return s.length; } },
-    println: { ret: 'size_t', fn: (rt, _s, a, ts) => { const s = fmtArgs(rt, a, ts) + '\r\n'; rt.world.print(s); return s.length; } },
-    printf: { ret: 'size_t', min: 1, fn: (rt, _s, [fmt, ...rest], ts) => { const s = cFormat(String(fmt), rest, ts.slice(1)); rt.world.print(s); return s.length; } },
+    print: { ret: 'size_t', fn: (rt, self, a, ts) => { const s = fmtArgs(rt, a, ts); serialSend(rt, self, s); return s.length; } },
+    println: { ret: 'size_t', fn: (rt, self, a, ts) => { const s = fmtArgs(rt, a, ts) + '\r\n'; serialSend(rt, self, s); return s.length; } },
+    printf: { ret: 'size_t', min: 1, fn: (rt, self, [fmt, ...rest], ts) => { const s = cFormat(String(fmt), rest, ts.slice(1)); serialSend(rt, self, s); return s.length; } },
     write: {
       ret: 'size_t',
-      fn: (rt, _s, [v], ts) => {
+      fn: (rt, self, [v], ts) => {
         const s = ts[0].k === 'cstr' || ts[0].k === 'string' ? String(v) : ts[0].k === 'array' ? charsToString(v) : String.fromCharCode(v & 0xff);
-        rt.world.print(s);
+        serialSend(rt, self, s);
         return s.length;
       },
     },
-    flush: { ret: 'void', fn: () => undefined },
+    flush: { ret: 'void', fn: (rt, self) => { if (self.txFreeAt > rt.world.now) rt.advance(self.txFreeAt); } },
     available: { ret: 'int', pure: true, fn: (rt) => rt.world.serialAvailable() },
     availableForWrite: { ret: 'int', pure: true, fn: () => 63 },
     read: { ret: 'int', fn: (rt) => rt.world.serialRead() },

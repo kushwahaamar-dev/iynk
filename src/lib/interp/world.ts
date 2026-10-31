@@ -396,7 +396,9 @@ export class World {
       else return Math.floor(this.floatNoise(n).float() * max * 0.25 + max * 0.3);
     }
     if (this.damaged.has(n)) return 0;
-    if (solved !== null) return Math.max(0, Math.min(max, Math.floor((v * (max + 1)) / this.profile.adcVref)));
+    if (solved !== null || this.profile.id === 'uno-r3' || this.profile.id === 'nano') {
+      return Math.max(0, Math.min(max, Math.floor((v * (max + 1)) / this.profile.adcVref)));
+    }
     return Math.max(0, Math.min(max, Math.round((v / this.profile.adcVref) * max)));
   }
 

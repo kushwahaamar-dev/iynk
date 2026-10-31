@@ -61,6 +61,16 @@ export class Exec {
     return c.now >= this.target || this.ops >= this.opBudget;
   }
 
+  /** Charge extra simulated time for one call; returns true when the program should yield to the host. */
+  chargeUs(us: number): boolean {
+    if (us <= 0) return false;
+    const c = this.world.clock;
+    c.now += us;
+    if (c.next() <= c.now) c.fireDue();
+    if ((this.world.irqQueue.length || this.softQueue.length) && !this.inIsr) this.serviceIrqs();
+    return c.now >= this.target;
+  }
+
   /** Run interrupt handlers queued by pin edges and timers. */
   serviceIrqs(): void {
     if (this.inIsr) return;
