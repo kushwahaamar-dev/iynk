@@ -137,7 +137,7 @@ export function sceneHash(scene: SceneSpec): string {
   return fnv1a64(utf8Encode(canonicalize(scene)));
 }
 
-interface Geometry {
+export interface Geometry {
   collider?: ColliderShape;
   localPose: Pose;
   inertiaShape?: InertiaShape;
@@ -162,7 +162,7 @@ function colliderOfShape(shape: InertiaShape): Pick<Geometry, "collider" | "loca
 
 type Choice = BodyPhysics["collider"];
 
-function geometryOf(body: Body, choice: Choice): Geometry {
+export function geometryOf(body: Body, choice: Choice): Geometry {
   const none: Geometry = { localPose: ORIGIN, boxed: false, comM: [0, 0, 0] };
   let shape: InertiaShape | undefined;
   if (choice === "from-shape") {
@@ -190,7 +190,7 @@ function geometryOf(body: Body, choice: Choice): Geometry {
   return shape ? { ...none, ...colliderOfShape(shape), inertiaShape: shape } : none;
 }
 
-function thinnest(shape: InertiaShape): number {
+export function thinnest(shape: InertiaShape): number {
   switch (shape.kind) {
     case "box":
       return Math.min(...shape.size_mm);
