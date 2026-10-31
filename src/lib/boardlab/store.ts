@@ -98,7 +98,7 @@ export type BoardLabAction =
   | { type: 'checks/result'; results: CheckResult[]; limit?: boolean }
   | { type: 'assembly/done'; id: string }
   | { type: 'assembly/reset' }
-  /** A room hands a joiner the host's state (src/lib/realtime/store-sync.ts). */
+  /** A room hands a joiner the host's state (v1 rooms, removed by T-B13-11). */
   | { type: 'sync/hydrate'; state: unknown };
 
 /** The serial monitor keeps this many lines (the original kept 40). */

@@ -60,12 +60,6 @@
     "reason": "The avatar is a drawing, not an icon."
   },
   {
-    "file": "src/components/realtime/PresenceCursors.tsx",
-    "code": "R9",
-    "pattern": ".",
-    "reason": "The cursor arrow is a drawing, not an icon."
-  },
-  {
     "file": "src/components/studio/PartEditor.tsx",
     "code": "R9",
     "pattern": "^<svg\\b",
