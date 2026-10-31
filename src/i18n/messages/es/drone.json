@@ -16,5 +16,100 @@
     "SN-8": "Esta simulación es una herramienta didáctica, no un visto bueno oficial de un diseño. No predice que una aeronave real vaya a volar, ni a volar con seguridad.",
     "ack": "He leído esto",
     "acked": "Confirmado el {date}"
+  },
+  "numbers": {
+    "title": "Números",
+    "auw": "Peso",
+    "thrust": "Empuje por motor",
+    "tw": "Empuje sobre peso",
+    "hoverThrottle": "Acelerador en vuelo estacionario",
+    "hoverAmps": "Corriente en vuelo estacionario",
+    "maxAmps": "Corriente a pleno acelerador",
+    "endurance": "Tiempo de vuelo",
+    "na": "no disponible",
+    "notYet": "Aún sin calcular.",
+    "missing": "Necesita {paths}.",
+    "range": "{low} a {high} min",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} a 1",
+      "pct": "{value} %",
+      "a": "{value} A"
+    }
+  },
+  "band": {
+    "fit": "Dentro del rango de tus filas de la hoja de datos: unas 9 de cada 10 de tus filas caen dentro de esta banda. No dice nada sobre lo bien que las filas coinciden con una pieza real.",
+    "none": "No se dieron filas de la hoja de datos, así que no hay nada con qué comprobarlo.",
+    "outside": "Este montaje queda fuera del rango de tus filas de la hoja de datos, así que la banda no se aplica aquí.",
+    "short": {
+      "fit": "Banda de unos {value} %",
+      "none": "Sin datos para comprobar",
+      "outside": "Fuera de tus filas"
+    }
+  },
+  "check": {
+    "title": "Comprobaciones",
+    "none": "Aún no hay comprobaciones. Completa primero las piezas que faltan.",
+    "reading": "{value} {unit}",
+    "value": "Valor",
+    "limit": "Límite",
+    "part": "Pieza",
+    "formula": "Fórmula",
+    "assumptions": "Supuestos",
+    "state": {
+      "fail": "Fallo",
+      "warn": "Aviso",
+      "info": "Nota",
+      "ok": "Correcto"
+    },
+    "DB-C-01": {
+      "name": "Empuje sobre peso"
+    },
+    "DB-C-02": {
+      "name": "Acelerador en vuelo estacionario"
+    },
+    "DB-C-03": {
+      "name": "Corriente del ESC"
+    },
+    "DB-C-04": {
+      "name": "Corriente de la batería"
+    },
+    "DB-C-05": {
+      "name": "Límites de tensión"
+    },
+    "DB-C-06": {
+      "name": "Separación de hélices"
+    },
+    "DB-C-07": {
+      "name": "Tamaño de hélice para el chasis"
+    },
+    "DB-C-08": {
+      "name": "Centro de masa"
+    },
+    "DB-C-09": {
+      "name": "Tiempo de vuelo"
+    },
+    "DB-C-10": {
+      "name": "Tensión de celda bajo carga"
+    },
+    "DB-C-11": {
+      "name": "Equilibrio de guiñada"
+    },
+    "DB-C-12": {
+      "name": "Frecuencia del lazo de control"
+    },
+    "DB-C-13": {
+      "name": "Clase de peso"
+    },
+    "DB-C-14": {
+      "name": "Valores del fabricante"
+    }
+  },
+  "error": {
+    "DB-E-INERTIA": "La inercia de este montaje no es válida. Revisa las masas y posiciones de las piezas.",
+    "DB-E-MIXER": "El mezclador de motores no puede controlar todos los ejes. Revisa la posición y el giro de los motores.",
+    "DB-E-MIXER-YAW": "Los motores no pueden controlar la guiñada. Comprueba que los giros se alternen.",
+    "DB-E-FIELD": "Falta un valor: {path}.",
+    "DB-E-CHEMISTRY": "El modelo no conoce la química de la batería ({path})."
   }
 }
