@@ -37,6 +37,8 @@ export interface LibClass {
   boards?: (p: BoardProfile) => boolean;
   create: (rt: ArduinoRt, a: CValue[], ts: Ty[]) => CValue;
   methods: Record<string, LibMethod>;
+  /** Real methods of the library that the model lacks, so a call says so instead of reading as a typo. */
+  unmodelledMethods?: readonly string[];
   statics?: Record<string, number>;
   props?: Record<string, { ret: string; get: (rt: ArduinoRt, self: CValue) => CValue }>;
 }
@@ -1461,3 +1463,15 @@ export const GLOBAL_OBJECTS: Record<string, { cls: string; headers: string[] | n
 };
 
 export { T, hasPwm };
+
+/** Headers of the Arduino core and the C library that need no simulated library behind them. */
+const BUILTIN_HEADERS = ['Arduino.h', 'stdint.h', 'stdlib.h', 'string.h', 'math.h', 'stdio.h', 'avr/pgmspace.h', 'avr/io.h'];
+
+/** Headers a simulated library answers to, sorted. */
+export const LIBRARY_HEADERS: readonly string[] = [
+  ...new Set([...Object.values(LIBS).flatMap((l) => l.headers), ...Object.values(GLOBAL_OBJECTS).flatMap((g) => g.headers ?? [])]),
+].sort();
+
+export function knownHeaders(): Set<string> {
+  return new Set([...LIBRARY_HEADERS, ...BUILTIN_HEADERS]);
+}

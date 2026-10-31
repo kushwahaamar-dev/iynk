@@ -1,10 +1,10 @@
-import { InterpError, didYouMean, type SourcePos } from '../errors';
+import { InterpError, didYouMean, notModelled, type SourcePos } from '../errors';
 import { Exec, PREEMPT, type Gen, type Program } from '../exec';
 import { HeapMeter, checkElements, checkString } from '../limits';
 import type { World } from '../world';
 import { parseSketch, type Expr, type FuncDecl, type Stmt, type TypeSpec, type Unit } from './parser';
 import { T, TypeEnv, isNumeric, tyName, wrapper, type CValue, type Ty } from './types';
-import { BUILTINS, CONSTANTS, GLOBAL_OBJECTS, LIBS, charsToString, fmtValue, type Builtin } from './libs';
+import { BUILTINS, CONSTANTS, GLOBAL_OBJECTS, LIBRARY_HEADERS, LIBS, charsToString, fmtValue, knownHeaders, type Builtin } from './libs';
 
 /** A variable's storage location, passed for reference parameters and &x. */
 export interface Ref {
@@ -145,14 +145,7 @@ export interface CompiledSketch {
   unit: Unit;
 }
 
-/** Headers of the Arduino core and the C library that need no simulated library behind them. */
-const KNOWN_BUILTIN_HEADERS = ['Arduino.h', 'stdint.h', 'stdlib.h', 'string.h', 'math.h', 'stdio.h', 'avr/pgmspace.h', 'avr/io.h'];
-
-const LIBRARY_HEADERS: readonly string[] = [
-  ...new Set([...Object.values(LIBS).flatMap((l) => l.headers), ...Object.values(GLOBAL_OBJECTS).flatMap((g) => g.headers ?? [])]),
-].sort();
-
-export const ALLOWED_HEADERS: ReadonlySet<string> = new Set([...LIBRARY_HEADERS, ...KNOWN_BUILTIN_HEADERS]);
+export const ALLOWED_HEADERS: ReadonlySet<string> = knownHeaders();
 
 function checkIncludes(unit: Unit): void {
   for (const { name, line } of unit.includes) {
@@ -1180,6 +1173,7 @@ class Compiler {
       const lib = LIBS[obj.t.cls];
       const m = lib?.methods[name];
       if (!m) {
+        if (lib?.unmodelledMethods?.includes(name)) throw notModelled(`${obj.t.cls}.${name}()`, 'library-method-not-modelled', e.fn.p);
         const guess = lib ? didYouMean(name, Object.keys(lib.methods)) : undefined;
         this.err(`${obj.t.cls} has no method ${name}()`, e.fn.p, guess ? `did you mean ${guess}()?` : undefined);
       }
