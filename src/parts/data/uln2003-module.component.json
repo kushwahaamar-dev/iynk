@@ -1,0 +1,1129 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.uln2003-module",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "ULN2003 stepper driver board for the 28BYJ-48 (35 x 32 mm)",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "motor-driver",
+    "description": {
+      "en": "The small green board that ships with the 28BYJ-48 motor: a ULN2003 Darlington array, four inputs, four LEDs and a 5-pin socket for the motor."
+    },
+    "chip": {
+      "manufacturer": "generic",
+      "model": "ULN2003A",
+      "package": "DIP-16"
+    },
+    "primary_source": "facts",
+    "legacy_ids": [
+      "uln2003"
+    ],
+    "tags": [
+      "motor-driver",
+      "stepper",
+      "darlington",
+      "28byj-48",
+      "robotics",
+      "uln2003"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Fact sheet docs/facts/la-components.md",
+      "publisher": "iynk",
+      "reliability": "secondary",
+      "note": "Section 15.2 describes the board. It cites the ULN2003A datasheet, read by the fact-sheet author, not by this descriptor. The board size is marked unverified there, and the layout is read from product photos."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/uln2003.js: constants and model code",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "partjs",
+      "kind": "own-estimate",
+      "title": "figures/parts/uln2003.js: constants and model code",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "IN1",
+      "designator": "IN1",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 5.69,
+        "y": 4.2
+      },
+      "note": {
+        "en": "Drives output 1 through the chip's 2.7 kohm base resistor."
+      },
+      "connector": "IN"
+    },
+    {
+      "id": "IN2",
+      "designator": "IN2",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 8.23,
+        "y": 4.2
+      },
+      "connector": "IN"
+    },
+    {
+      "id": "IN3",
+      "designator": "IN3",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 10.77,
+        "y": 4.2
+      },
+      "connector": "IN"
+    },
+    {
+      "id": "IN4",
+      "designator": "IN4",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 13.31,
+        "y": 4.2
+      },
+      "connector": "IN"
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "Power ground"
+      },
+      "designator": "-",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 23.13,
+        "y": 4.2
+      },
+      "connector": "PWR"
+    },
+    {
+      "id": "VCC",
+      "name": {
+        "en": "Power input, 5 to 12 V"
+      },
+      "designator": "+",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 25.67,
+        "y": 4.2
+      },
+      "note": {
+        "en": "Reaches the motor socket and the clamp diodes only while the ON jumper cap is fitted."
+      },
+      "connector": "PWR"
+    },
+    {
+      "id": "OUT1",
+      "name": {
+        "en": "Motor socket pin 1, blue"
+      },
+      "designator": "OUT1",
+      "type": "open_drain",
+      "class": "power",
+      "position": {
+        "x": 12.5,
+        "y": 27.6
+      },
+      "connector": "MOTOR"
+    },
+    {
+      "id": "OUT2",
+      "name": {
+        "en": "Motor socket pin 2, pink"
+      },
+      "designator": "OUT2",
+      "type": "open_drain",
+      "class": "power",
+      "position": {
+        "x": 15,
+        "y": 27.6
+      },
+      "connector": "MOTOR"
+    },
+    {
+      "id": "OUT3",
+      "name": {
+        "en": "Motor socket pin 3, yellow"
+      },
+      "designator": "OUT3",
+      "type": "open_drain",
+      "class": "power",
+      "position": {
+        "x": 17.5,
+        "y": 27.6
+      },
+      "connector": "MOTOR"
+    },
+    {
+      "id": "OUT4",
+      "name": {
+        "en": "Motor socket pin 4, orange"
+      },
+      "designator": "OUT4",
+      "type": "open_drain",
+      "class": "power",
+      "position": {
+        "x": 20,
+        "y": 27.6
+      },
+      "connector": "MOTOR"
+    },
+    {
+      "id": "MOTOR_V",
+      "name": {
+        "en": "Motor socket pin 5, red (+)"
+      },
+      "designator": "+",
+      "type": "power_io",
+      "class": "power",
+      "position": {
+        "x": 22.5,
+        "y": 27.6
+      },
+      "note": {
+        "en": "Joined to the power input through the ON jumper cap."
+      },
+      "connector": "MOTOR"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "IN",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "IN1",
+        "IN2",
+        "IN3",
+        "IN4"
+      ]
+    },
+    {
+      "id": "PWR",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "GND",
+        "VCC"
+      ],
+      "note": {
+        "en": "Marked - and +."
+      }
+    },
+    {
+      "id": "MOTOR",
+      "kind": "other",
+      "gender": "female",
+      "pitch": 2.5,
+      "pins": [
+        "OUT1",
+        "OUT2",
+        "OUT3",
+        "OUT4",
+        "MOTOR_V"
+      ],
+      "note": {
+        "en": "White 5-pin JST-XH socket."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "module",
+    "body": {
+      "w": 35,
+      "h": 32,
+      "d": 12
+    },
+    "board": {
+      "w": 35,
+      "h": 32,
+      "thickness": 1.6,
+      "corner_radius": 1
+    },
+    "height_total": 12,
+    "accuracy": 1,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/modules/uln2003.js:91"
+    }
+  },
+  "ratings": {
+    "supply_range": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 5,
+        "max": 12,
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        },
+        "conditions": "The power header is marked 5 to 12 V."
+      },
+      "used_by_model": "none"
+    },
+    "output_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 50,
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        },
+        "conditions": "ULN2003A output voltage."
+      },
+      "used_by_model": "none"
+    },
+    "channel_current_peak": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 0.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        },
+        "conditions": "Peak collector current per channel."
+      },
+      "used_by_model": "none"
+    },
+    "base_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 2700,
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        },
+        "conditions": "Series base resistor inside the chip."
+      },
+      "used_by_model": "manufacturer"
+    },
+    "vce_sat": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 1,
+        "max": 1.3,
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        },
+        "conditions": "At 200 mA; 0.9 V typical and 1.1 V maximum at 100 mA."
+      },
+      "used_by_model": "simulation",
+      "simulation": {
+        "unit": "V",
+        "value": 1,
+        "confidence": "medium",
+        "derived_from": [
+          "vce_sat.manufacturer"
+        ],
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:40"
+        },
+        "rationale": {
+          "en": "The figure uses the 1 V typical value at every current."
+        }
+      }
+    },
+    "darlington_hfe": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 1000,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:40"
+        },
+        "rationale": {
+          "en": "Constant in figures/parts/uln2003.js:40, no source found. The figure comment says \"hFE about 1000\"."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "darlington_hfr": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 5,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:40"
+        },
+        "rationale": {
+          "en": "The reverse gain the solver uses when a transistor has none given (figures/engine/bench-solve.js:108). The chip's own value is not stated."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "darlington_vbe": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 1.4,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:40"
+        },
+        "rationale": {
+          "en": "Constant in figures/parts/uln2003.js:40, no source found. Two junction drops for a Darlington pair."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "clamp_diode_vf": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.7,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:41"
+        },
+        "rationale": {
+          "en": "The forward drop the solver fixes for every diode (figures/engine/bench-solve.js:104). The chip's clamp diode value is not stated."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "clamp_diode_rd": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 0.2,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:41"
+        },
+        "rationale": {
+          "en": "The slope resistance the solver fixes for every diode (figures/engine/bench-solve.js:104)."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "clamp_diode_imax": {
+      "measure": "current",
+      "role": "characteristic",
+      "scope": {
+        "layer": "channels"
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.5,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/uln2003.js:41"
+        },
+        "rationale": {
+          "en": "Constant in figures/parts/uln2003.js:41, no source found; it matches the 0.5 A channel peak."
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
+  "protocols": [
+    {
+      "id": "coil_drive",
+      "kind": "gpio",
+      "role": "peripheral",
+      "pins": {
+        "in1": "IN1",
+        "in2": "IN2",
+        "in3": "IN3",
+        "in4": "IN4"
+      },
+      "status": "not-modelled-yet"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "supply",
+        "pins": [
+          "VCC"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "supply_range",
+        "condition": "ON jumper cap fitted"
+      }
+    ],
+    "protection": [
+      {
+        "kind": "flyback",
+        "present": true,
+        "note": {
+          "en": "A clamp diode from every output to the common pin, which the board ties to +."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        }
+      },
+      {
+        "kind": "reverse-polarity",
+        "present": false,
+        "source": {
+          "src": "facts",
+          "loc": "section 15.2, ULN2003 driver board"
+        }
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "power_jumper",
+      "name": {
+        "en": "ON jumper cap"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": true,
+      "affects": [
+        "VCC",
+        "MOTOR_V"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "Each input drives one Darlington pair that pulls its output to ground, so the coil between + and that output is on. A clamp diode from every output to + carries the switch-off current."
+    },
+    "layers": [
+      {
+        "id": "channels",
+        "domain": "analog",
+        "reads": [
+          "IN1",
+          "IN2",
+          "IN3",
+          "IN4",
+          "VCC",
+          "power_jumper"
+        ],
+        "drives": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4"
+        ],
+        "summary": {
+          "en": "Four identical channels: a 2.7 kohm base resistor, a Darlington transistor and a clamp diode."
+        },
+        "model": {
+          "kind": "subcircuit",
+          "instances": [
+            {
+              "id": "R1",
+              "element": "res",
+              "params": {
+                "ohms": {
+                  "from_rating": "base_resistance",
+                  "pick": "typ"
+                }
+              }
+            },
+            {
+              "id": "Q1",
+              "element": "npn",
+              "params": {
+                "hfe": {
+                  "from_rating": "darlington_hfe",
+                  "pick": "value"
+                },
+                "hfr": {
+                  "from_rating": "darlington_hfr",
+                  "pick": "value"
+                },
+                "vbe": {
+                  "from_rating": "darlington_vbe",
+                  "pick": "value"
+                },
+                "vcesat": {
+                  "from_rating": "vce_sat",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "D1",
+              "element": "diode",
+              "params": {
+                "vf": {
+                  "from_rating": "clamp_diode_vf",
+                  "pick": "value"
+                },
+                "rd": {
+                  "from_rating": "clamp_diode_rd",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "clamp_diode_imax",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "R2",
+              "element": "res",
+              "params": {
+                "ohms": {
+                  "from_rating": "base_resistance",
+                  "pick": "typ"
+                }
+              }
+            },
+            {
+              "id": "Q2",
+              "element": "npn",
+              "params": {
+                "hfe": {
+                  "from_rating": "darlington_hfe",
+                  "pick": "value"
+                },
+                "hfr": {
+                  "from_rating": "darlington_hfr",
+                  "pick": "value"
+                },
+                "vbe": {
+                  "from_rating": "darlington_vbe",
+                  "pick": "value"
+                },
+                "vcesat": {
+                  "from_rating": "vce_sat",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "D2",
+              "element": "diode",
+              "params": {
+                "vf": {
+                  "from_rating": "clamp_diode_vf",
+                  "pick": "value"
+                },
+                "rd": {
+                  "from_rating": "clamp_diode_rd",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "clamp_diode_imax",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "R3",
+              "element": "res",
+              "params": {
+                "ohms": {
+                  "from_rating": "base_resistance",
+                  "pick": "typ"
+                }
+              }
+            },
+            {
+              "id": "Q3",
+              "element": "npn",
+              "params": {
+                "hfe": {
+                  "from_rating": "darlington_hfe",
+                  "pick": "value"
+                },
+                "hfr": {
+                  "from_rating": "darlington_hfr",
+                  "pick": "value"
+                },
+                "vbe": {
+                  "from_rating": "darlington_vbe",
+                  "pick": "value"
+                },
+                "vcesat": {
+                  "from_rating": "vce_sat",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "D3",
+              "element": "diode",
+              "params": {
+                "vf": {
+                  "from_rating": "clamp_diode_vf",
+                  "pick": "value"
+                },
+                "rd": {
+                  "from_rating": "clamp_diode_rd",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "clamp_diode_imax",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "R4",
+              "element": "res",
+              "params": {
+                "ohms": {
+                  "from_rating": "base_resistance",
+                  "pick": "typ"
+                }
+              }
+            },
+            {
+              "id": "Q4",
+              "element": "npn",
+              "params": {
+                "hfe": {
+                  "from_rating": "darlington_hfe",
+                  "pick": "value"
+                },
+                "hfr": {
+                  "from_rating": "darlington_hfr",
+                  "pick": "value"
+                },
+                "vbe": {
+                  "from_rating": "darlington_vbe",
+                  "pick": "value"
+                },
+                "vcesat": {
+                  "from_rating": "vce_sat",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "D4",
+              "element": "diode",
+              "params": {
+                "vf": {
+                  "from_rating": "clamp_diode_vf",
+                  "pick": "value"
+                },
+                "rd": {
+                  "from_rating": "clamp_diode_rd",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "clamp_diode_imax",
+                  "pick": "value"
+                }
+              }
+            }
+          ],
+          "nets": [
+            {
+              "id": "input1",
+              "nodes": [
+                "pin:IN1",
+                "R1.a"
+              ]
+            },
+            {
+              "id": "input2",
+              "nodes": [
+                "pin:IN2",
+                "R2.a"
+              ]
+            },
+            {
+              "id": "input3",
+              "nodes": [
+                "pin:IN3",
+                "R3.a"
+              ]
+            },
+            {
+              "id": "input4",
+              "nodes": [
+                "pin:IN4",
+                "R4.a"
+              ]
+            },
+            {
+              "id": "base1",
+              "nodes": [
+                "R1.b",
+                "Q1.b"
+              ]
+            },
+            {
+              "id": "base2",
+              "nodes": [
+                "R2.b",
+                "Q2.b"
+              ]
+            },
+            {
+              "id": "base3",
+              "nodes": [
+                "R3.b",
+                "Q3.b"
+              ]
+            },
+            {
+              "id": "base4",
+              "nodes": [
+                "R4.b",
+                "Q4.b"
+              ]
+            },
+            {
+              "id": "out1",
+              "nodes": [
+                "Q1.c",
+                "D1.anode",
+                "pin:OUT1"
+              ]
+            },
+            {
+              "id": "out2",
+              "nodes": [
+                "Q2.c",
+                "D2.anode",
+                "pin:OUT2"
+              ]
+            },
+            {
+              "id": "out3",
+              "nodes": [
+                "Q3.c",
+                "D3.anode",
+                "pin:OUT3"
+              ]
+            },
+            {
+              "id": "out4",
+              "nodes": [
+                "Q4.c",
+                "D4.anode",
+                "pin:OUT4"
+              ]
+            },
+            {
+              "id": "ground",
+              "nodes": [
+                "pin:GND",
+                "Q1.e",
+                "Q2.e",
+                "Q3.e",
+                "Q4.e"
+              ]
+            },
+            {
+              "id": "common",
+              "nodes": [
+                "D1.cathode",
+                "D2.cathode",
+                "D3.cathode",
+                "D4.cathode",
+                "pin:VCC",
+                "pin:MOTOR_V"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "injectable_faults": [
+    {
+      "id": "cold_input_header",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "IN1",
+          "IN2",
+          "IN3",
+          "IN4"
+        ]
+      },
+      "legacy_id": "cold:IN",
+      "cause_id": "x-connection-cold-joint",
+      "symptom_ids": [
+        "x-stepper-stutters"
+      ],
+      "description": {
+        "en": "A cracked joint on the input header, so a coil drops out now and then."
+      }
+    },
+    {
+      "id": "cold_motor_socket",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4",
+          "MOTOR_V"
+        ]
+      },
+      "legacy_id": "cold:MOTOR",
+      "cause_id": "x-connection-cold-joint",
+      "symptom_ids": [
+        "x-stepper-stutters"
+      ],
+      "description": {
+        "en": "A cracked joint on the motor socket, so a coil drops out now and then."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Four channels, each a 2.7 kohm base resistor, a Darlington transistor and a clamp diode to the + rail, built from the solver's resistor, transistor and diode elements."
+      },
+      {
+        "en": "A high input pulls its output down to about 1 V above ground, so a coil from + to that output carries current."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The four LEDs and their 1 kohm resistors."
+      },
+      {
+        "en": "The power-on jumper: the model assumes the cap is fitted."
+      },
+      {
+        "en": "The motor itself and the step sequence; both belong to the stepper part and the program."
+      },
+      {
+        "en": "Heat in the chip, and damage above 0.5 A a channel or 50 V."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "assumed_transistor",
+        "text": {
+          "en": "The transistor gain and base-emitter drop come from constants in the part figure, and the diode drop from the solver's fixed value. None has a datasheet source."
+        },
+        "evidence": "figures/parts/uln2003.js:38-42"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "There is no numeric test of the saturation voltage against the datasheet; only the conformance checks run."
+        },
+        "evidence": "src/parts/data/tests/uln2003-module.conformance.json"
+      }
+    ],
+    "solver_requires": [
+      "res",
+      "npn",
+      "diode"
+    ],
+    "tests": [
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/uln2003-module.conformance.json",
+        "state": "present",
+        "note": "The layer resolves and every rating a layer reads has its slot."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": []
+      }
+    ]
+  },
+  "compatibility": {
+    "works_with": [
+      "core.uno-r3"
+    ],
+    "rules": [
+      {
+        "id": "supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VCC",
+          "rating": "supply_range"
+        },
+        "message": {
+          "en": "The power input is outside 5 V to 12 V."
+        }
+      },
+      {
+        "id": "common_ground",
+        "kind": "needs_common_ground",
+        "severity": "warning",
+        "params": {
+          "pin": "GND"
+        },
+        "message": {
+          "en": "Join the controller ground to the - pin, or the inputs have no reference."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "uln2003",
+        "path": "public/figures/parts/uln2003.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "IN1",
+        "IN2",
+        "IN3",
+        "IN4",
+        "GND",
+        "VCC"
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "IN1": "left",
+        "IN2": "left",
+        "IN3": "left",
+        "IN4": "left",
+        "GND": "bottom",
+        "VCC": "top",
+        "MOTOR_V": "top",
+        "OUT1": "right",
+        "OUT2": "right",
+        "OUT3": "right",
+        "OUT4": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "ULN2003",
+      "body_colour": "#1f6e48",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Board description and chip figures: docs/facts/la-components.md section 15.2, which cites the ULN2003A datasheet."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/uln2003.js and figures/parts/uln2003.js.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_module_figure": {
+    "kind": "module",
+    "id": "uln2003",
+    "path": "public/figures/modules/uln2003.html"
+  }
+}

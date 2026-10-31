@@ -1,0 +1,8 @@
+{
+  "id": "conformance",
+  "kind": "conformance",
+  "shape": "none",
+  "description": "The channels layer resolves to four resistor, transistor and diode sets, and every rating the layer reads has its slot.",
+  "checks": ["layers-resolve", "ratings-have-slot"],
+  "derivation": "The layer is a subcircuit of res, npn and diode instances, all elements the legacy solver has (figures/engine/bench-solve.js:102-108). No golden-trace shape fits a four-channel subcircuit, so there is no numeric check."
+}
