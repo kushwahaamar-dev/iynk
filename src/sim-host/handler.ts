@@ -1,4 +1,5 @@
 import { runChecks } from "@/lib/interp";
+import { withRobotFacts } from "@/sim/faults/robot-facts";
 import { WorkerError, type WorkerHandler } from "@/protocol";
 import { NS_PER_MS, type SimTime } from "@/sim/core/clock";
 import { simDiag } from "@/sim/core/diagnostic";
@@ -195,13 +196,14 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     const { net, program } = loaded;
     if (program.kind !== "source") return;
     const sources = Object.fromEntries(program.files.map((f) => [f.path, f.text]));
-    const facts = runFactsFrom({
+    const base = runFactsFrom({
       endNs: r.orch.now,
       states: [],
       voltage: () => undefined,
       current: () => undefined,
       serial: [...(r.engine.serialLog ?? [])],
     });
+    const facts = r.mech && kit ? withRobotFacts(base, r.mech.mech.facts(), kit.nets) : base;
     const findings = monitor.onRunEnd(facts, buildNetView(net, deps.faults.describe), codeFactsOf(net, sources, [program.entry]));
     emit({ t: "event", run, event: { kind: "findings", findings } });
   }

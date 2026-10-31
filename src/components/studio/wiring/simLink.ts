@@ -8,6 +8,7 @@ import type { SimHost } from "@/sim-host/host";
 import { buildSimNetlist } from "@/sim-host";
 import type { SimEv } from "@/sim-host/protocol";
 import type { ProgramImage, SimDiagnostic, SimRunOptions, StepUnit } from "@/sim/engine";
+import type { RobotStore } from "@/studio/robot/store";
 import type { DocStore } from "@/studio/stores/doc";
 import type { Diagnostic, LimitInfo, RunStore } from "@/studio/stores/run";
 
@@ -23,6 +24,8 @@ export interface SimLinkDeps {
   breakpoints?: () => Readonly<Record<string, readonly number[]>>;
   /** Where the imported files of the project are read from; a run on the avr8js engine needs its hex. */
   assets?: Pick<AssetBytes, "get">;
+  /** Where the physics frames, robot checks and run report of a robot project go. */
+  robot?: RobotStore;
 }
 
 export interface SimLink {
@@ -123,7 +126,7 @@ export async function loadForRun(host: Pick<SimHost, "load">, state: Project, se
   if (failed) throw new Error(String(failed.args?.message ?? failed.text_key));
 }
 
-export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), breakpoints = () => ({}), assets = deviceAssetBytes() }: SimLinkDeps): SimLink {
+export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), breakpoints = () => ({}), assets = deviceAssetBytes(), robot }: SimLinkDeps): SimLink {
   // A newer start, stop or reset makes the answers of an older start irrelevant.
   let generation = 0;
 
@@ -132,6 +135,19 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
     if (ev.t === "frame") {
       run.apply({ t: "frame", frame: { tNs: ev.at, pins: ev.pins, parts: ev.parts } });
       for (const chunk of ev.serial) run.apply({ t: "serial", tNs: chunk.at, kind: "out", text: chunk.text });
+      if (ev.serial.length > 0) robot?.apply({ t: "serial", entries: ev.serial.map((chunk) => ({ tNs: chunk.at, text: chunk.text })) });
+      return;
+    }
+    if (ev.t === "mech_frame") {
+      robot?.apply({ t: "mech_frame", frame: ev.frame });
+      return;
+    }
+    if (ev.t === "robot_problems") {
+      robot?.apply({ t: "robot_problems", problems: ev.problems, checks: ev.checks, coupling: ev.coupling });
+      return;
+    }
+    if (ev.t === "mech_report") {
+      robot?.apply({ t: "mech_report", report: ev.report });
       return;
     }
     if (ev.t === "speed.report") {
@@ -174,6 +190,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
 
   async function start(): Promise<void> {
     const mine = ++generation;
+    robot?.reset();
     run.apply({ t: "phase", phase: "starting" });
     const fail = (diagnostics: Diagnostic[]) => {
       run.apply({ t: "diagnostics", diagnostics });
