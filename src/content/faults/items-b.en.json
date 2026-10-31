@@ -51,6 +51,16 @@
         }
       ],
       "explanation": "The 5 V rail has a direct path to ground. With nothing in the way, the supply pushes as much current as it can through that path, so the power chip heats up and the voltage collapses for everything else on the board.",
+      "transfer": {
+        "template": "distance",
+        "question": "A distance sensor build shows the board lighting for a blink and then going dark, with warmth near the power chip. Which reading, taken with the power off, points at the problem?",
+        "options": [
+          "Close to 0 ohms between the 5 V rail and ground",
+          "About 10 kilo-ohms between the trigger pin and ground",
+          "About 5 volts across the sensor"
+        ],
+        "answer": 0
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -136,6 +146,16 @@
         }
       ],
       "explanation": "A joint that was never properly melted into the pad touches when the board is still and lets go when it moves. The program keeps running, and the current path opens and closes without any warning.",
+      "transfer": {
+        "template": "serial-echo",
+        "question": "A serial echo build prints garbled text only when you touch the wires. Pressing on one joint fixes it. What is the best next step?",
+        "options": [
+          "Reseat that joint and test it with a meter",
+          "Lower the baud rate",
+          "Add a delay to the code"
+        ],
+        "answer": 0
+      },
       "review": {
         "status": "model-only",
         "source": "own-reasoning"
@@ -464,6 +484,16 @@
         }
       ],
       "explanation": "A motor pulls a large current when it starts. The USB supply cannot deliver it, its voltage drops below what the chip needs and the chip restarts, which stops the motor, which lets the voltage recover. The cycle then repeats.",
+      "transfer": {
+        "template": "plant",
+        "question": "A plant monitor board with a small pump resets each time the pump starts, though the sensor code is fine. What is the likely cause?",
+        "options": [
+          "The sensor reading is too high",
+          "The pump pulls so much current that the supply voltage sags",
+          "The serial port is open"
+        ],
+        "answer": 1
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -783,6 +813,16 @@
         }
       ],
       "explanation": "An LED passes current in one direction only. Fitted the other way round it blocks the current, so it never lights, and it is not damaged by it.",
+      "transfer": {
+        "template": "knob",
+        "question": "A knob dims an LED, but the LED stays dark at every knob position. The code checks out. What is the quickest thing to test?",
+        "options": [
+          "Turn the knob the other way",
+          "Check whether the LED's longer leg is on the supply side",
+          "Raise the PWM frequency"
+        ],
+        "answer": 1
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -1443,6 +1483,16 @@
         }
       ],
       "explanation": "An LED has almost no resistance of its own once it conducts. Without a part to hold the current down, the pin pushes as much as it can and the LED burns out.",
+      "transfer": {
+        "template": "button",
+        "question": "A button lights an LED wired straight to a pin with no resistor. The LED flashes once, then never lights again. What went wrong?",
+        "options": [
+          "The code pressed the pin too fast",
+          "The LED drew far more current than it could take and failed",
+          "The button bounced"
+        ],
+        "answer": 1
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"

@@ -43,6 +43,16 @@
         }
       ],
       "explanation": "The barrel jack feeds the board through a diode before anything else. Wrong way round, the diode blocks, so no current flows and nothing is harmed. That is what the diode is for.",
+      "transfer": {
+        "template": "blink",
+        "question": "You plug a battery pack into a different board with the red and black leads swapped. The board has a protection diode right where power comes in. What do you expect?",
+        "options": [
+          "The board stays dark and nothing is damaged",
+          "The board runs, but its LED blinks twice as fast",
+          "The board works normally, since a battery has no polarity"
+        ],
+        "answer": 0
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -283,6 +293,16 @@
         }
       ],
       "explanation": "A wire joining the 5 V and 0 V rails draws as much current as USB can give. The resettable fuse heats up and goes high-resistance, cutting power to protect the computer's port.",
+      "transfer": {
+        "template": "rgb",
+        "question": "A bare wire strand from the 5 V pin falls across the ground pin on a board that drives a coloured LED. What happens first?",
+        "options": [
+          "The LED turns white",
+          "The board browns out or heats up while the LED goes dark",
+          "Nothing, a single wire carries too little current to matter"
+        ],
+        "answer": 1
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -521,6 +541,16 @@
         }
       ],
       "explanation": "A small resistor joins the chip's transmit line to the USB bridge. Without it nothing the chip sends reaches the computer, so the uploader never hears the bootloader answer.",
+      "transfer": {
+        "template": "button",
+        "question": "A push-button circuit has one leg of its wire left out of the breadboard hole. You press the button and the code never sees it. What is the best first check?",
+        "options": [
+          "Rewrite the code that reads the pin",
+          "Replace the button with a new one",
+          "Follow the signal path with a meter and find where it stops touching"
+        ],
+        "answer": 2
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -603,6 +633,16 @@
         }
       ],
       "explanation": "The regulator needs about 1.1 V of headroom. With only 3.3 V going in it can make about 2.2 V, below the chip's minimum, so the chip keeps restarting.",
+      "transfer": {
+        "template": "light",
+        "question": "A light sensor module needs 5 V but its supply wire is fed from a 3.3 V pin. What do you most likely see?",
+        "options": [
+          "Readings that are weak or wrong, though nothing is damaged",
+          "A burnt sensor within seconds",
+          "A perfectly normal reading"
+        ],
+        "answer": 0
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"
@@ -1555,6 +1595,16 @@
         }
       ],
       "explanation": "A solder bridge or stray wire from the 3.3 V pin to ground makes the converter hit its current limit. There is no fuse on the board.",
+      "transfer": {
+        "template": "sound",
+        "question": "A 3.3 V board has a stray lead touching between its power pin and ground pin while a buzzer circuit is wired up. How does the supply behave?",
+        "options": [
+          "It rises above 3.3 V",
+          "It collapses, the board resets or goes dark, and a part gets warm",
+          "It stays steady and the buzzer sounds louder"
+        ],
+        "answer": 1
+      },
       "review": {
         "status": "draft",
         "source": "own-reasoning"

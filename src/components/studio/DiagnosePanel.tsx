@@ -12,6 +12,7 @@ import { useStoreSelector } from "@/studio/stores/select";
 import type { DiagnoseStore } from "@/studio/stores/diagnose";
 import { DiagnosisRecord } from "./DiagnosisRecord";
 import { HintLadder } from "./HintLadder";
+import { TransferQuestion } from "./TransferQuestion";
 
 export interface DiagnosePanelProps {
   store: DiagnoseStore;
@@ -35,6 +36,7 @@ export function DiagnosePanel({ store, ladder, messages, lang, benchChecked, log
   const { session, lastRemedy, error } = useStoreSelector(store, (s) => s);
   const [choice, setChoice] = useState<number | null>(null);
   const [confidence, setConfidence] = useState<PickRecord["confidence"]>();
+  const [transferDone, setTransferDone] = useState(false);
   const ids = useId();
   const options = useMemo(() => (session ? buildOptions(session.spec, optionSeed(session.projectId)) : []), [session?.spec, session?.projectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -193,6 +195,8 @@ export function DiagnosePanel({ store, ladder, messages, lang, benchChecked, log
       ) : (
         <HintLadder levels={ladder} opened={session.hintLevel} onOpen={(level) => store.dispatch({ t: "hint", level })} messages={messages} lang={lang} />
       )}
+
+      {state === "verified" && spec.transfer && !transferDone ? <TransferQuestion transfer={spec.transfer} t={t} onDone={() => setTransferDone(true)} /> : null}
 
       {diagnosis ? (
         <DiagnosisRecord diagnosis={diagnosis} outcome={outcomeOf(session)} projectId={session.projectId} benchChecked={benchChecked} logOn={logOn} messages={messages} lang={lang} onOpenSettings={onOpenSettings} />
