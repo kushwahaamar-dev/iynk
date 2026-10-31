@@ -37,6 +37,11 @@ function asLesson(task: BenchItem["data"]["tasks"][number]): ConvertLesson {
   };
 }
 
+/** The optional project id of the lab generator (T-B13-15), the same function the bench context carries. */
+export type PracticeContext = ConvertContext & {
+  projectId?: (lab: "robotics", id: string, child: string | null) => string;
+};
+
 /**
  * One practice task of a robotics bench as a challenge project. The reference solution is kept in
  * `ext["x-iynk-solution"]`, with its comments in English, and nowhere in the guide or the sources.
@@ -47,13 +52,13 @@ export function convertPracticeTask(
   texts: Texts,
   boardItem: BoardItem,
   circuits: Readonly<Record<string, FigureCircuit>>,
-  ctx: ConvertContext,
+  ctx: PracticeContext,
 ): ConvertResult {
   const task = item.data.tasks.find((t) => t.id === taskId);
   if (!task) throw new Error(`robotics/${item.id} has no task "${taskId}"`);
   if (task.board !== boardItem.id) throw new Error(`robotics/${item.id}/${task.id} runs on "${task.board}", not on board/${boardItem.id}`);
 
-  const id = `prj_task-${item.id}-${task.id}`;
+  const id = ctx.projectId?.("robotics", item.id, task.id) ?? `prj_task-${item.id}-${task.id}`;
   const name = `robotics/${item.id}/${task.id}`;
   const lessonBoard: BoardItem = { ...boardItem, data: { ...boardItem.data, lessons: [asLesson(task)] } };
   const { project: lessonProject, report: lessonReport } = convertLesson(lessonBoard, task.id, texts, circuits, ctx);
