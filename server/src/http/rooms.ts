@@ -5,7 +5,7 @@ import { badField } from "./auth.ts";
 import { defineRoutes, type Authed, type Ctx, type Reply, type RouteDef } from "./classes.ts";
 import { ApiError, unauthorized } from "./errors.ts";
 
-const ROOM_ID = /^rm_[a-z2-7]{16}$/;
+export const ROOM_ID = /^rm_[a-z2-7]{16}$/;
 const STATUSES = ["open", "locked", "idle", "closed", "corrupt"] as const;
 const NOT_FOUND_FLOOR_MS = 200;
 const ENVELOPE_ALLOWANCE = 1.1;
@@ -14,16 +14,16 @@ const LIST_MAX = 100;
 const EVENTS_DEFAULT = 100;
 const EVENTS_MAX = 1000;
 
-const notFound = (): ApiError => new ApiError(404, "not_found", "Not found.");
+export const notFound = (): ApiError => new ApiError(404, "not_found", "Not found.");
 
-function readLimit(c: Ctx, fallback: number, max: number): number {
+export function readLimit(c: Ctx, fallback: number, max: number): number {
   const raw = c.query.get("limit");
   const limit = raw === null ? fallback : Number(raw);
   if (!Number.isInteger(limit) || limit < 1 || limit > max) throw badField("/limit", `Use a whole number from 1 to ${max}.`);
   return limit;
 }
 
-function readCursor(c: Ctx): number {
+export function readCursor(c: Ctx): number {
   const raw = c.query.get("cursor");
   if (raw === null) return 0;
   if (!/^\d{1,9}$/.test(raw)) throw badField("/cursor", "This cursor is not valid.");
