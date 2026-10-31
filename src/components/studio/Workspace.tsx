@@ -49,6 +49,7 @@ import { ModelsPanel } from "./ModelsPanel";
 import { Outline } from "./Outline";
 import { Palette } from "./Palette";
 import { PinPicker } from "./PinPicker";
+import { FirmwareMode, type RuntimeView } from "./FirmwareMode";
 import { Problems } from "./Problems";
 import { RegionLayout } from "./RegionLayout";
 import { RunBar } from "./RunBar";
@@ -227,6 +228,18 @@ function FidelityChips({ doc, ui, messages, lang }: { doc: DocStore; ui: UiStore
       <TierChips fidelity={fidelity} t={t} onOpenLayer={() => ui.set("rightRail", "models")} />
     </div>
   );
+}
+
+function FirmwareControl({ doc, messages, lang }: { doc: DocStore; messages: StudioMessages; lang: Locale }) {
+  const runtimes = useStoreSelector(doc, (s) => s.state.simulation.runtimes);
+  const boards = useStoreSelector(doc, (s) => s.state.boards);
+  const assets = useStoreSelector(doc, (s) => s.state.assets);
+  const t = useMemo(() => createTranslator(lang, messages.fidelity, `${lang}/fidelity`), [lang, messages.fidelity]);
+  const runtime = runtimes[0];
+  const board = boards.find((b) => b.id === runtime?.board);
+  if (!runtime || !board) return null;
+  const view: RuntimeView = { id: runtime.id, board: runtime.board, boardRef: board.definition.ref, engine: runtime.engine, options: runtime.options };
+  return <FirmwareMode runtime={view} assets={assets} t={t} onChange={(ops) => doc.commit(ops, { label: t("firmware.firmware") })} />;
 }
 
 function ModelsTab({ doc, messages }: { doc: DocStore; messages: StudioMessages }) {
@@ -408,7 +421,7 @@ function Regions({ graph, doc, sim, messages, lang, notices, onDismiss, onPlaceA
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
         serial: (
           <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} lang={lang} />
+            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} lang={lang} firmware={<FirmwareControl doc={doc} messages={messages} lang={lang} />} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
             <InstrumentDock doc={doc} run={run} ui={ui} sim={sim} messages={messages.instruments} fidelity={messages.fidelity} lang={lang} />
           </div>

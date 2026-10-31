@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Button, Callout, Chip, Icon, type CalloutTone, type ChipTone } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
@@ -18,6 +18,8 @@ export interface RunBarProps {
   messages: Messages["studioRun"];
   instruments: Messages["instruments"];
   lang: Locale;
+  /** The Interpreter / Firmware control, when the project has a board it can apply to. */
+  firmware?: ReactNode;
 }
 
 const PHASE_TONE: Record<RunPhase, ChipTone> = {
@@ -48,7 +50,7 @@ function Clock({ run, label }: { run: RunStore; label: string }) {
   );
 }
 
-export function RunBar({ run, link, messages, instruments, lang }: RunBarProps) {
+export function RunBar({ run, link, messages, instruments, lang, firmware }: RunBarProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioRun`), [lang, messages]);
   const ti = useMemo(() => createTranslator(lang, instruments, `${lang}/instruments`), [lang, instruments]);
   const [unit, setUnit] = useState<StepUnit>("statement");
@@ -139,6 +141,7 @@ export function RunBar({ run, link, messages, instruments, lang }: RunBarProps) 
         </Chip>
         <Clock run={run} label={t("bar.time")} />
       </div>
+      {firmware}
       <SpeedControl t={ti} speed={speed} achieved={achieved} behind={behind && phase === "running"} onChange={(x) => link.setSpeed(x)} />
       {restart ? (
         <p className="text-sm text-muted" role="status">
