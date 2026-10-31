@@ -1,0 +1,11 @@
+{
+  "id": "rgb-led_conformance",
+  "kind": "conformance",
+  "shape": "none",
+  "description": "Every layer resolves, every element terminal names a pin, every rating has the slot the model reads.",
+  "checks": [
+    "layers-resolve",
+    "ratings-have-slot"
+  ],
+  "derivation": "Reads the descriptor only. The subcircuit layer has no golden-trace shape, so no number is derived."
+}

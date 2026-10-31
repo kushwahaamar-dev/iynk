@@ -1,0 +1,781 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.tip120",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "TIP120 NPN Darlington transistor, TO-220",
+    "generic": true,
+    "refdes_prefix": "Q",
+    "kind": "discrete",
+    "category": "semiconductor",
+    "description": {
+      "en": "An NPN Darlington power transistor in a TO-220 package. It switches motors and other loads up to a few amps from a small base current."
+    },
+    "legacy_ids": [
+      "tip120"
+    ],
+    "tags": [
+      "transistor",
+      "npn",
+      "darlington",
+      "tip120",
+      "breadboard"
+    ],
+    "mpn": "TIP120"
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet (Learn Arduino parts and common sensors and actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It quotes maker sheets and reseller guides; the sheet marks the values it could not check as unverified. Section 18 quotes the Interlink FSR 400 series sheet and an Adafruit resistance table. Section 9 quotes the Analog Devices TMP36 sheet and Adafruit's guide. Section 11 quotes the TIP120 sheet."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/tip120.js: header comment and elec()",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Constants in the figure code. Where the header names a maker sheet, that sheet was not read for this descriptor."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: the elements the bench solver stamps",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "B",
+      "name": {
+        "en": "Base"
+      },
+      "designator": "1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Left with the printed face toward you and the legs down."
+      }
+    },
+    {
+      "id": "C",
+      "name": {
+        "en": "Collector"
+      },
+      "designator": "2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 2.54,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The metal tab is the collector too."
+      }
+    },
+    {
+      "id": "E",
+      "name": {
+        "en": "Emitter"
+      },
+      "designator": "3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 5.08,
+        "y": 0.0
+      },
+      "connector": "legs"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "B",
+        "C",
+        "E"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "TO-220",
+    "body": {
+      "w": 10.0,
+      "h": 4.5,
+      "d": 9.0
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 11"
+    }
+  },
+  "ratings": {
+    "current_gain": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "description": {
+        "en": "Lowest forward current gain the sheet allows; the model uses it as the gain."
+      },
+      "manufacturer": {
+        "unit": "ratio",
+        "value": 1000,
+        "conditions": "Minimum, at VCE 3 V and IC 0.5 A and 3 A",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "manufacturer",
+      "scope": {
+        "part": true
+      }
+    },
+    "reverse_gain": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "description": {
+        "en": "Gain with collector and emitter swapped."
+      },
+      "simulation": {
+        "unit": "ratio",
+        "value": 5,
+        "rationale": {
+          "en": "The solver's default when the figure gives none (bench-solve.js:108: hfr || 5). No source found."
+        },
+        "confidence": "low",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:108"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "part": true
+      }
+    },
+    "base_emitter_voltage": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Base-emitter voltage when on, at lesson currents."
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 1.2,
+        "typ": 1.3,
+        "max": 1.4,
+        "rationale": {
+          "en": "The fact sheet reads 1.2 to 1.4 V off the typical curves at 100 to 300 mA; the figure uses 1.3 V (tip120.js:46). Read off a curve, approximate."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "B",
+          "E"
+        ]
+      }
+    },
+    "saturation_voltage": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Collector-emitter voltage when saturated, at lesson currents."
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 0.7,
+        "typ": 0.9,
+        "max": 1.0,
+        "rationale": {
+          "en": "The fact sheet reads 0.7 to 1.0 V off the typical curves at 100 to 300 mA; the figure uses 0.9 V (tip120.js:46). Read off a curve, approximate."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "C",
+          "E"
+        ]
+      }
+    },
+    "saturation_voltage_max": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Highest collector-emitter voltage when saturated."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 2.0,
+        "conditions": "IC 3 A, IB 12 mA",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "C",
+          "E"
+        ]
+      }
+    },
+    "collector_current_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest continuous collector current."
+      },
+      "manufacturer": {
+        "unit": "A",
+        "value": 5,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "manufacturer",
+      "scope": {
+        "pins": [
+          "C"
+        ]
+      }
+    },
+    "base_current_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest continuous base current."
+      },
+      "manufacturer": {
+        "unit": "A",
+        "value": 0.12,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "B"
+        ]
+      }
+    },
+    "collector_emitter_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest collector-emitter voltage."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 60,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "C",
+          "E"
+        ]
+      }
+    },
+    "emitter_base_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest emitter-base voltage."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 5,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "B",
+          "E"
+        ]
+      }
+    },
+    "power_max": {
+      "measure": "power",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest power in free air at 25 degrees C."
+      },
+      "manufacturer": {
+        "unit": "W",
+        "value": 2,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "thermal_resistance": {
+      "measure": "thermal_resistance",
+      "role": "thermal",
+      "description": {
+        "en": "Junction to ambient in free air."
+      },
+      "simulation": {
+        "unit": "C_per_W",
+        "value": 62.5,
+        "derived_from": [
+          "power_max.manufacturer",
+          "junction_temperature_max.manufacturer"
+        ],
+        "rationale": {
+          "en": "Worked from the sheet: 2 W lifts the junction from 25 to 150 degrees C, so 125 / 2 = 62.5 (tip120.js:25)."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tip120.js:25"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "part": true
+      }
+    },
+    "junction_temperature_max": {
+      "measure": "temperature",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest junction temperature."
+      },
+      "manufacturer": {
+        "unit": "degC",
+        "value": 150,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "manufacturer",
+      "scope": {
+        "part": true
+      }
+    },
+    "driver_resistor": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Base-emitter resistor of the driver transistor inside."
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "value": 8000,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "B",
+          "E"
+        ]
+      }
+    },
+    "output_resistor": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Base-emitter resistor of the output transistor inside."
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "value": 120,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 11"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "B",
+          "E"
+        ]
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "An NPN Darlington switch: off below 1.3 V of base drive, saturated at 0.9 V when the base drives it hard enough, otherwise a current gain of 1000."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "B",
+          "C",
+          "E"
+        ],
+        "summary": {
+          "en": "Piecewise-linear transistor with the Darlington drops."
+        },
+        "model": {
+          "kind": "element",
+          "element": "npn",
+          "terminals": {
+            "b": "B",
+            "c": "C",
+            "e": "E"
+          },
+          "params": {
+            "hfe": {
+              "from_rating": "current_gain",
+              "pick": "value"
+            },
+            "hfr": {
+              "from_rating": "reverse_gain",
+              "pick": "value"
+            },
+            "vbe": {
+              "from_rating": "base_emitter_voltage",
+              "pick": "typ"
+            },
+            "vcesat": {
+              "from_rating": "saturation_voltage",
+              "pick": "typ"
+            },
+            "darlington": {
+              "value": true,
+              "rationale": {
+                "en": "Only matters after burn-out: a burnt Darlington fails short C-E (bench-solve.js:232)."
+              },
+              "source": {
+                "src": "solverjs",
+                "loc": "figures/engine/bench-solve.js:232"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "overheat",
+      "name": {
+        "en": "Burned out by heat"
+      },
+      "cause_id": "x-npn-overheat",
+      "symptom_ids": [
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "junction_temperature",
+          "target": "part",
+          "op": ">",
+          "threshold": {
+            "rating": "junction_temperature_max",
+            "pick": "value"
+          }
+        }
+      ],
+      "effect": {
+        "state": "short_circuit",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "A burnt Darlington fails short from collector to emitter."
+        }
+      },
+      "derivation": {
+        "en": "The solver works the junction temperature from power and 62.5 degrees C per watt and burns the part past 150 degrees C."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:341"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "overcurrent",
+      "name": {
+        "en": "Burned out by too much collector current"
+      },
+      "cause_id": "x-npn-overheat",
+      "symptom_ids": [
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "pin_current_peak",
+          "target": "C",
+          "op": ">",
+          "threshold": {
+            "rating": "collector_current_max",
+            "pick": "value",
+            "factor": 1.5
+          }
+        }
+      ],
+      "effect": {
+        "state": "short_circuit",
+        "latched": true,
+        "recovers_when": "the part is replaced"
+      },
+      "derivation": {
+        "en": "The solver burns the part when the peak collector current is more than 1.5 times the 5 A rating. The factor is an iynk teaching rule."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:341"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "hot_in_free_air",
+      "name": {
+        "en": "Running hot without a heatsink"
+      },
+      "cause_id": "x-npn-overheat",
+      "symptom_ids": [
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "part_power",
+          "target": "part",
+          "op": ">",
+          "threshold": {
+            "rating": "power_max",
+            "pick": "value",
+            "factor": 0.75
+          }
+        }
+      ],
+      "effect": {
+        "state": "derated",
+        "latched": false,
+        "detail": {
+          "en": "The part is flagged hot; nothing else changes."
+        }
+      },
+      "derivation": {
+        "en": "The solver flags the part hot above 75 percent of the free-air rating, 1.5 W. It is a label, not a burn-out; the 75 percent is an iynk choice."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:342"
+      },
+      "implemented_as": "scripted"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "reversed",
+      "kind": "reversed_part",
+      "target": {
+        "pins": [
+          "B",
+          "E"
+        ]
+      },
+      "cause_id": "swapped-pins",
+      "symptom_ids": [
+        "x-transistor-not-switching"
+      ],
+      "description": {
+        "en": "Fit the transistor turned round, so base and emitter change places."
+      },
+      "legacy_id": "reversed"
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A Darlington switch: off, saturated at 0.9 V or active with a gain of 1000."
+      },
+      {
+        "en": "Reverse operation with a gain of 5."
+      },
+      {
+        "en": "Burn-out from heat or collector current, failing short collector to emitter."
+      },
+      {
+        "en": "A hot flag above 1.5 W."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The curves of base-emitter and saturation voltage against current."
+      },
+      {
+        "en": "The two internal resistors and the diode from emitter to collector."
+      },
+      {
+        "en": "Heatsink effects: only the free-air thermal resistance is used."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "collector current",
+        "min": 0.1,
+        "max": 3,
+        "unit": "A"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "ratings_unread",
+        "text": {
+          "en": "The solver reads gain, base-emitter voltage and saturation voltage only. The current, power, voltage and internal resistor ratings are shown, not used."
+        },
+        "evidence": "figures/engine/bench-solve.js:109"
+      },
+      {
+        "id": "saturation_at_rating",
+        "text": {
+          "en": "The fact sheet gives a saturation voltage of at most 2.0 V at 3 A; the model holds 0.9 V at every current."
+        }
+      },
+      {
+        "id": "fixed_drop",
+        "text": {
+          "en": "The base-emitter and saturation voltages are read off curves at 100 to 300 mA, so they are approximate."
+        },
+        "evidence": "docs/facts/la-components.md section 11"
+      }
+    ],
+    "solver_requires": [
+      "npn"
+    ],
+    "tests": [
+      {
+        "id": "tip120_switch_20r",
+        "kind": "golden-trace",
+        "file": "src/parts/data/tests/tip120.golden.json",
+        "tolerance": {
+          "rel": 0.01
+        },
+        "note": "Saturated switch with a 20 ohm load from 5 V."
+      },
+      {
+        "id": "tip120_layers",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/tip120.conformance.json"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "tip120",
+        "path": "public/figures/parts/tip120.html",
+        "sha256": "79d9de906dc36e6b4520718717db1ee2dd5b509e3ce3eb559a8fdbda31fbcf52",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "B",
+        "C",
+        "E"
+      ],
+      "span": [
+        2,
+        2
+      ]
+    },
+    "schematic": {
+      "symbol": "transistor-npn"
+    },
+    "fallback": {
+      "renderer": "generic-dip",
+      "label": "TIP120",
+      "body_colour": "#34312e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      },
+      {
+        "text": "Ratings after the TIP120 sheet as quoted in docs/facts/la-components.md section 11."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/tip120.js, figures/engine/bench-solve.js and the fact sheet.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

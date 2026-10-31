@@ -1,0 +1,28 @@
+{
+  "id": "npn_switch_100r",
+  "kind": "golden-trace",
+  "shape": "npn-switch",
+  "description": "A 100 ohm load from 5 V into the collector, with the base fed through 1 kilohm from 5 V. The base current is far more than the load needs, so the transistor saturates.",
+  "circuit": {
+    "supply_v": 5,
+    "series_ohm": 100,
+    "base_ohm": 1000
+  },
+  "expect": [
+    {
+      "quantity": "i_a",
+      "value": 0.047995,
+      "tol": {
+        "rel": 0.01
+      }
+    },
+    {
+      "quantity": "v_collector_v",
+      "value": 0.20048,
+      "tol": {
+        "rel": 0.01
+      }
+    }
+  ],
+  "derivation": "Base current (5 - 0.7) / 1002 = 4.3 mA times gain 100 would be 0.43 A, above the 48 mA the load allows, so the part saturates: collector current (5 - 0.2) / (100 + 0.01) = 0.047995 A and the collector sits at 0.2 + 0.01 x i = 0.20048 V."
+}

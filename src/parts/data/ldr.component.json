@@ -1,0 +1,532 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.ldr",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "Light-dependent resistor GL5528",
+    "generic": true,
+    "refdes_prefix": "R",
+    "kind": "sensor",
+    "category": "sensor",
+    "description": {
+      "en": "A cadmium-sulphide photoresistor. Resistance falls as the light gets brighter, from about 1 megohm in the dark to a few hundred ohms in daylight."
+    },
+    "legacy_ids": [
+      "ldr"
+    ],
+    "tags": [
+      "ldr",
+      "photoresistor",
+      "sensor",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet (Learn Arduino parts and common sensors and actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It quotes maker sheets and reseller guides; the sheet marks the values it could not check as unverified."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/ldr.js: header comment and elec()",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Constants in the figure code. Where the header names a maker sheet, that sheet was not read for this descriptor."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: the elements the bench solver stamps",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "P1",
+      "name": {
+        "en": "Lead 1"
+      },
+      "designator": "1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Not polarised."
+      }
+    },
+    {
+      "id": "P2",
+      "name": {
+        "en": "Lead 2"
+      },
+      "designator": "2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 3.4,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Not polarised."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 3.4,
+      "pins": [
+        "P1",
+        "P2"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "5 mm disc, 2 leads",
+    "body": {
+      "w": 5.1,
+      "h": 5.1,
+      "d": 2.0
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 8"
+    }
+  },
+  "ratings": {
+    "resistance_at_10_lux": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Light resistance at 10 lux."
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "min": 10000,
+        "max": 20000,
+        "conditions": "10 lux, 2856 K",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "resistance_dark": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Dark resistance ten seconds after the light goes off."
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "min": 1000000,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "gamma": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "description": {
+        "en": "Slope of resistance against light between 10 and 100 lux."
+      },
+      "manufacturer": {
+        "unit": "ratio",
+        "value": 0.6,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "power_max": {
+      "measure": "power",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest power in the part."
+      },
+      "manufacturer": {
+        "unit": "W",
+        "value": 0.1,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "voltage_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest voltage across the part."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 150,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "P1",
+          "P2"
+        ]
+      }
+    },
+    "rise_time": {
+      "measure": "time",
+      "role": "timing",
+      "description": {
+        "en": "Time to respond when the light comes on."
+      },
+      "manufacturer": {
+        "unit": "s",
+        "value": 0.02,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "decay_time": {
+      "measure": "time",
+      "role": "timing",
+      "description": {
+        "en": "Time to respond when the light goes off."
+      },
+      "manufacturer": {
+        "unit": "s",
+        "value": 0.03,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 8"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "part": true
+      }
+    },
+    "resistance_default": {
+      "measure": "resistance",
+      "role": "operating",
+      "description": {
+        "en": "The resistance the model uses: the value at the default 300 lux."
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 1949.0,
+        "rationale": {
+          "en": "R = 15 kilohm x (300 lux / 10 lux)^-0.6, from the middle of the 10 to 20 kilohm range and a gamma of 0.6. The model holds this value whatever the light."
+        },
+        "confidence": "medium",
+        "derived_from": [
+          "resistance_at_10_lux.manufacturer",
+          "gamma.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/ldr.js:6-7 and :16"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "P1",
+          "P2"
+        ]
+      }
+    }
+  },
+  "parameters": [
+    {
+      "id": "lux",
+      "name": {
+        "en": "Light level"
+      },
+      "kind": "environment",
+      "type": "number",
+      "default": 300,
+      "min": 0,
+      "max": 100000,
+      "unit": "lux"
+    }
+  ],
+  "physical_inputs": [
+    {
+      "id": "light",
+      "name": {
+        "en": "Light on the sensor"
+      },
+      "unit": "lux",
+      "range": {
+        "min": 0,
+        "max": 100000
+      },
+      "world_channel": "optical.ambient"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A resistor whose value is fixed at the default light level. The resistance does not follow the light in this model."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "P1",
+          "P2"
+        ],
+        "summary": {
+          "en": "Linear conductance between the two leads at the default 300 lux."
+        },
+        "model": {
+          "kind": "element",
+          "element": "res",
+          "terminals": {
+            "a": "P1",
+            "b": "P2"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "resistance_default",
+              "pick": "value"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "overpower",
+      "name": {
+        "en": "Overheated by too much power"
+      },
+      "cause_id": "x-ldr-overpower",
+      "symptom_ids": [
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "part_power",
+          "target": "part",
+          "op": ">",
+          "threshold": {
+            "rating": "power_max",
+            "pick": "value"
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced"
+      },
+      "derivation": {
+        "en": "The figure states 100 mW as the limit and says a bare LDR across 5 V in daylight is over it. The solver stamps the resistor and checks no power, so nothing acts on this."
+      },
+      "basis": "manufacturer",
+      "source": {
+        "src": "factsheet",
+        "loc": "section 8"
+      },
+      "implemented_as": "not-implemented"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "overheated",
+      "kind": "overload",
+      "target": {
+        "pins": [
+          "P1",
+          "P2"
+        ]
+      },
+      "cause_id": "x-ldr-overpower",
+      "symptom_ids": [
+        "part-hot"
+      ],
+      "description": {
+        "en": "The sensor is shown overheated."
+      },
+      "legacy_id": "overheated"
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A fixed resistor of about 1.9 kilohm, the value at 300 lux."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Resistance that follows the light level."
+      },
+      {
+        "en": "The 20 ms and 30 ms response lag."
+      },
+      {
+        "en": "Power and voltage limits: the solver never overheats a resistor."
+      },
+      {
+        "en": "Temperature and part-to-part spread."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "light level",
+        "min": 299,
+        "max": 301,
+        "unit": "lux",
+        "note": {
+          "en": "The model is a fixed value at the default light level only."
+        }
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_light_curve",
+        "text": {
+          "en": "The resistance does not follow light until a curve model kind exists (Q1). The figure computes ohmsAt(lux) in ldr.js:16 and the solver is given that value per run."
+        },
+        "evidence": "figures/parts/ldr.js:44"
+      },
+      {
+        "id": "no_lag",
+        "text": {
+          "en": "The figure passes lag [0.02, 0.03] to the solver, which does not read it."
+        },
+        "evidence": "figures/parts/ldr.js:44"
+      }
+    ],
+    "solver_requires": [
+      "res"
+    ],
+    "tests": [
+      {
+        "id": "ldr_series_1k",
+        "kind": "golden-trace",
+        "file": "src/parts/data/tests/ldr.golden.json",
+        "tolerance": {
+          "rel": 0.001
+        },
+        "note": "Default resistance in series with 1 kilohm from 5 V."
+      },
+      {
+        "id": "ldr_layers",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/ldr.conformance.json"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "ldr",
+        "path": "public/figures/parts/ldr.html",
+        "sha256": "be28b8092d36ca40e3d1e26e2bdabbb6431d4b60283677ae7ff36a8a4a4eae14",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "P1",
+        "P2"
+      ],
+      "span": [
+        1,
+        4
+      ]
+    },
+    "schematic": {
+      "symbol": "resistor"
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "LDR",
+      "body_colour": "#c8553a",
+      "show_pin_labels": false
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      },
+      {
+        "text": "Resistance figures after the GL5528 table as quoted in docs/facts/la-components.md section 8."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/ldr.js, figures/engine/bench-solve.js and the fact sheet.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

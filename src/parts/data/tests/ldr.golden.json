@@ -1,0 +1,20 @@
+{
+  "id": "ldr_series_1k",
+  "kind": "golden-trace",
+  "shape": "series2",
+  "description": "The default resistance in series with 1 kilohm from a 5 V supply.",
+  "circuit": {
+    "supply_v": 5,
+    "series_ohm": 1000
+  },
+  "expect": [
+    {
+      "quantity": "i_a",
+      "value": 0.0016955,
+      "tol": {
+        "rel": 0.001
+      }
+    }
+  ],
+  "derivation": "resistance_default is 1949.0 ohm, so the loop current is 5 V / (1000 + 1949.0) ohm = 0.0016955 A."
+}
