@@ -13,19 +13,19 @@ const load = (name: string) => JSON.parse(readFileSync(join(dir, name + ".projec
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 const EXAMPLE_HASHES: Record<string, string> = {
-  "uno-blink-d12": "2034a1b8f508959a",
-  "env-monitor-esp32": "8e52bbe4fc07a568",
+  "uno-blink-d12": "5406cae2735da1eb",
+  "env-monitor-esp32": "7a31304324cf3343",
   "lesson-uno-r3-button": "1f6c95022ebf5736",
-  "robot-line-follower": "f947b3b3f79a80d1",
-  "drone-quad": "62e876e86e43eae9",
+  "robot-line-follower": "81e697b24e4db736",
+  "drone-quad": "9556e6a86f774add",
 };
 
 const CANONICAL_BYTES: Record<string, number> = {
   "uno-blink-d12": 8945,
   "env-monitor-esp32": 13196,
   "lesson-uno-r3-button": 32911,
-  "robot-line-follower": 23282,
-  "drone-quad": 16005,
+  "robot-line-follower": 23288,
+  "drone-quad": 16011,
 };
 
 describe("stateHash of the examples", () => {

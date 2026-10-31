@@ -275,6 +275,6 @@ describe("source.edit", () => {
       state = out.state;
     }
     expect(state.revision).toBe(142);
-    expect(stateHash(state)).toBe("8e52bbe4fc07a56800045de1579b8a22c725fb129a8de73e6efea5b08a3c0e79");
+    expect(stateHash(state)).toBe("7a31304324cf3343d32b3748cde71c683e2f6caff592a302c90b321b182c2006");
   });
 });

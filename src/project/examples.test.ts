@@ -15,15 +15,15 @@ const read = (url: URL): string => readFileSync(url, "utf8");
 const fileOf = (name: ExampleName): string => read(new URL(`examples/${name}.project.json`, SCHEMAS));
 
 const EXAMPLES: Record<ExampleName, { hash: string; bytes: number }> = {
-  "uno-blink-d12": { hash: "2034a1b8f508959a", bytes: 8945 },
-  "env-monitor-esp32": { hash: "8e52bbe4fc07a568", bytes: 13196 },
+  "uno-blink-d12": { hash: "5406cae2735da1eb", bytes: 8945 },
+  "env-monitor-esp32": { hash: "7a31304324cf3343", bytes: 13196 },
   "lesson-uno-r3-button": { hash: "1f6c95022ebf5736", bytes: 32911 },
-  "robot-line-follower": { hash: "f947b3b3f79a80d1", bytes: 23282 },
-  "drone-quad": { hash: "62e876e86e43eae9", bytes: 16005 },
+  "robot-line-follower": { hash: "81e697b24e4db736", bytes: 23288 },
+  "drone-quad": { hash: "9556e6a86f774add", bytes: 16011 },
 };
 const NAMES = Object.keys(EXAMPLES) as ExampleName[];
 
-const MONITOR_FULL_HASH = "8e52bbe4fc07a56800045de1579b8a22c725fb129a8de73e6efea5b08a3c0e79";
+const MONITOR_FULL_HASH = "7a31304324cf3343d32b3748cde71c683e2f6caff592a302c90b321b182c2006";
 const STORED_CHECKPOINT = "097630efe2ac0c752bc7ad7a4650ebe1e9f1a820cf67cf4d461af110aa6d127c";
 
 /** What the revision-140 monitor hashes to today. The stored checkpoint is not reproduced by it (OQ-3). */

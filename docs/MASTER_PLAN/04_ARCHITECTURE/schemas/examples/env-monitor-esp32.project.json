@@ -604,7 +604,7 @@
             "kind": "wrong-connection",
             "note": "Swap SDA and SCL on the board to see the I2C scan fail.",
             "symptom_ids": [
-              "i2c.no-ack"
+              "i2c-no-ack"
             ],
             "target": {
               "nets": [
@@ -882,7 +882,7 @@
         "kind": "wrong-connection",
         "note": "Swap SDA and SCL on the board to see the I2C scan fail.",
         "symptom_ids": [
-          "i2c.no-ack"
+          "i2c-no-ack"
         ],
         "target": {
           "nets": [

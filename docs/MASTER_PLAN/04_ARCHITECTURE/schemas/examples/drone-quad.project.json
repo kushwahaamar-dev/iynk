@@ -1270,7 +1270,7 @@
         "kind": "reversed-part",
         "note": "Swaps two phase wires on motor 2: it spins the other way.",
         "symptom_ids": [
-          "flips-on-takeoff"
+          "x-flips-on-takeoff"
         ],
         "target": {
           "component": "cmp_m2"
@@ -1283,7 +1283,7 @@
         "kind": "reversed-part",
         "note": "Fits the wrong-handed propeller on motor 3.",
         "symptom_ids": [
-          "yaw-spin-on-takeoff"
+          "x-yaw-spin-on-takeoff"
         ],
         "target": {
           "component": "cmp_p3"
@@ -1296,7 +1296,7 @@
         "kind": "brownout",
         "note": "Tired pack: the flight controller resets under a punch-out.",
         "symptom_ids": [
-          "fc-resets-in-flight"
+          "x-fc-resets-in-flight"
         ],
         "target": {
           "component": "cmp_bat"
