@@ -114,6 +114,15 @@ function inputOf(e: LogEvent): InputEntry | null {
   return { at: e.tNs, seq: d.seq, kind: d.kind as InputEntry["kind"], target: d.target, value: d.value };
 }
 
+/** Whole-string compare of every engine, model and dmath version; a difference refuses and shows both sides. */
+export function refuseIfVersionsDiffer(rec: ReplayRecord, running: ReplayRecord["versions"]): { ok: true } | { ok: false; shown: string[] } {
+  const side = (v: ReplayRecord["versions"]): string =>
+    [`engines ${describeEngines(v.engines)}`, `models ${describeEngines(v.models)}`, `dmath ${v.dmath}`].join("; ");
+  const logged = side(rec.versions);
+  const here = side(running);
+  return logged === here ? { ok: true } : { ok: false, shown: [logged, here] };
+}
+
 /** Reads a log back. It refuses a log made on other engine versions than the ones running, and says both. */
 export function fromReplayLog(log: ReplayLog, running: { engines: Record<string, string> }): ReplaySpec | { error: string } {
   const engines: Record<string, string> = {};
