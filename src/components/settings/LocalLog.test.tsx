@@ -42,7 +42,7 @@ test("lists entries as they arrive and clears them", () => {
 });
 
 test("the copied bug report text has no key even when an error quotes it", async () => {
-  localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, ai: { key: CANARY }, search: null, server: null }));
+  localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, search: { key: CANARY } }));
   const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
   vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
   renderLog();

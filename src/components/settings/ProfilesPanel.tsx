@@ -18,7 +18,6 @@ import { htmlLang } from "@/i18n/config";
 import { importLegacyKey, newKeyId, type ProfileStore } from "@/local/ai-profiles";
 import type { UsageStore } from "@/local/ai-usage";
 import type { KeysBackend } from "@/local/keys-backend";
-import { removeKey } from "@/lib/keys";
 import { PRESETS } from "@/protocol/ai-presets";
 import { ProviderForm } from "./ProviderForm";
 
@@ -151,7 +150,6 @@ export function ProfilesPanel({ store, usage, host, settings, legacy, t }: Profi
     try {
       const key = await importLegacyKey(legacy);
       if (key === null) return;
-      removeKey("ai");
       const profile: ProviderProfile = {
         id: newProfileId(Math.random),
         label: preset.label,
