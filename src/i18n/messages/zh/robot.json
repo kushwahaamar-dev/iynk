@@ -20,7 +20,31 @@
     "noProblems": "这个机器人没有发现问题。",
     "empty": "这个机器人还没有零件。先添加一个驱动底盘。",
     "undo": "撤销",
-    "redo": "重做"
+    "redo": "重做",
+    "added": "已添加{part}。",
+    "target": "要编辑的零件",
+    "properties": "属性",
+    "noTarget": "暂时没有可编辑的内容。",
+    "unitLength": "长度单位",
+    "unitMass": "质量单位",
+    "props": {
+      "mass": "质量",
+      "length": "长度",
+      "width": "宽度",
+      "height": "高度",
+      "diameter": "直径",
+      "track": "轮距",
+      "damping": "阻尼",
+      "friction": "摩擦",
+      "offset": "向前偏移"
+    },
+    "errors": {
+      "no-chassis": "请先添加底盘。",
+      "no-descriptor": "零件库里没有这个零件。",
+      "occupied": "机器人上的这个位置已被占用。",
+      "rejected": "这次更改被拒绝，没有添加任何内容。",
+      "value": "请输入数字。"
+    }
   },
   "parts": {
     "motor": "电机",

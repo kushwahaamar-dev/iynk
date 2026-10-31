@@ -20,7 +20,31 @@
     "noProblems": "Aucun problème trouvé dans ce robot.",
     "empty": "Ce robot n'a pas encore de pièces. Ajoutez une base motrice pour commencer.",
     "undo": "Annuler",
-    "redo": "Rétablir"
+    "redo": "Rétablir",
+    "added": "{part} ajouté.",
+    "target": "Pièce à modifier",
+    "properties": "Propriétés",
+    "noTarget": "Rien à modifier pour l'instant.",
+    "unitLength": "Unité de longueur",
+    "unitMass": "Unité de masse",
+    "props": {
+      "mass": "Masse",
+      "length": "Longueur",
+      "width": "Largeur",
+      "height": "Hauteur",
+      "diameter": "Diamètre",
+      "track": "Voie",
+      "damping": "Amortissement",
+      "friction": "Frottement",
+      "offset": "Décalage vers l'avant"
+    },
+    "errors": {
+      "no-chassis": "Ajoutez d'abord un châssis.",
+      "no-descriptor": "Cette pièce n'est pas dans la bibliothèque de pièces.",
+      "occupied": "Cet emplacement du robot est déjà pris.",
+      "rejected": "Le changement a été refusé. Rien n'a été ajouté.",
+      "value": "Saisissez un nombre."
+    }
   },
   "parts": {
     "motor": "Moteur",

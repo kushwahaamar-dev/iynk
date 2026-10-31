@@ -43,14 +43,14 @@ const REFUSAL_KEY: Record<PlaceRefusal, string> = { "off-board": "offBoard", quo
 const randomIds: IdSource = (prefix) => newId(prefix);
 const round2 = (n: number): number => Math.round(n * 100) / 100;
 
-function refdesPrefix(d: Descriptor): string {
+export function refdesPrefix(d: Descriptor): string {
   if (d.identity.refdes_prefix) return d.identity.refdes_prefix;
   const tag = d.identity.tags?.find((t) => PREFIX_OF_TAG[t]);
   return tag ? PREFIX_OF_TAG[tag]! : FALLBACK_PREFIX;
 }
 
 /** The lowest number after `prefix` that no board or part in the project uses. */
-function nextRefdes(state: ProjectState, prefix: string): string {
+export function nextRefdes(state: ProjectState, prefix: string): string {
   const used = new Set([...state.boards, ...state.components].map((item) => item.refdes));
   let n = 1;
   while (used.has(`${prefix}${n}`)) n++;

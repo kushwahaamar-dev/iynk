@@ -20,7 +20,31 @@
     "noProblems": "No problems found in this robot.",
     "empty": "This robot has no parts yet. Add a drive base to start.",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "added": "Added {part}.",
+    "target": "Part to edit",
+    "properties": "Properties",
+    "noTarget": "Nothing to edit yet.",
+    "unitLength": "Length unit",
+    "unitMass": "Mass unit",
+    "props": {
+      "mass": "Mass",
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "diameter": "Diameter",
+      "track": "Track width",
+      "damping": "Damping",
+      "friction": "Friction",
+      "offset": "Forward offset"
+    },
+    "errors": {
+      "no-chassis": "Add a chassis first.",
+      "no-descriptor": "This part is not in the parts library.",
+      "occupied": "That place on the robot is already taken.",
+      "rejected": "The change was refused. Nothing was added.",
+      "value": "Enter a number."
+    }
   },
   "parts": {
     "motor": "Motor",

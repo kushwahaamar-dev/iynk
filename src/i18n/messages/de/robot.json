@@ -20,7 +20,31 @@
     "noProblems": "In diesem Roboter wurden keine Probleme gefunden.",
     "empty": "Dieser Roboter hat noch keine Teile. Füge ein Fahrgestell hinzu, um zu beginnen.",
     "undo": "Rückgängig",
-    "redo": "Wiederholen"
+    "redo": "Wiederholen",
+    "added": "{part} hinzugefügt.",
+    "target": "Zu bearbeitendes Teil",
+    "properties": "Eigenschaften",
+    "noTarget": "Noch nichts zu bearbeiten.",
+    "unitLength": "Längeneinheit",
+    "unitMass": "Masseneinheit",
+    "props": {
+      "mass": "Masse",
+      "length": "Länge",
+      "width": "Breite",
+      "height": "Höhe",
+      "diameter": "Durchmesser",
+      "track": "Spurweite",
+      "damping": "Dämpfung",
+      "friction": "Reibung",
+      "offset": "Versatz nach vorn"
+    },
+    "errors": {
+      "no-chassis": "Füge zuerst ein Chassis hinzu.",
+      "no-descriptor": "Dieses Teil ist nicht in der Teilebibliothek.",
+      "occupied": "Dieser Platz am Roboter ist schon belegt.",
+      "rejected": "Die Änderung wurde abgelehnt. Es wurde nichts hinzugefügt.",
+      "value": "Gib eine Zahl ein."
+    }
   },
   "parts": {
     "motor": "Motor",
