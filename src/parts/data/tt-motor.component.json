@@ -1,0 +1,315 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.tt-motor",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "TT gear motor, 3 to 6 V, 1:48",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "The yellow TT gear motor of robot kits, with a 1:48 plastic gearbox and a 65 mm wheel. It is not modelled yet."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "tt-motor"
+    ],
+    "tags": [
+      "motor",
+      "gearmotor",
+      "robot",
+      "actuator",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components: fact sheet (Learn Arduino parts + common sensors/actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md section 13 is the figure's cited sheet; it has no TT motor entry."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/tt-motor.js",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "PLUS",
+      "name": {
+        "en": "Positive lead (red)"
+      },
+      "designator": "+",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "positive",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "MINUS",
+      "name": {
+        "en": "Negative lead (black)"
+      },
+      "designator": "-",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "negative",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "TT gearbox with 65 mm wheel",
+    "body": {
+      "w": 45,
+      "h": 18.8,
+      "d": 22.5
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/parts/tt-motor.js:2"
+    }
+  },
+  "ratings": {
+    "rated_voltage": {
+      "measure": "voltage",
+      "role": "recommended",
+      "description": {
+        "en": "Rated supply window."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "max": 6.0,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tt-motor.js:1"
+        },
+        "rationale": {
+          "en": "The 3 to 6 V window in the figure header. The header cites Adafruit 3777 measurements; that page was not read."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "free_current": {
+      "measure": "current",
+      "role": "consumption",
+      "description": {
+        "en": "Current with the wheel in the air at 6 V."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.16,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tt-motor.js:7"
+        },
+        "rationale": {
+          "en": "About 160 mA with the wheel free at 6 V, as the figure header says; the Adafruit 3777 page behind it was not read."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "wheel_speed": {
+      "measure": "rate",
+      "role": "characteristic",
+      "description": {
+        "en": "Wheel speed at 6 V, in rpm."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 220,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tt-motor.js:16"
+        },
+        "rationale": {
+          "en": "About 220 rpm at the wheel at 6 V, from the figure header (page not read). Written as a plain number of rpm."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "stall_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "description": {
+        "en": "Current when the shaft is held."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "min": 1.0,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tt-motor.js:8"
+        },
+        "rationale": {
+          "en": "The figure header says over 1 A held still or at the instant it starts; no exact value is given."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "parameters": [
+    {
+      "id": "demo",
+      "name": {
+        "en": "Show"
+      },
+      "kind": "environment",
+      "type": "enum",
+      "default": "stopped",
+      "values": [
+        "stopped",
+        "half",
+        "full",
+        "reversed",
+        "stalled",
+        "burnt"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A hobby gear motor shown on the breadboard. It has no electrical model yet."
+    },
+    "layers": [
+      {
+        "id": "plant",
+        "domain": "analog",
+        "reads": [
+          "PLUS",
+          "MINUS"
+        ],
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The figure has no electrical model, so the solver has nothing to run."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [],
+    "not_modelled": [
+      {
+        "en": "Everything. The figure has no elec line, so the solver sees a TT motor as nothing. The robotics benches model it in their own figure code until B13."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_elec_line",
+        "text": {
+          "en": "tt-motor.js has no elec line, so there is no legacy model to port."
+        },
+        "evidence": "figures/parts/tt-motor.js:61-63"
+      },
+      {
+        "id": "constants_unsourced",
+        "text": {
+          "en": "The figure uses a 4 ohm armature and a back-EMF constant for its own drawing; they are not given here because they have no source."
+        },
+        "evidence": "figures/parts/tt-motor.js:20"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "tt-motor",
+        "path": "public/figures/parts/tt-motor.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "PLUS",
+        "MINUS"
+      ],
+      "span": [
+        1,
+        30
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "TT motor",
+      "body_colour": "#f6cf3e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/tt-motor.js.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

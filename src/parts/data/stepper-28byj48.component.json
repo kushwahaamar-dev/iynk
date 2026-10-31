@@ -1,0 +1,553 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.stepper-28byj48",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "28BYJ-48 geared stepper, 5 V",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "A 5 V unipolar stepper with a 1:64 class gearbox and five leads. Only the four coils are modelled, as resistors to the common lead."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "stepper-28byj48"
+    ],
+    "tags": [
+      "stepper",
+      "28byj-48",
+      "unipolar",
+      "actuator",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components: fact sheet (Learn Arduino parts + common sensors/actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md section 15.1: datasheet values and teardown counts."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/stepper-28byj48.js",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: element stamps",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Lines 90 to 94 stamp the coils."
+    }
+  ],
+  "pins": [
+    {
+      "id": "B",
+      "name": {
+        "en": "Coil 1 end (blue)"
+      },
+      "designator": "B",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "P",
+      "name": {
+        "en": "Coil 2 end (pink)"
+      },
+      "designator": "P",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    },
+    {
+      "id": "Y",
+      "name": {
+        "en": "Coil 3 end (yellow)"
+      },
+      "designator": "Y",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 5.08,
+        "y": 0
+      }
+    },
+    {
+      "id": "O",
+      "name": {
+        "en": "Coil 4 end (orange)"
+      },
+      "designator": "O",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 7.62,
+        "y": 0
+      }
+    },
+    {
+      "id": "R",
+      "name": {
+        "en": "Common (red, +5 V)"
+      },
+      "designator": "R",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 10.16,
+        "y": 0
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "28 mm can, 5-pin plug",
+    "body": {
+      "w": 28,
+      "h": 28,
+      "d": 19
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 15.1"
+    }
+  },
+  "ratings": {
+    "coil_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Resistance of one coil."
+      },
+      "scope": {
+        "pins": [
+          "B",
+          "P",
+          "Y",
+          "O",
+          "R"
+        ]
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 50.0,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 15.1"
+        },
+        "rationale": {
+          "en": "50 ohm +-7 percent at 25 C, quoted verbatim by the fact sheet from the datasheet; the datasheet was not read here."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "rated_voltage": {
+      "measure": "voltage",
+      "role": "recommended",
+      "description": {
+        "en": "Rated supply."
+      },
+      "scope": {
+        "pins": [
+          "B",
+          "P",
+          "Y",
+          "O",
+          "R"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 5.0,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 15.1"
+        },
+        "rationale": {
+          "en": "5 V DC, quoted by the fact sheet from the datasheet (not read here)."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "full_steps_per_turn": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "description": {
+        "en": "Full steps per output turn."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 2037.8864,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 15.1; figures/parts/stepper-28byj48.js:28"
+        },
+        "rationale": {
+          "en": "32 full steps per rotor turn times a 63.68395 gearbox ratio counted from teardown tooth numbers (9/32, 11/22, 9/26, 10/31). Some batches are reported as 64:1."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "half_steps_per_turn": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "description": {
+        "en": "Half steps per output turn."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 4075.7728,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 15.1; figures/parts/stepper-28byj48.js:28"
+        },
+        "rationale": {
+          "en": "64 half steps per rotor turn times the same 63.68395 ratio."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "full_step_rate_limit": {
+      "measure": "frequency",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest full-step rate without a ramp."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "Hz",
+        "value": 510.0,
+        "confidence": "low",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 15.1; figures/parts/stepper-28byj48.js:29"
+        },
+        "rationale": {
+          "en": "About 510 full steps a second before it hums and stalls without a ramp. Community measurements per the fact sheet, unverified."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "parameters": [
+    {
+      "id": "wheel",
+      "name": {
+        "en": "On the shaft"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "pointer",
+      "values": [
+        "pointer",
+        "wheel"
+      ]
+    },
+    {
+      "id": "seq",
+      "name": {
+        "en": "Stepping"
+      },
+      "kind": "setting",
+      "type": "enum",
+      "default": "full",
+      "values": [
+        "full",
+        "half",
+        "wave"
+      ]
+    },
+    {
+      "id": "order",
+      "name": {
+        "en": "Pin order in code"
+      },
+      "kind": "environment",
+      "type": "enum",
+      "default": "8-10-9-11",
+      "values": [
+        "8-10-9-11",
+        "8-9-10-11"
+      ]
+    },
+    {
+      "id": "demo",
+      "name": {
+        "en": "Show"
+      },
+      "kind": "environment",
+      "type": "enum",
+      "default": "idle",
+      "values": [
+        "idle",
+        "turning",
+        "too fast",
+        "wrong pin order"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "Four resistive coils from a common lead; the step logic lives in the figure."
+    },
+    "layers": [
+      {
+        "id": "coil_b",
+        "domain": "analog",
+        "reads": [
+          "B",
+          "R"
+        ],
+        "summary": {
+          "en": "The blue coil as a resistor between the common lead and pin B."
+        },
+        "model": {
+          "kind": "element",
+          "element": "res",
+          "terminals": {
+            "a": "R",
+            "b": "B"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "coil_resistance",
+              "pick": "value",
+              "unit": "ohm"
+            }
+          }
+        }
+      },
+      {
+        "id": "coil_p",
+        "domain": "analog",
+        "reads": [
+          "P",
+          "R"
+        ],
+        "summary": {
+          "en": "The pink coil as a resistor between the common lead and pin P."
+        },
+        "model": {
+          "kind": "element",
+          "element": "res",
+          "terminals": {
+            "a": "R",
+            "b": "P"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "coil_resistance",
+              "pick": "value",
+              "unit": "ohm"
+            }
+          }
+        }
+      },
+      {
+        "id": "coil_y",
+        "domain": "analog",
+        "reads": [
+          "Y",
+          "R"
+        ],
+        "summary": {
+          "en": "The yellow coil as a resistor between the common lead and pin Y."
+        },
+        "model": {
+          "kind": "element",
+          "element": "res",
+          "terminals": {
+            "a": "R",
+            "b": "Y"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "coil_resistance",
+              "pick": "value",
+              "unit": "ohm"
+            }
+          }
+        }
+      },
+      {
+        "id": "coil_o",
+        "domain": "analog",
+        "reads": [
+          "O",
+          "R"
+        ],
+        "summary": {
+          "en": "The orange coil as a resistor between the common lead and pin O."
+        },
+        "model": {
+          "kind": "element",
+          "element": "res",
+          "terminals": {
+            "a": "R",
+            "b": "O"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "coil_resistance",
+              "pick": "value",
+              "unit": "ohm"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Four coils of 50 ohm from the common red lead to the blue, pink, yellow and orange leads."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Which coils are energised and in what order: step sequences, speed and stall stay in the figure."
+      },
+      {
+        "en": "Coil inductance, the gearbox and the torque."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "supply voltage",
+        "min": 0,
+        "max": 5,
+        "unit": "V"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "step_sequences_in_figure",
+        "text": {
+          "en": "Full, half and wave step tables, the pin-order check and the stall rate are figure code. The descriptor holds the coil resistance only."
+        },
+        "evidence": "figures/engine/bench-solve.js:90-94"
+      },
+      {
+        "id": "no_holding_torque",
+        "text": {
+          "en": "The fact sheet gives pull-in and self-positioning torque but no holding torque, so the mechanics block is left out."
+        }
+      },
+      {
+        "id": "datasheet_not_read",
+        "text": {
+          "en": "The coil resistance and the 5 V rating come from the fact sheet's quote of the datasheet, which was not read here, so they sit in the simulation slot."
+        }
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+        }
+      }
+    ],
+    "solver_requires": [
+      "res"
+    ],
+    "tests": [
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/stepper-28byj48.conformance.json",
+        "note": "Layers resolve, terminals are pins, every rating has its slot."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "stepper-28byj48",
+        "path": "public/figures/parts/stepper-28byj48.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "B",
+        "P",
+        "Y",
+        "O",
+        "R"
+      ],
+      "span": [
+        4,
+        4
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "28BYJ-48",
+      "body_colour": "#c3c9cb",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/stepper-28byj48.js and docs/facts/la-components.md section 15.1.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

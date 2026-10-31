@@ -1,0 +1,548 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.dc-motor",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "130-size brushed DC motor, 3 to 6 V",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "A small brushed DC hobby motor with two leads and a propeller. Its numbers are constants from the figure, not datasheet values."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "dc-motor"
+    ],
+    "tags": [
+      "motor",
+      "dc",
+      "actuator",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components: fact sheet (Learn Arduino parts + common sensors/actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md section 13: FA-130RA values, marked unverified."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/dc-motor.js",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: element stamps",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Line 110 stamps the motor between two nodes."
+    }
+  ],
+  "pins": [
+    {
+      "id": "PLUS",
+      "name": {
+        "en": "Positive lead"
+      },
+      "designator": "+",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "positive",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "MINUS",
+      "name": {
+        "en": "Negative lead"
+      },
+      "designator": "-",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "negative",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "130-size can",
+    "body": {
+      "w": 25,
+      "h": 20,
+      "d": 20
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/parts/dc-motor.js:2"
+    }
+  },
+  "ratings": {
+    "armature_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Winding resistance the solver uses to size the stall current."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 1.43,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "Armature resistance of an FA-130 class motor as used by the figure. no source found; constant in figures/parts/dc-motor.js:66"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "back_emf_constant": {
+      "measure": "other",
+      "role": "characteristic",
+      "description": {
+        "en": "Back-EMF in volts per rpm."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 0.000306,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:12 and 66"
+        },
+        "rationale": {
+          "en": "Volts of back-EMF per rpm, 0.306 mV. The figure quotes FA-130RA sheet values as approximate; the sheet was not read. The unit list has no volts per rpm, so the number is written as a plain ratio."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "no_load_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "description": {
+        "en": "Current with the shaft free and no propeller."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.12,
+        "confidence": "low",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 13; figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "No-load current. The fact sheet says kit motors vary and assumes 0.1 to 0.25 A at 5 V; the figure picks 0.12 A."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "propeller_load_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "description": {
+        "en": "Extra current from the propeller at full speed."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.08,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "no source found; constant in figures/parts/dc-motor.js:66; the propeller adds about 0.08 A at full speed."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "start_voltage": {
+      "measure": "voltage",
+      "role": "threshold",
+      "description": {
+        "en": "Lowest average voltage that starts the shaft."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 1.0,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "Average volts below which brush and bearing stiction hold the shaft. no source found; constant in figures/parts/dc-motor.js:66"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "stop_voltage": {
+      "measure": "voltage",
+      "role": "threshold",
+      "description": {
+        "en": "Average voltage under which a running shaft stops."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.6,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "Average volts below which a running shaft stops. no source found; constant in figures/parts/dc-motor.js:66"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "rated_voltage": {
+      "measure": "voltage",
+      "role": "recommended",
+      "description": {
+        "en": "Rated supply window."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "max": 6.0,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "The 3 to 6 V window the figure gives for a 130-size motor; the FA-130RA sheet was not read."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "max_voltage": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Voltage above which the winding burns out."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 9.0,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/dc-motor.js:66"
+        },
+        "rationale": {
+          "en": "Above 9 V the figure burns the winding open after a few seconds. no source found; constant in figures/parts/dc-motor.js:66"
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
+  "parameters": [
+    {
+      "id": "load",
+      "name": {
+        "en": "Load"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "prop",
+      "values": [
+        "prop",
+        "free",
+        "stalled"
+      ],
+      "affects": [
+        "dc"
+      ]
+    },
+    {
+      "id": "demo",
+      "name": {
+        "en": "Show"
+      },
+      "kind": "environment",
+      "type": "enum",
+      "default": "stopped",
+      "values": [
+        "stopped",
+        "half",
+        "full",
+        "reversed",
+        "stalled",
+        "burnt"
+      ]
+    }
+  ],
+  "mechanics": {
+    "motor": {
+      "r_ohm": 1.43,
+      "ke_vs_per_rad": 0.002922,
+      "source": {
+        "src": "figurejs",
+        "loc": "figures/parts/dc-motor.js:66"
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "A brushed DC motor read as a conductance between two leads, with start and stop voltages and a burn-out limit."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "PLUS",
+          "MINUS",
+          "load"
+        ],
+        "summary": {
+          "en": "A conductance between the two leads, set from the current the motor takes at the voltage it sees."
+        },
+        "model": {
+          "kind": "element",
+          "element": "motor",
+          "terminals": {
+            "a": "PLUS",
+            "b": "MINUS"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "armature_resistance",
+              "pick": "value",
+              "unit": "ohm"
+            },
+            "ke": {
+              "from_rating": "back_emf_constant",
+              "pick": "value"
+            },
+            "i0": {
+              "from_rating": "no_load_current",
+              "pick": "value",
+              "unit": "A"
+            },
+            "iload": {
+              "from_rating": "propeller_load_current",
+              "pick": "value",
+              "unit": "A"
+            },
+            "vstart": {
+              "from_rating": "start_voltage",
+              "pick": "value",
+              "unit": "V"
+            },
+            "vstop": {
+              "from_rating": "stop_voltage",
+              "pick": "value",
+              "unit": "V"
+            },
+            "vmax": {
+              "from_rating": "max_voltage",
+              "pick": "value",
+              "unit": "V"
+            },
+            "inductive": {
+              "value": true,
+              "rationale": {
+                "en": "The winding is an inductor, so switching it off without a flyback diode makes a spike."
+              },
+              "source": {
+                "src": "figurejs",
+                "loc": "figures/parts/dc-motor.js:66"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A two-lead brushed motor that draws the no-load current plus the propeller current once it spins, starts above one volt average and stops below 0.6 V."
+      },
+      {
+        "en": "Stall current of the supply voltage over the armature resistance when the shaft is held."
+      },
+      {
+        "en": "A winding that burns out above 9 V and a switch-off spike when there is no flyback diode."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Motor speed against torque beyond the propeller case, and the shaft inertia."
+      },
+      {
+        "en": "Brush noise and the heat of the winding over time."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "average voltage",
+        "min": 0.6,
+        "max": 9,
+        "unit": "V"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "constants_unsourced",
+        "text": {
+          "en": "Every number is a constant in the figure with no source. The fact sheet gives FA-130RA values and marks them unverified, so all of them sit in the simulation slot with low confidence."
+        }
+      },
+      {
+        "id": "solver_two_nodes",
+        "text": {
+          "en": "The solver stamps the motor between two nodes and reads only the resistance and a current table, not the back-EMF constant."
+        },
+        "evidence": "figures/engine/bench-solve.js:110"
+      },
+      {
+        "id": "load_not_wired",
+        "text": {
+          "en": "The load option (prop, free, stalled) changes the figure and the old solver loop but is not wired to a model parameter here; the propeller current is always used."
+        }
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+        }
+      }
+    ],
+    "solver_requires": [
+      "motor"
+    ],
+    "tests": [
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/dc-motor.conformance.json",
+        "note": "Layers resolve, terminals are pins, every rating has its slot."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "dc-motor",
+        "path": "public/figures/parts/dc-motor.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "PLUS",
+        "MINUS"
+      ],
+      "span": [
+        1,
+        30
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "DC motor",
+      "body_colour": "#c3c9cb",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/dc-motor.js and docs/facts/la-components.md section 13.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

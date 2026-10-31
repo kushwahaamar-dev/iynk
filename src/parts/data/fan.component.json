@@ -1,0 +1,470 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.fan",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "4010 axial fan, 5 V, brushless",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "A 40 mm brushless cooling fan with two leads. It needs the right polarity and its numbers are figure constants, not datasheet values."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "fan"
+    ],
+    "tags": [
+      "fan",
+      "motor",
+      "brushless",
+      "actuator",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components: fact sheet (Learn Arduino parts + common sensors/actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md sections 11 and 13 mention flyback diodes for motors."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/fan.js",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "PLUS",
+      "name": {
+        "en": "Positive lead (red)"
+      },
+      "designator": "+",
+      "type": "power_in",
+      "class": "power",
+      "polarity": "positive",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "MINUS",
+      "name": {
+        "en": "Negative lead (black)"
+      },
+      "designator": "-",
+      "type": "ground",
+      "class": "ground",
+      "polarity": "negative",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "40 x 40 x 10 mm frame",
+    "body": {
+      "w": 40,
+      "h": 40,
+      "d": 10
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/parts/fan.js:2"
+    }
+  },
+  "ratings": {
+    "rated_voltage": {
+      "measure": "voltage",
+      "role": "recommended",
+      "description": {
+        "en": "Supply window of the fan."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 4.0,
+        "typ": 5.0,
+        "max": 5.5,
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:20 and 54"
+        },
+        "rationale": {
+          "en": "Typical of 4010 5 V fans; the figure quotes distributor listings that were not read."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "nominal_current": {
+      "measure": "current",
+      "role": "consumption",
+      "description": {
+        "en": "Current at rated voltage."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.1,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:20"
+        },
+        "rationale": {
+          "en": "Modelled as 0.10 A at 5 V, between the listings the figure quotes (0.07 to 0.20 A). Listings not read."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "nominal_speed": {
+      "measure": "rate",
+      "role": "characteristic",
+      "description": {
+        "en": "Speed at rated voltage, in rpm."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 6000,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:20"
+        },
+        "rationale": {
+          "en": "6000 rpm at 5 V, a round number among the listings the figure quotes (listings not read). Unit is rpm written as a plain number."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "start_voltage": {
+      "measure": "voltage",
+      "role": "threshold",
+      "description": {
+        "en": "Average voltage needed to start."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 2.5,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:20"
+        },
+        "rationale": {
+          "en": "Below about 2.5 V average the fan stalls and starts again above it. no source found; constant in figures/parts/fan.js:20"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "stop_voltage": {
+      "measure": "voltage",
+      "role": "threshold",
+      "description": {
+        "en": "Average voltage at which speed reaches zero."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 1.8,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:20"
+        },
+        "rationale": {
+          "en": "Speed is zero at and below this average voltage. no source found; constant in figures/parts/fan.js:20"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "max_voltage": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Voltage above which the fan burns out."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 6.5,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:20"
+        },
+        "rationale": {
+          "en": "Above 6.5 V the driver chip in the hub fails. no source found; constant in figures/parts/fan.js:20"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "equivalent_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Resistance the motor element uses."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 50.0,
+        "derived_from": [
+          "nominal_current.simulation"
+        ],
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/fan.js:54"
+        },
+        "rationale": {
+          "en": "5 V over the 0.10 A nominal current. The live part list in src/sim/analog/live.ts:286 also uses 50 ohm for the fan."
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
+  "parameters": [
+    {
+      "id": "demo",
+      "name": {
+        "en": "Show"
+      },
+      "kind": "environment",
+      "type": "enum",
+      "default": "stopped",
+      "values": [
+        "stopped",
+        "half",
+        "full",
+        "reversed",
+        "burnt"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A brushless fan as a motor element with start and stop voltages and a burn-out limit."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "PLUS",
+          "MINUS"
+        ],
+        "summary": {
+          "en": "A motor element with the resistance of 5 V over the nominal current, a start and stop voltage and a burn-out limit."
+        },
+        "model": {
+          "kind": "element",
+          "element": "motor",
+          "terminals": {
+            "a": "PLUS",
+            "b": "MINUS"
+          },
+          "params": {
+            "ohms": {
+              "from_rating": "equivalent_resistance",
+              "pick": "value",
+              "unit": "ohm"
+            },
+            "vstart": {
+              "from_rating": "start_voltage",
+              "pick": "value",
+              "unit": "V"
+            },
+            "vstop": {
+              "from_rating": "stop_voltage",
+              "pick": "value",
+              "unit": "V"
+            },
+            "vmax": {
+              "from_rating": "max_voltage",
+              "pick": "value",
+              "unit": "V"
+            },
+            "inductive": {
+              "value": true,
+              "rationale": {
+                "en": "The stator coils are inductive, so a transistor that switches the fan off makes a spike."
+              },
+              "source": {
+                "src": "figurejs",
+                "loc": "figures/parts/fan.js:54"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A brushless fan as a motor element that stalls below 2.5 V average and runs above it."
+      },
+      {
+        "en": "A driver chip that fails above 6.5 V."
+      },
+      {
+        "en": "A switch-off spike when no flyback diode is across the fan."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Speed as a function of voltage inside the solver: the figure draws it, the element reads no speed."
+      },
+      {
+        "en": "Airflow, noise and the Hall sensor."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "average voltage",
+        "min": 1.8,
+        "max": 6.5,
+        "unit": "V"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "constants_unsourced",
+        "text": {
+          "en": "Every number is a figure constant with no source. The ratings the figure cites came from distributor listings that nobody read for this file, so all sit in the simulation slot."
+        }
+      },
+      {
+        "id": "reverse_polarity_not_in_model",
+        "text": {
+          "en": "The figure sets polar: true and draws a fan that does not spin when reversed, but the motor element has no polarity rule, so this part lists no reverse-polarity failure mode."
+        },
+        "evidence": "figures/parts/fan.js:54"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+        }
+      }
+    ],
+    "solver_requires": [
+      "motor"
+    ],
+    "tests": [
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/fan.conformance.json",
+        "note": "Layers resolve, terminals are pins, every rating has its slot."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "fan",
+        "path": "public/figures/parts/fan.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "PLUS",
+        "MINUS"
+      ],
+      "span": [
+        1,
+        30
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "Fan",
+      "body_colour": "#3f3b37",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/fan.js.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}
