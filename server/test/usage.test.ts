@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { cpSync, mkdirSync } from "node:fs";
+import { cpSync, mkdirSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import { addTokens, countRelayCall, countSearch, pruneUsage } from "../src/modules/ai/usage.ts";
@@ -138,14 +138,14 @@ test("the migration applies on a database made by the previous last migration", 
     const deps = fakeDeps();
     const older = join(scratch.dir, "older");
     mkdirSync(older);
-    cpSync(join(MIGRATIONS_DIR, "0001_identity.sql"), join(older, "0001_identity.sql"));
+    for (const name of readdirSync(MIGRATIONS_DIR).filter((file) => !file.startsWith("0005_"))) cpSync(join(MIGRATIONS_DIR, name), join(older, name));
     const options = { path: join(scratch.dir, "iynk.db"), sync: "normal" as const, backupsDir: join(scratch.dir, "backups"), serverVersion: "test" };
     const before = openStore({ ...options, migrationsDir: older }, deps);
-    assert.equal(before.schemaVersion(), 1);
+    assert.equal(before.schemaVersion(), 4);
     addDevice(before, "dev_a");
     before.close();
     const after = openStore({ ...options, migrationsDir: MIGRATIONS_DIR }, deps);
-    assert.equal(after.schemaVersion(), 2);
+    assert.equal(after.schemaVersion(), 5);
     assert.equal(after.transaction((tx) => countRelayCall(tx, deps.clock, "dev_a", "relay:anthropic", 1)).ok, true);
     assert.throws(() => after.transaction((tx) => tx.run("INSERT INTO api_tokens (id, kind, token_hash, scopes, created_at) VALUES ('t', 'other', x'01', '', 1)")));
     after.close();
