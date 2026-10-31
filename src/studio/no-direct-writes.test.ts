@@ -5,10 +5,11 @@ import { describe, expect, it } from "vitest";
 
 const ROOTS = ["src/studio", "src/components/studio"];
 const WRITER = path.join("src", "studio", "stores", "doc.ts");
-/** These write scratch sessions they create themselves (the B3 diagnostics probes, the breadboard test fixture), never the open project. */
+/** These write scratch sessions they create themselves (the B3 diagnostics probes, the breadboard test fixture, the dry run that plans a restore), never the open project. */
 const SCRATCH_SESSIONS = [
   path.join("src", "components", "studio", "diagnostics-run.ts"),
   path.join("src", "studio", "testing", "breadboard-fixture.ts"),
+  path.join("src", "studio", "history", "restore.ts"),
 ];
 const MUTATORS = "undo|redo|replace";
 
