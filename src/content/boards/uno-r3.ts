@@ -642,7 +642,7 @@ void loop() {
         { t: 2000, input: 'light', value: 300 },
       ],
     },
-    serial: { baud: 9600, sample: ['773', '773', '170', '170', '936'] },
+    serial: { baud: 9600, sample: ['773', '773', '170', '170', '937'] },
     runMs: 3000,
     checks: [
       { kind: 'serial', match: '^\\d+$', regex: true, minCount: 10, label: 'lessons.light.checks.1' },
@@ -1741,7 +1741,7 @@ void loop() {
         { t: 2500, input: 'force', value: 0 },
       ],
     },
-    serial: { baud: 9600, sample: ['682  5000 ohms', '682  5000 ohms', '974  503 ohms'] },
+    serial: { baud: 9600, sample: ['682  5000 ohms', '682  5000 ohms', '975  492 ohms'] },
     runMs: 4500,
     checks: [
       { kind: 'serial', match: '^682  5000 ohms$', regex: true, minCount: 3, byMs: 1500, label: 'lessons.force.checks.1' },
