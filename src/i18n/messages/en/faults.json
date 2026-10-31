@@ -1,0 +1,254 @@
+{
+  "breakIt": {
+    "title": "Break it",
+    "lede": "Put one fault into your circuit and see what the model does. Your project is not changed, and Restore brings everything back.",
+    "pick": "Pick a fault",
+    "surprise": "Surprise me",
+    "restore": "Restore",
+    "forBuddy": "For a buddy",
+    "applied": "Fault applied. Run the circuit to see the effect.",
+    "none": "No faults can be injected here yet.",
+    "explain": "What happened?",
+    "undone": "Fault removed.",
+    "needsDescriptor": "This part has no description of its failures yet, so it cannot be broken."
+  },
+  "diagnose": {
+    "title": "Find the fault",
+    "symptomHeading": "What you see",
+    "pickHeading": "What is the cause?",
+    "pick": "Pick the most likely cause",
+    "right": "Right. That is the cause.",
+    "wrong": "Not that one.",
+    "tryAgain": "Try again",
+    "giveUp": "Give up",
+    "showCause": "Show the cause",
+    "hideCause": "Hide the cause",
+    "fixHeading": "How to fix it",
+    "noEvidence": "No evidence has been recorded for this run.",
+    "sealedInfo": "The answer is sealed until you pick or give up.",
+    "addNote": "Add a note",
+    "skip": "Skip",
+    "transferTitle": "Does the same thing happen in a different circuit?",
+    "state": {
+      "presented": "The symptom is shown",
+      "observing": "Looking at the evidence",
+      "picking": "Choosing a cause",
+      "fixing": "Fixing the circuit",
+      "verified": "Fixed and checked",
+      "revealed": "Cause revealed"
+    }
+  },
+  "hint": {
+    "title": "Hints",
+    "level": {
+      "1": "A nudge about what to look at",
+      "2": "The area of the circuit to look at",
+      "3": "The kind of fault and the part, not the fix"
+    },
+    "open": "Open hint",
+    "generated": "Written for this circuit by the model",
+    "locked": "Locked until you open the hint before it",
+    "none": "No hint is available for this fault."
+  },
+  "record": {
+    "title": "Diagnosis record",
+    "cause": "Cause",
+    "symptom": "Symptom",
+    "evidence": "Evidence",
+    "hintLevel": "Hint level used",
+    "export": "Export",
+    "copy": "Copy",
+    "logOn": "Keep a local log on this device",
+    "logOff": "Local log is off",
+    "clear": "Clear the log",
+    "outcome": {
+      "clean": "Solved on your own",
+      "assisted": "Solved with a hint",
+      "helped": "Solved with the help of the ladder",
+      "revealed": "Cause shown after giving up"
+    },
+    "empty": "Nothing recorded yet."
+  },
+  "fidelity": {
+    "notChecked": "Not checked against hardware. This is what the model says, not what a bench measured.",
+    "checked": "Checked against a real bench measurement.",
+    "outside": "Outside what the model covers.",
+    "modelOnly": "Only the model shows this. No real part was measured.",
+    "mocked": "This value comes from a mock, not from a model of the part."
+  },
+  "check": {
+    "title": "Circuit check",
+    "run": "Check the circuit",
+    "none": "Nothing wrong was found.",
+    "found": "Problems found",
+    "skipped": "Skipped: the check could not see enough of this part or net."
+  },
+  "scan": {
+    "title": "I2C scan",
+    "run": "Scan the bus",
+    "found": "Devices found",
+    "none": "No device answered.",
+    "pins": "Pins used",
+    "noPins": "No I2C pins are connected."
+  },
+  "evidence": {
+    "kind": {
+      "pin-level": "Pin level",
+      "net-voltage": "Net voltage",
+      "branch-current": "Branch current",
+      "serial-line": "Serial line",
+      "state": "Part state",
+      "timeline": "Timeline"
+    }
+  },
+  "provenance": {
+    "computed": "Computed by the solver",
+    "approximation": "An approximation",
+    "mocked": "A mocked value"
+  },
+  "cause": {
+    "led-no-series-resistor": {
+      "title": "LED with no series resistor",
+      "why": "Nothing limits the current through the LED, so it draws far more than it should.",
+      "fix": "Put a resistor in series with the LED."
+    },
+    "led-reversed": {
+      "title": "LED the wrong way round",
+      "why": "An LED only conducts one way. Here it faces backwards, so no current flows.",
+      "fix": "Turn the LED so the long leg faces the positive side."
+    },
+    "output-contention": {
+      "title": "Two outputs fighting",
+      "why": "Two pins drive the same net to different levels, so they push against each other.",
+      "fix": "Drive the net from one output only, or make the other pin an input."
+    },
+    "supply-shorted-to-ground": {
+      "title": "Supply shorted to ground",
+      "why": "A path with almost no resistance joins the supply to ground, so the current is huge.",
+      "fix": "Remove the direct connection between the supply and ground."
+    },
+    "floating-input": {
+      "title": "Floating input",
+      "why": "An input pin is connected to nothing, so it picks up noise and reads random levels.",
+      "fix": "Tie the pin to a known level with a pull-up or pull-down."
+    },
+    "part-not-powered": {
+      "title": "Part not powered",
+      "why": "The part has no supply voltage on its power pin, so it does nothing.",
+      "fix": "Connect the power pin to the supply."
+    },
+    "button-no-pulldown": {
+      "title": "Button with no pull-down",
+      "why": "The button input has no resistor to a known level, so it floats when the button is open.",
+      "fix": "Add a pull-down resistor, or turn on the pull-up in code."
+    },
+    "open-connection": {
+      "title": "Open connection",
+      "why": "A wire or leg does not reach its target, so the path is broken.",
+      "fix": "Complete the connection."
+    },
+    "swapped-pins": {
+      "title": "Swapped pins",
+      "why": "Two pins are connected to each other's places, so signals arrive at the wrong pins.",
+      "fix": "Connect each pin to its own place."
+    },
+    "wrong-value": {
+      "title": "Wrong value",
+      "why": "A part has a value that does not suit the circuit, so the result is off.",
+      "fix": "Use the value the circuit needs."
+    },
+    "missing-ground": {
+      "title": "Missing ground",
+      "why": "The circuit has no connection back to ground, so no current can complete its loop.",
+      "fix": "Connect the ground pin to the ground rail."
+    },
+    "wrong-pin-in-code": {
+      "title": "Wrong pin in code",
+      "why": "The code uses a different pin number from the one the part is wired to.",
+      "fix": "Use the pin number the part is wired to."
+    },
+    "i2c-missing-pullup": {
+      "title": "I2C pull-up missing",
+      "why": "The I2C lines have no pull-up resistors, so they never rise to a high level.",
+      "fix": "Add a pull-up resistor from each I2C line to the supply."
+    },
+    "pin-overcurrent": {
+      "title": "Pin overcurrent",
+      "why": "A pin supplies more current than it can safely give.",
+      "fix": "Drive the load through a transistor, or use a larger resistor."
+    },
+    "brownout": {
+      "title": "Brown-out",
+      "why": "The supply sags under load, so the board resets or misbehaves.",
+      "fix": "Power the load from a separate supply, or reduce the load."
+    },
+    "reverse-polarity": {
+      "title": "Reverse polarity",
+      "why": "The supply is connected backwards.",
+      "fix": "Connect positive to positive and negative to negative."
+    },
+    "bus-device-not-modelled": {
+      "title": "Bus device not modelled",
+      "why": "A device on the bus has no model yet, so it cannot answer here.",
+      "fix": "Check the wiring and code against the datasheet; this simulator cannot show the device."
+    },
+    "library-not-modelled": {
+      "title": "Library not modelled",
+      "why": "The sketch uses a library the simulator does not model, so its calls have no effect.",
+      "fix": "Test the library on a real board."
+    },
+    "x-code.serial-baud-mismatch": {
+      "title": "Serial baud mismatch",
+      "why": "The sketch and the monitor use different baud rates, so the text is garbled.",
+      "fix": "Set the same baud rate in both."
+    },
+    "x-code.pin-mode-wrong": {
+      "title": "Pin mode wrong",
+      "why": "The pin is used as an output or an input but was set up the other way.",
+      "fix": "Call pinMode with the mode the code needs."
+    }
+  },
+  "symptom": {
+    "led-dark": "The LED stays dark",
+    "led-dim": "The LED is dim",
+    "led-burnt": "The LED burnt out",
+    "part-dead": "The part does nothing",
+    "part-hot": "The part gets hot",
+    "i2c-no-ack": "The device does not answer on I2C",
+    "reading-erratic": "The reading jumps around",
+    "button-erratic": "The button triggers by itself",
+    "supply-collapses": "The supply voltage collapses",
+    "mcu-resets": "The board keeps resetting",
+    "pin-level-wrong": "A pin shows the wrong level",
+    "pin-overloaded": "A pin is overloaded",
+    "serial-garbled": "The serial text is garbled",
+    "code-no-effect": "The code has no effect"
+  },
+  "hintTemplate": {
+    "wiring": {
+      "1": "Follow the signal from the source to the part.",
+      "2": "Look at the connections around {part}.",
+      "3": "Check what pin {pin} of {part} is connected to."
+    },
+    "power": {
+      "1": "Think about where the power comes from and where it goes back.",
+      "2": "Look at the supply and ground around {part}.",
+      "3": "Check the voltage on {net}; it should be about {expected} {unit}."
+    },
+    "code": {
+      "1": "Compare what the code says with what the circuit does.",
+      "2": "Look at the lines of code that touch {part}.",
+      "3": "Check which pin the code uses for {part}, and how that pin is set up."
+    },
+    "bus": {
+      "1": "Think about what the two ends of the bus need.",
+      "2": "Look at the bus lines that reach {part}.",
+      "3": "Check the lines on {net} and what they are connected to."
+    },
+    "value": {
+      "1": "Think about whether the numbers suit the part.",
+      "2": "Look at the value of {part}.",
+      "3": "Check that {value} {unit} suits {part}; about {expected} {unit} is expected."
+    }
+  }
+}

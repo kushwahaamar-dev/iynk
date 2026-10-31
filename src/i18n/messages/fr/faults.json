@@ -1,0 +1,254 @@
+{
+  "breakIt": {
+    "title": "Casse-le",
+    "lede": "Mets une panne dans ton circuit et regarde ce que fait le modèle. Ton projet ne change pas et Restaurer remet tout en place.",
+    "pick": "Choisis une panne",
+    "surprise": "Surprends-moi",
+    "restore": "Restaurer",
+    "forBuddy": "Pour un ami",
+    "applied": "Panne appliquée. Lance le circuit pour voir l'effet.",
+    "none": "Aucune panne ne peut encore être injectée ici.",
+    "explain": "Que s'est-il passé ?",
+    "undone": "Panne retirée.",
+    "needsDescriptor": "Cette pièce ne décrit pas encore ses pannes, on ne peut donc pas la casser."
+  },
+  "diagnose": {
+    "title": "Trouve la panne",
+    "symptomHeading": "Ce que tu vois",
+    "pickHeading": "Quelle est la cause ?",
+    "pick": "Choisis la cause la plus probable",
+    "right": "Exact. C'est la cause.",
+    "wrong": "Pas celle-là.",
+    "tryAgain": "Réessayer",
+    "giveUp": "Abandonner",
+    "showCause": "Montrer la cause",
+    "hideCause": "Masquer la cause",
+    "fixHeading": "Comment la réparer",
+    "noEvidence": "Aucune preuve n'a été enregistrée pour cette exécution.",
+    "sealedInfo": "La réponse est scellée tant que tu n'as pas choisi ou abandonné.",
+    "addNote": "Ajouter une note",
+    "skip": "Passer",
+    "transferTitle": "Se passe-t-il la même chose dans un autre circuit ?",
+    "state": {
+      "presented": "Le symptôme est affiché",
+      "observing": "Examen des preuves",
+      "picking": "Choix d'une cause",
+      "fixing": "Réparation du circuit",
+      "verified": "Réparé et vérifié",
+      "revealed": "Cause révélée"
+    }
+  },
+  "hint": {
+    "title": "Indices",
+    "level": {
+      "1": "Un coup de pouce sur où regarder",
+      "2": "La zone du circuit à regarder",
+      "3": "Le type de panne et la pièce, pas la solution"
+    },
+    "open": "Ouvrir l'indice",
+    "generated": "Écrit par le modèle pour ce circuit",
+    "locked": "Verrouillé tant que tu n'as pas ouvert l'indice précédent",
+    "none": "Aucun indice pour cette panne."
+  },
+  "record": {
+    "title": "Fiche de diagnostic",
+    "cause": "Cause",
+    "symptom": "Symptôme",
+    "evidence": "Preuves",
+    "hintLevel": "Niveau d'indice utilisé",
+    "export": "Exporter",
+    "copy": "Copier",
+    "logOn": "Garder un journal local sur cet appareil",
+    "logOff": "Le journal local est désactivé",
+    "clear": "Effacer le journal",
+    "outcome": {
+      "clean": "Résolu seul",
+      "assisted": "Résolu avec un indice",
+      "helped": "Résolu avec l'aide de l'échelle",
+      "revealed": "Cause montrée après abandon"
+    },
+    "empty": "Rien d'enregistré pour l'instant."
+  },
+  "fidelity": {
+    "notChecked": "Non vérifié sur du matériel. Ceci est ce que dit le modèle, pas ce qu'un banc a mesuré.",
+    "checked": "Vérifié par une vraie mesure sur banc.",
+    "outside": "Hors de ce que couvre le modèle.",
+    "modelOnly": "Seul le modèle montre ceci. Aucune pièce réelle n'a été mesurée.",
+    "mocked": "Cette valeur vient d'une simulation factice, pas d'un modèle de la pièce."
+  },
+  "check": {
+    "title": "Vérification du circuit",
+    "run": "Vérifier le circuit",
+    "none": "Aucun problème trouvé.",
+    "found": "Problèmes trouvés",
+    "skipped": "Ignoré : la vérification n'a pas vu assez de cette pièce ou de ce réseau."
+  },
+  "scan": {
+    "title": "Scan I2C",
+    "run": "Scanner le bus",
+    "found": "Périphériques trouvés",
+    "none": "Aucun périphérique n'a répondu.",
+    "pins": "Broches utilisées",
+    "noPins": "Aucune broche I2C n'est connectée."
+  },
+  "evidence": {
+    "kind": {
+      "pin-level": "Niveau de broche",
+      "net-voltage": "Tension du réseau",
+      "branch-current": "Courant de branche",
+      "serial-line": "Ligne série",
+      "state": "État de la pièce",
+      "timeline": "Chronologie"
+    }
+  },
+  "provenance": {
+    "computed": "Calculé par le solveur",
+    "approximation": "Une approximation",
+    "mocked": "Une valeur simulée"
+  },
+  "cause": {
+    "led-no-series-resistor": {
+      "title": "LED sans résistance en série",
+      "why": "Rien ne limite le courant dans la LED, elle en consomme bien trop.",
+      "fix": "Mets une résistance en série avec la LED."
+    },
+    "led-reversed": {
+      "title": "LED à l'envers",
+      "why": "Une LED ne conduit que dans un sens. Ici elle est à l'envers, aucun courant ne passe.",
+      "fix": "Retourne la LED pour que la patte longue soit côté positif."
+    },
+    "output-contention": {
+      "title": "Deux sorties qui se battent",
+      "why": "Deux broches imposent des niveaux différents au même réseau et s'opposent.",
+      "fix": "Pilote le réseau avec une seule sortie, ou mets l'autre broche en entrée."
+    },
+    "supply-shorted-to-ground": {
+      "title": "Alimentation en court-circuit avec la masse",
+      "why": "Un chemin presque sans résistance relie l'alimentation à la masse, le courant est énorme.",
+      "fix": "Retire la liaison directe entre l'alimentation et la masse."
+    },
+    "floating-input": {
+      "title": "Entrée flottante",
+      "why": "Une broche d'entrée n'est reliée à rien, elle capte du bruit et lit des niveaux au hasard.",
+      "fix": "Fixe la broche à un niveau connu avec un pull-up ou un pull-down."
+    },
+    "part-not-powered": {
+      "title": "Pièce non alimentée",
+      "why": "La pièce n'a pas de tension sur sa broche d'alimentation, elle ne fait rien.",
+      "fix": "Relie la broche d'alimentation à la source."
+    },
+    "button-no-pulldown": {
+      "title": "Bouton sans pull-down",
+      "why": "L'entrée du bouton n'a pas de résistance vers un niveau connu, elle flotte bouton ouvert.",
+      "fix": "Ajoute une résistance pull-down, ou active le pull-up dans le code."
+    },
+    "open-connection": {
+      "title": "Connexion ouverte",
+      "why": "Un fil ou une patte n'atteint pas sa cible, le chemin est coupé.",
+      "fix": "Termine la connexion."
+    },
+    "swapped-pins": {
+      "title": "Broches échangées",
+      "why": "Deux broches sont à la place l'une de l'autre, les signaux arrivent sur les mauvaises broches.",
+      "fix": "Relie chaque broche à sa place."
+    },
+    "wrong-value": {
+      "title": "Mauvaise valeur",
+      "why": "Une pièce a une valeur qui ne convient pas au circuit, le résultat est faussé.",
+      "fix": "Utilise la valeur dont le circuit a besoin."
+    },
+    "missing-ground": {
+      "title": "Masse manquante",
+      "why": "Le circuit n'a pas de retour vers la masse, le courant ne peut pas boucler.",
+      "fix": "Relie la broche de masse au rail de masse."
+    },
+    "wrong-pin-in-code": {
+      "title": "Mauvaise broche dans le code",
+      "why": "Le code utilise un autre numéro de broche que celui où la pièce est câblée.",
+      "fix": "Utilise le numéro de broche où la pièce est câblée."
+    },
+    "i2c-missing-pullup": {
+      "title": "Pull-up I2C manquant",
+      "why": "Les lignes I2C n'ont pas de résistances pull-up, elles ne montent jamais au niveau haut.",
+      "fix": "Ajoute une résistance pull-up de chaque ligne I2C vers l'alimentation."
+    },
+    "pin-overcurrent": {
+      "title": "Surintensité sur une broche",
+      "why": "Une broche fournit plus de courant qu'elle ne peut en donner sans risque.",
+      "fix": "Pilote la charge avec un transistor, ou prends une résistance plus grande."
+    },
+    "brownout": {
+      "title": "Chute de tension",
+      "why": "L'alimentation s'effondre en charge, la carte redémarre ou se comporte mal.",
+      "fix": "Alimente la charge avec une source séparée, ou réduis la charge."
+    },
+    "reverse-polarity": {
+      "title": "Polarité inversée",
+      "why": "L'alimentation est branchée à l'envers.",
+      "fix": "Relie le positif au positif et le négatif au négatif."
+    },
+    "bus-device-not-modelled": {
+      "title": "Périphérique de bus non modélisé",
+      "why": "Un périphérique du bus n'a pas encore de modèle, il ne peut pas répondre ici.",
+      "fix": "Vérifie le câblage et le code avec la fiche technique ; ce simulateur ne peut pas montrer le périphérique."
+    },
+    "library-not-modelled": {
+      "title": "Bibliothèque non modélisée",
+      "why": "Le sketch utilise une bibliothèque que le simulateur ne modélise pas, ses appels sont sans effet.",
+      "fix": "Teste la bibliothèque sur une vraie carte."
+    },
+    "x-code.serial-baud-mismatch": {
+      "title": "Débits série différents",
+      "why": "Le sketch et le moniteur utilisent des débits différents, le texte est illisible.",
+      "fix": "Règle le même débit des deux côtés."
+    },
+    "x-code.pin-mode-wrong": {
+      "title": "Mauvais mode de broche",
+      "why": "La broche sert de sortie ou d'entrée mais a été configurée à l'inverse.",
+      "fix": "Appelle pinMode avec le mode dont le code a besoin."
+    }
+  },
+  "symptom": {
+    "led-dark": "La LED reste éteinte",
+    "led-dim": "La LED est faible",
+    "led-burnt": "La LED a grillé",
+    "part-dead": "La pièce ne fait rien",
+    "part-hot": "La pièce chauffe",
+    "i2c-no-ack": "Le périphérique ne répond pas en I2C",
+    "reading-erratic": "La mesure saute",
+    "button-erratic": "Le bouton se déclenche tout seul",
+    "supply-collapses": "La tension d'alimentation s'effondre",
+    "mcu-resets": "La carte redémarre sans cesse",
+    "pin-level-wrong": "Une broche affiche le mauvais niveau",
+    "pin-overloaded": "Une broche est surchargée",
+    "serial-garbled": "Le texte série est illisible",
+    "code-no-effect": "Le code n'a aucun effet"
+  },
+  "hintTemplate": {
+    "wiring": {
+      "1": "Suis le signal de la source jusqu'à la pièce.",
+      "2": "Regarde les connexions autour de {part}.",
+      "3": "Vérifie à quoi la broche {pin} de {part} est reliée."
+    },
+    "power": {
+      "1": "Pense à d'où vient l'énergie et par où elle revient.",
+      "2": "Regarde l'alimentation et la masse autour de {part}.",
+      "3": "Vérifie la tension sur {net} ; elle devrait être d'environ {expected} {unit}."
+    },
+    "code": {
+      "1": "Compare ce que dit le code et ce que fait le circuit.",
+      "2": "Regarde les lignes de code qui touchent {part}.",
+      "3": "Vérifie quelle broche le code utilise pour {part} et comment elle est configurée."
+    },
+    "bus": {
+      "1": "Pense à ce dont les deux bouts du bus ont besoin.",
+      "2": "Regarde les lignes du bus qui arrivent à {part}.",
+      "3": "Vérifie les lignes de {net} et à quoi elles sont reliées."
+    },
+    "value": {
+      "1": "Demande-toi si les valeurs conviennent à la pièce.",
+      "2": "Regarde la valeur de {part}.",
+      "3": "Vérifie que {value} {unit} convient à {part} ; environ {expected} {unit} est attendu."
+    }
+  }
+}

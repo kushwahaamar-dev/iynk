@@ -1,0 +1,254 @@
+{
+  "breakIt": {
+    "title": "Kaputt machen",
+    "lede": "Baue einen Fehler in deine Schaltung ein und sieh, was das Modell macht. Dein Projekt bleibt unverändert, Wiederherstellen bringt alles zurück.",
+    "pick": "Wähle einen Fehler",
+    "surprise": "Überrasch mich",
+    "restore": "Wiederherstellen",
+    "forBuddy": "Für einen Freund",
+    "applied": "Fehler angewendet. Starte die Schaltung, um die Wirkung zu sehen.",
+    "none": "Hier lassen sich noch keine Fehler einbauen.",
+    "explain": "Was ist passiert?",
+    "undone": "Fehler entfernt.",
+    "needsDescriptor": "Dieses Bauteil beschreibt seine Ausfälle noch nicht und lässt sich daher nicht kaputt machen."
+  },
+  "diagnose": {
+    "title": "Finde den Fehler",
+    "symptomHeading": "Was du siehst",
+    "pickHeading": "Was ist die Ursache?",
+    "pick": "Wähle die wahrscheinlichste Ursache",
+    "right": "Richtig. Das ist die Ursache.",
+    "wrong": "Nicht diese.",
+    "tryAgain": "Nochmal versuchen",
+    "giveUp": "Aufgeben",
+    "showCause": "Ursache zeigen",
+    "hideCause": "Ursache verbergen",
+    "fixHeading": "So behebst du es",
+    "noEvidence": "Für diesen Lauf wurde kein Beleg aufgezeichnet.",
+    "sealedInfo": "Die Antwort bleibt versiegelt, bis du wählst oder aufgibst.",
+    "addNote": "Notiz hinzufügen",
+    "skip": "Überspringen",
+    "transferTitle": "Passiert dasselbe in einer anderen Schaltung?",
+    "state": {
+      "presented": "Das Symptom wird gezeigt",
+      "observing": "Belege ansehen",
+      "picking": "Ursache wählen",
+      "fixing": "Schaltung reparieren",
+      "verified": "Repariert und geprüft",
+      "revealed": "Ursache aufgedeckt"
+    }
+  },
+  "hint": {
+    "title": "Hinweise",
+    "level": {
+      "1": "Ein Anstoß, wohin du schauen sollst",
+      "2": "Der Bereich der Schaltung, den du ansehen sollst",
+      "3": "Die Art des Fehlers und das Bauteil, nicht die Lösung"
+    },
+    "open": "Hinweis öffnen",
+    "generated": "Vom Modell für diese Schaltung geschrieben",
+    "locked": "Gesperrt, bis du den vorigen Hinweis öffnest",
+    "none": "Für diesen Fehler gibt es keinen Hinweis."
+  },
+  "record": {
+    "title": "Diagnoseprotokoll",
+    "cause": "Ursache",
+    "symptom": "Symptom",
+    "evidence": "Belege",
+    "hintLevel": "Genutzte Hinweisstufe",
+    "export": "Exportieren",
+    "copy": "Kopieren",
+    "logOn": "Lokales Protokoll auf diesem Gerät führen",
+    "logOff": "Lokales Protokoll ist aus",
+    "clear": "Protokoll löschen",
+    "outcome": {
+      "clean": "Allein gelöst",
+      "assisted": "Mit einem Hinweis gelöst",
+      "helped": "Mit Hilfe der Hinweisleiter gelöst",
+      "revealed": "Ursache nach dem Aufgeben gezeigt"
+    },
+    "empty": "Noch nichts aufgezeichnet."
+  },
+  "fidelity": {
+    "notChecked": "Nicht an Hardware geprüft. Das sagt das Modell, nicht eine Messung am Prüfstand.",
+    "checked": "An einer echten Messung am Prüfstand geprüft.",
+    "outside": "Außerhalb dessen, was das Modell abdeckt.",
+    "modelOnly": "Nur das Modell zeigt das. Es wurde kein echtes Bauteil gemessen.",
+    "mocked": "Dieser Wert stammt aus einer Attrappe, nicht aus einem Modell des Bauteils."
+  },
+  "check": {
+    "title": "Schaltungsprüfung",
+    "run": "Schaltung prüfen",
+    "none": "Es wurde nichts Falsches gefunden.",
+    "found": "Gefundene Probleme",
+    "skipped": "Übersprungen: Die Prüfung sah nicht genug von diesem Bauteil oder Netz."
+  },
+  "scan": {
+    "title": "I2C-Scan",
+    "run": "Bus scannen",
+    "found": "Gefundene Geräte",
+    "none": "Kein Gerät hat geantwortet.",
+    "pins": "Verwendete Pins",
+    "noPins": "Es sind keine I2C-Pins verbunden."
+  },
+  "evidence": {
+    "kind": {
+      "pin-level": "Pegel am Pin",
+      "net-voltage": "Netzspannung",
+      "branch-current": "Zweigstrom",
+      "serial-line": "Serielle Zeile",
+      "state": "Zustand des Bauteils",
+      "timeline": "Zeitverlauf"
+    }
+  },
+  "provenance": {
+    "computed": "Vom Solver berechnet",
+    "approximation": "Eine Näherung",
+    "mocked": "Ein simulierter Wert"
+  },
+  "cause": {
+    "led-no-series-resistor": {
+      "title": "LED ohne Vorwiderstand",
+      "why": "Nichts begrenzt den Strom durch die LED, sie zieht weit mehr als sie sollte.",
+      "fix": "Setze einen Widerstand in Reihe zur LED."
+    },
+    "led-reversed": {
+      "title": "LED falsch herum",
+      "why": "Eine LED leitet nur in eine Richtung. Hier steht sie verkehrt, es fließt kein Strom.",
+      "fix": "Drehe die LED so, dass das lange Bein zur Plusseite zeigt."
+    },
+    "output-contention": {
+      "title": "Zwei Ausgänge kämpfen",
+      "why": "Zwei Pins treiben dasselbe Netz auf verschiedene Pegel und drücken gegeneinander.",
+      "fix": "Treibe das Netz nur von einem Ausgang oder mache den anderen Pin zum Eingang."
+    },
+    "supply-shorted-to-ground": {
+      "title": "Versorgung mit Masse kurzgeschlossen",
+      "why": "Ein Pfad ohne nennenswerten Widerstand verbindet Versorgung und Masse, der Strom ist riesig.",
+      "fix": "Entferne die direkte Verbindung zwischen Versorgung und Masse."
+    },
+    "floating-input": {
+      "title": "Offener Eingang",
+      "why": "Ein Eingangspin hängt an nichts, fängt Rauschen auf und liest zufällige Pegel.",
+      "fix": "Lege den Pin mit Pull-up oder Pull-down auf einen festen Pegel."
+    },
+    "part-not-powered": {
+      "title": "Bauteil ohne Versorgung",
+      "why": "Am Versorgungspin des Bauteils liegt keine Spannung, es tut nichts.",
+      "fix": "Verbinde den Versorgungspin mit der Versorgung."
+    },
+    "button-no-pulldown": {
+      "title": "Taster ohne Pull-down",
+      "why": "Der Tastereingang hat keinen Widerstand auf einen festen Pegel und schwebt bei offenem Taster.",
+      "fix": "Füge einen Pull-down-Widerstand hinzu oder aktiviere den Pull-up im Code."
+    },
+    "open-connection": {
+      "title": "Offene Verbindung",
+      "why": "Ein Draht oder Bein erreicht sein Ziel nicht, der Pfad ist unterbrochen.",
+      "fix": "Stelle die Verbindung her."
+    },
+    "swapped-pins": {
+      "title": "Vertauschte Pins",
+      "why": "Zwei Pins sitzen am Platz des anderen, Signale kommen an den falschen Pins an.",
+      "fix": "Verbinde jeden Pin mit seinem eigenen Platz."
+    },
+    "wrong-value": {
+      "title": "Falscher Wert",
+      "why": "Ein Bauteil hat einen Wert, der nicht zur Schaltung passt, das Ergebnis stimmt nicht.",
+      "fix": "Nimm den Wert, den die Schaltung braucht."
+    },
+    "missing-ground": {
+      "title": "Masse fehlt",
+      "why": "Die Schaltung hat keine Verbindung zurück zur Masse, der Strom kann seinen Kreis nicht schließen.",
+      "fix": "Verbinde den Massepin mit der Masseschiene."
+    },
+    "wrong-pin-in-code": {
+      "title": "Falscher Pin im Code",
+      "why": "Der Code nutzt eine andere Pinnummer als die, an der das Bauteil verdrahtet ist.",
+      "fix": "Nutze die Pinnummer, an der das Bauteil verdrahtet ist."
+    },
+    "i2c-missing-pullup": {
+      "title": "I2C-Pull-up fehlt",
+      "why": "Die I2C-Leitungen haben keine Pull-up-Widerstände und erreichen nie den High-Pegel.",
+      "fix": "Füge von jeder I2C-Leitung einen Pull-up-Widerstand zur Versorgung hinzu."
+    },
+    "pin-overcurrent": {
+      "title": "Überstrom am Pin",
+      "why": "Ein Pin liefert mehr Strom, als er sicher abgeben kann.",
+      "fix": "Treibe die Last über einen Transistor oder nimm einen größeren Widerstand."
+    },
+    "brownout": {
+      "title": "Spannungseinbruch",
+      "why": "Die Versorgung bricht unter Last ein, das Board startet neu oder spinnt.",
+      "fix": "Versorge die Last getrennt oder verringere die Last."
+    },
+    "reverse-polarity": {
+      "title": "Verpolung",
+      "why": "Die Versorgung ist falsch herum angeschlossen.",
+      "fix": "Verbinde Plus mit Plus und Minus mit Minus."
+    },
+    "bus-device-not-modelled": {
+      "title": "Busgerät nicht modelliert",
+      "why": "Für ein Gerät am Bus gibt es noch kein Modell, es kann hier nicht antworten.",
+      "fix": "Prüfe Verdrahtung und Code mit dem Datenblatt; dieser Simulator kann das Gerät nicht zeigen."
+    },
+    "library-not-modelled": {
+      "title": "Bibliothek nicht modelliert",
+      "why": "Der Sketch nutzt eine Bibliothek, die der Simulator nicht modelliert, ihre Aufrufe bleiben wirkungslos.",
+      "fix": "Teste die Bibliothek auf einem echten Board."
+    },
+    "x-code.serial-baud-mismatch": {
+      "title": "Serielle Baudrate passt nicht",
+      "why": "Sketch und Monitor nutzen verschiedene Baudraten, der Text ist unlesbar.",
+      "fix": "Stelle in beiden dieselbe Baudrate ein."
+    },
+    "x-code.pin-mode-wrong": {
+      "title": "Falscher Pin-Modus",
+      "why": "Der Pin wird als Ausgang oder Eingang genutzt, wurde aber andersherum eingerichtet.",
+      "fix": "Rufe pinMode mit dem Modus auf, den der Code braucht."
+    }
+  },
+  "symptom": {
+    "led-dark": "Die LED bleibt dunkel",
+    "led-dim": "Die LED leuchtet schwach",
+    "led-burnt": "Die LED ist durchgebrannt",
+    "part-dead": "Das Bauteil tut nichts",
+    "part-hot": "Das Bauteil wird heiß",
+    "i2c-no-ack": "Das Gerät antwortet nicht über I2C",
+    "reading-erratic": "Der Messwert springt",
+    "button-erratic": "Der Taster löst von selbst aus",
+    "supply-collapses": "Die Versorgungsspannung bricht ein",
+    "mcu-resets": "Das Board startet ständig neu",
+    "pin-level-wrong": "Ein Pin zeigt den falschen Pegel",
+    "pin-overloaded": "Ein Pin ist überlastet",
+    "serial-garbled": "Der serielle Text ist unlesbar",
+    "code-no-effect": "Der Code bewirkt nichts"
+  },
+  "hintTemplate": {
+    "wiring": {
+      "1": "Verfolge das Signal von der Quelle bis zum Bauteil.",
+      "2": "Sieh dir die Verbindungen um {part} an.",
+      "3": "Prüfe, womit Pin {pin} von {part} verbunden ist."
+    },
+    "power": {
+      "1": "Überlege, woher die Energie kommt und wohin sie zurückfließt.",
+      "2": "Sieh dir Versorgung und Masse um {part} an.",
+      "3": "Prüfe die Spannung auf {net}; sie sollte etwa {expected} {unit} betragen."
+    },
+    "code": {
+      "1": "Vergleiche, was der Code sagt, mit dem, was die Schaltung tut.",
+      "2": "Sieh dir die Codezeilen an, die {part} betreffen.",
+      "3": "Prüfe, welchen Pin der Code für {part} nutzt und wie dieser Pin eingerichtet ist."
+    },
+    "bus": {
+      "1": "Überlege, was die beiden Enden des Busses brauchen.",
+      "2": "Sieh dir die Busleitungen an, die {part} erreichen.",
+      "3": "Prüfe die Leitungen auf {net} und womit sie verbunden sind."
+    },
+    "value": {
+      "1": "Überlege, ob die Zahlen zum Bauteil passen.",
+      "2": "Sieh dir den Wert von {part} an.",
+      "3": "Prüfe, ob {value} {unit} zu {part} passt; erwartet werden etwa {expected} {unit}."
+    }
+  }
+}
