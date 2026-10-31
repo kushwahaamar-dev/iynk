@@ -7,11 +7,11 @@ import { labelText, type BoardPins } from "@/studio/checks";
 export type CheckJobError = "no-source" | "no-board" | "unsupported-language";
 
 /** Check kinds that read pins; a Verilog board has no such pins. */
-const PIN_KINDS: readonly ProjectCheck["kind"][] = ["pin-level", "pin-toggles", "pwm", "tone", "servo", "responds"];
+export const PIN_KINDS: readonly ProjectCheck["kind"][] = ["pin-level", "pin-toggles", "pwm", "tone", "servo", "responds"];
 
-const PLAIN_PIN = /^(?:D|GP|GPIO|P|IO)(\d+)$/;
+export const PLAIN_PIN = /^(?:D|GP|GPIO|P|IO)(\d+)$/;
 
-function plainPin(pin: string): number | undefined {
+export function plainPin(pin: string): number | undefined {
   const m = PLAIN_PIN.exec(pin.trim());
   return m ? Number(m[1]) : undefined;
 }
