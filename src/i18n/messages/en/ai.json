@@ -1,85 +1,19 @@
 {
   "panel": {
     "title": "Lab partner",
-    "byline": "Muse Spark · hints first, friends first",
     "intro": "Ask about your wiring, your code or a fault. I give hints before answers, and if a friend in your room has done this lesson, I ask them first.",
     "inputLabel": "Ask your lab partner",
     "placeholder": "Ask about the bench…",
-    "send": "Send",
-    "stop": "Stop",
-    "newChat": "New chat",
     "thinking": "Thinking…",
     "you": "You",
     "partner": "Partner",
     "stopped": "Stopped.",
-    "retry": "Try again",
-    "sources": "Sources",
-    "suggestions": "Try asking",
-    "accepted": "You accepted the {kind} change.",
-    "rejected": "You rejected the {kind} change.",
-    "kinds": {
-      "code": "code",
-      "wire": "wiring",
-      "part": "parts"
-    },
     "code": "Code",
     "transcript": "Conversation with your lab partner"
   },
-  "hint": {
-    "label": "Stuck?",
-    "hint": "Give me a hint",
-    "another": "Another hint",
-    "show": "Show me",
-    "askHint": "Give me a hint, not the answer.",
-    "askAnother": "Another hint, please.",
-    "askShow": "Show me the fix."
-  },
-  "suggest": {
-    "fault": "Why is this happening: {fault}?",
-    "error": "What does this compile error mean?",
-    "failed": "Why did “{test}” fail?",
-    "start": "What should I try first?",
-    "code": "What does this code do?",
-    "wiring": "Is my wiring right?",
-    "drone": "Will this drone fly well?",
-    "safety": "What should I be careful about?"
-  },
   "tools": {
-    "highlight": "Look at {part}",
-    "highlightOff": "The 3D figure isn’t loaded yet, so this part isn’t highlighted.",
-    "showAgain": "Show me again",
-    "change": {
-      "code": "Proposed code change",
-      "wire": "Proposed wiring change",
-      "part": "Proposed parts change"
-    },
-    "accept": "Accept",
-    "reject": "Reject",
-    "accepted": "Accepted",
-    "rejected": "Rejected",
-    "manual": "This bench can’t apply it for you. Copy it and make the change yourself.",
     "copy": "Copy",
-    "copied": "Copied",
-    "unchanged": {
-      "one": "{count} unchanged line",
-      "other": "{count} unchanged lines"
-    },
-    "diffLabel": "Changes: lines starting with + are added, lines starting with − are removed.",
-    "askPeer": "Asked {name} to explain",
-    "askPeerNoRoom": "A friend who has done this could explain it. Invite someone to build with you.",
-    "askPeerPending": "Ask {name} to explain?",
-    "askPeerSend": "Send",
-    "askPeerDecline": "Don’t send",
-    "askPeerDeclined": "Not sent to {name}.",
-    "invite": "Invite a friend",
-    "opened": "Opened {tab}",
-    "tabs": {
-      "partner": "Partner",
-      "together": "Together",
-      "real": "Build it for real",
-      "hardware": "Hardware"
-    },
-    "question": "“{question}”"
+    "copied": "Copied"
   },
   "errors": {
     "not_configured": "The lab partner isn’t set up on this deployment.",
@@ -95,17 +29,6 @@
     "what": "The AI partner",
     "unreachable": "Couldn’t reach the server to check the partner.",
     "check": "Check again"
-  },
-  "voice": {
-    "hold": "Hold to talk (or press M)",
-    "stopRecording": "Stop and send (or press M)",
-    "recording": "Listening… let go to send.",
-    "transcribing": "Turning your voice into text…",
-    "denied": "Microphone access is blocked. Allow it in your browser to talk.",
-    "unsupported": "Voice input isn’t available in this browser.",
-    "unavailable": "Voice isn’t set up on this deployment.",
-    "empty": "I didn’t catch that. Try again, a little closer to the mic.",
-    "failed": "Your voice couldn’t be turned into text. Try again or type."
   },
   "partner": {
     "state": {

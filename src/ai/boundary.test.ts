@@ -17,7 +17,7 @@ const files = sources(SRC).map((path) => ({
   text: readFileSync(path, "utf8"),
 }));
 
-const NAMES_SECRET_READER = ["ai/custody.ts", "ai/search-key.ts", "lib/keys/headers.ts", "lib/keys/store.ts", "local/ai-profiles.ts"];
+const NAMES_SECRET_READER = ["ai/custody.ts", "ai/search-key.ts", "lib/keys/store.ts", "local/ai-profiles.ts"];
 
 test("only the key custodians name readSecret", () => {
   const users = files.filter(({ text }) => /\breadSecret\b/.test(text)).map(({ name }) => name);

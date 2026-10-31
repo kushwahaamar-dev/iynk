@@ -276,20 +276,6 @@ export class RoomClient {
     };
   }
 
-  setTranslation(id: string, locale: Locale, text: string) {
-    const messages = this.state.messages.map((msg) =>
-      msg.id === id ? { ...msg, translations: { ...msg.translations, [locale]: text } } : msg,
-    );
-    this.set({ messages });
-  }
-
-  failTranslation(id: string, locale: Locale) {
-    const messages = this.state.messages.map((msg) =>
-      msg.id === id && !msg.untranslated?.includes(locale) ? { ...msg, untranslated: [...(msg.untranslated ?? []), locale] } : msg,
-    );
-    this.set({ messages });
-  }
-
   leave(reason: RoomEnd = "left") {
     if (this.state.ended) return;
     clearTimeout(this.pump);

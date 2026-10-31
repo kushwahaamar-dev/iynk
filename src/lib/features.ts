@@ -1,26 +1,25 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import type { Features as ServerFeatures } from "@/lib/server/env";
-import { fetchConfig, type ConfigDoc } from "@/server-client/probe";
+import { openDb } from "@/local/db";
+import { idbProfileStore as idbAiProfileStore } from "@/local/ai-profiles";
+import { fetchConfig, probeServer, type ConfigDoc } from "@/server-client/probe";
+import { idbProfileStore, openServerDb, resolveServerUrl } from "@/server-client/profile";
 
-export type Features = ServerFeatures & { hw: boolean };
+export type Features = { ai: boolean; search: boolean; hw: boolean };
 
 /**
- * Which hackathon features this deployment has (GET /config.json).
- * The server render and the first client render see "loading" with every
- * feature off; the answer is fetched once per page load and shared by every
- * caller. "error" means the config could not be fetched, which is a different
- * state from a feature that is not set up (a static host has no config at all).
+ * What this browser and its server can do. `ai` is on when the person has saved a provider profile, `search` when
+ * their server (the saved one, else the one in GET /config.json) offers the search proxy. The server render and the
+ * first client render see "loading" with every feature off; the answer is fetched once per page load and shared by
+ * every caller. "error" means the config could not be fetched, which is a different state from a feature that is
+ * not set up (a static host has no config at all).
  */
 export type FeatureState = { status: "loading" | "ready" | "error"; features: Features };
 
 export const NO_FEATURES: Features = Object.freeze({
   ai: false,
-  voice: false,
   search: false,
-  realtime: false,
-  gemini: false,
   hw: false,
 });
 
@@ -35,14 +34,32 @@ function publish(next: FeatureState) {
   for (const listener of listeners) listener();
 }
 
-function featuresOf(config: ConfigDoc | null): Features {
-  // Realtime and hardware stay off until later phases; gemini has no reader.
-  return { ...NO_FEATURES, ...config?.modules };
+async function hasProfile(): Promise<boolean> {
+  try {
+    return (await idbAiProfileStore(await openDb()).list()).length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function hasSearchProxy(config: ConfigDoc | null): Promise<boolean> {
+  try {
+    const url = resolveServerUrl(config, await idbProfileStore(openServerDb).read());
+    return url !== null && (await probeServer(url)).info?.features.searchProxy === true;
+  } catch {
+    return false;
+  }
+}
+
+async function featuresOf(config: ConfigDoc | null): Promise<Features> {
+  // Hardware stays off until a later phase.
+  const [ai, search] = await Promise.all([hasProfile(), hasSearchProxy(config)]);
+  return { ...NO_FEATURES, ai, search };
 }
 
 async function fetchFeatures(): Promise<void> {
   const result = await fetchConfig();
-  publish(result.ok ? { status: "ready", features: featuresOf(result.config) } : { status: "error", features: NO_FEATURES });
+  publish(result.ok ? { status: "ready", features: await featuresOf(result.config) } : { status: "error", features: NO_FEATURES });
 }
 
 /** One request at a time, and none once the answer is in. */

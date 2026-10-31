@@ -3,11 +3,9 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Button, Chip, cx, EmptyState, TextArea } from "@/components/ui";
 import { htmlLang, type Locale } from "@/i18n/config";
-import { useFeatures } from "@/lib/features";
 import { MAX_CHAT_LENGTH, type ChatMsg, type Peer, type RoomApi, type SystemEvent } from "@/lib/realtime";
 import type { TogetherT } from "./messages";
 import { PeerAvatar } from "./PeerAvatar";
-import { VoiceButton } from "./VoiceButton";
 
 function systemLine(t: TogetherT, event: SystemEvent): string {
   switch (event.event) {
@@ -26,7 +24,6 @@ function Message({
   mine,
   locale,
   t,
-  translating,
   time,
 }: {
   msg: ChatMsg;
@@ -34,7 +31,6 @@ function Message({
   mine: boolean;
   locale: Locale;
   t: TogetherT;
-  translating: boolean;
   time: string;
 }) {
   const [original, setOriginal] = useState(false);
@@ -64,20 +60,12 @@ function Message({
           {shown}
         </p>
         {msg.pending ? <p className="text-xs text-muted">{t("chat.sending")}</p> : null}
-        {msg.lang !== locale ? (
+        {translation !== undefined ? (
           <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted">
-            {translation !== undefined ? (
-              <>
-                <span>{t("chat.translatedFrom", { lang: t(`languages.${msg.lang}`) })}</span>
-                <Button size="sm" variant="ghost" onClick={() => setOriginal((v) => !v)} className="-my-2 px-2 py-1 text-xs underline underline-offset-2">
-                  {original ? t("chat.showTranslation") : t("chat.showOriginal")}
-                </Button>
-              </>
-            ) : msg.untranslated?.includes(locale) ? (
-              <span>{t("chat.translateFailed")}</span>
-            ) : translating ? (
-              <span>{t("chat.translating")}</span>
-            ) : null}
+            <span>{t("chat.translatedFrom", { lang: t(`languages.${msg.lang}`) })}</span>
+            <Button size="sm" variant="ghost" onClick={() => setOriginal((v) => !v)} className="-my-2 px-2 py-1 text-xs underline underline-offset-2">
+              {original ? t("chat.showTranslation") : t("chat.showOriginal")}
+            </Button>
           </p>
         ) : null}
       </div>
@@ -85,10 +73,9 @@ function Message({
   );
 }
 
-/** The room chat: every line in the reader's language, the original a tap away; voice too. */
+/** The room chat: every line as written, with a translation and the original a tap away when one came with it. */
 export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; locale: Locale }) {
   const id = useId();
-  const { features, status } = useFeatures();
   const [draft, setDraft] = useState("");
   const list = useRef<HTMLDivElement>(null);
   const end = useRef<HTMLDivElement>(null);
@@ -128,18 +115,11 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
     }
   };
 
-  const translateReady = status === "ready" && features.ai;
-  const voiceReady = status === "ready" && features.voice;
-  // What isn't set up, said once: not one line above the chat and another under it.
-  const offNote =
-    status !== "ready" ? null : !features.ai && !features.voice ? t("chat.offBoth") : !features.ai ? t("chat.translateOff") : !features.voice ? t("chat.voice.off") : null;
-
   return (
     <section aria-labelledby={`${id}-title`} className="flex min-h-0 flex-col gap-2">
       <h3 id={`${id}-title`} className="text-base font-bold">
         {t("chat.title")}
       </h3>
-      {offNote ? <p className="text-xs text-muted">{offNote}</p> : null}
       <div
         ref={list}
         role="log"
@@ -166,7 +146,6 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
                   mine={msg.from === room.you.id}
                   locale={locale}
                   t={t}
-                  translating={translateReady}
                   time={clock.format(msg.ts)}
                 />
               ),
@@ -176,7 +155,6 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
         <div ref={end} aria-hidden="true" className="-mt-3 h-px shrink-0" />
       </div>
       <form onSubmit={send} className="flex items-end gap-2">
-        {voiceReady ? <VoiceButton t={t} lang={locale} enabled onText={(text, lang) => room.chat(text, "voice", { lang })} /> : null}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <TextArea
             id={`${id}-draft`}

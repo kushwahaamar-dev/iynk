@@ -9,7 +9,6 @@ import { PanelSkeleton, useSearchAvailability } from "@/components/search/shared
 import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
-import { DOCK_TAB_EVENT } from "@/lib/ai/run-tools";
 import { useFeatures, type Features } from "@/lib/features";
 import { useTogether } from "@/lib/realtime";
 import { ROOM_PARAM } from "@/lib/realtime/config";
@@ -43,12 +42,6 @@ function firstWorkingTab(lab: LabKind): DockTab {
 
 function isDockTab(value: string): value is DockTab {
   return (DOCK_TABS as readonly string[]).includes(value);
-}
-
-function tabFromEvent(event: Event): DockTab | null {
-  if (!(event instanceof CustomEvent)) return null;
-  const tab = (event.detail as { tab?: unknown } | null)?.tab;
-  return typeof tab === "string" && isDockTab(tab) ? tab : null;
 }
 
 function roomInAddress() {
@@ -159,18 +152,6 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       window.removeEventListener("popstate", read);
     };
   }, [together]);
-
-  useEffect(() => {
-    const onDockTab = (event: Event) => {
-      const next = tabFromEvent(event);
-      if (!next || !tabShown(next, features)) return;
-      choose(next);
-      setDismissedRoom(false);
-      setOpen(true);
-    };
-    window.addEventListener(DOCK_TAB_EVENT, onDockTab);
-    return () => window.removeEventListener(DOCK_TAB_EVENT, onDockTab);
-  }, [features]);
 
   // On a desk the drawer takes focus when you open it, or when a room link needs your name; a room link that
   // opens it for someone already named leaves focus where it is.

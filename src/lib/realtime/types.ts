@@ -39,8 +39,6 @@ export type ChatMsg = {
   system?: SystemEvent;
   /** Additive: true until the relay has echoed our own message. */
   pending?: boolean;
-  /** Additive: languages the translation service couldn't produce for this line. */
-  untranslated?: Locale[];
   /** Additive: the sender's name when they sent it (they may have left since). */
   name?: string;
 };

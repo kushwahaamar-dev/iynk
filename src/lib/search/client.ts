@@ -2,12 +2,13 @@
 // becomes one of a few codes the panels have words for; nothing upstream is shown raw.
 
 import { readSearchKey } from "@/ai/search-key";
-import { PROVIDER_KEY_HEADER } from "@/lib/keys/headers";
 import { track } from "@/lib/telemetry";
 import { NeedsEnrolment } from "@/server-client/types";
 import type { ServerClient } from "@/server-client/client";
 import type { EventsInput, NearbyInput, OffersInput, VideosInput, WebInput } from "./schema";
 import type { EventsResponse, NearbyResponse, OffersResponse, VideosResponse, WebResponse } from "./types";
+
+const PROVIDER_KEY_HEADER = "X-Iynk-Provider-Key";
 
 export type FailCode = "needs_server" | "not_configured" | "no_key" | "rate_limited" | "quota_exhausted" | "failed";
 

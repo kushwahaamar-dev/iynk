@@ -8,12 +8,7 @@ const flags = vi.hoisted(() => ({
   status: "ready" as "loading" | "ready" | "error",
   features: {
     ai: false,
-   
-    voice: false,
     search: false,
-    db: false,
-    realtime: false,
-    gemini: false,
     hw: false,
   },
 }));
@@ -152,20 +147,6 @@ describe("LabDock", () => {
     fireEvent.click(screen.getByRole("button", { name: dock.open }));
     expect(await screen.findByRole("complementary", { name: dock.label })).toBeTruthy();
     expect(await screen.findByRole("tab", { name: dock.tabs.hardware })).toBeTruthy();
-  });
-
-  test("a dock-tab event opens the drawer on that tab and ignores a hidden one", () => {
-    renderDock();
-    act(() => {
-      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "real" } }));
-    });
-    expect(drawer()).toBeTruthy();
-    expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
-    act(() => {
-      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "hardware" } }));
-    });
-    expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
-    expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
   });
 
   test("a room in the address opens the drawer on Together", async () => {

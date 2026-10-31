@@ -7,6 +7,13 @@ import { I18nProvider } from "@/i18n/client";
 import { removeAllKeys, setKey } from "@/lib/keys/store";
 import type { Offer, PartOffers } from "@/lib/search/types";
 
+const features = vi.hoisted(() => ({ search: true }));
+
+vi.mock("@/lib/features", () => ({
+  useFeatures: () => ({ status: "ready", features: { ai: false, search: features.search, hw: false } }),
+  reloadFeatures: () => undefined,
+}));
+
 const design: DroneDesign = {
   model: {
     motors: 4,
@@ -50,7 +57,7 @@ const offer = (title: string, price: number, extra: Partial<Offer> = {}): Offer 
 function server(prices: Record<string, PartOffers["offers"]>) {
   return vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
     const path = String(input);
-    if (path === "/config.json") return Response.json({ server: null, protocol: 1, modules: { ai: false, search: true, voice: false } });
+    if (path === "/config.json") return Response.json({ server: null, protocol: 1 });
     if (path === "/api/search/offers") {
       const body = JSON.parse(String(init?.body)) as { parts: { key: string }[] };
       return Response.json({
@@ -83,6 +90,7 @@ const renderPanel = (props: Parameters<typeof RealBuildPanel>[0]) =>
   );
 
 beforeEach(() => {
+  features.search = true;
   localStorage.clear();
   setKey("search", "iynk-canary-SEARCH-0001-do-not-use");
   vi.stubGlobal("fetch", server({}));
@@ -160,12 +168,12 @@ describe("RealBuildPanel", () => {
   });
 
   it("with search off, lists a bench's parts without prices and sums a drone at catalogue prices", async () => {
-    // Fresh modules: the feature flags are a module singleton that earlier tests filled with search on.
+    features.search = false;
     vi.resetModules();
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: string | URL | Request) =>
-        String(input) === "/config.json" ? Response.json({ server: null, protocol: 1, modules: { ai: false, search: false, voice: false } }) : new Response("not found", { status: 404 }),
+        String(input) === "/config.json" ? Response.json({ server: null, protocol: 1 }) : new Response("not found", { status: 404 }),
       ),
     );
     const { RealBuildPanel: Panel } = await import("./RealBuildPanel");

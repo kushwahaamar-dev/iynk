@@ -1,85 +1,19 @@
 {
   "panel": {
     "title": "Laborpartner",
-    "byline": "Muse Spark · erst Tipps, erst Freunde",
     "intro": "Frag nach deiner Verkabelung, deinem Code oder einem Fehler. Ich gebe Tipps vor Antworten, und wenn jemand in deinem Raum diese Lektion schon gemacht hat, frage ich zuerst diese Person.",
     "inputLabel": "Frag deinen Laborpartner",
     "placeholder": "Frag etwas zum Aufbau …",
-    "send": "Senden",
-    "stop": "Stopp",
-    "newChat": "Neuer Chat",
     "thinking": "Denke nach …",
     "you": "Du",
     "partner": "Partner",
     "stopped": "Gestoppt.",
-    "retry": "Nochmal versuchen",
-    "sources": "Quellen",
-    "suggestions": "Frag zum Beispiel",
-    "accepted": "Du hast die Änderung ({kind}) angenommen.",
-    "rejected": "Du hast die Änderung ({kind}) abgelehnt.",
-    "kinds": {
-      "code": "Code",
-      "wire": "Verkabelung",
-      "part": "Bauteile"
-    },
     "code": "Code",
     "transcript": "Unterhaltung mit deinem Laborpartner"
   },
-  "hint": {
-    "label": "Hängst du fest?",
-    "hint": "Gib mir einen Tipp",
-    "another": "Noch ein Tipp",
-    "show": "Zeig es mir",
-    "askHint": "Gib mir einen Tipp, nicht die Lösung.",
-    "askAnother": "Noch einen Tipp, bitte.",
-    "askShow": "Zeig mir die Lösung."
-  },
-  "suggest": {
-    "fault": "Warum passiert das: {fault}?",
-    "error": "Was bedeutet dieser Kompilierfehler?",
-    "failed": "Warum ist „{test}“ fehlgeschlagen?",
-    "start": "Was sollte ich zuerst ausprobieren?",
-    "code": "Was macht dieser Code?",
-    "wiring": "Ist meine Verkabelung richtig?",
-    "drone": "Fliegt diese Drohne gut?",
-    "safety": "Worauf muss ich aufpassen?"
-  },
   "tools": {
-    "highlight": "Schau dir {part} an",
-    "highlightOff": "Die 3D-Abbildung ist noch nicht geladen, deshalb ist dieses Bauteil nicht hervorgehoben.",
-    "showAgain": "Nochmal zeigen",
-    "change": {
-      "code": "Vorgeschlagene Code-Änderung",
-      "wire": "Vorgeschlagene Verkabelungsänderung",
-      "part": "Vorgeschlagene Bauteiländerung"
-    },
-    "accept": "Annehmen",
-    "reject": "Ablehnen",
-    "accepted": "Angenommen",
-    "rejected": "Abgelehnt",
-    "manual": "Dieser Aufbau kann die Änderung nicht für dich übernehmen. Kopiere sie und ändere es selbst.",
     "copy": "Kopieren",
-    "copied": "Kopiert",
-    "unchanged": {
-      "one": "{count} unveränderte Zeile",
-      "other": "{count} unveränderte Zeilen"
-    },
-    "diffLabel": "Änderungen: Zeilen mit + werden hinzugefügt, Zeilen mit − werden entfernt.",
-    "askPeer": "{name} gebeten, es zu erklären",
-    "askPeerNoRoom": "Jemand, der das schon gemacht hat, könnte es dir erklären. Lade jemanden ein, mit dir zu bauen.",
-    "askPeerPending": "{name} bitten, es zu erklären?",
-    "askPeerSend": "Senden",
-    "askPeerDecline": "Nicht senden",
-    "askPeerDeclined": "Nicht an {name} gesendet.",
-    "invite": "Freund einladen",
-    "opened": "{tab} geöffnet",
-    "tabs": {
-      "partner": "Partner",
-      "together": "Gemeinsam",
-      "real": "In echt bauen",
-      "hardware": "Hardware"
-    },
-    "question": "„{question}“"
+    "copied": "Kopiert"
   },
   "errors": {
     "not_configured": "Der Laborpartner ist in dieser Installation nicht eingerichtet.",
@@ -95,17 +29,6 @@
     "what": "Der KI-Partner",
     "unreachable": "Der Server ist nicht erreichbar, um den Partner zu prüfen.",
     "check": "Erneut prüfen"
-  },
-  "voice": {
-    "hold": "Gedrückt halten zum Sprechen (oder M drücken)",
-    "stopRecording": "Stoppen und senden (oder M drücken)",
-    "recording": "Ich höre zu … loslassen zum Senden.",
-    "transcribing": "Deine Stimme wird in Text umgewandelt …",
-    "denied": "Der Mikrofonzugriff ist blockiert. Erlaube ihn im Browser, um zu sprechen.",
-    "unsupported": "Spracheingabe ist in diesem Browser nicht verfügbar.",
-    "unavailable": "Sprache ist in dieser Installation nicht eingerichtet.",
-    "empty": "Ich habe nichts verstanden. Versuch es nochmal, etwas näher am Mikrofon.",
-    "failed": "Deine Stimme konnte nicht in Text umgewandelt werden. Versuch es nochmal oder tippe."
   },
   "partner": {
     "state": {

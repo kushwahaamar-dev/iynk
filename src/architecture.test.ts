@@ -337,7 +337,7 @@ describe("moduleOf and resolveSpec", () => {
     expect(moduleOf("src/components/ui/a.tsx")).toBe("ui");
     expect(moduleOf("src/app/[lang]/page.tsx")).toBe("ui");
     expect(moduleOf("src/i18n/server.ts")).toBe("content");
-    expect(moduleOf("src/lib/server/a.ts")).toBe("labs");
+    expect(moduleOf("src/lib/search/a.ts")).toBe("labs");
     expect(moduleOf("server/src/a.ts")).toBe("server");
   });
 

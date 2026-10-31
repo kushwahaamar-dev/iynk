@@ -4,7 +4,6 @@ import { useState, type FormEvent } from "react";
 import type { LabDockProps } from "@/components/dock/types";
 import { Button, Callout, InlineStatus, Skeleton, SkeletonGroup, TextInput } from "@/components/ui";
 import { useCommonT, useLocale } from "@/i18n/client";
-import { useFeatures } from "@/lib/features";
 import { parseRoomInput, RoomProvider, useTogether, type Together } from "@/lib/realtime";
 import { ChatPanel } from "./ChatPanel";
 import { IdentityForm } from "./IdentityForm";
@@ -46,9 +45,6 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
   const locale = useLocale();
   const [renaming, setRenaming] = useState(false);
   const { room, roomId, identity, transport } = together;
-  const { status, features } = useFeatures();
-  // Chat translation runs on the AI service; without it the intro doesn't promise it.
-  const translates = status !== "ready" || features.ai;
 
   if (transport === null) return <Callout tone="warn">{t("panel.unavailable")}</Callout>;
 
@@ -84,7 +80,7 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
           {t(`panel.ended.${together.ended}`)}
         </Callout>
       ) : null}
-      <p className="text-sm text-pretty">{translates ? t("panel.intro") : t("panel.introPlain")}</p>
+      <p className="text-sm text-pretty">{t("panel.introPlain")}</p>
       <Button variant="primary" className="self-start" onClick={together.start}>
         {together.ended ? t("panel.again") : t("panel.start")}
       </Button>

@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { checkCounts, checkEnvNames, checkLinks, runChecks, scanText, schemaNamesOf } from './copy-check.mjs';
+import { checkCounts, checkLinks, runChecks, scanText } from './copy-check.mjs';
 
 const banned = [
   'validated',
@@ -55,29 +55,6 @@ describe('checkCounts', () => {
     expect(checkCounts(good.replace('>2<', '>5<'), counts)[0].message).toContain('says 5');
     expect(checkCounts('<!--count:items-->3<!--/count-->', counts)).toHaveLength(2);
     expect(checkCounts(`${good}\n<!--count:lessons-->4<!--/count-->`, counts)[0]).toMatchObject({ line: 2 });
-  });
-});
-
-describe('checkEnvNames', () => {
-  const doc = (rows) => `<!-- env-names: x -->\n\n| Name | Default |\n|---|---|\n${rows}\n\nprose\n`;
-
-  it('passes when the table and the schema agree and prose covers the rest', () => {
-    const text = `${doc('| `A_ONE` | 0 |')}\`B_TWO\` is set at build time.`;
-    expect(checkEnvNames(text, ['A_ONE', 'B_TWO'])).toEqual([]);
-  });
-
-  it('fails on a name missing from the doc and on a name missing from the schema', () => {
-    expect(checkEnvNames(doc('| `A_ONE` | 0 |'), ['A_ONE', 'B_TWO'])[0].message).toContain('B_TWO');
-    expect(checkEnvNames(doc('| `A_ONE` | 0 |\n| `GONE` | 0 |'), ['A_ONE'])[0].message).toContain('GONE');
-  });
-
-  it('fails without the marker', () => {
-    expect(checkEnvNames('| `A` | 0 |', ['A'])).toHaveLength(1);
-  });
-
-  it('reads the keys of the schema object', () => {
-    const src = 'const text = 1;\nconst schema = {\n  A_ONE: text,\n  B_TWO: x.y(),\n};\n  NOT_ME: 1,';
-    expect(schemaNamesOf(src)).toEqual(['A_ONE', 'B_TWO', 'NOT_ME']);
   });
 });
 
