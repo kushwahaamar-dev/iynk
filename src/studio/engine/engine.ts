@@ -1,3 +1,4 @@
+import type { Project } from "../../project/generated/types.ts";
 import type { DocStore } from "../stores/doc.ts";
 import type { Selectable, SessionStore } from "../stores/session.ts";
 import type { ToolHost } from "../tools/host.ts";
@@ -5,7 +6,7 @@ import type { ToolCtx, ToolPointerEvent } from "../tools/types.ts";
 import { GESTURE_SETTLE_MS } from "./constants.ts";
 import { buildDrawList } from "./draw-list.ts";
 import { GridIndex, pickAt, slopFor } from "./hit.ts";
-import type { ArtMode, ArtProvider, Hit, PointMm, Renderer, ResolvedPartShape, Scene, Viewport } from "./types.ts";
+import type { ArtMode, ArtProvider, DrawList, Hit, PointMm, Renderer, ResolvedPartShape, Scene, Viewport } from "./types.ts";
 import { fitRect, panBy, pxToMm, zoomAround } from "./viewport.ts";
 
 const DEFAULT_ZOOM = 4;
@@ -40,6 +41,8 @@ export type EditorEngineDeps = {
   snapMm: () => number;
   artMode: () => ArtMode;
   mountOptions: Parameters<Renderer["mount"]>[1];
+  /** What a view that draws itself (the schematic) puts on the canvas. Undefined draws the placements and wires of the view. */
+  fixed?: (state: Project, viewId: string) => DrawList | undefined;
 };
 
 type Pinch = { distance: number; mid: PointMm };
@@ -98,6 +101,7 @@ export function createEditorEngine(deps: EditorEngineDeps): EditorEngine {
       prev: scene,
       mode: deps.artMode(),
       overlays: session.getState().preview,
+      fixed: deps.fixed?.(doc.getState().state, viewId()),
     });
     grid.rebuild(next.targets);
     scene = { ...next, index: grid };

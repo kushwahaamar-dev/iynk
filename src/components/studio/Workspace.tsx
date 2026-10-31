@@ -1,19 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { PartnerPanel, type PartnerHost } from "@/components/ai";
 import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
-import { Button, Callout, Dialog, EmptyState, Icon, Kbd, Skeleton } from "@/components/ui";
+import { Button, Callout, Dialog, EmptyState, Icon, Kbd, Skeleton, cx } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
 import { check } from "@/lib/interp";
 import type { Diagnostic } from "@/lib/interp/errors";
+import type { PinRef } from "@/project/generated/types";
 import { buildPartIndex } from "@/parts/search";
 import { builtinRegistry } from "@/parts/builtin";
 import { fallbackSpec } from "@/parts/fallback";
 import { classifyImpact } from "@/project/opImpact";
 import { createArtProvider } from "@/studio/art/figure-art";
+import { runCommand } from "@/studio/commands";
 import { STUDIO_KEYS, installKeymap } from "@/studio/commands/keymap";
 import { registerHistoryCommands } from "@/studio/commands/history";
 import { firstFirmwareSource } from "@/studio/code/sources";
@@ -34,6 +37,8 @@ import { createRunStore, type RunStore } from "@/studio/stores/run";
 import { useStoreSelector } from "@/studio/stores/select";
 import { createSessionStore, type SessionStore } from "@/studio/stores/session";
 import { createUiStore, type UiStore } from "@/studio/stores/ui";
+import { buildPinMap, livePins } from "@/studio/views/board";
+import { VIEW_DEFS, viewIdFor, type ViewKind } from "@/studio/views/registry";
 import { createToolHost, type ToolHost } from "@/studio/tools/host";
 import { commitWirePick, createAnnouncer, type Announcer } from "@/studio/tools/keyboard";
 import { createPlaceTool, type PlaceTool } from "@/studio/tools/place";
@@ -51,6 +56,7 @@ import { PinPicker } from "./PinPicker";
 import { Problems } from "./Problems";
 import { RegionLayout } from "./RegionLayout";
 import { RunBar } from "./RunBar";
+import { ViewTabs } from "./ViewTabs";
 import { SerialPane } from "./SerialPane";
 import { StatusLine } from "./StatusLine";
 import { StudioSettings, useReducedMotion } from "./StudioSettings";
@@ -70,7 +76,13 @@ export interface WorkspaceProps {
   lang: Locale;
 }
 
+const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), {
+  ssr: false,
+  loading: () => <Skeleton className="m-4 h-96 rounded-xl" />,
+});
+
 const registry = builtinRegistry();
+const SCENE_ERROR = "views.sceneError";
 const EDITABLE = ".cm-editor, input, textarea, select, [contenteditable='true']";
 const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
 
@@ -111,8 +123,10 @@ function focusKind(): "canvas" | "code" | "other" {
  */
 function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, onNotice }: GraphInput): Graph {
   const state = doc.getState().state;
-  const session = createSessionStore((state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const ui = createUiStore(projectId);
+  const shownView = viewIdFor(state, ui.getState().activeView);
+  if (shownView === undefined) ui.set("activeView", "breadboard");
+  const session = createSessionStore(shownView ?? (state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const run = createRunStore();
 
   const tools = createToolHost({ doc, session });
@@ -132,6 +146,19 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, on
     snapMm: () => ui.getState().snapMm,
     artMode: () => ui.getState().artMode,
     mountOptions: { locale: lang, theme: "light", reduceMotion: reduceMotion() },
+    fixed: (current, id) => {
+      const kind = current.views.find((v) => v.id === id)?.kind;
+      const scene = VIEW_DEFS.find((def) => def.kind === kind)?.scene;
+      if (!scene) return undefined;
+      try {
+        const built = scene(current, id, registry);
+        if (session.getState().status?.key === SCENE_ERROR) session.setStatus(null);
+        return built;
+      } catch {
+        session.setStatus({ key: SCENE_ERROR });
+        return { items: [], targets: [] };
+      }
+    },
   });
 
   const toolCtx = (): ToolCtx => {
@@ -369,6 +396,47 @@ function NotOpened({ status, error, messages }: { status: Exclude<OpenStatus, "l
   );
 }
 
+type BoardPanelProps = {
+  doc: DocStore;
+  session: SessionStore;
+  run: RunStore;
+  announcer: Announcer;
+  onWireFrom: (from: WireEndRef) => void;
+  messages: StudioMessages;
+  lang: Locale;
+};
+
+function BoardPanel({ doc, session, run, announcer, onWireFrom, messages, lang }: BoardPanelProps) {
+  const state = useDeferredValue(useStoreSelector(doc, (s) => s.state));
+  const frame = useStoreSelector(run, (s) => s.frame);
+  const running = useStoreSelector(run, (s) => s.phase === "running");
+  const selectedNet = useStoreSelector(session, (s) => s.focusNet ?? undefined);
+  const boardId = state.boards[0]?.id ?? "";
+  const model = useMemo(() => buildPinMap(state, boardId, registry), [state, boardId]);
+  const live = useMemo(() => (frame ? livePins(state, frame, boardId) : {}), [state, frame, boardId]);
+
+  function selectNet(net: string | undefined) {
+    session.setFocusNet(net ?? null);
+    if (net === undefined) announcer.say("studioWire.announce.netCleared");
+    else announcer.say("studioWire.announce.netHighlighted", { net: state.nets.find((n) => n.id === net)?.name ?? net });
+  }
+
+  return (
+    <div className="min-h-0 flex-1 overflow-auto">
+      <PinMap
+        model={model}
+        live={live}
+        running={running}
+        selectedNet={selectedNet}
+        onSelectNet={selectNet}
+        onWireFrom={(pin: PinRef) => onWireFrom({ kind: "pin", c: pin.c, p: pin.p })}
+        messages={messages.studio}
+        lang={lang}
+      />
+    </div>
+  );
+}
+
 type RegionsProps = {
   graph: Graph;
   doc: DocStore;
@@ -378,17 +446,20 @@ type RegionsProps = {
   notices: readonly LinkNotice[];
   onDismiss: (notice: LinkNotice) => void;
   onPlaceAtCentre: (ref: string) => void;
+  onWireFrom: (from: WireEndRef) => void;
   /** Where the newest problem list and the one the person last went to are kept for the F8 keys. */
   problemsRef: MutableRefObject<Problem[]>;
   currentProblemRef: MutableRefObject<string | null>;
 };
 
-function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, problemsRef, currentProblemRef }: RegionsProps) {
-  const { ui, session, run, engine, tools, place, link, controller } = graph;
+function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef }: RegionsProps) {
+  const { ui, session, run, engine, tools, place, link, controller, announcer } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
   const armed = useStoreSelector(session, (s) => s.armedPart);
+  const activeView = useStoreSelector(ui, (s) => s.activeView);
+  const sceneFailed = useStoreSelector(session, (s) => s.status?.key === SCENE_ERROR);
   const diagnostics = useFirmwareDiagnostics(doc);
   const problems = useProblems(doc, run, diagnostics);
   const partIndex = useMemo(() => buildPartIndex(registry), []);
@@ -431,7 +502,18 @@ function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPl
       }}
       centre={
         <div className="flex min-h-0 flex-1 flex-col">
-          <CanvasView engine={engine} controller={controller} messages={t} />
+          <div className="border-b border-rule px-2 py-1">
+            <ViewTabs active={activeView} onChange={(kind) => runCommand(`view.${kind}`, { doc, session, ui })} messages={t} lang={lang} />
+          </div>
+          {sceneFailed ? (
+            <Callout tone="warn" live className="m-2">
+              {t.views.sceneError}
+            </Callout>
+          ) : null}
+          <div className={cx("min-h-0 flex-1 flex-col", activeView === "board" ? "hidden" : "flex")}>
+            <CanvasView engine={engine} controller={controller} messages={t} />
+          </div>
+          {activeView === "board" ? <BoardPanel doc={doc} session={session} run={run} announcer={announcer} onWireFrom={onWireFrom} messages={messages} lang={lang} /> : null}
           <StatusLine status={controller.status} session={session} run={run} ui={ui} messages={t} runMessages={messages.studioRun} lang={lang} />
         </div>
       }
@@ -564,6 +646,20 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
   }, [graph, doc, autorun, messages.studio.layout]);
 
   useEffect(() => {
+    if (!graph) return;
+    const tabs = messages.studio.views.tab;
+    let shown = graph.ui.getState().activeView;
+    return graph.ui.subscribe(() => {
+      const next = graph.ui.getState().activeView;
+      if (next === shown) return;
+      shown = next;
+      graph.announcer.say("studio.a11y.viewAnnounce", { view: tabs[next] });
+      // The canvas is hidden in the board view, and a key press there would have nowhere to go.
+      if (next === "board") requestAnimationFrame(() => root.current?.querySelector<HTMLElement>("[role=tab][aria-selected=true]")?.focus());
+    });
+  }, [graph, messages.studio.views.tab]);
+
+  useEffect(() => {
     const made = buildGraph({
       doc,
       services,
@@ -576,6 +672,12 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
     setGraph(made);
     return made.dispose;
   }, [doc, services, projectId, lang, messages]);
+
+  function wireFromBoard(from: WireEndRef) {
+    if (!graph) return;
+    runCommand("view.breadboard", { doc, session: graph.session, ui: graph.ui });
+    setWireFrom(from);
+  }
 
   function placeAtCentre(ref: string) {
     if (!graph) return;
@@ -598,6 +700,7 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
             notices={notices}
             onDismiss={(notice) => setNotices((now) => now.filter((n) => n !== notice))}
             onPlaceAtCentre={placeAtCentre}
+            onWireFrom={wireFromBoard}
             problemsRef={problemsRef}
             currentProblemRef={currentProblemRef}
           />

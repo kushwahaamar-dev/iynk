@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "Breadboard view",
+      "schematic": "Schematic view",
+      "board": "Board view",
       "fit": "Fit everything",
       "fitSelection": "Fit the selection",
       "zoomIn": "Zoom in",

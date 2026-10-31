@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "面包板视图",
+      "schematic": "原理图视图",
+      "board": "开发板视图",
       "fit": "全部适应窗口",
       "fitSelection": "所选内容适应窗口",
       "zoomIn": "放大",

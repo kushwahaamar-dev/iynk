@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "Steckbrett-Ansicht",
+      "schematic": "Schaltplan-Ansicht",
+      "board": "Platinen-Ansicht",
       "fit": "Alles einpassen",
       "fitSelection": "Auswahl einpassen",
       "zoomIn": "Vergrößern",

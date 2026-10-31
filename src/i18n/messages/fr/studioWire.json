@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "Vue plaque d'essai",
+      "schematic": "Vue schéma",
+      "board": "Vue carte",
       "fit": "Tout ajuster",
       "fitSelection": "Ajuster la sélection",
       "zoomIn": "Zoom avant",

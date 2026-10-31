@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "Vista de protoboard",
+      "schematic": "Vista de esquema",
+      "board": "Vista de placa",
       "fit": "Ajustar todo",
       "fitSelection": "Ajustar la selección",
       "zoomIn": "Acercar",

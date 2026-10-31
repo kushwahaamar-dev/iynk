@@ -13,6 +13,8 @@ import { createNudger, firstFreePin, focusNextPart, netOfSelection, NUDGE_COALES
 import type { Announcer } from "../tools/keyboard.ts";
 import type { ToolHost } from "../tools/host.ts";
 import type { ToolCtx, ToolKeyEvent } from "../tools/types.ts";
+import { VIEW_DEFS, viewIdFor } from "../views/registry.ts";
+import type { ViewKind } from "../views/registry.ts";
 
 export type KeyScope = "global" | "canvas";
 
@@ -60,6 +62,8 @@ export const STUDIO_KEYS: readonly KeyDef[] = [
   row("move.up", arrow("Up")),
   row("move.down", arrow("Down")),
   row("view.breadboard", ["1"]),
+  row("view.schematic", ["2"]),
+  row("view.board", ["3"]),
   row("view.fit", ["0"]),
   row("view.fitSelection", ["F"]),
   row("view.zoomIn", ["Plus", "="]),
@@ -386,6 +390,25 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     say("announce.netHighlighted", { net: ctx.doc.state.nets.find((n) => n.id === net)?.name ?? net });
   }
 
+  /** A project without that view gets it the first time the tab opens (STUDIO 6.4). */
+  function showView(kind: ViewKind) {
+    const ensure = VIEW_DEFS.find((def) => def.kind === kind)!.ensure(doc.getState().state);
+    if (ensure.length > 0) {
+      if (doc.getState().readOnly) {
+        say("announce.readOnly");
+        return;
+      }
+      const done = doc.commit(ensure, { label: "Add view" });
+      if (!done.ok) {
+        say("announce.rejected", { message: done.message });
+        return;
+      }
+    }
+    const id = viewIdFor(doc.getState().state, kind);
+    if (id) session.setView(id);
+    ui.set("activeView", kind);
+  }
+
   const forward = (id: string) => {
     const before = deps.toolCtx();
     host.key(FORWARDED[id]!, before);
@@ -416,10 +439,9 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     "wire.fromSelection": () => wireFromHere(deps.toolCtx()),
     "group.make": makeGroup,
     "group.remove": removeGroups,
-    "view.breadboard": () => {
-      const breadboard = doc.getState().state.views.find((v) => v.kind === "breadboard");
-      if (breadboard) session.setView(breadboard.id);
-    },
+    "view.breadboard": () => showView("breadboard"),
+    "view.schematic": () => showView("schematic"),
+    "view.board": () => showView("board"),
     "view.fit": () => deps.view.fit(),
     "view.fitSelection": () => deps.view.fitSelection(),
     "view.zoomIn": () => deps.view.zoom(ZOOM_STEP),
