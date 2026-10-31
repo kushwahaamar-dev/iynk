@@ -10,8 +10,8 @@ import { cx } from "@/components/ui/cx";
 import { createTranslator } from "@/i18n/translate";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
-import { Lobby, LobbyLede } from "./Lobby";
-import { getLobbyItems, getTogetherMessages } from "./strings";
+import { LobbyLede } from "./Lobby";
+import { getTogetherMessages } from "./strings";
 
 type Props = { params: Promise<{ lang: string }> };
 
@@ -33,7 +33,7 @@ export default function TogetherPage({ params }: Props) {
 async function TogetherLobby({ params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [messages, items] = await Promise.all([getTogetherMessages(lang), getLobbyItems(lang)]);
+  const messages = await getTogetherMessages(lang);
   const t = createTranslator(lang, messages, `${lang}/together`);
 
   return (
@@ -55,7 +55,6 @@ async function TogetherLobby({ params }: Props) {
             </ul>
           }
         />
-        <Lobby items={items} />
         <BuddiesPage />
       </TogetherStrings>
     </div>

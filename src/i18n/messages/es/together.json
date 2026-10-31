@@ -154,27 +154,7 @@
     "eyebrow": "iynk Juntos",
     "title": "Nadie tiene que construir solo",
     "lede": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo, una persona escribe a la vez y el chat muestra cada mensaje en tu propio idioma.",
-    "ledePlain": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo y una persona escribe a la vez.",
-    "create": {
-      "title": "Abrir una sala",
-      "hint": "Recibes un enlace de invitación y un código QR para compartir.",
-      "lab": "Laboratorio",
-      "item": "Qué construir",
-      "go": "Abrir la sala",
-      "empty": "Todavía no hay elementos de laboratorio listos."
-    },
-    "join": {
-      "title": "Unirse a una sala",
-      "hint": "Escribe el código de 6 caracteres de la invitación o pega el enlace.",
-      "go": "Unirse",
-      "looking": "Buscando la sala {code}…",
-      "empty": "Ahora no hay nadie en la sala {code}. Las salas se cierran 30 minutos después de que sale la última persona.",
-      "full": "La sala {code} está llena.",
-      "timeout": "No se pudo llegar a la sala {code}. Revisa el código y tu conexión.",
-      "unknown": "La sala {code} está abierta, pero no dijo qué está construyendo. Pide el enlace de invitación.",
-      "unavailable": "Este navegador no puede abrir salas.",
-      "found": "La encontramos. Abriendo la sala…"
-    }
+    "ledePlain": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo y una persona escribe a la vez."
   },
   "buddies": {
     "title": "Amigos",

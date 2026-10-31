@@ -154,27 +154,7 @@
     "eyebrow": "iynk Ensemble",
     "title": "Personne ne construit seul",
     "lede": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, une seule personne tape à la fois, et le chat affiche chaque message dans votre langue.",
-    "ledePlain": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, et une seule personne tape à la fois.",
-    "create": {
-      "title": "Ouvrir un salon",
-      "hint": "Vous recevez un lien d'invitation et un QR code à partager.",
-      "lab": "Labo",
-      "item": "Quoi construire",
-      "go": "Ouvrir le salon",
-      "empty": "Aucun élément de labo n'est encore prêt."
-    },
-    "join": {
-      "title": "Rejoindre un salon",
-      "hint": "Tapez le code de 6 caractères de l'invitation, ou collez le lien.",
-      "go": "Rejoindre",
-      "looking": "Recherche du salon {code}…",
-      "empty": "Personne n'est dans le salon {code} pour l'instant. Les salons ferment 30 minutes après le départ de la dernière personne.",
-      "full": "Le salon {code} est complet.",
-      "timeout": "Impossible de joindre le salon {code}. Vérifiez le code et votre connexion.",
-      "unknown": "Le salon {code} est ouvert, mais il n'a pas dit ce qu'il construit. Demandez le lien d'invitation.",
-      "unavailable": "Ce navigateur ne peut pas ouvrir de salon.",
-      "found": "Trouvé. Ouverture du salon…"
-    }
+    "ledePlain": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, et une seule personne tape à la fois."
   },
   "buddies": {
     "title": "Amis",

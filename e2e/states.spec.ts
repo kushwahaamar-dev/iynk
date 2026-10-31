@@ -55,10 +55,6 @@ test("no primary action opens a native dialog", async ({ page }) => {
   await main(page).getByTestId("run-button").click();
   await expect(main(page).getByTestId("serial-lines")).toContainText(boardlab.serial.upload.done, { timeout: 10_000 });
 
-  await page.goto("/en/together");
-  await page.getByRole("button", { name: together.lobby.create.go }).click();
-  await expect(page).toHaveURL(/room=/);
-
   await openLesson(page);
   const keysDialog = await openKeys(page);
   await keysDialog.getByRole("button", { name: `${keys.save}: ${keys.ai.label}` }).click();
