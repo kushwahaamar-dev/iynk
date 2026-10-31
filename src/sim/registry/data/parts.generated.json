@@ -1,0 +1,545 @@
+{
+  "entries": [
+    {
+      "id": "part:core.bme280-module@1",
+      "version": "1.1.0",
+      "kind": "part-model",
+      "title": "GY-BME280 breakout with Bosch BME280",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "The I2C slave answers at its address and returns raw temperature, pressure and humidity words that the Bosch integer compensation turns back into the inputs."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Conversion time, forced and normal mode, standby time, soft reset, and CTRL_HUM taking effect at the next CTRL_MEAS write."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "SPI mode (CSB low), the IIR filter, self-heating, sleep current, and sensor thermal lag."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Damage above the 4.25 V maximum."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "A BMP280 look-alike board that reads chip ID 0x58 and has no humidity."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "The calibration words are a synthetic set, not a dump from a physical chip."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vdd_range",
+          "value": 1.71,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 27"
+        },
+        {
+          "param": "supply_abs_max",
+          "value": 4.25,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 27"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.breadboard-half@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Half-size breadboard",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Each column half of five holes and each power rail is one conductor."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Contact resistance, stray capacitance between strips and the break in the middle of a long power rail."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The rails are continuous here. Some half-size boards split them; this one is modelled as unbroken."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.buzzer-piezo@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "12 mm piezo buzzer, passive or active",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A load across the two pins, and the tone() frequency of the pin it hangs on, reported as sound."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A steady HIGH makes a click on the passive kind and the fixed tone on the active kind."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Sound output, loudness against frequency beyond the resonance curve in the figure, and the buzzer's own current draw over time."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The magnetic 16 ohm kind, which needs a transistor on a board."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The test covers the passive kind only."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.led-5mm@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "5 mm through-hole LED",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Forward conduction as a fixed forward voltage per colour plus a 0.5 ohm slope."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Burn-out above 2.5 times the continuous current rating."
+        },
+        {
+          "id": "modelled-3",
+          "text": "A backwards LED passes no current and is flagged."
+        },
+        {
+          "id": "modelled-4",
+          "text": "Relative brightness from current, for the drawing only."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The exponential diode curve: below about 1 mA the model is off or on, not gradual."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Reverse breakdown and the reverse voltage rating."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Temperature, ageing and part-to-part spread in forward voltage."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Pulsed or PWM peak ratings: the burn rule uses one factor for any pulse."
+        },
+        {
+          "id": "not-modelled-5",
+          "text": "Light output as a physical unit."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "forward_current_continuous",
+          "value": 0.02,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "partjs figures/parts/led.js:3 and elec(): imax .02"
+        },
+        {
+          "param": "forward_voltage_red",
+          "value": 2,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 4, table"
+        },
+        {
+          "param": "forward_voltage_yellow",
+          "value": 2.1,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 4, table"
+        },
+        {
+          "param": "forward_voltage_green",
+          "value": 2.2,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 4, table"
+        },
+        {
+          "param": "forward_voltage_blue",
+          "value": 3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 4, table"
+        },
+        {
+          "param": "forward_voltage_white",
+          "value": 3.1,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 4, table"
+        },
+        {
+          "param": "dynamic_resistance",
+          "value": 0.5,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:102 rd: .5"
+        },
+        {
+          "param": "brightness_reference_current",
+          "value": 0.0136,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "partjs figures/engine/bench-bb.js:211"
+        },
+        {
+          "param": "brightness_exponent",
+          "value": 0.55,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "partjs figures/parts/led.js:3-4"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "forward current",
+          "min": 0.0003,
+          "max": 0.12,
+          "unit": "A",
+          "evidence": "The range of the RS-08 comparison cases C06 to C10."
+        }
+      ],
+      "knownFailureCases": [
+        "At 0.3 mA the solver reads 0.299 mA where a realistic LED model reads 0.321 mA (7 percent).",
+        "The green option is a GaP green. A pure green LED needs a 3.0 V forward voltage that this part does not offer."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.potentiometer-10k@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "B10K rotary potentiometer, 9 mm",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A linear taper: the wiper divides the track in proportion to the knob position."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A track that gets hot or burns when too much power goes through a short stretch of it."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Wiper contact resistance and noise."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Log taper and tolerance: the end-to-end value is the stated value."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The 300 degree sweep: the position is a number from 0 to 1."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "At either end the solver keeps 0.5 ohm between the wiper and the end, so a pot turned fully over is never a perfect short."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.push-button-6mm@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "6 x 6 mm tactile push button, 4 legs",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Two always-joined pairs of legs, and a press that joins the pairs."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A button whose switched legs sit in one breadboard strip counts as shorted."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Contact bounce, contact resistance and the 50 mA and 24 V contact ratings: the numbers are stored but no check reads them."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Operating force and travel."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "imax, vmax and bounce are passed to the solver, which does not read them yet."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.resistor@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Resistor, through-hole",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Ideal linear resistance between two pins."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Tolerance, temperature coefficient, power rating and burn-out."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Lead inductance and parasitic capacitance."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "resistance",
+          "min": 0.001,
+          "max": 1000000000,
+          "unit": "ohm",
+          "evidence": "core.resistor"
+        }
+      ],
+      "knownFailureCases": [
+        "A resistor never overheats in the model, whatever the current.",
+        "No test checks a resistor divider on its own; the series case above is the only one."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.ssd1306@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "0.96 inch 128 x 64 I2C OLED module with SSD1306",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "ACK at the set address."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Display on and off, invert and contrast commands."
+        },
+        {
+          "id": "modelled-3",
+          "text": "A 1-bit framebuffer written by the library and drawn on the module."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Scrolling, addressing modes, charge pump and panel voltage."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Bus timing and clock stretching."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Supply range: the 3.3 to 5 V window is shown but no model reads it."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_range",
+          "value": 3.3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 17"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.uno-r3@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Arduino UNO Rev3",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Arduino-C++ subset run by the interpreter with the Uno pin map."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3."
+        },
+        {
+          "id": "modelled-3",
+          "text": "10-bit analog reads against a 5 V reference, I2C master on SDA and SCL, serial output, and the L LED on D13."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The AVR core, timers, bootloader and flash behaviour."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The 5 V and 3.3 V regulators, the USB power switch and the brown-out level."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Pin current limits and the ICSP headers."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vcc_min",
+          "value": 2.7,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "profile figures/boards/uno-r3.js:134 (mcu.min 2.7)"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    }
+  ]
+}

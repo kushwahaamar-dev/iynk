@@ -1,7 +1,9 @@
 import { fail, ok } from "../../core/result.ts";
 import type { Result } from "../../core/result.ts";
+import type { Descriptor } from "../../parts/descriptor.ts";
 import { isCauseId } from "./cause-ids.ts";
 import { parseTrigger } from "./expr.ts";
+import { failureModelsFromDescriptor } from "./from-descriptor.ts";
 import { isSymptomId } from "./symptoms.ts";
 import type { CauseId } from "./types.ts";
 import data from "./data/failure-models.json" with { type: "json" };
@@ -19,6 +21,9 @@ export interface FailureModel {
   evidenceRange: { quantity: string; min: number; max: number; unit: string }[];
   threshold: { kind: "fixed" } | { kind: "distribution"; dist: "normal" | "lognormal"; sigmaFraction: number; stream: string };
   message: { symptomId: string; i18nKey: string };
+  /** Set on models compiled from a descriptor; `scripted` ones are driven by a timer or a flag, not by the trigger. */
+  implementedAs?: "threshold" | "scripted";
+  hints?: { level: 1 | 2 | 3; text: string }[];
 }
 
 export type BadModel = { code: "bad-model"; path: string };
@@ -80,8 +85,18 @@ const MODELS: readonly FailureModel[] = (data as unknown[]).map((raw, i) => {
   return r.value;
 });
 
-export function loadFailureModels(): FailureModel[] {
-  return [...MODELS];
+const isDuplicate = (record: FailureModel, made: readonly FailureModel[]): FailureModel | undefined =>
+  made.find((m) => m.causeId === record.causeId && record.appliesTo.some((a) => !a.startsWith("family:") && m.appliesTo.includes(a)));
+
+/** The data records plus the models the given descriptors author. Where both describe one failure the descriptor wins and `log` names the ignored record. */
+export function loadFailureModels(defs: readonly Descriptor[] = [], log: (line: string) => void = () => {}): FailureModel[] {
+  const made = defs.flatMap(failureModelsFromDescriptor);
+  const kept = MODELS.filter((record) => {
+    const twin = isDuplicate(record, made);
+    if (twin) log(`failure-models.json ${record.id} is ignored in favour of ${twin.id}`);
+    return !twin;
+  });
+  return [...kept, ...made];
 }
 
 export function modelsFor(causeId: CauseId): FailureModel[] {

@@ -46,6 +46,8 @@ import runtimeMicropythonSubset1 from "./data/runtime-micropython-subset-1.json"
 import runtimePiApiMock1 from "./data/runtime-pi-api-mock-1.json" with { type: "json" };
 import runtimeVerilog2state1 from "./data/runtime-verilog-2state-1.json" with { type: "json" };
 import boardPowerData from "./data/board-power.json" with { type: "json" };
+import partsGenerated from "./data/parts.generated.json" with { type: "json" };
+import type { Trust } from "../../parts/descriptor.ts";
 import { BJT_PARAMS, MOS_PARAMS } from "../analog/devices/params.ts";
 import type { CitedParams } from "../analog/devices/params.ts";
 import { SENSORS } from "../env/sensors.ts";
@@ -208,11 +210,28 @@ function paramSetEntries(family: "bjt" | "mos", sets: Record<string, CitedParams
 export function allEntries(): FidelityEntry[] {
   return [
     ...(DATA as FidelityEntry[]),
+    ...(partsGenerated.entries as FidelityEntry[]),
     ...(boardPowerData as BoardPowerModel[]).map(boardPowerEntry),
     ...sensorEntries(),
     ...paramSetEntries("bjt", BJT_PARAMS),
     ...paramSetEntries("mos", MOS_PARAMS),
   ];
+}
+
+/** Entries made at load for parts a person added. They live in memory only and never reach `data/`. */
+export interface RuntimeEntries {
+  add(entry: FidelityEntry, origin: Exclude<Trust, "core">): void;
+  all(): readonly FidelityEntry[];
+  originOf(id: string): Exclude<Trust, "core"> | undefined;
+}
+
+export function createRuntimeEntries(): RuntimeEntries {
+  const byId = new Map<string, { entry: FidelityEntry; origin: Exclude<Trust, "core"> }>();
+  return {
+    add: (entry, origin) => void byId.set(entry.id, { entry, origin }),
+    all: () => [...byId.values()].map((r) => r.entry),
+    originOf: (id) => byId.get(id)?.origin,
+  };
 }
 
 const LIST_FIELDS = ["implements", "mocked", "unsupported", "parameterSources", "validation", "errorMetrics", "operatingRange", "knownFailureCases", "performance"] as const;
