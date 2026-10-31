@@ -1,12 +1,14 @@
 // Progress actions and reads. They touch localStorage only when called, so
 // they belong in event handlers and effects of Client Components.
 
+import { mirrorLegacyDone, resetBoardRecords } from "../learn/facade";
 import { getSaved, updateSaved, type QuizResult, type Saved } from "./storage";
 
 export type Count = { done: number; total: number };
 
 export function markDone(key: string): void {
   updateSaved((saved) => (saved.done[key] ? saved : { ...saved, done: { ...saved.done, [key]: true } }));
+  mirrorLegacyDone(key);
 }
 
 export function isDone(key: string, saved: Saved = getSaved()): boolean {
@@ -72,4 +74,5 @@ export function resetProgress(prefix = ""): void {
     quiz: keep(saved.quiz),
     best: keep(saved.best),
   }));
+  resetBoardRecords(prefix);
 }

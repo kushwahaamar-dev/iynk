@@ -2,6 +2,8 @@
 // settings together. Reads are cached by the raw string, so React's
 // useSyncExternalStore gets the same object until something is written.
 
+import { boardDone, facadeActive, learnStore, startLegacyImport } from "../learn/facade";
+
 export const STORAGE_KEY = "iynk:v1";
 export const STORAGE_VERSION = 1;
 
@@ -122,7 +124,7 @@ let cached: Saved = EMPTY_SAVED;
 // Used when storage cannot be written, so the session still remembers.
 let memoryOnly: Saved | null = null;
 
-export function getSaved(): Saved {
+function readStored(): Saved {
   if (memoryOnly) return memoryOnly;
   const raw = readRaw();
   if (raw !== cachedRaw) {
@@ -134,6 +136,22 @@ export function getSaved(): Saved {
     }
   }
   return cached;
+}
+
+let overlay: { base: Saved; snapshot: ReadonlyMap<string, unknown>; saved: Saved } | null = null;
+
+/**
+ * Once the import has run and the records are loaded, they answer for the board keys. The old keys stay in the
+ * answer too, so a lesson whose template is missing never reads as not done.
+ */
+export function getSaved(): Saved {
+  const base = readStored();
+  if (!facadeActive()) return base;
+  const snapshot = learnStore().snapshot();
+  if (overlay?.base === base && overlay.snapshot === snapshot) return overlay.saved;
+  const saved = { ...base, done: { ...base.done, ...boardDone(snapshot) } };
+  overlay = { base, snapshot, saved };
+  return saved;
 }
 
 export function getServerSaved(): Saved {
@@ -151,7 +169,7 @@ export function updateSaved(change: (current: Saved) => Saved): Saved {
   if (typeof window === "undefined") {
     throw new Error("iynk progress: saved progress and settings can only change in the browser.");
   }
-  const current = getSaved();
+  const current = readStored();
   const next = change(current);
   if (next === current) return current;
   const raw = JSON.stringify(next);
@@ -170,11 +188,20 @@ export function updateSaved(change: (current: Saved) => Saved): Saved {
 /** Same-tab writes notify directly; other tabs arrive as storage events. */
 export function subscribeSaved(listener: () => void): () => void {
   listeners.add(listener);
+  const records = learnStore();
+  let live = true;
+  const stopRecords = records.subscribe(listener);
+  void records.ready.then(() => {
+    if (live) listener();
+  });
+  startLegacyImport(notify);
   const onStorage = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY || event.key === null) listener();
   };
   window.addEventListener("storage", onStorage);
   return () => {
+    live = false;
+    stopRecords();
     listeners.delete(listener);
     window.removeEventListener("storage", onStorage);
   };
