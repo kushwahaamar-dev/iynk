@@ -25,6 +25,7 @@ const sample = (i: number, over: Partial<RobotSample> = {}): RobotSample => ({
 const run = (count: number, over: (i: number) => Partial<RobotSample> = () => ({})): RobotFacts => ({
   samples: Array.from({ length: count }, (_, i) => sample(i, over(i))),
   sensorHeights: {},
+  sensors: [],
   supply: [],
   resets: [],
   decimated: false,

@@ -1,6 +1,6 @@
 import type { Evidence } from "../../project/diagnosis.ts";
 import { NS_PER_MS } from "../core/clock.ts";
-import type { RobotFacts, ResetFact } from "../mech/facts.ts";
+import { CELL_MIN_V, type RobotFacts, type ResetFact } from "../mech/facts.ts";
 import { modelsFor } from "./models.ts";
 import type { CauseId, Finding, NetView, Rule, RuleInput, SymptomId } from "./types.ts";
 
@@ -9,9 +9,6 @@ const MOTOR_START_WINDOW_NS = 50 * NS_PER_MS;
 const SAG_WINDOW_MS = 20;
 /** The sensor array's upper limit when no descriptor gives `range_max_mm`: h_opt 3 mm plus h_range 6.5 mm. */
 const DEFAULT_SENSOR_MAX_MM = 9.5;
-/** Per-cell volts below which a lithium pack browns the robot out. */
-const CELL_MIN_V = 3;
-const LOGIC_MIN_V = 4.5;
 const LOOP_OVERRUN = 2;
 const DEFAULT_LOOP_PERIOD_NS = 20 * NS_PER_MS;
 
@@ -79,20 +76,44 @@ const sensorTooHigh = rule(
     }),
 );
 
-const waitingForReadings = (meta: Meta, reason: string): Rule => ({
-  ...rule(meta, () => []),
-  enabled: false,
-  disabledReason: reason,
-});
+/** A line sensor whose every channel stayed within this of one end of 0..1 is pinned. */
+const PINNED_EPS = 0.02;
+/** Fewer ranger samples than this say nothing about the beam. */
+const MIN_RANGER_SAMPLES = 5;
 
-const sensorSaturated = waitingForReadings(
+const sensorSaturated = rule(
   { id: "solve:sensor-saturated@1", causeId: "sensor-saturated", symptomId: "line-not-detected", messageKey: "check.sensor-saturated", severity: "warning" },
-  "RobotFacts carries no per-sensor readings yet, so a pinned ADC or reflectance cannot be seen",
+  (facts, view, skip) =>
+    facts.sensors.flatMap((s) => {
+      if (s.kind !== "line" || s.samples === 0 || s.min === null || s.max === null) return [];
+      const maxMm = view.descriptor(s.part)?.mechanics?.sensor?.range_max_mm ?? DEFAULT_SENSOR_MAX_MM;
+      if ((facts.sensorHeights[s.part] ?? 0) > maxMm) {
+        skip("sensor too high explains it");
+        return [];
+      }
+      const low = s.max <= PINNED_EPS;
+      if (!low && s.min < 1 - PINNED_EPS) return [];
+      const at = facts.samples.at(-1)?.atNs ?? 0;
+      return {
+        targets: [{ kind: "part" as const, id: s.part }],
+        evidence: [evidence("state", `${s.part}:reflectance`, at, low ? s.max : s.min, "ratio", "sensor-saturated")],
+        args: { sensor: s.part, end: low ? "low" : "high", reflectance: Number((low ? s.max : s.min).toFixed(3)) },
+      };
+    }),
 );
 
-const rangerBeamBlocked = waitingForReadings(
+const rangerBeamBlocked = rule(
   { id: "solve:ranger-beam-blocked@1", causeId: "ranger-beam-blocked", symptomId: "ranger-always-near", messageKey: "check.ranger-beam-blocked" },
-  "RobotFacts carries no ranger readings or mount positions yet, so a blocked beam cannot be seen",
+  (facts) =>
+    facts.sensors.flatMap((s) => {
+      if (s.kind !== "ranger" || s.samples < MIN_RANGER_SAMPLES || s.tooClose < s.samples) return [];
+      const at = facts.samples.at(-1)?.atNs ?? 0;
+      return {
+        targets: [{ kind: "part" as const, id: s.part }],
+        evidence: [evidence("state", `${s.part}:too-close`, at, s.tooClose, "samples", "ranger-beam-blocked")],
+        args: { sensor: s.part, mount: s.mount, samples: s.samples },
+      };
+    }),
 );
 
 const driverUndersized = rule(
@@ -108,22 +129,33 @@ const driverUndersized = rule(
     }
     const [{ part, limitA }] = drivers;
     const peak = facts.samples.reduce((top, s) => (Math.abs(s.armatureA) > Math.abs(top.armatureA) ? s : top), facts.samples[0]);
-    if (!peak || Math.abs(peak.armatureA) < limitA) return [];
+    if (peak && Math.abs(peak.armatureA) >= limitA) {
+      return [{
+        targets: [{ kind: "part", id: part }],
+        evidence: [
+          evidence("state", `${peak.joint}:armature`, peak.atNs, Math.abs(peak.armatureA), "A", "driver-undersized"),
+          evidence("state", `${part}:i-max`, peak.atNs, limitA, "A", "driver-undersized"),
+        ],
+        args: { part, joint: peak.joint, amps: Number(Math.abs(peak.armatureA).toPrecision(3)), limitA },
+      }];
+    }
+    const { stall } = facts;
+    if (stall?.result !== "fail" || stall.limitingPart !== part || stall.value === null || stall.limit === null) return [];
     return [{
       targets: [{ kind: "part", id: part }],
       evidence: [
-        evidence("state", `${peak.joint}:armature`, peak.atNs, Math.abs(peak.armatureA), "A", "driver-undersized"),
-        evidence("state", `${part}:i-max`, peak.atNs, limitA, "A", "driver-undersized"),
+        evidence("state", `${part}:stall`, 0, stall.value, "A", "driver-undersized"),
+        evidence("state", `${part}:i-max`, 0, stall.limit, "A", "driver-undersized"),
       ],
-      args: { part, joint: peak.joint, amps: Number(Math.abs(peak.armatureA).toPrecision(3)), limitA },
+      args: { part, joint: "", amps: Number(stall.value.toPrecision(3)), limitA: stall.limit },
     }];
   },
 );
 
 /** Which of the two supplies is under its minimum at the reset, if either. */
-function lowSupply(r: ResetFact, packMinV: number | undefined): { name: "pack" | "logic rail"; ref: string; v: number } | undefined {
+function lowSupply(r: ResetFact, packMinV: number | undefined, logicMinV: number | undefined): { name: "pack" | "logic rail"; ref: string; v: number } | undefined {
   if (packMinV !== undefined && r.packV < packMinV) return { name: "pack", ref: "pack", v: r.packV };
-  if (r.railV < LOGIC_MIN_V) return { name: "logic rail", ref: "rail", v: r.railV };
+  if (logicMinV !== undefined && r.railV < logicMinV) return { name: "logic rail", ref: "rail", v: r.railV };
   return undefined;
 }
 
@@ -135,12 +167,13 @@ const batterySagReset = rule(
       return [];
     }
     const cells = view.parts().map((part) => view.descriptor(part)?.mechanics?.battery?.cells).find((n) => n !== undefined);
-    const packMinV = cells === undefined ? undefined : cells * CELL_MIN_V;
+    const packMinV = facts.packMinV ?? (cells === undefined ? undefined : cells * CELL_MIN_V);
+    if (facts.logicMinV === undefined) skip("no logic minimum");
     return facts.resets.flatMap((r) => {
       if (r.motorStartNs === null) return [];
       const after = r.atNs - r.motorStartNs;
       if (after < 0 || after > MOTOR_START_WINDOW_NS) return [];
-      const low = lowSupply(r, packMinV);
+      const low = lowSupply(r, packMinV, facts.logicMinV);
       if (!low) return [];
       return {
         targets: [{ kind: "net", id: low.ref }],
@@ -162,14 +195,15 @@ const loopTooSlow = rule(
       skip("no loop periods");
       return [];
     }
-    if (loop.p95Ns <= LOOP_OVERRUN * DEFAULT_LOOP_PERIOD_NS) return [];
+    const targetNs = facts.loopTargetNs ?? DEFAULT_LOOP_PERIOD_NS;
+    if (loop.p95Ns <= LOOP_OVERRUN * targetNs) return [];
     return [{
       targets: [{ kind: "file", id: "loop" }],
       evidence: [
         evidence("state", "loop:p95", 0, loop.p95Ns / NS_PER_MS, "ms", "loop-too-slow"),
-        evidence("state", "loop:target", 0, DEFAULT_LOOP_PERIOD_NS / NS_PER_MS, "ms", "loop-too-slow"),
+        evidence("state", "loop:target", 0, targetNs / NS_PER_MS, "ms", "loop-too-slow"),
       ],
-      args: { p95Ms: Number((loop.p95Ns / NS_PER_MS).toFixed(1)), targetMs: DEFAULT_LOOP_PERIOD_NS / NS_PER_MS },
+      args: { p95Ms: Number((loop.p95Ns / NS_PER_MS).toFixed(1)), targetMs: targetNs / NS_PER_MS },
     }];
   },
 );
