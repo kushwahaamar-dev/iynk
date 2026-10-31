@@ -176,7 +176,7 @@ export function solve(input: SolveInput, o: SolveOptions): SolveResult {
   const motors = els.flatMap((el, k) => (el.kind === 'M' ? [k] : []));
   for (const k of motors) {
     const el = els[k] as Extract<Element, { kind: 'M' }>;
-    const amps = curve?.(el.id, PWL_COMPAT.motorProbeVolts);
+    const amps = el.form === 'emf' ? undefined : curve?.(el.id, PWL_COMPAT.motorProbeVolts);
     states[k].gm = amps === undefined ? 1 / Math.max(el.ohms, PWL_COMPAT.minOhms) : amps / PWL_COMPAT.motorProbeVolts || PWL_COMPAT.motorMinSiemens;
   }
 
@@ -205,6 +205,7 @@ export function solve(input: SolveInput, o: SolveOptions): SolveResult {
     let moved = false;
     for (const k of motors) {
       const el = els[k];
+      if (el.kind === 'M' && el.form === 'emf') continue;
       const vOn = Math.max(...results.map((r) => Math.abs(r.branch.get(el.id)!.volts)));
       const amps = curve(el.id, vOn);
       if (amps === undefined) continue;
