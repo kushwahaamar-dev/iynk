@@ -13,11 +13,12 @@
   "scripts": {
     "content": "node -e \"const f='scripts/gen-content-index.mjs';if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f],{stdio:'inherit'});else console.log('skipped: '+f+' is not written yet')\"",
     "content:check": "node scripts/gen-content-index.mjs --check",
+    "engines:build": "node scripts/build-engines.mjs --if-present",
     "schema:gen": "node scripts/schema-gen.mjs",
     "schema:check": "node scripts/schema-gen.mjs --check",
     "predev": "npm run content",
     "dev": "next dev",
-    "prebuild": "npm run content",
+    "prebuild": "npm run content && npm run engines:build",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --quiet",
@@ -27,7 +28,7 @@
     "typecheck:portable": "tsc -p tsconfig.portable.json",
     "server:typecheck": "tsc -p server/tsconfig.json",
     "server:test": "npm --prefix server test && npm --prefix server/legacy test",
-    "pretest": "npm run content",
+    "pretest": "npm run content && npm run engines:build",
     "test": "vitest run",
     "pretest:perf": "npm run content",
     "test:perf": "vitest run --config vitest.perf.config.mts",
@@ -70,7 +71,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "6.1.2",
+    "@yowasp/yosys": "0.71.188-dev.1267",
     "ajv": "8.17.1",
+    "avr8js": "0.21.1",
+    "digitaljs": "0.14.2",
+    "eecircuit-engine": "1.9.0",
+    "esbuild": "0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "fake-indexeddb": "6.2.5",
@@ -80,6 +86,7 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "8.3.4",
-    "vitest": "5.0.3"
+    "vitest": "5.0.3",
+    "yosys2digitaljs": "0.10.3"
   }
 }

@@ -77,3 +77,6 @@ docs/MASTER_PLAN/**/node_modules/
 
 # Frame-time results of e2e/studio-perf.spec.ts
 .perf/
+
+# Engine files built from node_modules by scripts/build-engines.mjs
+public/engines/
