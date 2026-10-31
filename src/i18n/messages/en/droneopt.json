@@ -10,5 +10,77 @@
     "currency": "Currency",
     "asOf": "Price date",
     "estimate": "Price kind"
+  },
+  "opt": {
+    "title": "Find a better build",
+    "intro": "Set what you need and iynk searches the parts library for the motor, prop and battery that leave the most room above it. The frame, controller and ESCs stay as they are.",
+    "budget": "Budget ({currency})",
+    "budgetHint": "Leave empty for no limit",
+    "minTW": "Minimum thrust to weight",
+    "minFlight": "Minimum flight time (minutes)",
+    "invalid": "Enter a number of zero or more.",
+    "find": "Find",
+    "cancel": "Cancel",
+    "progress": "Searching",
+    "considered": "{done} of {total} combinations",
+    "starting": "Loading the parts…",
+    "empty": {
+      "title": "Nothing searched yet",
+      "body": "Press Find to compare every motor, prop and battery in the library."
+    },
+    "refused": {
+      "title": "The library is too large to search",
+      "body": "It makes {count} combinations and the limit is {max}. Remove parts from the library and try again."
+    },
+    "met": {
+      "title": "Every constraint is met",
+      "body": "This build keeps the most room above your minimums."
+    },
+    "unmet": {
+      "title": "No build meets every constraint",
+      "cheapest": "Shown below is the cheapest build that comes closest. Unmet: {fails}."
+    },
+    "reason": {
+      "budget": "Builds that meet the thrust and flight time minimums exist, but none fits the budget.",
+      "constraints": "No build in the library reaches the thrust to weight and flight time minimums.",
+      "unpriced": "Builds that meet the minimums exist, but their parts have no price, so the budget cannot be checked."
+    },
+    "fail": {
+      "budget": "budget",
+      "tw": "thrust to weight",
+      "flight": "flight time",
+      "check": "a build check fails"
+    },
+    "table": {
+      "caption": "Current build compared with the result",
+      "current": "Current",
+      "best": "Best",
+      "cheapest": "Cheapest",
+      "change": "Change"
+    },
+    "row": {
+      "cost": "Cost",
+      "tw": "Thrust to weight",
+      "flightLow": "Flight time, low",
+      "flightTyp": "Flight time, typical"
+    },
+    "minutes": "{value} min",
+    "money": "{amount} {currency}",
+    "unpricedValue": "unpriced",
+    "swaps": "Swaps",
+    "slot": {
+      "motor": "Motor",
+      "prop": "Prop",
+      "pack": "Battery"
+    },
+    "to": "becomes",
+    "apply": "Apply swaps",
+    "applyLabel": "Apply optimiser swaps",
+    "noSwaps": "The current build is already the best one.",
+    "unpriced": "Parts without a price",
+    "priceNote": "Prices are estimates, dated {date}, not live.",
+    "priceNoDate": "No prices are on file. Costs are shown as unpriced.",
+    "pruned": "{count} of {total} combinations were skipped",
+    "prunedWhy": "{part}: missing {path}"
   }
 }

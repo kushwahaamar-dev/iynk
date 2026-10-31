@@ -10,5 +10,77 @@
     "currency": "Moneda",
     "asOf": "Fecha del precio",
     "estimate": "Tipo de precio"
+  },
+  "opt": {
+    "title": "Encuentra una configuración mejor",
+    "intro": "Indica lo que necesitas e iynk busca en la biblioteca de piezas el motor, la hélice y la batería que dejan más margen sobre ello. El chasis, el controlador y los ESC se quedan como están.",
+    "budget": "Presupuesto ({currency})",
+    "budgetHint": "Déjalo vacío para no poner límite",
+    "minTW": "Empuje mínimo sobre peso",
+    "minFlight": "Tiempo de vuelo mínimo (minutos)",
+    "invalid": "Escribe un número de cero o más.",
+    "find": "Buscar",
+    "cancel": "Cancelar",
+    "progress": "Buscando",
+    "considered": "{done} de {total} combinaciones",
+    "starting": "Cargando las piezas…",
+    "empty": {
+      "title": "Aún no se ha buscado nada",
+      "body": "Pulsa Buscar para comparar cada motor, hélice y batería de la biblioteca."
+    },
+    "refused": {
+      "title": "La biblioteca es demasiado grande para buscar",
+      "body": "Da {count} combinaciones y el límite es {max}. Quita piezas de la biblioteca e inténtalo de nuevo."
+    },
+    "met": {
+      "title": "Se cumplen todas las restricciones",
+      "body": "Esta configuración deja el mayor margen sobre tus mínimos."
+    },
+    "unmet": {
+      "title": "Ninguna configuración cumple todas las restricciones",
+      "cheapest": "Abajo se muestra la más barata que más se acerca. No se cumple: {fails}."
+    },
+    "reason": {
+      "budget": "Hay configuraciones que alcanzan el empuje y el tiempo de vuelo, pero ninguna cabe en el presupuesto.",
+      "constraints": "Ninguna configuración de la biblioteca alcanza el empuje sobre peso y el tiempo de vuelo mínimos.",
+      "unpriced": "Hay configuraciones que alcanzan los mínimos, pero sus piezas no tienen precio, así que no se puede comprobar el presupuesto."
+    },
+    "fail": {
+      "budget": "presupuesto",
+      "tw": "empuje sobre peso",
+      "flight": "tiempo de vuelo",
+      "check": "falla una comprobación de la configuración"
+    },
+    "table": {
+      "caption": "Configuración actual comparada con el resultado",
+      "current": "Actual",
+      "best": "Mejor",
+      "cheapest": "Más barata",
+      "change": "Cambio"
+    },
+    "row": {
+      "cost": "Coste",
+      "tw": "Empuje sobre peso",
+      "flightLow": "Tiempo de vuelo, bajo",
+      "flightTyp": "Tiempo de vuelo, típico"
+    },
+    "minutes": "{value} min",
+    "money": "{amount} {currency}",
+    "unpricedValue": "sin precio",
+    "swaps": "Cambios",
+    "slot": {
+      "motor": "Motor",
+      "prop": "Hélice",
+      "pack": "Batería"
+    },
+    "to": "pasa a",
+    "apply": "Aplicar cambios",
+    "applyLabel": "Aplicar cambios del optimizador",
+    "noSwaps": "La configuración actual ya es la mejor.",
+    "unpriced": "Piezas sin precio",
+    "priceNote": "Los precios son estimaciones con fecha {date}, no en vivo.",
+    "priceNoDate": "No hay precios guardados. Los costes aparecen sin precio.",
+    "pruned": "Se omitieron {count} de {total} combinaciones",
+    "prunedWhy": "{part}: falta {path}"
   }
 }

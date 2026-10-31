@@ -10,5 +10,77 @@
     "currency": "币种",
     "asOf": "价格日期",
     "estimate": "价格类型"
+  },
+  "opt": {
+    "title": "寻找更好的配置",
+    "intro": "设定你的需求，iynk 会在零件库中搜索余量最大的电机、桨和电池。机架、飞控和电调保持不变。",
+    "budget": "预算（{currency}）",
+    "budgetHint": "留空表示不限",
+    "minTW": "最低推重比",
+    "minFlight": "最短飞行时间（分钟）",
+    "invalid": "请输入不小于零的数字。",
+    "find": "搜索",
+    "cancel": "取消",
+    "progress": "搜索中",
+    "considered": "已完成 {done} / {total} 种组合",
+    "starting": "正在加载零件…",
+    "empty": {
+      "title": "还没有搜索",
+      "body": "点击搜索，对比零件库中的每个电机、桨和电池。"
+    },
+    "refused": {
+      "title": "零件库太大，无法搜索",
+      "body": "共有 {count} 种组合，上限为 {max}。请从零件库移除一些零件后再试。"
+    },
+    "met": {
+      "title": "所有条件都已满足",
+      "body": "这个配置在你的最低要求之上留出了最大余量。"
+    },
+    "unmet": {
+      "title": "没有配置能满足所有条件",
+      "cheapest": "下面是最接近要求的最便宜配置。未满足：{fails}。"
+    },
+    "reason": {
+      "budget": "有配置能达到推力和飞行时间要求，但都超出预算。",
+      "constraints": "零件库中没有配置能达到最低推重比和飞行时间。",
+      "unpriced": "有配置能达到最低要求，但其零件没有价格，无法检查预算。"
+    },
+    "fail": {
+      "budget": "预算",
+      "tw": "推重比",
+      "flight": "飞行时间",
+      "check": "有一项配置检查未通过"
+    },
+    "table": {
+      "caption": "当前配置与结果对比",
+      "current": "当前",
+      "best": "最佳",
+      "cheapest": "最便宜",
+      "change": "变化"
+    },
+    "row": {
+      "cost": "成本",
+      "tw": "推重比",
+      "flightLow": "飞行时间，下限",
+      "flightTyp": "飞行时间，典型"
+    },
+    "minutes": "{value} 分钟",
+    "money": "{amount} {currency}",
+    "unpricedValue": "无价格",
+    "swaps": "更换",
+    "slot": {
+      "motor": "电机",
+      "prop": "桨",
+      "pack": "电池"
+    },
+    "to": "换成",
+    "apply": "应用更换",
+    "applyLabel": "应用优化器的更换",
+    "noSwaps": "当前配置已经是最好的。",
+    "unpriced": "没有价格的零件",
+    "priceNote": "价格为 {date} 的估计值，不是实时价格。",
+    "priceNoDate": "没有价格记录，成本显示为无价格。",
+    "pruned": "已跳过 {total} 种组合中的 {count} 种",
+    "prunedWhy": "{part}：缺少 {path}"
   }
 }
