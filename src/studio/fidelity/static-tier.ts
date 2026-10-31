@@ -1,7 +1,6 @@
 import type { Project as ProjectState } from "../../project/generated/types.ts";
 import type { Descriptor } from "../../parts/descriptor.ts";
 import { PROFILES } from "../../lib/interp/profiles.ts";
-import type { BoardId } from "../../lib/interp/profiles.ts";
 
 export type Tier = "T0" | "T1" | "T2" | "T3" | "none";
 export type ModelStatus = "modelled" | "partly-modelled" | "not-modelled-yet";
@@ -24,7 +23,6 @@ export interface PartLookup {
 export const UNKNOWN_PART = "unknown part";
 
 const RANK: Record<Exclude<Tier, "none">, number> = { T0: 0, T1: 1, T2: 2, T3: 3 };
-const CORE_PREFIX = "core.";
 
 /** The weakest tier in use. Rows without a tier are skipped unless every row is without one. */
 export function lowestTier(rows: ModelRow[]): Tier {
@@ -60,8 +58,7 @@ export function modelRows(state: ProjectState, registry: PartLookup): ModelRow[]
 export function engineLine(state: ProjectState): { engineKey: "arduino-subset-digital"; boardNotes: string[] } {
   const boardNotes = state.boards.flatMap((board) => {
     const { ref } = board.definition;
-    if (!ref.startsWith(CORE_PREFIX)) return [];
-    return PROFILES[ref.slice(CORE_PREFIX.length) as BoardId]?.notes ?? [];
+    return Object.values(PROFILES).find((profile) => profile.partId === ref)?.notes ?? [];
   });
   return { engineKey: "arduino-subset-digital", boardNotes: [...new Set(boardNotes)] };
 }

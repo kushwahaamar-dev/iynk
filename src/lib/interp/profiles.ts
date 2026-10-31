@@ -46,6 +46,8 @@ export interface FpgaPort {
 
 export interface BoardProfile {
   id: BoardId;
+  /** Registry ref of the board's component descriptor. */
+  partId: string;
   name: string;
   mcu: string;
   /** Languages the board runs; the first is the default. */
@@ -100,7 +102,7 @@ const AVR_ALIASES: Record<string, number> = {
 };
 
 const uno: BoardProfile = {
-  id: 'uno-r3', name: 'Arduino Uno R3', mcu: 'ATmega328P', languages: ['arduino'],
+  id: 'uno-r3', partId: 'core.uno-r3', name: 'Arduino Uno R3', mcu: 'ATmega328P', languages: ['arduino'],
   clockHz: 16_000_000, logicV: 5, intBits: 16, doubleBits: 32, charSigned: true,
   adcBits: 10, adcMaxBits: 10, adcVref: 5, analogPins: range(14, 19),
   pwmPins: [3, 5, 6, 9, 10, 11], pwmBits: 8, interruptPins: [2, 3], digitalPins: range(0, 19),
@@ -110,13 +112,13 @@ const uno: BoardProfile = {
 };
 
 const nano: BoardProfile = {
-  ...uno, id: 'nano', name: 'Arduino Nano', analogPins: range(14, 21), analogOnlyPins: [20, 21],
+  ...uno, id: 'nano', partId: 'core.nano', name: 'Arduino Nano', analogPins: range(14, 21), analogOnlyPins: [20, 21],
   digitalPins: range(0, 19), aliases: { ...AVR_ALIASES, A6: 20, A7: 21 },
   notes: [...uno.notes, 'A6 and A7 are analog inputs only: digitalRead/pinMode do not work on them'],
 };
 
 const unoR4: BoardProfile = {
-  id: 'uno-r4', name: 'Arduino Uno R4', mcu: 'Renesas RA4M1 (Cortex-M4)', languages: ['arduino'],
+  id: 'uno-r4', partId: 'core.uno-r4', name: 'Arduino Uno R4', mcu: 'Renesas RA4M1 (Cortex-M4)', languages: ['arduino'],
   variants: ['minima', 'wifi'], clockHz: 48_000_000, logicV: 5, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 10, adcMaxBits: 14, adcVref: 5, analogPins: range(14, 19),
   pwmPins: [3, 5, 6, 9, 10, 11], pwmBits: 8, interruptPins: [2, 3], digitalPins: range(0, 19),
@@ -126,7 +128,7 @@ const unoR4: BoardProfile = {
 };
 
 const esp32: BoardProfile = {
-  id: 'esp32-devkitc', name: 'ESP32-DevKitC V4', mcu: 'ESP32-WROOM-32E (dual-core Xtensa LX6)', languages: ['arduino'],
+  id: 'esp32-devkitc', partId: 'core.esp32-devkitc', name: 'ESP32-DevKitC V4', mcu: 'ESP32-WROOM-32E (dual-core Xtensa LX6)', languages: ['arduino'],
   clockHz: 240_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: true,
   adcBits: 12, adcMaxBits: 12, adcVref: 3.3,
   analogPins: [32, 33, 34, 35, 36, 39, 0, 2, 4, 12, 13, 14, 15, 25, 26, 27],
@@ -139,7 +141,7 @@ const esp32: BoardProfile = {
 };
 
 const esp32s3: BoardProfile = {
-  id: 'esp32-s3-devkitc-1', name: 'ESP32-S3-DevKitC-1 v1.1', mcu: 'ESP32-S3 (dual-core Xtensa LX7)', languages: ['arduino'],
+  id: 'esp32-s3-devkitc-1', partId: 'core.esp32-s3-devkitc-1', name: 'ESP32-S3-DevKitC-1 v1.1', mcu: 'ESP32-S3 (dual-core Xtensa LX7)', languages: ['arduino'],
   variants: ['v1.1', 'v1.0'], clockHz: 240_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: true,
   adcBits: 12, adcMaxBits: 12, adcVref: 3.3, analogPins: range(1, 20), pwmPins: 'all', pwmBits: 8, interruptPins: 'all',
   digitalPins: [...range(0, 21), ...range(35, 48)],
@@ -150,7 +152,7 @@ const esp32s3: BoardProfile = {
 };
 
 const nodemcu: BoardProfile = {
-  id: 'nodemcu', name: 'NodeMCU v3 (ESP8266)', mcu: 'ESP8266EX (ESP-12E)', languages: ['arduino'],
+  id: 'nodemcu', partId: 'core.nodemcu', name: 'NodeMCU v3 (ESP8266)', mcu: 'ESP8266EX (ESP-12E)', languages: ['arduino'],
   clockHz: 80_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 10, adcMaxBits: 10, adcVref: 3.3, analogPins: [17], pwmPins: [0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16], pwmBits: 8,
   interruptPins: [0, 1, 2, 3, 4, 5, 12, 13, 14, 15], digitalPins: [0, 1, 2, 3, 4, 5, 9, 10, 12, 13, 14, 15, 16],
@@ -162,7 +164,7 @@ const nodemcu: BoardProfile = {
 };
 
 const pico: BoardProfile = {
-  id: 'pico', name: 'Raspberry Pi Pico', mcu: 'RP2040 (dual Cortex-M0+)', languages: ['python', 'arduino'],
+  id: 'pico', partId: 'core.pico', name: 'Raspberry Pi Pico', mcu: 'RP2040 (dual Cortex-M0+)', languages: ['python', 'arduino'],
   variants: ['pico', 'pico-w', 'pico2', 'pico2-w'], clockHz: 125_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 12, adcMaxBits: 12, adcVref: 3.3, analogPins: [26, 27, 28, 29], pwmPins: 'all', pwmBits: 8, interruptPins: 'all',
   digitalPins: range(0, 29), leds: [{ name: 'LED', pin: 25, kind: 'single', color: 'mint' }], buttons: [],
@@ -172,7 +174,7 @@ const pico: BoardProfile = {
 };
 
 const nucleo: BoardProfile = {
-  id: 'nucleo-f401re', name: 'STM32 Nucleo-F401RE', mcu: 'STM32F401RE (Cortex-M4F)', languages: ['arduino'],
+  id: 'nucleo-f401re', partId: 'core.nucleo-f401re', name: 'STM32 Nucleo-F401RE', mcu: 'STM32F401RE (Cortex-M4F)', languages: ['arduino'],
   clockHz: 84_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 10, adcMaxBits: 12, adcVref: 3.3, analogPins: range(16, 21), pwmPins: [3, 5, 6, 9, 10, 11], pwmBits: 8,
   interruptPins: 'all', digitalPins: [...range(0, 21), 23],
@@ -183,7 +185,7 @@ const nucleo: BoardProfile = {
 };
 
 const microbit: BoardProfile = {
-  id: 'microbit-v2', name: 'BBC micro:bit V2', mcu: 'nRF52833 (Cortex-M4F)', languages: ['python'],
+  id: 'microbit-v2', partId: 'core.microbit-v2', name: 'BBC micro:bit V2', mcu: 'nRF52833 (Cortex-M4F)', languages: ['python'],
   clockHz: 64_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 10, adcMaxBits: 10, adcVref: 3.3, analogPins: [0, 1, 2, 3, 4, 10], pwmPins: 'all', pwmBits: 10, interruptPins: 'all',
   digitalPins: [...range(0, 16), 19, 20], leds: [],
@@ -194,7 +196,7 @@ const microbit: BoardProfile = {
 };
 
 const pi: BoardProfile = {
-  id: 'pi4-pi5', name: 'Raspberry Pi 4 / 5', mcu: 'BCM2711 / BCM2712 + RP1', languages: ['python'],
+  id: 'pi4-pi5', partId: 'core.pi4-pi5', name: 'Raspberry Pi 4 / 5', mcu: 'BCM2711 / BCM2712 + RP1', languages: ['python'],
   variants: ['pi4', 'pi5'], clockHz: 1_800_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 0, adcMaxBits: 0, adcVref: 3.3, analogPins: [], pwmPins: 'all', pwmBits: 8, interruptPins: 'all',
   digitalPins: range(0, 27), leds: [], buttons: [],
@@ -204,7 +206,7 @@ const pi: BoardProfile = {
 };
 
 const basys3: BoardProfile = {
-  id: 'basys3', name: 'Digilent Basys 3', mcu: 'Xilinx Artix-7 XC7A35T', languages: ['verilog'],
+  id: 'basys3', partId: 'core.basys3', name: 'Digilent Basys 3', mcu: 'Xilinx Artix-7 XC7A35T', languages: ['verilog'],
   clockHz: 100_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 12, adcMaxBits: 12, adcVref: 1, analogPins: [], pwmPins: [], pwmBits: 0, interruptPins: [], digitalPins: [],
   leds: [], buttons: [], aliases: {}, opUs: 0, pinMaxMa: 12, hasWifi: false,
@@ -224,7 +226,7 @@ const basys3: BoardProfile = {
 };
 
 const de10: BoardProfile = {
-  id: 'de10-lite', name: 'Terasic DE10-Lite', mcu: 'Intel MAX 10 10M50DAF484C7G', languages: ['verilog'],
+  id: 'de10-lite', partId: 'core.de10-lite', name: 'Terasic DE10-Lite', mcu: 'Intel MAX 10 10M50DAF484C7G', languages: ['verilog'],
   clockHz: 50_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
   adcBits: 12, adcMaxBits: 12, adcVref: 5, analogPins: [], pwmPins: [], pwmBits: 0, interruptPins: [], digitalPins: [],
   leds: [], buttons: [], aliases: {}, opUs: 0, pinMaxMa: 8, hasWifi: false,
