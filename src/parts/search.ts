@@ -56,13 +56,13 @@ function foldedOf(entry: PartEntry, lang: string): Folded {
  * The parts a palette offers: the newest version of each, except wiring surfaces, which the project adds itself.
  * `senders` maps `id@version` to the sender of the pack a part came in.
  */
-export function buildPartIndex(registry: Pick<PartRegistry, "list" | "latest">, senders: ReadonlyMap<string, string> = new Map()): PartEntry[] {
+export function buildPartIndex(registry: Pick<PartRegistry, "list" | "latest"> & Partial<Pick<PartRegistry, "originOf">>, senders: ReadonlyMap<string, string> = new Map()): PartEntry[] {
   const entries: PartEntry[] = [];
   for (const ref of new Set(registry.list().map((p) => p.ref))) {
     const d = registry.latest(ref);
     if (!d || d.identity.tags?.includes(SURFACE_TAG)) continue;
     const body = d.dimensions?.body ?? d.dimensions?.board;
-    const trust = TRUST_OF_ORIGIN[registry.originOf(ref, d.version) ?? "core"];
+    const trust = TRUST_OF_ORIGIN[registry.originOf?.(ref, d.version) ?? "core"];
     const sender = senders.get(`${ref}@${d.version}`);
     entries.push({
       ref,

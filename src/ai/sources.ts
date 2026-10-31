@@ -14,7 +14,7 @@ export interface Reading {
 }
 
 export interface RunSnapshot {
-  phase: "idle" | "starting" | "running" | "stopped" | "done" | "error" | "limit" | "killed";
+  phase: "idle" | "starting" | "running" | "paused" | "stopped" | "done" | "error" | "limit" | "killed";
   stale: boolean;
   tNs: number;
   readings: readonly Reading[];
