@@ -137,6 +137,29 @@
       "accepted": "Propuesta aceptada. Un solo deshacer la revierte.",
       "rejected": "Propuesta rechazada.",
       "stale": "La propuesta está desactualizada."
+    },
+    "diff": {
+      "steps": "Pasos",
+      "checks": "Comprobaciones",
+      "pass": "Superada",
+      "fail": "Fallida",
+      "parts": "Piezas",
+      "nets": "Redes",
+      "wires": "Cables",
+      "files": "Archivos",
+      "tests": "Pruebas",
+      "faults": "Fallos",
+      "params": "Parámetros",
+      "cascade": "También afecta a",
+      "added": "Añadido",
+      "removed": "Eliminado",
+      "changed": "Cambiado",
+      "unchanged": "{count} líneas sin cambios",
+      "wireCounts": "{added} añadidos, {removed} eliminados",
+      "paramChange": "{id}: {from} a {to}",
+      "cascadeCounts": "{components} piezas, {wires} cables, {pins} pines, {sources} archivos",
+      "bigFile": "Este archivo cambió demasiado para compararlo línea a línea. Se muestra como eliminado y luego añadido.",
+      "noChange": "Sin cambios"
     }
   },
   "mode": {

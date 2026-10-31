@@ -137,6 +137,29 @@
       "accepted": "Proposition acceptée. Une seule annulation la défait.",
       "rejected": "Proposition refusée.",
       "stale": "La proposition est périmée."
+    },
+    "diff": {
+      "steps": "Étapes",
+      "checks": "Vérifications",
+      "pass": "Réussie",
+      "fail": "Échouée",
+      "parts": "Composants",
+      "nets": "Réseaux",
+      "wires": "Fils",
+      "files": "Fichiers",
+      "tests": "Tests",
+      "faults": "Pannes",
+      "params": "Paramètres",
+      "cascade": "Touche aussi",
+      "added": "Ajouté",
+      "removed": "Supprimé",
+      "changed": "Modifié",
+      "unchanged": "{count} lignes inchangées",
+      "wireCounts": "{added} ajoutés, {removed} supprimés",
+      "paramChange": "{id} : {from} à {to}",
+      "cascadeCounts": "{components} composants, {wires} fils, {pins} broches, {sources} fichiers",
+      "bigFile": "Ce fichier a trop changé pour être comparé ligne à ligne. Il est affiché comme supprimé, puis ajouté.",
+      "noChange": "Aucun changement"
     }
   },
   "mode": {

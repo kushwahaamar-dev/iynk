@@ -137,6 +137,29 @@
       "accepted": "Proposal accepted. One undo reverses it.",
       "rejected": "Proposal rejected.",
       "stale": "Proposal is out of date."
+    },
+    "diff": {
+      "steps": "Steps",
+      "checks": "Checks",
+      "pass": "Passed",
+      "fail": "Failed",
+      "parts": "Parts",
+      "nets": "Nets",
+      "wires": "Wires",
+      "files": "Files",
+      "tests": "Tests",
+      "faults": "Faults",
+      "params": "Parameters",
+      "cascade": "Also affected",
+      "added": "Added",
+      "removed": "Removed",
+      "changed": "Changed",
+      "unchanged": "{count} unchanged lines",
+      "wireCounts": "{added} added, {removed} removed",
+      "paramChange": "{id}: {from} to {to}",
+      "cascadeCounts": "{components} parts, {wires} wires, {pins} pins, {sources} files",
+      "bigFile": "This file changed too much to match line by line. It is shown as removed, then added.",
+      "noChange": "No changes"
     }
   },
   "mode": {

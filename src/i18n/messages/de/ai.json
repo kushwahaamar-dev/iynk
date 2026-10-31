@@ -137,6 +137,29 @@
       "accepted": "Vorschlag angenommen. Ein Rückgängig macht ihn rückgängig.",
       "rejected": "Vorschlag abgelehnt.",
       "stale": "Der Vorschlag ist veraltet."
+    },
+    "diff": {
+      "steps": "Schritte",
+      "checks": "Prüfungen",
+      "pass": "Bestanden",
+      "fail": "Fehlgeschlagen",
+      "parts": "Bauteile",
+      "nets": "Netze",
+      "wires": "Leitungen",
+      "files": "Dateien",
+      "tests": "Tests",
+      "faults": "Fehler",
+      "params": "Parameter",
+      "cascade": "Betrifft auch",
+      "added": "Hinzugefügt",
+      "removed": "Entfernt",
+      "changed": "Geändert",
+      "unchanged": "{count} unveränderte Zeilen",
+      "wireCounts": "{added} hinzugefügt, {removed} entfernt",
+      "paramChange": "{id}: {from} zu {to}",
+      "cascadeCounts": "{components} Bauteile, {wires} Leitungen, {pins} Pins, {sources} Dateien",
+      "bigFile": "Diese Datei hat sich zu stark geändert für einen Zeilenvergleich. Sie wird als entfernt und dann hinzugefügt gezeigt.",
+      "noChange": "Keine Änderungen"
     }
   },
   "mode": {

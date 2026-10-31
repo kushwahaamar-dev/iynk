@@ -137,6 +137,29 @@
       "accepted": "建议已接受。撤销一次即可还原。",
       "rejected": "建议已拒绝。",
       "stale": "建议已过期。"
+    },
+    "diff": {
+      "steps": "步骤",
+      "checks": "检查",
+      "pass": "通过",
+      "fail": "未通过",
+      "parts": "元件",
+      "nets": "网络",
+      "wires": "导线",
+      "files": "文件",
+      "tests": "测试",
+      "faults": "故障",
+      "params": "参数",
+      "cascade": "同时影响",
+      "added": "新增",
+      "removed": "删除",
+      "changed": "修改",
+      "unchanged": "{count} 行未改动",
+      "wireCounts": "新增 {added} 条，删除 {removed} 条",
+      "paramChange": "{id}：{from} 改为 {to}",
+      "cascadeCounts": "{components} 个元件、{wires} 条导线、{pins} 个引脚、{sources} 个文件",
+      "bigFile": "此文件改动过大，无法逐行比较，将显示为先删除再新增。",
+      "noChange": "没有改动"
     }
   },
   "mode": {
