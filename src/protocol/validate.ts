@@ -15,12 +15,17 @@ import {
   type PresencePatch,
   type PresenceUp,
   type Resync,
+  type RunCheckUp,
+  type RunEvUp,
+  type RunReqUp,
+  type RunTickUp,
   type RoomSettings,
   type ServerFrame,
   type Submit,
   type SubmitOp,
   type WireOp,
 } from "./frames.ts";
+import { RUN_DETACH_MODES, RUN_EV_KINDS, RUN_LIMITS, RUN_REQ_NAMES } from "./run-ops.ts";
 
 export type Parsed = { ok: true; frame: ClientFrame } | { ok: false; code: ErrorCode; message: string };
 
@@ -37,6 +42,7 @@ const MAX_CAPS = 16;
 const MAX_ENGINES = 16;
 const MAX_COORD_MM = 1_000_000;
 
+const HASH16 = /^[0-9a-f]{16}$/;
 const OP_ID = /^op_[a-z0-9][a-z0-9_-]{0,63}$/;
 const REF = /^[A-Za-z0-9_.:-]{1,64}$/;
 const ACTOR = /^usr_[A-Za-z0-9_-]{1,64}$/;
@@ -58,7 +64,7 @@ const CHAT_JUNK = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f‪-‮⁦-⁩﻿]/g;
 const LONE_SURROGATE = /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/g;
 
 const UNSAFE_KEYS: ReadonlySet<string> = new Set(["__proto__", "constructor", "toString"]);
-const KNOWN_CAPS: ReadonlySet<string> = new Set([...CLIENT_CAPS, "run"]);
+const KNOWN_CAPS: ReadonlySet<string> = new Set(CLIENT_CAPS);
 
 const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
 
@@ -325,7 +331,7 @@ function roomSettings(v: unknown): Partial<RoomSettings> {
   return out;
 }
 
-type CmdArg = "to" | "on" | "settings" | "actor";
+type CmdArg = "to" | "on" | "settings" | "actor" | "mode";
 
 const CMD_ARGS: Record<CmdName, readonly CmdArg[]> = {
   "baton.request": [],
@@ -340,6 +346,8 @@ const CMD_ARGS: Record<CmdName, readonly CmdArg[]> = {
   "room.settings": ["settings"],
   "room.close": [],
   "room.pin": ["on"],
+  "runner.set": ["to"],
+  "run.detach": ["mode"],
 };
 
 const CMD_ARG_READ: Record<CmdArg, (v: unknown) => unknown> = {
@@ -347,6 +355,7 @@ const CMD_ARG_READ: Record<CmdArg, (v: unknown) => unknown> = {
   actor: (v) => matching(v, ACTOR, "args.actor"),
   on: (v) => bool(v, "args.on"),
   settings: roomSettings,
+  mode: (v) => oneOf(v, RUN_DETACH_MODES, "args.mode"),
 };
 
 function cmd(o: Rec): Cmd {
@@ -365,6 +374,73 @@ function cmd(o: Rec): Cmd {
   return out;
 }
 
+const jsonBytes = (v: unknown): number => utf8Length(JSON.stringify(v));
+
+/** Run frames are refused with their own code, so the same readers serve `bad_frame` field rules. */
+function asRun<T>(read: (o: Rec) => T): (o: Rec) => T {
+  return (o) => {
+    try {
+      return read(o);
+    } catch (e) {
+      if (e instanceof FrameError && e.code === "bad_frame") throw new FrameError("bad_run_frame", e.message);
+      throw e;
+    }
+  };
+}
+
+function tNs(o: Rec): number {
+  return int(o.tNs, "tNs", 0);
+}
+
+function runValue(v: unknown, field: string, maxBytes: number): unknown {
+  if (v === undefined) throw bad(field, "is required");
+  if (jsonBytes(v) > maxBytes) throw bad(field, `must be at most ${maxBytes} bytes`);
+  return cloneJson(v);
+}
+
+function runTarget(v: unknown): string {
+  if (typeof v !== "string" || v.length > RUN_LIMITS.targetMaxChars) {
+    throw bad("target", `must be text of at most ${RUN_LIMITS.targetMaxChars} characters`);
+  }
+  return v;
+}
+
+function runEvKind(v: unknown): RunEvUp["kind"] {
+  return oneOf(v, RUN_EV_KINDS, "kind");
+}
+
+const readRunEv = asRun(
+  (o): RunEvUp => ({
+    t: "run.ev",
+    kind: runEvKind(o.kind),
+    tNs: tNs(o),
+    target: runTarget(o.target),
+    value: runValue(o.value, "value", RUN_LIMITS.evValueMaxBytes),
+  }),
+);
+
+const readRunTick = asRun((o): RunTickUp => ({ t: "run.tick", tNs: tNs(o) }));
+
+const readRunCheck = asRun(
+  (o): RunCheckUp => ({
+    t: "run.check",
+    tNs: tNs(o),
+    hb: matching(o.hb, HASH16, "hb"),
+    hd: matching(o.hd, HASH16, "hd"),
+  }),
+);
+
+function runArgs(v: unknown): unknown {
+  return v === undefined ? undefined : runValue(v, "args", RUN_LIMITS.evValueMaxBytes);
+}
+
+const readRunReqUp = asRun((o): RunReqUp => {
+  const out: RunReqUp = { t: "run.req", id: matching(o.id, REF, "id"), req: oneOf(o.req, RUN_REQ_NAMES, "req") };
+  const args = runArgs(o.args);
+  if (args !== undefined) out.args = args;
+  return out;
+});
+
 const CLIENT_PARSERS: Record<ClientFrame["t"], (o: Rec) => ClientFrame> = {
   hello,
   submit,
@@ -373,6 +449,10 @@ const CLIENT_PARSERS: Record<ClientFrame["t"], (o: Rec) => ClientFrame> = {
   cursor,
   chat,
   cmd,
+  "run.req": readRunReqUp,
+  "run.ev": readRunEv,
+  "run.tick": readRunTick,
+  "run.check": readRunCheck,
   ping: () => ({ t: "ping" }),
   bye: () => ({ t: "bye" }),
 };
@@ -416,6 +496,35 @@ function isAck(v: unknown): boolean {
   return isRec(v) && isNum(v.sub) && Array.isArray(v.inverse);
 }
 
+const reads =
+  (read: (o: Rec) => unknown) =>
+  (o: Rec): boolean => {
+    try {
+      read(o);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+const readRunFrame = asRun((o) => {
+  tNs(o);
+  if (o.frame === undefined) throw bad("frame", "is required");
+  if (jsonBytes(o) > RUN_LIMITS.frameMaxBytes) throw bad("frame", `must fit in ${RUN_LIMITS.frameMaxBytes} bytes`);
+});
+
+const readRunReqDown = asRun((o) => {
+  matching(o.from, ACTOR, "from");
+  matching(o.id, REF, "id");
+  if (o.req !== "frames") {
+    oneOf(o.req, RUN_REQ_NAMES, "req");
+    runArgs(o.args);
+    return;
+  }
+  if (!isRec(o.args)) throw bad("args", "must be an object");
+  bool(o.args.on, "args.on");
+});
+
 const SERVER_CHECKS: Record<ServerFrame["t"], (o: Rec) => boolean> = {
   challenge: (o) => o.protocol === WIRE_PROTOCOL && strings(o, ["nonce", "aud", "serverTime"]),
   welcome: (o) =>
@@ -450,6 +559,11 @@ const SERVER_CHECKS: Record<ServerFrame["t"], (o: Rec) => boolean> = {
   buddies: (o) => Array.isArray(o.list),
   buddy: (o) => isStr(o.actor) && isRec(o.patch),
   invite: (o) => strings(o, ["room", "from", "title", "role", "expires"]),
+  "run.ev": (o) => isSeq(o.rseq) && reads(readRunEv)(o),
+  "run.tick": reads(readRunTick),
+  "run.check": reads(readRunCheck),
+  "run.frame": reads(readRunFrame),
+  "run.req": reads(readRunReqDown),
 };
 
 /** Narrows a server frame by its type and the fields the client reads first. Null means ignore it and log once. */

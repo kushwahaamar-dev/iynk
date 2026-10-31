@@ -49,7 +49,15 @@ export type {
   RoomEvent,
   RoomId,
   RoomSettings,
-  RunState,
+  RunCheck,
+  RunCheckUp,
+  RunEv,
+  RunEvUp,
+  RunFrame,
+  RunReq,
+  RunReqUp,
+  RunTick,
+  RunTickUp,
   Seq,
   ServerFrame,
   Snapshot,
@@ -64,3 +72,5 @@ export type {
 } from "./frames.ts";
 export { exceedsDepth, parseClientFrame, parseServerFrame, sanitizeChat, sanitizeName, sanitizeStatus } from "./validate.ts";
 export type { Parsed } from "./validate.ts";
+export { RUN_DETACH_MODES, RUN_EV_KINDS, RUN_LIMITS, RUN_REQ_NAMES, classifyOp } from "./run-ops.ts";
+export type { OpClass, RunDetachMode, RunEvKind, RunReqName, RunState } from "./run-ops.ts";

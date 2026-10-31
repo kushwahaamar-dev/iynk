@@ -1,5 +1,8 @@
 // Wire protocol v2 (REALTIME_ARCHITECTURE 7.3 and 7.4, ADR-0501). Decisions: D6 (opSchema 1.1), D7 (frames use the
-// structural WireOp and WireEnvelope because protocol imports core only), D14 (server_error), D21 (no run frames in B7).
+// structural WireOp and WireEnvelope because protocol imports core only), D14 (server_error), D21 (no run frames in B7;
+// the run channel of REALTIME 13 arrives with T-B8-17a).
+
+import type { RunEvKind, RunReqName, RunState } from "./run-ops.ts";
 
 export const WIRE_PROTOCOL = 2 as const;
 export const OP_SCHEMA = "1.1" as const;
@@ -25,6 +28,8 @@ export const CMD_NAMES = [
   "room.settings",
   "room.close",
   "room.pin",
+  "runner.set",
+  "run.detach",
 ] as const;
 export type CmdName = (typeof CMD_NAMES)[number];
 
@@ -38,7 +43,7 @@ export const CAPS = {
   gzipAbove: 4096,
 } as const;
 
-export const CLIENT_CAPS = ["gzip", "cursors", "chat", "lobby"] as const;
+export const CLIENT_CAPS = ["gzip", "cursors", "chat", "lobby", "run"] as const;
 
 export type RejectCode =
   | "malformed"
@@ -75,6 +80,9 @@ export type ErrorCode =
   | "rate_limited"
   | "quota"
   | "server_error"
+  | "run_state"
+  | "bad_run_frame"
+  | "run_log_full"
   | RejectCode;
 
 /** The op body. The protocol does not read it; `apply()` validates it. */
@@ -112,18 +120,6 @@ export type Member = {
   runner: boolean;
   status?: string;
   app?: string;
-};
-
-export type RunState = {
-  runId: string;
-  state: string;
-  runner: Actor | null;
-  atSeq: Seq;
-  seed: number;
-  speed: number;
-  horizonNs: number;
-  versions: Readonly<Record<string, string>>;
-  rseq: number;
 };
 
 export type PresencePatch = {
@@ -214,6 +210,19 @@ export type LobbyBuddies = { t: "buddies"; list: LobbyBuddy[] };
 export type LobbyBuddyPatch = { t: "buddy"; actor: Actor; patch: Partial<LobbyBuddy> };
 export type LobbyInvite = { t: "invite"; room: RoomId; from: Actor; title: string; role: Role; expires: Time };
 
+export type RunEv = { t: "run.ev"; rseq: number; tNs: number; kind: RunEvKind; target: string; value: unknown };
+export type RunTick = { t: "run.tick"; tNs: number };
+export type RunCheck = { t: "run.check"; tNs: number; hb: string; hd: string };
+export type RunFrame = { t: "run.frame"; tNs: number; frame: unknown };
+/** Sent to the runner only; `from` is stamped by the server. `frames` tells the runner to start or stop `run.frame`. */
+export type RunReq = {
+  t: "run.req";
+  from: Actor;
+  id: string;
+  req: RunReqName | "frames";
+  args?: unknown;
+};
+
 export type ServerFrame =
   | Challenge
   | Welcome
@@ -231,7 +240,12 @@ export type ServerFrame =
   | Pong
   | LobbyBuddies
   | LobbyBuddyPatch
-  | LobbyInvite;
+  | LobbyInvite
+  | RunEv
+  | RunTick
+  | RunCheck
+  | RunFrame
+  | RunReq;
 
 export type Hello = {
   t: "hello";
@@ -254,7 +268,24 @@ export type PresenceUp = { t: "presence"; patch: PresencePatch };
 export type CursorUp = { t: "cursor"; view: string; x_mm: number; y_mm: number };
 export type ChatUp = { t: "chat"; id: string; text: string; lang: string };
 export type Cmd = { t: "cmd"; id: string; name: CmdName; args?: Record<string, unknown> };
+export type RunReqUp = { t: "run.req"; id: string; req: RunReqName; args?: unknown };
+export type RunEvUp = { t: "run.ev"; kind: RunEvKind; tNs: number; target: string; value: unknown };
+export type RunTickUp = RunTick;
+export type RunCheckUp = RunCheck;
 export type Ping = { t: "ping" };
 export type Bye = { t: "bye" };
 
-export type ClientFrame = Hello | Submit | Resync | PresenceUp | CursorUp | ChatUp | Cmd | Ping | Bye;
+export type ClientFrame =
+  | Hello
+  | Submit
+  | Resync
+  | PresenceUp
+  | CursorUp
+  | ChatUp
+  | Cmd
+  | RunReqUp
+  | RunEvUp
+  | RunTickUp
+  | RunCheckUp
+  | Ping
+  | Bye;
