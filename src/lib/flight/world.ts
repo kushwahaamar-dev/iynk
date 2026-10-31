@@ -1,3 +1,4 @@
+import { pointHit } from "@/sim/flight/collide";
 import { DEG } from "./math";
 import type { Checkpoint, Course, Gate, HitKind, Prim } from "./types";
 
@@ -137,18 +138,7 @@ export function buildSolids(course: Course): Solid[] {
 
 /** The first solid the sphere (x, y, z, radius m) touches, or null. */
 export function collide(solids: Solid[], x: number, y: number, z: number, m: number): Solid | null {
-  for (const o of solids) {
-    if (o.pass || z < o.z0 - m || z > o.z1 + m) continue;
-    const dx = x - o.x, dy = y - o.y;
-    const lx = dx * o.c + dy * o.s, ly = -dx * o.s + dy * o.c;
-    if (o.k === "box") {
-      if (Math.abs(lx) < o.hw + m && Math.abs(ly) < o.hd + m) return o;
-    } else {
-      const k = Math.max(0, Math.min(1, (z - o.z0) / Math.max(1e-6, o.z1 - o.z0)));
-      const r = o.r0 + (o.r1 - o.r0) * k;
-      if (o.diamond ? Math.abs(lx) + Math.abs(ly) < r + m : lx * lx + ly * ly < (r + m) * (r + m)) return o;
-    }
-  }
+  for (const o of solids) if (pointHit(o, x, y, z, m)) return o;
   return null;
 }
 

@@ -33,8 +33,8 @@ describe("flight module layers", () => {
     }
   });
 
-  it("calls collide only from scoring", () => {
-    const callers = modules.filter((m) => /\bcollide\(/.test(readFileSync(join(DIR, `${m}.ts`), "utf8")) && !["world", "route"].includes(m));
+  it("calls sweptHit only from scoring", () => {
+    const callers = modules.filter((m) => /\bsweptHit\(/.test(readFileSync(join(DIR, `${m}.ts`), "utf8")) && !["world", "route"].includes(m));
     expect(callers).toEqual(["scoring"]);
   });
 

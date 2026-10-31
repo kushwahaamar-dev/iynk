@@ -1,7 +1,8 @@
+import { sweptHit } from "@/sim/flight/collide";
 import { release } from "./autopilot";
 import type { Vec3 } from "./math";
 import { ceilingOf, countsCheckpoints, countsGates, crash, emit, STEP, type SimState } from "./state";
-import { collide, passCheckpoint, throughGate } from "./world";
+import { passCheckpoint, throughGate } from "./world";
 
 export function worldChecks(s: SimState) {
   const c = s.craft, course = s.course;
@@ -25,9 +26,10 @@ export function worldChecks(s: SimState) {
     }
   }
   if (!s.crashed) {
-    const hit = collide(s.solids, s.p[0], s.p[1], s.p[2], c.hitRadius);
+    const hit = sweptHit(s.solids, prev, s.p, c.hitRadius);
     if (hit) {
-      crash(s, hit.kind);
+      s.p = hit.point;
+      crash(s, hit.solid.kind);
       s.v = [s.v[0] * -0.2, s.v[1] * -0.2, Math.min(0, s.v[2])];
     }
   }
