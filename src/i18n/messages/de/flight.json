@@ -211,6 +211,10 @@
     "silver": "Silber",
     "bronze": "Bronze"
   },
+  "model": {
+    "game": "Dieses Flugmodell ist aufs Fluggefühl abgestimmt. Es kann kein PID-Tuning vermitteln. Die Medaillenzeiten gelten für das Werksmodell.",
+    "rigid": "Dieses Flugmodell ist eine Starrkörper-Simulation. Seine Geister werden getrennt gespeichert, und es gibt keine Medaillen."
+  },
   "ghosts": {
     "title": "Geister",
     "best": "Deine beste Runde ({time} s)",

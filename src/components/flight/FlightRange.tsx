@@ -20,7 +20,6 @@ import {
   isPadMapping,
   lapClock,
   loadGhost,
-  medalFor,
   modesFor,
   paceGhost,
   padSticks,
@@ -42,7 +41,9 @@ import {
   type PadMapping,
   type Sticks,
 } from "@/lib/flight";
+import { DEFAULT_MODEL, medalForModel, type FlightModelId } from "@/lib/flight/model-id";
 import { GamepadPanel } from "./GamepadPanel";
+import { ModelLabel } from "./ModelLabel";
 import { TouchSticks } from "./TouchSticks";
 
 export type FlightStrings = Messages["flight"];
@@ -64,6 +65,8 @@ export type FlightRangeProps = {
   /** Translations of the course's title, checkpoint labels and the craft's own mode titles and hints. */
   courseText?: CourseText;
   initialMode?: string;
+  /** The physics the craft flies; ghosts are kept per model and only the game model earns medals. */
+  model?: FlightModelId;
   /** Medal times for the course: a finished lap, run or mission says which medal it earned. */
   par?: ParTimes | null;
   /** armed, checkpoint, lap, crash, landed, battery, run (best range time), missionStep... */
@@ -150,7 +153,7 @@ const GHOST_PACE = "#1c2948";
 const scoresGates = (course: Course, mode: { task: string }) => course.kind === "gates" || (!course.kind && mode.task === "race");
 const scoresCheckpoints = (course: Course, mode: { task: string }) => (course.kind ? course.kind !== "gates" : mode.task === "range");
 
-export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, par, onEvent, onSession, onFigure, peers, wind, onPose, onFix, className }: FlightRangeProps) {
+export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, model = DEFAULT_MODEL, par, onEvent, onSession, onFigure, peers, wind, onPose, onFix, className }: FlightRangeProps) {
   const locale = useLocale();
   const t = useMemo(() => createTranslator(locale, dict, "flight"), [locale, dict]);
   const label = useCallback((en: string) => courseText?.labels?.[en] ?? en, [courseText]);
@@ -234,10 +237,10 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     (e: { time: number; demo?: boolean }, line: string) => {
       if (e.demo) return t("msg.demoTime", { time: e.time.toFixed(1) });
       if (!par) return line;
-      const medal = medalFor(e.time, par);
+      const medal = medalForModel(model, e.time, par);
       return medal ? t("msg.medal", { line, medal: dict.medals[medal] }) : t("msg.noMedal", { line, s: par.bronze });
     },
-    [t, dict, par],
+    [t, dict, par, model],
   );
 
   const describe = useCallback(
@@ -333,21 +336,21 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   useEffect(() => {
     // localStorage and a headless lap: browser only, after the first paint
     const id = setTimeout(() => {
-      setBestGhost(loadGhost(craft.id, course.id));
+      setBestGhost(loadGhost(craft.id, course.id, model));
       setPace(paceGhost(craft, course, calc));
     }, 0);
     return () => clearTimeout(id);
-  }, [craft, course, calc]);
+  }, [craft, course, calc, model]);
   const keepBest = useCallback(
     (time: number) => {
       const steps = session.sim.step;
       const log = session.log().slice();
       setTimeout(() => {
         const g = ghostFromLog(session.origin, log, steps, time);
-        if (g && saveGhost(g)) setBestGhost(g);
+        if (g && saveGhost(g, model)) setBestGhost(g);
       }, 0);
     },
-    [session],
+    [session, model],
   );
 
   // Break it: a crash replays in slow motion from the session's log, then says why and offers the fix
@@ -816,6 +819,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           )}
         </div>
       </div>
+      <ModelLabel model={model} t={dict} />
     </div>
   );
 }

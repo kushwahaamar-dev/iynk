@@ -211,6 +211,10 @@
     "silver": "plata",
     "bronze": "bronce"
   },
+  "model": {
+    "game": "Este modelo de vuelo está ajustado para dar buena sensación. No sirve para aprender a ajustar un PID. Los tiempos de medalla están fijados para el dron de fábrica.",
+    "rigid": "Este modelo de vuelo es una simulación de cuerpo rígido. Sus fantasmas se guardan aparte y no tiene medallas."
+  },
   "ghosts": {
     "title": "Fantasmas",
     "best": "Tu mejor vuelta ({time} s)",

@@ -211,6 +211,10 @@
     "silver": "Silver",
     "bronze": "Bronze"
   },
+  "model": {
+    "game": "This flight model is tuned to feel. It cannot teach PID tuning. Medal times are set for the factory craft.",
+    "rigid": "This flight model is a rigid body simulation. Its ghosts are kept apart, and it has no medals."
+  },
   "ghosts": {
     "title": "Ghosts",
     "best": "Your best lap ({time} s)",

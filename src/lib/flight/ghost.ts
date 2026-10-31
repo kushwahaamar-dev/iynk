@@ -1,5 +1,6 @@
 import { lerp, wrapDeg } from "./math";
 import { createSim, dispatch, drainEvents, replay, STEP, stepSim, type SimState } from "./sim";
+import { DEFAULT_MODEL, modelSuffix, type FlightModelId } from "./model-id";
 import type { FlightOrigin } from "./session";
 import type { CalcOutputs, Course, FlightAction, FlightCraft, FlightEvent } from "./types";
 
@@ -15,6 +16,8 @@ export interface GhostTrack {
   v: 1;
   craft: string;
   course: string;
+  /** The flight model it was flown on; absent means the game model. */
+  model?: FlightModelId;
   /** The lap or run time this track flies, s. */
   time: number;
   /** Seconds between poses. */
@@ -104,16 +107,17 @@ export function isGhostTrack(v: unknown): v is GhostTrack {
   const g = v as GhostTrack;
   return (
     typeof v === "object" && v !== null && g.v === 1 && typeof g.craft === "string" && typeof g.course === "string" &&
+    (g.model === undefined || g.model === "flight-game@1" || g.model === "multirotor-rigid@1") &&
     typeof g.time === "number" && g.time > 0 && g.dt === GHOST_DT && Array.isArray(g.poses) && g.poses.length >= 2 && g.poses.every(isPose)
   );
 }
 
-const keyOf = (craft: string, course: string) => `iynk:ghost:v1:${craft}:${course}`;
+const keyOf = (craft: string, course: string, model: FlightModelId) => `iynk:ghost:v1:${craft}:${course}${modelSuffix(model)}`;
 
 /** Your best lap's ghost for a craft's course, from this browser. */
-export function loadGhost(craft: string, course: string): GhostTrack | null {
+export function loadGhost(craft: string, course: string, model: FlightModelId = DEFAULT_MODEL): GhostTrack | null {
   try {
-    const v = JSON.parse(localStorage.getItem(keyOf(craft, course)) ?? "null");
+    const v = JSON.parse(localStorage.getItem(keyOf(craft, course, model)) ?? "null");
     return isGhostTrack(v) && v.craft === craft && v.course === course ? v : null;
   } catch {
     return null;
@@ -121,11 +125,11 @@ export function loadGhost(craft: string, course: string): GhostTrack | null {
 }
 
 /** Keeps the track when it beats the stored one; returns whether it did. */
-export function saveGhost(g: GhostTrack): boolean {
-  const old = loadGhost(g.craft, g.course);
+export function saveGhost(g: GhostTrack, model: FlightModelId = DEFAULT_MODEL): boolean {
+  const old = loadGhost(g.craft, g.course, model);
   if (old && old.time <= g.time) return false;
   try {
-    localStorage.setItem(keyOf(g.craft, g.course), JSON.stringify(g));
+    localStorage.setItem(keyOf(g.craft, g.course, model), JSON.stringify(g));
     return true;
   } catch {
     // private mode or full storage: the ghost lasts for this visit
