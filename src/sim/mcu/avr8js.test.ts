@@ -6,13 +6,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { clockRate, cyclesToNs } from "../core/clock.ts";
-import type { EventSink, SimEvent, SliceBudget } from "../engine.ts";
-import { createAvrEngine, type AvrContext, type AvrEngine, type HexImage } from "./avr8js.ts";
+import type { EventSink, ProgramImage, SimEvent, SliceBudget } from "../engine.ts";
+import { createAvrEngine, type AvrContext, type AvrEngine } from "./avr8js.ts";
 
 const RATE = clockRate(125, 2);
 const budget: SliceBudget = { shouldYield: () => false, work: { statements: 0, events: 0, outputBytes: 0 } };
 
-function hexOf(words: number[]): HexImage {
+function hexOf(words: number[]): ProgramImage {
   const bytes = words.flatMap((w) => [w & 0xff, w >> 8]);
   const record = (addr: number, type: number, data: number[]) => {
     const body = [data.length, addr >> 8, addr & 0xff, type, ...data];

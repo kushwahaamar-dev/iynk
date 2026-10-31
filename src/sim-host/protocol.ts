@@ -1,3 +1,4 @@
+import type { ParseError } from "@/export/hex";
 import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import type { SimTime } from "@/sim/core/clock";
 import type {
@@ -41,6 +42,8 @@ export type SimReq =
   | { t: "check"; job: CheckJob; budgetMs?: number }
   /** Runs the fault rules over a netlist. `sources` is path to text; the code rules read it when it is not empty. */
   | { t: "static-check"; net: SimNetlist; sources: Record<string, string> }
+  /** Checks an imported hex, and its ELF if there is one, against the flash of the board. Imports never parse outside this worker. */
+  | { t: "parse-firmware"; hex: string; elf?: Uint8Array }
   /** Probes belong to the run: a load or a reset clears them, and the UI adds them again. At most 64. */
   | { t: "probe.add"; run: number; spec: ProbeSpec }
   | { t: "probe.remove"; run: number; id: string }
@@ -111,6 +114,9 @@ export interface StaticCheckReply {
   skipped: Record<string, Record<string, number>>;
   errors: Array<{ ruleId: string; message: string }>;
 }
+
+/** The ack of `parse-firmware`. */
+export type ParseFirmwareReply = { ok: true; bytes: number } | { ok: false; error: ParseError };
 
 /** A request for a run the worker no longer has is acked with this and does nothing. */
 export interface IgnoredReply {

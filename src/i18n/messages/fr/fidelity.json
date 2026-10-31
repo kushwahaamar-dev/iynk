@@ -97,7 +97,8 @@
       "elf-bad-section": "Une section de ce fichier ELF est mal formée.",
       "dwarf-too-large": "Les données de débogage DWARF sont trop volumineuses, les lignes de source ne sont donc pas disponibles.",
       "dwarf-bad-line-program": "La table de lignes DWARF est mal formée, les lignes de source ne sont donc pas disponibles.",
-      "import-timeout": "L'importation a pris trop de temps et a été arrêtée."
+      "import-timeout": "L'importation a pris trop de temps et a été arrêtée.",
+      "store-failed": "Le fichier n'a pas pu être enregistré sur cet appareil."
     }
   },
   "debug": {

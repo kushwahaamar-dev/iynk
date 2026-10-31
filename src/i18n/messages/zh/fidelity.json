@@ -97,7 +97,8 @@
       "elf-bad-section": "此 ELF 文件中有一个节已损坏。",
       "dwarf-too-large": "DWARF 调试数据太大,因此无法显示源码行。",
       "dwarf-bad-line-program": "DWARF 行表已损坏,因此无法显示源码行。",
-      "import-timeout": "导入耗时过长,已停止。"
+      "import-timeout": "导入耗时过长,已停止。",
+      "store-failed": "无法将文件保存到此设备。"
     }
   },
   "debug": {

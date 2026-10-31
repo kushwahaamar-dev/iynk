@@ -17,14 +17,6 @@ import {
 
 export type Avr8js = typeof import("avr8js");
 
-/** The 'hex' arm of SIMULATION 8.1; `ProgramImage` in `engine.ts` still lists only source. */
-export interface HexImage {
-  kind: "hex";
-  hex: string;
-  elf?: Uint8Array;
-  sourceMap?: unknown;
-}
-
 export type AvrStopReason = "pin" | "bus" | "adc" | "break" | "budget";
 
 export interface AvrContext {
@@ -51,7 +43,7 @@ export interface AvrAdapter {
 export type AvrState = "unloaded" | "loaded" | "running" | "paused" | "error";
 
 export interface AvrEngine extends McuEngine {
-  load(image: ProgramImage | HexImage): LoadResult;
+  load(image: ProgramImage): LoadResult;
   addAdapter(a: AvrAdapter): void;
   breakBitmap: Uint8Array | null;
   onBreak: ((pc: number) => void) | null;
@@ -68,7 +60,7 @@ const FLASH_BYTES = 32768;
 const SRAM_BYTES = 2048;
 const SRAM_START = 0x100;
 const CPU_HZ = 16_000_000;
-const RATE = clockRate(125, 2);
+export const RATE = clockRate(125, 2);
 const ENGINE_ID = "engine:avr@1.0.0";
 const SMCR = 0x53;
 const OP_SLEEP = 0x9588;
@@ -215,7 +207,7 @@ class AvrEngineImpl implements AvrEngine {
     if (this.m) a.attach(this.m.ctx);
   }
 
-  load(image: ProgramImage | HexImage): LoadResult {
+  load(image: ProgramImage): LoadResult {
     if (this.board !== "uno-r3" && this.board !== "nano") return failed("unsupported-board", `${this.board} does not run on the AVR engine`);
     if (image.kind !== "hex") return failed("unsupported-image", "the AVR engine runs compiled hex, not source");
     const parsed = readHex(image.hex);

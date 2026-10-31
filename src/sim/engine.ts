@@ -1,3 +1,4 @@
+import type { SourceMap } from "../export/dwarf-lines.ts";
 import type { ClockRate, SimTime } from "./core/clock.ts";
 import type { SimDiagnostic } from "./core/diagnostic.ts";
 import type { NoneReason } from "./models/kinds.ts";
@@ -9,13 +10,18 @@ export type { SimDiagnostic, SolveDiagnostic } from "./core/diagnostic.ts";
 /** SIMULATION 8.1. Not the `Language` of `src/lib/interp/profiles.ts`. */
 export type Language = "arduino-cpp" | "c-cpp" | "micropython" | "python" | "verilog";
 
-/** The 'hex' arm of SIMULATION 8.1 arrives with B9; `entry` is the path of the file that goes to the engine. */
-export type ProgramImage = {
-  kind: "source";
-  language: Language;
-  files: { path: string; text: string }[];
-  entry: string;
-};
+/** SIMULATION 8.1. For the source arm `entry` is the path of the file that goes to the engine. */
+export type ProgramImage =
+  | {
+      kind: "source";
+      language: Language;
+      files: { path: string; text: string }[];
+      entry: string;
+    }
+  | { kind: "hex"; hex: string; elf?: Uint8Array; sourceMap?: SourceMap };
+
+export type SourceProgram = Extract<ProgramImage, { kind: "source" }>;
+export type HexProgram = Extract<ProgramImage, { kind: "hex" }>;
 
 export interface LoadResult {
   ok: boolean;

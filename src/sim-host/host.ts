@@ -2,7 +2,7 @@ import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
 import type { SimTime } from "@/sim/core/clock";
 import type { HostInput, InputEntry, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
-import type { ControlOp, DebugOp, DiagnosticsReply, HashesReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
+import type { ControlOp, DebugOp, DiagnosticsReply, HashesReply, ParseFirmwareReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
 
@@ -87,6 +87,8 @@ export interface SimHost {
    * resolve with `note: "check.skipped"`, and so does a worker that is not ready.
    */
   staticCheck(net: SimNetlist, sources: Record<string, string>): Promise<StaticCheckResult>;
+  /** Parses an imported hex, and its ELF if there is one, in the worker. Nothing is loaded. */
+  parseFirmware(hex: string, elf?: Uint8Array): Promise<ParseFirmwareReply>;
   /** Probes are cleared by `load`, `reset` and `restart`; the caller adds them again. */
   readonly probes: SimHostProbes;
   /** The class hashes of the run at `tNs`; rejects when the run is somewhere else. */
@@ -333,6 +335,9 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
       } catch {
         return skipped;
       }
+    },
+    async parseFirmware(hex, elf) {
+      return (await port.call({ t: "parse-firmware", hex, elf })).result as ParseFirmwareReply;
     },
     probes,
     async hashes(tNs) {

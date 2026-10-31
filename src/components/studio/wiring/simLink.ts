@@ -1,3 +1,4 @@
+import { deviceAssetBytes, type AssetBytes } from "@/local/asset-bytes";
 import { builtinRegistry } from "@/parts/builtin";
 import type { PartRegistry } from "@/parts/registry";
 import type { RunWiring } from "@/collab/run-wiring";
@@ -20,6 +21,8 @@ export interface SimLinkDeps {
   reg?: Pick<PartRegistry, "get">;
   /** The breakpoint lines by source path, read each time a run starts. */
   breakpoints?: () => Readonly<Record<string, readonly number[]>>;
+  /** Where the imported files of the project are read from; a run on the avr8js engine needs its hex. */
+  assets?: Pick<AssetBytes, "get">;
 }
 
 export interface SimLink {
@@ -90,6 +93,22 @@ export function programOf(state: Project): ProgramImage | null {
   return entry === undefined || files.length === 0 ? null : { kind: "source", language: firmware.language, files, entry };
 }
 
+const FIRMWARE_ENGINE = "avr8js";
+const textOf = (bytes: Uint8Array): string => new TextDecoder().decode(bytes);
+
+/** The hex of the first runtime when it runs on the avr8js engine, with its ELF when one was imported; null when the files are not there. */
+async function hexProgramOf(state: Project, assets: Pick<AssetBytes, "get">): Promise<ProgramImage | null> {
+  const options: { image?: string; elf?: string } | undefined = state.simulation.runtimes[0]?.options;
+  const read = async (id: string | undefined): Promise<Uint8Array | null> => {
+    const asset = state.assets.find((a) => a.id === id);
+    return asset ? assets.get(asset.sha256) : null;
+  };
+  const hex = await read(options?.image);
+  if (!hex) return null;
+  const elf = options?.elf === undefined ? undefined : ((await read(options.elf)) ?? undefined);
+  return { kind: "hex", hex: textOf(hex), ...(elf ? { elf } : {}) };
+}
+
 /** Loads the project's circuit and firmware into `host`, not started, at the speed a mirrored run needs. */
 export async function loadForRun(host: Pick<SimHost, "load">, state: Project, seed: number, reg: Pick<PartRegistry, "get"> = builtinRegistry()): Promise<void> {
   const { net, diagnostics } = buildSimNetlist(state, reg);
@@ -102,7 +121,7 @@ export async function loadForRun(host: Pick<SimHost, "load">, state: Project, se
   if (failed) throw new Error(String(failed.args?.message ?? failed.text_key));
 }
 
-export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), breakpoints = () => ({}) }: SimLinkDeps): SimLink {
+export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), breakpoints = () => ({}), assets = deviceAssetBytes() }: SimLinkDeps): SimLink {
   // A newer start, stop or reset makes the answers of an older start irrelevant.
   let generation = 0;
 
@@ -144,6 +163,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
   /** A board that cannot be debugged refuses the op; its run just goes without breakpoints. */
   async function armBreakpoints(program: ProgramImage): Promise<void> {
     const marked = breakpoints();
+    if (program.kind !== "source") return;
     for (const { path } of program.files) {
       const lines = marked[path];
       if (lines?.length) await host.debug({ op: "set-breakpoints", file: path, lines: [...lines] }).catch(() => undefined);
@@ -161,8 +181,10 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
     const { net, diagnostics: netDiagnostics } = buildSimNetlist(state, reg);
     const blocked = netDiagnostics.filter((d) => d.severity === "error");
     if (blocked.length > 0) return fail(blocked.map(diagnosticOf));
-    const program = programOf(state);
-    if (!program) return fail([failure("no-firmware", "The project has no code to run.")]);
+    const compiled = state.simulation.runtimes[0]?.engine === FIRMWARE_ENGINE;
+    const program = compiled ? await hexProgramOf(state, assets) : programOf(state);
+    if (mine !== generation) return;
+    if (!program) return fail([compiled ? failure("no-firmware-image", "Import a .hex file to run in Firmware mode.") : failure("no-firmware", "The project has no code to run.")]);
     const opts: SimRunOptions = { seed: state.simulation.seed, speed: run.getState().speed, limits: LIMITS, tier: "T1" };
     try {
       const loaded = await host.load(net, opts, program);

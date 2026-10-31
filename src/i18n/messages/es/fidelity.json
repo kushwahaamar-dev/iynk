@@ -97,7 +97,8 @@
       "elf-bad-section": "Una sección de este archivo ELF está mal formada.",
       "dwarf-too-large": "Los datos de depuración DWARF son demasiado grandes, así que no hay líneas de código fuente.",
       "dwarf-bad-line-program": "La tabla de líneas DWARF está mal formada, así que no hay líneas de código fuente.",
-      "import-timeout": "La importación tardó demasiado y se detuvo."
+      "import-timeout": "La importación tardó demasiado y se detuvo.",
+      "store-failed": "No se pudo guardar el archivo en este dispositivo."
     }
   },
   "debug": {

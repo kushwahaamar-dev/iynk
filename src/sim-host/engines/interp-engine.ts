@@ -149,6 +149,7 @@ class InterpEngineImpl implements InterpEngine {
 
   load(image: ProgramImage): LoadResult {
     const profile = this.profile;
+    if (image.kind !== "source") return failed("unsupported-image", "the interpreter runs source, not compiled hex");
     if (!profile) return failed("unknown-board", `unknown board ${this.o.board}`);
     if (INTERP_LANGUAGE[image.language] !== this.o.language) {
       return failed("language-mismatch", `${image.language} does not run on this ${this.o.language} engine`);

@@ -288,7 +288,7 @@ describe("simLink with the real simulator", () => {
               createInterpEngine({
                 id: net.parts.find((p) => p.kind === "board")!.id,
                 board: "uno-r3",
-                language: INTERP_LANGUAGE[program.language as keyof typeof INTERP_LANGUAGE] ?? "arduino",
+                language: INTERP_LANGUAGE[(program.kind === "source" ? program.language : "arduino-cpp") as keyof typeof INTERP_LANGUAGE] ?? "arduino",
                 seed: opts.seed,
               }),
             makeDigital: createDigitalNets,

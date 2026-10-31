@@ -97,7 +97,8 @@
       "elf-bad-section": "Ein Abschnitt dieser ELF-Datei ist fehlerhaft.",
       "dwarf-too-large": "Die DWARF-Debugdaten sind zu groß, Quellzeilen sind daher nicht verfügbar.",
       "dwarf-bad-line-program": "Die DWARF-Zeilentabelle ist fehlerhaft, Quellzeilen sind daher nicht verfügbar.",
-      "import-timeout": "Der Import dauerte zu lange und wurde abgebrochen."
+      "import-timeout": "Der Import dauerte zu lange und wurde abgebrochen.",
+      "store-failed": "Die Datei konnte auf diesem Gerät nicht gespeichert werden."
     }
   },
   "debug": {

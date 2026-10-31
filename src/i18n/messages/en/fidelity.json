@@ -97,7 +97,8 @@
       "elf-bad-section": "A section of this ELF file is malformed.",
       "dwarf-too-large": "The DWARF debug data is too large, so source lines are not available.",
       "dwarf-bad-line-program": "The DWARF line table is malformed, so source lines are not available.",
-      "import-timeout": "Importing took too long and was stopped."
+      "import-timeout": "Importing took too long and was stopped.",
+      "store-failed": "The file could not be saved on this device."
     }
   },
   "debug": {

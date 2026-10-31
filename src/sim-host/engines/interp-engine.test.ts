@@ -6,7 +6,7 @@ import type { BoardContent } from "@/content/schema";
 import { boardLoaders } from "@/content/index.generated";
 import { defaultParams, renderTemplate, resolveText } from "@/lib/boardlab/template";
 import { INTERP_LANGUAGE, lessonJob, runHeadless, runOptionsFor, pinNet, BOARD_IDS, PROFILES, getProfile, type CheckJob } from "@/lib/interp";
-import { RANK, type EventSink, type ProgramImage, type SimEvent, type SliceBudget } from "@/sim/engine";
+import { RANK, type EventSink, type SourceProgram, type SimEvent, type SliceBudget } from "@/sim/engine";
 import { createInterpEngine, opNsOf, toSimLanguage, type InterpEngine, type InterpEngineOptions } from "./interp-engine";
 
 const BLINK = `void setup() {
@@ -42,7 +42,7 @@ const MS = 1_000_000;
 
 const BUDGET: SliceBudget = { shouldYield: () => false, work: { statements: Infinity, events: Infinity, outputBytes: Infinity } };
 
-const image = (language: ProgramImage["language"], text: string): ProgramImage => ({
+const image = (language: SourceProgram["language"], text: string): SourceProgram => ({
   kind: "source",
   language,
   files: [{ path: "main", text }],
@@ -54,7 +54,7 @@ interface Collected {
   events: Omit<SimEvent, "seq">[];
 }
 
-function boot(o: Partial<InterpEngineOptions>, text: string, language: ProgramImage["language"] = "arduino-cpp"): Collected {
+function boot(o: Partial<InterpEngineOptions>, text: string, language: SourceProgram["language"] = "arduino-cpp"): Collected {
   const engine = createInterpEngine({ id: "mcu", board: "uno-r3", language: "arduino", seed: 1, ...o });
   const events: Omit<SimEvent, "seq">[] = [];
   const sink: EventSink = { emit: (e) => events.push(e) };

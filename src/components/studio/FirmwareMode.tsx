@@ -5,10 +5,11 @@ import { Button, Callout, SegmentedControl } from "@/components/ui";
 import { newId } from "@/core/ids";
 import { sha256Hex } from "@/core/sha256";
 import { utf8Encode } from "@/core/canonical";
-import { parseElf } from "@/export/elf";
-import { parseHex, type ParseError } from "@/export/hex";
+import type { ParseError } from "@/export/hex";
+import type { AssetBytes } from "@/local/asset-bytes";
 import type { Asset, Op } from "@/project/generated/types";
 import type { Messages } from "@/i18n/namespaces";
+import type { ParseFirmwareReply } from "@/sim-host/protocol";
 import type { MessageKey } from "@/i18n/translate";
 import type { FidelityT } from "./TierChips";
 
@@ -25,7 +26,6 @@ export type AssetView = Pick<Asset, "id" | "path" | "bytes">;
 
 type Mode = "interpreter" | "firmware";
 
-const FLASH_BYTES = 32768;
 const AVR_BOARDS: readonly string[] = ["core.uno-r3", "core.nano"];
 const OCTET_STREAM = "application/octet-stream";
 const INTERPRETER = "iynk-interp";
@@ -59,10 +59,13 @@ export interface FirmwareModeProps {
   runtime: RuntimeView;
   assets: readonly AssetView[];
   onChange(ops: Op[]): void;
+  /** Checks the files in the sim worker; nothing is parsed here. */
+  parse(hex: string, elf?: Uint8Array): Promise<ParseFirmwareReply>;
+  store: Pick<AssetBytes, "put">;
   t: FidelityT;
 }
 
-export function FirmwareMode({ runtime, assets, onChange, t }: FirmwareModeProps) {
+export function FirmwareMode({ runtime, assets, onChange, parse, store, t }: FirmwareModeProps) {
   const [wanted, setWanted] = useState<Mode>(runtime.engine === FIRMWARE ? "firmware" : "interpreter");
   const [error, setError] = useState<ParseError | null>(null);
   const [staged, setStaged] = useState<{ name: string; hex: string } | null>(null);
@@ -84,28 +87,36 @@ export function FirmwareMode({ runtime, assets, onChange, t }: FirmwareModeProps
     }
   }
 
-  function commit(name: string, hex: string, elf?: Uint8Array) {
-    const hexResult = parseHex(hex, { flashBytes: FLASH_BYTES });
-    const failure = !hexResult.ok ? hexResult : elf ? parseElf(elf, { flashBytes: FLASH_BYTES }) : hexResult;
-    if (!failure.ok) {
-      setError(failure.error);
+  async function commit(name: string, hex: string, elf?: Uint8Array) {
+    const checked = await parse(hex, elf);
+    if (!checked.ok) {
+      setError(checked.error);
+      return;
+    }
+    const ops = imageOps(runtime, name, hex, elf);
+    const files = [utf8Encode(hex), ...(elf ? [elf] : [])];
+    const added = ops.filter((op): op is Extract<Op, { k: "asset.add" }> => op.k === "asset.add");
+    try {
+      await Promise.all(added.map((op, i) => store.put(op.asset.sha256, files[i])));
+    } catch {
+      setError({ kind: "store-failed", message: "the file could not be stored" });
       return;
     }
     setError(null);
     setStaged({ name, hex });
-    onChange(imageOps(runtime, name, hex, elf));
+    onChange(ops);
   }
 
   async function pickHex(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (file) commit(baseName(file.name), await file.text());
+    if (file) await commit(baseName(file.name), await file.text());
   }
 
   async function pickElf(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (file && staged) commit(staged.name, staged.hex, new Uint8Array(await file.arrayBuffer()));
+    if (file && staged) await commit(staged.name, staged.hex, new Uint8Array(await file.arrayBuffer()));
   }
 
   return (

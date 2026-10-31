@@ -29,7 +29,7 @@ function rig(): DiagDeps {
             return createInterpEngine({
               id: board.id,
               board: board.descriptor.replace(/^core\./, "").replace(/@.*$/, "") as BoardId,
-              language: INTERP_LANGUAGE[program.language as keyof typeof INTERP_LANGUAGE] ?? "arduino",
+              language: INTERP_LANGUAGE[(program.kind === "source" ? program.language : "arduino-cpp") as keyof typeof INTERP_LANGUAGE] ?? "arduino",
               seed: opts.seed,
             });
           },

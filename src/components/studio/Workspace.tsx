@@ -9,6 +9,7 @@ import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
 import { check } from "@/lib/interp";
+import { deviceAssetBytes } from "@/local/asset-bytes";
 import { appEventLog } from "@/local/events";
 import type { Diagnostic } from "@/lib/interp/errors";
 import type { PinRef } from "@/project/generated/types";
@@ -359,16 +360,17 @@ function FidelityChips({ doc, ui, messages, lang }: { doc: DocStore; ui: UiStore
   );
 }
 
-function FirmwareControl({ doc, messages, lang }: { doc: DocStore; messages: StudioMessages; lang: Locale }) {
+function FirmwareControl({ doc, host, messages, lang }: { doc: DocStore; host: Services["sim"]; messages: StudioMessages; lang: Locale }) {
   const runtimes = useStoreSelector(doc, (s) => s.state.simulation.runtimes);
   const boards = useStoreSelector(doc, (s) => s.state.boards);
   const assets = useStoreSelector(doc, (s) => s.state.assets);
   const t = useMemo(() => createTranslator(lang, messages.fidelity, `${lang}/fidelity`), [lang, messages.fidelity]);
+  const store = useMemo(() => deviceAssetBytes(), []);
   const runtime = runtimes[0];
   const board = boards.find((b) => b.id === runtime?.board);
   if (!runtime || !board) return null;
   const view: RuntimeView = { id: runtime.id, board: runtime.board, boardRef: board.definition.ref, engine: runtime.engine, options: runtime.options };
-  return <FirmwareMode runtime={view} assets={assets} t={t} onChange={(ops) => doc.commit(ops, { label: t("firmware.firmware") })} />;
+  return <FirmwareMode runtime={view} assets={assets} t={t} parse={(hex, elf) => host.parseFirmware(hex, elf)} store={store} onChange={(ops) => doc.commit(ops, { label: t("firmware.firmware") })} />;
 }
 
 /**
@@ -686,7 +688,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} debug={{ sim, run, messages: messages.fidelity.debug }} />,
         serial: (
           <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} roomRun={messages.run} lang={lang} firmware={<FirmwareControl doc={doc} messages={messages} lang={lang} />} />
+            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} roomRun={messages.run} lang={lang} firmware={<FirmwareControl doc={doc} host={sim} messages={messages} lang={lang} />} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
             <InstrumentDock doc={doc} run={run} ui={ui} sim={sim} messages={messages.instruments} fidelity={messages.fidelity} faults={messages.faults} lang={lang} />
           </div>

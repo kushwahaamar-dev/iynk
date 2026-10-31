@@ -25,6 +25,7 @@ import { runRules } from "@/sim/faults/rules";
 import { runFactsFrom } from "@/sim/faults/run-facts";
 import type { CodeFacts, Rule } from "@/sim/faults/types";
 import type { BoardId } from "@/lib/interp/profiles";
+import { parseFirmware } from "@/sim/mcu/firmware";
 import { scanBus, ScanError, type ScanSession } from "@/sim/bus/scan";
 import { createOrchestrator, type Orchestrator } from "@/sim/orchestrator";
 import type { ProbeHandle, ProbeTap, TraceChunk } from "@/sim/probe/tap";
@@ -45,6 +46,8 @@ export interface SimHandlerDeps {
   wallMs(): number;
   schedule(fn: () => void): void;
   makeEngine(program: ProgramImage, net: SimNetlist, opts: SimRunOptions): SimEngine;
+  /** Gets what `makeEngine` needs for a compiled program before the run is built; errors refuse the load. Without it `makeEngine` must cope on its own. */
+  prepareHex?(): Promise<SimDiagnostic[]>;
   makeDigital(): DigitalLayer;
   /** Without it every probe is refused. The tap stays outside the orchestrator so that probes never reach a hash. */
   makeTap?(): ProbeTap & Engine;
@@ -176,6 +179,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function postFindings(r: Runtime) {
     if (!monitor || !deps.faults || !loaded) return;
     const { net, program } = loaded;
+    if (program.kind !== "source") return;
     const sources = Object.fromEntries(program.files.map((f) => [f.path, f.text]));
     const facts = runFactsFrom({
       endNs: r.orch.now,
@@ -397,6 +401,14 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     });
   }
 
+  function refuse(req: Extract<SimReq, { t: "load" }>, diagnostics: SimDiagnostic[]): DiagnosticsReply {
+    loaded = req;
+    state = "idle";
+    rt = null;
+    post();
+    return { diagnostics };
+  }
+
   function build(req: Extract<SimReq, { t: "load" }>): DiagnosticsReply {
     const digital = deps.makeDigital();
     const engine = deps.makeEngine(req.program, req.net, req.opts);
@@ -409,13 +421,9 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       diagnostics.push(...loadedProgram.diagnostics);
       ok = loadedProgram.ok;
     }
+    if (!ok) return refuse(req, diagnostics);
     loaded = req;
     state = "idle";
-    if (!ok) {
-      rt = null;
-      post();
-      return { diagnostics };
-    }
     rt = {
       orch,
       engine,
@@ -565,6 +573,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     emit = send;
     if (msg.t === "check") return runChecks(msg.job, { budgetMs: msg.budgetMs });
     if (msg.t === "static-check") return staticCheck(msg);
+    if (msg.t === "parse-firmware") return parseFirmware(msg.hex, msg.elf);
     if (msg.t === "diag") {
       if (!deps.diag || msg.op !== "stall") throw bad("diag is not enabled in this worker");
       for (;;);
@@ -575,7 +584,11 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       speed = msg.opts.speed;
       horizon = null;
       stamped = [];
-      return build(msg);
+      if (msg.program.kind !== "hex" || !deps.prepareHex) return build(msg);
+      return deps.prepareHex().then((blocked) => {
+        if (run !== msg.run) return { ignored: true } satisfies IgnoredReply;
+        return blocked.length > 0 ? refuse(msg, blocked) : build(msg);
+      });
     }
     if (msg.run !== run) return { ignored: true } satisfies IgnoredReply;
     if (msg.t === "control") return void control(msg.op);
