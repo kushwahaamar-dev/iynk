@@ -27,6 +27,8 @@ export interface InterpEngineOptions {
   devices?: DeviceKind[];
   world?: WorldOptions;
   params?: Record<string, number>;
+  /** HC-SR04 modules by part id, with the board pins their TRIG and ECHO leads are wired to. A `distance` event moves the obstacle in front of one. */
+  rangers?: ReadonlyArray<{ part: string; trig: string; echo: string }>;
 }
 
 export interface PinEdgeRecord {
@@ -92,6 +94,7 @@ class InterpEngineImpl implements InterpEngine {
   private serialLength = 0;
   /** Virtual time of the Worlds that reset and deep sleep wake have replaced; each new World starts its clock at 0. */
   private base: SimTime = 0;
+  private readonly sonars = new Map<string, { distanceCm: number }>();
   private resolve: (net: string) => number | string | undefined = () => undefined;
   private readonly profile: BoardProfile | null;
 
@@ -183,6 +186,11 @@ class InterpEngineImpl implements InterpEngine {
     this.diagnostics.length = 0;
     this.serialLength = 0;
     this.resolve = netResolver(profile);
+    this.sonars.clear();
+    for (const { part, trig, echo } of this.o.rangers ?? []) {
+      const [t, e] = [this.resolve(trig), this.resolve(echo)];
+      if (t !== undefined && e !== undefined) this.sonars.set(part, run.attachUltrasonic(t, e));
+    }
     run.on("serial", (text) => {
       this.serialLog.push({ at: this.nowNs, text });
       this.serialLength += text.length;
@@ -239,6 +247,11 @@ class InterpEngineImpl implements InterpEngine {
       if (typeof value === "string") this.serialWrite(value);
       return;
     }
+    if (e.kind === "distance") {
+      const sonar = this.sonars.get(target);
+      if (sonar && typeof value === "number") sonar.distanceCm = value;
+      return;
+    }
     const pin = this.resolve(target);
     if (pin === undefined) return;
     if (e.kind === "pin" && (value === null || typeof value === "number" || typeof value === "boolean")) this.current.input(pin, value);
@@ -268,11 +281,15 @@ class InterpEngineImpl implements InterpEngine {
       this.edgeLog.push({ at, pin: n, level });
       this.emitPin(at, n, level);
     });
+    // A new duty is its own event: analogWrite(pin, 120) moves no level edge but the motor driver needs to hear it.
+    world.onPwmWrite((n) => this.emitPin(this.nowNs, n, world.level(n)));
   }
 
   private emitPin(at: SimTime, n: number, level: 0 | 1 | "Z"): void {
     if (!this.sink || !this.profile) return;
-    this.sink.emit({ at, phase: 2, rank: RANK.mcu, src: this.id, kind: "pin", payload: { pin: pinNet(this.profile, n), level } });
+    const { duty, pwmHz } = this.run.world.pin(n);
+    const pwm = level !== "Z" && duty !== null ? { duty, hz: pwmHz } : {};
+    this.sink.emit({ at, phase: 2, rank: RANK.mcu, src: this.id, kind: "pin", payload: { pin: pinNet(this.profile, n), level, ...pwm } });
   }
 }
 

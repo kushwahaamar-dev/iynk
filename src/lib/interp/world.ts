@@ -174,6 +174,7 @@ export class World {
   readonly irqQueue: Array<() => void> = [];
   private irqs: IrqHandler[] = [];
   private pinListeners: Array<(pin: number, level: 0 | 1) => void> = [];
+  private pwmListeners: Array<(pin: number) => void> = [];
   private analogSource: AnalogSource | null = null;
   private serialIn = '';
   serialOut: SerialSink = () => {};
@@ -316,10 +317,12 @@ export class World {
     }
     if (p.mode === mode) return;
     const before = this.level(n);
+    const pwmBefore = this.pwmKey(n);
     p.mode = mode;
     if (mode !== 'output') p.duty = null;
     this.touch();
     this.edge(n, before);
+    this.pwmEdge(n, pwmBefore, before);
   }
 
   digitalWrite(n: number, v: number): void {
@@ -341,17 +344,20 @@ export class World {
     }
     if (p.out === level && p.duty === null && !p.toneHz) return;
     const before = this.level(n);
+    const pwmBefore = this.pwmKey(n);
     p.out = level;
     p.duty = null;
     p.toneHz = 0;
     this.touch();
     this.edge(n, before);
+    this.pwmEdge(n, pwmBefore, before);
   }
 
   /** analogWrite(): real PWM on PWM pins; on other pins Arduino sets HIGH at >= half scale. */
   analogWrite(n: number, value: number, maxValue = (1 << this.pwmBits) - 1, hz = 490): void {
     const p = this.pin(n);
     const before = this.level(n);
+    const pwmBefore = this.pwmKey(n);
     const prev = `${p.mode}${p.out}${p.duty}${p.pwmHz}`;
     if (p.mode !== 'output') p.mode = 'output';
     const v = Math.max(0, Math.min(maxValue, value));
@@ -375,6 +381,7 @@ export class World {
     if (prev === `${p.mode}${p.out}${p.duty}${p.pwmHz}`) return;
     this.touch();
     this.edge(n, before);
+    this.pwmEdge(n, pwmBefore, before);
   }
 
   /** Where the circuit solver puts the voltage on a pin; null removes it and `analogRead` goes back to the pin's own state. */
@@ -433,6 +440,21 @@ export class World {
 
   onPinWrite(fn: (pin: number, level: 0 | 1) => void): void {
     this.pinListeners.push(fn);
+  }
+
+  /** Called when a pin's PWM duty or frequency changes without a level edge, which tells the pin listeners already. */
+  onPwmWrite(fn: (pin: number) => void): void {
+    this.pwmListeners.push(fn);
+  }
+
+  private pwmKey(n: number): string {
+    const p = this.pin(n);
+    return p.duty === null ? '' : `${p.duty}@${p.pwmHz}`;
+  }
+
+  private pwmEdge(n: number, before: string, levelBefore: 0 | 1): void {
+    if (this.pwmKey(n) === before || this.level(n) !== levelBefore) return;
+    for (const l of this.pwmListeners) l(n);
   }
 
   private edge(n: number, before: 0 | 1): void {

@@ -87,6 +87,27 @@ describe("createInterpEngine", () => {
     expect(engine.nextDue()).toBe(2001 * MS);
   });
 
+  it("emits a pin event when analogWrite changes the duty without moving the level", () => {
+    const { engine, events } = boot({}, "void setup() { pinMode(5, OUTPUT); analogWrite(5, 120); analogWrite(5, 60); analogWrite(5, 200); digitalWrite(5, HIGH); }\nvoid loop() {}");
+    runTo(engine, 2);
+    const pwm = events.map((e) => e.payload as { pin: string; level: number; duty?: number; hz?: number }).filter((p) => p.pin === "D5");
+    expect(pwm.filter((p) => p.duty !== undefined).map((p) => [p.level, Number(p.duty!.toFixed(2))])).toEqual([[0, 0.47], [0, 0.24], [1, 0.78]]);
+    expect(pwm.at(-1)).toEqual({ pin: "D5", level: 1 });
+  });
+
+  it("moves the obstacle in front of an HC-SR04 on a distance event", () => {
+    const sketch = `void setup() { Serial.begin(9600); pinMode(8, OUTPUT); pinMode(9, INPUT); }
+void loop() { digitalWrite(8, HIGH); delayMicroseconds(10); digitalWrite(8, LOW); Serial.println(pulseIn(9, HIGH)); delay(50); }`;
+    const { engine, events } = boot({ rangers: [{ part: "sonar", trig: "D8", echo: "D9" }] }, sketch);
+    runTo(engine, 200);
+    const before = engine.serialLog.at(-1)!.text.trim();
+    engine.onEvent({ at: 200 * MS, phase: 0, rank: RANK.mech, seq: 1, src: "mech", kind: "distance", payload: { target: "sonar", value: 60 } });
+    runTo(engine, 400);
+    const after = engine.serialLog.at(-1)!.text.trim();
+    expect([Number(before), Number(after)]).toEqual([1458, 3499]);
+    expect(events.length).toBeGreaterThan(0);
+  });
+
   it("runs a Pico MicroPython blink", () => {
     const { engine, events } = boot({ id: "pico", board: "pico", language: "python" }, PICO_BLINK, "micropython");
     runTo(engine, 1600);
