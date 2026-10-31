@@ -65,7 +65,7 @@ describe("local log", () => {
   });
 
   it("redacts a stored key from the detail and truncates to 500 characters", () => {
-    localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, ai: { key: CANARY }, search: null, server: null }));
+    localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, search: { key: CANARY } }));
     logError("ai.call", `provider said no to ${CANARY}`);
     expect(readLog()[0]?.detail).toBe("provider said no to [key]");
     logError("long", "x".repeat(900));
@@ -147,7 +147,7 @@ describe("local log", () => {
   });
 
   it("builds a bug report from the last 50 entries with the key redacted", () => {
-    localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, ai: { key: CANARY }, search: null, server: null }));
+    localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, search: { key: CANARY } }));
     for (let i = 0; i < 60; i += 1) {
       logError(`e${i}`, i === 59 ? CANARY : undefined);
       vi.advanceTimersByTime(1);

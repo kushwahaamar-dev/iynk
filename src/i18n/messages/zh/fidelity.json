@@ -31,6 +31,7 @@
     "computed": "{value} {unit}，{tier}，由 {model} 计算得出",
     "approx": "近似值，{why}",
     "notModelled": "尚未建模",
+    "noNumber": "无数值，仅为示意",
     "outsideRange": "超出了此模型经过检验的范围",
     "knownGap": "此模型在这里有已知的缺口：{why}",
     "noResult": "无结果"

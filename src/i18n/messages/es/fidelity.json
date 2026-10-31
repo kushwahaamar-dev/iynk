@@ -31,6 +31,7 @@
     "computed": "{value} {unit}, {tier}, calculado con {model}",
     "approx": "aproximado, {why}",
     "notModelled": "aún sin modelar",
+    "noNumber": "sin cifra, solo una ilustración",
     "outsideRange": "fuera del rango en el que se comprobó este modelo",
     "knownGap": "este modelo tiene aquí una limitación conocida: {why}",
     "noResult": "sin resultado"
