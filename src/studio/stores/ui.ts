@@ -5,7 +5,7 @@ import type { Store } from "./select.ts";
 
 export type UiState = {
   leftRail: "palette" | "files" | "outline";
-  rightRail: "inspector" | "problems" | "models";
+  rightRail: "inspector" | "problems" | "models" | "partner";
   dock: "code" | "serial";
   dockHeightPx: number;
   artMode: "illustrated" | "simple";
@@ -60,7 +60,7 @@ function normalise(raw: unknown): UiState {
   const r = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
   return {
     leftRail: oneOf(r.leftRail, ["palette", "files", "outline"], DEFAULTS.leftRail),
-    rightRail: oneOf(r.rightRail, ["inspector", "problems", "models"], DEFAULTS.rightRail),
+    rightRail: oneOf(r.rightRail, ["inspector", "problems", "models", "partner"], DEFAULTS.rightRail),
     dock: oneOf(r.dock, ["code", "serial"], DEFAULTS.dock),
     dockHeightPx: finite(r.dockHeightPx) ? Math.max(DOCK_MIN_PX, r.dockHeightPx) : DEFAULTS.dockHeightPx,
     artMode: oneOf(r.artMode, ["illustrated", "simple"], DEFAULTS.artMode),

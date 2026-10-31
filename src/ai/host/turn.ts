@@ -87,12 +87,12 @@ type Streamed = {
 const MAX_TEXT = 8_000;
 const MAX_ROUNDS = 6;
 const CALLS_PER_ROUND = 8;
-const HISTORY_TOKENS = 3_000;
+export const HISTORY_TOKENS = 3_000;
 const SMALLER: Record<PackProfile, PackProfile | null> = { extended: "standard", standard: "compact", compact: null };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-function localDay(ms: number): string {
+export function localDay(ms: number): string {
   const d = new Date(ms);
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { PartnerPanel, type PartnerHost } from "@/components/ai";
+import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
 import { Button, Callout, Dialog, EmptyState, Icon, Kbd, Skeleton } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
@@ -54,6 +56,8 @@ import { StatusLine } from "./StatusLine";
 import { StudioSettings, useReducedMotion } from "./StudioSettings";
 import { TopBar } from "./TopBar";
 import { installDebugHook } from "./wiring/debugHook";
+import { linkPartner, studioUi } from "./wiring/partnerLink";
+import { openPartnerParts } from "./wiring/partnerParts";
 import { useOpenProject, type OpenStatus } from "./wiring/openProject";
 import { linkRepository, type LinkNotice } from "./wiring/repositoryLink";
 import { linkSim, type SimLink } from "./wiring/simLink";
@@ -211,6 +215,67 @@ function useProblems(doc: DocStore, run: RunStore, diagnostics: Diagnostic[]): P
   return useMemo(() => collectProblems({ diagnostics, run: { limit, frame }, flags }), [diagnostics, limit, frame, flags]);
 }
 
+/**
+ * The lab partner for this project. Its stores and AI worker open after the workspace is on the page, so the tab shows a
+ * skeleton until `host` arrives. It is undone with the graph it reads from.
+ */
+function usePartnerHost(doc: DocStore, graph: Graph | null, lang: Locale): (PartnerHost & { dispose(): void }) | null {
+  const [host, setHost] = useState<(PartnerHost & { dispose(): void }) | null>(null);
+  const langRef = useRef(lang);
+
+  useEffect(() => {
+    langRef.current = lang;
+  });
+
+  useEffect(() => {
+    if (!graph) return;
+    let cancelled = false;
+    let stop = () => {};
+    void openPartnerParts(() => "project").then((parts) => {
+      if (cancelled) {
+        parts.dispose();
+        return;
+      }
+      const link = linkPartner({
+        doc,
+        run: graph.run,
+        session: graph.session,
+        profiles: parts.profiles,
+        ledger: parts.ledger,
+        ai: parts.ai,
+        threads: parts.threads,
+        server: parts.server,
+        locale: () => langRef.current,
+        registry: () => registry,
+        // Studio has no fault engine or probe tap yet, so these answer that nothing is known.
+        rules: () => [],
+        traceOf: () => ({ ok: false, code: "no_run" }),
+        diagnoses: () => [],
+        itemState: () => null,
+        ui: studioUi({ session: graph.session, ui: graph.ui, fitSelection: graph.engine.fitSelection }),
+        openSettings: () => window.dispatchEvent(new CustomEvent(OPEN_KEYS_EVENT)),
+        caps: parts.caps,
+        log: parts.log,
+        retention: () => "project",
+        random: Math.random,
+        now: Date.now,
+      });
+      stop = () => {
+        link.dispose();
+        parts.dispose();
+      };
+      setHost(link);
+    });
+    return () => {
+      cancelled = true;
+      stop();
+      setHost(null);
+    };
+  }, [doc, graph]);
+
+  return host;
+}
+
 function ModelsTab({ doc, messages }: { doc: DocStore; messages: StudioMessages }) {
   const state = useStoreSelector(doc, (s) => s.state);
   return <ModelsPanel state={state} messages={messages.studioModels} />;
@@ -307,6 +372,7 @@ function NotOpened({ status, error, messages }: { status: Exclude<OpenStatus, "l
 type RegionsProps = {
   graph: Graph;
   doc: DocStore;
+  partner: PartnerHost | null;
   messages: StudioMessages;
   lang: Locale;
   notices: readonly LinkNotice[];
@@ -317,7 +383,7 @@ type RegionsProps = {
   currentProblemRef: MutableRefObject<string | null>;
 };
 
-function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCentre, problemsRef, currentProblemRef }: RegionsProps) {
+function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, problemsRef, currentProblemRef }: RegionsProps) {
   const { ui, session, run, engine, tools, place, link, controller } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
@@ -383,6 +449,7 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
           />
         ),
         models: <ModelsTab doc={doc} messages={messages} />,
+        partner: partner ? <PartnerPanel host={partner} /> : <Skeleton className="h-28 rounded-xl" />,
       }}
       dock={{
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
@@ -411,6 +478,7 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
   const [notices, setNotices] = useState<LinkNotice[]>(recovered ? ["recovered"] : []);
   const [wireFrom, setWireFrom] = useState<WireEndRef | null>(null);
   const [keysOpen, setKeysOpen] = useState(false);
+  const partner = usePartnerHost(doc, graph, lang);
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
 
   useEffect(() => {
@@ -454,6 +522,10 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
       focusPartSearch() {
         graph.ui.set("leftRail", "palette");
         focusIn(regions.left, "input[type=search]");
+      },
+      focusPartner() {
+        graph.ui.set("rightRail", "partner");
+        focusIn(regions.right, "textarea");
       },
       focusInspector() {
         graph.ui.set("rightRail", "inspector");
@@ -520,6 +592,7 @@ function OpenWorkspace({ doc, recovered, projectId, autorun, messages, lang }: O
           <Regions
             graph={graph}
             doc={doc}
+            partner={partner}
             messages={messages}
             lang={lang}
             notices={notices}

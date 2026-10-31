@@ -136,6 +136,9 @@
       "next": "Nächster Bereich",
       "prev": "Voriger Bereich"
     },
+    "partner": {
+      "focus": "Den Partner öffnen"
+    },
     "help": {
       "keys": "Tastenkürzel anzeigen"
     }

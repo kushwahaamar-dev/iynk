@@ -63,6 +63,7 @@ export const STUDIO_KEYS: readonly KeyDef[] = [
   row("problems.prev", ["Shift+F8"], "global"),
   row("region.next", ["F6"], "global"),
   row("region.prev", ["Shift+F6"], "global"),
+  row("partner.focus", ["Mod+/"], "global"),
   row("help.keys", ["?"]),
 ];
 
@@ -152,6 +153,7 @@ export type KeymapDeps = {
   view: ViewControls;
   focusPartSearch(): void;
   focusInspector(): void;
+  focusPartner(): void;
   openPinPicker(from: WireEndRef): void;
   jumpProblem(dir: 1 | -1): void;
   focusRegion(dir: 1 | -1): void;
@@ -353,6 +355,7 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     "problems.prev": () => deps.jumpProblem(-1),
     "region.next": () => deps.focusRegion(1),
     "region.prev": () => deps.focusRegion(-1),
+    "partner.focus": () => deps.focusPartner(),
     "help.keys": () => deps.showKeys(),
   };
   for (const id of Object.keys(FORWARDED)) actions[id] ??= () => forward(id);

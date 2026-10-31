@@ -136,6 +136,9 @@
       "next": "Zone suivante",
       "prev": "Zone précédente"
     },
+    "partner": {
+      "focus": "Ouvrir le partenaire"
+    },
     "help": {
       "keys": "Afficher les raccourcis clavier"
     }

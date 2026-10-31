@@ -136,6 +136,9 @@
       "next": "Next region",
       "prev": "Previous region"
     },
+    "partner": {
+      "focus": "Open the partner"
+    },
     "help": {
       "keys": "Show the keyboard shortcuts"
     }

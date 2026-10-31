@@ -10,6 +10,10 @@ export type LabStore<S = unknown, A extends { type: string } = { type: string }>
   dispatch(action: A): void;
 };
 
+/** The LabDock tabs, in the order hx:dock shows them. */
+export const DOCK_TABS = ["together", "real", "hardware"] as const;
+export type DockTab = (typeof DOCK_TABS)[number];
+
 export type LabKind = "board" | "robotics" | "drone";
 
 export type LabDockProps<S = unknown, A extends { type: string } = { type: string }> = {

@@ -115,7 +115,7 @@ function Rail<K extends string>({ region, order, panels, value, onChange, messag
 }
 
 const LEFT_ORDER = ["palette", "files", "outline"] as const;
-const RIGHT_ORDER = ["inspector", "problems", "models"] as const;
+const RIGHT_ORDER = ["inspector", "problems", "models", "partner"] as const;
 const DOCK_ORDER = ["code", "serial"] as const;
 
 /** The five regions of the workspace. Under 768 px the canvas keeps the room and each rail opens as a drawer. */

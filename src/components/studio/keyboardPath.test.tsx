@@ -63,6 +63,7 @@ function setup() {
           view: { fit() {}, fitSelection() {}, zoom() {}, pan() {} },
           focusPartSearch: () => search.current?.focus(),
           focusInspector: () => field.current?.focus(),
+          focusPartner() {},
           openPinPicker: setFrom,
           jumpProblem() {},
           focusRegion() {},
