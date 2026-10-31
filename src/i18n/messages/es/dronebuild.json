@@ -102,5 +102,15 @@
     "back": "Volver a los proyectos"
   },
   "readOnly": "Aquí puedes leer los números. Elegir piezas requiere permiso de edición.",
-  "numbersTitle": "Números"
+  "numbersTitle": "Números",
+  "tabs": {
+    "label": "Secciones del constructor",
+    "numbers": "Cifras",
+    "compare": "Comparar",
+    "optimise": "Optimizar",
+    "fly": "Volar",
+    "pin": "Fijar para comparar",
+    "unpin": "Quitar la fijación",
+    "pinLabel": "{title}, {time}"
+  }
 }

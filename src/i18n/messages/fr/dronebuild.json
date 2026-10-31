@@ -102,5 +102,15 @@
     "back": "Retour aux projets"
   },
   "readOnly": "Vous pouvez lire les chiffres ici. Choisir des pièces demande un accès en modification.",
-  "numbersTitle": "Chiffres"
+  "numbersTitle": "Chiffres",
+  "tabs": {
+    "label": "Sections du constructeur",
+    "numbers": "Chiffres",
+    "compare": "Comparer",
+    "optimise": "Optimiser",
+    "fly": "Voler",
+    "pin": "Épingler pour comparer",
+    "unpin": "Retirer l'épingle",
+    "pinLabel": "{title}, {time}"
+  }
 }

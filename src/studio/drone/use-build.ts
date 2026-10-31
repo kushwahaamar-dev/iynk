@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import type { Op } from "@/project/generated/types";
 import { checkDroneDomain, type DroneIssue, type Resolve } from "@/project/domains/drone-semantic";
 import type { CraftGeometry } from "@/studio/art/craft";
@@ -19,6 +19,11 @@ export interface DroneBuild {
   state: BuildState;
   commit(ops: Op[], label: string): CommitResult;
   issues: DroneIssue[];
+}
+
+export interface PinnedBuild {
+  label: string;
+  out: BuildOutputs;
 }
 
 const IDLE_MS = 300;
@@ -137,4 +142,12 @@ export function useDroneBuild(doc: DocStore, resolve: Resolve): DroneBuild {
   const commit = useCallback((ops: Op[], label: string) => doc.commit(ops, { label }), [doc]);
   const state = stateOf(project.domains?.drone?.data.kind, build, out);
   return { build, out, state, commit, issues };
+}
+
+/** The build kept for the Compare tab. It lives in memory for as long as the page does and is never written to the document. */
+export function usePinnedBuild(): { pinned: PinnedBuild | null; pin(label: string, out: BuildOutputs): void; clear(): void } {
+  const [pinned, setPinned] = useState<PinnedBuild | null>(null);
+  const pin = useCallback((label: string, out: BuildOutputs) => setPinned({ label, out }), []);
+  const clear = useCallback(() => setPinned(null), []);
+  return { pinned, pin, clear };
 }

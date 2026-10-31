@@ -102,5 +102,15 @@
     "back": "Back to projects"
   },
   "readOnly": "You can read the numbers here. Picking parts needs edit access.",
-  "numbersTitle": "Numbers"
+  "numbersTitle": "Numbers",
+  "tabs": {
+    "label": "Builder sections",
+    "numbers": "Numbers",
+    "compare": "Compare",
+    "optimise": "Optimise",
+    "fly": "Fly",
+    "pin": "Pin for compare",
+    "unpin": "Clear pin",
+    "pinLabel": "{title}, {time}"
+  }
 }

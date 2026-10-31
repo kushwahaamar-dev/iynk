@@ -102,5 +102,15 @@
     "back": "返回项目"
   },
   "readOnly": "这里可以查看数值。选择零件需要编辑权限。",
-  "numbersTitle": "数值"
+  "numbersTitle": "数值",
+  "tabs": {
+    "label": "构建器分区",
+    "numbers": "数据",
+    "compare": "对比",
+    "optimise": "优化",
+    "fly": "飞行",
+    "pin": "固定以对比",
+    "unpin": "取消固定",
+    "pinLabel": "{title}, {time}"
+  }
 }

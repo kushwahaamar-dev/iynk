@@ -102,5 +102,15 @@
     "back": "Zurück zu den Projekten"
   },
   "readOnly": "Du kannst hier die Werte lesen. Teile wählen braucht Schreibzugriff.",
-  "numbersTitle": "Werte"
+  "numbersTitle": "Werte",
+  "tabs": {
+    "label": "Bereiche des Builders",
+    "numbers": "Werte",
+    "compare": "Vergleichen",
+    "optimise": "Optimieren",
+    "fly": "Fliegen",
+    "pin": "Zum Vergleich merken",
+    "unpin": "Merkung entfernen",
+    "pinLabel": "{title}, {time}"
+  }
 }

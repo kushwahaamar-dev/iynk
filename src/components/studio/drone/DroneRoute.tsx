@@ -15,13 +15,13 @@ const BUILDER_LOADING = () => <Skeleton className="h-96 w-full" />;
 
 const DroneBuilder = dynamic(() => import("./DroneBuilder").then((m) => m.DroneBuilder), { ssr: false, loading: BUILDER_LOADING });
 
-const NAMESPACES = ["drone", "dronebuild", "droneparts", "droneopt"] as const;
+const NAMESPACES = ["drone", "dronebuild", "droneparts", "droneopt", "flight"] as const;
 
 async function loadMessages(lang: Locale): Promise<DroneBuilderMessages> {
-  const [drone, dronebuild, droneparts, droneopt] = await Promise.all(
+  const [drone, dronebuild, droneparts, droneopt, flight] = await Promise.all(
     NAMESPACES.map(async (ns) => ((await import(`../../../i18n/messages/${lang}/${ns}.json`)) as { default: unknown }).default),
   );
-  return { drone, dronebuild, droneparts, droneopt } as DroneBuilderMessages;
+  return { drone, dronebuild, droneparts, droneopt, flight } as DroneBuilderMessages;
 }
 
 type Loaded = { lang: Locale; messages: DroneBuilderMessages | null };
