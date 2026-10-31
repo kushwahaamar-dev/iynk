@@ -53,6 +53,7 @@ export interface Repository {
     put(id: string, revision: number, snap: { state: Project; stateHash: string }): Promise<void>;
     get(id: string, revision: number): Promise<{ state: Project; stateHash: string } | null>;
     list(id: string): Promise<number[]>;
+    remove(id: string, revision: number): Promise<void>;
   };
   setFileCopy(id: string, has: boolean): Promise<void>;
   /** Used by wipe and Delete AI data. */

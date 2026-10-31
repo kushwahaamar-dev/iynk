@@ -214,6 +214,8 @@ export function repositoryContract(name: string, open: () => Promise<RepositoryH
         expect(await repo.revisions.list(ID)).toEqual([1, 2, 10]);
         expect(await repo.revisions.get(ID, 2)).toEqual(snap(2));
         expect(await repo.revisions.get(ID, 3)).toBeNull();
+        await repo.revisions.remove(ID, 2);
+        expect(await repo.revisions.list(ID)).toEqual([1, 10]);
       }));
 
     it("numbers backups per project", () =>

@@ -199,6 +199,9 @@ export function createRepository(backend: Backend): Repository {
         const prefix = `${id}:`;
         return numbered(await backend.transact(["revisions"], "readonly", (tx) => tx.entries("revisions", prefix)), prefix);
       },
+      async remove(id, revision) {
+        await backend.transact(["revisions"], "readwrite", (tx) => tx.delete("revisions", `${id}:${revision}`));
+      },
     },
 
     async setFileCopy(id, has) {
