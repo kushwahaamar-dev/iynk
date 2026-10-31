@@ -1,5 +1,6 @@
 import { utf8Length } from "../../core/canonical.ts";
 import type { Project, Source, Text } from "../../project/generated/types.ts";
+import { excludeFromProject } from "../modes/exclusions.ts";
 import type { RunSnapshot } from "../sources.ts";
 import { digestLines, neighbourhood, quoteSafe, word } from "./digest.ts";
 import type { Level, Quote } from "./digest.ts";
@@ -93,7 +94,8 @@ function numbered(lines: readonly string[], from: number, to: number): string {
 
 export function plan(input: PackInput, level: Level, shrink: Shrink): Plan {
   const { sources, nonce } = input;
-  const { doc, revision, stateHash } = sources.project();
+  const { doc: whole, revision, stateHash } = sources.project();
+  const doc = input.exclusions ? excludeFromProject(whole, input.exclusions).state : whole;
   const locale = sources.locale();
   const selection = sources.selection();
   const run = sources.run();
@@ -154,7 +156,7 @@ export function plan(input: PackInput, level: Level, shrink: Shrink): Plan {
   const tests = (): SectionInfo[] => {
     const lines = ["[TESTS] id name run visible-checks (hidden checks are counted only)"];
     for (const t of [...doc.tests].sort((a, b) => (a.id < b.id ? -1 : 1))) {
-      const hidden = t.checks.filter((c) => c.visibility === "hidden").length;
+      const hidden = whole.tests.find((w) => w.id === t.id)!.checks.filter((c) => c.visibility === "hidden").length;
       lines.push(`${word(t.id)} ${quote(localised(t.name, locale))} ${t.runMs}ms hidden=${hidden}`);
       for (const c of t.checks) {
         if (c.visibility !== "hidden") lines.push(`  ${word(c.id)} ${c.kind} ${quote(localised(c.label, locale))}`);
