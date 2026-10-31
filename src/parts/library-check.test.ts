@@ -206,7 +206,7 @@ describe("the examples against the builtin parts", () => {
     ],
     "env-monitor-esp32": [
       "V6-UNKNOWN-PART /dependencies/components/0",
-      "V6-UNKNOWN-PART /dependencies/components/1",
+      "V6-INTERFACE-DRIFT /dependencies/components/1/interface",
       "V6-UNKNOWN-PART /dependencies/components/4",
     ],
     "robot-line-follower": [0, 1, 2, 3, 4].map((i) => `V6-UNKNOWN-PART /dependencies/components/${i}`),
@@ -218,10 +218,10 @@ describe("the examples against the builtin parts", () => {
     expect(found).toEqual(EXPECTED[name]);
   });
 
-  it("finds drift only where an example pins a breadboard with no holes", () => {
+  it("finds drift only where an example pins a breadboard with no holes or an older board table", () => {
     for (const name of Object.keys(EXPECTED) as ExampleName[]) {
       const drift = codes(checkLibrary(loadExample(name), registry)).filter((c) => c === "V6-INTERFACE-DRIFT");
-      expect(drift).toHaveLength(name === "uno-blink-d12" || name === "lesson-uno-r3-button" ? 1 : 0);
+      expect(drift).toHaveLength(["uno-blink-d12", "lesson-uno-r3-button", "env-monitor-esp32"].includes(name) ? 1 : 0);
     }
   });
 });

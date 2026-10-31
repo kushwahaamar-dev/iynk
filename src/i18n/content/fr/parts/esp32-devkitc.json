@@ -1,0 +1,17 @@
+{
+  "description": "Une carte de développement ESP32 à 38 broches avec module ESP32-WROOM-32E, pont USB-UART CP2102N et régulateur 3,3 V.",
+  "summary": "La carte exécute votre sketch dans l'interpréteur iynk. Les broches, le PWM, l'I2C, la liaison série et le timing suivent le profil de carte esp32-devkitc. Ce n'est pas la puce ESP32.",
+  "layer": "Environnement d'exécution du firmware.",
+  "models": {
+    "1": "Sous-ensemble d'Arduino C++ exécuté par l'interpréteur avec le brochage de l'ESP32-DevKitC.",
+    "2": "E/S numériques sur les broches GPIO exposées par la carte, PWM et interruptions sur toute broche capable de sortie.",
+    "3": "Lectures analogiques 12 bits sur 3,3 V, maître I2C sur GPIO21 et GPIO22, sortie série et bouton BOOT sur GPIO0."
+  },
+  "not": {
+    "1": "Les deux cœurs Xtensa et les tâches FreeRTOS.",
+    "2": "Le Wi-Fi, le Bluetooth et le comportement de la flash. Le simulateur de requêtes des leçons de serveur web n'est pas une radio.",
+    "3": "Les pièges des broches de démarrage, comme GPIO12 à l'état haut au reset.",
+    "4": "Les limites du régulateur 3,3 V et le pont USB-UART."
+  },
+  "gap": "La carte n'a ni LED utilisateur ni LED_BUILTIN : le projet de départ câble une LED externe avec résistance sur GPIO23. GPIO34 à GPIO39 sont des entrées seulement, et les broches ADC2 ne se lisent pas quand le Wi-Fi est actif. Aucune valeur électrique maximale n'est encore indiquée, donc cette carte n'a pas de contrôle de surcharge des broches."
+}

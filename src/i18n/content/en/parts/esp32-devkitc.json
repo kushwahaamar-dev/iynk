@@ -1,0 +1,17 @@
+{
+  "description": "A 38-pin ESP32 development board with an ESP32-WROOM-32E module, a CP2102N USB-UART bridge and a 3.3 V regulator.",
+  "summary": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the esp32-devkitc board profile. It is not the ESP32 chip.",
+  "layer": "Firmware runtime.",
+  "models": {
+    "1": "Arduino-C++ subset run by the interpreter with the ESP32-DevKitC pin map.",
+    "2": "Digital I/O on the GPIO pins the board exposes, PWM and interrupts on every output-capable pin.",
+    "3": "12-bit analog reads against 3.3 V, I2C master on GPIO21 and GPIO22, serial output, and the BOOT button on GPIO0."
+  },
+  "not": {
+    "1": "The two Xtensa cores and FreeRTOS tasks.",
+    "2": "Wi-Fi, Bluetooth and flash behaviour. The request stub for web-server lessons is not a radio.",
+    "3": "The strapping-pin traps such as GPIO12 high at reset.",
+    "4": "The 3.3 V regulator limits and the USB-UART bridge."
+  },
+  "gap": "The board has no user LED and no LED_BUILTIN: the starter wires an external LED and resistor to GPIO23. GPIO34 to GPIO39 are inputs only, and ADC2 pins cannot be read while Wi-Fi is on. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

@@ -1,0 +1,18 @@
+{
+  "description": "ESP32-S3 开发板，带 ESP32-S3-WROOM-1 模块、两个 USB-C 接口和一个 RGB LED，有 v1.1 和 v1.0 两个版本。",
+  "summary": "开发板在 iynk 解释器中运行你的程序。引脚、PWM、I2C、串口和时序遵循 esp32-s3-devkitc-1 开发板配置。它不是 ESP32-S3 芯片本身。",
+  "layer": "固件运行时。",
+  "variant": "版本",
+  "models": {
+    "1": "由解释器按 ESP32-S3-DevKitC-1 引脚图运行的 Arduino C++ 子集。",
+    "2": "GPIO0 到 GPIO21 和 GPIO35 到 GPIO48 上的数字 I/O，以及每个可输出引脚上的 PWM 和中断。",
+    "3": "GPIO1 到 GPIO20 上的 12 位模拟读取、GPIO8 和 GPIO9 上的 I2C 主机、串口输出、RGB LED 上的 rgbLedWrite（v1.1 为 GPIO38，v1.0 为 GPIO48）以及 GPIO0 上的 BOOT 按键。"
+  },
+  "not": {
+    "1": "两个 Xtensa LX7 内核和 FreeRTOS 任务。",
+    "2": "Wi-Fi、蓝牙和闪存行为。网页服务器课程用的请求桩不是无线电。",
+    "3": "启动配置引脚的陷阱和原生 USB 接口。",
+    "4": "3.3 V 稳压器的限制。"
+  },
+  "gap": "RGB LED 是一颗 WS2812，v1.1 接在 GPIO38，v1.0 接在 GPIO48；请选择与你的开发板一致的版本。Wi-Fi 开启时 ADC2 引脚（GPIO11 到 GPIO20）无法读取。目前还没有列出电气额定值，所以这块板没有引脚过载检查。"
+}

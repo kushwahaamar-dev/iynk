@@ -120,8 +120,11 @@ describe("buildPartIndex", () => {
   it("lists the shipped parts and leaves the breadboard out", () => {
     expect(built.map((e) => e.ref).sort()).toEqual([
       "core.buzzer-piezo",
+      "core.esp32-devkitc",
+      "core.esp32-s3-devkitc-1",
       "core.led-5mm",
       "core.nano",
+      "core.nodemcu",
       "core.potentiometer-10k",
       "core.push-button-6mm",
       "core.resistor",

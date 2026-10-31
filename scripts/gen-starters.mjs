@@ -38,6 +38,9 @@ const FROM_CORPUS = {
 const BOARD_STARTERS = {
   nano: 'prj_nano-blink',
   'uno-r4': 'prj_uno-r4-blink',
+  'esp32-devkitc': 'prj_esp32-devkitc-blink',
+  'esp32-s3-devkitc-1': 'prj_esp32-s3-devkitc-1-blink',
+  nodemcu: 'prj_nodemcu-blink',
 };
 
 const ECHO = `void setup() {

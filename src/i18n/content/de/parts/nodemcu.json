@@ -1,0 +1,17 @@
+{
+  "description": "Ein ESP8266-Entwicklungsboard mit ESP-12E-Modul, CP2102-USB-Seriell-Chip und 3,3-V-Regler, mit zwei LEDs, die bei LOW leuchten.",
+  "summary": "Das Board führt den Sketch im iynk-Interpreter aus. Pins, PWM, I2C, Seriell und Timing folgen dem Board-Profil nodemcu. Es ist nicht der ESP8266-Chip.",
+  "layer": "Firmware-Laufzeit.",
+  "led": "LED auf dem Board, leuchtet bei LOW.",
+  "models": {
+    "1": "Arduino-C++-Teilmenge, vom Interpreter mit der NodeMCU-Pinbelegung ausgeführt, bei der D4 gleich GPIO2 ist.",
+    "2": "Digital-I/O an D0 bis D8, TX, RX, SD2 und SD3, PWM an jedem GPIO, Interrupts an jedem GPIO außer GPIO16 (D0).",
+    "3": "10-Bit-Analogmessung an A0 über den Spannungsteiler des Boards, I2C-Master an D2 und D1, serielle Ausgabe und die zwei LEDs an GPIO2 und GPIO16, die bei LOW leuchten."
+  },
+  "not": {
+    "1": "Der Xtensa-L106-Kern, der Wi-Fi-Stack und das Flash-Verhalten. Der Request-Stub für Webserver-Lektionen ist kein Funkmodul.",
+    "2": "Die Boot-Modus-Pins GPIO0, GPIO2 und GPIO15.",
+    "3": "Die CP2102-Brücke und die Grenzen des 3,3-V-Reglers."
+  },
+  "gap": "Die LEDs auf dem Board leuchten bei LOW: digitalWrite(LED_BUILTIN, LOW) schaltet sie ein. D-Nummern sind keine GPIO-Nummern: D4 ist GPIO2. A0 misst 0 bis 3,3 V über einen Spannungsteiler, und GPIO16 hat keinen Interrupt. Elektrische Grenzwerte sind noch nicht hinterlegt, daher gibt es für dieses Board keine Überlastprüfung der Pins."
+}
