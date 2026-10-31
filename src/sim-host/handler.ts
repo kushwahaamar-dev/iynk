@@ -18,6 +18,9 @@ import type {
 } from "@/sim/engine";
 import type { DebugPort, PauseEvent } from "@/sim/debug/breakpoints";
 import type { Descriptor } from "@/parts/descriptor";
+import type { Result } from "@/core/result";
+import type { Project } from "@/project/generated/types";
+import { needsPhysics, FRAME_EVERY_STEPS, type MechKit, type MechRefusal, type MechRunIo, type MechRuntime, type MechState, type RobotReport } from "./mech";
 import { extractCodeFacts } from "@/sim/faults/code-facts";
 import { createFaultMonitor } from "@/sim/faults/monitor";
 import { buildNetView } from "@/sim/faults/netlist-view";
@@ -53,6 +56,12 @@ export interface SimHandlerDeps {
   makeTap?(): ProbeTap & Engine;
   /** Without it `i2c-scan` is refused. Opens the I2C bus of a scratch engine; the pins are read once the sketch has run. */
   scan?(engine: SimEngine): Omit<ScanSession, "dispose">;
+  /** Without it a robot project loads with no physics. */
+  mech?: {
+    prepare(doc: Project, net: SimNetlist, onState: (state: MechState, info?: { wireBytes?: number; reason?: string }) => void): Promise<Result<MechKit, MechRefusal>>;
+    runIo(net: SimNetlist): MechRunIo;
+    report(doc: Project): RobotReport;
+  };
   /** Without it `static-check` finds nothing and a run posts no `findings` events. */
   faults?: {
     describe(descriptorId: string): Descriptor | undefined;
@@ -112,6 +121,9 @@ interface Runtime {
   /** The last reading sent per probe, without its time. */
   sentReadings: Map<string, string>;
   lastProbeWall: number;
+  mech: MechRuntime | null;
+  /** The frame bucket last sent; one bucket is `FRAME_EVERY_STEPS` steps. */
+  mechBucket: number;
 }
 
 const bad = (message: string) => new WorkerError({ kind: "bad_message", message });
@@ -146,6 +158,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   let speed = 0;
   let rt: Runtime | null = null;
   let loaded: Extract<SimReq, { t: "load" }> | null = null;
+  let kit: MechKit | null = null;
   let pumpGen = 0;
   let horizon: SimTime | null = null;
   let stamped: InputEntry[] = [];
@@ -160,6 +173,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     state = next;
     post(limit);
     if (rt && (next === "paused" || TERMINAL.includes(next))) postFindings(rt);
+    if (rt && TERMINAL.includes(next)) postMechReport(rt);
   }
 
   const boardOf = (net: SimNetlist) => ({ variant: boardIdOf(net.parts.find((p) => p.kind === "board")?.descriptor ?? "") });
@@ -190,6 +204,31 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     });
     const findings = monitor.onRunEnd(facts, buildNetView(net, deps.faults.describe), codeFactsOf(net, sources, [program.entry]));
     emit({ t: "event", run, event: { kind: "findings", findings } });
+  }
+
+  function postMechReport(r: Runtime) {
+    if (r.mech) emit({ t: "mech_report", run, report: r.mech.report(r.orch.checkpoints.map((c) => c.hash)) });
+  }
+
+  /** At most one frame per `FRAME_EVERY_STEPS` steps, which is 30 per simulated second; the last one of a run is always sent. */
+  function sendMech(r: Runtime, force: boolean) {
+    if (!r.mech) return;
+    const bucket = Math.floor(r.mech.mech.stepIndex() / FRAME_EVERY_STEPS);
+    if (!force && bucket === r.mechBucket) return;
+    r.mechBucket = bucket;
+    emit({ t: "mech_frame", run, frame: r.mech.takeFrame() });
+  }
+
+  /** A physics fault ends the run as halted, with the code and the last state, instead of escaping the worker. */
+  function advance(r: Runtime, slice: () => SliceResult): SliceResult {
+    try {
+      return slice();
+    } catch (error) {
+      const halt = r.mech?.mech.halt();
+      if (!r.mech || !halt) throw error;
+      emit({ t: "mech_halt", run, code: halt.code, body: halt.body, at: r.orch.now, frame: r.mech.takeFrame() });
+      return { reason: "halted", now: r.orch.now };
+    }
   }
 
   function stopPump() {
@@ -312,6 +351,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function finish(r: Runtime, result: SliceResult): boolean {
     const ended = review(r, result);
     sendFrame(r, ended !== null);
+    sendMech(r, ended !== null);
     flushProbes(r, ended !== null);
     if (!ended) return false;
     setState(ended.state, ended.limit);
@@ -381,10 +421,12 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     deps.schedule(() => {
       if (gen !== pumpGen) return;
       const started = deps.wallMs();
-      const result = r.orch.runUntil(targetOf(r), {
-        shouldYield: () => r.engine.debug?.paused != null || deps.wallMs() - started >= SLICE_WALL_MS,
-        work: r.opts.limits,
-      });
+      const result = advance(r, () =>
+        r.orch.runUntil(targetOf(r), {
+          shouldYield: () => r.engine.debug?.paused != null || deps.wallMs() - started >= SLICE_WALL_MS,
+          work: r.opts.limits,
+        }),
+      );
       if (finish(r, result)) return;
       const pause = r.engine.debug?.paused;
       if (pause) {
@@ -404,6 +446,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function refuse(req: Extract<SimReq, { t: "load" }>, diagnostics: SimDiagnostic[]): DiagnosticsReply {
     loaded = req;
     state = "idle";
+    rt?.mech?.free();
     rt = null;
     post();
     return { diagnostics };
@@ -412,7 +455,9 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
   function build(req: Extract<SimReq, { t: "load" }>): DiagnosticsReply {
     const digital = deps.makeDigital();
     const engine = deps.makeEngine(req.program, req.net, req.opts);
-    const orch = createOrchestrator({ engines: [engine], digital });
+    rt?.mech?.free();
+    const mech = kit && deps.mech ? kit.start(req.net, deps.mech.runIo(req.net)) : null;
+    const orch = createOrchestrator({ engines: mech ? [engine, mech.engine] : [engine], digital });
     const loadedNet = orch.load(req.net, req.opts);
     const diagnostics = [...loadedNet.diagnostics];
     let ok = loadedNet.ok;
@@ -421,7 +466,10 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       diagnostics.push(...loadedProgram.diagnostics);
       ok = loadedProgram.ok;
     }
-    if (!ok) return refuse(req, diagnostics);
+    if (!ok) {
+      mech?.free();
+      return refuse(req, diagnostics);
+    }
     loaded = req;
     state = "idle";
     rt = {
@@ -446,10 +494,29 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       subs: new Map(),
       sentReadings: new Map(),
       lastProbeWall: -Infinity,
+      mech,
+      mechBucket: -1,
     };
     post();
     sendFrame(rt, true);
+    sendMech(rt, true);
     return { diagnostics };
+  }
+
+  /** Brings the physics engine in, telling the Run bar as it goes, then builds the run with the robot on it. */
+  async function loadRobot(req: Extract<SimReq, { t: "load" }>, robot: Project): Promise<DiagnosticsReply | IgnoredReply> {
+    const prepared = await deps.mech!.prepare(robot, req.net, (s, info) => emit({ t: "mech_status", run: req.run, state: s, ...info }));
+    if (run !== req.run) return { ignored: true };
+    if (!prepared.ok) {
+      const { problems, ...refusal } = prepared.error;
+      if (problems) emit({ t: "robot_problems", run: req.run, problems, checks: [], coupling: [] });
+      emit({ t: "mech_status", run: req.run, state: "failed", reason: refusal.message, refusal });
+      return refuse(req, [simDiag("engine-load-failed", "error", {}, { message: refusal.message })]);
+    }
+    kit = prepared.value;
+    const { problems, checks, coupling } = kit;
+    emit({ t: "robot_problems", run: req.run, problems, checks, coupling });
+    return build(req);
   }
 
   /** The run as it is now, rebuilt from t = 0 with its recorded inputs on engines of its own. */
@@ -529,7 +596,8 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (state === "running") throw new WorkerError({ kind: "not_paused", message: "pause the run before stepping" });
     if (state === "done" || state === "halted" || state === "limit") return { diagnostics: [] };
     stopPump();
-    const result = rt.orch.step(req.unit, req.n);
+    const stepping = rt;
+    const result = advance(stepping, () => stepping.orch.step(req.unit, req.n));
     const diagnostics: SimDiagnostic[] = [];
     if (result.reason === "unsupported") {
       const d = simDiag("step-unit-unsupported", "warning", {}, { unit: req.unit });
@@ -584,12 +652,16 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       speed = msg.opts.speed;
       horizon = null;
       stamped = [];
-      if (msg.program.kind !== "hex" || !deps.prepareHex) return build(msg);
+      kit = null;
+      const robot = msg.robot && deps.mech && needsPhysics(msg.robot) ? msg.robot : undefined;
+      if (msg.program.kind !== "hex" || !deps.prepareHex) return robot ? loadRobot(msg, robot) : build(msg);
       return deps.prepareHex().then((blocked) => {
         if (run !== msg.run) return { ignored: true } satisfies IgnoredReply;
-        return blocked.length > 0 ? refuse(msg, blocked) : build(msg);
+        if (blocked.length > 0) return refuse(msg, blocked);
+        return robot ? loadRobot(msg, robot) : build(msg);
       });
     }
+    if (msg.t === "robot_validate") return deps.mech ? deps.mech.report(msg.doc) : { problems: [], checks: [], coupling: [] };
     if (msg.run !== run) return { ignored: true } satisfies IgnoredReply;
     if (msg.t === "control") return void control(msg.op);
     if (msg.t === "step") return step(msg);

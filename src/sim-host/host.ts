@@ -1,9 +1,11 @@
 import type { CheckJob, CheckOutcome } from "@/lib/interp";
+import type { Project } from "@/project/generated/types";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
 import type { SimTime } from "@/sim/core/clock";
 import type { HostInput, InputEntry, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
 import type { ControlOp, DebugOp, DiagnosticsReply, HashesReply, ParseFirmwareReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
+import type { RobotReport } from "./mech";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
 
 /** How often a running run is asked whether the worker's thread is still turning. */
@@ -23,6 +25,7 @@ interface LoadRequest {
   net: SimNetlist;
   opts: SimRunOptions;
   program: ProgramImage;
+  robot?: Project;
 }
 
 type SimPort = RpcPort<SimReq, SimEv>;
@@ -64,7 +67,10 @@ export interface SimHostProbes {
 }
 
 export interface SimHost {
-  load(net: SimNetlist, opts: SimRunOptions, program: ProgramImage): Promise<{ diagnostics: SimDiagnostic[]; runId: number }>;
+  /** `robot` is the project document of a robot run; the worker fetches the physics engine only when it needs one. */
+  load(net: SimNetlist, opts: SimRunOptions, program: ProgramImage, robot?: Project): Promise<{ diagnostics: SimDiagnostic[]; runId: number }>;
+  /** The robot validator, the ten checks and the motor coupling for a document. Loads no engine and needs no run. */
+  validateRobot(doc: Project): Promise<RobotReport>;
   control(op: ControlOp): Promise<void>;
   pause(): Promise<void>;
   resume(): Promise<void>;
@@ -255,16 +261,19 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
   };
 
   const host: SimHost = {
-    async load(net, opts, program) {
+    async load(net, opts, program, robot) {
       runId++;
       stats.runs++;
       stats.lastState = null;
       Object.assign(pace, { achievedSpeed: 0, behindReal: false });
       loaded = true;
       setRunning(false);
-      const ack = await port.call({ t: "load", run: runId, net, opts, program });
-      lastLoad = { net, opts, program };
+      const ack = await port.call({ t: "load", run: runId, net, opts, program, ...(robot ? { robot } : {}) });
+      lastLoad = { net, opts, program, ...(robot ? { robot } : {}) };
       return { diagnostics: (ack.result as DiagnosticsReply).diagnostics, runId };
+    },
+    async validateRobot(doc) {
+      return (await port.call({ t: "robot_validate", doc })).result as RobotReport;
     },
     async control(op) {
       const run = current();
