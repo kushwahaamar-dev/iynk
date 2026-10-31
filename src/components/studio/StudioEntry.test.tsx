@@ -13,7 +13,10 @@ vi.mock("next/dynamic", () => ({
   },
 }));
 
-vi.mock("./wiring/services", () => ({ ServicesProvider: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
+vi.mock("./wiring/services", () => {
+  const services = { host: { load: () => Promise.resolve({ state: null }) }, library: {}, sim: {}, files: {} };
+  return { ServicesProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>, useServices: () => services };
+});
 vi.mock("./Home", () => ({ Home: () => <div data-testid="home" /> }));
 vi.mock("./Workspace", () => ({
   Workspace: ({ projectId, autorun }: { projectId: string; autorun: boolean }) => <div data-testid="workspace" data-project={projectId} data-autorun={String(autorun)} />,
@@ -38,25 +41,26 @@ describe("StudioEntry", () => {
     expect(screen.queryByTestId("workspace")).toBeNull();
   });
 
-  it("opens the workspace for a project and drops the diagnostics", () => {
+  it("opens the workspace for a project and drops the diagnostics", async () => {
     window.location.hash = "#/prj_a";
     render(<StudioEntry messages={messages} lang="en" />);
-    expect(screen.getByTestId("workspace").dataset.project).toBe("prj_a");
-    expect(screen.getByTestId("workspace").dataset.autorun).toBe("false");
+    const workspace = await screen.findByTestId("workspace");
+    expect(workspace.dataset.project).toBe("prj_a");
+    expect(workspace.dataset.autorun).toBe("false");
     expect(screen.queryByTestId("home")).toBeNull();
     expect(screen.queryByTestId("diagnostics")).toBeNull();
   });
 
-  it("passes the run flag of the hash on", () => {
+  it("passes the run flag of the hash on", async () => {
     window.location.hash = "#/prj_a?run=1";
     render(<StudioEntry messages={messages} lang="en" />);
-    expect(screen.getByTestId("workspace").dataset.autorun).toBe("true");
+    expect((await screen.findByTestId("workspace")).dataset.autorun).toBe("true");
   });
 
   it("follows hashchange both ways", async () => {
     render(<StudioEntry messages={messages} lang="en" />);
     await setHash("#/prj_a?run=1");
-    expect(screen.getByTestId("workspace")).toBeTruthy();
+    expect(await screen.findByTestId("workspace")).toBeTruthy();
     await setHash("#/");
     expect(screen.queryByTestId("workspace")).toBeNull();
     expect(screen.getByTestId("diagnostics")).toBeTruthy();
