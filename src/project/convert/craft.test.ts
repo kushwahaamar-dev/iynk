@@ -26,13 +26,13 @@ beforeAll(() => {
 });
 
 const projects = (): Project[] => [...crafts.values()].map((c) => c.result.project);
-const legacy = (project: Project): Record<string, unknown> => (project.ext as Record<string, Record<string, unknown>>)["x-iynk-legacy-craft"]!;
+const legacy = (project: Project): Record<string, unknown> => (project.ext as Record<string, Record<string, unknown>>)["x-iynk-craft"]!;
 
 describe("the 13 converted crafts", () => {
   it("have distinct ids and the origin of their drone", () => {
     expect(crafts.size).toBe(13);
     for (const [id, { result }] of crafts) {
-      expect(result.project.id).toBe(`prj_craft-${id}`);
+      expect(result.project.id).toBe(`prj_drone-${id}`);
       expect(result.project.meta.kind).toBe("craft");
       expect(result.project.guide?.kind).toBe("craft");
       expect(result.project.provenance.origin).toMatchObject({ kind: "migration", catalogue: { lab: "drone", id } });
@@ -51,7 +51,7 @@ describe("the 13 converted crafts", () => {
     expect(projects().reduce((n, p) => n + (p.guide?.quizzes?.length ?? 0), 0)).toBe(49);
   });
 
-  it("keep the legacy model in the drone envelope and in ext", () => {
+  it("point at the craft content and carry the three design picks", () => {
     for (const [id, { item, result }] of crafts) {
       const project = result.project;
       expect(project.nets, id).toEqual([]);
@@ -63,13 +63,18 @@ describe("the 13 converted crafts", () => {
         course: { builtin: item.data.courses[0]!.id },
         bench: { propsOff: true },
       });
-      expect(Object.keys(legacy(project)), id).toEqual(expect.arrayContaining(["frame", "design", "firmware", "flight", "courses"]));
-      expect(legacy(project).courses).toHaveLength(item.data.courses.length);
+      expect(project.parameters.map((p) => [p.id, p.value]), id).toEqual([
+        ["par_batt", item.data.design.default.batt],
+        ["par_motor", item.data.design.default.motor],
+        ["par_prop", item.data.design.default.prop],
+      ]);
+      expect(project.parameters.map((p) => p.options?.length), id).toEqual([
+        Object.keys(item.data.design.batts).length,
+        Object.keys(item.data.design.motors).length,
+        Object.keys(item.data.design.props).length,
+      ]);
+      expect(Object.keys(project.ext ?? {}).sort(), id).toEqual(["x-iynk-craft", "x-iynk-legacy"]);
     }
-  });
-
-  it("keep the build steps in the guide only", () => {
-    for (const [id, { result }] of crafts) expect(legacy(result.project), id).not.toHaveProperty("build");
   });
 
   it("turn the quad5 craft into the race course with 12 build steps", () => {
@@ -82,8 +87,7 @@ describe("the 13 converted crafts", () => {
     const { project } = crafts.get("quad5")!.result;
     const title = project.guide?.title as Record<string, string>;
     expect(Object.keys(title).sort()).toEqual(["de", "en", "es", "fr", "hi", "zh"]);
-    const design = legacy(project).design as { fixed: { name: { en: string } }[] };
-    expect(design.fixed[0]!.name.en).not.toMatch(/^design\./);
+    expect((legacy(project).noun as { en: string }).en).not.toMatch(/^drone\./);
   });
 
   it("round trip through the file text with the same state hash", () => {
@@ -100,9 +104,9 @@ describe("the 13 converted crafts", () => {
     }
   });
 
-  it("report the third-party check and the data kept in ext for every craft", () => {
+  it("report the third-party check for every craft", () => {
     for (const { result } of crafts.values()) {
-      expect(result.report.map((r) => r.code)).toEqual(expect.arrayContaining(["third-party-unchecked", "skipped"]));
+      expect(result.report.map((r) => r.code)).toContain("third-party-unchecked");
       expect(result.project.provenance.thirdParty?.[0]?.review).toBe("unchecked");
     }
   });

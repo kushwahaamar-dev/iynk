@@ -1,79 +1,36 @@
-import type { Guide, IynkDroneDomainData, Project } from "../generated/types.ts";
+import type { Project } from "../generated/types.ts";
 import { chainStart } from "../hash.ts";
 import { CURRENT_SCHEMA_VERSION } from "../migrate.ts";
-import { buildAssembly, buildLegacyFigure, buildQuizzes } from "./guide.ts";
+import { craftDomain } from "./craft-domain.ts";
+import { craftGuide, craftParameters, craftThirdParty } from "./craft-guide.ts";
+import type { FixtureSource } from "./craft-guide.ts";
 import type { ConvertContext, ConvertResult } from "./lesson.ts";
 import { translator } from "./text.ts";
-import type { Translate } from "./text.ts";
-import type { CatalogueItem, ConvertCourse, ConvertDroneContent, ReportItem, Texts } from "./types.ts";
+import type { CatalogueItem, ReportItem, Texts } from "./types.ts";
 
 type DroneItem = CatalogueItem & { lab: "drone" };
 
 const ACTOR = "usr_iynk";
 const SEED = 0x2545f491;
 const TOOL = "iynk-catalogue-convert/0.1";
-const LEGACY_FIGURE = "x-iynk-legacy";
-const LEGACY_CRAFT = "x-iynk-legacy-craft";
+const LEGACY = "x-iynk-legacy";
 
-/** The neutral air of the `drone-quad` example: still, sea level, no sensor failures. */
-const neutralEnvironment = (): IynkDroneDomainData["environment"] => ({
-  temperature_degC: 15,
-  altitude_msl_m: 0,
-  pressure_pa: 101325,
-  wind: { mean_mps: [0, 0, 0], gust: { kind: "none", sigma_mps: 0, tau_s: 1 } },
-  sensorFailures: [],
-});
+/** The optional fields of the lab generator (T-B13-15) on top of B2's context. */
+export type CraftContext = ConvertContext & {
+  projectId?: (lab: "drone", id: string, child: null) => string;
+  fixtureSources?: readonly FixtureSource[];
+};
 
-interface DesignTexts {
-  fixed?: { name: string }[];
-  golden?: { verdict: string }[];
-}
+/** `CatalogueItem.meta` is typed `unknown` because the portable code never needs most of it. */
+const paletteOf = (item: DroneItem): string | undefined => {
+  const palette = (item.meta as { palette?: unknown } | null)?.palette;
+  return typeof palette === "string" ? palette : undefined;
+};
 
-/** The craft's design table verbatim, except that the part names and the golden verdicts are text keys. */
-function designOf(design: unknown, t: Translate): unknown {
-  const { fixed, golden, ...rest } = design as DesignTexts & Record<string, unknown>;
-  return {
-    ...rest,
-    ...(fixed === undefined ? {} : { fixed: fixed.map((part) => ({ ...part, name: t(part.name) })) }),
-    ...(golden === undefined ? {} : { golden: golden.map((entry) => ({ ...entry, verdict: t(entry.verdict) })) }),
-  };
-}
-
-const courseOf = (course: ConvertCourse, t: Translate) => ({
-  ...course,
-  title: t(course.title),
-  brief: t(course.brief),
-  goals: course.goals.map((goal) => ({ ...goal, label: t(goal.label) })),
-});
-
-function legacyCraft(data: ConvertDroneContent, t: Translate) {
-  return {
-    class: data.class,
-    noun: t(data.noun),
-    practice: t(data.practice),
-    frame: data.frame,
-    design: designOf(data.design, t),
-    parts: data.parts.map((part) => ({ ...part, name: t(part.name), what: t(part.what) })),
-    wiring: data.wiring.map((wire) => ({ ...wire, note: t(wire.note) })),
-    tests: data.tests.map((test) => ({ ...test, title: t(test.title), pass: t(test.pass), fail: t(test.fail) })),
-    firmware: {
-      ...data.firmware,
-      snippets: data.firmware.snippets.map((snippet) => ({ ...snippet, title: t(snippet.title), explain: t(snippet.explain) })),
-    },
-    flight: {
-      ...data.flight,
-      modes: data.flight.modes.map((mode) => ({ ...mode, title: t(mode.title), hint: t(mode.hint) })),
-      failsafes: data.flight.failsafes.map((failsafe) => ({ ...failsafe, note: t(failsafe.note) })),
-      controls: t(data.flight.controls),
-    },
-    courses: data.courses.map((course) => courseOf(course, t)),
-  };
-}
-
-/** One drone craft of the catalogue as a project. Its drone model has no schema fields yet, so it lives in `ext` (OQ-12). */
-export function convertCraft(item: DroneItem, texts: Texts, ctx: ConvertContext): ConvertResult {
+/** One drone craft of the catalogue as a project. The craft itself stays in `src/content/drones`, named by `legacy.contentId`. */
+export function convertCraft(item: DroneItem, texts: Texts, ctx: CraftContext): ConvertResult {
   const data = item.data;
-  const id = `prj_craft-${item.id}`;
+  const id = ctx.projectId?.("drone", item.id, null) ?? `prj_drone-${item.id}`;
   const name = `drone/${item.id}`;
   const missing = new Set<string>();
   const t = translator(texts, (key) => missing.add(key));
@@ -88,26 +45,13 @@ export function convertCraft(item: DroneItem, texts: Texts, ctx: ConvertContext)
     report.push({ item: name, project: id, code, message, ...(refs ? { refs } : {}) });
   };
   note("third-party-unchecked", "Craft wording, build order and firmware settings may follow third-party sources; review is pending (F-197)");
-  note(
-    "skipped",
-    "the drone domain schema has no fields for the frame, parts, wiring, tests, firmware, flight and courses of a craft; they are kept in ext x-iynk-legacy-craft",
-  );
-  if (data.courses.length === 0) throw new Error(`${name} has no course`);
+  const { guide, ext } = craftGuide(data, t);
+  const palette = paletteOf(item);
+  const title = english(data.title);
+  const description = english(data.sub);
   if (missing.size > 0) {
     note("skipped", `${missing.size} text keys have no English text; each key is used as its own text`, [...missing].sort());
   }
-
-  const guide: Guide = {
-    kind: "craft",
-    title: t(data.title),
-    sub: t(data.sub),
-    hint: t(data.hint),
-    overview: t(data.overview),
-    assembly: buildAssembly(data.build, t),
-    quizzes: buildQuizzes(data.quizzes, t),
-    references: data.sources.map(({ title, url }) => ({ title, url })),
-    legacyFigure: buildLegacyFigure(data.figure, null),
-  };
 
   const project: Project = {
     format: "iynk.project",
@@ -115,8 +59,8 @@ export function convertCraft(item: DroneItem, texts: Texts, ctx: ConvertContext)
     id,
     revision: 0,
     meta: {
-      title: english(data.title),
-      description: english(data.sub),
+      title,
+      description,
       kind: "craft",
       tags: [item.id, "craft", data.class],
       locale: "en",
@@ -138,25 +82,12 @@ export function convertCraft(item: DroneItem, texts: Texts, ctx: ConvertContext)
       world: { inputs: [], script: [] },
       faults: [],
     },
-    parameters: [],
+    parameters: craftParameters(data.design),
     assets: [],
     dependencies: { components: [], libraries: [] },
     tests: [],
     guide,
-    domains: {
-      drone: {
-        schemaVersion: "1.0",
-        data: {
-          kind: "legacy-craft",
-          legacy: { contentId: item.id, calcModelId: "legacy-calc@1", flightModelId: "flight-game@1" },
-          thrustSource: "legacy-calc",
-          flight: { model: "flight-game@1" },
-          environment: neutralEnvironment(),
-          course: { builtin: data.courses[0]!.id },
-          bench: { propsOff: true },
-        },
-      },
-    },
+    domains: { drone: craftDomain(data) },
     history: { baseChain: chainStart(id), baseRevision: 0, checkpoints: [], ops: [] },
     provenance: {
       contributors: [],
@@ -171,16 +102,11 @@ export function convertCraft(item: DroneItem, texts: Texts, ctx: ConvertContext)
           source: { title: "Third-party drone build and firmware guides named in D-017" },
           what: "Craft wording, build order and firmware settings may follow third-party sources (F-197 review pending)",
         },
+        ...craftThirdParty(ctx.fixtureSources ?? []),
       ],
     },
     license: { spdx: "LicenseRef-iynk-pending" },
-    ext: {
-      [LEGACY_FIGURE]: {
-        fig: data.fig,
-        figureParts: data.figure.parts.map((part) => ({ ...part, name: t(part.name), what: t(part.what) })),
-      },
-      [LEGACY_CRAFT]: legacyCraft(data, t),
-    },
+    ext: { ...ext, [LEGACY]: { fig: data.fig, ...(palette === undefined ? {} : { palette }) } },
   };
   return { project, report };
 }

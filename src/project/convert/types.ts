@@ -378,13 +378,27 @@ export interface ConvertCourse {
   brief: string;
 }
 
+export interface ConvertDronePick {
+  batt: string;
+  motor: string;
+  prop: string;
+}
+
+/** Only the design picks: the calculator input stays in the content file, read through `legacy.contentId`. */
+export interface ConvertDroneDesign {
+  batts: Record<string, { label: string }>;
+  motors: Record<string, { label: string }>;
+  props: Record<string, { label: string }>;
+  default: ConvertDronePick;
+}
+
 export interface ConvertDroneContent {
   lab: "drone";
   id: string;
   fig: number;
   class: string;
   frame: ConvertDroneFrame;
-  design: unknown;
+  design: ConvertDroneDesign;
   figure: ConvertFigureRef;
   parts: ConvertDronePart[];
   build: ConvertBuildStep[];
