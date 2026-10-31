@@ -153,6 +153,8 @@ export interface RunFacts {
   states: {
     at: SimTime;
     part: string;
+    pin?: string;
+    net?: string;
     state:
       | "burnt"
       | "over-current"
@@ -203,6 +205,8 @@ export interface CheckOutcome {
   ok: boolean;
   detail?: string;
   atMs: number;
+  /** The net a `node-voltage` or `supply-current` check reads. */
+  net?: string;
 }
 
 export interface RuleInput {
