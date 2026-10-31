@@ -2,24 +2,29 @@
 
 import { useCallback, useEffect, useId, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { AiErrorCode } from "@/ai/errors";
+import type { Level, Topic } from "@/ai/hints";
 import type { PackPreview } from "./WhatItSees";
 import type { SourceId } from "@/ai/context/pack";
 import type { ToolRecord, Turn } from "@/ai/host/thread";
 import type { TurnEvent } from "@/ai/host/turn";
 import { useAiT, useEffectsT, useInsightT, type AiT } from "@/ai/messages";
 import type { Mode } from "@/ai/modes";
+import type { HintPort, LogPort } from "@/ai/proposals/ports";
 import type { PartnerSources } from "@/ai/sources";
 import type { EffectRequest } from "@/ai/tools/effect";
-import { Button, Callout, EmptyState, Icon, Skeleton, TextArea } from "@/components/ui";
+import { Button, Callout, EmptyState, Icon, Skeleton, TextArea, Toggle } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { EffectCard } from "./EffectCard";
+import { HintBar } from "./HintBar";
 import { ModeSwitch } from "./ModeSwitch";
 import { ProposalList } from "./ProposalList";
+import { readHoldMe, useLadder, writeHoldMe, type GateFlags } from "./wiring/hintsHost";
 import type { ProposalHost } from "./wiring/proposalHost";
 import { TurnView } from "./TurnView";
 import { WhatItSees } from "./WhatItSees";
 
 const MAX_CHARS = 8_000;
+const TOPIC_CHARS = 60;
 const ANNOUNCE_EVERY_MS = 2_000;
 const ANNOUNCE_CHARS = 280;
 
@@ -31,7 +36,8 @@ export type UiHost = {
 };
 
 export type PartnerHost = {
-  run(i: { mode: Mode; text: string; signal: AbortSignal }): AsyncIterable<TurnEvent>;
+  /** `hint` is where the person stands on the ladder, and the buttons they pressed for this message. */
+  run(i: { mode: Mode; text: string; signal: AbortSignal; hint?: { level: Level } & GateFlags }): AsyncIterable<TurnEvent>;
   status(): PartnerStatus;
   mode: { get(): Mode; set(mode: Mode): void };
   sources: PartnerSources;
@@ -40,6 +46,8 @@ export type PartnerHost = {
   ui: UiHost;
   /** The proposal cards of the open thread. Absent where the partner cannot change the project. */
   proposals?: { host: ProposalHost; threadId: string };
+  /** The sealed fault the hints are about. Absent where there is no ladder to climb. */
+  hints?: { port: HintPort; log: LogPort };
   preview(): PackPreview;
   toggleSource(id: SourceId, on: boolean): void;
   destination(): { host: string; local: boolean };
@@ -84,7 +92,13 @@ export function PartnerPanel({ host }: { host: PartnerHost }) {
       </section>
     );
   }
-  return <Partner host={host} t={t} insight={insight} effectsT={effectsT} />;
+  const translators = { t, insight, effectsT };
+  return host.hints ? <LadderPartner host={host} hints={host.hints} {...translators} /> : <Partner host={host} ladder={null} {...translators} />;
+}
+
+function LadderPartner({ hints, ...rest }: { host: PartnerHost; hints: NonNullable<PartnerHost["hints"]> } & Translators) {
+  const ladder = useLadder(hints);
+  return <Partner ladder={ladder} {...rest} />;
 }
 
 type Translators = {
@@ -93,7 +107,9 @@ type Translators = {
   effectsT: NonNullable<ReturnType<typeof useEffectsT>>;
 };
 
-function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Translators) {
+type LadderControl = ReturnType<typeof useLadder>;
+
+function Partner({ host, ladder, t, insight, effectsT }: { host: PartnerHost; ladder: LadderControl | null } & Translators) {
   const titleId = useId();
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const [items, setItems] = useState<Item[]>([]);
@@ -103,6 +119,7 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
   const [keyRemoved, setKeyRemoved] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [holdMe, setHoldMe] = useState(readHoldMe);
   const counter = useRef(0);
   const abort = useRef<AbortController | null>(null);
   const liveText = useRef("");
@@ -121,7 +138,19 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
   const pending = host.effects.pending();
   const cost = host.costChip();
   const over = draft.length > MAX_CHARS;
-  const canSend = status === "ready" && !running && draft.trim() !== "" && !over;
+  const canAsk = status === "ready" && !running;
+  const canSend = canAsk && draft.trim() !== "" && !over;
+  const sealedOpen = host.hints?.port.sealedItems().some((item) => !item.revealed) ?? false;
+  const topic = hintTopic();
+  const level = ladder && topic ? ladder.level(topic) : 0;
+
+  function hintTopic(): Topic | null {
+    if (!host.hints) return null;
+    const sealed = host.hints.port.sealedItems().find((item) => !item.revealed);
+    if (sealed) return { kind: "fault", faultId: sealed.faultId };
+    const first = items.find((item) => item.kind === "turn" && item.turn.role === "user");
+    return { kind: "concept", label: first?.kind === "turn" ? first.turn.text.slice(0, TOPIC_CHARS) : "" };
+  }
 
   // Streamed text reaches a screen reader in short pieces, at most once every 2 s.
   useEffect(() => {
@@ -179,7 +208,8 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
     setLive(accumulated);
     let finished = false;
     try {
-      for await (const event of host.run({ mode: host.mode.get(), text, signal: controller.signal })) {
+      const hint = ladder && topic ? { level: ladder.level(topic), ...ladder.flags() } : undefined;
+      for await (const event of host.run({ mode: host.mode.get(), text, signal: controller.signal, ...(hint && { hint }) })) {
         if (event.t === "text") {
           accumulated.text += event.delta;
           liveText.current = accumulated.text;
@@ -202,21 +232,50 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
       if (!finished && (accumulated.text || accumulated.tools.length)) {
         setItems((all) => [...all, { kind: "turn", id: nextId("a"), turn: assistantTurn(nextId("turn"), accumulated) }]);
       }
+      ladder?.clear();
       if (controller.signal.aborted) addNote(t("panel.stopped"));
       setLive(null);
     }
   }
 
-  function submit() {
-    if (!canSend) return;
+  function mayAsk(): boolean {
     if (!previewShown.current && !host.destination().local) {
       previewShown.current = true;
       setPreviewOpen(true);
-      return;
+      return false;
     }
+    return true;
+  }
+
+  function submit() {
+    if (!canSend || !mayAsk()) return;
     const text = draft;
     setDraft("");
     void send(text);
+  }
+
+  function another() {
+    if (!ladder || !topic || !canAsk || !mayAsk()) return;
+    ladder.ladder.next(topic, "another");
+    void send(t("ladder.another"));
+  }
+
+  function showMe(confirmed: boolean) {
+    if (!ladder || !topic || !canAsk || !mayAsk()) return;
+    if (ladder.ladder.next(topic, "show", confirmed).needsConfirm) return;
+    ladder.raise("showMe");
+    void send(t("ladder.show"));
+  }
+
+  function press(flag: "fixIt" | "applyIt", text: string) {
+    if (!ladder || !canAsk || !mayAsk()) return;
+    ladder.raise(flag);
+    void send(text);
+  }
+
+  function changeHoldMe(on: boolean) {
+    setHoldMe(on);
+    writeHoldMe(on);
   }
 
   function changeMode(next: Mode) {
@@ -303,6 +362,25 @@ function Partner({ host, t, insight, effectsT }: { host: PartnerHost } & Transla
           )
         ) : null}
         {keyRemoved ? <p className="text-xs text-muted">{t("partner.keyRemoved")}</p> : null}
+
+        {ladder && mode !== "direct" && mode !== "advanced" ? (
+          <div className="space-y-1">
+            <HintBar
+              mode={mode}
+              level={level}
+              holdMe={holdMe}
+              showFixIt={!sealedOpen}
+              showApply={!sealedOpen && level === 3}
+              busy={!canAsk}
+              t={t}
+              onAnother={another}
+              onShow={showMe}
+              onFixIt={() => press("fixIt", t("ladder.fixIt"))}
+              onApply={() => press("applyIt", t("ladder.apply"))}
+            />
+            {mode !== "debugging" ? <Toggle checked={holdMe} onChange={changeHoldMe} label={t("ladder.holdMe")} /> : null}
+          </div>
+        ) : null}
 
         <form
           className="flex items-end gap-2"

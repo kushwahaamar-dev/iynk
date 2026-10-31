@@ -4,9 +4,9 @@ import type { Mode } from "@/ai/modes";
 import { SegmentedControl } from "@/components/ui";
 import type { AiT } from "./ToolCard";
 
-const MODES: readonly Mode[] = ["direct", "debugging", "beginner"];
+const MODES: readonly Mode[] = ["socratic", "beginner", "direct", "debugging", "advanced"];
 
-/** Direct, debugging or beginner, with the hint for the one that is chosen. */
+/** The five modes, with the hint for the one that is chosen. */
 export function ModeSwitch({ mode, onChange, t }: { mode: Mode; onChange: (mode: Mode) => void; t: AiT }) {
   return (
     <div className="space-y-1">
