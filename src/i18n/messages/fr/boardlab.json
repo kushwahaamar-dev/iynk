@@ -436,5 +436,7 @@
       "reverse": "{part} : à l'envers, éteint",
       "open": "{part} : non connecté"
     }
-  }
+  },
+  "openInStudio": "Ouvrir dans Studio",
+  "lessonView": "Vue leçon : l'éditeur complet est dans Studio"
 }

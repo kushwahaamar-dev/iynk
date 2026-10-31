@@ -436,5 +436,7 @@
       "reverse": "{part}: verkehrt herum, dunkel",
       "open": "{part}: nicht verbunden"
     }
-  }
+  },
+  "openInStudio": "In Studio öffnen",
+  "lessonView": "Lektionsansicht: der vollständige Editor ist in Studio"
 }
