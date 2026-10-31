@@ -2,7 +2,7 @@ import { deriveIdentityId } from "../protocol/identity.ts";
 import { enrol, probeServer, request, signIn } from "./auth.ts";
 import type { Session as AuthSession } from "./auth.ts";
 import type { DeviceKeyStore } from "./keys.ts";
-import { ClientError, NeedsEnrolment, SigningInputMismatch } from "./types.ts";
+import { ClientError, NeedsEnrolment, ServerUnreachable, SigningInputMismatch } from "./types.ts";
 import type {
   Api,
   Buddy,
@@ -43,6 +43,8 @@ export type ServerClient = {
   removeBuddy(id: string): Promise<void>;
   requestDeletion(confirm: string): Promise<DeletionStatus>;
   cancelDeletion(): Promise<void>;
+  fetchAuthed(path: string, init?: RequestInit): Promise<Response>;
+  fetchAnon(path: string, init?: RequestInit): Promise<Response>;
 };
 
 function query(page: PageOptions | undefined): string {
@@ -88,15 +90,18 @@ export function createClient(o: {
   const send = <T>(method: string, path: string, body?: unknown) =>
     request<T>(api, method, path, { body, token: session?.token });
 
-  const call = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
+  const withRenewal = async <T>(attempt: () => Promise<T>, unauthorised: (r: T) => boolean): Promise<T> => {
     try {
-      return await send<T>(method, path, body);
+      const first = await attempt();
+      if (!unauthorised(first)) return first;
     } catch (e) {
       if (!(e instanceof ClientError) || e.status !== 401) throw e;
     }
     try {
       await renew();
-      return await send<T>(method, path, body);
+      const second = await attempt();
+      if (unauthorised(second)) throw new NeedsEnrolment();
+      return second;
     } catch (e) {
       // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
       const refused = e instanceof NeedsEnrolment || e instanceof SigningInputMismatch;
@@ -105,6 +110,20 @@ export function createClient(o: {
         throw new NeedsEnrolment();
       }
       throw e;
+    }
+  };
+
+  const call = <T>(method: string, path: string, body?: unknown): Promise<T> =>
+    withRenewal(() => send<T>(method, path, body), () => false);
+
+  const rawFetch = async (path: string, init: RequestInit, token: string | null): Promise<Response> => {
+    const headers = new Headers(init.headers);
+    headers.delete("authorization");
+    if (token) headers.set("authorization", `Bearer ${token}`);
+    try {
+      return await api.fetch(`${api.base}/v1${path}`, { ...init, headers });
+    } catch {
+      throw new ServerUnreachable();
     }
   };
 
@@ -141,5 +160,8 @@ export function createClient(o: {
     removeBuddy: (id) => call("DELETE", `/buddies/${enc(id)}`),
     requestDeletion: (confirm) => call("POST", "/identities/me/deletion", { confirm }),
     cancelDeletion: () => call("DELETE", "/identities/me/deletion"),
+    fetchAuthed: (path, init = {}) =>
+      withRenewal(() => rawFetch(path, init, session?.token ?? null), (r) => r.status === 401),
+    fetchAnon: (path, init = {}) => rawFetch(path, init, null),
   };
 }

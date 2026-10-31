@@ -16,6 +16,9 @@
     "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json"
   },
+  "dependencies": {
+    "ws": "8.22.0"
+  },
   "devDependencies": {
     "@types/node": "24.19.2",
     "typescript": "5.9.3"

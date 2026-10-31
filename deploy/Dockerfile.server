@@ -1,5 +1,5 @@
 # iynk collaboration server. Build context: the repository root (compose.yaml sets it). The server runs its
-# TypeScript directly on Node 24, so the image has no compiler and no run-time dependencies.
+# TypeScript directly on Node 24, so the image has no compiler and only the run-time dependencies of server/package.json.
 FROM node:24.22.1-alpine
 
 ENV NODE_ENV=production
@@ -11,6 +11,7 @@ COPY server/src ./server/src
 COPY server/bin ./server/bin
 COPY server/migrations ./server/migrations
 COPY src/core ./src/core
+COPY src/project ./src/project
 COPY src/protocol ./src/protocol
 
 # A fresh named volume takes the owner and mode of this directory, so node can write it and config's 0700 check passes.
