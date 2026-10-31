@@ -168,8 +168,12 @@ function holds(repo: RoomsRepo, id: RoomId, candidate: CheckpointRow, older: Che
   return result.seq === candidate.seq && result.chain === candidate.chain && stateHash(result.doc) === candidate.state_hash;
 }
 
-function newEpoch(random: (n: number) => Uint8Array): string {
-  return Array.from(random(EPOCH_CHARS), (byte) => BASE32[byte & 31]).join("");
+export function randomBase32(random: (n: number) => Uint8Array, chars: number): string {
+  return Array.from(random(chars), (byte) => BASE32[byte & 31]).join("");
+}
+
+export function newEpoch(random: (n: number) => Uint8Array): string {
+  return randomBase32(random, EPOCH_CHARS);
 }
 
 export function restoreFromCheckpoint(
