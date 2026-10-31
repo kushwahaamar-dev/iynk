@@ -166,6 +166,17 @@ export function evaluateCheck(check: Check, trace: RunTrace, ctx: CheckContext):
   }
 }
 
+type WithoutLabel<T> = T extends unknown ? Omit<T, 'label'> : never;
+
+/** A check as a project stores it: a catalogue `Check` whose label may be inline text, plus the two analog kinds. */
+export type EvaluableCheck = (WithoutLabel<Check> & { label?: unknown }) | { kind: 'node-voltage' | 'supply-current' };
+
+/** One check of a project's own tests. The analog kinds need the circuit solver, so here they never pass. */
+export function evaluateProjectCheck(check: EvaluableCheck, trace: RunTrace, ctx: CheckContext): CheckResult {
+  if (check.kind === 'node-voltage' || check.kind === 'supply-current') return { ok: false, detail: 'needs-analog' };
+  return evaluateCheck({ ...check, label: '' } as Check, trace, ctx);
+}
+
 export function evaluateChecks(checks: readonly Check[], trace: RunTrace, ctx: CheckContext): CheckResult[] {
   return checks.map((c) => evaluateCheck(c, trace, ctx));
 }
