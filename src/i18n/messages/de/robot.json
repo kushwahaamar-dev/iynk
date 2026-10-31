@@ -52,6 +52,7 @@
     "formula": "Formel und Annahmen",
     "margin": "Sicherheitsfaktor von iynk: {factor}",
     "none": "Starte die Prüfungen, um Ergebnisse zu sehen.",
+    "noPart": "Kein einzelnes Bauteil",
     "coupling": "Kopplung von Motor und Physik",
     "RB-C-01": {
       "title": "Steigung",

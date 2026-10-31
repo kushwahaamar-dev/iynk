@@ -52,6 +52,7 @@
     "formula": "Fórmula y supuestos",
     "margin": "Margen de iynk: {factor} veces",
     "none": "Ejecuta las comprobaciones para ver resultados.",
+    "noPart": "Ninguna pieza en concreto",
     "coupling": "Acoplamiento motor y motor físico",
     "RB-C-01": {
       "title": "Subida",

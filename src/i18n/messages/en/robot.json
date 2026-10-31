@@ -52,6 +52,7 @@
     "formula": "Formula and assumptions",
     "margin": "iynk's margin: {factor} times",
     "none": "Run the checks to see results.",
+    "noPart": "No single part",
     "coupling": "Motor and engine coupling",
     "RB-C-01": {
       "title": "Climb",

@@ -52,6 +52,7 @@
     "formula": "公式与假设",
     "margin": "iynk 的余量:{factor} 倍",
     "none": "运行检查以查看结果。",
+    "noPart": "没有单一的零件",
     "coupling": "电机与物理引擎耦合",
     "RB-C-01": {
       "title": "爬坡",

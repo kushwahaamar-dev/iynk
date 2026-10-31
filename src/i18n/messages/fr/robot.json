@@ -52,6 +52,7 @@
     "formula": "Formule et hypothèses",
     "margin": "Marge d'iynk : {factor} fois",
     "none": "Lancez les vérifications pour voir les résultats.",
+    "noPart": "Aucune pièce en particulier",
     "coupling": "Couplage moteur et moteur physique",
     "RB-C-01": {
       "title": "Montée",
