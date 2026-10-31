@@ -13,11 +13,10 @@ import { createProbeTap } from "@/sim/probe/tap";
 import { loadRegistry } from "@/sim/registry/entries";
 import { RATE, type Avr8js, type AvrEngine } from "@/sim/mcu/avr8js";
 import { createFirmwareEngine, I2C_BUS, netlistBus } from "@/sim/mcu/firmware";
-import { NOMINAL_CELL } from "@/core/battery";
 import { createLoader, detectFeatures } from "./engines/loader";
 import { createInterpEngine, type InterpEngine } from "./engines/interp-engine";
 import { boardIdOf, createSimHandler, type SimEngine } from "./handler";
-import { prepareMech, robotReport } from "./mech";
+import { nominalRunIo, prepareMech, rangersOf, robotReport } from "./mech";
 
 const parts = builtinRegistry();
 
@@ -110,20 +109,6 @@ const loadPhysics = createLoader({ fetch: (input, init) => fetch(input, init), f
 
 const latestPart = (ref: string): Descriptor | undefined => parts.latest(ref);
 
-/**
- * The worker has no analog solver, so the motors are fed the nominal voltage of the pack in the netlist.
- * Sensor readings and encoder edges have no way into the firmware's pins yet.
- */
-function mechRunIo(net: SimNetlist) {
-  const cells = net.parts.flatMap((p) => {
-    const [ref = ""] = p.descriptor.split("@");
-    const count = latestPart(ref)?.mechanics?.battery?.cells;
-    return count === undefined ? [] : [count];
-  })[0];
-  const supply = cells === undefined ? 0 : cells * NOMINAL_CELL;
-  return { supplyV: () => supply, setAnalog: () => undefined, setParam: () => undefined, driveEdge: () => undefined };
-}
-
 serveWorker(
   self as unknown as WorkerScopeLike,
   createSimHandler({
@@ -139,13 +124,14 @@ serveWorker(
         board: boardIdOf(board?.descriptor ?? ""),
         language: INTERP_LANGUAGE[program.language as keyof typeof INTERP_LANGUAGE] ?? "arduino",
         seed: opts.seed,
+        rangers: rangersOf(net),
       });
     },
     makeDigital: createDigitalNets,
     scan: scanTap,
     mech: {
       prepare: (doc, net, onState) => prepareMech(doc, net, { loadEngine: loadPhysics, describe: latestPart, onState }),
-      runIo: mechRunIo,
+      runIo: (net) => nominalRunIo(net, latestPart),
       report: (doc) => robotReport(doc, latestPart),
     },
     faults: {

@@ -203,7 +203,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
       current: () => undefined,
       serial: [...(r.engine.serialLog ?? [])],
     });
-    const facts = r.mech && kit ? withRobotFacts(base, r.mech.mech.facts(), kit.nets) : base;
+    const facts = r.mech && kit ? withRobotFacts(base, r.mech.facts(), kit.nets) : base;
     const findings = monitor.onRunEnd(facts, buildNetView(net, deps.faults.describe), codeFactsOf(net, sources, [program.entry]));
     emit({ t: "event", run, event: { kind: "findings", findings } });
   }
