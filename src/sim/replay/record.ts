@@ -6,6 +6,7 @@ import { isSealed, readDiagnoseSpec, type ItemState } from "../faults/seal.ts";
 import type { CauseId } from "../faults/types.ts";
 import type { SimTime } from "../core/clock.ts";
 import type { InputEntry, SimSettings } from "../engine.ts";
+import type { CombineRule } from "../mech/backend.ts";
 import type { Orchestrator } from "../orchestrator.ts";
 import { pinTraceHash, serialHash } from "./trace.ts";
 
@@ -37,6 +38,47 @@ export interface RecordedFault {
   atNs: SimTime;
   /** Left out while the item is sealed and unrevealed. */
   causeId?: CauseId;
+}
+
+/** The physics settings a robot run was made with. A run without a robot has none. */
+export interface PhysicsRecord {
+  step_hz: number;
+  length_scale: 1 | 10;
+  sleeping: false;
+  ccd: "off" | "auto";
+  combine: { friction: CombineRule; restitution: CombineRule };
+  solver_iterations: number;
+  scene_hash: string;
+  engine_confirmed: boolean;
+}
+
+const RAPIER_KEY = "engine:rapier";
+const RAPIER_PIN = /^sha256:[0-9a-f]{24}$/;
+const PIN_DIGITS = 24;
+
+/** Short pins for `versions.engines`; a log value holds 40 characters, so the full hashes stay in the engine manifest. */
+export function rapierEngineEntries(pins: { version: string; wasmSha256: string; jsSha256: string }): Record<string, string> {
+  return {
+    [`${RAPIER_KEY}@${pins.version}`]: `sha256:${pins.wasmSha256.slice(0, PIN_DIGITS)}`,
+    [`${RAPIER_KEY}-glue@${pins.version}`]: `sha256:${pins.jsSha256.slice(0, PIN_DIGITS)}`,
+  };
+}
+
+export type VersionCheck =
+  | { ok: true }
+  | { ok: false; reason: "engine-mismatch"; key: string; recorded: string | undefined; running: string | undefined }
+  | { ok: false; reason: "bad-version"; key: string; recorded: string };
+
+/** Compares every `engine:rapier*` entry present on either side; a record made on another physics build is refused with both pins. */
+export function checkVersions(rec: Pick<ReplayRecord, "versions">, running: Record<string, string>): VersionCheck {
+  const recorded = rec.versions.engines;
+  const keys = [...new Set([...Object.keys(recorded), ...Object.keys(running)])].filter((k) => k.startsWith(RAPIER_KEY)).sort();
+  for (const key of keys) {
+    const value = recorded[key];
+    if (value !== undefined && !RAPIER_PIN.test(value)) return { ok: false, reason: "bad-version", key, recorded: value };
+    if (value !== running[key]) return { ok: false, reason: "engine-mismatch", key, recorded: value, running: running[key] };
+  }
+  return { ok: true };
 }
 
 /** What a log can carry; the optional four have no place in `ReplayLog`. */
