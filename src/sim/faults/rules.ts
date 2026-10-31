@@ -1,3 +1,7 @@
+import { CODE_RULES } from "./code.ts";
+import { SOLVED_RULES } from "./solved.ts";
+import { BUS_RULES } from "./static-bus.ts";
+import { POWER_RULES } from "./static-power.ts";
 import { STATIC_RULES } from "./static.ts";
 import type { Finding, Rule, RuleInput } from "./types.ts";
 
@@ -53,7 +57,9 @@ export function runRules(rules: readonly Rule[], input: Omit<RuleInput, "skipped
   return { findings, skipped, errors };
 }
 
-/** The rules that need only the netlist. The full list is assembled where every layer is known. */
-export function defaultRules(): Rule[] {
-  return [...STATIC_RULES];
+/** Every rule of every layer. */
+export function allRules(): Rule[] {
+  return [...STATIC_RULES, ...POWER_RULES, ...BUS_RULES, ...CODE_RULES, ...SOLVED_RULES];
 }
+
+export const defaultRules = allRules;

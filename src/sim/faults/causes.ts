@@ -1,5 +1,7 @@
 import { CORE_CAUSE_IDS, type CoreCauseId } from "./cause-ids.ts";
+import { allRules } from "./rules.ts";
 import type { SymptomId } from "./symptoms.ts";
+import type { CauseId, RuleLayer } from "./types.ts";
 
 export type CauseFamily = "wiring" | "power" | "code" | "bus" | "value" | "mechanical" | "flight";
 export type CauseSeat = "SIM" | "ROB" | "DRN";
@@ -111,3 +113,35 @@ export const CAUSES: readonly CauseMeta[] = CORE_CAUSE_IDS.map((id) => ({
 const BY_ID: ReadonlyMap<string, CauseMeta> = new Map(CAUSES.map((meta) => [meta.id, meta]));
 
 export const causeMeta = (id: string): CauseMeta | undefined => BY_ID.get(id);
+
+export type DetectorStatus =
+  | { status: RuleLayer; rules: string[] }
+  | { status: "diagnostic"; source: string }
+  | { status: "not-modelled-yet"; reason: string; phase: string };
+
+const DIAGNOSTIC_SOURCE: Partial<Record<CoreCauseId, string>> = {
+  "bus-device-not-modelled": "T-B8-01",
+  "library-not-modelled": "T-B8-02",
+};
+
+const NOT_MODELLED: Record<Exclude<CauseSeat, "SIM">, { reason: string; phase: string }> = {
+  ROB: { reason: "needs the robot physics engine", phase: "B16" },
+  DRN: { reason: "needs the drone flight model", phase: "B18" },
+};
+
+const LAYER_ORDER: readonly RuleLayer[] = ["static", "code", "solved"];
+
+/** The cheapest layer that detects the cause, or the reason nothing does yet. */
+export function detectorStatus(id: CauseId): DetectorStatus {
+  const rules = allRules().filter((rule) => rule.enabled && rule.causeId === id);
+  for (const layer of LAYER_ORDER) {
+    if (rules.some((rule) => rule.layer === layer)) {
+      return { status: layer, rules: rules.map((rule) => rule.id).sort() };
+    }
+  }
+  const source = DIAGNOSTIC_SOURCE[id as CoreCauseId];
+  if (source !== undefined) return { status: "diagnostic", source };
+  const meta = causeMeta(id);
+  if (meta !== undefined && meta.seat !== "SIM") return { status: "not-modelled-yet", ...NOT_MODELLED[meta.seat] };
+  throw new Error(`cause ${id} has no detector and is not a robot or drone cause`);
+}

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { viewOf } from "./circuit.fixture.ts";
-import { defaultRules, runRules } from "./rules.ts";
+import { allRules, defaultRules, runRules } from "./rules.ts";
 import { STATIC_RULES } from "./static.ts";
 import type { Finding, Rule } from "./types.ts";
 
@@ -86,9 +86,9 @@ describe("runRules", () => {
 });
 
 describe("defaultRules", () => {
-  it("holds the six static rules with valid ids", () => {
-    expect(defaultRules().map((r) => r.id)).toEqual(STATIC_RULES.map((r) => r.id));
-    expect(defaultRules()).toHaveLength(6);
+  it("holds every layer's rules with valid ids", () => {
+    expect(defaultRules().map((r) => r.id)).toEqual(allRules().map((r) => r.id));
+    expect(defaultRules().slice(0, STATIC_RULES.length)).toEqual([...STATIC_RULES]);
     expect(runRules(defaultRules(), { view }).errors).toEqual([]);
   });
 });
