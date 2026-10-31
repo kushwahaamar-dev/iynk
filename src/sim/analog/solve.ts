@@ -37,6 +37,7 @@ function nodesOf(el: Element): number[] {
     case 'POT': return [el.a, el.wiper, el.b];
     case 'PIN': case 'PWM': return [el.a];
     case 'Q': return [el.c, el.b, el.e];
+    case 'MOS': return [el.d, el.g, el.s];
     case 'SV': return [el.gnd, el.vplus, el.sig];
     case 'TS': return [el.supplyPos, el.supplyNeg, el.out];
   }

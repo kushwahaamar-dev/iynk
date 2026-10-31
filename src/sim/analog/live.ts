@@ -118,7 +118,7 @@ const NOT_SIGNAL = /^(GND\w*|POWER_\d+|NC|IOREF|AREF|RESET\d?|ICSP\w*|MISO2|MOSI
 
 const NODE_FIELDS = {
   R: ["a", "b"], M: ["a", "b"], V: ["a", "b"], D: ["a", "b"], BZ: ["a", "b"],
-  POT: ["a", "wiper", "b"], PIN: ["a"], PWM: ["a"], Q: ["c", "b", "e"],
+  POT: ["a", "wiper", "b"], PIN: ["a"], PWM: ["a"], Q: ["c", "b", "e"], MOS: ["d", "g", "s"],
   SV: ["gnd", "vplus", "sig"], TS: ["supplyPos", "supplyNeg", "out"],
 } as const satisfies Record<Element["kind"], readonly string[]>;
 

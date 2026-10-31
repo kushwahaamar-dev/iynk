@@ -10,7 +10,7 @@ const INNER_ITERATIONS = 300;
 
 export type DiodeElement = ElementD & { junction: DiodeParams };
 
-function expo(arg: number): { value: number; slope: number } {
+export function expo(arg: number): { value: number; slope: number } {
   const e = Math.exp(Math.min(arg, EXP_LIMIT));
   return { value: arg > EXP_LIMIT ? e * (1 + arg - EXP_LIMIT) : e, slope: e };
 }
@@ -67,6 +67,11 @@ export const diodeDevice: NewtonDevice<DiodeElement> = {
     s.current(e.a, e.b, amps - g * (vd + p.rsOhms * amps));
   },
   currents: (e, x) => [junction(e.junction, junctionVolts(e.junction, x[e.a] - x[e.b])).amps],
+  measure(e, x) {
+    const [amps] = diodeDevice.currents(e, x);
+    const volts = x[e.a] - x[e.b];
+    return { amps, volts, watts: amps * volts };
+  },
 };
 
 // Is from one point on the curve: the datasheet current `ifAmps` at `vfVolts`

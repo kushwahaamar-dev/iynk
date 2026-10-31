@@ -15,6 +15,8 @@ export interface Limiter { pnj(vnew: number, vold: number, vt: number, vcrit: nu
 /** What a device writes its linearisation into; nodes are circuit node numbers. */
 export interface Stamper {
   conduct(a: number, b: number, siemens: number): void;
+  // a current of `siemens` times (v[cp] - v[cn]) from a to b through the element
+  transconduct(a: number, b: number, cp: number, cn: number, siemens: number): void;
   // a constant current from a to b through the element
   current(a: number, b: number, amps: number): void;
   // the junction voltage each device used last iteration, by element id
@@ -62,6 +64,8 @@ interface Ctx {
 function terminals(el: Element): number[] {
   switch (el.kind) {
     case 'R': case 'M': case 'V': case 'D': return [el.a, el.b];
+    case 'Q': return [el.c, el.b, el.e];
+    case 'MOS': return [el.d, el.g, el.s];
     case 'POT': return [el.a, el.wiper, el.b];
     case 'PIN': return [el.a];
     case 'SV': return [el.gnd, el.vplus];
@@ -85,9 +89,10 @@ function floatingNodes(c: Ctx): { node: number; junction: boolean }[] {
     .map((node) => ({ node, junction: junctions.has(uf.find(key(node))) }));
 }
 
-function conduct(A: Float64Array[], i: number, j: number, g: number): void {
-  if (i >= 0) { A[i][i] += g; if (j >= 0) A[i][j] -= g; }
-  if (j >= 0) { A[j][j] += g; if (i >= 0) A[j][i] -= g; }
+// rows i and j are the through-element nodes, columns p and n the controlling pair; any of them may be ground (-1)
+function transconduct(A: Float64Array[], i: number, j: number, p: number, n: number, g: number): void {
+  if (i >= 0) { if (p >= 0) A[i][p] += g; if (n >= 0) A[i][n] -= g; }
+  if (j >= 0) { if (p >= 0) A[j][p] -= g; if (n >= 0) A[j][n] += g; }
 }
 
 function assemble(c: Ctx, x: Float64Array, gmin: number, lim: Limiter, junctionVolts: Map<ElementId, number>) {
@@ -96,7 +101,8 @@ function assemble(c: Ctx, x: Float64Array, gmin: number, lim: Limiter, junctionV
   const b = new Float64Array(n);
   for (let i = 0; i < n; i++) A[i][i] += gmin;
   const stamper: Stamper = {
-    conduct: (p, q, g) => conduct(A, c.ix(p), c.ix(q), g),
+    conduct: (p, q, g) => transconduct(A, c.ix(p), c.ix(q), c.ix(p), c.ix(q), g),
+    transconduct: (p, q, cp, cn, g) => transconduct(A, c.ix(p), c.ix(q), c.ix(cp), c.ix(cn), g),
     current: (p, q, amps) => {
       const i = c.ix(p), j = c.ix(q);
       if (i >= 0) b[i] -= amps;
@@ -289,10 +295,10 @@ export function newtonSolve(g: SolveInput, options: Partial<NewtonOptions> = {},
   const state: Record<ElementId, DeviceState> = {};
   c.els.forEach((el, k) => {
     const device = NEWTON_DEVICES.get(el.kind);
-    if (device && el.kind === 'D') {
-      const [amps] = device.currents(el, x);
-      const across = x[el.a] - x[el.b];
-      branch[el.id] = { amps, volts: across, watts: amps * across };
+    if (device) {
+      const { state: region, ...measured } = device.measure(el, x);
+      branch[el.id] = measured;
+      if (region) state[el.id] = region;
     } else {
       branch[el.id] = measureElement(el, c.states[k], volts);
       if (el.kind === 'PIN' && el.level === 'Z') state[el.id] = 'open';
