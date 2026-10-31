@@ -35,6 +35,10 @@ const table: Array<[string, StudioRoute, string]> = [
   ["#room=abc", home, "#/"],
   ["#share=abc", home, "#/"],
   ["prj_a", home, "#/"],
+  [`#/join/rm_${"a".repeat(16)}.${"A".repeat(22)}`, { kind: "join", room: `rm_${"a".repeat(16)}`, token: "A".repeat(22) }, "#/"],
+  [`#/join/rm_${"a".repeat(16)}.${"A".repeat(21)}`, home, "#/"],
+  [`#/join/rm_${"a".repeat(15)}.${"A".repeat(22)}`, home, "#/"],
+  [`#/join/rm_${"1".repeat(16)}.${"A".repeat(22)}`, home, "#/"],
 ];
 
 describe("parseHash", () => {
