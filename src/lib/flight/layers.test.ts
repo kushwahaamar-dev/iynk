@@ -37,4 +37,12 @@ describe("flight module layers", () => {
     const callers = modules.filter((m) => /\bcollide\(/.test(readFileSync(join(DIR, `${m}.ts`), "utf8")) && !["world", "route"].includes(m));
     expect(callers).toEqual(["scoring"]);
   });
+
+  it("keeps the class physics below the sim", () => {
+    for (const name of ["multirotor", "wing", "swarm"]) {
+      const importers = modules.filter((m) => importsOf(m).includes(name));
+      expect(importers, `${name} imported by`).toEqual(name === "wing" ? ["multirotor", "sim"] : ["sim"]);
+      expect(importsOf(name), `${name} imports sim`).not.toContain("sim");
+    }
+  });
 });

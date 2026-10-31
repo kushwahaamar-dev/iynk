@@ -1,12 +1,14 @@
-import { autopilot } from "./autopilot";
-import { freshBattery, currentFor, IDLE_AMPS, LIMITS, stepBattery, voltageFactor, type BatteryState } from "./battery";
-import { bodyAxes, clamp, DEG, expo, G, wave, wrapDeg, type Vec3 } from "./math";
+import { freshBattery, currentFor, IDLE_AMPS, LIMITS, stepBattery, voltageFactor } from "./battery";
+import { clamp, G } from "./math";
 import {
-  ceilingOf, countsCheckpoints, countsGates, crash, currentMission, demoResume, emit, groundContact, isClimbMode, MAX_FRAME, STEP, windAt,
-  type Phase, type SimState,
+  ceilingOf, countsCheckpoints, countsGates, currentMission, demoResume, emit, isClimbMode, MAX_FRAME, STEP, windAt,
+  type SimState,
 } from "./state";
 import { worldChecks } from "./scoring";
 import { buildSolids } from "./world";
+import { followersStep, formation } from "./swarm";
+import { multirotorStep } from "./multirotor";
+import { wingStep } from "./wing";
 import type {
   CalcOutputs,
   Course,
@@ -16,9 +18,7 @@ import type {
   FlightEvent,
   FlightFrame,
   FlightMode,
-  Mission,
   Sticks,
-  Waypoint,
 } from "./types";
 
 export { STEP, MAX_FRAME, isClimbMode, ceilingOf, type SimState };
@@ -107,11 +107,6 @@ export function resetFlight(s: SimState) {
   const sw = s.craft.swarm;
   s.followers = [];
   if (sw) for (let i = 1; i < sw.count; i++) s.followers.push({ p: [px + formation(i, sw.spacing)[0], py + formation(i, sw.spacing)[1], 0], v: [0, 0, 0], yaw: 90 });
-}
-
-function formation(i: number, d: number): [number, number] {
-  const spots: Array<[number, number]> = [[0, 0], [d, 0], [0, -d], [d, -d], [-d, 0], [-d, -d]];
-  return spots[i % spots.length];
 }
 
 /** Applies one action. Physics only advances in stepSim. */
@@ -220,286 +215,6 @@ export function advance(s: SimState, seconds: number, carry = 0): { steps: numbe
   }
   return { steps, carry: acc };
 }
-
-
-function multirotorStep(s: SimState, dt: number) {
-  const c = s.craft, calc = s.calc, m = s.mode, st = s.sticks;
-  const mass = (calc.auw - s.dropped) / 1000;
-  const n = calc.motors;
-  const lost = s.motorsOut.length + (s.desyncT > 0 ? 1 : 0);
-  const tmax = ((n * calc.thrustPerMotor) / 1000) * G * Math.max(0, (n - lost) / n);
-  const kV = s.battery.empty ? 0 : voltageFactor(calc, s.battery.volt);
-  const live = s.armed && !s.crashed;
-  const auto = live ? autopilot(s) : { pitch: null, roll: null, yawRate: null, climb: null };
-  const grounded = s.p[2] <= 0.02 && s.thrust < 0.3 * mass * G;
-  const rate = c.acroRate * (m.rateScale ?? 1);
-  const limit = m.angleLimit ?? c.angleLimit;
-  const e = m.expo ?? 0;
-
-  // a quad has no spare motor: with one out the flight controller cannot hold the attitude
-  const uncontrolled = s.motorsOut.length > 0 && n <= 4 && live;
-  if (uncontrolled) {
-    s.roll += 400 * dt;
-    s.yaw += 300 * dt;
-  } else if (grounded) {
-    s.roll *= 0.8;
-    s.pitch *= 0.8;
-  } else if (m.attitude === "acro" && auto.pitch === null) {
-    s.roll += expo(st.roll, e) * rate * dt;
-    s.pitch += expo(st.pitch, e) * rate * dt;
-  } else {
-    const tp = auto.pitch ?? expo(st.pitch, e) * limit;
-    const tr = auto.roll ?? expo(st.roll, e) * limit;
-    const k = Math.min(1, c.levelRate * dt);
-    s.pitch += (clamp(tp, -limit, limit) - s.pitch) * k;
-    s.roll += (clamp(tr, -limit, limit) - s.roll) * k;
-  }
-
-  // yaw: props' reaction torque, or the tricopter's tail servo
-  // expo shapes roll and pitch only: the CLIs set yaw with no expo (quad5: yaw_rc_rate = yaw_srate = 20)
-  const yawCmd = auto.yawRate !== null ? -auto.yawRate / (c.yawRate * (m.rateScale ?? 1)) : st.yaw;
-  if (c.tailServo) {
-    // Reversed (fitted backwards, or reversed in the mixer): each yaw correction adds to the turn, so in the air the
-    // servo runs to its stop the way it is already leaning and the tri pirouettes.
-    const want = s.faults.servosReversed && !grounded ? Math.sign(s.servo || yawCmd || 1) : clamp(yawCmd, -1, 1);
-    const target = want * c.tailServo.maxDeg;
-    const stepMax = c.tailServo.rateDegS * dt;
-    s.servo += clamp(target - s.servo, -stepMax, stepMax);
-    if (!grounded) s.yaw += -(s.servo / c.tailServo.maxDeg) * c.yawRate * (m.rateScale ?? 1) * dt;
-  } else if (!grounded) s.yaw += -yawCmd * c.yawRate * (m.rateScale ?? 1) * dt;
-
-  // throttle
-  let cmd = 0;
-  if (live) {
-    if (m.throttle === "climb" || auto.climb !== null) {
-      const stickClimb = Math.abs(st.throttle - 0.5) < 0.05 ? 0 : (st.throttle - 0.5) * 2;
-      const climb = auto.climb ?? stickClimb;
-      const up = bodyAxes(s.yaw, s.pitch, s.roll).up;
-      if (s.p[2] <= 0.02 && climb <= 0 && !s.airborne) cmd = 0;
-      else {
-        const need = (mass * (G + 3 * (climb * c.climbRate - s.v[2]))) / Math.max(1e-6, tmax * kV) / Math.max(0.4, up[2]);
-        cmd = Math.sqrt(clamp(need, 0, 1));
-      }
-    } else cmd = clamp(st.throttle, 0, 1);
-    if (m.task === "rtl" || m.task === "qrtl") {
-      if (s.phase === "descend" && s.p[2] <= 0.03 && s.airborne === false) cmd = 0;
-    }
-  }
-  if (!live) s.u = Math.max(0, s.u - 3 * dt);
-  else s.u += (cmd - s.u) * Math.min(1, c.spool * dt);
-
-  // faults that show on take-off
-  const f = s.u * s.u;
-  if (live && s.t > 0.25 && f > 0.05) {
-    const flip = s.faults.fcReversed ? "flipFc" : s.faults.propsSwapped ? "flipProps" : s.faults.motorDirUnchecked ? "flipMotor" : null;
-    if (flip) {
-      s.flipWhy = flip;
-      s.roll += 900 * dt * (flip === "flipFc" ? 1 : -1);
-      s.pitch += 500 * dt;
-    }
-  }
-  // a pirouette the stick cannot stop: after about 1.5 s at full yaw the tri loses its level and goes over, as hard
-  // as a flip (the self-levelling of angle and althold would hold anything gentler)
-  if (live && c.tailServo && s.faults.servosReversed && s.airborne) {
-    s.pirouette += dt;
-    if (s.pirouette > 1.5) {
-      s.flipWhy = "flipServo";
-      s.roll += 900 * dt;
-      s.pitch += 300 * dt;
-    }
-  }
-  if (calc.overKv && live) {
-    s.heat += dt * f * 1.6;
-    if (s.heat > 9 && s.desyncT <= 0) {
-      s.desyncT = 0.4;
-      s.heat -= 3;
-      emit(s, { type: "desync", motor: Math.min(3, n) });
-    }
-  }
-  s.heat = Math.max(0, s.heat - dt * 0.35);
-  if (s.desyncT > 0) {
-    s.desyncT -= dt;
-    s.roll += 260 * dt;
-    s.yaw += 120 * dt;
-  }
-  if (s.motorsOut.length && live && n > 4) s.yaw += (6 * dt * 4) / n; // less yaw authority: a slow drift
-
-  // forces
-  const ceil = ceilingOf(s);
-  const fade = s.p[2] > ceil - 3 ? Math.max(0, 1 - (s.p[2] - ceil + 3) / 3) : 1;
-  s.thrust = f * tmax * kV * fade;
-  let { up } = bodyAxes(s.yaw, s.pitch, s.roll);
-  if (c.vtol && s.tilt > 0) {
-    // tilted motors push forward; the wing adds lift with airspeed
-    const ax = bodyAxes(s.yaw, s.pitch, s.roll);
-    const a = s.tilt * 90 * DEG;
-    up = [ax.up[0] * Math.cos(a) + ax.fwd[0] * Math.sin(a), ax.up[1] * Math.cos(a) + ax.fwd[1] * Math.sin(a), ax.up[2] * Math.cos(a) + ax.fwd[2] * Math.sin(a)];
-  }
-  const [wx, wy] = windAt(s);
-  const rx = s.v[0] - wx, ry = s.v[1] - wy, rz = s.v[2];
-  const rel = Math.hypot(rx, ry, rz);
-  const a: Vec3 = [
-    (up[0] * s.thrust) / mass - c.drag * rx * (rel + 1),
-    (up[1] * s.thrust) / mass - c.drag * ry * (rel + 1),
-    (up[2] * s.thrust) / mass - c.drag * rz * (rel + 1) - G,
-  ];
-  if (c.vtol) vtolTransition(s, a, dt);
-  if (c.tailServo && s.thrust > 0) {
-    // the tilted tail motor also pushes sideways a little
-    const side = (Math.sin(s.servo * DEG) * s.thrust) / 3 / mass;
-    const fx = Math.cos(s.yaw * DEG), fy = Math.sin(s.yaw * DEG);
-    a[0] += -side * -fy * 0.3;
-    a[1] += -side * fx * 0.3;
-  }
-  for (let i = 0; i < 3; i++) s.v[i] += a[i] * dt;
-  for (let i = 0; i < 3; i++) s.p[i] += s.v[i] * dt;
-  groundContact(s, false);
-}
-
-function vtolTransition(s: SimState, a: Vec3, dt: number) {
-  const vt = s.craft.vtol!;
-  const wantCruise = s.mode.task === "transition";
-  const step = dt / vt.transitionS;
-  s.tilt = clamp(s.tilt + (wantCruise && s.p[2] > 2 ? step : -step), 0, 1);
-  const fwd = Math.hypot(s.v[0], s.v[1]);
-  const lift = Math.min(1, (fwd / vt.vmin) ** 2) * s.tilt;
-  a[2] += lift * G;
-  s.servo = s.tilt * 90;
-  if (wantCruise && s.tilt >= 1 && fwd > vt.vmin * 1.1) {
-    s.cruise = true;
-    s.airspeed = fwd;
-    s.launched = true;
-    s.yaw = Math.atan2(s.v[1], s.v[0]) / DEG;
-    s.pitch = 0;
-    emit(s, { type: "transition", to: "cruise" });
-  }
-}
-
-function wingStep(s: SimState, dt: number) {
-  const c = s.craft, calc = s.calc, st = s.sticks, w = (c.vtol ?? c.wing)!;
-  const mass = (calc.auw - s.dropped) / 1000;
-  const live = s.armed && !s.crashed;
-  const isVtol = !!c.vtol;
-  if (isVtol && (s.mode.task === "qrtl" || s.mode.task === "free")) {
-    // back to hover: slow down on the wing, tilt the motors up
-    s.cruise = false;
-    s.v = [Math.cos(s.yaw * DEG) * s.airspeed, Math.sin(s.yaw * DEG) * s.airspeed, s.v[2]];
-    s.pitch = 0;
-    emit(s, { type: "transition", to: "hover" });
-    return;
-  }
-  const rth = s.mode.task === "rth";
-  const demo = s.mode.task === "demo";
-  const target = demo && live ? wingTarget(s) : null;
-  const gliding = !!target && target.z < 1.5;
-  let thr = live ? clamp(st.throttle, 0, 1) : 0;
-  // home: the craft's return altitude and loiter circle (the CLI's), else 15 m and 22 m
-  const homeAlt = c.rtlAlt ?? 15;
-  if (rth && live) thr = Math.min(0.8, 1.25 * calc.hoverThrottle + (s.p[2] < homeAlt - 2 ? 0.15 : 0));
-  // the demo holds a slow cruise (a tight turning circle) and climbs on throttle
-  if (demo && live) thr = clamp(calc.hoverThrottle + 0.08 * (w.vmin * 1.35 - s.airspeed) + (s.p[2] < (target?.z ?? 13) - 1 ? 0.12 : 0), 0.1, 0.85);
-  if (gliding && live) thr = s.airspeed < w.vmin * 1.15 ? 0.25 : 0;
-  s.u += (thr - s.u) * Math.min(1, 8 * dt);
-  if (!s.launched) {
-    if (live && thr > 0.25) {
-      s.launched = true;
-      s.airspeed = w.launchSpeed;
-      s.p[2] = Math.max(s.p[2], 1.6);
-      s.pitch = -14;
-      emit(s, { type: "launch" });
-    } else {
-      s.v = [0, 0, 0];
-      s.pitch = 0;
-      s.roll = 0;
-      return;
-    }
-  }
-  // attitude
-  if (rth || demo) {
-    // home: circle the pad at 22 m; the demo: steer for the route's next point, then circle home
-    const [hx, hy] = target ? [target.x, target.y] : s.course.pad;
-    const R = c.loiterRadius ?? 22;
-    const d = Math.hypot(hx - s.p[0], hy - s.p[1]);
-    let head = Math.atan2(hy - s.p[1], hx - s.p[0]);
-    if (!target && d < 2.2 * R) head += Math.PI / 2 - clamp((d - R) / R, -1, 1) * (Math.PI / 3);
-    const err = wrapDeg(head / DEG - s.yaw) * DEG;
-    const maxBank = demo ? Math.min(w.bankLimit, 50) * DEG : 0.6;
-    const bank = clamp(1.4 * err, -maxBank, maxBank) / DEG;
-    s.roll += (bank - s.roll) * Math.min(1, 3.5 * dt);
-    const pitchT = clamp(-0.05 * ((target?.z ?? homeAlt) - s.p[2]), -0.35, gliding ? 0.1 : 0.3) / DEG;
-    s.pitch += (pitchT - s.pitch) * Math.min(1, 3 * dt);
-  } else if (s.mode.attitude === "angle") {
-    s.roll += (st.roll * w.bankLimit - s.roll) * Math.min(1, 3.5 * dt);
-    s.pitch += (st.pitch * w.pitchLimit - 3 - s.pitch) * Math.min(1, 3 * dt);
-  } else {
-    s.roll += st.roll * w.rollRate * dt;
-    s.pitch += st.pitch * w.pitchRate * dt + (1 - Math.cos(s.roll * DEG)) * 25 * dt;
-  }
-  if (s.faults.servosReversed || s.faults.fcReversed) {
-    s.roll += (2 * s.roll + 25) * dt;
-    s.pitch += 55 * dt;
-  }
-  if (s.faults.tailHeavy) s.pitch -= (10 + 14 * Math.sin(5 * s.t)) * dt;
-  if (s.p[2] > ceilingOf(s) - 5) s.pitch += 30 * dt;
-  // stall: the nose drops and the wing rocks
-  if (s.airspeed < w.vstall) {
-    if (!s.stalled) {
-      s.stalled = true;
-      emit(s, { type: "stall" });
-    }
-    s.pitch += 55 * dt;
-    s.roll += 40 * Math.sin(4 * s.t) * dt;
-  } else if (s.airspeed > w.vstall + 3) s.stalled = false;
-  s.roll = clamp(s.roll, -80, 80);
-  s.pitch = clamp(s.pitch, -75, 75);
-  // coordinated turn
-  s.yaw += ((G * Math.tan(clamp(s.roll, -69, 69) * DEG)) / Math.max(s.airspeed, 6)) * (dt / DEG);
-  const kV = s.battery.empty ? 0 : voltageFactor(calc, s.battery.volt);
-  const T = s.u * s.u * ((calc.motors * calc.thrustPerMotor) / 1000) * G * kV * (s.faults.propBackwards ? 0.4 : 1);
-  s.thrust = T;
-  const { fwd } = bodyAxes(s.yaw, s.pitch, s.roll);
-  s.airspeed = Math.max(0, s.airspeed + ((T - w.cd * s.airspeed * s.airspeed) / mass - G * fwd[2]) * dt);
-  const lift = Math.min(1, (s.airspeed / w.vmin) ** 2);
-  const sinkT = (1 - lift) * 6 + (s.mode.attitude === "acro" ? s.airspeed * (1 - Math.cos(s.roll * DEG)) * 0.15 : 0);
-  s.sink += (sinkT - s.sink) * Math.min(1, 2 * dt);
-  const [wx, wy] = windAt(s);
-  s.v = [fwd[0] * s.airspeed + wx, fwd[1] * s.airspeed + wy, fwd[2] * s.airspeed - s.sink];
-  for (let i = 0; i < 3; i++) s.p[i] += s.v[i] * dt;
-  groundContact(s, true);
-}
-
-/** The demo route's next point for a wing, moving on once the wing passes close by (it cannot stop there). */
-function wingTarget(s: SimState) {
-  const route = currentMission(s, "demo");
-  if (!route) return null;
-  if (s.wp >= route.waypoints.length) {
-    if (route.loopFrom === undefined) return null;
-    s.wp = route.loopFrom;
-  }
-  const w = route.waypoints[s.wp];
-  const r = w.r ?? 6;
-  if (Math.hypot(w.x - s.p[0], w.y - s.p[1]) < r && Math.abs(w.z - s.p[2]) < Math.max(3, r)) s.wp++;
-  return w;
-}
-
-function followersStep(s: SimState, dt: number) {
-  const sw = s.craft.swarm!;
-  s.followers.forEach((f, i) => {
-    // each follower holds its slot in the formation around the leader (the mocap frame is shared)
-    const [ox, oy] = formation(i + 1, sw.spacing);
-    const tx = s.p[0] + ox, ty = s.p[1] + oy;
-    if (!s.armed && f.p[2] <= 0.01) return;
-    const tz = s.armed ? s.p[2] : 0;
-    for (const [k, t] of [[0, tx], [1, ty], [2, tz]] as Array<[0 | 1 | 2, number]>) {
-      const want = clamp((t - f.p[k]) * 2.5, -1.5, 1.5);
-      f.v[k] += (want - f.v[k]) * Math.min(1, 6 * dt);
-      f.p[k] += f.v[k] * dt;
-    }
-    f.p[2] = Math.max(0, f.p[2]);
-    f.yaw += wrapDeg(s.yaw - f.yaw) * Math.min(1, 3 * dt);
-  });
-}
-
 
 function batteryStep(s: SimState, dt: number) {
   const calc = s.calc;
