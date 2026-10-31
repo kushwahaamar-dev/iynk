@@ -151,6 +151,14 @@ function resolveSpec(fromFile: string, spec: string): string | null {
   return null;
 }
 
+// Search request schemas and cost helpers the server shares with the app; the i18n config is their only import.
+const SERVER_SHARED = new Set([
+  "src/lib/search/types.ts",
+  "src/lib/search/schema.ts",
+  "src/lib/search/cost.ts",
+  "src/i18n/config.ts",
+]);
+
 const RELATIVE_EXTENSIONS = [".ts", ".mjs", ".json"];
 const FORBIDDEN_PACKAGES = ["react", "react-dom", "next"];
 
@@ -176,6 +184,7 @@ function checkImport(fromFile: string, spec: string, typeOnly: boolean): string 
   }
   const to = moduleOf(resolved);
   if (to === from) return null;
+  if (from === "server" && SERVER_SHARED.has(resolved)) return null;
   if (!ALLOWED[from].has(to)) return `${from} -> ${to} is not allowed by SYSTEM 5.3 ('${spec}')`;
   if (from === "parts" && to === "project" && PARTS_TO_PROJECT_TYPE_ONLY && !typeOnly) {
     return `parts may only import types from project ('${spec}')`;

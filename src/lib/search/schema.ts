@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { LOCALES } from "@/i18n/config";
-import { NEARBY_KINDS, OFFER_SOURCES } from "./types";
+import { LOCALES } from "../../i18n/config.ts";
+import { NEARBY_KINDS, OFFER_SOURCES } from "./types.ts";
 
 // Request bodies of the /api/search/* routes (HX-CONTRACT H5). The routes
 // validate with these; callers import the inferred types.
