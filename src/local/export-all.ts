@@ -2,6 +2,7 @@ import { prettyPrint, utf8Encode } from "@/core/canonical";
 import { writeIynk } from "@/export/iynk";
 import { utf8Decode, writeZip } from "@/export/zip";
 import type { ZipFile } from "@/export/zip";
+import type { PartsRepository } from "./parts-store";
 import type { Repository } from "./repository";
 
 const SECRET_SHAPES: ReadonlyArray<{ name: string; pattern: RegExp }> = [
@@ -23,17 +24,20 @@ function secretWarnings(path: string, text: string): string[] {
 
 /**
  * One `.iynkz`-style archive of everything in the repository: every live project as `<id>.iynk`, the settings text
- * the main thread read, and `manifest.json`. The `keys`, `server`, `identity` and `journal` stores are never read.
+ * the main thread read, the library parts as `parts/<id@version>.component.json` with their files beside them, and
+ * `manifest.json`. The `keys`, `server`, `identity` and `journal` stores are never read.
  */
 export async function exportAll(deps: {
   repo: Repository;
+  parts?: PartsRepository;
   settingsJson: string | null;
   now: () => number;
 }): Promise<Uint8Array> {
-  const { repo, settingsJson, now } = deps;
+  const { repo, parts, settingsJson, now } = deps;
   const files: ZipFile[] = [];
   const projects: Array<{ id: string; name: string; file: string; hash: string }> = [];
   const skipped: Array<{ id: string; reason: "lost" | "missing" | "failed" }> = [];
+  const library: Array<{ key: string; digest: string; file: string }> = [];
   const warnings: string[] = [];
 
   for (const row of await repo.list()) {
@@ -60,6 +64,17 @@ export async function exportAll(deps: {
     projects.push({ id: row.id, name: row.name, file: path, hash });
   }
 
+  for (const rec of (await parts?.list()) ?? []) {
+    const file = `parts/${rec.key}.component.json`;
+    files.push({ path: file, data: utf8Encode(prettyPrint(rec.descriptor)) });
+    for (const [path, sha256] of Object.entries(rec.files)) {
+      const blob = await parts?.getFile(sha256);
+      if (blob) files.push({ path: `parts/${rec.key}/${path}`, data: new Uint8Array(await blob.arrayBuffer()) });
+      else warnings.push(`${rec.key} lacks its file ${path}`);
+    }
+    library.push({ key: rec.key, digest: rec.digest, file });
+  }
+
   if (settingsJson !== null) {
     warnings.push(...secretWarnings(SETTINGS_PATH, settingsJson));
     files.push({ path: SETTINGS_PATH, data: utf8Encode(settingsJson) });
@@ -73,6 +88,7 @@ export async function exportAll(deps: {
         version: 1,
         exportedAt: new Date(now()).toISOString(),
         projects,
+        parts: library,
         skipped,
         warnings,
       }),

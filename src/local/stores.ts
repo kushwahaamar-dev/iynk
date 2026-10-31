@@ -1,16 +1,17 @@
 export const DB_NAME = "iynk";
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
 export interface StoreSpec {
-  /** Every store uses out-of-line keys: the key is chosen by the caller, or by the store when `autoIncrement` is set. */
+  /** Stores use out-of-line keys, chosen by the caller or by the store when `autoIncrement` is set, unless `keyPath` names the key field. */
   autoIncrement: boolean;
+  keyPath?: string;
   indexes: Readonly<Record<string, string>>;
 }
 
 const keyed: StoreSpec = { autoIncrement: false, indexes: {} };
 const counted: StoreSpec = { autoIncrement: true, indexes: {} };
 
-/** The 19 stores of SYSTEM 8.1, in table order. Keys: see the comment on each line. */
+/** The 19 stores of SYSTEM 8.1 in table order, then `parts` (T-B11-13). Keys: see the comment on each line. */
 export const STORES = {
   projects: keyed, // project id
   index: { autoIncrement: false, indexes: { updatedAt: "updatedAt" } }, // project id
@@ -31,6 +32,7 @@ export const STORES = {
   ai_debug: keyed, // request id
   journal: keyed, // project id
   identity: keyed, // server origin
+  parts: { autoIncrement: false, keyPath: "key", indexes: { id: "id" } }, // `id@version`
 } as const satisfies Record<string, StoreSpec>;
 
 export type StoreName = keyof typeof STORES;
