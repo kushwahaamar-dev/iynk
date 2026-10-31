@@ -30,7 +30,34 @@
     "notSavedToFile": "未保存"
   },
   "board": {
-    "unoR3": "Arduino Uno R3"
+    "unoR3": "Arduino Uno R3",
+    "pin": "引脚",
+    "role": "功能",
+    "net": "网络",
+    "connectedTo": "连接到",
+    "state": "当前状态",
+    "noneConnected": "没有连接",
+    "wireThis": "将此引脚连接到...",
+    "ports": "端口",
+    "notRunning": "未运行",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin}：{level}",
+    "missing": "项目中没有这块开发板。",
+    "roles": {
+      "power": "电源",
+      "ground": "地",
+      "digital": "数字",
+      "analog": "模拟",
+      "bus": "总线",
+      "misc": "其他"
+    },
+    "dir": {
+      "in": "输入",
+      "out": "输出"
+    },
+    "bits": "{count} 位",
+    "activeLow": "低电平有效"
   },
   "row": {
     "open": "打开 {name}",
@@ -217,6 +244,7 @@
       "inspector": "检查器",
       "problems": "问题",
       "models": "模型",
+      "partner": "搭档",
       "code": "代码",
       "serial": "串口"
     },
@@ -351,7 +379,10 @@
       "menu": "房间",
       "copyLink": "复制邀请链接",
       "away": "离开",
-      "invitations": { "one": "{count} 个邀请", "other": "{count} 个邀请" },
+      "invitations": {
+        "one": "{count} 个邀请",
+        "other": "{count} 个邀请"
+      },
       "invitedBy": "{name} 邀请你加入 {title}",
       "roleLabel": "对方可以做什么",
       "live": "有效的邀请",
@@ -432,5 +463,175 @@
       "engine": "此浏览器无法登录房间。请试用最新版的 Chrome、Firefox、Safari 或 Edge。",
       "privateWindow": "房间需要普通窗口，不能用隐私窗口"
     }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "面包板",
+      "schematic": "原理图",
+      "board": "开发板"
+    },
+    "tablist": "视图",
+    "auto": "自动",
+    "arrange": "整理",
+    "schematicReadOnlyWire": "请在面包板视图中接线。原理图显示的是同样的连接。",
+    "sceneError": "无法绘制此视图。其他视图仍可使用。",
+    "cmd": {
+      "breadboard": "面包板视图",
+      "schematic": "原理图视图",
+      "board": "开发板视图"
+    }
+  },
+  "history": {
+    "title": "历史",
+    "nameThis": "为此版本命名",
+    "named": "已命名",
+    "auto": "自动",
+    "compare": "比较",
+    "restore": "恢复此版本",
+    "restoreHelp": "恢复会在你现有的工作之上添加更改。你可以撤销。",
+    "empty": "还没有版本。",
+    "limit": "列表保留最新的 {max} 个版本。",
+    "mismatch": "此版本未通过校验，没有打开。",
+    "diff": {
+      "added": "新增：{items}",
+      "removed": "移除：{items}",
+      "changed": "更改：{items}",
+      "nets": "不同的连接：{count}",
+      "files": "不同的文件：{count}"
+    },
+    "storeFailed": "无法保存此版本：{reason}",
+    "nameLabel": "版本名称（1 到 80 个字符）",
+    "labelRequired": "请输入名称。",
+    "labelTooLong": "最多使用 {max} 个字符。",
+    "runLabel": "运行",
+    "fileLabel": "已保存的文件"
+  },
+  "checks": {
+    "title": "检查",
+    "add": "添加检查",
+    "run": "运行检查",
+    "pass": "通过",
+    "fail": "未通过",
+    "notRun": "未运行",
+    "kind": {
+      "runs": "运行无错误",
+      "serial": "串口输出包含",
+      "pin-level": "某一时刻的引脚电平",
+      "pin-toggles": "引脚翻转",
+      "pwm": "某一时刻的 PWM 占空比",
+      "tone": "某一时刻的音调频率",
+      "servo": "某一时刻的舵机角度",
+      "responds": "引脚对输入作出响应",
+      "code": "代码包含"
+    },
+    "hiddenNote": "隐藏只是在屏幕上不显示该值。拿到文件的人都能读到它。",
+    "badPin": "此开发板没有名为 {pin} 的引脚。",
+    "needsRun": "运行后可查看结果。",
+    "noSource": "此项目没有适用于该开发板的固件。",
+    "unsupportedLanguage": "对于此开发板的语言，只有运行、串口和代码检查可用。",
+    "limit": "运行在 20 秒的限制处停止。",
+    "empty": "还没有检查。添加一条，看看这个项目是否符合预期。",
+    "running": "运行中",
+    "edit": "编辑 {name}",
+    "delete": "删除 {name}",
+    "editText": "编辑",
+    "deleteText": "删除",
+    "save": "保存检查",
+    "kindLabel": "检查类型",
+    "hidden": "隐藏数值",
+    "hiddenValue": "已隐藏",
+    "rangeOrder": "第一个数不能大于第二个数。",
+    "badRegex": "这个模式无效。",
+    "regexLong": "最多 {max} 个字符。",
+    "afterRun": "这个时间晚于运行结束的 {runMs} ms。",
+    "mustHint": "每行一段文本。",
+    "field": {
+      "pin": "引脚",
+      "level": "电平",
+      "atMs": "时间 (ms)",
+      "minMs": "至少运行 (ms)",
+      "match": "文本",
+      "regex": "按模式匹配",
+      "minCount": "至少这么多行",
+      "periodMs": "周期 (ms)",
+      "from": "从",
+      "to": "到",
+      "minCycles": "周期数",
+      "duty": "占空比 (0 到 1)",
+      "hz": "频率 (Hz)",
+      "deg": "角度 (度)",
+      "input": "输入",
+      "afterAt": "输入变化的时间 (ms)",
+      "afterValue": "输入值",
+      "withinMs": "在多久内 (ms)",
+      "v": "引脚值",
+      "must": "必须包含",
+      "mustNot": "不得包含",
+      "label": "名称"
+    }
+  },
+  "ino": {
+    "import": "导入程序",
+    "export": "导出为 .ino",
+    "wiringCsv": "接线表 (CSV)",
+    "lossTitle": "会有哪些变化",
+    "lossNone": "不会丢失任何内容。",
+    "lossBoard": "已选开发板：{board}。如果不对，请更换。",
+    "unsupported": "第 {line} 行：{message}",
+    "banner": "从模拟中导出。直接编译可能不会成功。",
+    "tooBig": "此文件超过 {max} 个字符。",
+    "notText": "此文件不是文本。",
+    "confirm": "创建项目",
+    "firstOnly": "仅显示第一个问题。修复后请重新导入。",
+    "noEntry": "没有找到 .ino 文件。",
+    "empty": "此文件为空。",
+    "badPath": "不允许使用文件名 {name}。",
+    "tooMany": "最多 {max} 个文件。",
+    "cancel": "取消",
+    "exportBlocked": "此项目没有可导出的 Arduino 程序。"
+  },
+  "align": {
+    "left": "左对齐",
+    "right": "右对齐",
+    "top": "顶部对齐",
+    "bottom": "底部对齐",
+    "centerH": "水平居中",
+    "centerV": "垂直居中",
+    "distributeH": "水平分布",
+    "distributeV": "垂直分布",
+    "needThree": "请选择三个或更多零件进行分布。",
+    "group": "编组",
+    "ungroup": "取消编组",
+    "groupNeedTwo": "请选择两个或更多对象进行编组。",
+    "groupNesting": "一个编组不能包含另一个编组。"
+  },
+  "projectMenu": {
+    "label": "项目",
+    "history": "历史...",
+    "saveFile": "保存到文件",
+    "historyTab": "历史"
+  },
+  "rail": {
+    "history": "历史",
+    "checks": "检查"
+  },
+  "dialog": {
+    "cancel": "取消"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "画布",
+      "code": "代码",
+      "run": "运行",
+      "project": "项目"
+    },
+    "tabs": "工作室分区",
+    "sheetClose": "关闭"
+  },
+  "a11y": {
+    "viewAnnounce": "{view}视图",
+    "groupMade": "已将 {count} 个对象编组。",
+    "restored": "已恢复版本 {label}。",
+    "pinLevel": "{pin} 为 {level}（{mode}）"
   }
 }

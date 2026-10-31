@@ -1,0 +1,18 @@
+{
+  "description": "STM32 Nucleo-64 开发板，搭载 STM32F401RE 芯片、ST-LINK 调试器、Arduino 接口和 ST Morpho 接口，带一个绿色 LED 和一个蓝色用户按键。",
+  "summary": "开发板在 iynk 解释器中运行你的程序。引脚、PWM、I2C、串口和时序遵循 nucleo-f401re 开发板配置。它不是 STM32F401RE 芯片本身。",
+  "layer": "固件运行时。",
+  "led": "LD2，D13（PA5）上的绿色 LED：HIGH 点亮。",
+  "button": "B1 USER，PC13 上的蓝色按键：按下时读为 LOW。",
+  "models": {
+    "1": "解释器按 Nucleo 引脚图运行的 Arduino C++ 子集。",
+    "2": "D0 到 D15 和 A0 到 A5 上的数字输入输出，D3、D5、D6、D9、D10 和 D11 上的 PWM，每个引脚都支持中断。",
+    "3": "10 位模拟读取（调用 analogReadResolution(12) 后为 12 位）、D14 和 D15 上的 I2C 主机、串口输出、D13 上的 LD2 和 PC13 上的 B1 USER 按键。"
+  },
+  "not": {
+    "1": "ST-LINK 调试器和 USB 虚拟串口。",
+    "2": "时钟树，以及数字输入输出、ADC、PWM、I2C 和串口之外的所有外设。",
+    "3": "没有 Arduino 名称的 Morpho 引脚：它们已列出，但解释器不驱动它们。"
+  },
+  "gap": "undefined 目前尚未列出电气额定值，因此这块开发板没有引脚过载检查。"
+}

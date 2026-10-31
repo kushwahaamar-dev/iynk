@@ -1,0 +1,1249 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.de10-lite",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Terasic",
+    "model": "DE10-Lite",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "fpga",
+    "legacy_ids": [
+      "de10-lite"
+    ],
+    "description": {
+      "i18n_key": "parts.de10-lite.description",
+      "en": "A Terasic DE10-Lite FPGA board with an Intel MAX 10 10M50 chip, 10 switches, 2 keys, 10 LEDs, six seven-segment displays and an Arduino header."
+    },
+    "chip": {
+      "manufacturer": "Intel",
+      "model": "10M50DAF484C7G"
+    },
+    "primary_source": "manual",
+    "tags": [
+      "max-10",
+      "10m50",
+      "fpga",
+      "verilog",
+      "terasic",
+      "education"
+    ]
+  },
+  "sources": [
+    {
+      "id": "manual",
+      "kind": "datasheet",
+      "title": "Terasic DE10-Lite User Manual (v1.7, October 2022)",
+      "publisher": "Terasic",
+      "url": "https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&No=1021",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the document in full."
+    },
+    {
+      "id": "qsf",
+      "kind": "library",
+      "title": "DE10_LITE_Golden_Top.qsf (Terasic System Builder pin assignments)",
+      "publisher": "Terasic",
+      "url": "https://github.com/janaite/fpga-de10lite-golden-top",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile de10-lite) and src/content/boards/de10-lite.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "FPGA",
+      "kind": "other",
+      "pins": [
+        "MAX10_CLK1_50",
+        "SW0",
+        "SW1",
+        "SW2",
+        "SW3",
+        "SW4",
+        "SW5",
+        "SW6",
+        "SW7",
+        "SW8",
+        "SW9",
+        "KEY0",
+        "KEY1",
+        "LEDR0",
+        "LEDR1",
+        "LEDR2",
+        "LEDR3",
+        "LEDR4",
+        "LEDR5",
+        "LEDR6",
+        "LEDR7",
+        "LEDR8",
+        "LEDR9",
+        "HEX00",
+        "HEX01",
+        "HEX02",
+        "HEX03",
+        "HEX04",
+        "HEX05",
+        "HEX06",
+        "HEX07",
+        "HEX10",
+        "HEX11",
+        "HEX12",
+        "HEX13",
+        "HEX14",
+        "HEX15",
+        "HEX16",
+        "HEX17",
+        "HEX20",
+        "HEX21",
+        "HEX22",
+        "HEX23",
+        "HEX24",
+        "HEX25",
+        "HEX26",
+        "HEX27",
+        "HEX30",
+        "HEX31",
+        "HEX32",
+        "HEX33",
+        "HEX34",
+        "HEX35",
+        "HEX36",
+        "HEX37",
+        "HEX40",
+        "HEX41",
+        "HEX42",
+        "HEX43",
+        "HEX44",
+        "HEX45",
+        "HEX46",
+        "HEX47",
+        "HEX50",
+        "HEX51",
+        "HEX52",
+        "HEX53",
+        "HEX54",
+        "HEX55",
+        "HEX56",
+        "HEX57"
+      ]
+    },
+    {
+      "id": "ARDUINO",
+      "kind": "header",
+      "pins": [
+        "ARDUINO_IO0",
+        "ARDUINO_IO1",
+        "ARDUINO_IO2",
+        "ARDUINO_IO3",
+        "ARDUINO_IO4",
+        "ARDUINO_IO5",
+        "ARDUINO_IO6",
+        "ARDUINO_IO7",
+        "ARDUINO_IO8",
+        "ARDUINO_IO9",
+        "ARDUINO_IO10",
+        "ARDUINO_IO11",
+        "ARDUINO_IO12",
+        "ARDUINO_IO13",
+        "ARDUINO_IO14",
+        "ARDUINO_IO15"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "MAX10_CLK1_50",
+      "designator": "MAX10_CLK1_50",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.clock",
+        "en": "Clock input: 50 MHz on the board."
+      }
+    },
+    {
+      "id": "SW0",
+      "designator": "SW[0]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW1",
+      "designator": "SW[1]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW2",
+      "designator": "SW[2]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW3",
+      "designator": "SW[3]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW4",
+      "designator": "SW[4]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW5",
+      "designator": "SW[5]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW6",
+      "designator": "SW[6]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW7",
+      "designator": "SW[7]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW8",
+      "designator": "SW[8]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SW9",
+      "designator": "SW[9]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "KEY0",
+      "designator": "KEY[0]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "KEY1",
+      "designator": "KEY[1]",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "LEDR0",
+      "designator": "LEDR[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR1",
+      "designator": "LEDR[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR2",
+      "designator": "LEDR[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR3",
+      "designator": "LEDR[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR4",
+      "designator": "LEDR[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR5",
+      "designator": "LEDR[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR6",
+      "designator": "LEDR[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR7",
+      "designator": "LEDR[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR8",
+      "designator": "LEDR[8]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "LEDR9",
+      "designator": "LEDR[9]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "HEX00",
+      "designator": "HEX0[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX01",
+      "designator": "HEX0[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX02",
+      "designator": "HEX0[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX03",
+      "designator": "HEX0[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX04",
+      "designator": "HEX0[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX05",
+      "designator": "HEX0[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX06",
+      "designator": "HEX0[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX07",
+      "designator": "HEX0[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX10",
+      "designator": "HEX1[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX11",
+      "designator": "HEX1[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX12",
+      "designator": "HEX1[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX13",
+      "designator": "HEX1[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX14",
+      "designator": "HEX1[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX15",
+      "designator": "HEX1[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX16",
+      "designator": "HEX1[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX17",
+      "designator": "HEX1[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX20",
+      "designator": "HEX2[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX21",
+      "designator": "HEX2[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX22",
+      "designator": "HEX2[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX23",
+      "designator": "HEX2[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX24",
+      "designator": "HEX2[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX25",
+      "designator": "HEX2[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX26",
+      "designator": "HEX2[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX27",
+      "designator": "HEX2[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX30",
+      "designator": "HEX3[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX31",
+      "designator": "HEX3[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX32",
+      "designator": "HEX3[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX33",
+      "designator": "HEX3[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX34",
+      "designator": "HEX3[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX35",
+      "designator": "HEX3[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX36",
+      "designator": "HEX3[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX37",
+      "designator": "HEX3[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX40",
+      "designator": "HEX4[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX41",
+      "designator": "HEX4[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX42",
+      "designator": "HEX4[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX43",
+      "designator": "HEX4[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX44",
+      "designator": "HEX4[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX45",
+      "designator": "HEX4[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX46",
+      "designator": "HEX4[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX47",
+      "designator": "HEX4[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX50",
+      "designator": "HEX5[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX51",
+      "designator": "HEX5[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX52",
+      "designator": "HEX5[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX53",
+      "designator": "HEX5[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX54",
+      "designator": "HEX5[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX55",
+      "designator": "HEX5[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX56",
+      "designator": "HEX5[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "HEX57",
+      "designator": "HEX5[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "FPGA",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.activelow",
+        "en": "Active low: 0 means pressed or lit."
+      }
+    },
+    {
+      "id": "ARDUINO_IO0",
+      "designator": "ARDUINO_IO[0]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO1",
+      "designator": "ARDUINO_IO[1]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO2",
+      "designator": "ARDUINO_IO[2]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO3",
+      "designator": "ARDUINO_IO[3]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO4",
+      "designator": "ARDUINO_IO[4]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO5",
+      "designator": "ARDUINO_IO[5]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO6",
+      "designator": "ARDUINO_IO[6]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO7",
+      "designator": "ARDUINO_IO[7]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO8",
+      "designator": "ARDUINO_IO[8]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO9",
+      "designator": "ARDUINO_IO[9]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO10",
+      "designator": "ARDUINO_IO[10]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO11",
+      "designator": "ARDUINO_IO[11]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO12",
+      "designator": "ARDUINO_IO[12]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO13",
+      "designator": "ARDUINO_IO[13]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO14",
+      "designator": "ARDUINO_IO[14]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    },
+    {
+      "id": "ARDUINO_IO15",
+      "designator": "ARDUINO_IO[15]",
+      "type": "digital_out",
+      "class": "digital",
+      "connector": "ARDUINO",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.de10-lite.outputonly",
+        "en": "Output only in the simulator."
+      }
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.de10-lite.summary",
+      "en": "The board runs the user's Verilog in the iynk cycle simulator. Ports stand in for pins: switches, keys, LEDs, the seven-segment displays and the Arduino header outputs. It does not synthesise a design or time it."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.de10-lite.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile de10-lite in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.de10-lite.models.1",
+        "en": "Verilog subset run by the cycle simulator with the DE10-Lite ports, one pin per port bit."
+      },
+      {
+        "i18n_key": "parts.de10-lite.models.2",
+        "en": "Switches, keys (active low), LEDs, the six seven-segment displays (active low) and the Arduino header as outputs."
+      },
+      {
+        "i18n_key": "parts.de10-lite.models.3",
+        "en": "A design that declares CLK_HZ runs at 100 kHz instead of the 50 MHz board clock."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.de10-lite.not.1",
+        "en": "Synthesis, timing closure and constraint files."
+      },
+      {
+        "i18n_key": "parts.de10-lite.not.2",
+        "en": "The ADC, the accelerometer, VGA and the SDRAM."
+      },
+      {
+        "i18n_key": "parts.de10-lite.not.3",
+        "en": "Block RAM sizing and the electrical limits of the pins."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.de10-lite.gap",
+          "en": "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/verilog/verilog.test.ts",
+        "state": "present",
+        "note": "Runs a program on the de10-lite profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "verilog"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "de10-lite",
+        "path": "public/figures/boards/de10-lite.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Terasic DE10-Lite",
+      "body_colour": "#1f4e8c",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. One pin per port bit of the de10-lite profile (87 pins).",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

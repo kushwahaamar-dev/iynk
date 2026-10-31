@@ -6,12 +6,19 @@ import { I18nProvider } from "@/i18n/client";
 import { removeAllKeys, setKey } from "@/lib/keys/store";
 import { NearbyPanel } from "./NearbyPanel";
 
+const features = vi.hoisted(() => ({ search: true }));
+
+vi.mock("@/lib/features", () => ({
+  useFeatures: () => ({ status: "ready", features: { ai: false, search: features.search, hw: false } }),
+  reloadFeatures: () => undefined,
+}));
+
 const store: LabStore = { getState: () => null, subscribe: () => () => undefined, dispatch: () => undefined };
 
 function server() {
   return vi.fn(async (input: string | URL | Request) => {
     const path = String(input);
-    if (path === "/config.json") return Response.json({ server: null, protocol: 1, modules: { ai: false, search: true, voice: false } });
+    if (path === "/config.json") return Response.json({ server: null, protocol: 1 });
     if (path === "/api/search/nearby") return Response.json({ places: [] });
     if (path === "/api/search/events") return Response.json({ events: [] });
     return new Response("not found", { status: 404 });
@@ -28,6 +35,7 @@ const renderPanel = () =>
   );
 
 beforeEach(() => {
+  features.search = true;
   localStorage.clear();
 });
 afterEach(() => {

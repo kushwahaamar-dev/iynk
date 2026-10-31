@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import type { LabKind, LabStore } from "@/components/dock/types";
 import { useLocale } from "@/i18n/client";
-import { useFeatures } from "@/lib/features";
 import { progressPrefix, useSaved } from "@/lib/progress";
 import { track } from "@/lib/telemetry";
 import { createTransport, pageLink, pageScope, ROOM_PARAM, transportKind } from "./config";
@@ -11,7 +10,6 @@ import { getIdentity, getServerIdentity, subscribeIdentity, type Identity } from
 import { isRoomId, newId, newRoomId, normalizeRoomId } from "./protocol";
 import { RoomClient, type RoomState } from "./room";
 import { attachStore } from "./store-sync";
-import { translateMessages } from "./translate";
 import type { TransportKind } from "./transport";
 import type { RoomApi, RoomEnd } from "./types";
 
@@ -133,7 +131,6 @@ export function RoomProvider<S, A extends { type: string }>({
   const identity = useIdentity();
   const kind = useClientValue(noopSubscribe, transportKind, () => null);
   const saved = useSaved();
-  const { features } = useFeatures();
   const [client, setClient] = useState<RoomClient | null>(null);
   const [lastEnded, setLastEnded] = useState<RoomEnd | null>(null);
 
@@ -199,28 +196,6 @@ export function RoomProvider<S, A extends { type: string }>({
     () => client?.getState() ?? null,
     () => null,
   );
-
-
-  // Translate every line into this reader's language as it arrives.
-  useEffect(() => {
-    if (!client || !features.ai) return;
-    const controller = new AbortController();
-    const run = () => {
-      void translateMessages(
-        client.getState().messages,
-        locale,
-        (id, text) => client.setTranslation(id, locale, text),
-        (id) => client.failTranslation(id, locale),
-        controller.signal,
-      );
-    };
-    run();
-    const off = client.subscribe(run);
-    return () => {
-      off();
-      controller.abort();
-    };
-  }, [client, locale, features.ai]);
 
   const room = useMemo(() => (client && state ? toApi(client, state) : null), [client, state]);
 

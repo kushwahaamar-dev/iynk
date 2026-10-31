@@ -77,3 +77,6 @@ docs/MASTER_PLAN/**/node_modules/
 
 # Frame-time results of e2e/studio-perf.spec.ts
 .perf/
+
+# the server's bundled catalogue tools
+/server/dist/

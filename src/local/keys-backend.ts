@@ -1,10 +1,11 @@
+import type { ProviderProfile } from "../ai/profiles";
 import { toDbError } from "./db";
 
 type Slot = "ai" | "search";
 
 /** The fields of `KeyRow` in `src/lib/keys/store.ts`, written out so `local` does not import `lib`. */
 export interface StoredKeyRow {
-  providerProfile: null;
+  providerProfile: ProviderProfile | null;
   key: string;
   label?: string;
   addedAt: number;
@@ -29,6 +30,8 @@ function settle<T>(tx: IDBTransaction, read: () => T): Promise<T> {
 }
 
 /** Keys are deliberately not part of the `Repository` interface, so an export can never reach them. */
+export type KeysBackend = ReturnType<typeof createKeysBackend>;
+
 export function createKeysBackend(db: Pick<IDBDatabase, "transaction">) {
   return {
     load(): Promise<Record<Slot, StoredKeyRow | null>> {

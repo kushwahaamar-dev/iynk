@@ -1,0 +1,18 @@
+{
+  "description": "Un ordinateur monocarte Raspberry Pi 4 Model B ou Raspberry Pi 5 avec un connecteur GPIO de 40 broches, modélisé comme une API Python.",
+  "summary": "La carte exécute ton programme dans l'interpréteur iynk, en Python avec gpiozero. C'est un modèle d'API Python, pas Raspberry Pi OS. Les broches, le PWM, l'I2C et le timing suivent le profil de carte pi4-pi5.",
+  "layer": "Environnement d'exécution du firmware.",
+  "variant": "Variante",
+  "ideeprom": "Réservée à l'EEPROM d'identification des HAT. N'y touche pas.",
+  "models": {
+    "1": "Sous-ensemble de Python exécuté par l'interpréteur avec la numérotation BCM du Raspberry Pi (GPIO17 est la broche physique 11).",
+    "2": "E/S numériques, PWM et rappels sur front de GPIO0 à GPIO27 via gpiozero, et RPi.GPIO sur le Pi 4.",
+    "3": "Maître I2C sur GPIO2 et GPIO3 et sortie série. Le Pi 4 et le Pi 5 ne diffèrent que par la fréquence d'horloge."
+  },
+  "not": {
+    "1": "Linux, le bureau et Raspberry Pi OS : c'est un modèle d'API Python, pas un système d'exploitation.",
+    "2": "Les couches caméra, écran, réseau, USB et PCI Express.",
+    "3": "Les entrées analogiques : la carte n'en a aucune, il faut une puce CAN comme le MCP3008."
+  },
+  "gap": "Aucune valeur électrique maximale n'est encore indiquée, donc il n'existe pas de contrôle de surcharge des broches pour cette carte."
+}

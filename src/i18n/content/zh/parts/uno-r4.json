@@ -1,0 +1,18 @@
+{
+  "description": "一款 5 V 开发板，采用 48 MHz 的 Renesas RA4M1 Cortex-M4，分 Minima 和 WiFi 两个版本，沿用 UNO 的排针布局，带 14 位 ADC 和 A0 上的 DAC。",
+  "summary": "开发板在 iynk 解释器中运行你的程序。引脚、PWM、I2C、串口和时序都遵循 uno-r4 开发板配置。它不是 Renesas RA4M1 芯片本身。",
+  "layer": "固件运行时。",
+  "variant": "版本",
+  "models": {
+    "1": "解释器按 UNO R4 引脚图运行的 Arduino C++ 子集，int 为 32 位，double 为 64 位。",
+    "2": "D0 到 D13 和 A0 到 A5 的数字输入输出，D3、D5、D6、D9、D10 和 D11 的 PWM，D2 和 D3 的中断。",
+    "3": "用 analogReadResolution 最高 14 位的模拟读取，SDA 和 SCL 上的 I2C 主机，串口输出，以及 D13 上的 L 指示灯。"
+  },
+  "not": {
+    "1": "数字输入输出、I2C 和串口以外的 Renesas 外设。",
+    "2": "12x8 LED 点阵库和 WiFi 版本的 ESP32-S3 无线模块。",
+    "3": "A0 上的 DAC 作为模拟输出值。",
+    "4": "每个引脚 8 mA 的拉出电流上限不会被强制执行。"
+  },
+  "gap": "WiFi 版本按 Minima 来建模：LED 点阵和无线模块不起作用。目前还没有列出电气额定值，所以这块板子没有引脚过载检查。"
+}

@@ -1,0 +1,21 @@
+{
+  "description": "Eine Platine der Raspberry-Pi-Pico-Familie mit RP2040- oder RP2350-Chip, 26 GPIO-Pins auf zwei Randreihen und einem Debug-Header, in den Varianten Pico, Pico W, Pico 2 und Pico 2 W.",
+  "summary": "Die Platine führt dein Programm im iynk-Interpreter aus, in MicroPython oder Arduino C++. Pins, PWM, I2C, Seriell und Timing folgen dem Platinenprofil pico. Es ist nicht der RP2040-Chip.",
+  "layer": "Firmware-Laufzeit.",
+  "variant": "Variante",
+  "led": "Onboard-LED an GP25. Bei den W-Platinen hängt die LED am Funkchip; nutze Pin(\"LED\").",
+  "gp23": "Interner Pin: stellt den Stromversorgungsmodus der Platine ein. Nicht anfassen.",
+  "gp24": "Interner Pin: zeigt an, ob USB-Spannung anliegt.",
+  "gp29": "Interner Pin: misst die Versorgungsspannung über einen Teiler (VSYS geteilt durch 3).",
+  "models": {
+    "1": "MicroPython- und Arduino-C++-Teilmengen, die der Interpreter mit der Pico-Pinbelegung ausführt.",
+    "2": "Digitale Ein- und Ausgabe an GP0 bis GP22 und GP26 bis GP28, PWM und Interrupts an jedem GPIO.",
+    "3": "Analoges Lesen mit 12 Bit an GP26 bis GP28, von read_u16() als 0 bis 65535 geliefert, I2C-Master an GP4 und GP5, serielle Ausgabe und die Onboard-LED an GP25."
+  },
+  "not": {
+    "1": "Die PIO-Zustandsmaschinen und der zweite Kern.",
+    "2": "Das WLAN und Bluetooth der W-Platinen.",
+    "3": "Die Unterschiede des RP2350 über die Pinbelegung hinaus sowie das Verhalten von Flash und Stromversorgung."
+  },
+  "gap": "undefined Es sind noch keine elektrischen Grenzwerte hinterlegt, daher gibt es für diese Platine keine Prüfung auf Pin-Überlast."
+}

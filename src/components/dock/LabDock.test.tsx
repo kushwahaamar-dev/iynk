@@ -8,12 +8,7 @@ const flags = vi.hoisted(() => ({
   status: "ready" as "loading" | "ready" | "error",
   features: {
     ai: false,
-   
-    voice: false,
     search: false,
-    db: false,
-    realtime: false,
-    gemini: false,
     hw: false,
   },
 }));
@@ -23,12 +18,8 @@ vi.mock("@/lib/features", () => ({
   reloadFeatures: () => undefined,
 }));
 
-const loaded = vi.hoisted(() => ({ partner: 0, together: 0, real: 0 }));
+const loaded = vi.hoisted(() => ({ together: 0, real: 0 }));
 
-vi.mock("@/components/ai/PartnerPanel", async (original) => {
-  loaded.partner++;
-  return original();
-});
 vi.mock("@/components/realtime/TogetherPanel", async (original) => {
   loaded.together++;
   return original();
@@ -103,19 +94,17 @@ describe("LabDock", () => {
   // The module registry lives for the whole file, so this has to run before any test that opens another tab.
   test("fetches a panel's code only when its tab is first on screen", async () => {
     renderDock();
-    expect(loaded).toEqual({ partner: 0, together: 0, real: 0 });
+    expect(loaded).toEqual({ together: 0, real: 0 });
 
     openDrawer();
     await waitFor(() => expect(loaded.together).toBe(1));
-    expect(loaded.partner).toBe(0);
     expect(loaded.real).toBe(0);
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
     await waitFor(() => expect(loaded.real).toBe(1));
-    expect(loaded.partner).toBe(0);
   });
 
-  test("is a closed Lab tools button until pressed, then a drawer with Partner, Together and Real", async () => {
+  test("is a closed Lab tools button until pressed, then a drawer with Together and Real", async () => {
     renderDock();
     const trigger = screen.getByRole("button", { name: dock.open });
     expect(trigger.textContent).toContain(dock.label);
@@ -125,11 +114,8 @@ describe("LabDock", () => {
     openDrawer();
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
     expect(drawer().getAttribute("data-layout")).toBe("desk");
-    expect(screen.getByRole("tab", { name: dock.tabs.partner })).toBeTruthy();
+    expect(screen.queryByRole("tab", { name: dock.tabs.partner })).toBeNull();
     expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
-
-    fireEvent.click(screen.getByRole("tab", { name: dock.tabs.partner }));
-    expect(await screen.findByTestId("not-set-up")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.together }));
     expect(screen.getByRole("tab", { name: dock.tabs.together }).getAttribute("aria-selected")).toBe("true");
@@ -140,10 +126,10 @@ describe("LabDock", () => {
     });
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
-    await waitFor(() => expect(screen.getAllByTestId("not-set-up")).toHaveLength(2));
+    await waitFor(() => expect(screen.getAllByTestId("not-set-up")).toHaveLength(1));
   });
 
-  test("opens on the first tab that works: the partner with AI, else Together, or prices on a drone", () => {
+  test("opens on the first tab that works: Together, or prices on a drone", () => {
     const first = renderDock();
     openDrawer();
     expect(screen.getByRole("tab", { name: dock.tabs.together }).getAttribute("aria-selected")).toBe("true");
@@ -153,11 +139,6 @@ describe("LabDock", () => {
     openDrawer();
     expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
     drone.unmount();
-
-    flags.features.ai = true;
-    renderDock("drone");
-    openDrawer();
-    expect(screen.getByRole("tab", { name: dock.tabs.partner }).getAttribute("aria-selected")).toBe("true");
   });
 
   test("shows Hardware only when its flag is on", async () => {
@@ -166,20 +147,6 @@ describe("LabDock", () => {
     fireEvent.click(screen.getByRole("button", { name: dock.open }));
     expect(await screen.findByRole("complementary", { name: dock.label })).toBeTruthy();
     expect(await screen.findByRole("tab", { name: dock.tabs.hardware })).toBeTruthy();
-  });
-
-  test("a dock-tab event opens the drawer on that tab and ignores a hidden one", () => {
-    renderDock();
-    act(() => {
-      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "real" } }));
-    });
-    expect(drawer()).toBeTruthy();
-    expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
-    act(() => {
-      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "hardware" } }));
-    });
-    expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
-    expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
   });
 
   test("a room in the address opens the drawer on Together", async () => {

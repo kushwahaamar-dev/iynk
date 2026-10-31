@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "Steckbrett-Ansicht",
+      "schematic": "Schaltplan-Ansicht",
+      "board": "Platinen-Ansicht",
       "fit": "Alles einpassen",
       "fitSelection": "Auswahl einpassen",
       "zoomIn": "Vergrößern",
@@ -136,8 +138,23 @@
       "next": "Nächster Bereich",
       "prev": "Voriger Bereich"
     },
+    "partner": {
+      "focus": "Den Partner öffnen"
+    },
     "help": {
       "keys": "Tastenkürzel anzeigen"
+    },
+    "align": {
+      "left": "Linksbündig ausrichten",
+      "right": "Rechtsbündig ausrichten",
+      "top": "Oben ausrichten",
+      "bottom": "Unten ausrichten",
+      "centerH": "Horizontal zentrieren",
+      "centerV": "Vertikal zentrieren"
+    },
+    "group": {
+      "make": "Gruppieren",
+      "remove": "Gruppierung aufheben"
     }
   }
 }

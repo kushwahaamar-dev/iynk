@@ -38,7 +38,7 @@ function foldedOf(entry: PartEntry, lang: string): Folded {
 }
 
 /** The parts a palette offers: the newest version of each, except wiring surfaces, which the project adds itself. */
-export function buildPartIndex(registry: PartRegistry): PartEntry[] {
+export function buildPartIndex(registry: Pick<PartRegistry, "list" | "latest">): PartEntry[] {
   const entries: PartEntry[] = [];
   for (const ref of new Set(registry.list().map((p) => p.ref))) {
     const d = registry.latest(ref);

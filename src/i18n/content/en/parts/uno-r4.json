@@ -1,0 +1,18 @@
+{
+  "description": "A 5 V development board with a Renesas RA4M1 Cortex-M4 at 48 MHz, in a Minima and a WiFi variant, with the UNO header layout, a 14-bit ADC and a DAC on A0.",
+  "summary": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the uno-r4 board profile. It is not the Renesas RA4M1 chip.",
+  "layer": "Firmware runtime.",
+  "variant": "Variant",
+  "models": {
+    "1": "Arduino-C++ subset run by the interpreter with the UNO R4 pin map, 32-bit int and 64-bit double.",
+    "2": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3.",
+    "3": "Analog reads up to 14 bits with analogReadResolution, I2C master on SDA and SCL, serial output, and the L LED on D13."
+  },
+  "not": {
+    "1": "Renesas peripherals other than digital I/O, I2C and serial.",
+    "2": "The 12x8 LED matrix library and the ESP32-S3 radio of the WiFi variant.",
+    "3": "The DAC on A0 as an analog output value.",
+    "4": "The 8 mA pin source limit is not enforced."
+  },
+  "gap": "The WiFi variant is modelled as the Minima: the LED matrix and the radio do nothing. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

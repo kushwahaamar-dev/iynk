@@ -153,6 +153,26 @@ export function pasteBatch(
   return { batch, label: count === 1 ? "Paste part" : `Paste ${count} parts`, selection };
 }
 
+export type Clip = ClipboardPayload;
+
+/** The copy of the given part ids in a view, ready to paste into this project or another. */
+export function copyClip(state: ProjectState, viewId: string, selected: readonly string[]): Clip {
+  const view = state.views.find((v) => v.id === viewId);
+  if (!view) return { v: 1, components: [], placements: [], nets: [], wires: [], deps: [], bbox: { x0: 0, y0: 0, x1: 0, y1: 0 } };
+  return copySelection(state, view, selected.map((id): Selectable => ({ kind: "part", view: viewId, id })));
+}
+
+/**
+ * The ops that put a clip in a view with its top left at `at`. A clip that does not read as one, one that would not
+ * fit in the view, or an unknown view gives no ops.
+ */
+export function pasteOps(state: ProjectState, viewId: string, clip: Clip, at: PointMm, newId: IdSource): Op[] {
+  const view = state.views.find((v) => v.id === viewId);
+  if (!view || !parseClipboard(JSON.stringify({ iynk: MARKER, ...clip }))) return [];
+  if (view.placements.length + clip.placements.length > LIMITS.placementsPerView) return [];
+  return pasteBatch(state, view, clip, at, newId).batch;
+}
+
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 const isText = (v: unknown, max = 64): v is string => typeof v === "string" && v.length > 0 && v.length <= max;
 const isCoordinate = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= LIMITS.layoutAbsMm;

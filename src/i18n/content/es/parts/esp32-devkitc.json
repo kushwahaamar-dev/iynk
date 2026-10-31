@@ -1,0 +1,17 @@
+{
+  "description": "Una placa de desarrollo ESP32 de 38 pines con módulo ESP32-WROOM-32E, puente USB-UART CP2102N y regulador de 3,3 V.",
+  "summary": "La placa ejecuta tu sketch en el intérprete de iynk. Los pines, el PWM, el I2C, el serie y los tiempos siguen el perfil de placa esp32-devkitc. No es el chip ESP32.",
+  "layer": "Entorno de ejecución del firmware.",
+  "models": {
+    "1": "Subconjunto de Arduino C++ ejecutado por el intérprete con el mapa de pines de la ESP32-DevKitC.",
+    "2": "E/S digital en los pines GPIO que expone la placa, PWM e interrupciones en todos los pines con salida.",
+    "3": "Lecturas analógicas de 12 bits contra 3,3 V, maestro I2C en GPIO21 y GPIO22, salida serie y el botón BOOT en GPIO0."
+  },
+  "not": {
+    "1": "Los dos núcleos Xtensa y las tareas de FreeRTOS.",
+    "2": "El Wi-Fi, el Bluetooth y el comportamiento de la flash. El simulador de peticiones de las lecciones de servidor web no es una radio.",
+    "3": "Las trampas de los pines de arranque, como GPIO12 en alto durante el reset.",
+    "4": "Los límites del regulador de 3,3 V y el puente USB-UART."
+  },
+  "gap": "La placa no tiene LED de usuario ni LED_BUILTIN: el proyecto inicial conecta un LED externo con resistencia a GPIO23. GPIO34 a GPIO39 son solo entradas y los pines ADC2 no se pueden leer con el Wi-Fi activo. Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

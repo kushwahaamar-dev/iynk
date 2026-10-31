@@ -27,6 +27,8 @@ export interface TopBarProps {
   doc: DocStore;
   run: RunStore;
   link: SimLink;
+  /** The project menu, mounted by the workspace. */
+  menu: ReactNode;
   /** The settings popover, mounted by the workspace. */
   settings: ReactNode;
   messages: Messages["studio"];
@@ -85,7 +87,7 @@ function SaveStatus({ doc, messages }: Pick<TopBarProps, "doc" | "messages">) {
   );
 }
 
-export function TopBar({ doc, run, link, settings, messages, modelMessages }: TopBarProps) {
+export function TopBar({ doc, run, link, menu, settings, messages, modelMessages }: TopBarProps) {
   const t = messages.topBar;
   const canUndo = useStoreSelector(doc, (s) => s.canUndo);
   const canRedo = useStoreSelector(doc, (s) => s.canRedo);
@@ -97,6 +99,7 @@ export function TopBar({ doc, run, link, settings, messages, modelMessages }: To
     <div role="toolbar" aria-label={t.label} className="flex flex-wrap items-center gap-2">
       <ProjectName doc={doc} messages={messages} />
       <SaveStatus doc={doc} messages={messages} />
+      {menu}
       <span className="flex-1" />
       <IconButton label={t.undo} icon="undo" size="sm" shortcut="Ctrl+Z" disabled={!canUndo} onClick={() => doc.undo()} />
       <IconButton label={t.redo} icon="undo" size="sm" shortcut="Ctrl+Shift+Z" disabled={!canRedo} className="[&_svg]:-scale-x-100" onClick={() => doc.redo()} />

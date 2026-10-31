@@ -1,0 +1,142 @@
+{
+  "list": {
+    "title": "Fournisseurs d'IA",
+    "intro": "Ajoute le fournisseur que le partenaire doit utiliser. Ta clé reste dans ce navigateur.",
+    "empty": "Aucun fournisseur pour l'instant. Ajoute-en un pour activer le partenaire.",
+    "add": "Ajouter un fournisseur",
+    "edit": "Modifier",
+    "remove": "Retirer",
+    "removeAsk": "Retirer {label} ? Sa clé est supprimée aussi.",
+    "removeYes": "Le retirer",
+    "removeNo": "Le garder",
+    "limit": "Tu peux garder jusqu'à {count} fournisseurs.",
+    "key": "Clé se terminant par {tail}",
+    "noKey": "Pas de clé",
+    "local": "Tourne sur cet ordinateur",
+    "via": {
+      "auto": "Direct, puis relais",
+      "direct": "Direct",
+      "relay": "Relais"
+    },
+    "tested": "Testé le {date} : {passed} contrôles sur {total} réussis",
+    "untested": "Pas encore testé",
+    "notPersisted": "Ce navigateur ne peut pas garder les fournisseurs après la fermeture de l'onglet."
+  },
+  "legacy": {
+    "offer": "Utiliser ta clé enregistrée avec",
+    "use": "Utiliser la clé enregistrée",
+    "failed": "Impossible de déplacer la clé enregistrée. Réessaie."
+  },
+  "form": {
+    "addTitle": "Ajouter un fournisseur",
+    "editTitle": "Modifier {label}",
+    "preset": "Fournisseur",
+    "custom": "Autre adresse",
+    "family": "Type",
+    "familyAnthropic": "Anthropic",
+    "familyOpenai": "Compatible OpenAI",
+    "label": "Nom",
+    "baseUrl": "Adresse",
+    "baseUrlHint": "L'adresse web jusqu'à la version, par exemple https://api.openai.com/v1",
+    "key": "Clé",
+    "keyHint": "Gardée dans ce navigateur et jamais affichée de nouveau.",
+    "keyKeep": "Laisse vide pour garder la clé enregistrée.",
+    "keySaved": "Clé enregistrée se terminant par {tail}",
+    "keyLocal": "Ce fournisseur tourne sur ton ordinateur et n'a pas besoin de clé.",
+    "keyBad": "La clé doit compter de 8 à 512 caractères visibles.",
+    "via": "Route",
+    "viaAuto": "Automatique",
+    "viaDirect": "Directe depuis ce navigateur",
+    "viaRelay": "Par ton serveur",
+    "models": "Modèles",
+    "modelsNone": "Ajoute au moins un modèle.",
+    "modelId": "Identifiant du modèle",
+    "tier": "Niveau",
+    "tierNone": "Aucun niveau",
+    "tierFast": "Rapide",
+    "tierStandard": "Standard",
+    "tierStrong": "Puissant",
+    "context": "Tokens de contexte",
+    "output": "Tokens de sortie",
+    "priceIn": "Entrée en USD par million de tokens",
+    "priceOut": "Sortie en USD par million de tokens",
+    "priceBoth": "Remplis les deux prix ou aucun.",
+    "priceStale": "Ce prix date du {date}. Vérifie-le auprès du fournisseur.",
+    "modelAdd": "Ajouter un modèle",
+    "modelRemove": "Retirer le modèle {n}",
+    "save": "Enregistrer",
+    "saved": "Enregistré.",
+    "close": "Fermer",
+    "test": "Enregistrer et tester",
+    "testing": "Test en cours"
+  },
+  "test": {
+    "title": "Résultats du test",
+    "date": "Testé le {date}",
+    "pass": "Réussi",
+    "fail": "Échoué",
+    "toolsOff": "Outils : désactivés pour ce fournisseur. Le partenaire peut répondre, mais il ne peut pas lire ton projet avec des outils.",
+    "csp": "La politique de ce site n'autorise pas cette adresse. Ajoute-la à IYNK_CONNECT_ORIGINS et redémarre le conteneur web.",
+    "noModel": "Ajoute un modèle avant de tester.",
+    "error": "Le test n'a pas pu s'exécuter. Réessaie.",
+    "check": {
+      "C1": "Joint le fournisseur",
+      "C2": "Discussion simple",
+      "C3": "Streaming avec usage",
+      "C4": "Aller-retour d'outil",
+      "C5": "Outils en parallèle",
+      "C6": "Aucun outil choisi",
+      "C7": "Texte JSON de secours",
+      "C8": "Correspondance des erreurs",
+      "C9": "Rapport de cache",
+      "C10": "Annulation"
+    }
+  },
+  "caps": {
+    "title": "Plafonds de dépense",
+    "hint": "Laisse un champ vide pour la valeur par défaut. Tape {word} pour retirer un plafond. 0 n'est pas accepté.",
+    "word": "sans plafond",
+    "dayUSD": "Par jour (USD)",
+    "monthUSD": "Par mois (USD)",
+    "sessionUSD": "Par session (USD)",
+    "dayTokens": "Tokens par jour",
+    "sessionTokens": "Tokens par session",
+    "default": "Par défaut {value}",
+    "zero": "0 n'est pas accepté. Tape {word} pour retirer le plafond.",
+    "number": "Tape un nombre supérieur à 0.",
+    "save": "Enregistrer les plafonds",
+    "saved": "Plafonds enregistrés."
+  },
+  "usage": {
+    "title": "Utilisé dans ce navigateur",
+    "today": "Aujourd'hui : {tokens} tokens, {cost}",
+    "month": "Ce mois-ci : {tokens} tokens, {cost}",
+    "unpriced": {
+      "one": "{count} appel n'a pas de prix connu.",
+      "other": "{count} appels n'ont pas de prix connu."
+    },
+    "search": "Recherches : {today} aujourd'hui, {month} ce mois-ci"
+  },
+  "prices": {
+    "asOf": "Table des prix du {date}.",
+    "stale": "Table des prix du {date}. Elle date de plus de 90 jours, vérifie donc les prix auprès de ton fournisseur."
+  },
+  "retention": {
+    "title": "Garder les conversations",
+    "session": "Cette session seulement",
+    "project": "Par projet, 90 jours",
+    "forever": "Jusqu'à ce que je les supprime"
+  },
+  "data": {
+    "delete": "Supprimer les données d'IA",
+    "ask": "Supprimer toutes les conversations, tous les journaux et les compteurs d'usage ? Tes clés restent.",
+    "yes": "Supprimer",
+    "no": "Garder",
+    "done": "Données d'IA supprimées.",
+    "failed": "Impossible de supprimer les données d'IA. Réessaie."
+  },
+  "notes": {
+    "relay": "Si tu utilises le serveur d'un ami comme relais, ta clé passe par sa machine à chaque appel.",
+    "cap": "Les plafonds de dépense ne comptent que dans ce navigateur, fixe donc aussi une limite chez ton fournisseur."
+  }
+}

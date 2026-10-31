@@ -1,0 +1,17 @@
+{
+  "description": "An ESP8266 development board with an ESP-12E module, a CP2102 USB-serial chip and a 3.3 V regulator, with two active-low LEDs.",
+  "summary": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the nodemcu board profile. It is not the ESP8266 chip.",
+  "layer": "Firmware runtime.",
+  "led": "On-board LED, active low: LOW turns it on.",
+  "models": {
+    "1": "Arduino-C++ subset run by the interpreter with the NodeMCU pin map, where D4 is GPIO2.",
+    "2": "Digital I/O on D0 to D8, TX, RX, SD2 and SD3, PWM on every GPIO, interrupts on every GPIO except GPIO16 (D0).",
+    "3": "10-bit analog read on A0 through the board divider, I2C master on D2 and D1, serial output, and the two active-low LEDs on GPIO2 and GPIO16."
+  },
+  "not": {
+    "1": "The Xtensa L106 core, the Wi-Fi stack and flash behaviour. The request stub for web-server lessons is not a radio.",
+    "2": "The boot-mode pins GPIO0, GPIO2 and GPIO15.",
+    "3": "The CP2102 bridge and the 3.3 V regulator limits."
+  },
+  "gap": "The on-board LEDs are active low: digitalWrite(LED_BUILTIN, LOW) turns them on. D-numbers are not GPIO numbers: D4 is GPIO2. A0 reads 0 to 3.3 V through a divider, and GPIO16 has no interrupt. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

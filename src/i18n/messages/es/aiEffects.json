@@ -1,0 +1,14 @@
+{
+  "tool": {
+    "search_datasheet": "Buscar una hoja de datos en la web",
+    "find_parts": "Consultar precios de piezas"
+  },
+  "argsLabel": "Exactamente lo que se enviará",
+  "cost": {
+    "one": "Hasta {count} búsqueda con tu clave",
+    "other": "Hasta {count} búsquedas con tu clave"
+  },
+  "allow": "Permitir una vez",
+  "deny": "Denegar",
+  "hint": "No se envía nada hasta que lo permitas. Escape deniega."
+}

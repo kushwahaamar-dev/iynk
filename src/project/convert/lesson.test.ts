@@ -275,9 +275,9 @@ describe("the report", () => {
     expect(blink.filter((x) => x.code === "code-comments-en-only")).toHaveLength(1);
   });
 
-  it("names the parts and the board that have no descriptor", () => {
+  it("finds a descriptor for every board and for the parts of the Uno blink lesson", () => {
     expect(lessons.get("uno-r3/blink")!.report.filter((x) => x.code === "no-descriptor")).toEqual([]);
-    expect(tours.get("nano")!.report.find((x) => x.code === "no-descriptor")!.refs).toEqual(["core.nano"]);
+    for (const [id, tour] of tours) expect(tour.report.filter((x) => x.code === "no-descriptor"), id).toEqual([]);
   });
 
   it("attaches a world input of a part outside the circuit to the board, and says so", () => {

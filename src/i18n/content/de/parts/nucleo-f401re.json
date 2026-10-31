@@ -1,0 +1,18 @@
+{
+  "description": "Eine STM32-Nucleo-64-Platine mit STM32F401RE-Chip, ST-LINK-Debugger, Arduino-Headern und ST-Morpho-Headern, einer grünen LED und einer blauen Benutzertaste.",
+  "summary": "Die Platine führt deinen Sketch im iynk-Interpreter aus. Pins, PWM, I2C, Seriell und Timing folgen dem Platinenprofil nucleo-f401re. Es ist nicht der STM32F401RE-Chip.",
+  "layer": "Firmware-Laufzeit.",
+  "led": "LD2, die grüne LED an D13 (PA5): HIGH schaltet sie ein.",
+  "button": "B1 USER, die blaue Taste an PC13: liest LOW, wenn sie gedrückt ist.",
+  "models": {
+    "1": "Arduino-C++-Teilmenge, die der Interpreter mit der Nucleo-Pinbelegung ausführt.",
+    "2": "Digitale Ein- und Ausgabe an D0 bis D15 und A0 bis A5, PWM an D3, D5, D6, D9, D10 und D11, Interrupts an jedem Pin.",
+    "3": "Analoges Lesen mit 10 Bit, nach analogReadResolution(12) mit 12 Bit, I2C-Master an D14 und D15, serielle Ausgabe, LD2 an D13 und die Taste B1 USER an PC13."
+  },
+  "not": {
+    "1": "Der ST-LINK-Debugger und der virtuelle USB-Seriellport.",
+    "2": "Der Taktbaum und jede Peripherie außer digitaler Ein- und Ausgabe, ADC, PWM, I2C und Seriell.",
+    "3": "Die Morpho-Pins ohne Arduino-Namen: Sie sind aufgeführt, aber der Interpreter steuert sie nicht."
+  },
+  "gap": "undefined Es sind noch keine elektrischen Grenzwerte hinterlegt, daher gibt es für diese Platine keine Prüfung auf Pin-Überlast."
+}

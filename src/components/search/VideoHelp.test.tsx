@@ -6,12 +6,19 @@ import { I18nProvider } from "@/i18n/client";
 import { removeAllKeys, setKey } from "@/lib/keys/store";
 import { VideoHelp } from "./VideoHelp";
 
+const features = vi.hoisted(() => ({ search: true }));
+
+vi.mock("@/lib/features", () => ({
+  useFeatures: () => ({ status: "ready", features: { ai: false, search: features.search, hw: false } }),
+  reloadFeatures: () => undefined,
+}));
+
 const store: LabStore = { getState: () => null, subscribe: () => () => undefined, dispatch: () => undefined };
 
-function server(search: boolean) {
+function server() {
   return vi.fn(async (input: string | URL | Request) => {
     const path = String(input);
-    if (path === "/config.json") return Response.json({ server: null, protocol: 1, modules: { ai: false, search, voice: false } });
+    if (path === "/config.json") return Response.json({ server: null, protocol: 1 });
     if (path === "/api/search/videos") return Response.json({ videos: [] });
     return new Response("not found", { status: 404 });
   });
@@ -27,6 +34,7 @@ const renderPanel = () =>
   );
 
 beforeEach(() => {
+  features.search = true;
   localStorage.clear();
 });
 afterEach(() => {
@@ -38,7 +46,7 @@ afterEach(() => {
 describe("VideoHelp", () => {
   it("shows the suggested query but sends nothing until Find videos is pressed", async () => {
     setKey("search", "iynk-canary-SEARCH-0001-do-not-use");
-    const fetchMock = server(true);
+    const fetchMock = server();
     vi.stubGlobal("fetch", fetchMock);
     renderPanel();
 
@@ -55,7 +63,7 @@ describe("VideoHelp", () => {
   });
 
   it("with no search key shows the needs-key box and makes no search request", async () => {
-    const fetchMock = server(true);
+    const fetchMock = server();
     vi.stubGlobal("fetch", fetchMock);
     renderPanel();
 

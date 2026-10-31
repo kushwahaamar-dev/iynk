@@ -2,21 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import { fetchConfig, parseConfig, probeServer } from "./probe";
 
 describe("parseConfig", () => {
-  it("reads the server and the modules", () => {
-    expect(parseConfig({ server: "https://srv.example", protocol: 1, modules: { ai: true, search: false, voice: true }, extra: 1 })).toEqual({
-      server: "https://srv.example",
-      protocol: 1,
-      modules: { ai: true, search: false, voice: true },
-    });
-  });
-
-  it("accepts a document without modules, and counts a missing voice as off", () => {
+  it("reads the server and ignores anything else", () => {
+    expect(parseConfig({ server: "https://srv.example", protocol: 1, extra: 1 })).toEqual({ server: "https://srv.example", protocol: 1 });
     expect(parseConfig({ server: null, protocol: 1 })).toEqual({ server: null, protocol: 1 });
-    expect(parseConfig({ server: null, protocol: 1, modules: { ai: true, search: true } })?.modules).toEqual({
-      ai: true,
-      search: true,
-      voice: false,
-    });
   });
 
   it("rejects what is not a config", () => {

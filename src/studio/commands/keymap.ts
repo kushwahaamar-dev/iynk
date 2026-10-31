@@ -1,14 +1,20 @@
 import { typingTarget } from "../../components/boardlab/shortcuts.ts";
 import { registerCommand, runCommand } from "../commands.ts";
 import type { Command, CommandCtx } from "../commands.ts";
+import type { Op } from "../../project/generated/types.ts";
 import type { WireEndRef } from "../rules/connect.ts";
 import type { DocStore } from "../stores/doc.ts";
 import type { SessionStore } from "../stores/session.ts";
 import type { UiStore } from "../stores/ui.ts";
+import { alignOps, distributeOps } from "../tools/align.ts";
+import type { AlignKind, Box, DistributeAxis } from "../tools/align.ts";
+import { expandSelection, groupOps, ungroupOps } from "../tools/groups.ts";
 import { createNudger, firstFreePin, focusNextPart, netOfSelection, NUDGE_COALESCE_MS, partName, rotateBatch } from "../tools/keyboard.ts";
 import type { Announcer } from "../tools/keyboard.ts";
 import type { ToolHost } from "../tools/host.ts";
 import type { ToolCtx, ToolKeyEvent } from "../tools/types.ts";
+import { VIEW_DEFS, viewIdFor } from "../views/registry.ts";
+import type { ViewKind } from "../views/registry.ts";
 
 export type KeyScope = "global" | "canvas";
 
@@ -43,11 +49,21 @@ export const STUDIO_KEYS: readonly KeyDef[] = [
   row("place.rotate", ["R"]),
   row("place.rotateBack", ["Shift+R"]),
   row("wire.fromSelection", ["W"]),
+  row("align.left", ["Alt+Shift+ArrowLeft"]),
+  row("align.right", ["Alt+Shift+ArrowRight"]),
+  row("align.top", ["Alt+Shift+ArrowUp"]),
+  row("align.bottom", ["Alt+Shift+ArrowDown"]),
+  row("align.centerH", ["Alt+Shift+C"]),
+  row("align.centerV", ["Alt+Shift+V"]),
+  row("group.make", ["Mod+G"]),
+  row("group.remove", ["Mod+Shift+G"]),
   row("move.left", arrow("Left")),
   row("move.right", arrow("Right")),
   row("move.up", arrow("Up")),
   row("move.down", arrow("Down")),
   row("view.breadboard", ["1"]),
+  row("view.schematic", ["2"]),
+  row("view.board", ["3"]),
   row("view.fit", ["0"]),
   row("view.fitSelection", ["F"]),
   row("view.zoomIn", ["Plus", "="]),
@@ -63,6 +79,7 @@ export const STUDIO_KEYS: readonly KeyDef[] = [
   row("problems.prev", ["Shift+F8"], "global"),
   row("region.next", ["F6"], "global"),
   row("region.prev", ["Shift+F6"], "global"),
+  row("partner.focus", ["Mod+/"], "global"),
   row("help.keys", ["?"]),
 ];
 
@@ -91,13 +108,14 @@ function parseChord(spec: string): Chord {
 
 const isLetter = (key: string): boolean => key.length === 1 && key.toLowerCase() !== key.toUpperCase();
 
-type KeyLike = Pick<KeyboardEvent, "key" | "ctrlKey" | "metaKey" | "altKey" | "shiftKey">;
+type KeyLike = Pick<KeyboardEvent, "key" | "ctrlKey" | "metaKey" | "altKey" | "shiftKey"> & { code?: string };
 
 function matches(chord: Chord, e: KeyLike): boolean {
   const accel = e.ctrlKey || e.metaKey;
   if (chord.mod ? !accel : chord.ctrl ? !e.ctrlKey : accel) return false;
   if (chord.alt !== e.altKey) return false;
-  const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  // Alt turns a letter into another character on a Mac, so an Alt chord reads the physical key.
+  const key = chord.alt && isLetter(chord.key) && e.code?.startsWith("Key") ? e.code.slice(3).toLowerCase() : e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (key !== chord.key) return false;
   return isLetter(key) || key.length > 1 ? chord.shift === e.shiftKey : true;
 }
@@ -152,6 +170,7 @@ export type KeymapDeps = {
   view: ViewControls;
   focusPartSearch(): void;
   focusInspector(): void;
+  focusPartner(): void;
   openPinPicker(from: WireEndRef): void;
   jumpProblem(dir: 1 | -1): void;
   focusRegion(dir: 1 | -1): void;
@@ -160,7 +179,25 @@ export type KeymapDeps = {
 
 const ZOOM_STEP = 1.25;
 
+const ALIGN_KIND: Record<string, AlignKind> = {
+  "align.left": "left",
+  "align.right": "right",
+  "align.top": "top",
+  "align.bottom": "bottom",
+  "align.centerH": "centerH",
+  "align.centerV": "centerV",
+};
+
+const DISTRIBUTE_AXIS: Record<string, DistributeAxis> = { "align.distributeH": "horizontal", "align.distributeV": "vertical" };
+
+/** Distribute has no chord (STUDIO 6.11): the Inspector and the command menu reach it. */
+const KEYLESS: readonly KeyDef[] = Object.keys(DISTRIBUTE_AXIS).map((id) => ({ id, keys: [], scope: "canvas", labelKey: `studio.${id}` }));
+
 const MUTATING: ReadonlySet<string> = new Set([
+  ...Object.keys(ALIGN_KIND),
+  ...Object.keys(DISTRIBUTE_AXIS),
+  "group.make",
+  "group.remove",
   "edit.cut",
   "edit.paste",
   "edit.duplicate",
@@ -286,6 +323,57 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     else say("announce.rejected", { message: done.message });
   }
 
+  function refuse(key: "align.needThree" | "align.groupNeedTwo" | "align.groupNesting") {
+    session.setStatus({ key });
+    announcer.say(`studio.${key}`);
+  }
+
+  function commitArrange(batch: Op[], label: string) {
+    if (batch.length === 0) return false;
+    const done = doc.commit(batch, { label });
+    if (!done.ok) say("announce.rejected", { message: done.message });
+    return done.ok;
+  }
+
+  /** The boxes of the selected parts and of the members of any group they touch. Locked parts and the surface stay out. */
+  function selectedBoxes(ctx: ToolCtx): Box[] {
+    const picked = ctx.selection.filter((s) => s.view === ctx.view.id).map((s) => s.id);
+    const ids = new Set(expandSelection(ctx.doc.state, ctx.view.id, picked));
+    const locked = new Set(ctx.doc.state.components.filter((c) => c.locked).map((c) => c.id));
+    return ctx.scene.targets.flatMap(({ hit, bbox }) =>
+      hit.kind === "part" && ids.has(hit.c) && !locked.has(hit.c) && hit.c !== ctx.view.surface
+        ? [{ c: hit.c, x_mm: bbox.x0, y_mm: bbox.y0, w_mm: bbox.x1 - bbox.x0, h_mm: bbox.y1 - bbox.y0 }]
+        : [],
+    );
+  }
+
+  function align(kind: AlignKind) {
+    const ctx = deps.toolCtx();
+    commitArrange(alignOps(ctx.view.id, selectedBoxes(ctx), ctx.view.placements, kind), `Align ${kind}`);
+  }
+
+  function distribute(axis: DistributeAxis) {
+    const ctx = deps.toolCtx();
+    const ops = distributeOps(ctx.view.id, selectedBoxes(ctx), ctx.view.placements, axis);
+    if ("error" in ops) refuse("align.needThree");
+    else commitArrange(ops, `Distribute ${axis}`);
+  }
+
+  function makeGroup() {
+    const ctx = deps.toolCtx();
+    const members = [...new Set(ctx.selection.filter((s) => s.view === ctx.view.id).map((s) => s.id))];
+    const ops = groupOps(ctx.doc.state, ctx.view.id, members);
+    if ("error" in ops) refuse(ops.error === "need-two" ? "align.groupNeedTwo" : "align.groupNesting");
+    else if (commitArrange(ops, "Group")) announcer.say("studio.a11y.groupMade", { count: members.length });
+  }
+
+  function removeGroups() {
+    const ctx = deps.toolCtx();
+    const picked = new Set(ctx.selection.filter((s) => s.view === ctx.view.id).map((s) => s.id));
+    const groups = (ctx.view.groups ?? []).filter((g) => g.members.some((m) => picked.has(m)));
+    commitArrange(groups.flatMap((g) => ungroupOps(ctx.view.id, g.id)), "Ungroup");
+  }
+
   function highlightNet() {
     if (session.getState().focusNet !== null) {
       session.setFocusNet(null);
@@ -300,6 +388,25 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     }
     session.setFocusNet(net);
     say("announce.netHighlighted", { net: ctx.doc.state.nets.find((n) => n.id === net)?.name ?? net });
+  }
+
+  /** A project without that view gets it the first time the tab opens (STUDIO 6.4). */
+  function showView(kind: ViewKind) {
+    const ensure = VIEW_DEFS.find((def) => def.kind === kind)!.ensure(doc.getState().state);
+    if (ensure.length > 0) {
+      if (doc.getState().readOnly) {
+        say("announce.readOnly");
+        return;
+      }
+      const done = doc.commit(ensure, { label: "Add view" });
+      if (!done.ok) {
+        say("announce.rejected", { message: done.message });
+        return;
+      }
+    }
+    const id = viewIdFor(doc.getState().state, kind);
+    if (id) session.setView(id);
+    ui.set("activeView", kind);
   }
 
   const forward = (id: string) => {
@@ -330,10 +437,11 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     "place.rotate": () => rotate(-1),
     "place.rotateBack": () => rotate(1),
     "wire.fromSelection": () => wireFromHere(deps.toolCtx()),
-    "view.breadboard": () => {
-      const breadboard = doc.getState().state.views.find((v) => v.kind === "breadboard");
-      if (breadboard) session.setView(breadboard.id);
-    },
+    "group.make": makeGroup,
+    "group.remove": removeGroups,
+    "view.breadboard": () => showView("breadboard"),
+    "view.schematic": () => showView("schematic"),
+    "view.board": () => showView("board"),
     "view.fit": () => deps.view.fit(),
     "view.fitSelection": () => deps.view.fitSelection(),
     "view.zoomIn": () => deps.view.zoom(ZOOM_STEP),
@@ -353,12 +461,15 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     "problems.prev": () => deps.jumpProblem(-1),
     "region.next": () => deps.focusRegion(1),
     "region.prev": () => deps.focusRegion(-1),
+    "partner.focus": () => deps.focusPartner(),
     "help.keys": () => deps.showKeys(),
   };
   for (const id of Object.keys(FORWARDED)) actions[id] ??= () => forward(id);
   for (const id of Object.keys(STEP_OF)) actions[id] = (e) => move(id, e);
+  for (const [id, kind] of Object.entries(ALIGN_KIND)) actions[id] = () => align(kind);
+  for (const [id, axis] of Object.entries(DISTRIBUTE_AXIS)) actions[id] = () => distribute(axis);
 
-  const commands: Command[] = STUDIO_KEYS.filter((def) => !REGISTERED_ELSEWHERE.has(def.id)).map((def) => ({
+  const commands: Command[] = [...STUDIO_KEYS.filter((def) => !REGISTERED_ELSEWHERE.has(def.id)), ...KEYLESS].map((def) => ({
     id: def.id,
     labelKey: def.labelKey,
     keys: [...def.keys],

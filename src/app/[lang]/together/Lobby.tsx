@@ -8,7 +8,6 @@ import { eyebrow, sectionTitle } from "@/components/editorial/Editorial";
 import { Button, Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
-import { useFeatures } from "@/lib/features";
 import { createRoom, parseRoomInput, probeRoom, roomLink, type ProbeResult } from "@/lib/realtime";
 import { roomPath } from "./api";
 import type { LobbyItem } from "./strings";
@@ -124,16 +123,10 @@ function JoinRoom({ t }: { t: TogetherT }) {
   );
 }
 
-// Known only once /config.json answers; until then the page reads as if the AI service is there.
-function useAiOff() {
-  const { status, features } = useFeatures();
-  return status === "ready" && !features.ai;
-}
-
-/** The lobby's lede: chat translation runs on the AI service, so without it the lede doesn't promise it. */
+/** The lobby's lede. */
 export function LobbyLede({ className }: { className?: string }) {
   const t = useTogetherT()!;
-  return <p className={className}>{t(useAiOff() ? "lobby.ledePlain" : "lobby.lede")}</p>;
+  return <p className={className}>{t("lobby.ledePlain")}</p>;
 }
 
 /** The /together lobby: start or join a room. */

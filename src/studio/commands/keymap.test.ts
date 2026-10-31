@@ -33,6 +33,7 @@ function setup(rig: Rig = keyboardRig()) {
     pan: vi.fn(),
     focusPartSearch: vi.fn(),
     focusInspector: vi.fn(),
+    focusPartner: vi.fn(),
     openPinPicker: vi.fn(),
     jumpProblem: vi.fn(),
     focusRegion: vi.fn(),
@@ -49,6 +50,7 @@ function setup(rig: Rig = keyboardRig()) {
     view: { fit: calls.fit, fitSelection: calls.fitSelection, zoom: calls.zoom, pan: calls.pan },
     focusPartSearch: calls.focusPartSearch,
     focusInspector: calls.focusInspector,
+    focusPartner: calls.focusPartner,
     openPinPicker: calls.openPinPicker,
     jumpProblem: calls.jumpProblem,
     focusRegion: calls.focusRegion,
@@ -342,6 +344,13 @@ describe("installKeymap", () => {
     expect(rig.ui.getState().leftRail).toBe("outline");
     press("o");
     expect(rig.ui.getState().leftRail).toBe("palette");
+  });
+
+  it("opens the partner with Ctrl+/ and leaves a bare slash to quick add", () => {
+    const { calls } = setup();
+    press("/", { ctrl: true });
+    expect(calls.focusPartner).toHaveBeenCalledTimes(1);
+    expect(calls.focusPartSearch).not.toHaveBeenCalled();
   });
 
   it("switches to the breadboard view with 1", () => {

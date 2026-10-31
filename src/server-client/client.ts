@@ -90,6 +90,16 @@ export function createClient(o: {
   const send = <T>(method: string, path: string, body?: unknown) =>
     request<T>(api, method, path, { body, token: session?.token });
 
+  // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
+  const lapse = (e: unknown): never => {
+    const refused = e instanceof NeedsEnrolment || e instanceof SigningInputMismatch;
+    if (refused || (e instanceof ClientError && e.status === 401)) {
+      setSession(null);
+      throw new NeedsEnrolment();
+    }
+    throw e;
+  };
+
   const withRenewal = async <T>(attempt: () => Promise<T>, unauthorised: (r: T) => boolean): Promise<T> => {
     try {
       const first = await attempt();
@@ -103,13 +113,7 @@ export function createClient(o: {
       if (unauthorised(second)) throw new NeedsEnrolment();
       return second;
     } catch (e) {
-      // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
-      const refused = e instanceof NeedsEnrolment || e instanceof SigningInputMismatch;
-      if (refused || (e instanceof ClientError && e.status === 401)) {
-        setSession(null);
-        throw new NeedsEnrolment();
-      }
-      throw e;
+      return lapse(e);
     }
   };
 
@@ -122,7 +126,8 @@ export function createClient(o: {
     if (token) headers.set("authorization", `Bearer ${token}`);
     try {
       return await api.fetch(`${api.base}/v1${path}`, { ...init, headers });
-    } catch {
+    } catch (e) {
+      if ((e as { name?: string } | null)?.name === "AbortError") throw e;
       throw new ServerUnreachable();
     }
   };

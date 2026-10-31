@@ -1,0 +1,573 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.esp32-devkitc",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Espressif",
+    "model": "ESP32-DevKitC V4 (ESP32-DevKitC-32E)",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "esp32-devkitc"
+    ],
+    "mpn": "ESP32-DevKitC-32E",
+    "description": {
+      "i18n_key": "parts.esp32-devkitc.description",
+      "en": "A 38-pin ESP32 development board with an ESP32-WROOM-32E module, a CP2102N USB-UART bridge and a 3.3 V regulator."
+    },
+    "chip": {
+      "manufacturer": "Espressif",
+      "model": "ESP32-WROOM-32E"
+    },
+    "primary_source": "guide",
+    "tags": [
+      "esp32",
+      "xtensa",
+      "wifi",
+      "dev-board",
+      "arduino"
+    ]
+  },
+  "sources": [
+    {
+      "id": "guide",
+      "kind": "product-page",
+      "title": "ESP32-DevKitC V4 User Guide",
+      "publisher": "Espressif",
+      "url": "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/user_guide.html",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/esp32-devkitc.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "schematic",
+      "kind": "schematic",
+      "title": "ESP32-DevKitC V4 schematic",
+      "publisher": "Espressif",
+      "url": "https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/esp32-devkitc.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "module",
+      "kind": "datasheet",
+      "title": "ESP32-WROOM-32E and WROOM-32UE datasheet v2.1",
+      "publisher": "Espressif",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/esp32-devkitc.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile esp32-devkitc) and src/content/boards/esp32-devkitc.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J2",
+      "kind": "header",
+      "pins": [
+        "P3V3",
+        "EN",
+        "GPIO36",
+        "GPIO39",
+        "GPIO34",
+        "GPIO35",
+        "GPIO32",
+        "GPIO33",
+        "GPIO25",
+        "GPIO26",
+        "GPIO27",
+        "GPIO14",
+        "GPIO12",
+        "GND",
+        "GPIO13",
+        "J2_16",
+        "J2_17",
+        "J2_18",
+        "P5V"
+      ]
+    },
+    {
+      "id": "J3",
+      "kind": "header",
+      "pins": [
+        "J3_1",
+        "GPIO23",
+        "GPIO22",
+        "GPIO1",
+        "GPIO3",
+        "GPIO21",
+        "J3_7",
+        "GPIO19",
+        "GPIO18",
+        "GPIO5",
+        "GPIO17",
+        "GPIO16",
+        "GPIO4",
+        "GPIO0",
+        "GPIO2",
+        "GPIO15",
+        "J3_17",
+        "J3_18",
+        "J3_19"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "P3V3",
+      "designator": "3V3",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J2"
+    },
+    {
+      "id": "EN",
+      "designator": "EN",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO36",
+      "designator": "VP",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2",
+      "note": {
+        "en": "Input only"
+      }
+    },
+    {
+      "id": "GPIO39",
+      "designator": "VN",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2",
+      "note": {
+        "en": "Input only"
+      }
+    },
+    {
+      "id": "GPIO34",
+      "designator": "34",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2",
+      "note": {
+        "en": "Input only"
+      }
+    },
+    {
+      "id": "GPIO35",
+      "designator": "35",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2",
+      "note": {
+        "en": "Input only"
+      }
+    },
+    {
+      "id": "GPIO32",
+      "designator": "32",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO33",
+      "designator": "33",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO25",
+      "designator": "25",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO26",
+      "designator": "26",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO27",
+      "designator": "27",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO14",
+      "designator": "14",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO12",
+      "designator": "12",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J2"
+    },
+    {
+      "id": "GPIO13",
+      "designator": "13",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J2_16",
+      "designator": "D2",
+      "type": "nc",
+      "class": "nc",
+      "connector": "J2"
+    },
+    {
+      "id": "J2_17",
+      "designator": "D3",
+      "type": "nc",
+      "class": "nc",
+      "connector": "J2"
+    },
+    {
+      "id": "J2_18",
+      "designator": "CMD",
+      "type": "nc",
+      "class": "nc",
+      "connector": "J2"
+    },
+    {
+      "id": "P5V",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J2"
+    },
+    {
+      "id": "J3_1",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J3"
+    },
+    {
+      "id": "GPIO23",
+      "designator": "23",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO22",
+      "designator": "22",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO1",
+      "designator": "TX",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO3",
+      "designator": "RX",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO21",
+      "designator": "21",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J3_7",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J3"
+    },
+    {
+      "id": "GPIO19",
+      "designator": "19",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO18",
+      "designator": "18",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO5",
+      "designator": "5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO17",
+      "designator": "17",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO16",
+      "designator": "16",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO4",
+      "designator": "4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO0",
+      "designator": "0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO2",
+      "designator": "2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO15",
+      "designator": "15",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J3",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J3_17",
+      "designator": "D1",
+      "type": "nc",
+      "class": "nc",
+      "connector": "J3"
+    },
+    {
+      "id": "J3_18",
+      "designator": "D0",
+      "type": "nc",
+      "class": "nc",
+      "connector": "J3"
+    },
+    {
+      "id": "J3_19",
+      "designator": "CLK",
+      "type": "nc",
+      "class": "nc",
+      "connector": "J3"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "J3_1",
+        "J3_7"
+      ]
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.esp32-devkitc.summary",
+      "en": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the esp32-devkitc board profile. It is not the ESP32 chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.esp32-devkitc.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile esp32-devkitc in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.esp32-devkitc.models.1",
+        "en": "Arduino-C++ subset run by the interpreter with the ESP32-DevKitC pin map."
+      },
+      {
+        "i18n_key": "parts.esp32-devkitc.models.2",
+        "en": "Digital I/O on the GPIO pins the board exposes, PWM and interrupts on every output-capable pin."
+      },
+      {
+        "i18n_key": "parts.esp32-devkitc.models.3",
+        "en": "12-bit analog reads against 3.3 V, I2C master on GPIO21 and GPIO22, serial output, and the BOOT button on GPIO0."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.esp32-devkitc.not.1",
+        "en": "The two Xtensa cores and FreeRTOS tasks."
+      },
+      {
+        "i18n_key": "parts.esp32-devkitc.not.2",
+        "en": "Wi-Fi, Bluetooth and flash behaviour. The request stub for web-server lessons is not a radio."
+      },
+      {
+        "i18n_key": "parts.esp32-devkitc.not.3",
+        "en": "The strapping-pin traps such as GPIO12 high at reset."
+      },
+      {
+        "i18n_key": "parts.esp32-devkitc.not.4",
+        "en": "The 3.3 V regulator limits and the USB-UART bridge."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.esp32-devkitc.gap",
+          "en": "The board has no user LED and no LED_BUILTIN: the starter wires an external LED and resistor to GPIO23. GPIO34 to GPIO39 are inputs only, and ADC2 pins cannot be read while Wi-Fi is on. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a sketch on the esp32-devkitc profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          },
+          {
+            "name": "WiFi",
+            "install": "built in",
+            "iynk_support": "unsupported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "esp32-devkitc",
+        "path": "public/figures/boards/esp32-devkitc.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "ESP32 DevKitC",
+      "body_colour": "#1b1b1b",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the 38 rows of src/content/boards/esp32-devkitc.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

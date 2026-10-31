@@ -9,11 +9,13 @@ import type { Messages } from "@/i18n/namespaces";
 import { createTranslator, type Translate } from "@/i18n/translate";
 import { builtinRegistry } from "@/parts/builtin";
 import type { Op, ParamValue, Project as ProjectState } from "@/project/generated/types";
+import { runCommand } from "@/studio/commands";
 import { modelRows } from "@/studio/fidelity/static-tier";
 import type { PartLookup } from "@/studio/fidelity/static-tier";
 import type { DocStore } from "@/studio/stores/doc";
 import { useStoreSelector } from "@/studio/stores/select";
 import type { SessionStore } from "@/studio/stores/session";
+import type { UiStore } from "@/studio/stores/ui";
 import { selectableExists } from "@/studio/tools/select";
 import { formatValue, parseValue, quantityOf } from "@/studio/units";
 import type { Quantity } from "@/studio/units";
@@ -27,12 +29,15 @@ const PARAM_LIMIT = 1e15;
 const LAYOUT_LIMITS = { min: -LIMITS.layoutAbsMm, max: LIMITS.layoutAbsMm };
 
 type InspectorMessages = Messages["studioInspect"];
+type AlignMessages = Messages["studio"]["align"];
 type T = Translate<InspectorMessages>;
 
 export interface InspectorProps {
   doc: DocStore;
   session: SessionStore;
+  ui: UiStore;
   messages: InspectorMessages;
+  alignMessages: AlignMessages;
   modelMessages: Messages["studioModels"];
   lang: Locale;
   registry?: PartLookup;
@@ -366,8 +371,45 @@ function Nets({ state, session, t }: { state: ProjectState; session: SessionStor
   );
 }
 
+const ARRANGE: readonly (readonly [keyof AlignMessages, string][])[] = [
+  [
+    ["left", "align.left"],
+    ["right", "align.right"],
+    ["top", "align.top"],
+    ["bottom", "align.bottom"],
+    ["centerH", "align.centerH"],
+    ["centerV", "align.centerV"],
+  ],
+  [
+    ["distributeH", "align.distributeH"],
+    ["distributeV", "align.distributeV"],
+  ],
+  [
+    ["group", "group.make"],
+    ["ungroup", "group.remove"],
+  ],
+];
+
+/** Align, distribute and group for two or more selected parts. Each button runs the command its shortcut runs. */
+function Arrange({ count, readOnly, run, messages, t }: { count: number; readOnly: boolean; run(id: string): void; messages: AlignMessages; t: T }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-base font-semibold">{t("many", { count })}</p>
+      {ARRANGE.map((row) => (
+        <div key={row[0]![1]} className="flex flex-wrap gap-2">
+          {row.map(([name, command]) => (
+            <Button key={command} variant="secondary" size="sm" disabled={readOnly} onClick={() => run(command)}>
+              {messages[name]}
+            </Button>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** The right rail: what the selected part is made of and set to, and the nets of the project. */
-export function Inspector({ doc, session, messages, modelMessages, lang, registry = builtin }: InspectorProps) {
+export function Inspector({ doc, session, ui, messages, alignMessages, modelMessages, lang, registry = builtin }: InspectorProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioInspect`), [lang, messages]);
   const state = useStoreSelector(doc, (s) => s.state);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
@@ -401,7 +443,7 @@ export function Inspector({ doc, session, messages, modelMessages, lang, registr
           <Model {...part} />
         </div>
       ) : parts.length > 1 ? (
-        <p className="text-base font-semibold">{t("many", { count: parts.length })}</p>
+        <Arrange count={parts.length} readOnly={readOnly} run={(id) => void runCommand(id, { doc, session, ui })} messages={alignMessages} t={t} />
       ) : (
         <EmptyState title={t("empty.title")}>{t("empty.hint")}</EmptyState>
       )}

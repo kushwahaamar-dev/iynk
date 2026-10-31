@@ -1,85 +1,19 @@
 {
   "panel": {
     "title": "Partenaire de labo",
-    "byline": "Muse Spark · d’abord des indices, d’abord les amis",
     "intro": "Pose une question sur ton câblage, ton code ou une panne. Je donne des indices avant les réponses et, si quelqu’un de ton salon a déjà fait cette leçon, je lui demande d’abord.",
     "inputLabel": "Pose une question à ton partenaire de labo",
     "placeholder": "Une question sur le banc…",
-    "send": "Envoyer",
-    "stop": "Arrêter",
-    "newChat": "Nouvelle discussion",
     "thinking": "Réflexion…",
     "you": "Toi",
     "partner": "Partenaire",
     "stopped": "Arrêté.",
-    "retry": "Réessayer",
-    "sources": "Sources",
-    "suggestions": "Essaie de demander",
-    "accepted": "Tu as accepté la modification ({kind}).",
-    "rejected": "Tu as refusé la modification ({kind}).",
-    "kinds": {
-      "code": "code",
-      "wire": "câblage",
-      "part": "pièces"
-    },
     "code": "Code",
     "transcript": "Discussion avec ton partenaire de labo"
   },
-  "hint": {
-    "label": "Bloqué ?",
-    "hint": "Donne-moi un indice",
-    "another": "Un autre indice",
-    "show": "Montre-moi",
-    "askHint": "Donne-moi un indice, pas la réponse.",
-    "askAnother": "Un autre indice, s’il te plaît.",
-    "askShow": "Montre-moi la solution."
-  },
-  "suggest": {
-    "fault": "Pourquoi ça arrive : {fault} ?",
-    "error": "Que veut dire cette erreur de compilation ?",
-    "failed": "Pourquoi « {test} » a-t-il échoué ?",
-    "start": "Que devrais-je essayer d’abord ?",
-    "code": "Que fait ce code ?",
-    "wiring": "Mon câblage est-il correct ?",
-    "drone": "Ce drone va-t-il bien voler ?",
-    "safety": "À quoi dois-je faire attention ?"
-  },
   "tools": {
-    "highlight": "Regarde {part}",
-    "highlightOff": "La figure 3D n’est pas encore chargée, cette pièce n’est donc pas mise en évidence.",
-    "showAgain": "Montre-la encore",
-    "change": {
-      "code": "Modification du code proposée",
-      "wire": "Modification du câblage proposée",
-      "part": "Modification des pièces proposée"
-    },
-    "accept": "Accepter",
-    "reject": "Refuser",
-    "accepted": "Acceptée",
-    "rejected": "Refusée",
-    "manual": "Ce banc ne peut pas l’appliquer pour toi. Copie-la et fais la modification toi-même.",
     "copy": "Copier",
-    "copied": "Copié",
-    "unchanged": {
-      "one": "{count} ligne inchangée",
-      "other": "{count} lignes inchangées"
-    },
-    "diffLabel": "Modifications : les lignes qui commencent par + sont ajoutées, celles qui commencent par − sont supprimées.",
-    "askPeer": "J’ai demandé à {name} d’expliquer",
-    "askPeerNoRoom": "Un ami qui a déjà fait ça pourrait te l’expliquer. Invite quelqu’un à construire avec toi.",
-    "askPeerPending": "Demander à {name} d’expliquer ?",
-    "askPeerSend": "Envoyer",
-    "askPeerDecline": "Ne pas envoyer",
-    "askPeerDeclined": "Pas envoyé à {name}.",
-    "invite": "Inviter un ami",
-    "opened": "{tab} ouvert",
-    "tabs": {
-      "partner": "Partenaire",
-      "together": "Ensemble",
-      "real": "Construire pour de vrai",
-      "hardware": "Matériel"
-    },
-    "question": "« {question} »"
+    "copied": "Copié"
   },
   "errors": {
     "not_configured": "Le partenaire de labo n’est pas configuré sur ce déploiement.",
@@ -96,15 +30,62 @@
     "unreachable": "Impossible de joindre le serveur pour vérifier le partenaire.",
     "check": "Vérifier à nouveau"
   },
-  "voice": {
-    "hold": "Maintiens pour parler (ou appuie sur M)",
-    "stopRecording": "Arrêter et envoyer (ou appuie sur M)",
-    "recording": "J’écoute… relâche pour envoyer.",
-    "transcribing": "Transcription de ta voix…",
-    "denied": "L’accès au micro est bloqué. Autorise-le dans ton navigateur pour parler.",
-    "unsupported": "La saisie vocale n’est pas disponible dans ce navigateur.",
-    "unavailable": "La voix n’est pas configurée sur ce déploiement.",
-    "empty": "Je n’ai rien entendu. Réessaie, un peu plus près du micro.",
-    "failed": "Ta voix n’a pas pu être transcrite. Réessaie ou écris."
+  "partner": {
+    "state": {
+      "notSetUp": "Le partenaire n’est pas encore configuré. Choisis un fournisseur dans les réglages.",
+      "needsKey": "Ce fournisseur demande une clé. Ajoute-la dans les réglages.",
+      "capped": "La limite de dépense du jour est atteinte. Augmente-la dans les réglages.",
+      "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+      "busy": "Le partenaire répond…"
+    },
+    "mode": {
+      "label": "Comment le partenaire aide",
+      "direct": {
+        "name": "Direct",
+        "hint": "Des réponses courtes et claires."
+      },
+      "debugging": {
+        "name": "Débogage",
+        "hint": "Cherche la cause d’une panne, étape par étape."
+      },
+      "beginner": {
+        "name": "Débutant",
+        "hint": "Des mots simples, de petits pas, une question à la fin."
+      }
+    },
+    "send": "Envoyer",
+    "stop": "Arrêter",
+    "counter": "{count} sur {max}",
+    "keyRemoved": "Une valeur qui ressemblait à une clé a été retirée de ton message.",
+    "error": {
+      "not_configured": "Configure un fournisseur d’IA dans les réglages.",
+      "no_key": "Ce fournisseur demande une clé.",
+      "auth": "Le fournisseur n’a pas accepté cette clé.",
+      "bad_model": "Ce modèle n’est pas disponible avec ta clé.",
+      "context_too_long": "Ce projet est trop grand pour ce modèle. Sélectionne une pièce ou choisis un modèle plus grand.",
+      "quota": "Ton compte fournisseur n’a plus de crédit.",
+      "capped": "La limite du jour est atteinte. Augmente-la dans les réglages.",
+      "network": "Impossible de joindre le fournisseur. Si c’est une restriction du navigateur, active le relais.",
+      "relay_denied": "Ton serveur ne l’a pas autorisé.",
+      "upstream_busy": "Le fournisseur est occupé. Réessaie.",
+      "upstream_timeout": "Le fournisseur a mis trop de temps. Réessaie.",
+      "upstream_failed": "Le fournisseur a échoué. Réessaie.",
+      "filtered": "Le fournisseur a refusé de répondre. Essaie de reformuler."
+    },
+    "hint": {
+      "relay": "Passe par ton propre serveur, pas directement depuis ce navigateur.",
+      "selectPart": "Sélectionne une pièce pour donner au partenaire une vue plus petite et plus nette."
+    },
+    "tool": {
+      "args": "Arguments",
+      "result": "Résultat",
+      "showAll": "Afficher les {count} lignes",
+      "showLess": "Afficher moins de lignes",
+      "ok": "Terminé",
+      "failed": "Échec",
+      "noArgs": "Aucun argument",
+      "noResult": "Aucun résultat"
+    },
+    "unverified": "Référence non vérifiée"
   }
 }

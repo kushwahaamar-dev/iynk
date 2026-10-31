@@ -1,17 +1,22 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
-import { Button, Callout, Dialog, EmptyState, Icon, Kbd, Skeleton } from "@/components/ui";
+import dynamic from "next/dynamic";
+import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
+import { PartnerPanel, type PartnerHost } from "@/components/ai";
+import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
+import { Button, Callout, Chip, Dialog, EmptyState, Icon, Kbd, Skeleton, cx } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { StudioMessages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
 import { check } from "@/lib/interp";
 import type { Diagnostic } from "@/lib/interp/errors";
+import type { PinRef } from "@/project/generated/types";
 import { buildPartIndex } from "@/parts/search";
 import { builtinRegistry } from "@/parts/builtin";
 import { fallbackSpec } from "@/parts/fallback";
 import { classifyImpact } from "@/project/opImpact";
 import { createArtProvider } from "@/studio/art/figure-art";
+import { registerCommand, runCommand } from "@/studio/commands";
 import { STUDIO_KEYS, installKeymap } from "@/studio/commands/keymap";
 import { registerHistoryCommands } from "@/studio/commands/history";
 import { firstFirmwareSource } from "@/studio/code/sources";
@@ -26,12 +31,15 @@ import { stateOverlays } from "@/studio/overlays/state";
 import { resolvePart } from "@/studio/parts-view";
 import { collectProblems, nextProblem, type Problem } from "@/studio/problems";
 import { staticFlags, type WireEndRef } from "@/studio/rules/connect";
+import { CHECKPOINT_POLICY } from "@/studio/history/revisions";
 import { navigate } from "@/studio/router";
 import type { DocStore } from "@/studio/stores/doc";
 import { createRunStore, type RunStore } from "@/studio/stores/run";
 import { useStoreSelector } from "@/studio/stores/select";
 import { createSessionStore, type SessionStore } from "@/studio/stores/session";
-import { createUiStore, type UiStore } from "@/studio/stores/ui";
+import { createUiStore, type UiState, type UiStore } from "@/studio/stores/ui";
+import { buildPinMap, livePins } from "@/studio/views/board";
+import { VIEW_DEFS, viewIdFor, type ViewKind } from "@/studio/views/registry";
 import { createToolHost, type ToolHost } from "@/studio/tools/host";
 import { commitWirePick, createAnnouncer, type Announcer } from "@/studio/tools/keyboard";
 import { createPlaceTool, type PlaceTool } from "@/studio/tools/place";
@@ -47,15 +55,20 @@ import { Outline } from "./Outline";
 import { Palette } from "./Palette";
 import { PinPicker } from "./PinPicker";
 import { Problems } from "./Problems";
+import { useProjectActions, type ProjectActions } from "./ProjectActions";
+import { ChecksTab, HistoryTab, useChecksRun, type ChecksRun } from "./ProjectTabs";
 import { RegionLayout } from "./RegionLayout";
 import { RunBar } from "./RunBar";
+import { ViewTabs } from "./ViewTabs";
 import { SerialPane } from "./SerialPane";
 import { StatusLine } from "./StatusLine";
 import { StudioSettings, useReducedMotion } from "./StudioSettings";
 import { TopBar } from "./TopBar";
 import { installDebugHook } from "./wiring/debugHook";
+import { linkPartner, studioUi } from "./wiring/partnerLink";
+import { openPartnerParts } from "./wiring/partnerParts";
 import { useOpenProject, type OpenStatus } from "./wiring/openProject";
-import { linkRepository, type LinkNotice } from "./wiring/repositoryLink";
+import { createPageRevisionPort, linkRepository, onRunStart, type LinkNotice } from "./wiring/repositoryLink";
 import { linkSim, type SimLink } from "./wiring/simLink";
 import { useServices, type Services } from "./wiring/services";
 
@@ -68,7 +81,13 @@ export interface WorkspaceProps {
   shared?: DocStore;
 }
 
+const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), {
+  ssr: false,
+  loading: () => <Skeleton className="m-4 h-96 rounded-xl" />,
+});
+
 const registry = builtinRegistry();
+const SCENE_ERROR = "views.sceneError";
 const EDITABLE = ".cm-editor, input, textarea, select, [contenteditable='true']";
 const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
 
@@ -95,6 +114,8 @@ type GraphInput = {
   reduceMotion: () => boolean;
   ephemeral: boolean;
   onNotice: (notice: LinkNotice) => void;
+  /** The code of a version that could not be made before a run. The run goes on. */
+  onVersionFailed: (code: string | null) => void;
 };
 
 function focusKind(): "canvas" | "code" | "other" {
@@ -108,10 +129,12 @@ function focusKind(): "canvas" | "code" | "other" {
  * Creates the stores, the engine and the links for one open project. `dispose` undoes them in the reverse order. The
  * keymap and the scene controller need the mounted canvas, so the workspace starts them once it is on the page.
  */
-function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ephemeral, onNotice }: GraphInput): Graph {
+function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ephemeral, onNotice, onVersionFailed }: GraphInput): Graph {
   const state = doc.getState().state;
-  const session = createSessionStore((state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const ui = createUiStore(projectId);
+  const shownView = viewIdFor(state, ui.getState().activeView);
+  if (shownView === undefined) ui.set("activeView", "breadboard");
+  const session = createSessionStore(shownView ?? (state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const run = createRunStore();
 
   const tools = createToolHost({ doc, session });
@@ -131,6 +154,19 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
     snapMm: () => ui.getState().snapMm,
     artMode: () => ui.getState().artMode,
     mountOptions: { locale: lang, theme: "light", reduceMotion: reduceMotion() },
+    fixed: (current, id) => {
+      const kind = current.views.find((v) => v.id === id)?.kind;
+      const scene = VIEW_DEFS.find((def) => def.kind === kind)?.scene;
+      if (!scene) return undefined;
+      try {
+        const built = scene(current, id, registry);
+        if (session.getState().status?.key === SCENE_ERROR) session.setStatus(null);
+        return built;
+      } catch {
+        session.setStatus({ key: SCENE_ERROR });
+        return { items: [], targets: [] };
+      }
+    },
   });
 
   const toolCtx = (): ToolCtx => {
@@ -152,8 +188,18 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
   const announcer = createAnnouncer();
   const offHistory = registerHistoryCommands({ doc, focus: focusKind });
   const debug = installDebugHook({ doc, run, announcer, tools: tools.recent });
-  const offRepository = ephemeral ? () => {} : linkRepository(doc, debug.wrapHost(services.host), { onNotice });
-  const link = linkSim({ doc, run, host: services.sim, impact: classifyImpact });
+  const offRepository = ephemeral ? () => {} : linkRepository(doc, debug.wrapHost(services.host), { onNotice, revisions: createPageRevisionPort() });
+  const sim = linkSim({ doc, run, host: services.sim, impact: classifyImpact });
+  const link: SimLink = ephemeral
+    ? sim
+    : {
+        ...sim,
+        async run() {
+          const made = await onRunStart(messages.studio.history.runLabel);
+          onVersionFailed(made.ok ? null : made.error);
+          await sim.run();
+        },
+      };
 
   const viewId = () => session.getState().viewId;
   const overlays: OverlayProviders = {
@@ -212,6 +258,67 @@ function useProblems(doc: DocStore, run: RunStore, diagnostics: Diagnostic[]): P
   const frame = useStoreSelector(run, (s) => s.frame);
   const flags = useMemo(() => staticFlags(state, state.nets.map((n) => n.id)), [state]);
   return useMemo(() => collectProblems({ diagnostics, run: { limit, frame }, flags }), [diagnostics, limit, frame, flags]);
+}
+
+/**
+ * The lab partner for this project. Its stores and AI worker open after the workspace is on the page, so the tab shows a
+ * skeleton until `host` arrives. It is undone with the graph it reads from.
+ */
+function usePartnerHost(doc: DocStore, graph: Graph | null, lang: Locale): (PartnerHost & { dispose(): void }) | null {
+  const [host, setHost] = useState<(PartnerHost & { dispose(): void }) | null>(null);
+  const langRef = useRef(lang);
+
+  useEffect(() => {
+    langRef.current = lang;
+  });
+
+  useEffect(() => {
+    if (!graph) return;
+    let cancelled = false;
+    let stop = () => {};
+    void openPartnerParts(() => "project").then((parts) => {
+      if (cancelled) {
+        parts.dispose();
+        return;
+      }
+      const link = linkPartner({
+        doc,
+        run: graph.run,
+        session: graph.session,
+        profiles: parts.profiles,
+        ledger: parts.ledger,
+        ai: parts.ai,
+        threads: parts.threads,
+        server: parts.server,
+        locale: () => langRef.current,
+        registry: () => registry,
+        // Studio has no fault engine or probe tap yet, so these answer that nothing is known.
+        rules: () => [],
+        traceOf: () => ({ ok: false, code: "no_run" }),
+        diagnoses: () => [],
+        itemState: () => null,
+        ui: studioUi({ session: graph.session, ui: graph.ui, fitSelection: graph.engine.fitSelection }),
+        openSettings: () => window.dispatchEvent(new CustomEvent(OPEN_KEYS_EVENT)),
+        caps: parts.caps,
+        log: parts.log,
+        retention: () => "project",
+        random: Math.random,
+        now: Date.now,
+      });
+      stop = () => {
+        link.dispose();
+        parts.dispose();
+      };
+      setHost(link);
+    });
+    return () => {
+      cancelled = true;
+      stop();
+      setHost(null);
+    };
+  }, [doc, graph]);
+
+  return host;
 }
 
 function ModelsTab({ doc, messages }: { doc: DocStore; messages: StudioMessages }) {
@@ -307,25 +414,74 @@ function NotOpened({ status, error, messages }: { status: Exclude<OpenStatus, "l
   );
 }
 
+type BoardPanelProps = {
+  doc: DocStore;
+  session: SessionStore;
+  run: RunStore;
+  announcer: Announcer;
+  onWireFrom: (from: WireEndRef) => void;
+  messages: StudioMessages;
+  lang: Locale;
+};
+
+function BoardPanel({ doc, session, run, announcer, onWireFrom, messages, lang }: BoardPanelProps) {
+  const state = useDeferredValue(useStoreSelector(doc, (s) => s.state));
+  const frame = useStoreSelector(run, (s) => s.frame);
+  const running = useStoreSelector(run, (s) => s.phase === "running");
+  const selectedNet = useStoreSelector(session, (s) => s.focusNet ?? undefined);
+  const boardId = state.boards[0]?.id ?? "";
+  const model = useMemo(() => buildPinMap(state, boardId, registry), [state, boardId]);
+  const live = useMemo(() => (frame ? livePins(state, frame, boardId) : {}), [state, frame, boardId]);
+
+  function selectNet(net: string | undefined) {
+    session.setFocusNet(net ?? null);
+    if (net === undefined) announcer.say("studioWire.announce.netCleared");
+    else announcer.say("studioWire.announce.netHighlighted", { net: state.nets.find((n) => n.id === net)?.name ?? net });
+  }
+
+  return (
+    <div className="min-h-0 flex-1 overflow-auto">
+      <PinMap
+        model={model}
+        live={live}
+        running={running}
+        selectedNet={selectedNet}
+        onSelectNet={selectNet}
+        onWireFrom={(pin: PinRef) => onWireFrom({ kind: "pin", c: pin.c, p: pin.p })}
+        messages={messages.studio}
+        lang={lang}
+      />
+    </div>
+  );
+}
+
 type RegionsProps = {
   graph: Graph;
   doc: DocStore;
+  partner: PartnerHost | null;
   messages: StudioMessages;
   lang: Locale;
   notices: readonly LinkNotice[];
   onDismiss: (notice: LinkNotice) => void;
   onPlaceAtCentre: (ref: string) => void;
+  onWireFrom: (from: WireEndRef) => void;
   /** Where the newest problem list and the one the person last went to are kept for the F8 keys. */
   problemsRef: MutableRefObject<Problem[]>;
   currentProblemRef: MutableRefObject<string | null>;
+  checksRun: ChecksRun;
+  projectMenu: ReactNode;
+  /** Why the version before the last run could not be made, or null. */
+  versionWarning: string | null;
 };
 
-function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCentre, problemsRef, currentProblemRef }: RegionsProps) {
-  const { ui, session, run, engine, tools, place, link, controller } = graph;
+function Regions({ graph, doc, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning }: RegionsProps) {
+  const { ui, session, run, engine, tools, place, link, controller, announcer } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
   const armed = useStoreSelector(session, (s) => s.armedPart);
+  const activeView = useStoreSelector(ui, (s) => s.activeView);
+  const sceneFailed = useStoreSelector(session, (s) => s.status?.key === SCENE_ERROR);
   const diagnostics = useFirmwareDiagnostics(doc);
   const problems = useProblems(doc, run, diagnostics);
   const partIndex = useMemo(() => buildPartIndex(registry), []);
@@ -340,13 +496,18 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
       messages={t}
       top={
         <>
-          <TopBar doc={doc} run={run} link={link} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
+          <TopBar doc={doc} run={run} link={link} menu={projectMenu} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
           {readOnly ? (
             <Callout tone="note" title={t.workspace.readOnlyTitle} className="mt-2">
               {t.workspace.readOnly}
             </Callout>
           ) : null}
           <Notices notices={notices} name={title} messages={messages} onDismiss={onDismiss} />
+          {versionWarning ? (
+            <Chip tone="warn" role="status" className="mt-2">
+              {versionWarning}
+            </Chip>
+          ) : null}
         </>
       }
       left={{
@@ -368,12 +529,23 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
       }}
       centre={
         <div className="flex min-h-0 flex-1 flex-col">
-          <CanvasView engine={engine} controller={controller} messages={t} />
+          <div className="border-b border-rule px-2 py-1">
+            <ViewTabs active={activeView} onChange={(kind) => runCommand(`view.${kind}`, { doc, session, ui })} messages={t} lang={lang} />
+          </div>
+          {sceneFailed ? (
+            <Callout tone="warn" live className="m-2">
+              {t.views.sceneError}
+            </Callout>
+          ) : null}
+          <div className={cx("min-h-0 flex-1 flex-col", activeView === "board" ? "hidden" : "flex")}>
+            <CanvasView engine={engine} controller={controller} messages={t} />
+          </div>
+          {activeView === "board" ? <BoardPanel doc={doc} session={session} run={run} announcer={announcer} onWireFrom={onWireFrom} messages={messages} lang={lang} /> : null}
           <StatusLine status={controller.status} session={session} run={run} ui={ui} messages={t} runMessages={messages.studioRun} lang={lang} />
         </div>
       }
       right={{
-        inspector: <Inspector doc={doc} session={session} messages={messages.studioInspect} modelMessages={messages.studioModels} lang={lang} />,
+        inspector: <Inspector doc={doc} session={session} ui={ui} messages={messages.studioInspect} alignMessages={t.align} modelMessages={messages.studioModels} lang={lang} />,
         problems: (
           <Problems
             problems={problems}
@@ -386,6 +558,9 @@ function Regions({ graph, doc, messages, lang, notices, onDismiss, onPlaceAtCent
           />
         ),
         models: <ModelsTab doc={doc} messages={messages} />,
+        history: <HistoryTab doc={doc} messages={messages} lang={lang} />,
+        checks: <ChecksTab doc={doc} checksRun={checksRun} messages={messages} lang={lang} />,
+        partner: partner ? <PartnerPanel host={partner} /> : <Skeleton className="h-28 rounded-xl" />,
       }}
       dock={{
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} />,
@@ -414,10 +589,28 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
   const [notices, setNotices] = useState<LinkNotice[]>(recovered ? ["recovered"] : []);
   const [wireFrom, setWireFrom] = useState<WireEndRef | null>(null);
   const [keysOpen, setKeysOpen] = useState(false);
+  const [versionFailure, setVersionFailure] = useState<string | null>(null);
+  const checksRun = useChecksRun(doc);
+  const actions = useProjectActions({
+    doc,
+    services,
+    messages,
+    lang,
+    onVersionFailed: setVersionFailure,
+    onOpenHistory: () => graph?.ui.set("rightRail", "history"),
+  });
+  const actionsNow = useRef<ProjectActions>(actions);
+  const checksRunNow = useRef(checksRun);
+  const partner = usePartnerHost(doc, graph, lang);
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
+  const history = messages.studio.history;
+  const versionWarning =
+    versionFailure === null ? null : versionFailure === "limit" ? history.limit.replace("{max}", String(CHECKPOINT_POLICY.max)) : history.storeFailed.replace("{reason}", versionFailure);
 
   useEffect(() => {
     reduceMotionNow.current = reduceMotion;
+    actionsNow.current = actions;
+    checksRunNow.current = checksRun;
   });
 
   useEffect(() => {
@@ -440,6 +633,42 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
     };
 
     graph.controller.start();
+    const rail = (id: UiState["rightRail"], then?: () => void) => () => {
+      graph.ui.set("rightRail", id);
+      then?.();
+    };
+    const offCommands = [
+      registerCommand({ id: "history.open", labelKey: "studio.history.title", scope: "global", enabled: () => true, run: rail("history") }),
+      registerCommand({
+        id: "history.name",
+        labelKey: "studio.history.nameThis",
+        scope: "global",
+        enabled: () => !doc.getState().readOnly,
+        run: rail("history", () => focusIn(regions.right, "input")),
+      }),
+      registerCommand({ id: "checks.open", labelKey: "studio.checks.title", scope: "global", enabled: () => true, run: rail("checks") }),
+      registerCommand({
+        id: "checks.run",
+        labelKey: "studio.checks.run",
+        scope: "global",
+        enabled: () => !checksRunNow.current.running,
+        run: rail("checks", () => checksRunNow.current.run()),
+      }),
+      registerCommand({
+        id: "project.exportIno",
+        labelKey: "studio.ino.export",
+        scope: "global",
+        enabled: () => actionsNow.current.canExportIno(),
+        run: () => actionsNow.current.exportIno(),
+      }),
+      registerCommand({
+        id: "project.importIno",
+        labelKey: "studio.ino.import",
+        scope: "global",
+        enabled: () => !doc.getState().readOnly,
+        run: () => actionsNow.current.importIno(),
+      }),
+    ];
     const offKeys = installKeymap(root.current!, {
       doc,
       session: graph.session,
@@ -457,6 +686,10 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
       focusPartSearch() {
         graph.ui.set("leftRail", "palette");
         focusIn(regions.left, "input[type=search]");
+      },
+      focusPartner() {
+        graph.ui.set("rightRail", "partner");
+        focusIn(regions.right, "textarea");
       },
       focusInspector() {
         graph.ui.set("rightRail", "inspector");
@@ -490,9 +723,24 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
     return () => {
       cancelAnimationFrame(frame);
       offKeys();
+      offCommands.forEach((off) => off());
       graph.controller.stop();
     };
   }, [graph, doc, autorun, messages.studio.layout]);
+
+  useEffect(() => {
+    if (!graph) return;
+    const tabs = messages.studio.views.tab;
+    let shown = graph.ui.getState().activeView;
+    return graph.ui.subscribe(() => {
+      const next = graph.ui.getState().activeView;
+      if (next === shown) return;
+      shown = next;
+      graph.announcer.say("studio.a11y.viewAnnounce", { view: tabs[next] });
+      // The canvas is hidden in the board view, and a key press there would have nowhere to go.
+      if (next === "board") requestAnimationFrame(() => root.current?.querySelector<HTMLElement>("[role=tab][aria-selected=true]")?.focus());
+    });
+  }, [graph, messages.studio.views.tab]);
 
   useEffect(() => {
     const made = buildGraph({
@@ -504,10 +752,17 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
       reduceMotion: () => reduceMotionNow.current,
       ephemeral: shared !== undefined,
       onNotice: (notice) => setNotices((now) => (now.includes(notice) ? now : [...now, notice])),
+      onVersionFailed: setVersionFailure,
     });
     setGraph(made);
     return made.dispose;
   }, [doc, shared, services, projectId, lang, messages]);
+
+  function wireFromBoard(from: WireEndRef) {
+    if (!graph) return;
+    runCommand("view.breadboard", { doc, session: graph.session, ui: graph.ui });
+    setWireFrom(from);
+  }
 
   function placeAtCentre(ref: string) {
     if (!graph) return;
@@ -524,14 +779,20 @@ function OpenWorkspace({ doc, recovered, shared, projectId, autorun, messages, l
           <Regions
             graph={graph}
             doc={doc}
+            partner={partner}
             messages={messages}
             lang={lang}
             notices={notices}
             onDismiss={(notice) => setNotices((now) => now.filter((n) => n !== notice))}
             onPlaceAtCentre={placeAtCentre}
+            onWireFrom={wireFromBoard}
             problemsRef={problemsRef}
             currentProblemRef={currentProblemRef}
+            checksRun={checksRun}
+            projectMenu={actions.menu}
+            versionWarning={versionWarning}
           />
+          {actions.dialogs}
           <LiveRegion announcer={graph.announcer} messages={messages} lang={lang} />
           {wireFrom ? (
             <PinPicker

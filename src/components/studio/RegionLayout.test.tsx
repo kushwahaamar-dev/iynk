@@ -18,7 +18,7 @@ function mount() {
       top={<p>top stub</p>}
       left={{ palette: <p>palette stub</p>, files: <p>files stub</p>, outline: <p>outline stub</p> }}
       centre={<p>canvas stub</p>}
-      right={{ inspector: <Boom />, problems: <p>problems stub</p>, models: <p>models stub</p> }}
+      right={{ inspector: <Boom />, problems: <p>problems stub</p>, models: <p>models stub</p>, history: <p>history stub</p>, checks: <p>checks stub</p>, partner: <p>partner stub</p> }}
       dock={{ code: <p>code stub</p>, serial: <p>serial stub</p> }}
       ui={ui}
       messages={studio}

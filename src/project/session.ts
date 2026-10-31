@@ -3,8 +3,8 @@ import { applyBatch } from "./apply/index.ts";
 import type { Author, RejectCode } from "./apply/index.ts";
 import { createLocalAuthority } from "./authority.ts";
 import type { LocalAuthority } from "./authority.ts";
-import type { Op, Project } from "./generated/types.ts";
-import { checkpointOf, chainNext, foldChain } from "./hash.ts";
+import type { Checkpoint, ExportRecord, Op, Project } from "./generated/types.ts";
+import { checkpointOf, chainNext, foldChain, stateHash } from "./hash.ts";
 import { checkBatch } from "./semantic.ts";
 import { computeTouched } from "./touched.ts";
 import type { DocChange } from "./touched.ts";
@@ -13,6 +13,7 @@ import type { DocChange } from "./touched.ts";
 const COMPACT_AT = 1000;
 const KEEP_TAIL = 500;
 const MAX_CHECKPOINTS = 256;
+const MAX_EXPORTS = 32;
 const DEFAULT_MAX_UNDO = 100;
 
 export interface SessionOptions {
@@ -47,6 +48,13 @@ export interface ProjectSession {
   /** Swaps in a snapshot (open, resync) and forgets every undo and redo entry. */
   replace(state: Project): void;
   compact(): void;
+  /**
+   * Adds a header entry for the document as it stands. Changes neither the revision nor the state hash, and drops the
+   * oldest `auto` entries past the cap.
+   */
+  recordCheckpoint(checkpoint: Omit<Checkpoint, "stateHash">): Checkpoint;
+  /** Appends to `exports`, dropping the oldest past the cap. Changes neither the revision nor the state hash. */
+  recordExport(record: ExportRecord): void;
 }
 
 export type OpFilter = (op: Op) => boolean;
@@ -57,6 +65,12 @@ interface Entry {
 }
 
 type Stacks = Map<string, Entry[]>;
+
+/** Drops the oldest `auto` entries until the list fits; with none left the oldest of any kind goes. */
+function capCheckpoints(list: Checkpoint[]): Checkpoint[] {
+  while (list.length > MAX_CHECKPOINTS) list.splice(Math.max(0, list.findIndex((c) => c.kind === "auto")), 1);
+  return list;
+}
 
 const originOf = (author: Author): DocChange["origin"] =>
   author.kind === "user" ? "local" : author.kind === "ai" ? "ai" : "remote";
@@ -82,6 +96,11 @@ export function createSession(opts: SessionOptions): ProjectSession {
 
   const now = () => new Date(opts.clock()).toISOString();
 
+  /** A change that touches only the header: no ops, no entities. */
+  function notifyHeader() {
+    notify({ from: state.revision, to: state.revision, ops: [], touched: computeTouched(state, state), origin: "local" });
+  }
+
   function notify(change: DocChange) {
     for (const listener of [...listeners]) listener(change);
   }
@@ -98,8 +117,7 @@ export function createSession(opts: SessionOptions): ProjectSession {
     if (ops.length < COMPACT_AT) return;
     const dropped = ops.slice(0, ops.length - KEEP_TAIL);
     const checkpoint = checkpointOf(state, "auto", undefined, ops[ops.length - 1]!.author.actor, now());
-    const kept = [...checkpoints, checkpoint];
-    while (kept.length > MAX_CHECKPOINTS) kept.splice(Math.max(0, kept.findIndex((c) => c.kind === "auto")), 1);
+    const kept = capCheckpoints([...checkpoints, checkpoint]);
     state = {
       ...state,
       history: {
@@ -180,5 +198,18 @@ export function createSession(opts: SessionOptions): ProjectSession {
       notify({ from: before.revision, to: next.revision, ops: [], touched: computeTouched(before, next), origin: "load" });
     },
     compact,
+    recordCheckpoint(entry) {
+      const checkpoint: Checkpoint = { ...entry, stateHash: stateHash(state) };
+      state = {
+        ...state,
+        history: { ...state.history, checkpoints: capCheckpoints([...state.history.checkpoints, checkpoint]) },
+      };
+      notifyHeader();
+      return checkpoint;
+    },
+    recordExport(record) {
+      state = { ...state, exports: [...(state.exports ?? []), record].slice(-MAX_EXPORTS) };
+      notifyHeader();
+    },
   };
 }

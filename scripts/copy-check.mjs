@@ -4,8 +4,7 @@
 //   node scripts/copy-check.mjs
 //
 // Scans the tracked files named in `scanned`, checks the README count markers against
-// `gen-content-index.mjs --counts`, the env names in docs/SELF_HOSTING.md against src/lib/server/env.ts,
-// and that relative links point at tracked files. Exit 0 clean, 1 on any problem.
+// `gen-content-index.mjs --counts`, and that relative links point at tracked files. Exit 0 clean, 1 on any problem.
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -78,30 +77,6 @@ export function checkCounts(readme, counts) {
   return problems;
 }
 
-const ENV_MARKER = '<!-- env-names';
-
-export function checkEnvNames(doc, schemaNames) {
-  const file = 'docs/SELF_HOSTING.md';
-  const lines = doc.split('\n');
-  const start = lines.findIndex((l) => l.startsWith(ENV_MARKER));
-  if (start === -1) return [{ file, line: 1, message: `marker "${ENV_MARKER}" not found` }];
-  const problems = [];
-  const listed = new Set();
-  for (let i = start + 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (line === '' && listed.size === 0) continue;
-    if (!line.startsWith('|')) break;
-    const name = /^\|\s*`([A-Z][A-Z0-9_]*)`/.exec(line)?.[1];
-    if (!name) continue;
-    listed.add(name);
-    if (!schemaNames.includes(name)) problems.push({ file, line: i + 1, message: `"${name}" is not in src/lib/server/env.ts` });
-  }
-  for (const name of schemaNames) {
-    if (!doc.includes(`\`${name}\``)) problems.push({ file, line: start + 1, message: `"${name}" is in src/lib/server/env.ts but not described` });
-  }
-  return problems;
-}
-
 const LINK = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
 
 export function checkLinks(file, text, exists) {
@@ -115,11 +90,6 @@ export function checkLinks(file, text, exists) {
     }
   });
   return problems;
-}
-
-export function schemaNamesOf(envSource) {
-  const body = envSource.slice(envSource.indexOf('const schema = {'));
-  return [...body.matchAll(/^ {2}([A-Z][A-Z0-9_]*):/gm)].map((m) => m[1]);
 }
 
 function trackedFiles() {
@@ -139,9 +109,6 @@ export function runChecks({ tracked, read, counts, exceptions }) {
     if (isProse(file)) problems.push(...checkLinks(file, text, exists));
   }
   if (files.has('README.md')) problems.push(...checkCounts(read('README.md'), counts));
-  if (files.has('docs/SELF_HOSTING.md')) {
-    problems.push(...checkEnvNames(read('docs/SELF_HOSTING.md'), schemaNamesOf(read('src/lib/server/env.ts'))));
-  }
   return problems;
 }
 

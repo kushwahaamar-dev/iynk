@@ -1,0 +1,18 @@
+{
+  "description": "Ein Einplatinencomputer Raspberry Pi 4 Model B oder Raspberry Pi 5 mit 40-poliger GPIO-Leiste, nachgebildet als Python-API.",
+  "summary": "Die Platine führt dein Programm im iynk-Interpreter aus, in Python mit gpiozero. Es ist ein Python-API-Modell, kein Raspberry Pi OS. Pins, PWM, I2C und Timing folgen dem Platinenprofil pi4-pi5.",
+  "layer": "Firmware-Laufzeit.",
+  "variant": "Variante",
+  "ideeprom": "Reserviert für das HAT-Identifikations-EEPROM. Lass ihn in Ruhe.",
+  "models": {
+    "1": "Python-Teilmenge, die der Interpreter mit den BCM-Pinnummern des Raspberry Pi ausführt (GPIO17 ist physischer Pin 11).",
+    "2": "Digitale Ein- und Ausgabe, PWM und Flankenrückrufe an GPIO0 bis GPIO27 über gpiozero sowie RPi.GPIO beim Pi 4.",
+    "3": "I2C-Master an GPIO2 und GPIO3 und serielle Ausgabe. Pi 4 und Pi 5 unterscheiden sich nur in der Taktrate."
+  },
+  "not": {
+    "1": "Linux, die Desktop-Oberfläche und Raspberry Pi OS: Das ist ein Python-API-Modell, kein Betriebssystem.",
+    "2": "Die Software für Kamera, Display, Netzwerk, USB und PCI Express.",
+    "3": "Analoge Eingänge: Die Platine hat keine, dafür braucht man einen ADC-Chip wie den MCP3008."
+  },
+  "gap": "Es sind noch keine elektrischen Grenzwerte hinterlegt, daher gibt es für diese Platine keine Prüfung auf Pin-Überlastung."
+}

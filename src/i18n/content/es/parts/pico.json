@@ -1,0 +1,21 @@
+{
+  "description": "Una placa de la familia Raspberry Pi Pico con chip RP2040 o RP2350, 26 pines GPIO en dos filas de borde y un conector de depuración, en las variantes Pico, Pico W, Pico 2 y Pico 2 W.",
+  "summary": "La placa ejecuta tu programa en el intérprete de iynk, en MicroPython o Arduino C++. Los pines, PWM, I2C, serie y tiempos siguen el perfil de placa pico. No es el chip RP2040.",
+  "layer": "Entorno de ejecución del firmware.",
+  "variant": "Variante",
+  "led": "LED de la placa en GP25. En las placas W el LED cuelga del chip de radio; usa Pin(\"LED\").",
+  "gp23": "Pin interno: fija el modo de la fuente de alimentación de la placa. No lo toques.",
+  "gp24": "Pin interno: indica si hay alimentación por USB.",
+  "gp29": "Pin interno: lee la tensión de alimentación a través de un divisor (VSYS dividido entre 3).",
+  "models": {
+    "1": "Subconjuntos de MicroPython y Arduino C++ que el intérprete ejecuta con el mapa de pines de la Pico.",
+    "2": "E/S digital en GP0 a GP22 y GP26 a GP28, PWM e interrupciones en cada GPIO.",
+    "3": "Lecturas analógicas de 12 bits en GP26 a GP28, devueltas como 0 a 65535 por read_u16(), maestro I2C en GP4 y GP5, salida serie y el LED de la placa en GP25."
+  },
+  "not": {
+    "1": "Las máquinas de estado PIO y el segundo núcleo.",
+    "2": "La radio Wi-Fi y Bluetooth de las placas W.",
+    "3": "Las diferencias del RP2350 más allá del mapa de pines, y el comportamiento de la flash y de la alimentación."
+  },
+  "gap": "undefined Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

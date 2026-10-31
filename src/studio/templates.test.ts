@@ -13,6 +13,7 @@ import { createDigitalNets } from "@/sim/digital/nets";
 import type { SliceBudget } from "@/sim/engine";
 import { buildSimNetlist } from "@/sim/netlist";
 import { createOrchestrator } from "@/sim/orchestrator";
+import { starterFor } from "./starters/index";
 import { LOCAL_ACTOR, loadStarter, newUnoProject, STARTERS } from "./templates";
 
 const NOW = "2026-10-28T10:00:00.000Z";
@@ -73,7 +74,10 @@ describe("starters", () => {
   });
 
   it("has a committed file for every starter and none besides", () => {
-    const files = readdirSync(join(__dirname, "starters")).map((f) => f.replace(".project.json", ""));
+    const files = readdirSync(join(__dirname, "starters"))
+      .filter((f) => f.endsWith(".project.json"))
+      .map((f) => f.replace(".project.json", ""))
+      .filter((id) => !starterFor(id));
     expect(files.sort()).toEqual(STARTERS.map((s) => s.id).sort());
   });
 

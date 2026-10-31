@@ -114,6 +114,8 @@
     },
     "view": {
       "breadboard": "Vue plaque d'essai",
+      "schematic": "Vue schéma",
+      "board": "Vue carte",
       "fit": "Tout ajuster",
       "fitSelection": "Ajuster la sélection",
       "zoomIn": "Zoom avant",
@@ -136,8 +138,23 @@
       "next": "Zone suivante",
       "prev": "Zone précédente"
     },
+    "partner": {
+      "focus": "Ouvrir le partenaire"
+    },
     "help": {
       "keys": "Afficher les raccourcis clavier"
+    },
+    "align": {
+      "left": "Aligner à gauche",
+      "right": "Aligner à droite",
+      "top": "Aligner en haut",
+      "bottom": "Aligner en bas",
+      "centerH": "Centrer horizontalement",
+      "centerV": "Centrer verticalement"
+    },
+    "group": {
+      "make": "Grouper",
+      "remove": "Dissocier"
     }
   }
 }

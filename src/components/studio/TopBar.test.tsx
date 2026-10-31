@@ -14,7 +14,7 @@ function rig() {
   const doc = createDocStore(createSession({ state: blinkCircuit().project, clock: steppingClock(), rnd: seededRandom() }));
   const run = createRunStore();
   const link: SimLink = { run: vi.fn(async () => {}), stop: vi.fn(), reset: vi.fn(), restart: vi.fn(async () => {}), sendSerial: vi.fn(), press: vi.fn(), dispose: vi.fn() };
-  render(<TopBar doc={doc} run={run} link={link} settings={<span>settings slot</span>} messages={studio} modelMessages={studioModels} />);
+  render(<TopBar doc={doc} run={run} link={link} menu={null} settings={<span>settings slot</span>} messages={studio} modelMessages={studioModels} />);
   return { doc, run, link };
 }
 

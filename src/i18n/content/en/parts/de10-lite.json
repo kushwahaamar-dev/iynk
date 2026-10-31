@@ -1,0 +1,19 @@
+{
+  "description": "A Terasic DE10-Lite FPGA board with an Intel MAX 10 10M50 chip, 10 switches, 2 keys, 10 LEDs, six seven-segment displays and an Arduino header.",
+  "summary": "The board runs the user's Verilog in the iynk cycle simulator. Ports stand in for pins: switches, keys, LEDs, the seven-segment displays and the Arduino header outputs. It does not synthesise a design or time it.",
+  "layer": "Firmware runtime.",
+  "clock": "Clock input: 50 MHz on the board.",
+  "activelow": "Active low: 0 means pressed or lit.",
+  "outputonly": "Output only in the simulator.",
+  "models": {
+    "1": "Verilog subset run by the cycle simulator with the DE10-Lite ports, one pin per port bit.",
+    "2": "Switches, keys (active low), LEDs, the six seven-segment displays (active low) and the Arduino header as outputs.",
+    "3": "A design that declares CLK_HZ runs at 100 kHz instead of the 50 MHz board clock."
+  },
+  "not": {
+    "1": "Synthesis, timing closure and constraint files.",
+    "2": "The ADC, the accelerometer, VGA and the SDRAM.",
+    "3": "Block RAM sizing and the electrical limits of the pins."
+  },
+  "gap": "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

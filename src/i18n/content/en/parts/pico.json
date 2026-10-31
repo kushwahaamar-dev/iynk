@@ -1,0 +1,21 @@
+{
+  "description": "A Raspberry Pi Pico family board with an RP2040 or RP2350 chip, 26 GPIO pins on two edge rows and a debug header, in Pico, Pico W, Pico 2 and Pico 2 W variants.",
+  "summary": "The board runs the user's program in the iynk interpreter, in MicroPython or Arduino C++. Pins, PWM, I2C, serial and timing follow the pico board profile. It is not the RP2040 chip.",
+  "layer": "Firmware runtime.",
+  "variant": "Variant",
+  "led": "On-board LED on GP25. On the W boards the LED hangs off the radio chip; use Pin(\"LED\").",
+  "gp23": "Internal pin: sets the board's power-supply mode. Leave it alone.",
+  "gp24": "Internal pin: tells whether USB power is present.",
+  "gp29": "Internal pin: reads the supply voltage through a divider (VSYS divided by 3).",
+  "models": {
+    "1": "MicroPython and Arduino-C++ subsets run by the interpreter with the Pico pin map.",
+    "2": "Digital I/O on GP0 to GP22 and GP26 to GP28, PWM and interrupts on every GPIO.",
+    "3": "12-bit analog reads on GP26 to GP28, returned as 0 to 65535 by read_u16(), I2C master on GP4 and GP5, serial output and the on-board LED on GP25."
+  },
+  "not": {
+    "1": "The PIO state machines and the second core.",
+    "2": "The Wi-Fi and Bluetooth radio of the W boards.",
+    "3": "The RP2350 differences beyond the pin map, and the flash and power-supply behaviour."
+  },
+  "gap": "undefined No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

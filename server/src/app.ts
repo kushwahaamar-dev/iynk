@@ -19,6 +19,7 @@ import { createRouter } from "./http/router.ts";
 import { serverInfoRoutes } from "./http/server-info.ts";
 import { createChallengeStore, type ChallengeStore } from "./identity/challenge.ts";
 import { touchSession, verifyToken } from "./identity/tokens.ts";
+import { moduleRoutes } from "./modules/index.ts";
 import { createLogger, type Logger } from "./ops/log.ts";
 import type { RoomRegistry } from "./rooms/registry.ts";
 import type { ServerStore } from "./store/port.ts";
@@ -67,6 +68,7 @@ export function allRoutes(ctx: RouteDeps & { challenges: ChallengeStore }, colla
     ...deletionRoutes(ctx),
     ...buddyRoutes(ctx),
     ...collab.routes,
+    ...moduleRoutes(ctx),
   ];
 }
 
@@ -87,6 +89,10 @@ export function createApp(config: ServerConfig, deps: Deps, opts: CreateAppOptio
   const limiter = createLimiter(deps);
   let draining = false;
   let closed = false;
+
+  const modules = ["tools", ...(config.aiEnable ? ["ai"] : []), ...(config.searchEnable ? ["search"] : [])];
+  log.info("modules on", { modules: modules.join(",") });
+  if (config.aiAllowPrivate && !config.aiEnable) log.warn("IYNK_AI_RELAY_ALLOW_PRIVATE has no effect while IYNK_AI_ENABLE is 0");
 
   const challenges = createChallengeStore(deps, config.audience);
 

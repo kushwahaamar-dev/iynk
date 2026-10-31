@@ -3,13 +3,12 @@
 import dynamic from "next/dynamic";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import type { LabDockProps, LabKind } from "@/components/dock/types";
+import { DOCK_TABS, type DockTab, type LabDockProps, type LabKind } from "@/components/dock/types";
 import { setPointing, usePointing } from "@/components/realtime/pointing";
 import { PanelSkeleton, useSearchAvailability } from "@/components/search/shared";
+import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
-import { DOCK_TAB_EVENT } from "@/lib/ai/run-tools";
-import { DOCK_TABS, type DockTab } from "@/lib/ai/tools";
 import { useFeatures, type Features } from "@/lib/features";
 import { useTogether } from "@/lib/realtime";
 import { ROOM_PARAM } from "@/lib/realtime/config";
@@ -20,14 +19,12 @@ import { useRegisterLabStore } from "./LabRoom";
 const PHONE_QUERY = "(max-width: 767px)";
 
 const TAB_FLAG: Record<DockTab, "hw" | null> = {
-  partner: null,
   together: null,
   real: null,
   hardware: "hw",
 };
 
 const TAB_LABEL = {
-  partner: "dock.tabs.partner",
   together: "dock.tabs.together",
   real: "dock.tabs.real",
   hardware: "dock.tabs.hardware",
@@ -38,20 +35,13 @@ function tabShown(tab: DockTab, features: Features): boolean {
   return flag === null || features[flag] === true;
 }
 
-/** The first tab that does something on this deployment: the partner when AI is on, else rooms, or prices on a drone. */
-function firstWorkingTab(lab: LabKind, features: Features): DockTab {
-  if (features.ai) return "partner";
+/** The first tab that does something on this deployment: rooms, or prices on a drone. */
+function firstWorkingTab(lab: LabKind): DockTab {
   return lab === "drone" ? "real" : "together";
 }
 
 function isDockTab(value: string): value is DockTab {
   return (DOCK_TABS as readonly string[]).includes(value);
-}
-
-function tabFromEvent(event: Event): DockTab | null {
-  if (!(event instanceof CustomEvent)) return null;
-  const tab = (event.detail as { tab?: unknown } | null)?.tab;
-  return typeof tab === "string" && isDockTab(tab) ? tab : null;
 }
 
 function roomInAddress() {
@@ -60,7 +50,6 @@ function roomInAddress() {
 }
 
 const loading = () => <PanelSkeleton />;
-const PartnerPanel = dynamic(() => import("@/components/ai/PartnerPanel").then((m) => m.PartnerPanel), { loading });
 const TogetherPanel = dynamic(() => import("@/components/realtime/TogetherPanel").then((m) => m.TogetherPanel), { loading });
 const HardwareTwinPanel = dynamic(() => import("@/components/hw/HardwareTwinPanel").then((m) => m.HardwareTwinPanel), { loading });
 const RealBuildPanel = dynamic(() => import("@/components/search/RealBuildPanel").then((m) => m.RealBuildPanel), { loading });
@@ -83,14 +72,13 @@ function RealTab(lab: LabDockProps) {
 }
 
 function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
-  if (tab === "partner") return <PartnerPanel {...lab} />;
   if (tab === "together") return <TogetherPanel {...lab} />;
   if (tab === "hardware") return <HardwareTwinPanel {...lab} />;
   return <RealTab {...lab} />;
 }
 
 /**
- * Partner, Together and Build it for real on every lab page (Hardware
+ * Together and Build it for real on every lab page (Hardware
  * when its flag is on). Rendered where the page puts it (the
  * workspace bar) as a "Lab tools" button: on a desk it opens a drawer along
  * the right edge that leaves the figure in view, on a phone a bottom sheet.
@@ -116,7 +104,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const [visited, setVisited] = useState<readonly DockTab[]>([]);
   const inRoom = together ? together.roomId !== null : addressRoom;
   const shown = DOCK_TABS.filter((id) => tabShown(id, features));
-  const preferred = firstWorkingTab(lab, features);
+  const preferred = firstWorkingTab(lab);
   const fromRoom = tab === null && inRoom && shown.includes("together");
   const selected = fromRoom ? "together" : tab && shown.includes(tab) ? tab : shown.includes(preferred) ? preferred : shown[0];
   const roomOpened = inRoom && !dismissedRoom;
@@ -164,18 +152,6 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       window.removeEventListener("popstate", read);
     };
   }, [together]);
-
-  useEffect(() => {
-    const onDockTab = (event: Event) => {
-      const next = tabFromEvent(event);
-      if (!next || !tabShown(next, features)) return;
-      choose(next);
-      setDismissedRoom(false);
-      setOpen(true);
-    };
-    window.addEventListener(DOCK_TAB_EVENT, onDockTab);
-    return () => window.removeEventListener(DOCK_TAB_EVENT, onDockTab);
-  }, [features]);
 
   // On a desk the drawer takes focus when you open it, or when a room link needs your name; a room link that
   // opens it for someone already named leaves focus where it is.
