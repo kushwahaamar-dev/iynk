@@ -1,0 +1,43 @@
+{
+  "title": "Ce qui est modélisé",
+  "chip": "Niveau du modèle",
+  "tiers": {
+    "T0": {
+      "name": "Illustration",
+      "meaning": "Dessinée seulement. Rien n'est calculé pour elle."
+    },
+    "T1": {
+      "name": "Modèle pédagogique",
+      "meaning": "Un modèle simple qui montre le comportement de la pièce. Pas exact."
+    },
+    "T2": {
+      "name": "Modèle calculé",
+      "meaning": "Les valeurs viennent des chiffres de la fiche technique."
+    },
+    "T3": {
+      "name": "Exécute votre firmware",
+      "meaning": "Le vrai programme de la puce s'exécute, instruction par instruction."
+    },
+    "none": {
+      "name": "Aucun niveau",
+      "meaning": "Aucun niveau de modèle n'est défini pour cette pièce."
+    }
+  },
+  "status": {
+    "modelled": "Modélisée",
+    "partly-modelled": "Modélisée en partie",
+    "not-modelled-yet": "Pas encore modélisée"
+  },
+  "engine": {
+    "label": "Moteur",
+    "value": "Interpréteur d'un sous-ensemble de C++ Arduino, modèle numérique des broches"
+  },
+  "boardNotes": "Notes sur la carte",
+  "notModelledHelp": "Pas encore modélisée signifie que la pièce est dessinée et câblée, mais que rien n'est calculé pour elle.",
+  "models": "Ce qui est modélisé",
+  "notModelled": "Ce qui n'est pas modélisé",
+  "showAll": "Tout afficher",
+  "showLess": "Afficher moins",
+  "unknownPart": "pièce inconnue",
+  "empty": "Ce projet ne contient encore aucune pièce."
+}

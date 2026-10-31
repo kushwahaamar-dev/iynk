@@ -3,6 +3,7 @@
 import type { FigureHandle } from "@/components/figure/protocol";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
+import { Select } from "@/components/ui/Field";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { BuildStep } from "@/content/schema";
 import type { BoardLabStore, BoardView } from "@/lib/boardlab/store";
@@ -57,7 +58,10 @@ type Props = {
   onYaw: (yaw: number) => void;
 };
 
-const fieldClass = "ink-field min-h-9 shrink-0 py-0 [@media(pointer:coarse)]:min-h-11";
+// Views, modes and turns are one family: the same height, the same 8 px radius, one border per group.
+const groupClass = "flex shrink-0 items-center rounded-lg border border-rule p-0.5";
+const toggleClass = "min-h-8 whitespace-nowrap px-2 py-0";
+const selectClass = "min-h-9 py-0 text-sm [@media(pointer:coarse)]:min-h-11";
 
 /**
  * The stage toolbar, one row that scrolls sideways when it can't fit: views,
@@ -93,59 +97,71 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
         onChange={(v) => store.dispatch({ type: "view/set", view: v })}
         options={views.map((v) => ({ value: v, label: t(`view.${v}`) }))}
       />
-      <Button
-        size="sm"
-        variant="secondary"
-        className="shrink-0 whitespace-nowrap"
-        aria-pressed={exploded}
-        aria-keyshortcuts="X"
-        onClick={() => store.dispatch({ type: "exploded/set", on: !exploded })}
-      >
-        {t("view.exploded")}
-      </Button>
-      <Button
-        size="sm"
-        variant="secondary"
-        className="shrink-0 whitespace-nowrap"
-        aria-pressed={xr}
-        aria-keyshortcuts="T"
-        onClick={() => {
-          onXr(!xr);
-          figure()?.send("xr", { on: !xr });
-        }}
-      >
-        {t("view.seeThrough")}
-      </Button>
-      <span className="flex shrink-0 items-center rounded-full border-[1.5px] border-rule">
+      <span className={`${groupClass} gap-0.5`}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className={toggleClass}
+          aria-pressed={exploded}
+          aria-keyshortcuts="X"
+          onClick={() => store.dispatch({ type: "exploded/set", on: !exploded })}
+        >
+          {t("view.exploded")}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className={toggleClass}
+          aria-pressed={xr}
+          aria-keyshortcuts="T"
+          onClick={() => {
+            onXr(!xr);
+            figure()?.send("xr", { on: !xr });
+          }}
+        >
+          {t("view.seeThrough")}
+        </Button>
+      </span>
+      <span className={groupClass}>
         <IconButton icon="rotate-left" size="sm" label={t("view.turnLeft")} onClick={() => turn(-90)} />
         <IconButton icon="reset" size="sm" label={t("view.resetView")} onClick={resetView} />
         <IconButton icon="rotate-right" size="sm" label={t("view.turnRight")} onClick={() => turn(90)} />
       </span>
       {variants.length > 1 && (
-        <label className="shrink-0">
-          <span className="sr-only">{t("board.variant")}</span>
-          <select className={fieldClass} value={variant ?? variants[0].figureVariant} onChange={(e) => store.dispatch({ type: "variant/set", id: e.target.value })}>
+        <div className="shrink-0">
+          <Select
+            label={t("board.variant")}
+            hideLabel
+            className={selectClass}
+            value={variant ?? variants[0].figureVariant}
+            onChange={(e) => store.dispatch({ type: "variant/set", id: e.target.value })}
+          >
             {variants.map((v) => (
               <option key={v.id} value={v.figureVariant}>
                 {v.name}
               </option>
             ))}
-          </select>
-        </label>
+          </Select>
+        </div>
       )}
       {board.power.length > 0 && (
-        <label className="shrink-0">
+        <div className="shrink-0">
           {/* "USB-B cable (5.5 V)" or "Unplugged" says what it is; the name is for screen readers. */}
-          <span className="sr-only">{t("view.supply.label")}</span>
-          <select className={fieldClass} value={power ?? ""} onChange={(e) => store.dispatch({ type: "power/set", source: e.target.value || null })}>
+          <Select
+            label={t("view.supply.label")}
+            hideLabel
+            className={selectClass}
+            value={power ?? ""}
+            onChange={(e) => store.dispatch({ type: "power/set", source: e.target.value || null })}
+          >
             <option value="">{t("view.supply.unplugged")}</option>
             {board.power.map((p) => (
               <option key={p.id} value={p.id}>
                 {t(`connector.${p.connector}` as Parameters<typeof t>[0], { volts: p.volts })}
               </option>
             ))}
-          </select>
-        </label>
+          </Select>
+        </div>
       )}
       {/* The figure draws the status big; this keeps it readable for screen readers and tests. */}
       <span role="status" aria-label={t("view.statusLabel")} className="sr-only" data-testid="board-status">

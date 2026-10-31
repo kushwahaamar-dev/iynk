@@ -1,0 +1,86 @@
+{
+  "columns": {
+    "qty": "Quantité",
+    "ref": "Pièce",
+    "name": "Nom",
+    "mpn": "Référence fabricant",
+    "mass_g": "Masse (g)",
+    "source": "Origine des valeurs",
+    "price": "Prix",
+    "currency": "Devise",
+    "asOf": "Date du prix",
+    "estimate": "Nature du prix"
+  },
+  "opt": {
+    "title": "Trouver un meilleur montage",
+    "intro": "Indiquez ce qu'il vous faut et iynk cherche dans la bibliothèque de pièces le moteur, l'hélice et la batterie qui laissent le plus de marge. Le cadre, le contrôleur et les ESC restent tels quels.",
+    "budget": "Budget ({currency})",
+    "budgetHint": "Laissez vide pour aucune limite",
+    "minTW": "Rapport poussée sur poids minimal",
+    "minFlight": "Durée de vol minimale (minutes)",
+    "invalid": "Saisissez un nombre supérieur ou égal à zéro.",
+    "find": "Chercher",
+    "cancel": "Annuler",
+    "progress": "Recherche en cours",
+    "considered": "{done} combinaisons sur {total}",
+    "starting": "Chargement des pièces…",
+    "empty": {
+      "title": "Rien n'a encore été cherché",
+      "body": "Appuyez sur Chercher pour comparer chaque moteur, hélice et batterie de la bibliothèque."
+    },
+    "refused": {
+      "title": "La bibliothèque est trop grande pour la recherche",
+      "body": "Elle donne {count} combinaisons et la limite est {max}. Retirez des pièces de la bibliothèque et réessayez."
+    },
+    "met": {
+      "title": "Toutes les contraintes sont respectées",
+      "body": "Ce montage laisse le plus de marge au-dessus de vos minimums."
+    },
+    "unmet": {
+      "title": "Aucun montage ne respecte toutes les contraintes",
+      "cheapest": "Le montage le moins cher qui s'en approche le plus est affiché ci-dessous. Non respecté : {fails}."
+    },
+    "reason": {
+      "budget": "Des montages atteignent la poussée et la durée de vol, mais aucun ne tient dans le budget.",
+      "constraints": "Aucun montage de la bibliothèque n'atteint le rapport poussée sur poids et la durée de vol minimaux.",
+      "unpriced": "Des montages atteignent les minimums, mais leurs pièces n'ont pas de prix, le budget ne peut donc pas être vérifié."
+    },
+    "fail": {
+      "budget": "budget",
+      "tw": "poussée sur poids",
+      "flight": "durée de vol",
+      "check": "une vérification du montage échoue"
+    },
+    "table": {
+      "caption": "Montage actuel comparé au résultat",
+      "current": "Actuel",
+      "best": "Meilleur",
+      "cheapest": "Le moins cher",
+      "change": "Écart"
+    },
+    "row": {
+      "cost": "Coût",
+      "tw": "Poussée sur poids",
+      "flightLow": "Durée de vol, basse",
+      "flightTyp": "Durée de vol, typique"
+    },
+    "minutes": "{value} min",
+    "money": "{amount} {currency}",
+    "unpricedValue": "sans prix",
+    "swaps": "Remplacements",
+    "slot": {
+      "motor": "Moteur",
+      "prop": "Hélice",
+      "pack": "Batterie"
+    },
+    "to": "devient",
+    "apply": "Appliquer les remplacements",
+    "applyLabel": "Appliquer les remplacements de l'optimiseur",
+    "noSwaps": "Le montage actuel est déjà le meilleur.",
+    "unpriced": "Pièces sans prix",
+    "priceNote": "Les prix sont des estimations datées du {date}, pas en direct.",
+    "priceNoDate": "Aucun prix n'est enregistré. Les coûts apparaissent sans prix.",
+    "pruned": "{count} combinaisons sur {total} ont été ignorées",
+    "prunedWhy": "{part} : {path} manquant"
+  }
+}

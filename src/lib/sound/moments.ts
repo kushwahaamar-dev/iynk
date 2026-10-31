@@ -8,7 +8,7 @@ import type { DroneContent } from "@/content/schema";
 import { sketchTones, type BoardLabState } from "@/lib/boardlab/store";
 import { buildComplete, testStatus, type TestStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
-import type { DroneLabState } from "@/lib/dronelab/store";
+import type { DroneLabState } from "@/lib/dronelab/workshop";
 import { progressKey } from "@/lib/progress/keys";
 
 /** `key` is the D7 progress key of the lesson, task, test or step (null: a step with no key of its own). */

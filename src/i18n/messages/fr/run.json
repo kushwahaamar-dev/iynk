@@ -1,0 +1,33 @@
+{
+  "runner": "Exécute : {name}",
+  "you": "Toi",
+  "inSync": "Synchronisé à {t} s",
+  "catchingUp": "Rattrapage en cours",
+  "watching": "Tu regardes l'exécution de {name}",
+  "private": "Exécution privée",
+  "detach": "Exécuter ma propre copie",
+  "rejoin": "Rejoindre l'exécution de la salle",
+  "moveRunner": "Demande à {host} de déplacer l'exécution sur un appareil plus rapide",
+  "pickRunner": "Exécutant",
+  "halt": {
+    "edited": "L'exécution s'est arrêtée parce que le circuit a été modifié.",
+    "logFull": "L'exécution s'est arrêtée parce que son journal est plein.",
+    "server": "L'exécution s'est arrêtée parce que le serveur a redémarré.",
+    "runnerLost": "L'exécutant est parti, l'exécution est donc en pause.",
+    "error": "L'exécution s'est arrêtée à cause d'une erreur."
+  },
+  "reason": {
+    "diverged": "ta copie et celle de l'exécutant ne correspondent plus",
+    "engines": "tes moteurs diffèrent de ceux de l'exécutant"
+  },
+  "badge": "Exécutant",
+  "indicator": "Exécution partagée",
+  "controlDenied": "Tu ne peux pas contrôler l'exécution partagée.",
+  "state": {
+    "idle": "À l'arrêt",
+    "running": "En cours",
+    "paused": "En pause",
+    "halted": "Arrêté",
+    "done": "Terminé"
+  }
+}

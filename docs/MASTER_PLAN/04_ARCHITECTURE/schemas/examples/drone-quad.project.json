@@ -1,0 +1,1752 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [],
+    "owners": [
+      "usr_amar"
+    ],
+    "visibility": "private"
+  },
+  "actors": [
+    {
+      "id": "usr_amar",
+      "name": "Amar"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.fc-f405",
+        "version": "1.0.0"
+      },
+      "id": "brd_fc",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.battery-lipo-6s-1300",
+        "version": "1.0.0"
+      },
+      "id": "cmp_bat",
+      "refdes": "BT1"
+    },
+    {
+      "definition": {
+        "ref": "core.esc-4in1-55a",
+        "version": "1.0.0"
+      },
+      "id": "cmp_esc",
+      "refdes": "U2"
+    },
+    {
+      "definition": {
+        "ref": "core.bldc-2306-1750kv",
+        "version": "1.0.0"
+      },
+      "id": "cmp_m1",
+      "refdes": "M1"
+    },
+    {
+      "definition": {
+        "ref": "core.bldc-2306-1750kv",
+        "version": "1.0.0"
+      },
+      "id": "cmp_m2",
+      "refdes": "M2"
+    },
+    {
+      "definition": {
+        "ref": "core.bldc-2306-1750kv",
+        "version": "1.0.0"
+      },
+      "id": "cmp_m3",
+      "refdes": "M3"
+    },
+    {
+      "definition": {
+        "ref": "core.bldc-2306-1750kv",
+        "version": "1.0.0"
+      },
+      "id": "cmp_m4",
+      "refdes": "M4"
+    },
+    {
+      "definition": {
+        "ref": "core.prop-5043-3blade",
+        "version": "1.0.0"
+      },
+      "id": "cmp_p1",
+      "refdes": "P1"
+    },
+    {
+      "definition": {
+        "ref": "core.prop-5043-3blade",
+        "version": "1.0.0"
+      },
+      "id": "cmp_p2",
+      "refdes": "P2"
+    },
+    {
+      "definition": {
+        "ref": "core.prop-5043-3blade",
+        "version": "1.0.0"
+      },
+      "id": "cmp_p3",
+      "refdes": "P3"
+    },
+    {
+      "definition": {
+        "ref": "core.prop-5043-3blade",
+        "version": "1.0.0"
+      },
+      "id": "cmp_p4",
+      "refdes": "P4"
+    },
+    {
+      "definition": {
+        "ref": "core.rx-elrs-2g4",
+        "version": "1.0.0"
+      },
+      "id": "cmp_rx",
+      "refdes": "U3"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "designator": "+",
+              "id": "POS",
+              "type": "power_out"
+            },
+            {
+              "designator": "-",
+              "id": "NEG",
+              "type": "ground"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.battery-lipo-6s-1300",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "designator": "A",
+              "id": "A",
+              "type": "passive"
+            },
+            {
+              "designator": "B",
+              "id": "B",
+              "type": "passive"
+            },
+            {
+              "designator": "C",
+              "id": "C",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.bldc-2306-1750kv",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "designator": "BAT+",
+              "id": "VBAT",
+              "type": "power_in"
+            },
+            {
+              "designator": "GND",
+              "id": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "5V",
+              "id": "V5",
+              "type": "power_out"
+            },
+            {
+              "designator": "S1",
+              "id": "S1",
+              "type": "digital_in"
+            },
+            {
+              "designator": "S2",
+              "id": "S2",
+              "type": "digital_in"
+            },
+            {
+              "designator": "S3",
+              "id": "S3",
+              "type": "digital_in"
+            },
+            {
+              "designator": "S4",
+              "id": "S4",
+              "type": "digital_in"
+            },
+            {
+              "designator": "M1A",
+              "id": "M1A",
+              "type": "power_out"
+            },
+            {
+              "designator": "M1B",
+              "id": "M1B",
+              "type": "power_out"
+            },
+            {
+              "designator": "M1C",
+              "id": "M1C",
+              "type": "power_out"
+            },
+            {
+              "designator": "M2A",
+              "id": "M2A",
+              "type": "power_out"
+            },
+            {
+              "designator": "M2B",
+              "id": "M2B",
+              "type": "power_out"
+            },
+            {
+              "designator": "M2C",
+              "id": "M2C",
+              "type": "power_out"
+            },
+            {
+              "designator": "M3A",
+              "id": "M3A",
+              "type": "power_out"
+            },
+            {
+              "designator": "M3B",
+              "id": "M3B",
+              "type": "power_out"
+            },
+            {
+              "designator": "M3C",
+              "id": "M3C",
+              "type": "power_out"
+            },
+            {
+              "designator": "M4A",
+              "id": "M4A",
+              "type": "power_out"
+            },
+            {
+              "designator": "M4B",
+              "id": "M4B",
+              "type": "power_out"
+            },
+            {
+              "designator": "M4C",
+              "id": "M4C",
+              "type": "power_out"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.esc-4in1-55a",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "designator": "VBAT",
+              "id": "VBAT",
+              "type": "power_in"
+            },
+            {
+              "designator": "GND",
+              "id": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "5V",
+              "id": "V5",
+              "type": "power_in"
+            },
+            {
+              "designator": "M1",
+              "id": "M1",
+              "type": "digital_out"
+            },
+            {
+              "designator": "M2",
+              "id": "M2",
+              "type": "digital_out"
+            },
+            {
+              "designator": "M3",
+              "id": "M3",
+              "type": "digital_out"
+            },
+            {
+              "designator": "M4",
+              "id": "M4",
+              "type": "digital_out"
+            },
+            {
+              "designator": "RX1",
+              "id": "RX1",
+              "type": "digital_in"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.fc-f405",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.prop-5043-3blade",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "designator": "5V",
+              "id": "V5",
+              "type": "power_in"
+            },
+            {
+              "designator": "GND",
+              "id": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "TX",
+              "id": "TX",
+              "type": "digital_out"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.rx-elrs-2g4",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": []
+  },
+  "domains": {
+    "drone": {
+      "data": {
+        "battery": "cmp_bat",
+        "bench": {
+          "propsOff": true
+        },
+        "controller": "brd_fc",
+        "course": {
+          "builtin": "bando"
+        },
+        "environment": {
+          "altitude_msl_m": 0,
+          "pressure_pa": 101325,
+          "sensorFailures": [],
+          "temperature_degC": 15,
+          "wind": {
+            "gust": {
+              "kind": "none",
+              "sigma_mps": 0,
+              "tau_s": 1
+            },
+            "mean_mps": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "fcParams": {
+          "angle": {
+            "limit_deg": 38,
+            "strength": 50
+          },
+          "failsafe": {
+            "delay_ms": 1500,
+            "rx_loss_action": "drop"
+          },
+          "filters": {
+            "dterm_lpf_hz": 150,
+            "gyro_lpf_hz": 250
+          },
+          "mixer": {
+            "airmode": true,
+            "idle_percent": 5.5,
+            "thrust_linearisation": 20
+          },
+          "modes": [
+            {
+              "aux": 1,
+              "mode": "arm",
+              "range_us": [
+                1700,
+                2100
+              ]
+            },
+            {
+              "aux": 2,
+              "mode": "angle",
+              "range_us": [
+                1300,
+                1700
+              ]
+            },
+            {
+              "aux": 3,
+              "mode": "turtle",
+              "range_us": [
+                1700,
+                2100
+              ]
+            }
+          ],
+          "pid": {
+            "d_pitch": 34,
+            "d_roll": 30,
+            "d_yaw": 0,
+            "ff_pitch": 125,
+            "ff_roll": 120,
+            "ff_yaw": 120,
+            "i_pitch": 84,
+            "i_roll": 80,
+            "i_yaw": 80,
+            "p_pitch": 47,
+            "p_roll": 45,
+            "p_yaw": 45
+          },
+          "rates": {
+            "pitch": {
+              "expo": 54,
+              "rc_rate": 20,
+              "super_rate": 67
+            },
+            "roll": {
+              "expo": 54,
+              "rc_rate": 20,
+              "super_rate": 67
+            },
+            "yaw": {
+              "expo": 0,
+              "rc_rate": 20,
+              "super_rate": 20
+            }
+          }
+        },
+        "flight": {
+          "model": "multirotor-rigid@1",
+          "pid_hz": 1000,
+          "step_hz": 1000
+        },
+        "kind": "multirotor",
+        "motors": [
+          {
+            "esc": "cmp_esc",
+            "esc_channel": 0,
+            "id": "m1",
+            "motor": "cmp_m1",
+            "mount": "mnt_m1",
+            "prop": "cmp_p1",
+            "prop_spin": "ccw",
+            "spin": "ccw"
+          },
+          {
+            "esc": "cmp_esc",
+            "esc_channel": 1,
+            "id": "m2",
+            "motor": "cmp_m2",
+            "mount": "mnt_m2",
+            "prop": "cmp_p2",
+            "prop_spin": "cw",
+            "spin": "cw"
+          },
+          {
+            "esc": "cmp_esc",
+            "esc_channel": 2,
+            "id": "m3",
+            "motor": "cmp_m3",
+            "mount": "mnt_m3",
+            "prop": "cmp_p3",
+            "prop_spin": "cw",
+            "spin": "cw"
+          },
+          {
+            "esc": "cmp_esc",
+            "esc_channel": 3,
+            "id": "m4",
+            "motor": "cmp_m4",
+            "mount": "mnt_m4",
+            "prop": "cmp_p4",
+            "prop_spin": "ccw",
+            "spin": "ccw"
+          }
+        ],
+        "thrustSource": "parts"
+      },
+      "schemaVersion": "1.0"
+    }
+  },
+  "format": "iynk.project",
+  "history": {
+    "baseChain": "51215dc85c3298dc8395da05bab8d3192bc6ea68270eec05f07a4c21acb3a930",
+    "baseRevision": 0,
+    "checkpoints": [],
+    "ops": []
+  },
+  "id": "prj_drone-quad",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "mechanical": {
+    "bodies": [
+      {
+        "component": "cmp_bat",
+        "frame": "frm_battery",
+        "id": "bdy_battery",
+        "mass_g": 190,
+        "name": "Battery",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            75,
+            35,
+            30
+          ]
+        }
+      },
+      {
+        "frame": "frm_camera",
+        "id": "bdy_camera",
+        "mass_g": 55,
+        "name": "Camera and VTX",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            28,
+            30,
+            30
+          ]
+        }
+      },
+      {
+        "frame": "frm_body",
+        "id": "bdy_frame",
+        "mass_g": 98,
+        "name": "Frame plates and arms",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            200,
+            200,
+            5
+          ]
+        }
+      },
+      {
+        "component": "cmp_m1",
+        "frame": "frm_m1",
+        "id": "bdy_m1",
+        "mass_g": 34,
+        "name": "Motor 1",
+        "shape": {
+          "height_mm": 18,
+          "kind": "cylinder",
+          "radius_mm": 14
+        }
+      },
+      {
+        "component": "cmp_m2",
+        "frame": "frm_m2",
+        "id": "bdy_m2",
+        "mass_g": 34,
+        "name": "Motor 2",
+        "shape": {
+          "height_mm": 18,
+          "kind": "cylinder",
+          "radius_mm": 14
+        }
+      },
+      {
+        "component": "cmp_m3",
+        "frame": "frm_m3",
+        "id": "bdy_m3",
+        "mass_g": 34,
+        "name": "Motor 3",
+        "shape": {
+          "height_mm": 18,
+          "kind": "cylinder",
+          "radius_mm": 14
+        }
+      },
+      {
+        "component": "cmp_m4",
+        "frame": "frm_m4",
+        "id": "bdy_m4",
+        "mass_g": 34,
+        "name": "Motor 4",
+        "shape": {
+          "height_mm": 18,
+          "kind": "cylinder",
+          "radius_mm": 14
+        }
+      },
+      {
+        "frame": "frm_stack",
+        "id": "bdy_stack",
+        "mass_g": 28,
+        "name": "FC and ESC stack",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            36,
+            36,
+            12
+          ]
+        }
+      }
+    ],
+    "frames": [
+      {
+        "id": "frm_battery",
+        "name": "Battery",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            24
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_body",
+        "name": "Body (FLU)",
+        "parent": "world",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_camera",
+        "name": "Camera and VTX",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            45,
+            0,
+            12
+          ],
+          "rpy_deg": [
+            0,
+            -30,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_m1",
+        "name": "Motor 1",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            -79.5,
+            -79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_m2",
+        "name": "Motor 2",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            79.5,
+            -79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_m3",
+        "name": "Motor 3",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            -79.5,
+            79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_m4",
+        "name": "Motor 4",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            79.5,
+            79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_stack",
+        "name": "Stack",
+        "parent": "frm_body",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            8
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "joints": [],
+    "mounts": [
+      {
+        "component": "cmp_bat",
+        "frame": "frm_body",
+        "id": "mnt_bat",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            24
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_esc",
+        "frame": "frm_body",
+        "id": "mnt_esc",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "brd_fc",
+        "frame": "frm_body",
+        "id": "mnt_fc",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            12
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_m1",
+        "frame": "frm_body",
+        "id": "mnt_m1",
+        "pose": {
+          "position_mm": [
+            -79.5,
+            -79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_m2",
+        "frame": "frm_body",
+        "id": "mnt_m2",
+        "pose": {
+          "position_mm": [
+            79.5,
+            -79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_m3",
+        "frame": "frm_body",
+        "id": "mnt_m3",
+        "pose": {
+          "position_mm": [
+            -79.5,
+            79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_m4",
+        "frame": "frm_body",
+        "id": "mnt_m4",
+        "pose": {
+          "position_mm": [
+            79.5,
+            79.5,
+            5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_rx",
+        "frame": "frm_body",
+        "id": "mnt_rx",
+        "pose": {
+          "position_mm": [
+            -35,
+            0,
+            10
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "meta": {
+    "createdAt": "2026-10-27T12:00:00.000Z",
+    "description": "Quad-X 5-inch frame, four brushless motors, a four-in-one ESC, a 6S pack and a flight controller with its parameters, flown in the rigid-body model. Part numbers, masses and gains are example values.",
+    "kind": "craft",
+    "locale": "en",
+    "tags": [
+      "drone",
+      "quad",
+      "5-inch",
+      "freestyle"
+    ],
+    "title": "5-inch freestyle quad",
+    "updatedAt": "2026-10-27T12:00:00.000Z"
+  },
+  "nets": [
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "V5"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "V5"
+        },
+        {
+          "c": "cmp_rx",
+          "p": "V5"
+        }
+      ],
+      "id": "net_5v",
+      "name": "5V"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_bat",
+          "p": "NEG"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_rx",
+          "p": "GND"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M1A"
+        },
+        {
+          "c": "cmp_m1",
+          "p": "A"
+        }
+      ],
+      "id": "net_m1a",
+      "name": "M1A"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M1B"
+        },
+        {
+          "c": "cmp_m1",
+          "p": "B"
+        }
+      ],
+      "id": "net_m1b",
+      "name": "M1B"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M1C"
+        },
+        {
+          "c": "cmp_m1",
+          "p": "C"
+        }
+      ],
+      "id": "net_m1c",
+      "name": "M1C"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M2A"
+        },
+        {
+          "c": "cmp_m2",
+          "p": "A"
+        }
+      ],
+      "id": "net_m2a",
+      "name": "M2A"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M2B"
+        },
+        {
+          "c": "cmp_m2",
+          "p": "B"
+        }
+      ],
+      "id": "net_m2b",
+      "name": "M2B"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M2C"
+        },
+        {
+          "c": "cmp_m2",
+          "p": "C"
+        }
+      ],
+      "id": "net_m2c",
+      "name": "M2C"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M3A"
+        },
+        {
+          "c": "cmp_m3",
+          "p": "A"
+        }
+      ],
+      "id": "net_m3a",
+      "name": "M3A"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M3B"
+        },
+        {
+          "c": "cmp_m3",
+          "p": "B"
+        }
+      ],
+      "id": "net_m3b",
+      "name": "M3B"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M3C"
+        },
+        {
+          "c": "cmp_m3",
+          "p": "C"
+        }
+      ],
+      "id": "net_m3c",
+      "name": "M3C"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M4A"
+        },
+        {
+          "c": "cmp_m4",
+          "p": "A"
+        }
+      ],
+      "id": "net_m4a",
+      "name": "M4A"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M4B"
+        },
+        {
+          "c": "cmp_m4",
+          "p": "B"
+        }
+      ],
+      "id": "net_m4b",
+      "name": "M4B"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "cmp_esc",
+          "p": "M4C"
+        },
+        {
+          "c": "cmp_m4",
+          "p": "C"
+        }
+      ],
+      "id": "net_m4c",
+      "name": "M4C"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "RX1"
+        },
+        {
+          "c": "cmp_rx",
+          "p": "TX"
+        }
+      ],
+      "id": "net_rx",
+      "name": "RX"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "M1"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "S1"
+        }
+      ],
+      "id": "net_sig1",
+      "name": "M1_SIG"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "M2"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "S2"
+        }
+      ],
+      "id": "net_sig2",
+      "name": "M2_SIG"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "M3"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "S3"
+        }
+      ],
+      "id": "net_sig3",
+      "name": "M3_SIG"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "M4"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "S4"
+        }
+      ],
+      "id": "net_sig4",
+      "name": "M4_SIG"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_fc",
+          "p": "VBAT"
+        },
+        {
+          "c": "cmp_bat",
+          "p": "POS"
+        },
+        {
+          "c": "cmp_esc",
+          "p": "VBAT"
+        }
+      ],
+      "id": "net_vbat",
+      "name": "VBAT"
+    }
+  ],
+  "parameters": [],
+  "provenance": {
+    "createdBy": "usr_amar",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0-spec"
+    },
+    "origin": {
+      "kind": "template",
+      "template": "iynk/templates/drone-quad"
+    }
+  },
+  "revision": 0,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 30000,
+    "faults": [
+      {
+        "cause_id": "motor-direction-reversed",
+        "enabled": false,
+        "id": "flt_motor2_dir",
+        "kind": "reversed-part",
+        "note": "Swaps two phase wires on motor 2: it spins the other way.",
+        "symptom_ids": [
+          "x-flips-on-takeoff"
+        ],
+        "target": {
+          "component": "cmp_m2"
+        }
+      },
+      {
+        "cause_id": "props-swapped",
+        "enabled": false,
+        "id": "flt_prop3_swap",
+        "kind": "reversed-part",
+        "note": "Fits the wrong-handed propeller on motor 3.",
+        "symptom_ids": [
+          "x-yaw-spin-on-takeoff"
+        ],
+        "target": {
+          "component": "cmp_p3"
+        }
+      },
+      {
+        "cause_id": "battery-sag-reset",
+        "enabled": false,
+        "id": "flt_sag",
+        "kind": "brownout",
+        "note": "Tired pack: the flight controller resets under a punch-out.",
+        "symptom_ids": [
+          "x-fc-resets-in-flight"
+        ],
+        "target": {
+          "component": "cmp_bat"
+        }
+      }
+    ],
+    "runtimes": [],
+    "seed": 1,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [],
+      "script": []
+    }
+  },
+  "sources": [],
+  "tests": [
+    {
+      "checks": [
+        {
+          "id": "c1",
+          "kind": "runs",
+          "label": "Runs for 5 s",
+          "minMs": 5000,
+          "visibility": "visible"
+        },
+        {
+          "atMs": 500,
+          "id": "c2",
+          "kind": "node-voltage",
+          "label": "A full 6S pack reads between 20 V and 25.2 V",
+          "net": "net_vbat",
+          "visibility": "visible",
+          "volts": [
+            20,
+            25.2
+          ]
+        }
+      ],
+      "id": "bench",
+      "name": "Power-up and battery",
+      "runMs": 5000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_sch",
+      "kind": "schematic",
+      "name": "Schematic",
+      "placements": [
+        {
+          "c": "brd_fc",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bat",
+          "x_mm": 180,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_esc",
+          "x_mm": 60,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_m1",
+          "x_mm": 240,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_m2",
+          "x_mm": 0,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_m3",
+          "x_mm": 60,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_m4",
+          "x_mm": 120,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_p1",
+          "x_mm": 180,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_p2",
+          "x_mm": 240,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_p3",
+          "x_mm": 0,
+          "y_mm": 100
+        },
+        {
+          "c": "cmp_p4",
+          "x_mm": 60,
+          "y_mm": 100
+        },
+        {
+          "c": "cmp_rx",
+          "x_mm": 120,
+          "y_mm": 0
+        }
+      ],
+      "wires": [
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "POS"
+          },
+          "id": "wir_s1",
+          "net": "net_vbat",
+          "to": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "VBAT"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "M2"
+          },
+          "id": "wir_s10",
+          "net": "net_sig2",
+          "to": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "S2"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "M3"
+          },
+          "id": "wir_s11",
+          "net": "net_sig3",
+          "to": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "S3"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "M4"
+          },
+          "id": "wir_s12",
+          "net": "net_sig4",
+          "to": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "S4"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M1A"
+          },
+          "id": "wir_s13",
+          "net": "net_m1a",
+          "to": {
+            "c": "cmp_m1",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M1B"
+          },
+          "id": "wir_s14",
+          "net": "net_m1b",
+          "to": {
+            "c": "cmp_m1",
+            "kind": "pin",
+            "p": "B"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M1C"
+          },
+          "id": "wir_s15",
+          "net": "net_m1c",
+          "to": {
+            "c": "cmp_m1",
+            "kind": "pin",
+            "p": "C"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M2A"
+          },
+          "id": "wir_s16",
+          "net": "net_m2a",
+          "to": {
+            "c": "cmp_m2",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M2B"
+          },
+          "id": "wir_s17",
+          "net": "net_m2b",
+          "to": {
+            "c": "cmp_m2",
+            "kind": "pin",
+            "p": "B"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M2C"
+          },
+          "id": "wir_s18",
+          "net": "net_m2c",
+          "to": {
+            "c": "cmp_m2",
+            "kind": "pin",
+            "p": "C"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M3A"
+          },
+          "id": "wir_s19",
+          "net": "net_m3a",
+          "to": {
+            "c": "cmp_m3",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "POS"
+          },
+          "id": "wir_s2",
+          "net": "net_vbat",
+          "to": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "VBAT"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M3B"
+          },
+          "id": "wir_s20",
+          "net": "net_m3b",
+          "to": {
+            "c": "cmp_m3",
+            "kind": "pin",
+            "p": "B"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M3C"
+          },
+          "id": "wir_s21",
+          "net": "net_m3c",
+          "to": {
+            "c": "cmp_m3",
+            "kind": "pin",
+            "p": "C"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M4A"
+          },
+          "id": "wir_s22",
+          "net": "net_m4a",
+          "to": {
+            "c": "cmp_m4",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M4B"
+          },
+          "id": "wir_s23",
+          "net": "net_m4b",
+          "to": {
+            "c": "cmp_m4",
+            "kind": "pin",
+            "p": "B"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "M4C"
+          },
+          "id": "wir_s24",
+          "net": "net_m4c",
+          "to": {
+            "c": "cmp_m4",
+            "kind": "pin",
+            "p": "C"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "NEG"
+          },
+          "id": "wir_s3",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "NEG"
+          },
+          "id": "wir_s4",
+          "net": "net_gnd",
+          "to": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "NEG"
+          },
+          "id": "wir_s5",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_rx",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "V5"
+          },
+          "id": "wir_s6",
+          "net": "net_5v",
+          "to": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "V5"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "V5"
+          },
+          "id": "wir_s7",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_rx",
+            "kind": "pin",
+            "p": "V5"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_rx",
+            "kind": "pin",
+            "p": "TX"
+          },
+          "id": "wir_s8",
+          "net": "net_rx",
+          "to": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "RX1"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_fc",
+            "kind": "pin",
+            "p": "M1"
+          },
+          "id": "wir_s9",
+          "net": "net_sig1",
+          "to": {
+            "c": "cmp_esc",
+            "kind": "pin",
+            "p": "S1"
+          }
+        }
+      ]
+    }
+  ]
+}

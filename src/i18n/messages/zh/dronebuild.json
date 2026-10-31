@@ -1,0 +1,116 @@
+{
+  "picker": {
+    "role": {
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "电调",
+      "battery": "电池",
+      "frame": "机架",
+      "fc": "飞控"
+    },
+    "search": "搜索{role}",
+    "list": "{role}",
+    "results": {
+      "one": "{count} 个零件",
+      "other": "{count} 个零件"
+    },
+    "none": "没有零件匹配“{query}”。",
+    "empty": {
+      "title": "库里还没有这类零件",
+      "body": "用零件录入表单添加一个，然后在这里选择。"
+    },
+    "flag": {
+      "cellsOverMotor": "最多 {max}S",
+      "propOverFrame": "螺旋桨大于此机架可装的 {maxIn} 英寸",
+      "escVolts": "额定 {max} V，低于电池电压",
+      "missing": "缺少 {path}"
+    },
+    "price": "{amount} {currency}，截至 {date}",
+    "priceEstimate": "{amount} {currency}，估计值，截至 {date}"
+  },
+  "slots": {
+    "title": "电机位",
+    "col": {
+      "slot": "位置",
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "ESC"
+    },
+    "sameForAll": "所有电机位使用相同的电机、螺旋桨和 ESC",
+    "sameForAllHint": "在任一行中选择，会更改所有电机位。",
+    "choose": "选择",
+    "trigger": "{role}，电机位 {slot}：{part}",
+    "empty": "还没有电机位。选择一种布局来放置它们。",
+    "count": "一架无人机有 3 到 12 个电机位。这架有 {count} 个。",
+    "refused": "{part} 不是{role}。",
+    "kind": {
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "ESC",
+      "battery": "电池",
+      "fc": "飞控"
+    },
+    "shared": {
+      "title": "电池和飞控",
+      "battery": "电池",
+      "fc": "飞控"
+    }
+  },
+  "layout": {
+    "x": "X",
+    "plus": "十字",
+    "h": "H",
+    "hex": "六轴",
+    "octo": "八轴"
+  },
+  "header": {
+    "tier": "第 {tier} 级",
+    "figure": "无人机俯视图"
+  },
+  "legacy": {
+    "title": "这架飞行器使用原来的计算器",
+    "body": "更换任何一个零件，整架飞行器就会改用你的零件，数值也会重新计算。原来的飞行器会作为出厂版本保留在“飞行”标签页。",
+    "confirm": "改用我的零件"
+  },
+  "setup": {
+    "title": "机架和电机",
+    "hint": "选择机架、布局，以及电机、螺旋桨和电调。一开始每个电机都使用相同的零件，之后可以逐个更换。",
+    "label": {
+      "frame": "机架",
+      "layout": "布局",
+      "motor": "电机",
+      "prop": "螺旋桨",
+      "esc": "电调"
+    },
+    "trigger": "{role}：{part}",
+    "wheelbase": "轴距（毫米）",
+    "wheelbaseHint": "从一个电机中心到对角电机中心",
+    "wheelbaseBad": "请输入大于 0 毫米的轴距。",
+    "create": "放置机架和电机",
+    "incomplete": "请先选择机架、电机、螺旋桨和电调。"
+  },
+  "actions": {
+    "title": "操作",
+    "addPart": "添加我自己的零件",
+    "closePart": "关闭",
+    "exportBom": "导出物料清单",
+    "exportFailed": "无法保存零件清单。"
+  },
+  "notDrone": {
+    "title": "这不是无人机项目",
+    "body": "构建器只打开包含无人机设计的项目。",
+    "back": "返回项目"
+  },
+  "readOnly": "这里可以查看数值。选择零件需要编辑权限。",
+  "numbersTitle": "数值",
+  "tabs": {
+    "label": "构建器分区",
+    "numbers": "数据",
+    "compare": "对比",
+    "optimise": "优化",
+    "fly": "飞行",
+    "pin": "固定以对比",
+    "unpin": "取消固定",
+    "pinLabel": "{title}, {time}"
+  }
+}

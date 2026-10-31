@@ -1,0 +1,85 @@
+@theme static {
+  --ease-iynk: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: 300ms;
+  --default-transition-timing-function: var(--ease-iynk);
+  --dur-reveal: 700ms;
+
+  --animate-fade-in: fade-in 300ms var(--ease-iynk) both;
+  --animate-rise-in: rise-in 500ms var(--ease-iynk) both;
+  --animate-slide-in-end: slide-in-end 500ms var(--ease-iynk) both;
+  --animate-slide-in-start: slide-in-start 500ms var(--ease-iynk) both;
+  --animate-slide-in-bottom: slide-in-bottom 500ms var(--ease-iynk) both;
+  --animate-scale-in: scale-in 500ms var(--ease-iynk) both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(var(--travel, 24px)); }
+  }
+  @keyframes slide-in-end {
+    from { opacity: 0; transform: translateX(var(--slide-travel, 100%)); }
+  }
+  @keyframes slide-in-start {
+    from { opacity: 0; transform: translateX(calc(var(--slide-travel, 100%) * -1)); }
+  }
+  @keyframes slide-in-bottom {
+    from { opacity: 0; transform: translateY(var(--slide-travel, 100%)); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(var(--scale-from, 0.96)); }
+  }
+}
+
+@utility stagger-in {
+  animation: rise-in 500ms var(--ease-iynk) both;
+  animation-delay: min(calc(var(--i, 0) * 60ms), 360ms);
+}
+
+@utility motion-move {
+  transition-property: transform, translate, scale, opacity;
+  transition-duration: 500ms;
+  transition-timing-function: var(--ease-iynk);
+}
+
+@utility motion-fade {
+  transition-property: color, background-color, border-color, text-decoration-color, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: var(--ease-iynk);
+}
+
+@utility motion-press {
+  transition-property: transform;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-iynk);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --travel: 0px;
+    --slide-travel: 0px;
+    --scale-from: 1;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .motion-move {
+    transition-property: opacity;
+  }
+  .motion-press {
+    transition-property: none;
+  }
+}
+
+:root[data-reduce-motion="true"] {
+  --travel: 0px;
+  --slide-travel: 0px;
+  --scale-from: 1;
+  scroll-behavior: auto;
+}
+:root[data-reduce-motion="true"] .motion-move {
+  transition-property: opacity;
+}
+:root[data-reduce-motion="true"] .motion-press {
+  transition-property: none;
+}

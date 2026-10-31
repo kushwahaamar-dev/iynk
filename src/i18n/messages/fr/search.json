@@ -1,7 +1,8 @@
 {
   "real": {
     "title": "Construire pour de vrai",
-    "lede": "Prix en direct de chaque pièce de ce montage sur Google Shopping, Amazon et eBay.",
+    "lede": "Prix catalogue de chaque pièce, et prix en boutique quand vous ajoutez une clé de recherche et appuyez sur Vérifier les prix.",
+    "check": "Vérifier les prix",
     "loading": "Recherche des prix…",
     "refresh": "Vérifier à nouveau les prix",
     "checked": "Prix vérifiés à {time}",
@@ -9,7 +10,7 @@
     "alternatives": "Alternatives que l’optimiseur peut choisir",
     "total": "Total le moins cher",
     "totalCatalogue": "Total au prix du catalogue",
-    "allLive": "Toutes les pièces ont un prix en direct",
+    "allLive": "Toutes les pièces ont un prix en boutique",
     "estimated": {
       "one": "{count} pièce au prix du catalogue",
       "other": "{count} pièces au prix du catalogue"
@@ -29,13 +30,15 @@
     "offersHide": "Masquer les offres",
     "offersLabel": "Offres pour {part}",
     "partial": {
-      "quota": "Le budget de recherche de ce site est épuisé : certains prix viennent du catalogue.",
+      "quota": "Votre limite de recherches de ce mois est épuisée. Les résultats en cache fonctionnent toujours.",
       "upstream": "Certaines boutiques n’ont pas répondu : certains prix viennent du catalogue."
     },
     "failed": "Impossible de charger les prix.",
     "rateLimited": "Trop de vérifications d’affilée. Attendez une minute, puis réessayez.",
+    "quotaExhausted": "Votre limite mensuelle de recherches est épuisée et se réinitialise le 1er. Les résultats en cache fonctionnent toujours.",
+    "noKey": "Ajoutez une clé de recherche dans les réglages pour vérifier les prix.",
+    "needsKey": "La vérification des prix",
     "retry": "Réessayer",
-    "notSetUp": "Les prix en direct ne sont pas configurés sur ce déploiement.",
     "notSetUpDrone": "L’optimiseur ci-dessous utilise les prix du catalogue.",
     "statusError": "Impossible de joindre le serveur.",
     "noContent": "La liste des pièces de cet élément n’est pas encore publiée.",
@@ -90,6 +93,8 @@
     "place": "Ville ou adresse",
     "placeHint": "Austin, TX",
     "search": "Rechercher",
+    "findEvents": "Trouver des événements",
+    "needsKey": "La recherche à proximité",
     "locate": "Utiliser ma position",
     "locating": "Localisation…",
     "privacy": "Votre position sert uniquement à cette recherche et n’est jamais enregistrée.",
@@ -116,12 +121,13 @@
     "title": "Aide en vidéo",
     "lede": "Tutoriels YouTube pour cet élément.",
     "query": "Rechercher des vidéos",
-    "search": "Rechercher",
     "loading": "Recherche de vidéos…",
     "empty": "Aucune vidéo trouvée. Essayez d’autres mots.",
     "failed": "Impossible de charger les vidéos.",
+    "needsKey": "L'aide en vidéo",
     "watch": "Regarder « {title} » de {channel} sur YouTube",
-    "duration": "Durée {duration}"
+    "duration": "Durée {duration}",
+    "find": "Trouver des vidéos"
   },
   "sources": {
     "heading": "Sources",

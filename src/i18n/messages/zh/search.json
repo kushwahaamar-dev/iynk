@@ -1,7 +1,8 @@
 {
   "real": {
     "title": "动手实做",
-    "lede": "来自 Google Shopping、Amazon 和 eBay 的实时价格，覆盖这套装机的每个零件。",
+    "lede": "每个零件的目录价格；添加搜索密钥并点击“查看价格”后，显示商店价格。",
+    "check": "查询价格",
     "loading": "正在查找价格…",
     "refresh": "重新查询价格",
     "checked": "价格查询于 {time}",
@@ -9,7 +10,7 @@
     "alternatives": "优化器可替换的备选零件",
     "total": "最低总价",
     "totalCatalogue": "目录价合计",
-    "allLive": "所有零件均为实时价格",
+    "allLive": "所有零件均为商店价格",
     "estimated": {
       "one": "{count} 个零件使用目录价格",
       "other": "{count} 个零件使用目录价格"
@@ -29,13 +30,15 @@
     "offersHide": "隐藏报价",
     "offersLabel": "{part} 的报价",
     "partial": {
-      "quota": "本站的搜索额度已用完，部分价格来自目录。",
+      "quota": "你本月的搜索额度已用完。缓存的结果仍可使用。",
       "upstream": "部分商店没有响应，部分价格来自目录。"
     },
     "failed": "无法加载价格。",
     "rateLimited": "查询过于频繁。请等一分钟后再试。",
+    "quotaExhausted": "你的每月搜索额度已用完，将在每月 1 日重置。缓存的结果仍可使用。",
+    "noKey": "请在设置中添加搜索密钥以查询价格。",
+    "needsKey": "商店价格",
     "retry": "重试",
-    "notSetUp": "此部署尚未配置实时价格。",
     "notSetUpDrone": "下方的优化器改用目录价格计算。",
     "statusError": "无法连接服务器。",
     "noContent": "此项目的零件清单尚未发布。",
@@ -90,6 +93,8 @@
     "place": "城市或地址",
     "placeHint": "Austin, TX",
     "search": "搜索",
+    "findEvents": "查找活动",
+    "needsKey": "附近搜索",
     "locate": "使用我的位置",
     "locating": "正在定位…",
     "privacy": "你的位置只用于这次搜索，绝不会被保存。",
@@ -116,12 +121,13 @@
     "title": "视频帮助",
     "lede": "来自 YouTube 的本项目教程。",
     "query": "搜索视频",
-    "search": "搜索",
     "loading": "正在查找视频…",
     "empty": "没有找到视频。换个说法试试。",
     "failed": "无法加载视频。",
+    "needsKey": "视频帮助",
     "watch": "在 YouTube 上观看 {channel} 的“{title}”",
-    "duration": "时长 {duration}"
+    "duration": "时长 {duration}",
+    "find": "查找视频"
   },
   "sources": {
     "heading": "来源",

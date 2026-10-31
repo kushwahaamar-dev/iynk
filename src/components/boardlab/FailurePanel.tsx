@@ -5,7 +5,9 @@ import type { FigureHandle } from "@/components/figure/protocol";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { cx } from "@/components/ui/cx";
+import { legacyRecord } from "@/content/faults/legacy-map";
 import type { FailureMode } from "@/content/schema";
+import { appEventLog } from "@/local/events";
 import type { BoardLabStore } from "@/lib/boardlab/store";
 import { sendCommand } from "./AssemblyPanel";
 import { useText } from "./text";
@@ -19,17 +21,18 @@ function faultCircuit(f: FailureMode): string | null {
   return typeof state?.circuit === "string" ? state.circuit : null;
 }
 
-function FaultRow({ f, on, onTrigger, onRepair }: { f: FailureMode; on: boolean; onTrigger: () => void; onRepair: () => void }) {
+function FaultRow({ f, on, onTrigger, onRepair }: { f: FailureMode; on: boolean; onTrigger: () => void; onRepair: (f: FailureMode) => void }) {
   const { t, tc } = useText();
   return (
-    <li className={cx("py-2.5", on && "-mx-4 border-s-4 border-bad bg-sunken px-3")} data-failure={f.id}>
+    <li className={cx("relative py-3", on && "-mx-3 rounded-lg bg-hover px-3")} data-failure={f.id}>
+      {on && <span aria-hidden="true" className="absolute start-1 top-7 size-1 rounded-full bg-accent" />}
       <div className="flex items-center gap-3">
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold leading-snug">{tc(f.title)}</span>
           <span className="block text-xs text-muted">{on ? <strong className="font-semibold text-ink">{t("failures.active")}</strong> : t(`failures.kind.${f.kind}`)}</span>
         </span>
         {on ? (
-          <Button size="sm" variant="danger" className="shrink-0 whitespace-nowrap" onClick={onRepair}>
+          <Button size="sm" variant="danger" className="shrink-0 whitespace-nowrap" onClick={() => onRepair(f)}>
             {t("failures.clear")}
           </Button>
         ) : (
@@ -67,6 +70,7 @@ export function FailurePanel({ store, failures, figure, circuit = null }: { stor
   const id = useId();
   const active = useLab(store, (s) => s.fault);
   const reported = useLab(store, (s) => s.figure.fault) as FigureFault;
+  const board = useLab(store, (s) => s.board);
   if (failures.length === 0) return null;
 
   const trigger = (f: FailureMode) => {
@@ -74,7 +78,10 @@ export function FailurePanel({ store, failures, figure, circuit = null }: { stor
     // A `set` fault reaches the figure through the store's figure state; presses and acts are one-shot.
     if (f.figure.type !== "set") sendCommand(figure(), f.figure);
   };
-  const repair = () => store.dispatch({ type: "fault/clear" });
+  const repair = (f: FailureMode) => {
+    store.dispatch({ type: "fault/clear" });
+    void appEventLog().append("diagnosis.record", legacyRecord(board, f));
+  };
   const mine = circuit ? failures.filter((f) => faultCircuit(f) === circuit) : [];
   const rest = failures.filter((f) => !mine.includes(f));
   const rows = (list: FailureMode[]) => list.map((f) => <FaultRow key={f.id} f={f} on={active === f.id} onTrigger={() => trigger(f)} onRepair={repair} />);
@@ -90,11 +97,11 @@ export function FailurePanel({ store, failures, figure, circuit = null }: { stor
           {reported.fix ?? null}
         </Callout>
       )}
-      <ul className="divide-y-[1.5px] divide-rule">{rows(mine.length ? mine : rest)}</ul>
+      <ul className="divide-y divide-rule">{rows(mine.length ? mine : rest)}</ul>
       {mine.length > 0 && rest.length > 0 && (
         <>
-          <p className="ink-kicker mt-3">{t("failures.more")}</p>
-          <ul className="divide-y-[1.5px] divide-rule">{rows(rest)}</ul>
+          <p className="kicker mt-3">{t("failures.more")}</p>
+          <ul className="divide-y divide-rule">{rows(rest)}</ul>
         </>
       )}
     </section>

@@ -1,0 +1,19 @@
+{
+  "description": "Una placa FPGA Digilent Basys 3 con chip Artix-7 XC7A35T, 16 interruptores, 5 botones, 16 LED, una pantalla de siete segmentos de cuatro dígitos y tres puertos Pmod.",
+  "summary": "La placa ejecuta tu Verilog en el simulador por ciclos de iynk. Los puertos sustituyen a los pines: interruptores, botones, LED, la pantalla de siete segmentos y las salidas Pmod. No sintetiza el diseño ni comprueba sus tiempos.",
+  "layer": "Entorno de ejecución del firmware.",
+  "clock": "Entrada de reloj: 100 MHz en la placa.",
+  "activelow": "Activo en bajo: 0 significa pulsado o encendido.",
+  "outputonly": "Solo salida en el simulador.",
+  "models": {
+    "1": "Subconjunto de Verilog que el simulador por ciclos ejecuta con los puertos de la Basys 3, un pin por cada bit de puerto.",
+    "2": "Interruptores, botones (activos en alto), LED, la pantalla de siete segmentos (ánodo común, activa en bajo) y los puertos Pmod JA, JB y JC como salidas.",
+    "3": "Un diseño que declara CLK_HZ se ejecuta a 100 kHz en lugar de al reloj de 100 MHz de la placa."
+  },
+  "not": {
+    "1": "Síntesis, cierre de tiempos y archivos de restricciones.",
+    "2": "Las entradas analógicas XADC, VGA, PS/2, USB y la UART.",
+    "3": "El tamaño de la RAM de bloques y los límites eléctricos de los pines."
+  },
+  "gap": "Todavía no hay valores eléctricos máximos indicados, así que no existe una comprobación de sobrecarga de pines para esta placa."
+}

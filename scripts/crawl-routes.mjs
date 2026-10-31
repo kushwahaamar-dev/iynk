@@ -24,8 +24,8 @@ const WORKERS = Number(arg('workers', 6));
 
 const LAB_DIR = { boards: 'boards', robotics: 'robotics', drones: 'drones' };
 const LOCALES = ['en', 'es', 'fr', 'de', 'zh', 'hi'];
-// Pages that answer 404 on purpose: the not-found page itself, and the phase-4 pages behind features.solana.
-const BY_DESIGN = [/^\/[a-z]{2}\/not-found$/, /^\/[a-z]{2}\/(passport|verify)$/];
+// Pages that answer 404 on purpose: the not-found page itself.
+const BY_DESIGN = [/^\/[a-z]{2}\/not-found$/];
 // Problems a later phase owns, listed so they are counted, not hidden. Anything else fails the crawl.
 const KNOWN = [
   [/missing figure strings src\/i18n\/figures\/\w+\.json/, 'figure strings not translated yet (BUILD-PLAN phase 3)'],

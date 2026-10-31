@@ -1,0 +1,11 @@
+* C07 Red LED, 100 ohm, from D13 (matched)
+Vsrc_D13 s_d13 0 5.00000000000000
+Rsrc_D13 s_d13 n_d13 25
+R_r1 n_d13 n_a 100
+Vs_led1 n_a x_led1 0
+B_led1 x_led1 0 I=max(V(x_led1,0)-2,0)/0.5
+Rg_d13 n_d13 0 999999999.9999999
+Rg_a n_a 0 999999999.9999999
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

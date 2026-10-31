@@ -9,7 +9,7 @@
   },
   "lab": {
     "unsupportedTitle": "Nothing to mirror here",
-    "unsupported": "The twin mirrors Board Lab lessons for the Arduino Uno R3, Nano and Uno R4. Open one of those lessons to drive a real board."
+    "unsupported": "The twin mirrors Board lab lessons for the Arduino Uno R3, Nano and Uno R4. Open one of those lessons to drive a real board."
   },
   "setup": {
     "title": "Before you connect",

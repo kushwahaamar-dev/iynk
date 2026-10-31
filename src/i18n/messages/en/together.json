@@ -150,89 +150,79 @@
   },
   "lobby": {
     "metaTitle": "Build together",
-    "metaDescription": "Open a live build room on any board, robot or drone, find a build buddy and plan a build night with Muse Spark.",
+    "metaDescription": "Open a live build room on any board, robot or drone and build it together.",
     "eyebrow": "iynk Together",
     "title": "Nobody has to build alone",
     "lede": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, one person types at a time, and the chat shows each message in your own language.",
-    "ledePlain": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, and one person types at a time.",
-    "notSetUp": "Not set up on this deployment",
-    "aiOff": "Build Buddies and the Build Night planner need the AI service, which isn't set up on this deployment.",
-    "retry": "Try again",
-    "create": {
-      "title": "Start a room",
-      "hint": "You get an invite link and a QR code to share.",
-      "lab": "Lab",
-      "item": "What to build",
-      "go": "Open the room",
-      "empty": "No lab items are ready yet."
+    "ledePlain": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, and one person types at a time."
+  },
+  "buddies": {
+    "title": "Buddies",
+    "needsServer": {
+      "title": "Buddies need a server",
+      "body": "Buddies live on an iynk server that you or a friend runs. Without one, this page has nothing to show and the rest of iynk works as before.",
+      "guide": "How to run a server"
     },
-    "join": {
-      "title": "Join a room",
-      "hint": "Type the 6-character code from the invite, or paste the link.",
-      "go": "Join",
-      "looking": "Looking for room {code}…",
-      "empty": "Nobody is in room {code} right now. Rooms close 30 minutes after the last person leaves.",
-      "full": "Room {code} is full.",
-      "timeout": "Couldn't reach room {code}. Check the code and your connection.",
-      "unknown": "Room {code} is open, but it didn't say what it's building. Ask for the invite link.",
-      "unavailable": "This browser can't open rooms.",
-      "found": "Found it. Opening the room…"
+    "insecure": {
+      "title": "This page needs a secure connection",
+      "body": "Your browser only makes device keys on https pages or on localhost. Open iynk over https and try again."
     },
-    "buddies": {
-      "title": "Build Buddies",
-      "lede": "Say what you've built and what you want to make next. Muse Spark suggests people whose skills fit with yours, and says why.",
-      "privacy": "Your profile holds no contact details and is deleted after 24 hours. You connect by room invite.",
+    "empty": {
+      "title": "No buddies yet",
+      "add": "Pair with a buddy",
+      "enter": "Enter a code"
+    },
+    "list": {
+      "online": "Online",
+      "offline": "Offline",
+      "asOf": "Last seen {time}",
+      "inRoom": "In room {code}",
+      "rename": "Rename",
+      "remove": "Remove buddy",
+      "block": "Block",
+      "removeConfirm": "Remove {name} from your buddies? You can pair again later.",
+      "blockConfirm": "Block {name}? They are removed and cannot pair with you again.",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "enrol": {
+      "title": "Join this server",
+      "code": "Enrolment code",
       "name": "Your name",
-      "interests": "Interests",
-      "interestsHint": "Separate them with commas, e.g. drones, LEDs, line followers",
-      "builtNote": {
-        "one": "Your profile also lists the {count} lesson or test you've finished in iynk.",
-        "other": "Your profile also lists the {count} lessons and tests you've finished in iynk."
-      },
-      "wants": "What you want to build next",
-      "submit": "Find my buddies",
-      "finding": "Looking for buddies…",
-      "matches": "Your matches",
-      "none": "No good matches yet. More people join through the day, so check back soon.",
-      "alone": "You're the first one on the list. Invite a friend, or check back later.",
-      "score": "{score}% match",
-      "shared": "You both like {interest}",
-      "project": "Build together: {item}",
-      "invite": "Invite to a room",
-      "inviteTitle": "Build {item} with {name}",
-      "inviteHint": "Show {name} this QR code or send the link. The room opens on {item}.",
-      "notSetUp": "Buddy matching needs the database and the AI service, and this deployment doesn't have both.",
-      "failed": "Couldn't find buddies just now.",
-      "missing": "Add your name and what you want to build next."
+      "submit": "Join",
+      "closed": "This server isn't taking new people right now.",
+      "wrongCode": "That code didn't work. Check it, or ask the person who runs the server for a new one.",
+      "help": "The person who runs the server gives you a code. It works once."
     },
-    "plan": {
-      "title": "Build Night planner",
-      "lede": "Everyone says what they'd like to make. Muse Spark picks one project you'll all enjoy and gives each person a role and a first task.",
-      "people": "Who's building",
-      "person": "Person {n}",
-      "name": "Name",
-      "lang": "Language",
-      "level": "Experience",
-      "levels": {
-        "new": "New to this",
-        "some": "Some",
-        "lots": "Lots"
-      },
-      "wants": "What they'd like to make or learn",
-      "add": "Add a person",
-      "remove": "Remove {name}",
-      "submit": "Plan our build night",
-      "planning": "Planning…",
-      "roles": "Roles",
-      "firstTask": "First task",
-      "steps": "The plan",
-      "parts": "Parts",
-      "start": "Start this build",
-      "again": "Plan again",
-      "notSetUp": "The planner needs the AI service, which isn't set up on this deployment.",
-      "failed": "Couldn't make a plan just now.",
-      "missing": "Give everyone a name and say what they'd like to make.",
-      "unknownItem": "The plan picked something iynk doesn't have yet. Plan again."
+    "pair": {
+      "title": "Pair with a buddy",
+      "code": "Pairing code",
+      "link": "Pairing link",
+      "qr": "QR code for the pairing link",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "expires": "Expires {time}",
+      "cancel": "Cancel pairing",
+      "enterCode": "Enter a pairing code",
+      "enterLabel": "Code or link from your buddy",
+      "peekFrom": "{name} wants to pair with you.",
+      "accept": "Accept",
+      "wrong": "That code didn't work. Check it and try again.",
+      "tooMany": "Too many tries. Wait a minute and try again.",
+      "already": "You are already buddies.",
+      "full": "One of you has reached the buddy limit.",
+      "show": "Show a code",
+      "joined": "{name} joined.",
+      "fingerprint": "Key {fingerprint}"
+    },
+    "joined": "You joined the server as {name}.",
+    "unknown": {
+      "title": "This server isn't known here",
+      "body": "This browser has no key for that server. Join it with an enrolment code first."
+    },
+    "unreachable": "Can't reach the server. Check that it is running and try again.",
+    "errors": {
+      "generic": "Something went wrong. Try again."
     }
   }
 }

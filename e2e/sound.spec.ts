@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
 import common from "../src/i18n/messages/en/common.json";
 import dronelab from "../src/i18n/messages/en/dronelab.json";

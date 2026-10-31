@@ -1,83 +1,19 @@
 {
   "panel": {
     "title": "Partenaire de labo",
-    "byline": "Muse Spark · d’abord des indices, d’abord les amis",
     "intro": "Pose une question sur ton câblage, ton code ou une panne. Je donne des indices avant les réponses et, si quelqu’un de ton salon a déjà fait cette leçon, je lui demande d’abord.",
     "inputLabel": "Pose une question à ton partenaire de labo",
     "placeholder": "Une question sur le banc…",
-    "send": "Envoyer",
-    "stop": "Arrêter",
-    "newChat": "Nouvelle discussion",
     "thinking": "Réflexion…",
     "you": "Toi",
     "partner": "Partenaire",
     "stopped": "Arrêté.",
-    "retry": "Réessayer",
-    "sources": "Sources",
-    "suggestions": "Essaie de demander",
-    "accepted": "Tu as accepté la modification ({kind}).",
-    "rejected": "Tu as refusé la modification ({kind}).",
-    "kinds": {
-      "code": "code",
-      "wire": "câblage",
-      "part": "pièces"
-    },
     "code": "Code",
-    "chat": "Discussion",
     "transcript": "Discussion avec ton partenaire de labo"
   },
-  "hint": {
-    "label": "Bloqué ?",
-    "hint": "Donne-moi un indice",
-    "another": "Un autre indice",
-    "show": "Montre-moi",
-    "askHint": "Donne-moi un indice, pas la réponse.",
-    "askAnother": "Un autre indice, s’il te plaît.",
-    "askShow": "Montre-moi la solution."
-  },
-  "suggest": {
-    "fault": "Pourquoi ça arrive : {fault} ?",
-    "error": "Que veut dire cette erreur de compilation ?",
-    "failed": "Pourquoi « {test} » a-t-il échoué ?",
-    "start": "Que devrais-je essayer d’abord ?",
-    "code": "Que fait ce code ?",
-    "wiring": "Mon câblage est-il correct ?",
-    "drone": "Ce drone va-t-il bien voler ?",
-    "safety": "À quoi dois-je faire attention ?"
-  },
   "tools": {
-    "highlight": "Regarde {part}",
-    "highlightOff": "La figure 3D n’est pas encore chargée, cette pièce n’est donc pas mise en évidence.",
-    "showAgain": "Montre-la encore",
-    "change": {
-      "code": "Modification du code proposée",
-      "wire": "Modification du câblage proposée",
-      "part": "Modification des pièces proposée"
-    },
-    "accept": "Accepter",
-    "reject": "Refuser",
-    "accepted": "Acceptée",
-    "rejected": "Refusée",
-    "manual": "Ce banc ne peut pas l’appliquer pour toi. Copie-la et fais la modification toi-même.",
     "copy": "Copier",
-    "copied": "Copié",
-    "unchanged": {
-      "one": "{count} ligne inchangée",
-      "other": "{count} lignes inchangées"
-    },
-    "diffLabel": "Modifications : les lignes qui commencent par + sont ajoutées, celles qui commencent par − sont supprimées.",
-    "askPeer": "J’ai demandé à {name} d’expliquer",
-    "askPeerNoRoom": "Un ami qui a déjà fait ça pourrait te l’expliquer. Invite quelqu’un à construire avec toi.",
-    "invite": "Inviter un ami",
-    "opened": "{tab} ouvert",
-    "tabs": {
-      "partner": "Partenaire",
-      "together": "Ensemble",
-      "real": "Construire pour de vrai",
-      "passport": "Passeport",
-      "hardware": "Matériel"
-    },
-    "question": "« {question} »"
+    "copied": "Copié"
   },
   "errors": {
     "not_configured": "Le partenaire de labo n’est pas configuré sur ce déploiement.",
@@ -85,52 +21,190 @@
     "bad_input": "Impossible d’envoyer ce message. Essaie une question plus courte.",
     "upstream": "Le partenaire n’a pas répondu cette fois. Réessaie.",
     "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+    "no_key": "Ajoutez votre clé d’IA dans les réglages pour utiliser le partenaire de labo.",
     "aborted": "Arrêté."
   },
   "status": {
     "loading": "Réveil de ton partenaire de labo…",
-    "unavailable": "Le partenaire de labo n’est pas configuré sur ce déploiement",
-    "unavailableBody": "Tout le reste du labo fonctionne sans lui. Le partenaire a besoin sur le serveur d’une clé de l’API de modèles de Meta ou d’une clé de l’API Gemini.",
+    "what": "Le partenaire IA",
     "unreachable": "Impossible de joindre le serveur pour vérifier le partenaire.",
     "check": "Vérifier à nouveau"
   },
-  "voice": {
-    "hold": "Maintiens pour parler (ou appuie sur M)",
-    "stopRecording": "Arrêter et envoyer (ou appuie sur M)",
-    "recording": "J’écoute… relâche pour envoyer.",
-    "transcribing": "Transcription de ta voix…",
-    "denied": "L’accès au micro est bloqué. Autorise-le dans ton navigateur pour parler.",
-    "unsupported": "La saisie vocale n’est pas disponible dans ce navigateur.",
-    "unavailable": "La voix n’est pas configurée sur ce déploiement.",
-    "empty": "Je n’ai rien entendu. Réessaie, un peu plus près du micro.",
-    "failed": "Ta voix n’a pas pu être transcrite. Réessaie ou écris."
-  },
-  "story": {
-    "title": "Récit de construction",
-    "intro": "Transforme cette session en un court récit avec une couverture : qui a construit quoi, ce qui a cassé et qui a aidé.",
-    "make": "Écrire notre récit",
-    "remake": "Le réécrire",
-    "writing": "Écriture de ton récit…",
-    "drawing": "Dessin de la couverture…",
-    "empty": "Rien à raconter pour l’instant. Branche quelque chose, lance du code ou pose une question au partenaire, puis reviens.",
-    "moments": {
-      "one": "{count} moment pour l’instant",
-      "other": "{count} moments pour l’instant"
+  "partner": {
+    "state": {
+      "notSetUp": "Le partenaire n’est pas encore configuré. Choisis un fournisseur dans les réglages.",
+      "needsKey": "Ce fournisseur demande une clé. Ajoute-la dans les réglages.",
+      "capped": "La limite de dépense du jour est atteinte. Augmente-la dans les réglages.",
+      "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+      "busy": "Le partenaire répond…"
     },
-    "coverAlt": "Illustration de couverture pour « {title} »",
-    "builtBy": "Construit par",
-    "helped": "{helper} a aidé {learner}",
-    "highlights": "Temps forts",
-    "download": "Télécharger le PNG",
-    "share": "Partager",
-    "copyLink": "Copier le lien",
-    "copied": "Lien copié",
-    "facebook": "Partager sur Facebook",
-    "shareText": "{title}, un récit de construction iynk",
-    "unavailable": "Les récits de construction ne sont pas configurés sur ce déploiement.",
-    "failed": "Le récit n’a pas pu être écrit. Réessaie.",
-    "noCover": "La couverture n’a pas pu être dessinée cette fois, le récit n’en a donc pas.",
-    "footer": "Fait ensemble dans iynk",
-    "me": "Moi"
+    "mode": {
+      "label": "Comment le partenaire aide",
+      "direct": {
+        "name": "Direct",
+        "hint": "Des réponses courtes et claires."
+      },
+      "debugging": {
+        "name": "Débogage",
+        "hint": "Cherche la cause d’une panne, étape par étape."
+      },
+      "beginner": {
+        "name": "Débutant",
+        "hint": "Des mots simples, de petits pas, une question à la fin."
+      }
+    },
+    "send": "Envoyer",
+    "stop": "Arrêter",
+    "counter": "{count} sur {max}",
+    "keyRemoved": "Une valeur qui ressemblait à une clé a été retirée de ton message.",
+    "error": {
+      "not_configured": "Configure un fournisseur d’IA dans les réglages.",
+      "no_key": "Ce fournisseur demande une clé.",
+      "auth": "Le fournisseur n’a pas accepté cette clé.",
+      "bad_model": "Ce modèle n’est pas disponible avec ta clé.",
+      "context_too_long": "Ce projet est trop grand pour ce modèle. Sélectionne une pièce ou choisis un modèle plus grand.",
+      "quota": "Ton compte fournisseur n’a plus de crédit.",
+      "capped": "La limite du jour est atteinte. Augmente-la dans les réglages.",
+      "network": "Impossible de joindre le fournisseur. Si c’est une restriction du navigateur, active le relais.",
+      "relay_denied": "Ton serveur ne l’a pas autorisé.",
+      "upstream_busy": "Le fournisseur est occupé. Réessaie.",
+      "upstream_timeout": "Le fournisseur a mis trop de temps. Réessaie.",
+      "upstream_failed": "Le fournisseur a échoué. Réessaie.",
+      "filtered": "Le fournisseur a refusé de répondre. Essaie de reformuler."
+    },
+    "hint": {
+      "relay": "Passe par ton propre serveur, pas directement depuis ce navigateur.",
+      "selectPart": "Sélectionne une pièce pour donner au partenaire une vue plus petite et plus nette."
+    },
+    "tool": {
+      "args": "Arguments",
+      "result": "Résultat",
+      "showAll": "Afficher les {count} lignes",
+      "showLess": "Afficher moins de lignes",
+      "ok": "Terminé",
+      "failed": "Échec",
+      "noArgs": "Aucun argument",
+      "noResult": "Aucun résultat"
+    },
+    "unverified": "Référence non vérifiée"
+  },
+  "proposal": {
+    "title": {
+      "fix": "Correction proposée",
+      "scaffold": "Circuit de départ proposé",
+      "explore": "Une piste à essayer"
+    },
+    "base": "Établi à partir de la révision {rev}",
+    "changedSince": "Le projet a changé à la révision {rev}",
+    "step": "Étape {n} : {label}",
+    "risk": {
+      "0": "Disposition seulement",
+      "1": "Ajoute ou modifie",
+      "2": "Supprime ou remplace"
+    },
+    "confirmStep": "Je comprends que cela supprime {components} composants et {wires} fils, et détache {pins} broches",
+    "accept": "Tout accepter",
+    "acceptSome": "Accepter les étapes choisies",
+    "acceptAnyway": "Accepter quand même",
+    "reject": "Refuser",
+    "undo": "Annuler cette proposition",
+    "accepted": "Acceptée",
+    "rejected": "Refusée",
+    "stale": "Cette proposition est périmée. Des parties du projet qu'elle modifie ont été éditées après sa création.",
+    "redo": "Demande au partenaire de la refaire sur le projet actuel",
+    "refreshed": "L'aperçu a changé. Vérifie-le, puis appuie de nouveau sur Accepter.",
+    "failing": "Les vérifications échouent après ce changement",
+    "checks": {
+      "rules": "Vérification des règles",
+      "compile": "Compilation",
+      "tests": "Tests",
+      "run": "Courte exécution"
+    },
+    "skipped": "Non exécuté : {reason}",
+    "netLine": "{net} : {change}",
+    "fileLine": "{path} : +{added} −{removed}",
+    "taint": "Faite après lecture de : {sources}",
+    "tainted": "Ce tour a lu du texte venant de l'extérieur de ton projet. Afficher la proposition ?",
+    "show": "Afficher la proposition",
+    "explainOnly": "Je n'ai pas pu faire de changement valide. Voici ce que j'essaierais :",
+    "forbidden": "Le partenaire ne peut pas proposer ce changement.",
+    "list": "Propositions",
+    "empty": "Aucune proposition pour l'instant.",
+    "ready": "Proposition prête : {title}",
+    "model": "{model}, mode {mode}",
+    "tier": "Fidélité des nouveaux composants : {tier}",
+    "announce": {
+      "open": "Une proposition est prête à être examinée.",
+      "accepted": "Proposition acceptée. Une seule annulation la défait.",
+      "rejected": "Proposition refusée.",
+      "stale": "La proposition est périmée."
+    },
+    "diff": {
+      "steps": "Étapes",
+      "checks": "Vérifications",
+      "pass": "Réussie",
+      "fail": "Échouée",
+      "parts": "Composants",
+      "nets": "Réseaux",
+      "wires": "Fils",
+      "files": "Fichiers",
+      "tests": "Tests",
+      "faults": "Pannes",
+      "params": "Paramètres",
+      "cascade": "Touche aussi",
+      "added": "Ajouté",
+      "removed": "Supprimé",
+      "changed": "Modifié",
+      "unchanged": "{count} lignes inchangées",
+      "wireCounts": "{added} ajoutés, {removed} supprimés",
+      "paramChange": "{id} : {from} à {to}",
+      "cascadeCounts": "{components} composants, {wires} fils, {pins} broches, {sources} fichiers",
+      "bigFile": "Ce fichier a trop changé pour être comparé ligne à ligne. Il est affiché comme supprimé, puis ajouté.",
+      "noChange": "Aucun changement"
+    }
+  },
+  "mode": {
+    "label": "Mode",
+    "socratic": "Socratique",
+    "beginner": "Débutant",
+    "direct": "Direct",
+    "debugging": "Débogage",
+    "advanced": "Avancé",
+    "hint": {
+      "socratic": "Questions et indices, pas de réponse tant que tu n'en demandes pas",
+      "beginner": "Termes expliqués, une idée à la fois",
+      "direct": "La réponse ou le changement d'abord",
+      "debugging": "Part des preuves, puis le plus petit correctif",
+      "advanced": "Compromis, marges et hypothèses"
+    },
+    "switched": "Le mode est {mode} dès le prochain message"
+  },
+  "ladder": {
+    "label": "Indices",
+    "another": "Un autre indice",
+    "show": "Montre-moi",
+    "fixIt": "Corrige",
+    "apply": "Applique",
+    "level": "Indice {level} sur 3",
+    "holdMe": "Me demander de confirmer avant Montre-moi",
+    "confirmShow": "Montrer la cause et le correctif maintenant ?",
+    "codeWithheld": "Code masqué. Demande « Montre-moi » pour le voir."
+  },
+  "scaffold": {
+    "prompt": "Décris le circuit que tu veux",
+    "tier": "Les nouveaux composants sont modélisés au niveau {tier}",
+    "checks": "A passé la vérification des règles avant que tu le voies"
+  },
+  "draft": {
+    "title": "Brouillon de message à un ami",
+    "buddy": "À",
+    "copy": "Copier",
+    "copied": "Copié",
+    "addLink": "Ajouter un lien de partage",
+    "noLink": "Les liens de partage ont besoin de ton serveur.",
+    "use": "Utiliser ce brouillon",
+    "dismiss": "Ignorer",
+    "sentByYou": "Rien n'est envoyé tant que tu n'appuies pas sur Envoyer.",
+    "noBuddies": "Tu n'as pas encore d'amis. Copie le texte et envoie-le à ta façon."
   }
 }

@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import { ROBOTICS_IDS } from "../src/content/ids";
 import { AVAILABLE, roboticsLoaders } from "../src/content/index.generated";
 import type { RoboticsContent } from "../src/content/schema";

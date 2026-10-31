@@ -1,4 +1,5 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import flight from "../src/i18n/messages/en/flight.json";
 
 // The fly page on a phone held upright: no sideways scroll, and in the FPV goggles every OSD readout (volts,

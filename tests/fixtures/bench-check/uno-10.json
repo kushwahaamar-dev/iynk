@@ -1,0 +1,296 @@
+{
+  "version": 1,
+  "board": "uno-r3",
+  "rows": [
+    {
+      "id": "bench-01-led-reversed",
+      "cause_id": "led-reversed",
+      "built": {
+        "how": "candidate",
+        "ref": "flt_reverse-part_cmp-led1_"
+      },
+      "setup": "Turn the LED round: anode to GND, cathode to the resistor. Let the sketch hold D13 high and read across the LED.",
+      "measure": {
+        "a": "cmp_led1.A",
+        "b": "cmp_led1.K",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": -4.9998761530649105,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-02-open-connection",
+      "cause_id": "open-connection",
+      "built": {
+        "how": "candidate",
+        "ref": "flt_open-wire_cmp-oled1_vcc"
+      },
+      "setup": "Lift the VCC leg of the display module out of its breadboard hole. Power the Uno over USB.",
+      "measure": {
+        "a": "cmp_oled1.VCC",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 0,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-03-missing-ground",
+      "cause_id": "missing-ground",
+      "built": {
+        "how": "candidate",
+        "ref": "flt_missing-ground_cmp-oled1_gnd"
+      },
+      "setup": "Lift the GND leg of the display module out of its breadboard hole. Power the Uno over USB.",
+      "measure": {
+        "a": "cmp_oled1.VCC",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 3.2999998333500082,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-04-button-no-pulldown",
+      "cause_id": "button-no-pulldown",
+      "built": {
+        "how": "corpus-slot",
+        "ref": "slot-07"
+      },
+      "setup": "Remove the 10 kOhm pull-down from D2 and leave the button released. Read D2 against GND with a meter of 10 MOhm or more.",
+      "measure": {
+        "a": "brd_main.D2",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 0.00004950446551051063,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-05-i2c-missing-pullup",
+      "cause_id": "i2c-missing-pullup",
+      "built": {
+        "how": "corpus-slot",
+        "ref": "slot-11"
+      },
+      "setup": "Fit two 10 kOhm pull-ups from SDA and SCL but leave their other ends unconnected. Read SDA against GND while the bus is idle.",
+      "measure": {
+        "a": "brd_main.SDA",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 0,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-06-swapped-pins",
+      "cause_id": "swapped-pins",
+      "built": {
+        "how": "candidate",
+        "ref": "flt_swap-pins_cmp-oled1_sda"
+      },
+      "setup": "Exchange the SDA and SCL wires of the display module. Read the module SDA pin against GND while the bus is idle.",
+      "measure": {
+        "a": "cmp_oled1.SDA",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 0,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-07-wrong-value",
+      "cause_id": "wrong-value",
+      "built": {
+        "how": "fault-literal",
+        "ref": "flt_bench_wrong-value_cmp-res1_ohms-10k"
+      },
+      "setup": "Fit a 10 kOhm resistor where the 220 Ohm resistor belongs. Power off and read the resistor with the ohm range.",
+      "measure": {
+        "a": "cmp_res1.P1",
+        "b": "cmp_res1.P2",
+        "unit": "ohm"
+      },
+      "simulated": {
+        "value": 9999.950999565468,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-08-part-not-powered",
+      "cause_id": "part-not-powered",
+      "built": {
+        "how": "corpus-slot",
+        "ref": "slot-06"
+      },
+      "setup": "Move the VCC of the 5 V distance module from the 5V pin to the 3V3 pin. Read the module VCC against GND.",
+      "measure": {
+        "a": "cmp_us1.VCC",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 3.2999998333500082,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-09-wrong-pin-in-code",
+      "cause_id": "wrong-pin-in-code",
+      "built": {
+        "how": "candidate",
+        "ref": "flt_wrong-pin-in-code_brd-main_d13"
+      },
+      "setup": "Change the pin number of the LED in the sketch to the one the fault names and upload it. Read D13 against GND.",
+      "measure": {
+        "a": "brd_main.D13",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 0,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    },
+    {
+      "id": "bench-10-floating-input",
+      "cause_id": "floating-input",
+      "built": {
+        "how": "corpus-slot",
+        "ref": "slot-05"
+      },
+      "setup": "Lift the wiper wire of the potentiometer so A0 hangs in the air. Read A0 against GND with a meter of 10 MOhm or more.",
+      "measure": {
+        "a": "brd_main.A0",
+        "b": "ground",
+        "unit": "V"
+      },
+      "simulated": {
+        "value": 0,
+        "tier": "T1",
+        "modelIds": [
+          "engine:mna-dc-pwl@1.0.0"
+        ]
+      },
+      "real": {
+        "value": null,
+        "photo": null,
+        "date": null,
+        "board": null
+      },
+      "match": null,
+      "note": null
+    }
+  ]
+}

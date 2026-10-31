@@ -154,6 +154,14 @@ PATCHES = [
      "  if (opts && !opts.inline && typeof opts.mech !== 'function') CF_NOTE('xrWrap: option \"mech\" missing');\n"),
     ('P5 moving flag', "const frame = () => { if (!driving) return; driving = false; clearTimeout(fbT);",
      "const frame = () => { if (!driving) return; driving = false; clearTimeout(fbT); CF_MOVED();"),
+    # idle redraw: an unchanged scene string is not written again, and a scene that has stayed identical for four
+    # renders is redrawn at most every 500 ms by the frame driver. A drag (invalidate) and a direct render still draw now.
+    ('P7 render skip', "art.innerHTML = inkScale(cfg.scene(st, PALS[st.pal]));",
+     "const drawn = inkScale(cfg.scene(st, PALS[st.pal])); if (drawn !== art._drawn){ art._drawn = drawn; art.innerHTML = drawn; ui._still = 0; } else ui._still++;"),
+    ('P7 render counters', "  ui.render = () => { _clipN = 0;", "  ui._still = 0; ui._lastDraw = 0;\n  ui.render = () => { _clipN = 0;"),
+    ('P7 frame throttle', "    ui.render(); if (steps.size) drive(); };",
+     "    if (!(ui._still > 3 && now - ui._lastDraw < 500)){ ui._lastDraw = now; ui.render(); } if (steps.size) drive(); };"),
+    ('P7 invalidate', "ui.invalidate = () => drive();", "ui.invalidate = () => { ui._still = 0; drive(); };"),
     # mountKeypad(): translatable names
     ('P2 keypad group', "pad.setAttribute('aria-label', 'Keypad');", "pad.setAttribute('aria-label', CF_T('Keypad')); pad.dataset.cftAria = 'Keypad';"),
     ('P2 keypad keys', "b.textContent = k.glyph; b.setAttribute('aria-label', k.name);",

@@ -1,0 +1,73 @@
+{
+  "id": "model:button.switch@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Push button, ideal switch",
+  "tier": "T1",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "pairs",
+      "text": "The legs of each pair are always joined; pressing joins the two pairs"
+    },
+    {
+      "id": "shorted",
+      "text": "A switched pair that is already joined in the circuit reports shorted"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "bounce",
+      "text": "Contact bounce"
+    },
+    {
+      "id": "contact-r",
+      "text": "Contact resistance"
+    },
+    {
+      "id": "rating",
+      "text": "Current and voltage rating"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "contact",
+      "value": 0,
+      "unit": "ohm",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:99",
+      "note": "joined nets, zero resistance"
+    }
+  ],
+  "validation": [
+    {
+      "id": "bench-solve-tests",
+      "kind": "self-consistency",
+      "dataset": "figures/engine/bench-solve.test.mjs: a push button pulls D2 up while pressed",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "figures/engine/bench-solve.js@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "A real button bounces for a few milliseconds; the model changes state once"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

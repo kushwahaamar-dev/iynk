@@ -1,0 +1,24 @@
+uptime: 13:32  up 21 days, 10:48, 1 user, load averages: 7.43 3.08 2.95
+cold-first blink 6.56 s
+cold-fresh-cache motor 1.17 s
+cold-fresh-cache knob 1.16 s
+warm1 blink 0.35 s
+warm1 motor 0.45 s
+warm1 knob 0.49 s
+warm2 blink 0.34 s
+warm2 motor 0.34 s
+warm2 knob 0.38 s
+warm3 blink 0.33 s
+warm3 motor 0.36 s
+warm3 knob 0.37 s
+warm-edited blink 0.45 s
+warm-edited motor 0.47 s
+warm-edited knob 0.47 s
+-rw-r--r--@ 1 amar  staff  2615 Oct 27 13:32 out/blink/blink.ino.hex
+-rw-r--r--@ 1 amar  staff  3972 Oct 27 13:32 out/blink/blink.ino.with_bootloader.hex
+-rw-r--r--@ 1 amar  staff  6653 Oct 27 13:32 out/knob/knob.ino.hex
+-rw-r--r--@ 1 amar  staff  7920 Oct 27 13:32 out/knob/knob.ino.with_bootloader.hex
+-rw-r--r--@ 1 amar  staff  3188 Oct 27 13:32 out/motor/motor.ino.hex
+-rw-r--r--@ 1 amar  staff  4532 Oct 27 13:32 out/motor/motor.ino.with_bootloader.hex
+Sketch uses 2358 bytes (7%) of program storage space. Maximum is 32256 bytes.
+Global variables use 188 bytes (9%) of dynamic memory, leaving 1860 bytes for local variables. Maximum is 2048 bytes.

@@ -1,0 +1,251 @@
+[
+ {
+  "name": "basys3-blink-cp",
+  "convMs": 1.8,
+  "devices": 16,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 1,
+   "Output": 1,
+   "Dff": 3,
+   "AndReduce": 1,
+   "Eq": 1,
+   "Not": 1,
+   "Addition": 2,
+   "BusGroup": 2,
+   "Constant": 4
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "basys3-blink",
+  "convMs": 0.5,
+  "devices": 16,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 1,
+   "Output": 1,
+   "Dff": 3,
+   "AndReduce": 1,
+   "Eq": 1,
+   "Not": 1,
+   "Addition": 2,
+   "BusGroup": 2,
+   "Constant": 4
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "basys3-counter-cp",
+  "convMs": 0.5,
+  "devices": 26,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 3,
+   "Output": 1,
+   "Dff": 5,
+   "AndReduce": 1,
+   "OrReduce": 1,
+   "Not": 2,
+   "Eq": 2,
+   "Addition": 2,
+   "And": 1,
+   "BusGroup": 3,
+   "Constant": 3,
+   "BusSlice": 2
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "basys3-counter",
+  "convMs": 0.5,
+  "devices": 26,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 3,
+   "Output": 1,
+   "Dff": 5,
+   "AndReduce": 1,
+   "OrReduce": 1,
+   "Not": 2,
+   "Eq": 2,
+   "Addition": 2,
+   "And": 1,
+   "BusGroup": 3,
+   "Constant": 3,
+   "BusSlice": 2
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "basys3-display",
+  "convMs": 1.3,
+  "devices": 32,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 2,
+   "Output": 3,
+   "Dff": 2,
+   "Memory": 1,
+   "Eq": 3,
+   "Addition": 2,
+   "Not": 1,
+   "Mux1Hot": 2,
+   "NorReduce": 1,
+   "BusGroup": 1,
+   "Constant": 10,
+   "BusSlice": 4
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "basys3-gates",
+  "convMs": 0.4,
+  "devices": 10,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 1,
+   "Output": 1,
+   "Not": 1,
+   "And": 1,
+   "Or": 1,
+   "Xor": 1,
+   "BusGroup": 1,
+   "BusSlice": 3
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "basys3-pwm",
+  "convMs": 0.5,
+  "devices": 19,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 2,
+   "Output": 2,
+   "Dff": 3,
+   "Addition": 2,
+   "Lt": 1,
+   "Eq": 1,
+   "Not": 1,
+   "ZeroExtend": 1,
+   "BusGroup": 1,
+   "Constant": 4,
+   "BusSlice": 1
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "de10-lite-blink",
+  "convMs": 0.3,
+  "devices": 16,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 1,
+   "Output": 1,
+   "Dff": 3,
+   "AndReduce": 1,
+   "Eq": 1,
+   "Not": 1,
+   "Addition": 2,
+   "BusGroup": 2,
+   "Constant": 4
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "de10-lite-counter",
+  "convMs": 0.5,
+  "devices": 25,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 2,
+   "Output": 1,
+   "Dff": 4,
+   "And": 1,
+   "Not": 1,
+   "Ne": 1,
+   "Addition": 2,
+   "Eq": 1,
+   "BusGroup": 2,
+   "Constant": 4,
+   "BusSlice": 6
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "de10-lite-hex",
+  "convMs": 0.6,
+  "devices": 18,
+  "subcircuits": 1,
+  "kinds": {
+   "Input": 1,
+   "Output": 7,
+   "Subcircuit": 3,
+   "ZeroExtend": 1,
+   "Constant": 3,
+   "BusSlice": 3
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "de10-lite-pwm",
+  "convMs": 0.7,
+  "devices": 40,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 2,
+   "Output": 2,
+   "Dff": 4,
+   "Not": 2,
+   "Ne": 2,
+   "AndReduce": 1,
+   "Eq": 2,
+   "Addition": 3,
+   "NorReduce": 1,
+   "Mux": 2,
+   "Lt": 1,
+   "ZeroExtend": 1,
+   "BusGroup": 6,
+   "Constant": 9,
+   "BusSlice": 2
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "de10-lite-switches",
+  "convMs": 0.3,
+  "devices": 10,
+  "subcircuits": 0,
+  "kinds": {
+   "Input": 2,
+   "Output": 1,
+   "Not": 1,
+   "Xor": 1,
+   "BusGroup": 1,
+   "BusSlice": 4
+  },
+  "circuit": "ok",
+  "convert": "ok"
+ },
+ {
+  "name": "starter-empty",
+  "convMs": 0.1,
+  "devices": 0,
+  "subcircuits": 0,
+  "kinds": {},
+  "circuit": "ok",
+  "convert": "ok"
+ }
+]

@@ -1,4 +1,5 @@
 import type { CalcBattery, CalcResult } from "../drone/calc";
+import type { BuildFlightOutputs } from "@/sim/flight/from-build";
 import type { CalcOutputs } from "./types";
 
 /** Maps the drone calculator's result for a design onto what the range needs. */
@@ -15,4 +16,9 @@ export function fromCalc(r: CalcResult, battery: CalcBattery, overKv = r.over): 
     chemistry: battery.liion ? "liion" : "lipo",
     overKv,
   };
+}
+
+/** Maps the parts model's numbers for a build onto what the range needs. */
+export function fromBuild(o: BuildFlightOutputs): CalcOutputs {
+  return { ...o };
 }

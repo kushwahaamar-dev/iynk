@@ -1,0 +1,18 @@
+{
+  "description": "BBC micro:bit V2 开发板，搭载 nRF52833 芯片，带 5x5 LED 点阵、按键 A 和 B 以及边缘连接器。",
+  "summary": "开发板在 iynk 解释器中用 MicroPython 运行你的程序。引脚、PWM、I2C、串口和时序遵循 microbit-v2 开发板配置。它不是 nRF52833 芯片本身。",
+  "layer": "固件运行时。",
+  "display": "与 LED 点阵共用。",
+  "button": "按键引脚：按下按键时读为 LOW。",
+  "i2c": "边缘连接器上的 I2C：P20 是 SDA，P19 是 SCL。",
+  "models": {
+    "1": "解释器按 micro:bit 引脚图运行的 MicroPython 子集。",
+    "2": "P0 到 P16、P19 和 P20 上的数字输入输出，每个引脚都支持 PWM。",
+    "3": "P0 到 P4 和 P10 上的 10 位模拟读取、P20 和 P19 上的 I2C 主机、串口输出，以及按下时读为 LOW 的按键 A（P5）和 B（P11）。"
+  },
+  "not": {
+    "1": "蓝牙无线电。",
+    "2": "麦克风和扬声器。"
+  },
+  "gap": "undefined 目前尚未列出电气额定值，因此这块开发板没有引脚过载检查。"
+}

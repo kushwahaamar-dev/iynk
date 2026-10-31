@@ -1,0 +1,48 @@
+{
+  "edit": {
+    "place": {
+      "offBoard": "That part needs the breadboard.",
+      "quota": "This project has reached its size limit. Remove something before adding more.",
+      "unknownDefinition": "That part is not in the library, so it was not placed.",
+      "readOnly": "This project is open read only, so parts cannot be added.",
+      "placed": "Placed {refdes}.",
+      "cancelled": "Placing cancelled."
+    }
+  },
+  "palette": {
+    "title": "Parts",
+    "search": "Search parts",
+    "results": {
+      "one": "{count} part",
+      "other": "{count} parts"
+    },
+    "empty": "No part matches {query}.",
+    "emptyHelp": "Try a shorter word, or a kind such as passive or display.",
+    "armed": "{name} is ready. Click the breadboard to place it, or press Enter to place it in the middle of the view.",
+    "place": "Place {name}",
+    "modelLabel": "Model",
+    "model": {
+      "modelled": "Modelled",
+      "partly-modelled": "Partly modelled",
+      "not-modelled-yet": "Not modelled yet"
+    },
+    "category": {
+      "microcontroller": "Microcontroller",
+      "dev-board": "Dev board",
+      "passive": "Passive",
+      "semiconductor": "Semiconductor",
+      "sensor": "Sensor",
+      "actuator": "Actuator",
+      "motor-driver": "Motor driver",
+      "power": "Power",
+      "display": "Display",
+      "communication": "Communication",
+      "mechanical": "Mechanical",
+      "robotics": "Robotics",
+      "drone": "Drone",
+      "fpga": "FPGA",
+      "instrument": "Instrument",
+      "virtual": "Virtual"
+    }
+  }
+}

@@ -40,6 +40,23 @@ export function sampleAt(events: readonly PinEvent[] | undefined, t: number): Pi
   return found;
 }
 
+type NodeSample = NonNullable<RunTrace['nodes']>[string][number];
+
+/** The last node reading at or before `tMs`; the samples are sorted by time. */
+export function sampleNodeAt(samples: readonly NodeSample[] | undefined, tMs: number): NodeSample | undefined {
+  let lo = 0;
+  let hi = (samples?.length ?? 0) - 1;
+  let found: NodeSample | undefined;
+  while (samples && lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (samples[mid].tMs <= tMs) {
+      found = samples[mid];
+      lo = mid + 1;
+    } else hi = mid - 1;
+  }
+  return found;
+}
+
 /** Times at which a driven pin went from low to high. */
 export function risingEdges(events: readonly PinEvent[] | undefined): number[] {
   const out: number[] = [];
@@ -163,7 +180,26 @@ export function evaluateCheck(check: Check, trace: RunTrace, ctx: CheckContext):
     }
     case 'state':
       return { ok: stateMatches(figureStateAt(trace, check.atMs, ctx.figure), check.equals) };
+    case 'node-voltage': {
+      const s = sampleNodeAt(trace.nodes?.[check.net], check.atMs);
+      return s ? { ok: inRange(s.v, check.volts), detail: `${s.v.toFixed(2)} V` } : { ok: false, detail: 'no reading' };
+    }
+    case 'supply-current': {
+      const i = sampleNodeAt(trace.nodes?.[check.net], check.atMs)?.i;
+      return i === undefined ? { ok: false, detail: 'no reading' } : { ok: inRange(i, check.amps), detail: `${i.toFixed(3)} A` };
+    }
   }
+}
+
+type WithoutLabel<T> = T extends unknown ? Omit<T, 'label'> : never;
+
+/** A check as a project stores it: a catalogue `Check` whose label may be inline text, plus the two analog kinds. */
+export type EvaluableCheck = (WithoutLabel<Check> & { label?: unknown }) | { kind: 'node-voltage' | 'supply-current' };
+
+/** One check of a project's own tests. The analog kinds need the circuit solver, so here they never pass. */
+export function evaluateProjectCheck(check: EvaluableCheck, trace: RunTrace, ctx: CheckContext): CheckResult {
+  if (check.kind === 'node-voltage' || check.kind === 'supply-current') return { ok: false, detail: 'needs-analog' };
+  return evaluateCheck({ ...check, label: '' } as Check, trace, ctx);
 }
 
 export function evaluateChecks(checks: readonly Check[], trace: RunTrace, ctx: CheckContext): CheckResult[] {

@@ -61,17 +61,17 @@ function LessonRow({ lang, board, lesson }: { lang: string; board: string; lesso
     <li>
       <Link
         href={`/${lang}/boards/${board}/${lesson.id}`}
-        className="-mx-2 flex min-h-11 items-center gap-3 rounded-ink-sm px-2 py-1.5 text-sm text-ink no-underline hover:bg-sunken"
+        className="-mx-2 flex min-h-11 items-center gap-3 rounded-lg px-2 py-2 text-sm text-ink no-underline hover:bg-sunken"
         aria-label={`${t("board.openLesson", { n: lesson.n, title: lesson.title })}${done ? ` · ${t("lesson.done")}` : ""}`}
       >
         <span
           aria-hidden="true"
           className={cx(
-            "tabular inline-flex size-6 shrink-0 items-center justify-center rounded-full border-[1.5px] font-ui text-xs font-bold",
+            "tabular inline-flex size-6 shrink-0 items-center justify-center rounded-full border font-ui text-xs font-bold",
             done ? "border-good bg-good text-paper" : "border-rule text-muted",
           )}
         >
-          {done ? <Icon name="check" size={12} /> : lesson.n}
+          {done ? <Icon name="check" size={16} /> : lesson.n}
         </span>
         <span className="min-w-0 flex-1 font-semibold leading-snug">{lesson.title}</span>
         <span className="shrink-0 text-xs text-muted">{t(`level.${lesson.level}`)}</span>
@@ -107,8 +107,8 @@ function Facts({ board }: { board: BoardOverview["board"] }) {
         {rows
           .filter(([, v]) => v !== null)
           .map(([k, v]) => (
-            <div key={k} className="min-w-0 border-b-[1.5px] border-rule py-2">
-              <dt className="ink-label">{k}</dt>
+            <div key={k} className="min-w-0 border-b border-rule py-2">
+              <dt className="field-label">{k}</dt>
               <dd className="font-semibold break-words">{v}</dd>
             </div>
           ))}
@@ -119,7 +119,7 @@ function Facts({ board }: { board: BoardOverview["board"] }) {
           <ul className="mt-1 flex flex-col gap-1 text-sm">
             {mcu.companions.map((c) => (
               <li key={c.part}>
-                <span className="font-mono font-semibold">{c.part}</span> · {tc(c.role)}
+                <code className="font-semibold">{c.part}</code> · {tc(c.role)}
               </li>
             ))}
           </ul>
@@ -155,7 +155,7 @@ function Power({ board }: { board: BoardOverview["board"] }) {
       <ul className="mt-1 flex flex-col gap-1 text-sm">
         {p.rails.map((r) => (
           <li key={r.name}>
-            <span className="font-mono font-semibold">{r.name}</span> · {t("board.volts", { n: r.volts })}
+            <code className="font-semibold">{r.name}</code> · {t("board.volts", { n: r.volts })}
             {r.maxCurrentMa ? ` · ${t("board.maxCurrent", { n: r.maxCurrentMa })}` : ""}
             {has(r.note) ? <span className="block text-muted">{tc(r.note)}</span> : null}
           </li>
@@ -202,7 +202,7 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
                   {t("board.press", { label: c.label })}
                 </Button>
                 <span className="min-w-0 flex-1">
-                  {c.pin && c.pin !== c.label ? <span className="me-1.5 font-mono text-muted">{c.pin}</span> : null}
+                  {c.pin && c.pin !== c.label ? <code className="me-2 text-muted">{c.pin}</code> : null}
                   {tc(c.effect)}
                 </span>
               </li>
@@ -270,7 +270,7 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
     });
   }, [store, figureOpts]);
 
-  useLabMoments(store, boardMoments, model.id);
+  useLabMoments(store, boardMoments);
   const figureSound = useFigureSound();
 
   const view = useLab(store, (s) => s.view);
@@ -405,7 +405,7 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
       }
       rail={
         <Panel>
-          <div className="flex shrink-0 flex-col gap-3 border-b-[1.5px] border-rule p-4">
+          <div className="flex shrink-0 flex-col gap-3 border-b border-rule p-4">
             <p className="line-clamp-3 text-sm leading-relaxed">{tc(board.tagline)}</p>
             <BoardProgress
               board={model.id}
@@ -428,8 +428,7 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
       }
       below={
         <div className="flex flex-col gap-8">
-          {/* Wide screens set the overview in two columns at a reading measure, rather than one column and a blank half. */}
-          <p className="ink-prose text-lg xl:max-w-[128ch] xl:columns-2 xl:gap-12">{tc(board.overview)}</p>
+          <p className="prose text-lg">{tc(board.overview)}</p>
           <Tabs label={t("board.reference")} tabs={belowTabs} defaultValue="pinout" phoneGrid />
         </div>
       }

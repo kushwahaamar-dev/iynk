@@ -1,0 +1,87 @@
+{
+  "title": "检查器",
+  "empty": {
+    "title": "未选择任何内容",
+    "hint": "点击画布上的元件，查看它的数值、引脚和位置。"
+  },
+  "many": {
+    "other": "已选择 {count} 项"
+  },
+  "sections": {
+    "identity": "标识",
+    "values": "数值",
+    "pins": "引脚",
+    "position": "位置与旋转",
+    "model": "模型",
+    "nets": "网络"
+  },
+  "identity": {
+    "refdes": "编号",
+    "label": "标签",
+    "refdesInvalid": "以字母开头，后面是字母和数字，最多 16 个字符。",
+    "refdesTaken": "{refdes} 已被另一个元件使用。"
+  },
+  "values": {
+    "none": "这个元件没有可设置的数值。",
+    "bound": "由项目参数决定。",
+    "default": "默认值：{value}"
+  },
+  "value": {
+    "empty": "请输入一个数值。",
+    "nan": "这不是数字。可以试试 330、4k7 或 0.33k。",
+    "range": "请使用 {min} 到 {max} 之间的值。",
+    "unit": "这里不能用这个单位。此数值的单位是{unit}。"
+  },
+  "units": {
+    "ohm": "欧姆",
+    "farad": "法拉",
+    "volt": "伏特",
+    "amp": "安培",
+    "hertz": "赫兹",
+    "second": "秒",
+    "none": "普通数字"
+  },
+  "pins": {
+    "unconnected": "未连接",
+    "inNet": "在网络 {name} 中",
+    "showAll": "显示全部",
+    "showLess": "收起"
+  },
+  "position": {
+    "x": "X（毫米）",
+    "y": "Y（毫米）",
+    "rotation": "旋转",
+    "degrees": "{deg} 度",
+    "invalid": "请输入 {min} 到 {max} 之间的数字。",
+    "notPlaced": "这个元件不在当前视图中。"
+  },
+  "nets": {
+    "none": "还没有网络。在两个引脚之间连一根线就会生成一个。",
+    "unnamed": "网络 {number}",
+    "pins": {
+      "other": "{count} 个引脚"
+    },
+    "focus": "在画布上高亮 {name}"
+  },
+  "select": {
+    "refuse": {
+      "last-board": "项目里唯一的主板不能删除。",
+      "read-only": "这个项目以只读方式打开，无法在这里修改。"
+    },
+    "deleted": {
+      "other": "已删除 {count} 项。撤销可以恢复。"
+    },
+    "copied": {
+      "other": "已复制 {count} 个元件。"
+    },
+    "copy": {
+      "nothing": "请至少选择一个元件再复制。"
+    },
+    "paste": {
+      "nothing": "没有可粘贴的内容。请先复制。"
+    },
+    "pasted": {
+      "other": "已粘贴 {count} 个元件。"
+    }
+  }
+}

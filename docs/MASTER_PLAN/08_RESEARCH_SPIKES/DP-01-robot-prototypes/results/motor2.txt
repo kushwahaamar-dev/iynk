@@ -1,0 +1,8 @@
+slow  duty 0.25 fine 114.3 cycle-closed-form 114.9 0.52% duty-avg V model 114.7 0.3%
+slow  duty 0.5 fine 229.2 cycle-closed-form 229.9 0.31% duty-avg V model 229.3 0.1%
+slow  duty 0.75 fine 344.2 cycle-closed-form 344.8 0.16% duty-avg V model 344.0 -0.1%
+coast duty 0.25 fine 188.1 cycle-closed-form 188.4 0.14% duty-avg V model 114.7 -39.0%
+coast duty 0.5 fine 316.6 cycle-closed-form 317.1 0.14% duty-avg V model 229.3 -27.6%
+coast duty 0.75 fine 395.8 cycle-closed-form 396.4 0.14% duty-avg V model 344.0 -13.1%
+closed-form cost per PWM cycle ns 108.57979591836735
+node $f.mjs  0.03s user 0.01s system 108% cpu 0.031 total

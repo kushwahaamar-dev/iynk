@@ -1,5 +1,6 @@
-import { InterpError, didYouMean, type SourcePos } from '../errors';
+import { InterpError, didYouMean, type DiagnosticCode, type SourcePos } from '../errors';
 import { Exec, PREEMPT, type Gen, type Program } from '../exec';
+import { HeapMeter, checkElements, checkString } from '../limits';
 import type { World } from '../world';
 import { parsePython, type PExpr, type PParam, type PStmt } from './parser';
 
@@ -159,9 +160,10 @@ EXC.UnboundLocalError = exc('UnboundLocalError', EXC.NameError);
 EXC.ModuleNotFoundError = exc('ModuleNotFoundError', EXC.ImportError);
 EXC.RecursionError = exc('RecursionError', EXC.RuntimeError);
 
-export function pyErr(cls: string, msg: string): PyRaise {
+export function pyErr(cls: string, msg: string, code?: DiagnosticCode): PyRaise {
   const e = new PyInstance(EXC[cls] ?? Exception);
   e.dict.set('args', new PyTuple([msg]));
+  if (code) e.dict.set('code', code);
   return new PyRaise(e);
 }
 
@@ -240,6 +242,7 @@ export class PyRt extends Exec {
   readonly modules = new Map<string, () => PyModule>();
   private loaded = new Map<string, PyModule>();
   readonly globals = new Scope(null, null, null);
+  readonly heap = new HeapMeter();
   private body: PStmt[];
   depth = 0;
   /** Current line, for tracebacks. */
@@ -266,7 +269,8 @@ export class PyRt extends Exec {
       const msg = excMessage(e.exc);
       const p = e.pos ?? this.line;
       const hint = name === 'NameError' ? (e.exc.dict.get('hint') as string | undefined) : name === 'KeyboardInterrupt' ? undefined : undefined;
-      return new InterpError('runtime', `${name}${msg ? `: ${msg}` : ''}`, p, hint);
+      const code = e.exc.dict.get('code') as DiagnosticCode | undefined;
+      return new InterpError('runtime', `${name}${msg ? `: ${msg}` : ''}`, p, hint, code && { code });
     }
     return e;
   }
@@ -490,6 +494,18 @@ export class PyRt extends Exec {
     if (e instanceof InterpError) return null;
     if (e instanceof RangeError) return pyErr('RecursionError', 'maximum recursion depth exceeded');
     return null;
+  }
+
+  /** Refuses a string past the cap and meters the big ones. */
+  textSize(len: number, p?: SourcePos): void {
+    checkString(len, p);
+    this.heap.chargeText(len, 'this string', p);
+  }
+
+  /** Refuses a list or tuple past the cap and meters the big ones. */
+  listSize(n: number, p?: SourcePos): void {
+    checkElements(n, 'list size', p);
+    this.heap.chargeItems(n, 'this list', p);
   }
 
   err(cls: string, msg: string, p?: SourcePos): PyRaise {
@@ -1062,9 +1078,18 @@ export class PyRt extends Exec {
       throw this.err('TypeError', `unsupported operand type(s) for ${op}: 'float' and '${typeName(b)}'`, p);
     }
     if (op === '+') {
-      if (typeof a === 'string' && typeof b === 'string') return a + b;
-      if (a instanceof PyList && b instanceof PyList) return new PyList([...a.items, ...b.items]);
-      if (a instanceof PyTuple && b instanceof PyTuple) return new PyTuple([...a.items, ...b.items]);
+      if (typeof a === 'string' && typeof b === 'string') {
+        this.textSize(a.length + b.length, p);
+        return a + b;
+      }
+      if (a instanceof PyList && b instanceof PyList) {
+        this.listSize(a.items.length + b.items.length, p);
+        return new PyList([...a.items, ...b.items]);
+      }
+      if (a instanceof PyTuple && b instanceof PyTuple) {
+        this.listSize(a.items.length + b.items.length, p);
+        return new PyTuple([...a.items, ...b.items]);
+      }
       if (a instanceof PyBytes && b instanceof PyBytes) return new PyBytes([...a.data, ...b.data]);
       if (typeof a === 'string' || typeof b === 'string') throw this.err('TypeError', `can only concatenate str (not "${typeName(typeof a === 'string' ? b : a)}") to str`, p);
     }
@@ -1072,9 +1097,15 @@ export class PyRt extends Exec {
       const [s, n] = isInt(a) ? [b, a] : [a, b];
       if (isInt(n)) {
         const k = Math.max(0, Number(toBig(n)));
-        if (typeof s === 'string') return s.repeat(k);
-        if (s instanceof PyList) return new PyList(Array.from({ length: k }, () => s.items).flat());
-        if (s instanceof PyTuple) return new PyTuple(Array.from({ length: k }, () => s.items).flat());
+        if (typeof s === 'string') {
+          this.textSize(s.length * k, p);
+          return s.repeat(k);
+        }
+        if (s instanceof PyList || s instanceof PyTuple) {
+          this.listSize(s.items.length * k, p);
+          const items = s.items.length ? Array.from({ length: k }, () => s.items).flat() : [];
+          return s instanceof PyList ? new PyList(items) : new PyTuple(items);
+        }
       }
     }
     if (op === '%' && typeof a === 'string') return this.percentFormat(a, b instanceof PyTuple ? b.items : [b], p);

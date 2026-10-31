@@ -1,0 +1,154 @@
+{
+  "title": "Añade tu propia pieza",
+  "intro": "Escribe los números de una hoja de datos o de tu propia medición. La pieza se guarda solo en este dispositivo.",
+  "kind": {
+    "label": "Tipo de pieza",
+    "motor": "Motor y hélice",
+    "pack": "Batería",
+    "esc": "ESC"
+  },
+  "motor": {
+    "heading": "Motor",
+    "name": "Nombre",
+    "kv": "kv (rpm por voltio)",
+    "r": "Resistencia (ohmios)",
+    "i0": "Corriente en vacío (A)",
+    "vMax": "Tensión máxima (V)",
+    "iMax": "Corriente máxima (A)",
+    "mass": "Masa (g)"
+  },
+  "prop": {
+    "heading": "Hélice",
+    "toggle": "Ajustar una hélice a este motor",
+    "toggleHint": "Una hélice necesita filas de la hoja de datos. Sus números de empuje y potencia se ajustan a ellas.",
+    "name": "Nombre",
+    "diameter": "Diámetro (pulgadas)",
+    "pitch": "Paso (pulgadas)",
+    "blades": "Palas",
+    "mass": "Masa (g)"
+  },
+  "rows": {
+    "label": "Filas de la hoja de datos",
+    "hint": "Una fila por línea: tensión de la batería (V), acelerador (0 a 1), empuje (g), corriente (A). Separa con tabuladores, punto y coma o comas. Hasta {max} filas.",
+    "placeholder": "11.1, 0.5, 420, 6.5",
+    "parsed": "Filas leídas",
+    "count": {
+      "one": "{count} fila leída",
+      "other": "{count} filas leídas"
+    },
+    "volts": "Batería V",
+    "throttle": "Acelerador",
+    "thrust": "Empuje g",
+    "current": "Corriente A",
+    "error": {
+      "tooMany": "Pegaste {count} filas. El límite es {max}.",
+      "columns": "La línea {line} necesita cuatro columnas.",
+      "notNumber": "La línea {line} tiene un valor que no es un número."
+    }
+  },
+  "fit": {
+    "heading": "Números ajustados",
+    "ct0": "Coeficiente de empuje ct0",
+    "cp0": "Coeficiente de potencia cp0",
+    "thrust": "Residuo de empuje",
+    "current": "Residuo de corriente",
+    "band": "Banda ±{percent} %. Es un residuo del ajuste, no una tolerancia.",
+    "needed": "Pega al menos cuatro filas de la hoja de datos de este motor y esta hélice para ver el ajuste.",
+    "unsettled": "El ajuste no se estabilizó. Revisa las filas."
+  },
+  "esc": {
+    "heading": "ESC",
+    "name": "Nombre",
+    "current": "Corriente continua (A)",
+    "burst": "Corriente de pico (A)",
+    "channels": "Canales de motor",
+    "protocol": "Protocolo de señal",
+    "efficiency": "Eficiencia (0 a 1)",
+    "vMax": "Tensión máxima (V)",
+    "mass": "Masa (g)"
+  },
+  "pack": {
+    "heading": "Batería",
+    "name": "Nombre",
+    "cells": "Celdas en serie",
+    "parallel": "Celdas en paralelo",
+    "capacity": "Capacidad (mAh)",
+    "c": "Tasa continua (C)",
+    "r": "Resistencia de celda (mOhm)",
+    "rHint": "Déjalo vacío para calcularla a partir de la capacidad.",
+    "chemistry": "Química",
+    "mass": "Masa (g)"
+  },
+  "source": {
+    "heading": "Fuente",
+    "title": "Título de la fuente",
+    "titleHint": "La hoja de datos, prueba o página de donde salen los números. Toda pieza necesita una.",
+    "url": "Enlace (opcional)",
+    "kind": "Tipo de fuente",
+    "kinds": {
+      "manufacturer-datasheet": "Hoja de datos del fabricante",
+      "own-measurement": "Mi propia medición",
+      "community": "Publicación de la comunidad"
+    },
+    "note": "Nota (opcional)"
+  },
+  "license": {
+    "label": "Licencia",
+    "hint": "Si lo dejas vacío, la pieza recibe una licencia para piezas aportadas por ti."
+  },
+  "version": "Versión",
+  "issues": {
+    "heading": "Por corregir",
+    "number": "Escribe un número.",
+    "name": "El nombre necesita letras o dígitos.",
+    "duplicate": "Otra pieza de aquí tiene el mismo nombre.",
+    "source": "Indica de dónde salen los números.",
+    "blocked": {
+      "one": "{count} cosa por corregir antes de guardar.",
+      "other": "{count} cosas por corregir antes de guardar."
+    }
+  },
+  "save": {
+    "action": "Guardar pieza",
+    "saving": "Guardando",
+    "saved": "{names} guardado. Ya está en el selector de piezas.",
+    "conflict": "Ya hay una pieza con este id y versión guardada con otros números. Cambia la versión para guardar esta.",
+    "failed": "No se pudo guardar la pieza en este dispositivo.",
+    "loading": "Abriendo la biblioteca de piezas"
+  },
+  "compare": {
+    "title": "Comparar montajes",
+    "pinnedLabel": "Fijado: {label}",
+    "memoryNote": "Los montajes fijados solo se guardan en esta pestaña. No se guardan en el proyecto y al recargar se borran.",
+    "empty": "Fija primero un montaje. Luego cambia una pieza y vuelve para ver cada número lado a lado.",
+    "figure": "Valor",
+    "pinnedHead": "Fijado",
+    "currentHead": "Actual",
+    "difference": "Diferencia",
+    "percent": "Cambio",
+    "blocked": "bloqueado",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} a 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Comprobaciones que cambiaron",
+    "checksNone": "Ninguna comprobación cambió de resultado.",
+    "checkChange": "{pinned} a {current}",
+    "assumptionsTitle": "Supuestos",
+    "assumptionsSame": "Ambos montajes usan los mismos supuestos.",
+    "assumptionsDiffer": "Los supuestos son distintos.",
+    "onlyPinned": "Solo en el montaje fijado",
+    "onlyCurrent": "Solo en el montaje actual",
+    "row": {
+      "auw": "Peso",
+      "tw": "Empuje sobre peso",
+      "hoverThrottle": "Gas en vuelo estacionario",
+      "hoverAmps": "Corriente en vuelo estacionario",
+      "maxAmps": "Corriente a gas máximo",
+      "enduranceTyp": "Tiempo de vuelo, típico"
+    }
+  }
+}

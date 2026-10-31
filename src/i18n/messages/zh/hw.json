@@ -9,7 +9,7 @@
   },
   "lab": {
     "unsupportedTitle": "这里没有可镜像的内容",
-    "unsupported": "硬件孪生可镜像 Arduino Uno R3、Nano 和 Uno R4 的 Board Lab 课程。打开其中一节课即可控制真实的开发板。"
+    "unsupported": "硬件孪生可镜像 Arduino Uno R3、Nano 和 Uno R4 的开发板实验室课程。打开其中一节课即可控制真实的开发板。"
   },
   "setup": {
     "title": "连接之前",

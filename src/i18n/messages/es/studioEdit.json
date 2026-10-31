@@ -1,0 +1,48 @@
+{
+  "edit": {
+    "place": {
+      "offBoard": "Esa pieza necesita la protoboard.",
+      "quota": "Este proyecto ha llegado a su límite de tamaño. Quita algo antes de añadir más.",
+      "unknownDefinition": "Esa pieza no está en la biblioteca, así que no se colocó.",
+      "readOnly": "Este proyecto está abierto en solo lectura, así que no se pueden añadir piezas.",
+      "placed": "Se colocó {refdes}.",
+      "cancelled": "Colocación cancelada."
+    }
+  },
+  "palette": {
+    "title": "Piezas",
+    "search": "Buscar piezas",
+    "results": {
+      "one": "{count} pieza",
+      "other": "{count} piezas"
+    },
+    "empty": "Ninguna pieza coincide con {query}.",
+    "emptyHelp": "Prueba con una palabra más corta o con un tipo, como pasivo o pantalla.",
+    "armed": "{name} está lista. Haz clic en la protoboard para colocarla, o pulsa Intro para colocarla en el centro de la vista.",
+    "place": "Colocar {name}",
+    "modelLabel": "Modelo",
+    "model": {
+      "modelled": "Modelada",
+      "partly-modelled": "Modelada en parte",
+      "not-modelled-yet": "Aún sin modelar"
+    },
+    "category": {
+      "microcontroller": "Microcontrolador",
+      "dev-board": "Placa de desarrollo",
+      "passive": "Pasivo",
+      "semiconductor": "Semiconductor",
+      "sensor": "Sensor",
+      "actuator": "Actuador",
+      "motor-driver": "Driver de motor",
+      "power": "Alimentación",
+      "display": "Pantalla",
+      "communication": "Comunicación",
+      "mechanical": "Mecánico",
+      "robotics": "Robótica",
+      "drone": "Dron",
+      "fpga": "FPGA",
+      "instrument": "Instrumento",
+      "virtual": "Virtual"
+    }
+  }
+}

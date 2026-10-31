@@ -1,0 +1,65 @@
+{
+  "title": "Code",
+  "files": "Fichiers de code",
+  "editor": "Code de {path}",
+  "noFiles": "Ce projet n'a aucun fichier de code",
+  "noFilesHint": "Les pièces qui exécutent du code, comme une carte, apportent leur fichier de firmware.",
+  "errors": "Erreurs : {count}",
+  "position": "Ligne {line}, colonne {col}",
+  "plain": "Texte brut",
+  "readOnly": "Lecture seule",
+  "copy": "Copier le code",
+  "copied": "Copié",
+  "run": "Lancer",
+  "escape": "Appuyez sur Échap, puis sur Tab, pour quitter l'éditeur.",
+  "tooBig": "Cette modification rendrait le fichier plus grand que 256 Ko, elle n'a donc pas été appliquée.",
+  "failed": "La modification n'a pas pu être enregistrée. L'éditeur affiche de nouveau le texte enregistré.",
+  "baton": {
+    "heldBy": "Clavier détenu par {name}",
+    "nobody": "Personne n'a le clavier",
+    "you": "Vous avez le clavier",
+    "ask": "Demander le clavier",
+    "giveBack": "Le rendre",
+    "viewer": "Vous pouvez voir cette salle mais pas la modifier",
+    "ended": "Cette salle est terminée"
+  },
+  "marker": {
+    "error": "Erreur, ligne {line}, colonne {col} :",
+    "warning": "Avertissement, ligne {line}, colonne {col} :"
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} n'est pas une bibliothèque que iynk sait simuler."
+    },
+    "limit": {
+      "statements": "Le code a fait trop d'étapes sans finir un tour. Cherche une boucle qui ne s'arrête jamais.",
+      "operations": "Une expression a demandé trop d'opérations. Vérifie les nombres qu'elle utilise.",
+      "memory": "Le code a utilisé plus de mémoire que le simulateur n'en permet.",
+      "time": "L'exécution a duré trop longtemps et a été arrêtée."
+    },
+    "static": {
+      "short-circuit": "L'alimentation et la masse sont reliées directement, sans rien entre elles. {count} broches se rejoignent sur cette connexion.",
+      "output-contention": "Des sorties qui pilotent la même connexion se battent entre elles. {count} broches s'y rejoignent."
+    },
+    "run": {
+      "noModel": "{part} n'a pas encore de modèle dans le simulateur, donc il ne fait rien pendant une exécution."
+    }
+  },
+  "problems": {
+    "title": "Problèmes",
+    "empty": "Aucun problème trouvé.",
+    "emptyHint": "Les erreurs du code et du câblage apparaissent ici.",
+    "count": {
+      "one": "1 problème",
+      "other": "{count} problèmes"
+    },
+    "line": "Ligne {line}",
+    "severity": {
+      "error": "Erreur",
+      "warning": "Avertissement",
+      "note": "Note"
+    },
+    "hint": "Piste : {hint}",
+    "jump": "Aller au problème"
+  }
+}

@@ -1,280 +1,222 @@
-// Browser telemetry (HX-CONTRACT H8). track() only queues; batches go out every
-// 10 s, at 50 events, right away for the few events people wait to see (a lap on
-// the leaderboard), and through sendBeacon when the page is hidden. It does
-// nothing on the server, and stops for the page once it learns that this
-// deployment has no database. It sends nothing while the learner has unticked
-// "Share anonymous usage counts" (settings.telemetry). No personal data: a random
-// session id, the event kind, and what the caller puts in data.
+"use client";
 
+// A local log of what happened in this browser: errors always, events only when the
+// usage switch is on. Nothing here talks to the network. The log lives in
+// localStorage["iynk:log:v1"] and the copy-for-a-bug-report text redacts the user's keys.
+
+import { useSyncExternalStore } from "react";
+import { version } from "../../../package.json";
+import { redact } from "@/lib/keys";
 import { getSettings } from "@/lib/settings/settings";
-import {
-  MAX_BODY_BYTES,
-  MAX_EVENTS_PER_BATCH,
-  SESSION_PATTERN,
-  type KnownPayloads,
-  type TelemetryBatch,
-  type TelemetryData,
-  type TelemetryEvent,
-  type TelemetryKind,
-} from "./kinds";
+import type { KnownPayloads, TelemetryData, TelemetryKind } from "./kinds";
 
-const ENDPOINT = "/api/telemetry";
-const STATUS_ENDPOINT = "/api/status";
-const SESSION_KEY = "iynk:telemetry:v1";
-const FLUSH_MS = 10_000;
-const FLUSH_AT = 50;
-const MAX_QUEUE = 1000;
-const SAMPLE_GAP_MS = 950; // flight.sample is 1 Hz
-const URGENT = new Set<TelemetryKind>(["flight.lap", "lesson.pass", "credential.issued"]);
+export type LogEntry = { t: number; kind: "event" | "error"; name: string; detail?: string };
 
-type Mode = "unknown" | "on" | "off";
-type Context = { room?: string; item?: string };
-type Tally = { kind: TallyKind; room?: string; item?: string; count: number; ts: number };
+const LOG_STORAGE_KEY = "iynk:log:v1";
+const MAX_ENTRIES = 200;
+const REPORT_ENTRIES = 50;
+const DETAIL_MAX = 500;
+const REPEAT_WINDOW_MS = 1000;
+const WRITE_DELAY_MS = 250;
+
 type TallyKind = { [K in keyof KnownPayloads]: KnownPayloads[K] extends { count: number } ? K : never }[keyof KnownPayloads];
 type DataFor<K extends TelemetryKind> = K extends keyof KnownPayloads ? KnownPayloads[K] & TelemetryData : TelemetryData;
 
-let mode: Mode = "unknown";
-let queue: TelemetryEvent[] = [];
-const tallies = new Map<string, Tally>();
-let context: Context = {};
-let session: string | null = null;
-let timer: ReturnType<typeof setTimeout> | null = null;
-let sending: Promise<void> | null = null;
-let flushAgain = false;
-let lastSample = 0;
-let wired = false;
-const flushedListeners = new Set<(kinds: ReadonlySet<TelemetryKind>) => void>();
+const EMPTY: readonly LogEntry[] = Object.freeze([]);
 
-const inBrowser = () => typeof window !== "undefined" && typeof document !== "undefined";
-/** The learner unticked usage sharing (the checkbox at the bottom of every lab page). */
-const optedOut = () => !getSettings().telemetry;
-const encoder = new TextEncoder();
+// The newest entry is last. The array is replaced, never changed, so readLog() is a stable snapshot.
+let entries: readonly LogEntry[] = EMPTY;
+let loaded = false;
+let writeTimer: ReturnType<typeof setTimeout> | undefined;
+let pagehideBound = false;
+// The last pushed entry before its repeat count was added to the detail.
+let lastPush: { kind: LogEntry["kind"]; name: string; detail: string | undefined; count: number } | null = null;
 
-function randomId(): string {
-  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
-  const bytes = crypto.getRandomValues(new Uint8Array(16));
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+const listeners = new Set<() => void>();
+
+const isEntry = (value: unknown): value is LogEntry => {
+  if (typeof value !== "object" || value === null) return false;
+  const entry = value as Record<string, unknown>;
+  return (
+    typeof entry.t === "number" &&
+    (entry.kind === "event" || entry.kind === "error") &&
+    typeof entry.name === "string" &&
+    (entry.detail === undefined || typeof entry.detail === "string")
+  );
+};
+
+function readStored(): readonly LogEntry[] {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(LOG_STORAGE_KEY) ?? "[]");
+    return Array.isArray(parsed) ? parsed.filter(isEntry).slice(-MAX_ENTRIES) : EMPTY;
+  } catch {
+    return EMPTY;
+  }
 }
 
-/**
- * This browser's anonymous telemetry id: random, kept in localStorage, never
- * tied to a person. Browser only; on the server it is "" (no id is ever shared
- * between requests).
- */
-export function telemetrySession(): string {
-  if (!inBrowser()) return "";
-  if (session) return session;
+function load() {
+  if (loaded || typeof window === "undefined") return;
+  loaded = true;
+  entries = readStored();
+}
+
+function notify() {
+  for (const listener of [...listeners]) listener();
+}
+
+function flush() {
+  clearTimeout(writeTimer);
+  writeTimer = undefined;
   try {
-    const saved = JSON.parse(localStorage.getItem(SESSION_KEY) ?? "null") as { session?: unknown } | null;
-    if (saved && typeof saved.session === "string" && SESSION_PATTERN.test(saved.session)) {
-      session = saved.session;
-      return session;
+    if (entries.length === 0) window.localStorage.removeItem(LOG_STORAGE_KEY);
+    else window.localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(entries));
+  } catch {
+    // The log stays in memory for this tab.
+  }
+}
+
+function scheduleWrite() {
+  if (!pagehideBound) {
+    pagehideBound = true;
+    window.addEventListener("pagehide", () => {
+      if (writeTimer !== undefined) flush();
+    });
+  }
+  writeTimer ??= setTimeout(flush, WRITE_DELAY_MS);
+}
+
+/** Text for a log line: strings as they are, anything else as JSON that survives cycles. */
+function describe(value: unknown): string {
+  if (typeof value === "string") return value;
+  const seen = new WeakSet<object>();
+  try {
+    return (
+      JSON.stringify(value, (_key, item: unknown) => {
+        if (typeof item === "bigint") return item.toString();
+        if (typeof item !== "object" || item === null) return item;
+        if (seen.has(item)) return "[circular]";
+        seen.add(item);
+        return item;
+      }) ?? String(value)
+    );
+  } catch {
+    return "[unreadable]";
+  }
+}
+
+function push(kind: LogEntry["kind"], name: string, detail?: string) {
+  if (typeof window === "undefined") return;
+  try {
+    load();
+    const now = Date.now();
+    const last = entries.at(-1);
+    if (last && lastPush && now - last.t < REPEAT_WINDOW_MS && lastPush.kind === kind && lastPush.name === name && lastPush.detail === detail) {
+      lastPush.count += 1;
+      const repeated = { ...last, t: now, detail: `${detail ?? ""} (x${lastPush.count})`.trim() };
+      entries = [...entries.slice(0, -1), repeated];
+    } else {
+      lastPush = { kind, name, detail, count: 1 };
+      entries = [...entries, { t: now, kind, name, ...(detail === undefined ? {} : { detail }) }].slice(-MAX_ENTRIES);
     }
+    scheduleWrite();
+    notify();
   } catch {
-    // Storage blocked or corrupt: a fresh id for this page load.
+    // The log must never throw into the app.
   }
-  session = randomId();
+}
+
+function clean(detail: string): string {
+  return redact(detail).slice(0, DETAIL_MAX);
+}
+
+export function readLog(): readonly LogEntry[] {
+  load();
+  return entries;
+}
+
+export function clearLog(): void {
+  clearTimeout(writeTimer);
+  writeTimer = undefined;
+  lastPush = null;
+  entries = EMPTY;
+  loaded = true;
   try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ session }));
+    window.localStorage.removeItem(LOG_STORAGE_KEY);
   } catch {
-    // Private mode: the id lives as long as the page.
+    // Nothing stored to remove.
   }
-  return session;
+  notify();
 }
 
-/** Room and item stamped on every following event (the room provider and lab pages set it). */
-export function setTelemetryContext(next: Context): void {
-  context = { ...context, ...next };
+export function logError(name: string, detail?: string): void {
+  push("error", name, detail === undefined ? undefined : clean(detail));
 }
 
-/** Records one event. Cheap and synchronous; safe to call anywhere, any time. */
-export function track<K extends TelemetryKind>(kind: K, data?: DataFor<K>): void {
-  if (!inBrowser() || mode === "off" || optedOut()) return;
-  const now = Date.now();
-  if (kind === "flight.sample") {
-    if (now - lastSample < SAMPLE_GAP_MS) return;
-    lastSample = now;
-  }
-  wire();
-  queue.push({ ts: now, kind, session: telemetrySession(), ...stamp(), data: data ?? {} });
-  if (queue.length > MAX_QUEUE) queue.splice(0, queue.length - MAX_QUEUE);
-  if (URGENT.has(kind) || queue.length >= FLUSH_AT) void flush();
-  else schedule();
-}
-
-/** Counts something that happens too often for one event each (LED blinks); sent as one event per flush. */
-export function tally(kind: TallyKind, n = 1): void {
-  if (!inBrowser() || mode === "off" || optedOut() || !(n > 0)) return;
-  wire();
-  const { room, item } = stamp();
-  const key = `${kind}|${room ?? ""}|${item ?? ""}`;
-  const entry = tallies.get(key) ?? { kind, room, item, count: 0, ts: Date.now() };
-  entry.count += Math.round(n);
-  tallies.set(key, entry);
-  schedule();
-}
-
-/** Called after a batch is stored, with the kinds it held (the leaderboard refreshes on a lap). */
-export function onFlushed(listener: (kinds: ReadonlySet<TelemetryKind>) => void): () => void {
-  flushedListeners.add(listener);
-  return () => flushedListeners.delete(listener);
-}
-
-function stamp(): Context {
-  return { ...(context.room ? { room: context.room } : {}), ...(context.item ? { item: context.item } : {}) };
-}
-
-function schedule() {
-  timer ??= setTimeout(() => {
-    timer = null;
-    void flush();
-  }, FLUSH_MS);
-}
-
-function wire() {
-  if (wired) return;
-  wired = true;
-  const onHide = () => {
-    if (document.visibilityState === "hidden") beacon();
+/** Records uncaught errors and rejected promises until the returned function is called. */
+export function installErrorCapture(): () => void {
+  const onError = (event: ErrorEvent) => {
+    const where = event.filename ? ` (${event.filename}:${event.lineno})` : "";
+    logError("window.error", `${event.message}${where}`);
   };
-  document.addEventListener("visibilitychange", onHide);
-  window.addEventListener("pagehide", beacon);
+  const onRejection = (event: PromiseRejectionEvent) => {
+    const { reason } = event;
+    logError("unhandledrejection", reason instanceof Error ? `${reason.name}: ${reason.message}` : describe(reason));
+  };
+  window.addEventListener("error", onError);
+  window.addEventListener("unhandledrejection", onRejection);
+  return () => {
+    window.removeEventListener("error", onError);
+    window.removeEventListener("unhandledrejection", onRejection);
+  };
 }
 
-function drainTallies() {
-  for (const t of tallies.values()) {
-    queue.push({
-      ts: t.ts,
-      kind: t.kind,
-      session: telemetrySession(),
-      ...(t.room ? { room: t.room } : {}),
-      ...(t.item ? { item: t.item } : {}),
-      data: { count: Math.min(t.count, 100_000) },
-    });
-  }
-  tallies.clear();
+/** The text a person pastes into a bug report. Their stored keys come out as [key]. */
+export function bugReportText(): string {
+  const shown = readLog().slice(-REPORT_ENTRIES);
+  const lines = shown.map((entry) => `${new Date(entry.t).toISOString()} ${entry.kind} ${entry.name}${entry.detail ? ` ${entry.detail}` : ""}`);
+  const text = [
+    "iynk bug report",
+    `version: ${version}`,
+    `user agent: ${navigator.userAgent}`,
+    `language: ${document.documentElement.lang || navigator.language}`,
+    `entries: ${shown.length} of ${entries.length}`,
+    "",
+    ...(lines.length > 0 ? lines : ["(no entries)"]),
+  ].join("\n");
+  return redact(text);
 }
 
-/** Splits the queue into bodies under the per-request event and byte caps. */
-function takeBatches(): TelemetryEvent[][] {
-  drainTallies();
-  const batches: TelemetryEvent[][] = [];
-  let current: TelemetryEvent[] = [];
-  let bytes = 64;
-  for (const event of queue.splice(0)) {
-    const size = encoder.encode(JSON.stringify(event)).length + 1;
-    if (size > MAX_BODY_BYTES - 64) continue; // can never fit; the server would refuse it anyway
-    if (current.length >= MAX_EVENTS_PER_BATCH || bytes + size > MAX_BODY_BYTES) {
-      batches.push(current);
-      current = [];
-      bytes = 64;
+function subscribeLog(listener: () => void): () => void {
+  listeners.add(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== LOG_STORAGE_KEY && event.key !== null) return;
+    if (writeTimer === undefined) {
+      entries = readStored();
+      lastPush = null;
     }
-    current.push(event);
-    bytes += size;
-  }
-  if (current.length) batches.push(current);
-  return batches;
+    listener();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
-async function featureOn(): Promise<Mode> {
-  if (mode !== "unknown") return mode;
-  try {
-    const res = await fetch(STATUS_ENDPOINT, { headers: { accept: "application/json" } });
-    if (res.ok) {
-      const body = (await res.json()) as { features?: { db?: unknown } };
-      mode = body.features?.db === true ? "on" : "off";
-    }
-  } catch {
-    // Offline: ask again at the next flush; the queue keeps the events meanwhile.
-  }
-  if (mode === "off") stop();
-  return mode;
+/** The log, newest last; empty on the server and during hydration. */
+export function useLog(): readonly LogEntry[] {
+  return useSyncExternalStore(subscribeLog, readLog, () => EMPTY);
 }
 
-/** Unticking the box with events still queued: they are dropped, never sent later. */
-function dropQueued() {
-  queue = [];
-  tallies.clear();
-  if (timer) clearTimeout(timer);
-  timer = null;
+function recordEvent(name: string, data?: unknown) {
+  if (typeof window === "undefined" || !getSettings().telemetry) return;
+  push("event", name, data === undefined ? undefined : clean(describe(data)));
 }
 
-function stop() {
-  mode = "off";
-  dropQueued();
+export function track<K extends TelemetryKind>(kind: K, data?: DataFor<K>): void {
+  recordEvent(kind, data);
 }
 
-/** Sends everything queued now. Resolves when the batches are stored, retried later, or dropped. */
-export function flush(): Promise<void> {
-  if (!inBrowser()) return Promise.resolve();
-  if (optedOut()) {
-    dropQueued();
-    return sending ?? Promise.resolve();
-  }
-  if (timer) clearTimeout(timer);
-  timer = null;
-  if (sending) {
-    // Events queued while a send is in flight go out right after it.
-    flushAgain = true;
-    return sending;
-  }
-  sending = (async () => {
-    try {
-      if ((await featureOn()) !== "on") {
-        if (mode === "unknown" && (queue.length || tallies.size)) schedule();
-        return;
-      }
-      for (const batch of takeBatches()) {
-        if (optedOut()) return dropQueued();
-        const outcome = await post(batch);
-        if (outcome === "retry") {
-          queue = [...batch, ...queue].slice(-MAX_QUEUE);
-          schedule();
-          return;
-        }
-        if (outcome === "off") return stop();
-        if (outcome === "stored") notify(batch);
-      }
-    } finally {
-      sending = null;
-      if (flushAgain) {
-        flushAgain = false;
-        void flush();
-      }
-    }
-  })();
-  return sending;
-}
-
-async function post(events: TelemetryEvent[]): Promise<"stored" | "retry" | "dropped" | "off"> {
-  try {
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ events, sentAt: Date.now() } satisfies TelemetryBatch),
-      keepalive: true,
-    });
-    if (res.ok) return "stored";
-    if (res.status === 503) return "off";
-    if (res.status === 429 || res.status >= 500) return "retry";
-    return "dropped";
-  } catch {
-    return "retry";
-  }
-}
-
-function notify(batch: TelemetryEvent[]) {
-  const kinds = new Set(batch.map((e) => e.kind));
-  for (const listener of flushedListeners) listener(kinds);
-}
-
-/** The page is going away: hand whatever is queued to sendBeacon, which outlives the page. */
-function beacon() {
-  if (optedOut()) return dropQueued();
-  if (mode === "off" || typeof navigator.sendBeacon !== "function") return;
-  for (const batch of takeBatches()) {
-    const payload: TelemetryBatch = { events: batch, sentAt: Date.now() };
-    const body = new Blob([JSON.stringify(payload)], { type: "application/json" });
-    if (!navigator.sendBeacon(ENDPOINT, body)) queue.push(...batch);
-  }
+export function tally(kind: TallyKind, n = 1): void {
+  recordEvent(kind, { count: n });
 }

@@ -1,0 +1,6 @@
+duty 0.3 rpm 8003 T N 1.23 gf 125 I A 4.8
+duty 0.5 rpm 13100 T N 3.28 gf 335 I A 10.3
+duty 0.7 rpm 17893 T N 6.13 gf 625 I A 17.8
+duty 1 rpm 24398 T N 11.39 gf 1161 I A 31.7
+torque residual -1.11e-15
+node $f.mjs  0.02s user 0.01s system 99% cpu 0.025 total

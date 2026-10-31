@@ -13,7 +13,7 @@ import {
   initialFly,
   reduceFly,
 } from "./fly";
-import type { BenchSummary } from "./store";
+import type { BenchSummary } from "./workshop";
 
 const ready: BenchSummary = {
   pick: { batt: "4s1500", motor: "2306-2450", prop: "5x4.3x3" },
@@ -142,10 +142,8 @@ describe("fly page store", () => {
     expect(reduceFly(content, before, { type: "challenge", challenge: { ...day, batt: "9s" } })).toBe(before);
   });
 
-  test("a room's snapshot leaves each pilot's own flight alone, and an unknown action changes nothing", () => {
+  test("an unknown action changes nothing", () => {
     const s = reduceFly(content, initialFly(content), { type: "break", id: "fcReversed", on: true });
-    const host = { ...initialFly(content), course: "elsewhere" };
-    expect(reduceFly(content, s, { type: "sync/hydrate", state: host })).toBe(s);
     expect(reduceFly(content, s, { type: "design/pick" } as unknown as Parameters<typeof reduceFly>[2])).toBe(s);
   });
 });

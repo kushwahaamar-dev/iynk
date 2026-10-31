@@ -1,0 +1,4936 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.breadboard-half",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "Half-size breadboard",
+    "generic": true,
+    "refdes_prefix": "BB",
+    "kind": "mechanical",
+    "category": "mechanical",
+    "description": {
+      "i18n_key": "parts.breadboard-half.description",
+      "en": "A half-size solderless breadboard: 30 columns of two five-hole strips and four power rails."
+    },
+    "legacy_ids": [
+      "breadboard"
+    ],
+    "tags": [
+      "breadboard",
+      "surface"
+    ]
+  },
+  "sources": [
+    {
+      "id": "benchbb",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-bb.js: the half board geometry",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Lines 8-19 give 30 columns, 82.5 by 54.5 mm, a 2.54 mm pitch, the row heights and the rail columns."
+    }
+  ],
+  "pins": [
+    {
+      "id": "a1",
+      "designator": "a1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b1",
+      "designator": "b1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c1",
+      "designator": "c1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d1",
+      "designator": "d1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e1",
+      "designator": "e1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f1",
+      "designator": "f1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g1",
+      "designator": "g1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h1",
+      "designator": "h1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i1",
+      "designator": "i1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j1",
+      "designator": "j1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 4.42,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a2",
+      "designator": "a2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b2",
+      "designator": "b2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c2",
+      "designator": "c2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d2",
+      "designator": "d2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e2",
+      "designator": "e2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f2",
+      "designator": "f2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g2",
+      "designator": "g2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h2",
+      "designator": "h2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i2",
+      "designator": "i2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j2",
+      "designator": "j2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a3",
+      "designator": "a3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b3",
+      "designator": "b3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c3",
+      "designator": "c3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d3",
+      "designator": "d3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e3",
+      "designator": "e3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f3",
+      "designator": "f3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g3",
+      "designator": "g3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h3",
+      "designator": "h3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i3",
+      "designator": "i3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j3",
+      "designator": "j3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a4",
+      "designator": "a4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b4",
+      "designator": "b4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c4",
+      "designator": "c4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d4",
+      "designator": "d4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e4",
+      "designator": "e4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f4",
+      "designator": "f4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g4",
+      "designator": "g4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h4",
+      "designator": "h4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i4",
+      "designator": "i4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j4",
+      "designator": "j4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a5",
+      "designator": "a5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b5",
+      "designator": "b5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c5",
+      "designator": "c5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d5",
+      "designator": "d5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e5",
+      "designator": "e5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f5",
+      "designator": "f5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g5",
+      "designator": "g5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h5",
+      "designator": "h5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i5",
+      "designator": "i5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j5",
+      "designator": "j5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a6",
+      "designator": "a6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b6",
+      "designator": "b6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c6",
+      "designator": "c6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d6",
+      "designator": "d6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e6",
+      "designator": "e6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f6",
+      "designator": "f6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g6",
+      "designator": "g6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h6",
+      "designator": "h6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i6",
+      "designator": "i6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j6",
+      "designator": "j6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a7",
+      "designator": "a7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b7",
+      "designator": "b7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c7",
+      "designator": "c7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d7",
+      "designator": "d7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e7",
+      "designator": "e7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f7",
+      "designator": "f7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g7",
+      "designator": "g7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h7",
+      "designator": "h7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i7",
+      "designator": "i7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j7",
+      "designator": "j7",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 19.66,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a8",
+      "designator": "a8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b8",
+      "designator": "b8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c8",
+      "designator": "c8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d8",
+      "designator": "d8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e8",
+      "designator": "e8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f8",
+      "designator": "f8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g8",
+      "designator": "g8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h8",
+      "designator": "h8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i8",
+      "designator": "i8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j8",
+      "designator": "j8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a9",
+      "designator": "a9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b9",
+      "designator": "b9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c9",
+      "designator": "c9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d9",
+      "designator": "d9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e9",
+      "designator": "e9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f9",
+      "designator": "f9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g9",
+      "designator": "g9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h9",
+      "designator": "h9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i9",
+      "designator": "i9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j9",
+      "designator": "j9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a10",
+      "designator": "a10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b10",
+      "designator": "b10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c10",
+      "designator": "c10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d10",
+      "designator": "d10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e10",
+      "designator": "e10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f10",
+      "designator": "f10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g10",
+      "designator": "g10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h10",
+      "designator": "h10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i10",
+      "designator": "i10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j10",
+      "designator": "j10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a11",
+      "designator": "a11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b11",
+      "designator": "b11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c11",
+      "designator": "c11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d11",
+      "designator": "d11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e11",
+      "designator": "e11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f11",
+      "designator": "f11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g11",
+      "designator": "g11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h11",
+      "designator": "h11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i11",
+      "designator": "i11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j11",
+      "designator": "j11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a12",
+      "designator": "a12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b12",
+      "designator": "b12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c12",
+      "designator": "c12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d12",
+      "designator": "d12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e12",
+      "designator": "e12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f12",
+      "designator": "f12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g12",
+      "designator": "g12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h12",
+      "designator": "h12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i12",
+      "designator": "i12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j12",
+      "designator": "j12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a13",
+      "designator": "a13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b13",
+      "designator": "b13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c13",
+      "designator": "c13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d13",
+      "designator": "d13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e13",
+      "designator": "e13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f13",
+      "designator": "f13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g13",
+      "designator": "g13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h13",
+      "designator": "h13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i13",
+      "designator": "i13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j13",
+      "designator": "j13",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 34.9,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a14",
+      "designator": "a14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b14",
+      "designator": "b14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c14",
+      "designator": "c14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d14",
+      "designator": "d14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e14",
+      "designator": "e14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f14",
+      "designator": "f14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g14",
+      "designator": "g14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h14",
+      "designator": "h14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i14",
+      "designator": "i14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j14",
+      "designator": "j14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a15",
+      "designator": "a15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b15",
+      "designator": "b15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c15",
+      "designator": "c15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d15",
+      "designator": "d15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e15",
+      "designator": "e15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f15",
+      "designator": "f15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g15",
+      "designator": "g15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h15",
+      "designator": "h15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i15",
+      "designator": "i15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j15",
+      "designator": "j15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a16",
+      "designator": "a16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b16",
+      "designator": "b16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c16",
+      "designator": "c16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d16",
+      "designator": "d16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e16",
+      "designator": "e16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f16",
+      "designator": "f16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g16",
+      "designator": "g16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h16",
+      "designator": "h16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i16",
+      "designator": "i16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j16",
+      "designator": "j16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a17",
+      "designator": "a17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b17",
+      "designator": "b17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c17",
+      "designator": "c17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d17",
+      "designator": "d17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e17",
+      "designator": "e17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f17",
+      "designator": "f17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g17",
+      "designator": "g17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h17",
+      "designator": "h17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i17",
+      "designator": "i17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j17",
+      "designator": "j17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a18",
+      "designator": "a18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b18",
+      "designator": "b18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c18",
+      "designator": "c18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d18",
+      "designator": "d18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e18",
+      "designator": "e18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f18",
+      "designator": "f18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g18",
+      "designator": "g18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h18",
+      "designator": "h18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i18",
+      "designator": "i18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j18",
+      "designator": "j18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a19",
+      "designator": "a19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b19",
+      "designator": "b19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c19",
+      "designator": "c19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d19",
+      "designator": "d19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e19",
+      "designator": "e19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f19",
+      "designator": "f19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g19",
+      "designator": "g19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h19",
+      "designator": "h19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i19",
+      "designator": "i19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j19",
+      "designator": "j19",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 50.14,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a20",
+      "designator": "a20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b20",
+      "designator": "b20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c20",
+      "designator": "c20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d20",
+      "designator": "d20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e20",
+      "designator": "e20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f20",
+      "designator": "f20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g20",
+      "designator": "g20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h20",
+      "designator": "h20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i20",
+      "designator": "i20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j20",
+      "designator": "j20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a21",
+      "designator": "a21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b21",
+      "designator": "b21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c21",
+      "designator": "c21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d21",
+      "designator": "d21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e21",
+      "designator": "e21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f21",
+      "designator": "f21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g21",
+      "designator": "g21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h21",
+      "designator": "h21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i21",
+      "designator": "i21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j21",
+      "designator": "j21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a22",
+      "designator": "a22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b22",
+      "designator": "b22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c22",
+      "designator": "c22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d22",
+      "designator": "d22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e22",
+      "designator": "e22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f22",
+      "designator": "f22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g22",
+      "designator": "g22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h22",
+      "designator": "h22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i22",
+      "designator": "i22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j22",
+      "designator": "j22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a23",
+      "designator": "a23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b23",
+      "designator": "b23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c23",
+      "designator": "c23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d23",
+      "designator": "d23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e23",
+      "designator": "e23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f23",
+      "designator": "f23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g23",
+      "designator": "g23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h23",
+      "designator": "h23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i23",
+      "designator": "i23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j23",
+      "designator": "j23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a24",
+      "designator": "a24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b24",
+      "designator": "b24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c24",
+      "designator": "c24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d24",
+      "designator": "d24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e24",
+      "designator": "e24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f24",
+      "designator": "f24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g24",
+      "designator": "g24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h24",
+      "designator": "h24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i24",
+      "designator": "i24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j24",
+      "designator": "j24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a25",
+      "designator": "a25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b25",
+      "designator": "b25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c25",
+      "designator": "c25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d25",
+      "designator": "d25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e25",
+      "designator": "e25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f25",
+      "designator": "f25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g25",
+      "designator": "g25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h25",
+      "designator": "h25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i25",
+      "designator": "i25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j25",
+      "designator": "j25",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 65.38,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a26",
+      "designator": "a26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b26",
+      "designator": "b26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c26",
+      "designator": "c26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d26",
+      "designator": "d26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e26",
+      "designator": "e26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f26",
+      "designator": "f26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g26",
+      "designator": "g26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h26",
+      "designator": "h26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i26",
+      "designator": "i26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j26",
+      "designator": "j26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a27",
+      "designator": "a27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b27",
+      "designator": "b27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c27",
+      "designator": "c27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d27",
+      "designator": "d27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e27",
+      "designator": "e27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f27",
+      "designator": "f27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g27",
+      "designator": "g27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h27",
+      "designator": "h27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i27",
+      "designator": "i27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j27",
+      "designator": "j27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a28",
+      "designator": "a28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b28",
+      "designator": "b28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c28",
+      "designator": "c28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d28",
+      "designator": "d28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e28",
+      "designator": "e28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f28",
+      "designator": "f28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g28",
+      "designator": "g28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h28",
+      "designator": "h28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i28",
+      "designator": "i28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j28",
+      "designator": "j28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a29",
+      "designator": "a29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b29",
+      "designator": "b29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c29",
+      "designator": "c29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d29",
+      "designator": "d29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e29",
+      "designator": "e29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f29",
+      "designator": "f29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g29",
+      "designator": "g29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h29",
+      "designator": "h29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i29",
+      "designator": "i29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j29",
+      "designator": "j29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "a30",
+      "designator": "a30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 40.44
+      }
+    },
+    {
+      "id": "b30",
+      "designator": "b30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 37.9
+      }
+    },
+    {
+      "id": "c30",
+      "designator": "c30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 35.36
+      }
+    },
+    {
+      "id": "d30",
+      "designator": "d30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 32.82
+      }
+    },
+    {
+      "id": "e30",
+      "designator": "e30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 30.28
+      }
+    },
+    {
+      "id": "f30",
+      "designator": "f30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 22.66
+      }
+    },
+    {
+      "id": "g30",
+      "designator": "g30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 20.12
+      }
+    },
+    {
+      "id": "h30",
+      "designator": "h30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 17.58
+      }
+    },
+    {
+      "id": "i30",
+      "designator": "i30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 15.04
+      }
+    },
+    {
+      "id": "j30",
+      "designator": "j30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 12.5
+      }
+    },
+    {
+      "id": "RAIL_TP2",
+      "designator": "RAIL_TP2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP3",
+      "designator": "RAIL_TP3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP4",
+      "designator": "RAIL_TP4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP5",
+      "designator": "RAIL_TP5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP6",
+      "designator": "RAIL_TP6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP8",
+      "designator": "RAIL_TP8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP9",
+      "designator": "RAIL_TP9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP10",
+      "designator": "RAIL_TP10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP11",
+      "designator": "RAIL_TP11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP12",
+      "designator": "RAIL_TP12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP14",
+      "designator": "RAIL_TP14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP15",
+      "designator": "RAIL_TP15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP16",
+      "designator": "RAIL_TP16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP17",
+      "designator": "RAIL_TP17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP18",
+      "designator": "RAIL_TP18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP20",
+      "designator": "RAIL_TP20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP21",
+      "designator": "RAIL_TP21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP22",
+      "designator": "RAIL_TP22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP23",
+      "designator": "RAIL_TP23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP24",
+      "designator": "RAIL_TP24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP26",
+      "designator": "RAIL_TP26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP27",
+      "designator": "RAIL_TP27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP28",
+      "designator": "RAIL_TP28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP29",
+      "designator": "RAIL_TP29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TP30",
+      "designator": "RAIL_TP30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 48.56
+      }
+    },
+    {
+      "id": "RAIL_TN2",
+      "designator": "RAIL_TN2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN3",
+      "designator": "RAIL_TN3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN4",
+      "designator": "RAIL_TN4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN5",
+      "designator": "RAIL_TN5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN6",
+      "designator": "RAIL_TN6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN8",
+      "designator": "RAIL_TN8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN9",
+      "designator": "RAIL_TN9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN10",
+      "designator": "RAIL_TN10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN11",
+      "designator": "RAIL_TN11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN12",
+      "designator": "RAIL_TN12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN14",
+      "designator": "RAIL_TN14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN15",
+      "designator": "RAIL_TN15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN16",
+      "designator": "RAIL_TN16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN17",
+      "designator": "RAIL_TN17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN18",
+      "designator": "RAIL_TN18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN20",
+      "designator": "RAIL_TN20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN21",
+      "designator": "RAIL_TN21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN22",
+      "designator": "RAIL_TN22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN23",
+      "designator": "RAIL_TN23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN24",
+      "designator": "RAIL_TN24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN26",
+      "designator": "RAIL_TN26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN27",
+      "designator": "RAIL_TN27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN28",
+      "designator": "RAIL_TN28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN29",
+      "designator": "RAIL_TN29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_TN30",
+      "designator": "RAIL_TN30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 51.1
+      }
+    },
+    {
+      "id": "RAIL_BP2",
+      "designator": "RAIL_BP2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP3",
+      "designator": "RAIL_BP3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP4",
+      "designator": "RAIL_BP4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP5",
+      "designator": "RAIL_BP5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP6",
+      "designator": "RAIL_BP6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP8",
+      "designator": "RAIL_BP8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP9",
+      "designator": "RAIL_BP9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP10",
+      "designator": "RAIL_BP10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP11",
+      "designator": "RAIL_BP11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP12",
+      "designator": "RAIL_BP12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP14",
+      "designator": "RAIL_BP14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP15",
+      "designator": "RAIL_BP15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP16",
+      "designator": "RAIL_BP16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP17",
+      "designator": "RAIL_BP17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP18",
+      "designator": "RAIL_BP18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP20",
+      "designator": "RAIL_BP20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP21",
+      "designator": "RAIL_BP21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP22",
+      "designator": "RAIL_BP22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP23",
+      "designator": "RAIL_BP23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP24",
+      "designator": "RAIL_BP24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP26",
+      "designator": "RAIL_BP26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP27",
+      "designator": "RAIL_BP27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP28",
+      "designator": "RAIL_BP28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP29",
+      "designator": "RAIL_BP29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BP30",
+      "designator": "RAIL_BP30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 3.4
+      }
+    },
+    {
+      "id": "RAIL_BN2",
+      "designator": "RAIL_BN2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.96,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN3",
+      "designator": "RAIL_BN3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 9.5,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN4",
+      "designator": "RAIL_BN4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 12.04,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN5",
+      "designator": "RAIL_BN5",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 14.58,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN6",
+      "designator": "RAIL_BN6",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 17.12,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN8",
+      "designator": "RAIL_BN8",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 22.2,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN9",
+      "designator": "RAIL_BN9",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 24.74,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN10",
+      "designator": "RAIL_BN10",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 27.28,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN11",
+      "designator": "RAIL_BN11",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 29.82,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN12",
+      "designator": "RAIL_BN12",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 32.36,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN14",
+      "designator": "RAIL_BN14",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 37.44,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN15",
+      "designator": "RAIL_BN15",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 39.98,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN16",
+      "designator": "RAIL_BN16",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 42.52,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN17",
+      "designator": "RAIL_BN17",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 45.06,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN18",
+      "designator": "RAIL_BN18",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 47.6,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN20",
+      "designator": "RAIL_BN20",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 52.68,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN21",
+      "designator": "RAIL_BN21",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 55.22,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN22",
+      "designator": "RAIL_BN22",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 57.76,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN23",
+      "designator": "RAIL_BN23",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 60.3,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN24",
+      "designator": "RAIL_BN24",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 62.84,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN26",
+      "designator": "RAIL_BN26",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 67.92,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN27",
+      "designator": "RAIL_BN27",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 70.46,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN28",
+      "designator": "RAIL_BN28",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 73,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN29",
+      "designator": "RAIL_BN29",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 75.54,
+        "y": 5.94
+      }
+    },
+    {
+      "id": "RAIL_BN30",
+      "designator": "RAIL_BN30",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 78.08,
+        "y": 5.94
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "S1u",
+      "kind": "strip",
+      "pins": [
+        "a1",
+        "b1",
+        "c1",
+        "d1",
+        "e1"
+      ]
+    },
+    {
+      "id": "S1l",
+      "kind": "strip",
+      "pins": [
+        "f1",
+        "g1",
+        "h1",
+        "i1",
+        "j1"
+      ]
+    },
+    {
+      "id": "S2u",
+      "kind": "strip",
+      "pins": [
+        "a2",
+        "b2",
+        "c2",
+        "d2",
+        "e2"
+      ]
+    },
+    {
+      "id": "S2l",
+      "kind": "strip",
+      "pins": [
+        "f2",
+        "g2",
+        "h2",
+        "i2",
+        "j2"
+      ]
+    },
+    {
+      "id": "S3u",
+      "kind": "strip",
+      "pins": [
+        "a3",
+        "b3",
+        "c3",
+        "d3",
+        "e3"
+      ]
+    },
+    {
+      "id": "S3l",
+      "kind": "strip",
+      "pins": [
+        "f3",
+        "g3",
+        "h3",
+        "i3",
+        "j3"
+      ]
+    },
+    {
+      "id": "S4u",
+      "kind": "strip",
+      "pins": [
+        "a4",
+        "b4",
+        "c4",
+        "d4",
+        "e4"
+      ]
+    },
+    {
+      "id": "S4l",
+      "kind": "strip",
+      "pins": [
+        "f4",
+        "g4",
+        "h4",
+        "i4",
+        "j4"
+      ]
+    },
+    {
+      "id": "S5u",
+      "kind": "strip",
+      "pins": [
+        "a5",
+        "b5",
+        "c5",
+        "d5",
+        "e5"
+      ]
+    },
+    {
+      "id": "S5l",
+      "kind": "strip",
+      "pins": [
+        "f5",
+        "g5",
+        "h5",
+        "i5",
+        "j5"
+      ]
+    },
+    {
+      "id": "S6u",
+      "kind": "strip",
+      "pins": [
+        "a6",
+        "b6",
+        "c6",
+        "d6",
+        "e6"
+      ]
+    },
+    {
+      "id": "S6l",
+      "kind": "strip",
+      "pins": [
+        "f6",
+        "g6",
+        "h6",
+        "i6",
+        "j6"
+      ]
+    },
+    {
+      "id": "S7u",
+      "kind": "strip",
+      "pins": [
+        "a7",
+        "b7",
+        "c7",
+        "d7",
+        "e7"
+      ]
+    },
+    {
+      "id": "S7l",
+      "kind": "strip",
+      "pins": [
+        "f7",
+        "g7",
+        "h7",
+        "i7",
+        "j7"
+      ]
+    },
+    {
+      "id": "S8u",
+      "kind": "strip",
+      "pins": [
+        "a8",
+        "b8",
+        "c8",
+        "d8",
+        "e8"
+      ]
+    },
+    {
+      "id": "S8l",
+      "kind": "strip",
+      "pins": [
+        "f8",
+        "g8",
+        "h8",
+        "i8",
+        "j8"
+      ]
+    },
+    {
+      "id": "S9u",
+      "kind": "strip",
+      "pins": [
+        "a9",
+        "b9",
+        "c9",
+        "d9",
+        "e9"
+      ]
+    },
+    {
+      "id": "S9l",
+      "kind": "strip",
+      "pins": [
+        "f9",
+        "g9",
+        "h9",
+        "i9",
+        "j9"
+      ]
+    },
+    {
+      "id": "S10u",
+      "kind": "strip",
+      "pins": [
+        "a10",
+        "b10",
+        "c10",
+        "d10",
+        "e10"
+      ]
+    },
+    {
+      "id": "S10l",
+      "kind": "strip",
+      "pins": [
+        "f10",
+        "g10",
+        "h10",
+        "i10",
+        "j10"
+      ]
+    },
+    {
+      "id": "S11u",
+      "kind": "strip",
+      "pins": [
+        "a11",
+        "b11",
+        "c11",
+        "d11",
+        "e11"
+      ]
+    },
+    {
+      "id": "S11l",
+      "kind": "strip",
+      "pins": [
+        "f11",
+        "g11",
+        "h11",
+        "i11",
+        "j11"
+      ]
+    },
+    {
+      "id": "S12u",
+      "kind": "strip",
+      "pins": [
+        "a12",
+        "b12",
+        "c12",
+        "d12",
+        "e12"
+      ]
+    },
+    {
+      "id": "S12l",
+      "kind": "strip",
+      "pins": [
+        "f12",
+        "g12",
+        "h12",
+        "i12",
+        "j12"
+      ]
+    },
+    {
+      "id": "S13u",
+      "kind": "strip",
+      "pins": [
+        "a13",
+        "b13",
+        "c13",
+        "d13",
+        "e13"
+      ]
+    },
+    {
+      "id": "S13l",
+      "kind": "strip",
+      "pins": [
+        "f13",
+        "g13",
+        "h13",
+        "i13",
+        "j13"
+      ]
+    },
+    {
+      "id": "S14u",
+      "kind": "strip",
+      "pins": [
+        "a14",
+        "b14",
+        "c14",
+        "d14",
+        "e14"
+      ]
+    },
+    {
+      "id": "S14l",
+      "kind": "strip",
+      "pins": [
+        "f14",
+        "g14",
+        "h14",
+        "i14",
+        "j14"
+      ]
+    },
+    {
+      "id": "S15u",
+      "kind": "strip",
+      "pins": [
+        "a15",
+        "b15",
+        "c15",
+        "d15",
+        "e15"
+      ]
+    },
+    {
+      "id": "S15l",
+      "kind": "strip",
+      "pins": [
+        "f15",
+        "g15",
+        "h15",
+        "i15",
+        "j15"
+      ]
+    },
+    {
+      "id": "S16u",
+      "kind": "strip",
+      "pins": [
+        "a16",
+        "b16",
+        "c16",
+        "d16",
+        "e16"
+      ]
+    },
+    {
+      "id": "S16l",
+      "kind": "strip",
+      "pins": [
+        "f16",
+        "g16",
+        "h16",
+        "i16",
+        "j16"
+      ]
+    },
+    {
+      "id": "S17u",
+      "kind": "strip",
+      "pins": [
+        "a17",
+        "b17",
+        "c17",
+        "d17",
+        "e17"
+      ]
+    },
+    {
+      "id": "S17l",
+      "kind": "strip",
+      "pins": [
+        "f17",
+        "g17",
+        "h17",
+        "i17",
+        "j17"
+      ]
+    },
+    {
+      "id": "S18u",
+      "kind": "strip",
+      "pins": [
+        "a18",
+        "b18",
+        "c18",
+        "d18",
+        "e18"
+      ]
+    },
+    {
+      "id": "S18l",
+      "kind": "strip",
+      "pins": [
+        "f18",
+        "g18",
+        "h18",
+        "i18",
+        "j18"
+      ]
+    },
+    {
+      "id": "S19u",
+      "kind": "strip",
+      "pins": [
+        "a19",
+        "b19",
+        "c19",
+        "d19",
+        "e19"
+      ]
+    },
+    {
+      "id": "S19l",
+      "kind": "strip",
+      "pins": [
+        "f19",
+        "g19",
+        "h19",
+        "i19",
+        "j19"
+      ]
+    },
+    {
+      "id": "S20u",
+      "kind": "strip",
+      "pins": [
+        "a20",
+        "b20",
+        "c20",
+        "d20",
+        "e20"
+      ]
+    },
+    {
+      "id": "S20l",
+      "kind": "strip",
+      "pins": [
+        "f20",
+        "g20",
+        "h20",
+        "i20",
+        "j20"
+      ]
+    },
+    {
+      "id": "S21u",
+      "kind": "strip",
+      "pins": [
+        "a21",
+        "b21",
+        "c21",
+        "d21",
+        "e21"
+      ]
+    },
+    {
+      "id": "S21l",
+      "kind": "strip",
+      "pins": [
+        "f21",
+        "g21",
+        "h21",
+        "i21",
+        "j21"
+      ]
+    },
+    {
+      "id": "S22u",
+      "kind": "strip",
+      "pins": [
+        "a22",
+        "b22",
+        "c22",
+        "d22",
+        "e22"
+      ]
+    },
+    {
+      "id": "S22l",
+      "kind": "strip",
+      "pins": [
+        "f22",
+        "g22",
+        "h22",
+        "i22",
+        "j22"
+      ]
+    },
+    {
+      "id": "S23u",
+      "kind": "strip",
+      "pins": [
+        "a23",
+        "b23",
+        "c23",
+        "d23",
+        "e23"
+      ]
+    },
+    {
+      "id": "S23l",
+      "kind": "strip",
+      "pins": [
+        "f23",
+        "g23",
+        "h23",
+        "i23",
+        "j23"
+      ]
+    },
+    {
+      "id": "S24u",
+      "kind": "strip",
+      "pins": [
+        "a24",
+        "b24",
+        "c24",
+        "d24",
+        "e24"
+      ]
+    },
+    {
+      "id": "S24l",
+      "kind": "strip",
+      "pins": [
+        "f24",
+        "g24",
+        "h24",
+        "i24",
+        "j24"
+      ]
+    },
+    {
+      "id": "S25u",
+      "kind": "strip",
+      "pins": [
+        "a25",
+        "b25",
+        "c25",
+        "d25",
+        "e25"
+      ]
+    },
+    {
+      "id": "S25l",
+      "kind": "strip",
+      "pins": [
+        "f25",
+        "g25",
+        "h25",
+        "i25",
+        "j25"
+      ]
+    },
+    {
+      "id": "S26u",
+      "kind": "strip",
+      "pins": [
+        "a26",
+        "b26",
+        "c26",
+        "d26",
+        "e26"
+      ]
+    },
+    {
+      "id": "S26l",
+      "kind": "strip",
+      "pins": [
+        "f26",
+        "g26",
+        "h26",
+        "i26",
+        "j26"
+      ]
+    },
+    {
+      "id": "S27u",
+      "kind": "strip",
+      "pins": [
+        "a27",
+        "b27",
+        "c27",
+        "d27",
+        "e27"
+      ]
+    },
+    {
+      "id": "S27l",
+      "kind": "strip",
+      "pins": [
+        "f27",
+        "g27",
+        "h27",
+        "i27",
+        "j27"
+      ]
+    },
+    {
+      "id": "S28u",
+      "kind": "strip",
+      "pins": [
+        "a28",
+        "b28",
+        "c28",
+        "d28",
+        "e28"
+      ]
+    },
+    {
+      "id": "S28l",
+      "kind": "strip",
+      "pins": [
+        "f28",
+        "g28",
+        "h28",
+        "i28",
+        "j28"
+      ]
+    },
+    {
+      "id": "S29u",
+      "kind": "strip",
+      "pins": [
+        "a29",
+        "b29",
+        "c29",
+        "d29",
+        "e29"
+      ]
+    },
+    {
+      "id": "S29l",
+      "kind": "strip",
+      "pins": [
+        "f29",
+        "g29",
+        "h29",
+        "i29",
+        "j29"
+      ]
+    },
+    {
+      "id": "S30u",
+      "kind": "strip",
+      "pins": [
+        "a30",
+        "b30",
+        "c30",
+        "d30",
+        "e30"
+      ]
+    },
+    {
+      "id": "S30l",
+      "kind": "strip",
+      "pins": [
+        "f30",
+        "g30",
+        "h30",
+        "i30",
+        "j30"
+      ]
+    },
+    {
+      "id": "RAIL_TP",
+      "kind": "strip",
+      "pins": [
+        "RAIL_TP2",
+        "RAIL_TP3",
+        "RAIL_TP4",
+        "RAIL_TP5",
+        "RAIL_TP6",
+        "RAIL_TP8",
+        "RAIL_TP9",
+        "RAIL_TP10",
+        "RAIL_TP11",
+        "RAIL_TP12",
+        "RAIL_TP14",
+        "RAIL_TP15",
+        "RAIL_TP16",
+        "RAIL_TP17",
+        "RAIL_TP18",
+        "RAIL_TP20",
+        "RAIL_TP21",
+        "RAIL_TP22",
+        "RAIL_TP23",
+        "RAIL_TP24",
+        "RAIL_TP26",
+        "RAIL_TP27",
+        "RAIL_TP28",
+        "RAIL_TP29",
+        "RAIL_TP30"
+      ]
+    },
+    {
+      "id": "RAIL_TN",
+      "kind": "strip",
+      "pins": [
+        "RAIL_TN2",
+        "RAIL_TN3",
+        "RAIL_TN4",
+        "RAIL_TN5",
+        "RAIL_TN6",
+        "RAIL_TN8",
+        "RAIL_TN9",
+        "RAIL_TN10",
+        "RAIL_TN11",
+        "RAIL_TN12",
+        "RAIL_TN14",
+        "RAIL_TN15",
+        "RAIL_TN16",
+        "RAIL_TN17",
+        "RAIL_TN18",
+        "RAIL_TN20",
+        "RAIL_TN21",
+        "RAIL_TN22",
+        "RAIL_TN23",
+        "RAIL_TN24",
+        "RAIL_TN26",
+        "RAIL_TN27",
+        "RAIL_TN28",
+        "RAIL_TN29",
+        "RAIL_TN30"
+      ]
+    },
+    {
+      "id": "RAIL_BP",
+      "kind": "strip",
+      "pins": [
+        "RAIL_BP2",
+        "RAIL_BP3",
+        "RAIL_BP4",
+        "RAIL_BP5",
+        "RAIL_BP6",
+        "RAIL_BP8",
+        "RAIL_BP9",
+        "RAIL_BP10",
+        "RAIL_BP11",
+        "RAIL_BP12",
+        "RAIL_BP14",
+        "RAIL_BP15",
+        "RAIL_BP16",
+        "RAIL_BP17",
+        "RAIL_BP18",
+        "RAIL_BP20",
+        "RAIL_BP21",
+        "RAIL_BP22",
+        "RAIL_BP23",
+        "RAIL_BP24",
+        "RAIL_BP26",
+        "RAIL_BP27",
+        "RAIL_BP28",
+        "RAIL_BP29",
+        "RAIL_BP30"
+      ]
+    },
+    {
+      "id": "RAIL_BN",
+      "kind": "strip",
+      "pins": [
+        "RAIL_BN2",
+        "RAIL_BN3",
+        "RAIL_BN4",
+        "RAIL_BN5",
+        "RAIL_BN6",
+        "RAIL_BN8",
+        "RAIL_BN9",
+        "RAIL_BN10",
+        "RAIL_BN11",
+        "RAIL_BN12",
+        "RAIL_BN14",
+        "RAIL_BN15",
+        "RAIL_BN16",
+        "RAIL_BN17",
+        "RAIL_BN18",
+        "RAIL_BN20",
+        "RAIL_BN21",
+        "RAIL_BN22",
+        "RAIL_BN23",
+        "RAIL_BN24",
+        "RAIL_BN26",
+        "RAIL_BN27",
+        "RAIL_BN28",
+        "RAIL_BN29",
+        "RAIL_BN30"
+      ]
+    }
+  ],
+  "ratings": {},
+  "dimensions": {
+    "package": "half-size breadboard, 400 holes",
+    "body": {
+      "w": 82.5,
+      "h": 54.5,
+      "d": 8.5
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "benchbb",
+      "loc": "figures/engine/bench-bb.js:8-19"
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "Holes in one strip conduct to each other. The rails run the full length of the board."
+    },
+    "layers": [
+      {
+        "id": "strips",
+        "domain": "analog",
+        "summary": {
+          "en": "A conductor. The strips are joined by the nets the document holds for each leg, not by a solver element."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The breadboard has no electrical behaviour of its own. Which holes are joined is the document netlist."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "modelled",
+    "what_it_models": [
+      {
+        "en": "Each column half of five holes and each power rail is one conductor."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Contact resistance, stray capacitance between strips and the break in the middle of a long power rail."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "rail_gap",
+        "text": {
+          "en": "The rails are continuous here. Some half-size boards split them; this one is modelled as unbroken."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "strip_layout",
+        "kind": "conformance",
+        "file": "src/parts/breadboard-data.test.ts",
+        "state": "present",
+        "note": "Checks the hole count, the strips and that every hole is in exactly one strip."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "breadboard",
+        "path": "public/figures/parts/breadboard.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Breadboard",
+      "body_colour": "#e8e4da",
+      "show_pin_labels": false
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-28",
+    "third_party_content": false,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-28",
+        "note": "First descriptor, generated from figures/engine/bench-bb.js.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

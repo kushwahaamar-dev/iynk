@@ -1,0 +1,154 @@
+{
+  "title": "Add your own part",
+  "intro": "Type the numbers from a datasheet or from your own bench test. The part is saved on this device only.",
+  "kind": {
+    "label": "Part type",
+    "motor": "Motor and propeller",
+    "pack": "Battery",
+    "esc": "ESC"
+  },
+  "motor": {
+    "heading": "Motor",
+    "name": "Name",
+    "kv": "kv (rpm per volt)",
+    "r": "Resistance (ohm)",
+    "i0": "Current with no load (A)",
+    "vMax": "Highest voltage (V)",
+    "iMax": "Highest current (A)",
+    "mass": "Mass (g)"
+  },
+  "prop": {
+    "heading": "Propeller",
+    "toggle": "Fit a propeller to this motor",
+    "toggleHint": "A propeller needs datasheet rows. Its thrust and power numbers are fitted to them.",
+    "name": "Name",
+    "diameter": "Diameter (in)",
+    "pitch": "Pitch (in)",
+    "blades": "Blades",
+    "mass": "Mass (g)"
+  },
+  "rows": {
+    "label": "Datasheet rows",
+    "hint": "One row per line: pack voltage (V), throttle (0 to 1), thrust (g), current (A). Separate with tabs, semicolons or commas. Up to {max} rows.",
+    "placeholder": "11.1, 0.5, 420, 6.5",
+    "parsed": "Rows read",
+    "count": {
+      "one": "{count} row read",
+      "other": "{count} rows read"
+    },
+    "volts": "Pack V",
+    "throttle": "Throttle",
+    "thrust": "Thrust g",
+    "current": "Current A",
+    "error": {
+      "tooMany": "{count} rows pasted. The limit is {max}.",
+      "columns": "Line {line} needs four columns.",
+      "notNumber": "Line {line} has a value that is not a number."
+    }
+  },
+  "fit": {
+    "heading": "Fitted numbers",
+    "ct0": "Thrust coefficient ct0",
+    "cp0": "Power coefficient cp0",
+    "thrust": "Thrust residual",
+    "current": "Current residual",
+    "band": "Band ±{percent} %. This is a fit residual, not a tolerance.",
+    "needed": "Paste at least four datasheet rows that match this motor and propeller to see the fit.",
+    "unsettled": "The fit did not settle. Check the rows."
+  },
+  "esc": {
+    "heading": "ESC",
+    "name": "Name",
+    "current": "Continuous current (A)",
+    "burst": "Burst current (A)",
+    "channels": "Motor channels",
+    "protocol": "Signal protocol",
+    "efficiency": "Efficiency (0 to 1)",
+    "vMax": "Highest voltage (V)",
+    "mass": "Mass (g)"
+  },
+  "pack": {
+    "heading": "Battery",
+    "name": "Name",
+    "cells": "Cells in series",
+    "parallel": "Cells in parallel",
+    "capacity": "Capacity (mAh)",
+    "c": "Continuous rating (C)",
+    "r": "Cell resistance (mOhm)",
+    "rHint": "Leave empty to set it from the capacity.",
+    "chemistry": "Chemistry",
+    "mass": "Mass (g)"
+  },
+  "source": {
+    "heading": "Source",
+    "title": "Source title",
+    "titleHint": "The datasheet, test or page the numbers came from. Every part needs one.",
+    "url": "Link (optional)",
+    "kind": "Source type",
+    "kinds": {
+      "manufacturer-datasheet": "Manufacturer datasheet",
+      "own-measurement": "My own measurement",
+      "community": "Community post"
+    },
+    "note": "Note (optional)"
+  },
+  "license": {
+    "label": "Licence",
+    "hint": "Left empty, the part gets a licence for parts you supply yourself."
+  },
+  "version": "Version",
+  "issues": {
+    "heading": "To fix",
+    "number": "Enter a number.",
+    "name": "The name needs letters or digits.",
+    "duplicate": "Another part here has the same name.",
+    "source": "Add where the numbers came from.",
+    "blocked": {
+      "one": "{count} thing to fix before you can save.",
+      "other": "{count} things to fix before you can save."
+    }
+  },
+  "save": {
+    "action": "Save part",
+    "saving": "Saving",
+    "saved": "Saved {names}. It is now in the part picker.",
+    "conflict": "A part with this id and version is already saved with other numbers. Change the version to save this one.",
+    "failed": "The part could not be saved on this device.",
+    "loading": "Opening the part library"
+  },
+  "compare": {
+    "title": "Compare builds",
+    "pinnedLabel": "Pinned: {label}",
+    "memoryNote": "Pinned builds are kept in this tab only. They are not saved to the project, and a reload clears them.",
+    "empty": "Pin a build first. Then change a part and come back to see each number side by side.",
+    "figure": "Figure",
+    "pinnedHead": "Pinned",
+    "currentHead": "Current",
+    "difference": "Difference",
+    "percent": "Change",
+    "blocked": "blocked",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} to 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Checks that changed",
+    "checksNone": "No check changed its result.",
+    "checkChange": "{pinned} to {current}",
+    "assumptionsTitle": "Assumptions",
+    "assumptionsSame": "Both builds use the same assumptions.",
+    "assumptionsDiffer": "The assumptions differ.",
+    "onlyPinned": "Only in the pinned build",
+    "onlyCurrent": "Only in the current build",
+    "row": {
+      "auw": "Weight",
+      "tw": "Thrust to weight",
+      "hoverThrottle": "Hover throttle",
+      "hoverAmps": "Current at hover",
+      "maxAmps": "Current at full throttle",
+      "enduranceTyp": "Flight time, typical"
+    }
+  }
+}

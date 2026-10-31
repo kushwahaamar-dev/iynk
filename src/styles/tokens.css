@@ -1,0 +1,303 @@
+/*
+  iynk look: warm paper, ink lines, the five Colorfigures palettes and a warm
+  technical monochrome, set in Geist and Geist Mono. Light/mid/dark bands match the figure engine
+  (figures/vendor/colorfigures/core.js) so host chrome and figures agree.
+
+  Theme: <html data-theme="light|dark"> forces a theme; no attribute (or
+  "system") follows prefers-color-scheme. Figures stay paper plates in both
+  themes (colorfigures-guide 2.3): in dark mode the plate paper is dimmed to
+  #e4ddcf and keeps dark ink, everything around it goes dark.
+*/
+
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* static: every palette variable is emitted, so figures' inline styles and
+   canvas code can read var(--color-cobalt-d) without a utility using it. */
+@theme static {
+  --color-tomato: #ef6a4c;
+  --color-tomato-l: #ef6a4c;
+  --color-tomato-m: #cf5038;
+  --color-tomato-d: #4a2219;
+  --color-mustard: #f4b829;
+  --color-mustard-l: #f4b829;
+  --color-mustard-m: #d49c1f;
+  --color-mustard-d: #4e4a18;
+  --color-mint: #93d3b0;
+  --color-mint-l: #93d3b0;
+  --color-mint-m: #71b693;
+  --color-mint-d: #1f4034;
+  --color-cobalt: #76a0e2;
+  --color-cobalt-l: #76a0e2;
+  --color-cobalt-m: #5a82c6;
+  --color-cobalt-d: #1c2948;
+  --color-blush: #f3a6bb;
+  --color-blush-l: #f3a6bb;
+  --color-blush-m: #d8869c;
+  --color-blush-d: #4b2430;
+
+  /* technical monochrome: ceramic, board and dark materials of the engine */
+  --color-mono-50: #fbfaf3;
+  --color-mono-100: #eeebe2;
+  --color-mono-200: #e3e0d2;
+  --color-mono-300: #cfc8b8;
+  --color-mono-400: #aaa293;
+  --color-mono-500: #857d6e;
+  --color-mono-600: #625b4f;
+  --color-mono-700: #55504a;
+  --color-mono-800: #3d3935;
+  --color-mono-900: #272421;
+  --color-metal-l: #eef0f0;
+  --color-metal-m: #c6ccce;
+  --color-metal-d: #8f989b;
+  --color-cast: #41538f;
+  --color-ink-fixed: #231e16;
+  --color-paper-fixed: #f2efe7;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-alt: var(--alt);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-hover: var(--hover);
+  --color-sunken: var(--sunken);
+  --color-plate: var(--plate-bg);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+  --color-on-color: var(--on-color);
+  --color-focus: var(--focus);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --color-warn: var(--warn);
+  --color-info: var(--info);
+  --color-good-bg: var(--good-bg);
+  --color-bad-bg: var(--bad-bg);
+  --color-warn-bg: var(--warn-bg);
+  --color-info-bg: var(--info-bg);
+  --color-console: var(--console-bg);
+  --color-console-well: var(--console-well);
+  --color-console-ink: var(--console-ink);
+  --color-console-muted: var(--console-muted);
+  --color-console-accent: var(--console-accent);
+  --color-console-warn: var(--console-warn);
+  --color-console-err: var(--console-err);
+
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-a1));
+  --shadow-md: 0 4px 12px rgb(var(--shadow-rgb) / var(--shadow-a2));
+  --shadow-lg: 0 12px 32px rgb(var(--shadow-rgb) / var(--shadow-a3));
+
+  --font-body: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-ui: var(--font-mono, ui-monospace), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+@utility z-sticky { z-index: var(--z-sticky); }
+@utility z-header { z-index: var(--z-header); }
+@utility z-dock { z-index: var(--z-dock); }
+@utility z-overlay { z-index: var(--z-overlay); }
+@utility z-popover { z-index: var(--z-popover); }
+@utility z-tooltip { z-index: var(--z-tooltip); }
+@utility z-skip { z-index: var(--z-skip); }
+
+/* Paper plates reuse the light token set, so whatever sits on one (labels,
+   steppers, code, buttons) draws as it would on a light page. */
+:root,
+.plate {
+  color-scheme: light;
+  --paper: #f2efe7;
+  --alt: #ece7da;
+  --surface: #faf8f2;
+  --raised: #faf8f2;
+  --hover: #ece7da;
+  --sunken: #e9e4d8;
+  --ink: #231e16;
+  --muted: #625b4f;
+  --rule: #d9d1c1;
+  --line: var(--rule);
+  --accent: #e4694e;
+  --accent-hover: #dc6248;
+  --accent-ink: #a8402b;
+  --on-accent: #231e16;
+  --on-color: #231e16;
+  --focus: #231e16;
+  --good: #2e6b52;
+  --bad: #a8402b;
+  --warn: #7a5a00;
+  --info: #2f4f8f;
+  --good-bg: color-mix(in oklab, var(--good) 12%, var(--surface));
+  --bad-bg: color-mix(in oklab, var(--bad) 12%, var(--surface));
+  --warn-bg: color-mix(in oklab, var(--warn) 12%, var(--surface));
+  --info-bg: color-mix(in oklab, var(--info) 12%, var(--surface));
+  --shadow-rgb: 35 30 22;
+  --shadow-a1: 0.08;
+  --shadow-a2: 0.12;
+  --shadow-a3: 0.18;
+  --scrim: rgb(19 18 9 / 0.55);
+  --hero-from: #000000;
+  --hero-to: #666666;
+  --code-bg: #faf8f2;
+  --code-fg: #231e16;
+  --code-kw: #2a4f9a;
+  --code-str: #2e6b52;
+  --code-fn: #9a4316;
+  --code-con: #a8402b;
+  --code-pp: #7a3a6a;
+  --code-cm: #6b6457;
+  --code-num: #5a4fa0;
+  --code-line: #ece6d8;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .36  0 0 0 0 .3  0 0 0 .15 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+}
+
+:root {
+  --plate-bg: #f2efe7;
+  --plate-frame: #231e16;
+  --console-bg: #181818;
+  --console-well: #000000;
+  --console-ink: #e8e8e8;
+  --console-muted: #a3a3a3;
+  --console-accent: #8af0ae;
+  --console-warn: #f4b829;
+  --console-err: #ff8a7a;
+
+  --z-sticky: 10;
+  --z-header: 30;
+  --z-dock: 40;
+  --z-overlay: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+  --z-skip: 80;
+
+  /* The site shell (header, footer): up to 1440 px with fluid gutters, as the editorial pages. */
+  --shell-max: 1440px;
+  --shell-pad: clamp(16px, 4vw, 56px);
+
+  /* Page frames (POLISH-SPEC 1.1). The header is a 48 px bar with 8 px above and below. */
+  --header-h: 64px;
+  --frame-max: 80rem;
+  --frame-pad: 1rem;
+  --rail-w: clamp(22rem, 30vw, 36rem);
+  --stage-h: 46svh;
+  --footer-gap: 4rem;
+}
+@media (width >= 40rem) {
+  :root { --frame-pad: 1.5rem; }
+}
+@media (width >= 48rem) {
+  :root { --stage-h: 52svh; }
+}
+/* On a wide screen the reading frame grows too; text inside keeps its own measure. */
+@media (width >= 105rem) {
+  :root { --frame-max: 90rem; }
+}
+/* A lab page is a workspace: the header and footer span the screen with the workspace's gutter. Activity keeps
+   earlier pages in the DOM under display: none, and those must not count. */
+:root:has([data-frame="workspace"]:not([style*="display: none"], [style*="display: none"] *)) {
+  --frame-max: none;
+  --frame-pad: 1rem;
+  --footer-gap: 0px;
+  --shell-max: none;
+  --shell-pad: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #131209;
+    --alt: #181818;
+    --surface: #1F1F1F;
+    --raised: #272727;
+    --hover: #313131;
+    --sunken: #000000;
+    --plate-bg: #e4ddcf;
+    --plate-frame: #cfc6b4;
+    --ink: #ece6d8;
+    --muted: #b3aa98;
+    --rule: #313131;
+    --accent-hover: #ec7c63;
+    --accent-ink: #f08a70;
+    --on-accent: #131209;
+    --focus: #ece6d8;
+    --good: #93d3b0;
+    --bad: #f08a70;
+    --warn: #f4b829;
+    --info: #9dbcef;
+    --good-bg: #272727;
+    --bad-bg: #272727;
+    --warn-bg: #272727;
+    --info-bg: #272727;
+    --shadow-rgb: 19 18 9;
+    --shadow-a1: 0.5;
+    --shadow-a2: 0.6;
+    --shadow-a3: 0.7;
+    --hero-from: #FFFFFF;
+    --hero-to: #9B9B9B;
+    --code-bg: #000000;
+    --code-fg: #ece6d8;
+    --code-kw: #9dbcef;
+    --code-str: #93d3b0;
+    --code-fn: #f4b829;
+    --code-con: #f08a70;
+    --code-pp: #f3a6bb;
+    --code-cm: #a39a88;
+    --code-num: #c4b5f4;
+    --code-line: #1F1F1F;
+    --grain: none;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #131209;
+  --alt: #181818;
+  --surface: #1F1F1F;
+  --raised: #272727;
+  --hover: #313131;
+  --sunken: #000000;
+  --plate-bg: #e4ddcf;
+  --plate-frame: #cfc6b4;
+  --ink: #ece6d8;
+  --muted: #b3aa98;
+  --rule: #313131;
+  --accent-hover: #ec7c63;
+  --accent-ink: #f08a70;
+  --on-accent: #131209;
+  --focus: #ece6d8;
+  --good: #93d3b0;
+  --bad: #f08a70;
+  --warn: #f4b829;
+  --info: #9dbcef;
+  --good-bg: #272727;
+  --bad-bg: #272727;
+  --warn-bg: #272727;
+  --info-bg: #272727;
+  --shadow-rgb: 19 18 9;
+  --shadow-a1: 0.5;
+  --shadow-a2: 0.6;
+  --shadow-a3: 0.7;
+  --hero-from: #FFFFFF;
+  --hero-to: #9B9B9B;
+  --code-bg: #000000;
+  --code-fg: #ece6d8;
+  --code-kw: #9dbcef;
+  --code-str: #93d3b0;
+  --code-fn: #f4b829;
+  --code-con: #f08a70;
+  --code-pp: #f3a6bb;
+  --code-cm: #a39a88;
+  --code-num: #c4b5f4;
+  --code-line: #1F1F1F;
+  --grain: none;
+}

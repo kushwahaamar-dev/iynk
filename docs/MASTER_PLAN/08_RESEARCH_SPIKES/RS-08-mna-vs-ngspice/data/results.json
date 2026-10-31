@@ -1,0 +1,5191 @@
+[
+ {
+  "id": "C01",
+  "title": "Divider 10k/10k from 5V",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {},
+  "matched_warm": {
+   "worst": 7.177199355788128e-12,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.94987625000008,
+     "spice": 4.949876250000081,
+     "rel": 1.7943446963954113e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.4749257503712885,
+     "spice": 2.474925750371289,
+     "rel": 1.794353668118893e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.00024749504996287913,
+     "spice": 0.0002474950499628792,
+     "rel": 2.190351226515681e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.00024749257503712884,
+     "spice": 0.0002474925750371289,
+     "rel": 2.1903731300279457e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00024749999984052806,
+     "spice": 0.0002474999998387517,
+     "rel": 7.177199355788128e-12,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 7.177199355788128e-12,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.94987625000008,
+     "spice": 4.949876250000081,
+     "rel": 1.7943446963954113e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.4749257503712885,
+     "spice": 2.474925750371289,
+     "rel": 1.794353668118893e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.00024749504996287913,
+     "spice": 0.0002474950499628792,
+     "rel": 2.190351226515681e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.00024749257503712884,
+     "spice": 0.0002474925750371289,
+     "rel": 2.1903731300279457e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00024749999984052806,
+     "spice": 0.0002474999998387517,
+     "rel": 7.177199355788128e-12,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.000024999348597789238,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.94987625000008,
+     "spice": 4.949876253093672,
+     "rel": 6.249837149491402e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.4749257503712885,
+     "spice": 2.4749381265468364,
+     "rel": 0.000005000599980741162,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.00024749504996287913,
+     "spice": 0.00024749381265468356,
+     "rel": 0.000004999350013235566,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.00024749257503712884,
+     "spice": 0.00024749381265468367,
+     "rel": 0.000005000599980866976,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00024749999984052806,
+     "spice": 0.00024749381265642967,
+     "rel": 0.000024999348597789238,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.000024999348597789238,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.94987625000008,
+     "spice": 4.949876253093672,
+     "rel": 6.249837149491402e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.4749257503712885,
+     "spice": 2.4749381265468364,
+     "rel": 0.000005000599980741162,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.00024749504996287913,
+     "spice": 0.00024749381265468356,
+     "rel": 0.000004999350013235566,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.00024749257503712884,
+     "spice": 0.00024749381265468367,
+     "rel": 0.000005000599980866976,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00024749999984052806,
+     "spice": 0.00024749381265642967,
+     "rel": 0.000024999348597789238,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C02",
+  "title": "Three-resistor divider 1k/2.2k/4.7k, two taps",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {},
+  "matched_warm": {
+   "worst": 1.5573933999840217e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949686723449625,
+     "spice": 4.949686723449625,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.3231385723871085,
+     "spice": 4.323138572387109,
+     "rel": 2.054475943410945e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 2.9447421509544305,
+     "spice": 2.9447421509544314,
+     "rel": 3.0161500537908027e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0006265481510625169,
+     "spice": 0.0006265481510625159,
+     "rel": 1.5573933999840217e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0006265438279239446,
+     "spice": 0.0006265438279239446,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0006265408831817937,
+     "spice": 0.000626540883181794,
+     "rel": 3.4609143683634696e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0006265531007496605,
+     "spice": 0.0006265531007496605,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.5573933999840217e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949686723449625,
+     "spice": 4.949686723449625,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.3231385723871085,
+     "spice": 4.323138572387109,
+     "rel": 2.054475943410945e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 2.9447421509544305,
+     "spice": 2.9447421509544314,
+     "rel": 3.0161500537908027e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0006265481510625169,
+     "spice": 0.0006265481510625159,
+     "rel": 1.5573933999840217e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0006265438279239446,
+     "spice": 0.0006265438279239446,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0006265408831817937,
+     "spice": 0.000626540883181794,
+     "rel": 3.4609143683634696e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0006265531007496605,
+     "spice": 0.0006265531007496605,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.00001672171245485161,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949686723449625,
+     "spice": 4.949686728688058,
+     "rel": 1.0583362313188756e-9,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.3231385723871085,
+     "spice": 4.323144104803494,
+     "rel": 0.000001279720557848002,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 2.9447421509544305,
+     "spice": 2.9447503322574526,
+     "rel": 0.0000027782671191303025,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0006265481510625169,
+     "spice": 0.0006265426238845641,
+     "rel": 0.00000882171099305116,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0006265438279239446,
+     "spice": 0.0006265426238845642,
+     "rel": 0.0000019217198231236174,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0006265408831817937,
+     "spice": 0.0006265426238845644,
+     "rel": 0.000002778267119045032,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0006265531007496605,
+     "spice": 0.0006265426238840632,
+     "rel": 0.00001672171245485161,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.00001672171245485161,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949686723449625,
+     "spice": 4.949686728688058,
+     "rel": 1.0583362313188756e-9,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.3231385723871085,
+     "spice": 4.323144104803494,
+     "rel": 0.000001279720557848002,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 2.9447421509544305,
+     "spice": 2.9447503322574526,
+     "rel": 0.0000027782671191303025,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0006265481510625169,
+     "spice": 0.0006265426238845641,
+     "rel": 0.00000882171099305116,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0006265438279239446,
+     "spice": 0.0006265426238845642,
+     "rel": 0.0000019217198231236174,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0006265408831817937,
+     "spice": 0.0006265426238845644,
+     "rel": 0.000002778267119045032,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0006265531007496605,
+     "spice": 0.0006265426238840632,
+     "rel": 0.00001672171245485161,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C03",
+  "title": "Divider 1k/1k from a pin (25 ohm source), 1k load on the tap",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {},
+  "matched_warm": {
+   "worst": 5.026353031720284e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D12",
+     "solver": 4.918032652512774,
+     "spice": 4.918032652512774,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 1.6393436710563676,
+     "spice": 1.6393436710563676,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0032786889814564063,
+     "spice": 0.0032786889814564063,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393436710563675,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393436710563675,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0032786938994890493,
+     "spice": 0.0032786938994890658,
+     "rel": 5.026353031720284e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 5.026353031720284e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D12",
+     "solver": 4.918032652512774,
+     "spice": 4.918032652512774,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 1.6393436710563676,
+     "spice": 1.6393436710563676,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0032786889814564063,
+     "spice": 0.0032786889814564063,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393436710563675,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393436710563675,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0032786938994890493,
+     "spice": 0.0032786938994890658,
+     "rel": 5.026353031720284e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.0000016393441724634467,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D12",
+     "solver": 4.918032652512774,
+     "spice": 4.918032786885247,
+     "rel": 2.7322402873508617e-8,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 1.6393436710563676,
+     "spice": 1.6393442622950825,
+     "rel": 3.6065561607401255e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0032786889814564063,
+     "spice": 0.0032786885245901644,
+     "rel": 1.393442037754197e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393442622950824,
+     "rel": 3.606556160814198e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393442622950824,
+     "rel": 3.606556160814198e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0032786938994890493,
+     "spice": 0.003278688524590123,
+     "rel": 0.0000016393441724634467,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.0000016393441724634467,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D12",
+     "solver": 4.918032652512774,
+     "spice": 4.918032786885247,
+     "rel": 2.7322402873508617e-8,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 1.6393436710563676,
+     "spice": 1.6393442622950825,
+     "rel": 3.6065561607401255e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0032786889814564063,
+     "spice": 0.0032786885245901644,
+     "rel": 1.393442037754197e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393442622950824,
+     "rel": 3.606556160814198e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0016393436710563675,
+     "spice": 0.0016393442622950824,
+     "rel": 3.606556160814198e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0032786938994890493,
+     "spice": 0.003278688524590123,
+     "rel": 0.0000016393441724634467,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C04",
+  "title": "Potentiometer 10k at 30 percent, 2.2k load on the wiper",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "POT1": "ok"
+  },
+  "matched_warm": {
+   "worst": 1.3456199384897322e-16,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949470518966282,
+     "spice": 4.949470518966282,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "W",
+     "solver": 1.7725991650697512,
+     "spice": 1.7725991650697515,
+     "rel": 1.2526498336486236e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.top",
+     "solver": 0.0010589571179655103,
+     "spice": 0.0010589571179655103,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.bot",
+     "solver": 0.0002532284521528216,
+     "spice": 0.0002532284521528216,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0008057268932135233,
+     "spice": 0.0008057268932135234,
+     "rel": 1.3456199384897322e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0010589620674359423,
+     "spice": 0.0010589620674359423,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.3456199384897322e-16,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949470518966282,
+     "spice": 4.949470518966282,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "W",
+     "solver": 1.7725991650697512,
+     "spice": 1.7725991650697515,
+     "rel": 1.2526498336486236e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.top",
+     "solver": 0.0010589571179655103,
+     "spice": 0.0010589571179655103,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.bot",
+     "solver": 0.0002532284521528216,
+     "spice": 0.0002532284521528216,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0008057268932135233,
+     "spice": 0.0008057268932135234,
+     "rel": 1.3456199384897322e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0010589620674359423,
+     "spice": 0.0010589620674359423,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.000005272841311781737,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949470518966282,
+     "spice": 4.949470521758137,
+     "rel": 5.640713961448656e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "W",
+     "solver": 1.7725991650697512,
+     "spice": 1.7726010705831468,
+     "rel": 0.0000010749815213020048,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.top",
+     "solver": 0.0010589571179655103,
+     "spice": 0.0010589564837249967,
+     "rel": 5.989297231487619e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.bot",
+     "solver": 0.0002532284521528216,
+     "spice": 0.00025322872436902096,
+     "rel": 0.0000010749815212369258,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0008057268932135233,
+     "spice": 0.0008057277593559758,
+     "rel": 0.0000010749815212491586,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0010589620674359423,
+     "spice": 0.0010589564837264476,
+     "rel": 0.000005272841311781737,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.000005272841311781737,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949470518966282,
+     "spice": 4.949470521758137,
+     "rel": 5.640713961448656e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "W",
+     "solver": 1.7725991650697512,
+     "spice": 1.7726010705831468,
+     "rel": 0.0000010749815213020048,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.top",
+     "solver": 0.0010589571179655103,
+     "spice": 0.0010589564837249967,
+     "rel": 5.989297231487619e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "POT1.bot",
+     "solver": 0.0002532284521528216,
+     "spice": 0.00025322872436902096,
+     "rel": 0.0000010749815212369258,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0008057268932135233,
+     "spice": 0.0008057277593559758,
+     "rel": 0.0000010749815212491586,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0010589620674359423,
+     "spice": 0.0010589564837264476,
+     "rel": 0.000005272841311781737,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C05",
+  "title": "Wheatstone bridge 1k/2k/2k/3.3k with 10k bridge resistor",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {},
+  "matched_warm": {
+   "worst": 2.4081881789588134e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.948707948955399,
+     "spice": 4.948707948955399,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.2869431214445473,
+     "spice": 3.2869431214445477,
+     "rel": 1.351070564479053e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 3.1040433229899804,
+     "spice": 3.1040433229899813,
+     "rel": 2.861359611581014e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.001661764827510852,
+     "spice": 0.0016617648275108515,
+     "rel": 2.6097607905434487e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016434715607222736,
+     "spice": 0.0016434715607222738,
+     "rel": 1.3194048481240754e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0009223323129827095,
+     "spice": 0.000922332312982709,
+     "rel": 5.877502919632775e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R4",
+     "solver": 0.0009406191887848425,
+     "spice": 0.0009406191887848429,
+     "rel": 3.4579419134096723e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R5",
+     "solver": 0.000018289979845456682,
+     "spice": 0.000018289979845456638,
+     "rel": 2.4081881789588134e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0025841020892016786,
+     "spice": 0.0025841020892016786,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 2.4081881789588134e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.948707948955399,
+     "spice": 4.948707948955399,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.2869431214445473,
+     "spice": 3.2869431214445477,
+     "rel": 1.351070564479053e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 3.1040433229899804,
+     "spice": 3.1040433229899813,
+     "rel": 2.861359611581014e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.001661764827510852,
+     "spice": 0.0016617648275108515,
+     "rel": 2.6097607905434487e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016434715607222736,
+     "spice": 0.0016434715607222738,
+     "rel": 1.3194048481240754e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0009223323129827095,
+     "spice": 0.000922332312982709,
+     "rel": 5.877502919632775e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R4",
+     "solver": 0.0009406191887848425,
+     "spice": 0.0009406191887848429,
+     "rel": 3.4579419134096723e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R5",
+     "solver": 0.000018289979845456682,
+     "spice": 0.000018289979845456638,
+     "rel": 2.4081881789588134e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0025841020892016786,
+     "spice": 0.0025841020892016786,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.00000768318408342779,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.948707948955399,
+     "spice": 4.948707953493662,
+     "rel": 9.170601986016274e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.2869431214445473,
+     "spice": 3.2869454094482724,
+     "rel": 6.960881426784356e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 3.1040433229899804,
+     "spice": 3.104047016235729,
+     "rel": 0.0000011898163041551746,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.001661764827510852,
+     "spice": 0.0016617625440453901,
+     "rel": 0.000001374122596539247,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016434715607222736,
+     "spice": 0.0016434727047241362,
+     "rel": 6.960881427196009e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0009223323129827095,
+     "spice": 0.0009223304686289666,
+     "rel": 0.0000019996669367386094,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R4",
+     "solver": 0.0009406191887848425,
+     "spice": 0.000940620307950221,
+     "rel": 0.0000011898163041641165,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R5",
+     "solver": 0.000018289979845456682,
+     "spice": 0.00001828983932125432,
+     "rel": 0.00000768318408342779,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0025841020892016786,
+     "spice": 0.0025840930126754813,
+     "rel": 0.0000035124611044504074,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.00000768318408342779,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.948707948955399,
+     "spice": 4.948707953493662,
+     "rel": 9.170601986016274e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.2869431214445473,
+     "spice": 3.2869454094482724,
+     "rel": 6.960881426784356e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 3.1040433229899804,
+     "spice": 3.104047016235729,
+     "rel": 0.0000011898163041551746,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.001661764827510852,
+     "spice": 0.0016617625440453901,
+     "rel": 0.000001374122596539247,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0016434715607222736,
+     "spice": 0.0016434727047241362,
+     "rel": 6.960881427196009e-7,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R3",
+     "solver": 0.0009223323129827095,
+     "spice": 0.0009223304686289666,
+     "rel": 0.0000019996669367386094,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R4",
+     "solver": 0.0009406191887848425,
+     "spice": 0.000940620307950221,
+     "rel": 0.0000011898163041641165,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R5",
+     "solver": 0.000018289979845456682,
+     "spice": 0.00001828983932125432,
+     "rel": 0.00000768318408342779,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0025841020892016786,
+     "spice": 0.0025840930126754813,
+     "rel": 0.0000035124611044504074,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C06",
+  "title": "Red LED, 220 ohm, from D13",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "ok"
+  },
+  "matched_warm": {
+   "worst": 3.776089004759628e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.6945009128166495,
+     "spice": 4.694500912816649,
+     "rel": 1.8919549408868429e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.006109978393362,
+     "spice": 2.0061099783933614,
+     "rel": 2.2136832707732282e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.012219958792833125,
+     "spice": 0.012219958792833123,
+     "rel": 1.419582099568293e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.012219956786723607,
+     "spice": 0.012219956786723146,
+     "rel": 3.776089004759628e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01221996348733402,
+     "spice": 0.012219963487334062,
+     "rel": 3.406995730109682e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 3.776089004759628e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.6945009128166495,
+     "spice": 4.694500912816649,
+     "rel": 1.8919549408868429e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.006109978393362,
+     "spice": 2.0061099783933614,
+     "rel": 2.2136832707732282e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.012219958792833125,
+     "spice": 0.012219958792833123,
+     "rel": 1.419582099568293e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.012219956786723607,
+     "spice": 0.012219956786723146,
+     "rel": 3.776089004759628e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01221996348733402,
+     "spice": 0.012219963487334062,
+     "rel": 3.406995730109682e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.01715815636252984,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.6945009128166495,
+     "spice": 4.691047905145986,
+     "rel": 0.000736084504034953,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.006109978393362,
+     "spice": 1.9722694704306685,
+     "rel": 0.01715815636252984,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.012219958792833125,
+     "spice": 0.012358083794160533,
+     "rel": 0.011176894705364851,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.012219956786723607,
+     "spice": 0.012358083794160535,
+     "rel": 0.011177057037127057,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01221996348733402,
+     "spice": 0.012358083794160563,
+     "rel": 0.011176514832486118,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.01715815636252984,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.6945009128166495,
+     "spice": 4.691047905145986,
+     "rel": 0.000736084504034953,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.006109978393362,
+     "spice": 1.9722694704306685,
+     "rel": 0.01715815636252984,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.012219958792833125,
+     "spice": 0.012358083794160533,
+     "rel": 0.011176894705364851,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.012219956786723607,
+     "spice": 0.012358083794160535,
+     "rel": 0.011177057037127057,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01221996348733402,
+     "spice": 0.012358083794160563,
+     "rel": 0.011176514832486118,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C07",
+  "title": "Red LED, 100 ohm, from D13",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "ok"
+  },
+  "matched_warm": {
+   "worst": 1.8142318539398738e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.402390349911115,
+     "spice": 4.402390349911114,
+     "rel": 2.0174912924703688e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0119521897946067,
+     "spice": 2.0119521897946067,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.023904381601165082,
+     "spice": 0.02390438160116507,
+     "rel": 4.354156082980851e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.02390437958921332,
+     "spice": 0.023904379589212887,
+     "rel": 1.8142318539398738e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.02390438600355541,
+     "spice": 0.02390438600355546,
+     "rel": 2.177077640545283e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.8142318539398738e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.402390349911115,
+     "spice": 4.402390349911114,
+     "rel": 2.0174912924703688e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0119521897946067,
+     "spice": 2.0119521897946067,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.023904381601165082,
+     "spice": 0.02390438160116507,
+     "rel": 4.354156082980851e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.02390437958921332,
+     "spice": 0.023904379589212887,
+     "rel": 1.8142318539398738e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.02390438600355541,
+     "spice": 0.02390438600355546,
+     "rel": 2.177077640545283e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.00010669342042738072,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.402390349911115,
+     "spice": 4.402433374952189,
+     "rel": 0.000009773013560793215,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0119521897946067,
+     "spice": 2.0121668747609456,
+     "rel": 0.00010669342042738072,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.023904381601165082,
+     "spice": 0.023902665001912432,
+     "rel": 0.00007181622854658505,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.02390437958921332,
+     "spice": 0.023902665001912436,
+     "rel": 0.00007173205585016177,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.02390438600355541,
+     "spice": 0.02390266500191246,
+     "rel": 0.0000720004084402988,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.00010669342042738072,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.402390349911115,
+     "spice": 4.402433374952189,
+     "rel": 0.000009773013560793215,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0119521897946067,
+     "spice": 2.0121668747609456,
+     "rel": 0.00010669342042738072,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.023904381601165082,
+     "spice": 0.023902665001912432,
+     "rel": 0.00007181622854658505,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.02390437958921332,
+     "spice": 0.023902665001912436,
+     "rel": 0.00007173205585016177,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.02390438600355541,
+     "spice": 0.02390266500191246,
+     "rel": 0.0000720004084402988,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C08",
+  "title": "Red LED, 10k, from D13 (dim)",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "ok"
+  },
+  "matched_warm": {
+   "worst": 1.1050646113511343e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.992518951851065,
+     "spice": 4.992518951851065,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0001496174666444,
+     "spice": 2.0001496174666444,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0002992369334384421,
+     "spice": 0.0002992369334384421,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.0002992349332888722,
+     "spice": 0.0002992349332888722,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00029924192595739643,
+     "spice": 0.00029924192595739973,
+     "rel": 1.1050646113511343e-14,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.1050646113511343e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.992518951851065,
+     "spice": 4.992518951851065,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0001496174666444,
+     "spice": 2.0001496174666444,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0002992369334384421,
+     "spice": 0.0002992369334384421,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.0002992349332888722,
+     "spice": 0.0002992349332888722,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00029924192595739643,
+     "spice": 0.00029924192595739973,
+     "rel": 1.1050646113511343e-14,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.12527441456272367,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.992518951851065,
+     "spice": 4.991963783545221,
+     "rel": 0.00011121240656316643,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0001496174666444,
+     "spice": 1.7774772016334284,
+     "rel": 0.12527441456272367,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0002992369334384421,
+     "spice": 0.00032144865819117924,
+     "rel": 0.06909882554098858,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.0002992349332888722,
+     "spice": 0.00032144865819117886,
+     "rel": 0.06910504783969343,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00029924192595739643,
+     "spice": 0.0003214486581911702,
+     "rel": 0.06908329423035604,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.12527441456272367,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.992518951851065,
+     "spice": 4.991963783545221,
+     "rel": 0.00011121240656316643,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0001496174666444,
+     "spice": 1.7774772016334284,
+     "rel": 0.12527441456272367,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0002992369334384421,
+     "spice": 0.00032144865819117924,
+     "rel": 0.06909882554098858,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.0002992349332888722,
+     "spice": 0.00032144865819117886,
+     "rel": 0.06910504783969343,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00029924192595739643,
+     "spice": 0.0003214486581911702,
+     "rel": 0.06908329423035604,
+     "ok": false,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C09",
+  "title": "Blue LED, 220 ohm, from 5V rail",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "ok"
+  },
+  "matched_warm": {
+   "worst": 2.0132032905888853e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.9455882328235194,
+     "spice": 4.94558823282352,
+     "rel": 1.7959004629729336e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.0044117632014804,
+     "spice": 3.004411763201481,
+     "rel": 1.4781236556497974e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.008823529407372905,
+     "spice": 0.008823529407372906,
+     "rel": 1.9660199404189428e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008823526402960802,
+     "spice": 0.008823526402961142,
+     "rel": 3.8534003953039634e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00882353435296146,
+     "spice": 0.008823534352959683,
+     "rel": 2.0132032905888853e-13,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 2.0132032905888853e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.9455882328235194,
+     "spice": 4.94558823282352,
+     "rel": 1.7959004629729336e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.0044117632014804,
+     "spice": 3.004411763201481,
+     "rel": 1.4781236556497974e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.008823529407372905,
+     "spice": 0.008823529407372906,
+     "rel": 1.9660199404189428e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008823526402960802,
+     "spice": 0.008823526402961142,
+     "rel": 3.8534003953039634e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00882353435296146,
+     "spice": 0.008823534352959683,
+     "rel": 2.0132032905888853e-13,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.024775700940478092,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.9455882328235194,
+     "spice": 4.94547615537704,
+     "rel": 0.00002266261992937967,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.0044117632014804,
+     "spice": 2.9549845212746186,
+     "rel": 0.016726734631266886,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.008823529407372905,
+     "spice": 0.009047689245920098,
+     "rel": 0.024775368876453662,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008823526402960802,
+     "spice": 0.009047689245920098,
+     "rel": 0.024775700940478092,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00882353435296146,
+     "spice": 0.009047689245919699,
+     "rel": 0.024774822262969304,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.024775700940478092,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.9455882328235194,
+     "spice": 4.94547615537704,
+     "rel": 0.00002266261992937967,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 3.0044117632014804,
+     "spice": 2.9549845212746186,
+     "rel": 0.016726734631266886,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.008823529407372905,
+     "spice": 0.009047689245920098,
+     "rel": 0.024775368876453662,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008823526402960802,
+     "spice": 0.009047689245920098,
+     "rel": 0.024775700940478092,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00882353435296146,
+     "spice": 0.009047689245919699,
+     "rel": 0.024774822262969304,
+     "ok": false,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C10",
+  "title": "Red LED straight on D13, no resistor (first solve, before it burns)",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "burnt"
+  },
+  "matched_warm": {
+   "worst": 1.4155343806832036e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 2.0588235284025376,
+     "spice": 2.058823528402538,
+     "rel": 2.1570047346148016e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.11764705680507515,
+     "spice": 0.11764705680507498,
+     "rel": 1.4155343806832036e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1176470588638985,
+     "spice": 0.1176470588638985,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.4155343806832036e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 2.0588235284025376,
+     "spice": 2.058823528402538,
+     "rel": 2.1570047346148016e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.11764705680507515,
+     "spice": 0.11764705680507498,
+     "rel": 1.4155343806832036e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1176470588638985,
+     "spice": 0.1176470588638985,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.03724364484231115,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 2.0588235284025376,
+     "spice": 2.1384678661148127,
+     "rel": 0.03724364484231115,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.11764705680507515,
+     "spice": 0.11446128535540749,
+     "rel": 0.02783274222175375,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1176470588638985,
+     "spice": 0.1144612853554075,
+     "rel": 0.027832760208825337,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.03724364484231115,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 2.0588235284025376,
+     "spice": 2.1384678661148127,
+     "rel": 0.03724364484231115,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.11764705680507515,
+     "spice": 0.11446128535540749,
+     "rel": 0.02783274222175375,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1176470588638985,
+     "spice": 0.1144612853554075,
+     "rel": 0.027832760208825337,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "afterBurn": {
+   "cur": {
+    "LED1": 0
+   },
+   "states": {
+    "LED1": "burnt"
+   }
+  }
+ },
+ {
+  "id": "C11",
+  "title": "Two red LEDs in parallel, one shared 150 ohm",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "ok",
+   "LED2": "ok"
+  },
+  "matched_warm": {
+   "worst": 1.0376886145419407e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572039844871604,
+     "spice": 4.572039844871604,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0042795999072047,
+     "spice": 2.0042795999072043,
+     "rel": 2.2157048840422435e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017118401633095994,
+     "spice": 0.017118401633095998,
+     "rel": 2.026735337980347e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008559199814409446,
+     "spice": 0.008559199814408558,
+     "rel": 1.0376886145419407e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0.008559199814409446,
+     "spice": 0.008559199814408558,
+     "rel": 1.0376886145419407e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01711840620513584,
+     "spice": 0.017118406205135855,
+     "rel": 8.106939186693006e-16,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.0376886145419407e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572039844871604,
+     "spice": 4.572039844871604,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0042795999072047,
+     "spice": 2.0042795999072043,
+     "rel": 2.2157048840422435e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017118401633095994,
+     "spice": 0.017118401633095998,
+     "rel": 2.026735337980347e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008559199814409446,
+     "spice": 0.008559199814408558,
+     "rel": 1.0376886145419407e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0.008559199814409446,
+     "spice": 0.008559199814408558,
+     "rel": 1.0376886145419407e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01711840620513584,
+     "spice": 0.017118406205135855,
+     "rel": 8.106939186693006e-16,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.026607444493820465,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572039844871604,
+     "spice": 4.564619001109932,
+     "rel": 0.0016257312515825298,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0042795999072047,
+     "spice": 1.9523330077695236,
+     "rel": 0.026607444493820465,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017118401633095994,
+     "spice": 0.017415239955602724,
+     "rel": 0.01704474490523648,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008559199814409446,
+     "spice": 0.00870761997780134,
+     "rel": 0.01704485999277261,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0.008559199814409446,
+     "spice": 0.00870761997780134,
+     "rel": 0.01704485999277261,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01711840620513584,
+     "spice": 0.017415239955602735,
+     "rel": 0.017044482374266545,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.026607444493820465,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572039844871604,
+     "spice": 4.564619001109932,
+     "rel": 0.0016257312515825298,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0042795999072047,
+     "spice": 1.9523330077695236,
+     "rel": 0.026607444493820465,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017118401633095994,
+     "spice": 0.017415239955602724,
+     "rel": 0.01704474490523648,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.008559199814409446,
+     "spice": 0.00870761997780134,
+     "rel": 0.01704485999277261,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0.008559199814409446,
+     "spice": 0.00870761997780134,
+     "rel": 0.01704485999277261,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.01711840620513584,
+     "spice": 0.017415239955602735,
+     "rel": 0.017044482374266545,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C12",
+  "title": "Red and blue LEDs in parallel, one shared 150 ohm",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "LED1": "ok",
+   "LED2": "off"
+  },
+  "matched_warm": {
+   "worst": 1.0391689124016059e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572649474474641,
+     "spice": 4.572649474474641,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0085470072199096,
+     "spice": 2.0085470072199088,
+     "rel": 4.4219946882372454e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017094016448364877,
+     "spice": 0.017094016448364883,
+     "rel": 4.059253087106374e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.017094014439819283,
+     "spice": 0.017094014439817506,
+     "rel": 1.0391689124016059e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0,
+     "spice": 0,
+     "rel": 0,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.017094021021014358,
+     "spice": 0.01709402102101437,
+     "rel": 8.118504002512885e-16,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.0391689124016059e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572649474474641,
+     "spice": 4.572649474474641,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0085470072199096,
+     "spice": 2.0085470072199088,
+     "rel": 4.4219946882372454e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017094016448364877,
+     "spice": 0.017094016448364883,
+     "rel": 4.059253087106374e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.017094014439819283,
+     "spice": 0.017094014439817506,
+     "rel": 1.0391689124016059e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0,
+     "spice": 0,
+     "rel": 0,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.017094021021014358,
+     "spice": 0.01709402102101437,
+     "rel": 8.118504002512885e-16,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.008429730020519003,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572649474474641,
+     "spice": 4.570251004737695,
+     "rel": 0.0005248004397262515,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0085470072199096,
+     "spice": 1.9917570331638683,
+     "rel": 0.008429730020519003,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017094016448364877,
+     "spice": 0.01718995981049218,
+     "rel": 0.005581360467680925,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.017094014439819283,
+     "spice": 0.017189959727627713,
+     "rel": 0.005581472518183193,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0,
+     "spice": 8.286444452017911e-11,
+     "rel": 1,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.017094021021014358,
+     "spice": 0.017189959810492178,
+     "rel": 0.005581094460689918,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.008429730020519003,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.572649474474641,
+     "spice": 4.570251004737695,
+     "rel": 0.0005248004397262515,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 2.0085470072199096,
+     "spice": 1.9917570331638683,
+     "rel": 0.008429730020519003,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.017094016448364877,
+     "spice": 0.01718995981049218,
+     "rel": 0.005581360467680925,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED1",
+     "solver": 0.017094014439819283,
+     "spice": 0.017189959727627713,
+     "rel": 0.005581472518183193,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "LED2",
+     "solver": 0,
+     "spice": 8.286444452017911e-11,
+     "rel": 1,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.017094021021014358,
+     "spice": 0.017189959810492178,
+     "rel": 0.005581094460689918,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C13",
+  "title": "Diode clamp: D13 high through 1k, 1N4007 to the 3V3 rail",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "DIO1": "ok"
+  },
+  "matched_warm": {
+   "worst": 6.832563395065965e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.975626280014626,
+     "spice": 4.975626280014626,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.00068245622593,
+     "spice": 4.00068245622593,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.300487468261309,
+     "spice": 3.3004874682613092,
+     "rel": 1.3455261203703586e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0009749438237886956,
+     "spice": 0.0009749438237886956,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.000974939823107368,
+     "spice": 0.0009749398231067019,
+     "rel": 6.832563395065965e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0009749487994149675,
+     "spice": 0.0009749487994149819,
+     "rel": 1.4790406329757896e-14,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 6.832563395065965e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.975626280014626,
+     "spice": 4.975626280014626,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.00068245622593,
+     "spice": 4.00068245622593,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.300487468261309,
+     "spice": 3.3004874682613092,
+     "rel": 1.3455261203703586e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0009749438237886956,
+     "spice": 0.0009749438237886956,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.000974939823107368,
+     "spice": 0.0009749398231067019,
+     "rel": 6.832563395065965e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0009749487994149675,
+     "spice": 0.0009749487994149819,
+     "rel": 1.4790406329757896e-14,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.12308857875317872,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.975626280014626,
+     "spice": 4.972205293502703,
+     "rel": 0.000688021976162831,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.00068245622593,
+     "spice": 3.8604170336107666,
+     "rel": 0.0363342668405877,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.300487468261309,
+     "spice": 3.3005558941299387,
+     "rel": 0.00002073161940737595,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0009749438237886956,
+     "spice": 0.0011117882598919362,
+     "rel": 0.12308498033298318,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.000974939823107368,
+     "spice": 0.0011117882598919362,
+     "rel": 0.12308857875317872,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0009749487994149675,
+     "spice": 0.0011117882598918882,
+     "rel": 0.1230805049967223,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.12308857875317872,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D13",
+     "solver": 4.975626280014626,
+     "spice": 4.972205293502703,
+     "rel": 0.000688021976162831,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 4.00068245622593,
+     "spice": 3.8604170336107666,
+     "rel": 0.0363342668405877,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.300487468261309,
+     "spice": 3.3005558941299387,
+     "rel": 0.00002073161940737595,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0009749438237886956,
+     "spice": 0.0011117882598919362,
+     "rel": 0.12308498033298318,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.000974939823107368,
+     "spice": 0.0011117882598919362,
+     "rel": 0.12308857875317872,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0009749487994149675,
+     "spice": 0.0011117882598918882,
+     "rel": 0.1230805049967223,
+     "ok": false,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C14",
+  "title": "1N4007 in series with 1k from 5V",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "DIO1": "ok"
+  },
+  "matched_warm": {
+   "worst": 1.0456474020623206e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.947876483986707,
+     "spice": 4.947876483986707,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 0.7008494052755723,
+     "spice": 0.7008494052755722,
+     "rel": 1.5841106752293236e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004247027078711134,
+     "spice": 0.004247027078711134,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.0042470263778615625,
+     "spice": 0.004247026377861118,
+     "rel": 1.0456474020623206e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00424703202658705,
+     "spice": 0.00424703202658705,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 1.0456474020623206e-13,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.947876483986707,
+     "spice": 4.947876483986707,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 0.7008494052755723,
+     "spice": 0.7008494052755722,
+     "rel": 1.5841106752293236e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004247027078711134,
+     "spice": 0.004247027078711134,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.0042470263778615625,
+     "spice": 0.004247026377861118,
+     "rel": 1.0456474020623206e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00424703202658705,
+     "spice": 0.00424703202658705,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.12407548374945873,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.947876483986707,
+     "spice": 4.947837825901081,
+     "rel": 0.000007813127064029276,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 0.7008494052755723,
+     "spice": 0.6234896280611189,
+     "rel": 0.12407548374945873,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004247027078711134,
+     "spice": 0.004324348197839962,
+     "rel": 0.017880410085258588,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.0042470263778615625,
+     "spice": 0.004324348197839961,
+     "rel": 0.017880572155827154,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00424703202658705,
+     "spice": 0.004324348197839001,
+     "rel": 0.01787926589505167,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.12407548374945873,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.947876483986707,
+     "spice": 4.947837825901081,
+     "rel": 0.000007813127064029276,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 0.7008494052755723,
+     "spice": 0.6234896280611189,
+     "rel": 0.12407548374945873,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004247027078711134,
+     "spice": 0.004324348197839962,
+     "rel": 0.017880410085258588,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0.0042470263778615625,
+     "spice": 0.004324348197839961,
+     "rel": 0.017880572155827154,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.00424703202658705,
+     "spice": 0.004324348197839001,
+     "rel": 0.01787926589505167,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C15",
+  "title": "TIP120 low-side motor switch, 1k base from D6, motor on 5V, flyback diode",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "Q1": "on",
+   "MOT1": "ok",
+   "DIO1": "block"
+  },
+  "matched_warm": {
+   "worst": 0.002632578177734285,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.909931720487683,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 1.3072054499267112,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9019329900515198,
+     "spice": 0.901938092230833,
+     "rel": 0.0000056569063410271025,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.853350494546364,
+     "spice": 4.853095385580826,
+     "rel": 0.00005256623768327407,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.0036027262705609717,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.0036027249633555636,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.19329900515198117,
+     "spice": 0.19380922308331394,
+     "rel": 0.002632578177734285,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 0.1932990060539233,
+     "spice": 0.19380922398525335,
+     "rel": 0.0026325781654688934,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0,
+     "spice": 0,
+     "rel": 0,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.19690174208776565,
+     "spice": 0.19741196001884173,
+     "rel": 0.0025845340425544,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 0.002632578177734285,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.909931720487683,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 1.3072054499267112,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9019329900515198,
+     "spice": 0.901938092230833,
+     "rel": 0.0000056569063410271025,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.853350494546364,
+     "spice": 4.853095385580826,
+     "rel": 0.00005256623768327407,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.0036027262705609717,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.0036027249633555636,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.19329900515198117,
+     "spice": 0.19380922308331394,
+     "rel": 0.002632578177734285,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 0.1932990060539233,
+     "spice": 0.19380922398525335,
+     "rel": 0.0026325781654688934,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0,
+     "spice": 0,
+     "rel": 0,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.19690174208776565,
+     "spice": 0.19741196001884173,
+     "rel": 0.0025845340425544,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.20842414906467152,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.918326739595119,
+     "rel": 0.0017068851973276733,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 1.6513963233998525,
+     "rel": 0.20842414906467152,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9019329900515198,
+     "spice": 0.8794928642396621,
+     "rel": 0.025514846935407065,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.853350494546364,
+     "spice": 4.852675842173408,
+     "rel": 0.0001390268781385483,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.003266930416195266,
+     "rel": 0.1027863503615055,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.003266930416195274,
+     "rel": 0.10278595022888858,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.19329900515198117,
+     "spice": 0.1946483156531844,
+     "rel": 0.006932043037081187,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 0.1932990060539233,
+     "spice": 0.19464830861922677,
+     "rel": 0.006932002517129436,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0,
+     "spice": -7.033957645508071e-9,
+     "rel": 1,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.19690174208776565,
+     "spice": 0.19791524606937966,
+     "rel": 0.005120898979448632,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.20842414906467152,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.918326739595119,
+     "rel": 0.0017068851973276733,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 1.6513963233998525,
+     "rel": 0.20842414906467152,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9019329900515198,
+     "spice": 0.8794928642396621,
+     "rel": 0.025514846935407065,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.853350494546364,
+     "spice": 4.852675842173408,
+     "rel": 0.0001390268781385483,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.003266930416195266,
+     "rel": 0.1027863503615055,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.003266930416195274,
+     "rel": 0.10278595022888858,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.19329900515198117,
+     "spice": 0.1946483156531844,
+     "rel": 0.006932043037081187,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 0.1932990060539233,
+     "spice": 0.19464830861922677,
+     "rel": 0.006932002517129436,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "DIO1",
+     "solver": 0,
+     "spice": -7.033957645508071e-9,
+     "rel": 1,
+     "ok": true,
+     "small": true
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.19690174208776565,
+     "spice": 0.19791524606937966,
+     "rel": 0.005120898979448632,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C16",
+  "title": "2N2222 saturated, 1k base from D6, 100 ohm load on 5V",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "Q1": "on"
+  },
+  "matched_warm": {
+   "worst": 9.58780281957532e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.89532607335605,
+     "spice": 4.89532607335605,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7083739029241161,
+     "spice": 0.7083739029241161,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.20047258978981086,
+     "spice": 0.2004725897898103,
+     "rel": 2.7690145216091465e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.926370507946034,
+     "spice": 4.926370507946034,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004186952170431934,
+     "spice": 0.004186952170431934,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.004186951462058053,
+     "spice": 0.004186951462058053,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.04725897898108511,
+     "spice": 0.04725897898108964,
+     "rel": 9.58780281957532e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.04725897918156223,
+     "spice": 0.04725897918156224,
+     "rel": 1.4682699508275433e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.05144594117369028,
+     "spice": 0.05144594117369028,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 9.58780281957532e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.89532607335605,
+     "spice": 4.89532607335605,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7083739029241161,
+     "spice": 0.7083739029241161,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.20047258978981086,
+     "spice": 0.2004725897898103,
+     "rel": 2.7690145216091465e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.926370507946034,
+     "spice": 4.926370507946034,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004186952170431934,
+     "spice": 0.004186952170431934,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.004186951462058053,
+     "spice": 0.004186951462058053,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.04725897898108511,
+     "spice": 0.04725897898108964,
+     "rel": 9.58780281957532e-14,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.04725897918156223,
+     "spice": 0.04725897918156224,
+     "rel": 1.4682699508275433e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.05144594117369028,
+     "spice": 0.05144594117369028,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 2.296014750468678,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.89532607335605,
+     "spice": 4.898132455103526,
+     "rel": 0.0005729493379771462,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7083739029241161,
+     "spice": 0.8234306592445337,
+     "rel": 0.13972853090748147,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.20047258978981086,
+     "spice": 0.06082272227735164,
+     "rel": 2.296014750468678,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.926370507946034,
+     "spice": 4.9256757349367035,
+     "rel": 0.0001410513088392422,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004186952170431934,
+     "spice": 0.0040747017958589924,
+     "rel": 0.027548120131642168,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.004186951462058053,
+     "spice": 0.0040747017958589924,
+     "rel": 0.027547946284838958,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.04725897898108511,
+     "spice": 0.04864853012659352,
+     "rel": 0.028563065356599974,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.04725897918156223,
+     "spice": 0.048648530126593516,
+     "rel": 0.0285630612356712,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.05144594117369028,
+     "spice": 0.05272323192245229,
+     "rel": 0.02422633632628417,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 2.296014750468678,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.89532607335605,
+     "spice": 4.898132455103526,
+     "rel": 0.0005729493379771462,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7083739029241161,
+     "spice": 0.8234306592445337,
+     "rel": 0.13972853090748147,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.20047258978981086,
+     "spice": 0.06082272227735164,
+     "rel": 2.296014750468678,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.926370507946034,
+     "spice": 4.9256757349367035,
+     "rel": 0.0001410513088392422,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.004186952170431934,
+     "spice": 0.0040747017958589924,
+     "rel": 0.027548120131642168,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.004186951462058053,
+     "spice": 0.0040747017958589924,
+     "rel": 0.027547946284838958,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.04725897898108511,
+     "spice": 0.04864853012659352,
+     "rel": 0.028563065356599974,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.04725897918156223,
+     "spice": 0.048648530126593516,
+     "rel": 0.0285630612356712,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.05144594117369028,
+     "spice": 0.05272323192245229,
+     "rel": 0.02422633632628417,
+     "ok": false,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C17",
+  "title": "2N2222 in the active region, 220k base from 5V, 1k load",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {
+   "Q1": "linear"
+  },
+  "matched_warm": {
+   "worst": 2.732003673830129e-12,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949024695579799,
+     "spice": 4.949024695579796,
+     "rel": 5.383960321475454e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7000386257460119,
+     "spice": 0.7000386257460119,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 3.0177343772469523,
+     "spice": 3.0177343772482415,
+     "rel": 4.2720492098787586e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.000019313573044699034,
+     "spice": 0.00001931357304469902,
+     "rel": 7.017099904146715e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.00001931287300599438,
+     "spice": 0.00001931287300599438,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.001931287300599438,
+     "spice": 0.0019312873006001041,
+     "rel": 3.449169963309487e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0019312903183328464,
+     "spice": 0.0019312903183315547,
+     "rel": 6.68837023640831e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0019506088404028787,
+     "spice": 0.0019506088404082078,
+     "rel": 2.732003673830129e-12,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 2.732003673830129e-12,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949024695579799,
+     "spice": 4.949024695579796,
+     "rel": 5.383960321475454e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7000386257460119,
+     "spice": 0.7000386257460119,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 3.0177343772469523,
+     "spice": 3.0177343772482415,
+     "rel": 4.2720492098787586e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.000019313573044699034,
+     "spice": 0.00001931357304469902,
+     "rel": 7.017099904146715e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.00001931287300599438,
+     "spice": 0.00001931287300599438,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.001931287300599438,
+     "spice": 0.0019312873006001041,
+     "rel": 3.449169963309487e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0019312903183328464,
+     "spice": 0.0019312903183315547,
+     "rel": 6.68837023640831e-13,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0019506088404028787,
+     "spice": 0.0019506088404082078,
+     "rel": 2.732003673830129e-12,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.02453314182785312,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949024695579799,
+     "spice": 4.949000391451894,
+     "rel": 0.000004910916545260925,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7000386257460119,
+     "spice": 0.6903234762035497,
+     "rel": 0.01407332921066355,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 3.0177343772469523,
+     "spice": 2.969140917581836,
+     "rel": 0.016366168199484502,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.000019313573044699034,
+     "spice": 0.000019357622342037927,
+     "rel": 0.0022755530901764956,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.00001931287300599438,
+     "spice": 0.00001935762234203664,
+     "rel": 0.0023117165554513053,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.001931287300599438,
+     "spice": 0.0019798594738711373,
+     "rel": 0.02453314182785312,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0019312903183328464,
+     "spice": 0.001979859473870058,
+     "rel": 0.02453161761136139,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0019506088404028787,
+     "spice": 0.0019992170962126465,
+     "rel": 0.02431364552746781,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.02453314182785312,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 4.949024695579799,
+     "spice": 4.949000391451894,
+     "rel": 0.000004910916545260925,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 0.7000386257460119,
+     "spice": 0.6903234762035497,
+     "rel": 0.01407332921066355,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 3.0177343772469523,
+     "spice": 2.969140917581836,
+     "rel": 0.016366168199484502,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.000019313573044699034,
+     "spice": 0.000019357622342037927,
+     "rel": 0.0022755530901764956,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.00001931287300599438,
+     "spice": 0.00001935762234203664,
+     "rel": 0.0023117165554513053,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 0.001931287300599438,
+     "spice": 0.0019798594738711373,
+     "rel": 0.02453314182785312,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R2",
+     "solver": 0.0019312903183328464,
+     "spice": 0.001979859473870058,
+     "rel": 0.02453161761136139,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.0019506088404028787,
+     "spice": 0.0019992170962126465,
+     "rel": 0.02431364552746781,
+     "ok": false,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C18",
+  "title": "Battery with 2 ohm internal resistance (VIN rail, 9 V jack) into a 47 ohm load",
+  "rails": {
+   "USBVCC": 0,
+   "VIN": 8.3,
+   "5V": 5,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {},
+  "matched_warm": {
+   "worst": 2.118786876176124e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "VIN",
+     "solver": 8.216161608353637,
+     "spice": 8.216161608353639,
+     "rel": 2.1620276280765591e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 7.88080805820051,
+     "spice": 7.880808058200511,
+     "rel": 1.1270144040317234e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "RINT",
+     "solver": 0.16767677507656353,
+     "spice": 0.16767677507656398,
+     "rel": 2.6484837249958093e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.16767676719575553,
+     "spice": 0.16767676719575555,
+     "rel": 1.6553024059215938e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.16767678329272684,
+     "spice": 0.16767678329272329,
+     "rel": 2.118786876176124e-14,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 2.118786876176124e-14,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "VIN",
+     "solver": 8.216161608353637,
+     "spice": 8.216161608353639,
+     "rel": 2.1620276280765591e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 7.88080805820051,
+     "spice": 7.880808058200511,
+     "rel": 1.1270144040317234e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "RINT",
+     "solver": 0.16767677507656353,
+     "spice": 0.16767677507656398,
+     "rel": 2.6484837249958093e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.16767676719575553,
+     "spice": 0.16767676719575555,
+     "rel": 1.6553024059215938e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.16767678329272684,
+     "spice": 0.16767678329272329,
+     "rel": 2.118786876176124e-14,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 9.313132819150057e-8,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "VIN",
+     "solver": 8.216161608353637,
+     "spice": 8.216161616161617,
+     "rel": 9.5031967542347e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 7.88080805820051,
+     "spice": 7.88080808080808,
+     "rel": 2.868686790292769e-9,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "RINT",
+     "solver": 0.16767677507656353,
+     "spice": 0.16767676767676853,
+     "rel": 4.413130752400483e-8,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.16767676719575553,
+     "spice": 0.16767676767676767,
+     "rel": 2.868686899472289e-9,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.16767678329272684,
+     "spice": 0.16767676767676676,
+     "rel": 9.313132819150057e-8,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 9.313132819150057e-8,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "VIN",
+     "solver": 8.216161608353637,
+     "spice": 8.216161616161617,
+     "rel": 9.5031967542347e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "A",
+     "solver": 7.88080805820051,
+     "spice": 7.88080808080808,
+     "rel": 2.868686790292769e-9,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "RINT",
+     "solver": 0.16767677507656353,
+     "spice": 0.16767676767676853,
+     "rel": 4.413130752400483e-8,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.16767676719575553,
+     "spice": 0.16767676767676767,
+     "rel": 2.868686899472289e-9,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.16767678329272684,
+     "spice": 0.16767676767676676,
+     "rel": 9.313132819150057e-8,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C19",
+  "title": "Rail under load: 3V3 rail (0.5 ohm source) into 22 ohm",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": null,
+  "states": {},
+  "matched_warm": {
+   "worst": 0,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.226666665089185,
+     "spice": 3.226666665089185,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.14666666659496294,
+     "spice": 0.14666666659496294,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1466666698216299,
+     "spice": 0.1466666698216299,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 0,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.226666665089185,
+     "spice": 3.226666665089185,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.14666666659496294,
+     "spice": 0.14666666659496294,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1466666698216299,
+     "spice": 0.1466666698216299,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 2.151111410210084e-8,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.226666665089185,
+     "spice": 3.2266666666666666,
+     "rel": 4.888889568659276e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.14666666659496294,
+     "spice": 0.14666666666666667,
+     "rel": 4.888890428852735e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1466666698216299,
+     "spice": 0.1466666666666665,
+     "rel": 2.151111410210084e-8,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 2.151111410210084e-8,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "3V3",
+     "solver": 3.226666665089185,
+     "spice": 3.2266666666666666,
+     "rel": 4.888889568659276e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.14666666659496294,
+     "spice": 0.14666666666666667,
+     "rel": 4.888890428852735e-10,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 0.1466666698216299,
+     "spice": 0.1466666666666665,
+     "rel": 2.151111410210084e-8,
+     "ok": true,
+     "small": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "C20",
+  "title": "Brownout: stalled motor on the 5V rail through a TIP120 (driven by 1k from D6)",
+  "rails": {
+   "USBVCC": 5,
+   "VIN": 0,
+   "5V": 4.95,
+   "3V3": 3.3
+  },
+  "sagmA": 2091,
+  "states": {
+   "Q1": "hot",
+   "MOT1": "stall"
+  },
+  "matched_warm": {
+   "worst": 2.548292842379343e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.909931720487683,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 1.3072054499267112,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9208762886405651,
+     "spice": 0.920876288640565,
+     "rel": 1.2056158230158286e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 3.906185565558218,
+     "spice": 3.906185565558215,
+     "rel": 6.821322782497148e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.0036027262705609717,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.0036027249633555636,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 2.087628864056512,
+     "spice": 2.0876288640565073,
+     "rel": 2.3399663572664916e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 2.08762886497738,
+     "spice": 2.087628864977383,
+     "rel": 1.4890694994218317e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 2.091231600064057,
+     "spice": 2.0912316000640625,
+     "rel": 2.548292842379343e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "matched_cold": {
+   "worst": 2.548292842379343e-15,
+   "pass": true,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.909931720487683,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 1.3072054499267112,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9208762886405651,
+     "spice": 0.920876288640565,
+     "rel": 1.2056158230158286e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 3.906185565558218,
+     "spice": 3.906185565558215,
+     "rel": 6.821322782497148e-16,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.0036027262705609717,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.0036027249633555636,
+     "rel": 0,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 2.087628864056512,
+     "spice": 2.0876288640565073,
+     "rel": 2.3399663572664916e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 2.08762886497738,
+     "spice": 2.087628864977383,
+     "rel": 1.4890694994218317e-15,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 2.091231600064057,
+     "spice": 2.0912316000640625,
+     "rel": 2.548292842379343e-15,
+     "ok": true,
+     "small": false
+    }
+   ]
+  },
+  "realistic_warm": {
+   "worst": 0.4111971998403733,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.932197741304002,
+     "rel": 0.004514421761693551,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 2.2201073934640303,
+     "rel": 0.4111971998403733,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9208762886405651,
+     "spice": 1.4972411296751968,
+     "rel": 0.38495124773900985,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 3.906185565558218,
+     "spice": 4.055502883335543,
+     "rel": 0.03681844695287598,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.0027120903478399716,
+     "rel": 0.32839463605271924,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.002712090347839971,
+     "rel": 0.3283941540608827,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 2.087628864056512,
+     "spice": 1.7889942333289137,
+     "rel": 0.16692878331525246,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 2.08762886497738,
+     "spice": 1.7889942333289137,
+     "rel": 0.166928783829993,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 2.091231600064057,
+     "spice": 1.791706323676754,
+     "rel": 0.16717319821289034,
+     "ok": false,
+     "small": false
+    }
+   ]
+  },
+  "realistic_cold": {
+   "worst": 0.4111971998403733,
+   "pass": false,
+   "rows": [
+    {
+     "kind": "V",
+     "name": "D6",
+     "solver": 4.909931720487683,
+     "spice": 4.932197741304002,
+     "rel": 0.004514421761693551,
+     "ok": true,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "B",
+     "solver": 1.3072054499267112,
+     "spice": 2.2201073934640303,
+     "rel": 0.4111971998403733,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "C",
+     "solver": 0.9208762886405651,
+     "spice": 1.4972411296751968,
+     "rel": 0.38495124773900985,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "V",
+     "name": "5V",
+     "solver": 3.906185565558218,
+     "spice": 4.055502883335543,
+     "rel": 0.03681844695287598,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "R1",
+     "solver": 0.0036027262705609717,
+     "spice": 0.0027120903478399716,
+     "rel": 0.32839463605271924,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ib",
+     "solver": 0.0036027249633555636,
+     "spice": 0.002712090347839971,
+     "rel": 0.3283941540608827,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "Q1.ic",
+     "solver": 2.087628864056512,
+     "spice": 1.7889942333289137,
+     "rel": 0.16692878331525246,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "MOT1",
+     "solver": 2.08762886497738,
+     "spice": 1.7889942333289137,
+     "rel": 0.166928783829993,
+     "ok": false,
+     "small": false
+    },
+    {
+     "kind": "I",
+     "name": "load",
+     "solver": 2.091231600064057,
+     "spice": 1.791706323676754,
+     "rel": 0.16717319821289034,
+     "ok": false,
+     "small": false
+    }
+   ]
+  }
+ }
+]

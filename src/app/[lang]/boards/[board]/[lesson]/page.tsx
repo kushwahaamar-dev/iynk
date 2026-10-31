@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LessonWorkspace } from "@/components/boardlab/LessonWorkspace";
-import { LabRoom } from "@/components/dock/LabRoom";
+import { OpenInStudio } from "@/components/boardlab/OpenInStudio";
 import { UntranslatedNotice } from "@/components/shell";
+import { PageSkeleton } from "@/components/ui";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { getT } from "@/i18n/server";
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function LessonPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="workspace" />}>
       <Lesson params={params} />
     </Suspense>
   );
@@ -47,9 +48,10 @@ async function Lesson({ params }: Pick<Props, "params">) {
   const page = await loadBoardPage(lang, board);
   const model = page && lessonModel(page, lesson);
   if (!page || !model) notFound();
-  const messages = await boardLabMessages(lang);
+  const [messages, t] = await Promise.all([boardLabMessages(lang), getT(lang, "boardlab")]);
   return (
-    <LabRoom lab="board" itemId={board}>
+    <>
+      <OpenInStudio lang={lang} board={board} lesson={lesson} label={t("openInStudio")} note={t("lessonView")} />
       <LessonWorkspace
         key={`${board}/${lesson}`}
         lang={lang}
@@ -58,6 +60,6 @@ async function Lesson({ params }: Pick<Props, "params">) {
         text={lessonText(page.text, lesson)}
         notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
       />
-    </LabRoom>
+    </>
   );
 }

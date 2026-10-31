@@ -1,0 +1,74 @@
+{
+  "settings": {
+    "open": "Ajustes de vista",
+    "art": {
+      "label": "Dibujo",
+      "illustrated": "Ilustrado",
+      "simple": "Simple"
+    },
+    "grid": {
+      "label": "Cuadrícula",
+      "hint": "Muestra la cuadrícula en el lienzo"
+    },
+    "snap": {
+      "label": "Ajuste en mm",
+      "hint": "De {min} a {max} mm. Los valores fuera de rango se corrigen."
+    },
+    "shortcuts": {
+      "label": "Atajos de una tecla",
+      "hint": "Las teclas de letra cambian de herramienta mientras el lienzo tiene el foco."
+    }
+  },
+  "starters": {
+    "title": "Empieza con un ejemplo",
+    "lede": "Cada ejemplo se abre como tu propia copia en el editor. El original no cambia.",
+    "listLabel": "Ejemplos",
+    "first": {
+      "title": "Empieza con Blink",
+      "body": "Un Uno, un LED y un sketch que lo hace parpadear. Se abre listo para ejecutar.",
+      "action": "Empezar con Blink"
+    },
+    "opening": "Abriendo {name}",
+    "failed": "No se pudo abrir {name}. Inténtalo de nuevo.",
+    "blink": {
+      "title": "Blink",
+      "description": "Un LED y una resistencia en el pin 13."
+    },
+    "button": {
+      "title": "Pulsador",
+      "description": "Mantén pulsado un botón para encender un LED."
+    },
+    "knob": {
+      "title": "Potenciómetro",
+      "description": "Gira una perilla para ajustar el brillo de un LED."
+    },
+    "rgb": {
+      "title": "Mezcla de color con PWM",
+      "description": "Mezcla cualquier color en un LED RGB con tres pines PWM."
+    },
+    "sound": {
+      "title": "Melodía con zumbador",
+      "description": "Un zumbador piezoeléctrico toca una lista de notas."
+    },
+    "plant": {
+      "title": "Pantalla I2C",
+      "description": "Una lectura de humedad del suelo en una pantalla OLED."
+    },
+    "serial-echo": {
+      "title": "Eco serie",
+      "description": "Envía texto por el monitor serie y léelo de vuelta."
+    },
+    "board": {
+      "title": "Conoce el Uno",
+      "description": "La placa sola, sin cableado."
+    },
+    "light": {
+      "title": "Sensor de luz",
+      "description": "Una luz nocturna que se enciende cuando oscurece."
+    },
+    "distance": {
+      "title": "Sensor de distancia",
+      "description": "Un sensor ultrasónico que mide en centímetros."
+    }
+  }
+}

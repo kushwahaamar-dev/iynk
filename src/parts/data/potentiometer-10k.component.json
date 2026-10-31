@@ -1,0 +1,310 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.potentiometer-10k",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "B10K rotary potentiometer, 9 mm",
+    "generic": true,
+    "refdes_prefix": "RV",
+    "kind": "discrete",
+    "category": "passive",
+    "description": {
+      "i18n_key": "parts.potentiometer-10k.description",
+      "en": "A 10 kilohm linear rotary potentiometer. Turning the knob moves the wiper between the two ends."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "potentiometer"
+    ],
+    "tags": [
+      "potentiometer",
+      "knob",
+      "input",
+      "analog",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 7: B10K potentiometer",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. Its numbers cite the sources it lists; this descriptor did not read those sources itself."
+    },
+    {
+      "id": "partjs",
+      "kind": "own-estimate",
+      "title": "figures/parts/potentiometer.js: pos, ohms, 300 degree sweep, 0.05 W",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Legs are 1, W and 3 in the figure; P1, W and P3 here by rule C-LEG."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: pot element",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Two resistors from the wiper, R x pos to P1 and R x (1 - pos) to P3, each floored at 0.5 ohm."
+    }
+  ],
+  "pins": [
+    {
+      "id": "P1",
+      "name": {
+        "en": "End 1"
+      },
+      "designator": "1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The anticlockwise end, with the shaft up and the legs toward you."
+      }
+    },
+    {
+      "id": "W",
+      "name": {
+        "en": "Wiper"
+      },
+      "designator": "W",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 2.5,
+        "y": 0
+      },
+      "connector": "legs"
+    },
+    {
+      "id": "P3",
+      "name": {
+        "en": "End 3"
+      },
+      "designator": "3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 5,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The clockwise end."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.5,
+      "pins": [
+        "P1",
+        "W",
+        "P3"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "9 mm rotary, 3 legs",
+    "body": {
+      "w": 9.8,
+      "h": 9.8,
+      "d": 10
+    },
+    "accuracy": 1,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 7"
+    }
+  },
+  "ratings": {},
+  "parameters": [
+    {
+      "id": "ohms",
+      "name": {
+        "en": "Resistance end to end"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 10000,
+      "min": 1000,
+      "max": 1000000,
+      "unit": "ohm",
+      "affects": [
+        "track"
+      ]
+    },
+    {
+      "id": "pos",
+      "name": {
+        "en": "Knob position"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 0.5,
+      "min": 0,
+      "max": 1,
+      "unit": "1",
+      "affects": [
+        "track"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A resistor of ohms between P1 and P3 with a wiper at the fraction pos of the way from P1."
+    },
+    "layers": [
+      {
+        "id": "track",
+        "domain": "analog",
+        "reads": [
+          "P1",
+          "W",
+          "P3",
+          "ohms",
+          "pos"
+        ],
+        "summary": {
+          "en": "Wiper to P1 is ohms x pos and wiper to P3 is ohms x (1 - pos)."
+        },
+        "model": {
+          "kind": "element",
+          "element": "pot",
+          "terminals": {
+            "a": "P1",
+            "w": "W",
+            "b": "P3"
+          },
+          "params": {
+            "pmax": {
+              "value": 0.05,
+              "unit": "W",
+              "source": {
+                "src": "partjs",
+                "loc": "figures/parts/potentiometer.js elec()"
+              },
+              "rationale": {
+                "en": "About what a 9 mm carbon pot is rated for. The solver marks the track hot or burnt above it."
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A linear taper: the wiper divides the track in proportion to the knob position."
+      },
+      {
+        "en": "A track that gets hot or burns when too much power goes through a short stretch of it."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Wiper contact resistance and noise."
+      },
+      {
+        "en": "Log taper and tolerance: the end-to-end value is the stated value."
+      },
+      {
+        "en": "The 300 degree sweep: the position is a number from 0 to 1."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "wiper_floor",
+        "text": {
+          "en": "At either end the solver keeps 0.5 ohm between the wiper and the end, so a pot turned fully over is never a perfect short."
+        }
+      }
+    ],
+    "solver_requires": [
+      "pot"
+    ],
+    "tests": [
+      {
+        "id": "knob_divides_5v",
+        "kind": "golden-trace",
+        "file": "figures/engine/bench-solve.test.mjs",
+        "note": "At the middle A0 reads 2.5 V, and at the end of the track it reads above 4.8 V."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "potentiometer",
+        "path": "public/figures/parts/potentiometer.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "P1",
+        "W",
+        "P3"
+      ],
+      "span": [
+        2,
+        4
+      ]
+    },
+    "schematic": {
+      "symbol": "generated"
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "10k pot",
+      "body_colour": "#3f6fb8",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-28",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-28",
+        "note": "First descriptor, from figures/parts/potentiometer.js, figures/engine/bench-solve.js and docs/facts/la-components.md.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

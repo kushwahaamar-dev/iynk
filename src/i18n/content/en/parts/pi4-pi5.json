@@ -1,0 +1,18 @@
+{
+  "description": "A Raspberry Pi 4 Model B or Raspberry Pi 5 single-board computer with a 40-pin GPIO header, modelled as a Python API.",
+  "summary": "The board runs the user's program in the iynk interpreter, in Python with gpiozero. It is a Python API model, not Raspberry Pi OS. Pins, PWM, I2C and timing follow the pi4-pi5 board profile.",
+  "layer": "Firmware runtime.",
+  "variant": "Variant",
+  "ideeprom": "Reserved for the HAT identification EEPROM. Leave it alone.",
+  "models": {
+    "1": "Python subset run by the interpreter with the Raspberry Pi BCM pin numbers (GPIO17 is physical pin 11).",
+    "2": "Digital I/O, PWM and edge callbacks on GPIO0 to GPIO27 through gpiozero, and RPi.GPIO on the Pi 4.",
+    "3": "I2C master on GPIO2 and GPIO3 and serial output. The Pi 4 and the Pi 5 differ only in clock speed."
+  },
+  "not": {
+    "1": "Linux, the desktop and Raspberry Pi OS: this is a Python API model, not an operating system.",
+    "2": "The camera, display, network, USB and PCI Express stacks.",
+    "3": "Analog inputs: the board has none, so an ADC chip such as the MCP3008 is needed."
+  },
+  "gap": "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

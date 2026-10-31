@@ -141,6 +141,7 @@
     "focusFigure": "चित्र के अंदर जाएँ",
     "selected": "चुना गया पुर्ज़ा",
     "walk": "और बेंच",
+    "concept": "अवधारणा मॉडल: Python API का नकली रूप, यह न Raspberry Pi OS है और न चलता हुआ ROS 2 ग्राफ़",
     "tabs": {
       "label": "बेंच के पैनल",
       "steps": "चरण",

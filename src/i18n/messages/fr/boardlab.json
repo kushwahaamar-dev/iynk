@@ -178,7 +178,7 @@
     "figureFault": "La figure signale : {msg}",
     "kind": {
       "reverse-polarity": "Polarité inversée",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "wrong-voltage": "Mauvaise tension",
       "cold-solder": "Soudure froide",
       "short": "Court-circuit",
@@ -293,7 +293,7 @@
     },
     "refused": {
       "unplugged": "Branchez d'abord l'USB : les téléversements passent par le câble.",
-      "brownout": "La carte redémarre sans arrêt (brown-out) : réglez d'abord l'alimentation.",
+      "brownout": "La carte redémarre sans arrêt (brownout) : réglez d'abord l'alimentation.",
       "fault": "Réglez d'abord la panne : débranchez, puis réparez.",
       "notReady": "La carte ne tourne pas : terminez le montage et mettez-la sous tension d'abord."
     },
@@ -351,7 +351,7 @@
       "powered": "Sous tension, à l'arrêt",
       "running": "En marche",
       "uploading": "Téléversement",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "fault": "Panne"
     },
     "statusLabel": "État de la carte",
@@ -436,5 +436,7 @@
       "reverse": "{part} : à l'envers, éteint",
       "open": "{part} : non connecté"
     }
-  }
+  },
+  "openInStudio": "Ouvrir dans Studio",
+  "lessonView": "Vue leçon : l'éditeur complet est dans Studio"
 }

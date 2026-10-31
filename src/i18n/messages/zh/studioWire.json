@@ -1,0 +1,164 @@
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "请选另一个引脚。导线需要两个端点。",
+      "no-such-pin": "{end} 不是这个元件上的引脚，没有连线。",
+      "mechanical-pin": "{end} 是安装点，不是电气引脚，没有连线。",
+      "not-on-view": "{part} 还没有放到板上。请先放置，再连线。",
+      "hole-not-on-surface": "{hole} 不是这块面包板上的孔。",
+      "same-strip": "{a} 和 {b} 在面包板内部已经相连。",
+      "duplicate-wire": "{a} 和 {b} 之间已经有一根导线。",
+      "empty-target": "那里没有引脚，没有连线。",
+      "quota": "这个项目已达到大小上限（{limit}）。请先删除一些内容再添加。",
+      "permission": "你正在查看这个项目。请向所有者申请编辑权限。",
+      "read-only": "这个项目以只读方式打开，无法在这里修改。"
+    },
+    "added": "已连接 {from} 到 {to}。",
+    "cancelled": "已取消连线。"
+  },
+  "announce": {
+    "wireMade": "已在 {from} 和 {to} 之间接线。",
+    "rejected": "没有做出更改。{message}",
+    "moved": "{what} 已移到 {x} 毫米，{y} 毫米。",
+    "movedMany": {
+      "one": "已移动 {count} 个元件。",
+      "other": "已移动 {count} 个元件。"
+    },
+    "selected": "已选中 {what}。",
+    "removedWire": "已删除导线。",
+    "removedWireNet": "已删除导线。网络 {net} 仍连接 {a} 和 {b}。",
+    "removedPart": "已删除 {what}。",
+    "removedMany": {
+      "one": "已删除 {count} 项。",
+      "other": "已删除 {count} 项。"
+    },
+    "rotated": {
+      "one": "已旋转 {count} 个元件。",
+      "other": "已旋转 {count} 个元件。"
+    },
+    "rotateBlocked": "插在面包板上的元件固定在网格上，不能旋转。",
+    "readOnly": "这个项目是只读的。",
+    "nothingToWire": "请先选一个元件，再按 W 接线。",
+    "noFreePin": "{part} 没有可用来起头接线的空闲引脚。",
+    "gridOn": "网格已开。",
+    "gridOff": "网格已关。",
+    "netHighlighted": "已高亮网络 {net}。",
+    "netCleared": "已取消网络高亮。",
+    "noNet": "所选内容不在任何网络上。"
+  },
+  "pin": {
+    "polarity": {
+      "anode": "阳极",
+      "cathode": "阴极",
+      "positive": "正极",
+      "negative": "负极"
+    },
+    "connected": "已连接到 {others}",
+    "connectedMore": "已连接到 {others} 等另外 {more} 个",
+    "unconnected": "未连接"
+  },
+  "pinPicker": {
+    "fromTitle": "从哪个引脚开始接线？",
+    "toTitle": "从 {from} 接到哪个引脚？",
+    "search": "搜索引脚",
+    "searchHint": "输入元件和引脚，例如 led1 anode 或 d13。按 Enter 选中高亮的引脚。",
+    "nearby": "附近",
+    "all": "所有引脚",
+    "none": "没有与 {query} 匹配的引脚。",
+    "results": {
+      "one": "{count} 个引脚",
+      "other": "{count} 个引脚"
+    },
+    "net": "网络 {name}",
+    "close": "关闭"
+  },
+  "outline": {
+    "title": "大纲",
+    "empty": "这个视图里还没有内容",
+    "emptyHint": "从元件库添加一个元件，它会出现在这里。",
+    "group": {
+      "boards": "开发板",
+      "parts": "元件",
+      "wires": "导线"
+    },
+    "wire": "从 {from} 到 {to} 的导线",
+    "junction": "节点"
+  },
+  "keys": {
+    "undo": "撤销",
+    "redo": "重做",
+    "edit": {
+      "copy": "复制",
+      "cut": "剪切",
+      "paste": "粘贴",
+      "duplicate": "创建副本",
+      "selectAll": "全选",
+      "delete": "删除所选内容",
+      "deleteDrawing": "只删除图形并保留连接",
+      "cancel": "取消，然后清除选择",
+      "enter": "放下元件，或打开检查器"
+    },
+    "place": {
+      "quickAdd": "添加元件",
+      "rotate": "向左旋转",
+      "rotateBack": "向右旋转"
+    },
+    "wire": {
+      "fromSelection": "从所选元件开始接线"
+    },
+    "move": {
+      "left": "向左移动，或聚焦上一个元件（Shift 十步，Alt 微调）",
+      "right": "向右移动，或聚焦下一个元件（Shift 十步，Alt 微调）",
+      "up": "向上移动，或聚焦上一个元件（Shift 十步，Alt 微调）",
+      "down": "向下移动，或聚焦下一个元件（Shift 十步，Alt 微调）"
+    },
+    "view": {
+      "breadboard": "面包板视图",
+      "schematic": "原理图视图",
+      "board": "开发板视图",
+      "fit": "全部适应窗口",
+      "fitSelection": "所选内容适应窗口",
+      "zoomIn": "放大",
+      "zoomOut": "缩小",
+      "pan": "按住时用鼠标平移",
+      "grid": "显示或隐藏网格",
+      "netHighlight": "高亮网络",
+      "outline": "显示或隐藏大纲"
+    },
+    "sim": {
+      "run": "运行",
+      "stop": "停止",
+      "reset": "重置"
+    },
+    "problems": {
+      "next": "下一个问题",
+      "prev": "上一个问题"
+    },
+    "region": {
+      "next": "下一个区域",
+      "prev": "上一个区域"
+    },
+    "partner": {
+      "focus": "打开搭档"
+    },
+    "guide": {
+      "stepPrev": "上一个引导步骤",
+      "stepNext": "下一个引导步骤"
+    },
+    "help": {
+      "keys": "显示键盘快捷键"
+    },
+    "align": {
+      "left": "左对齐",
+      "right": "右对齐",
+      "top": "顶部对齐",
+      "bottom": "底部对齐",
+      "centerH": "水平居中",
+      "centerV": "垂直居中"
+    },
+    "group": {
+      "make": "编组",
+      "remove": "取消编组"
+    }
+  }
+}

@@ -1,0 +1,1725 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.l298n-module",
+  "version": "1.0.1",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "L298N dual H-bridge motor driver module (red, 43 x 43 mm)",
+    "generic": true,
+    "kind": "module",
+    "category": "motor-driver",
+    "description": {
+      "en": "The common red L298N board: two bipolar H-bridges for two DC motors, a 78M05 regulator that can power your controller, and jumper caps on the enables."
+    },
+    "chip": {
+      "manufacturer": "STMicroelectronics",
+      "model": "L298N",
+      "package": "Multiwatt15 (vertical)"
+    },
+    "primary_source": "facts",
+    "legacy_ids": [
+      "l298n"
+    ],
+    "tags": [
+      "motor-driver",
+      "h-bridge",
+      "dc-motor",
+      "robotics"
+    ],
+    "refdes_prefix": "U"
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Fact sheet docs/facts/l298n.md",
+      "publisher": "iynk",
+      "reliability": "secondary",
+      "note": "It cites the ST L298 datasheet (Jan 2000), the Handson Technology module schematic, the TI LM78M05 product page and a Last Minute Engineers tutorial, all read by the fact-sheet author, not by this descriptor. Positions are estimated from one product photo, about 0.3 mm."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/l298n.js: constants and model code",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "VS",
+      "name": {
+        "en": "Motor supply (+12V)"
+      },
+      "designator": "+12V",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 9.5,
+        "y": 4.25
+      },
+      "connector": "J1"
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "Ground"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 14.5,
+        "y": 4.25
+      },
+      "connector": "J1"
+    },
+    {
+      "id": "P5V",
+      "name": {
+        "en": "+5V (output or input)"
+      },
+      "designator": "+5V",
+      "type": "power_io",
+      "class": "power",
+      "position": {
+        "x": 19.5,
+        "y": 4.25
+      },
+      "connector": "J1",
+      "note": {
+        "en": "An output when the 5V-EN jumper is fitted; an input for an outside 5 V supply when it is removed."
+      }
+    },
+    {
+      "id": "OUT1",
+      "name": {
+        "en": "Motor A, terminal 1"
+      },
+      "designator": "OUT1",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 4.25,
+        "y": 13.5
+      },
+      "connector": "J2"
+    },
+    {
+      "id": "OUT2",
+      "name": {
+        "en": "Motor A, terminal 2"
+      },
+      "designator": "OUT2",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 4.25,
+        "y": 18.5
+      },
+      "connector": "J2"
+    },
+    {
+      "id": "OUT3",
+      "name": {
+        "en": "Motor B, terminal 1"
+      },
+      "designator": "OUT3",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 38.75,
+        "y": 18.5
+      },
+      "connector": "J3"
+    },
+    {
+      "id": "OUT4",
+      "name": {
+        "en": "Motor B, terminal 2"
+      },
+      "designator": "OUT4",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 38.75,
+        "y": 13.5
+      },
+      "connector": "J3"
+    },
+    {
+      "id": "IN1",
+      "designator": "IN1",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 28.87,
+        "y": 2.27
+      },
+      "connector": "J4",
+      "logic_family": "ttl"
+    },
+    {
+      "id": "IN2",
+      "designator": "IN2",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 31.41,
+        "y": 2.27
+      },
+      "connector": "J4",
+      "logic_family": "ttl"
+    },
+    {
+      "id": "IN3",
+      "designator": "IN3",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 33.95,
+        "y": 2.27
+      },
+      "connector": "J4",
+      "logic_family": "ttl"
+    },
+    {
+      "id": "IN4",
+      "designator": "IN4",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 36.49,
+        "y": 2.27
+      },
+      "connector": "J4",
+      "logic_family": "ttl"
+    },
+    {
+      "id": "ENA",
+      "name": {
+        "en": "Enable A"
+      },
+      "designator": "ENA",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 26.33,
+        "y": 4.81
+      },
+      "connector": "JEA",
+      "logic_family": "ttl",
+      "note": {
+        "en": "No pull resistor. With the jumper cap off and nothing wired, this pin floats."
+      }
+    },
+    {
+      "id": "ENB",
+      "name": {
+        "en": "Enable B"
+      },
+      "designator": "ENB",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 39.87,
+        "y": 8.81
+      },
+      "connector": "JEB",
+      "logic_family": "ttl",
+      "note": {
+        "en": "No pull resistor. With the jumper cap off and nothing wired, this pin floats."
+      }
+    },
+    {
+      "id": "REGIN",
+      "name": {
+        "en": "Regulator input (5V-EN header)"
+      },
+      "designator": "5V-EN",
+      "type": "passive",
+      "class": "power",
+      "position": {
+        "x": 26.27,
+        "y": 8.5
+      },
+      "note": {
+        "en": "The 5V-EN cap joins this hole to +12V and so feeds the regulator."
+      },
+      "connector": "JE5"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J1",
+      "kind": "screw-terminal",
+      "pitch": 5,
+      "pins": [
+        "VS",
+        "GND",
+        "P5V"
+      ]
+    },
+    {
+      "id": "J2",
+      "kind": "screw-terminal",
+      "pitch": 5,
+      "pins": [
+        "OUT1",
+        "OUT2"
+      ]
+    },
+    {
+      "id": "J3",
+      "kind": "screw-terminal",
+      "pitch": 5,
+      "pins": [
+        "OUT3",
+        "OUT4"
+      ]
+    },
+    {
+      "id": "J4",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "IN1",
+        "IN2",
+        "IN3",
+        "IN4"
+      ]
+    },
+    {
+      "id": "JEA",
+      "kind": "jumper",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "ENA",
+        "P5V"
+      ],
+      "note": {
+        "en": "A cap on this header ties ENA to +5V."
+      }
+    },
+    {
+      "id": "JEB",
+      "kind": "jumper",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "ENB",
+        "P5V"
+      ],
+      "note": {
+        "en": "A cap on this header ties ENB to +5V."
+      }
+    },
+    {
+      "id": "JE5",
+      "kind": "jumper",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "VS",
+        "REGIN"
+      ],
+      "note": {
+        "en": "A cap on this header feeds the regulator from the motor supply."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "module",
+    "body": {
+      "w": 43,
+      "h": 43,
+      "d": 27
+    },
+    "board": {
+      "w": 43,
+      "h": 43,
+      "thickness": 1.6,
+      "corner_radius": 1.5,
+      "mounting_holes": [
+        {
+          "x": 3,
+          "y": 3,
+          "diameter": 3
+        },
+        {
+          "x": 40,
+          "y": 3,
+          "diameter": 3
+        },
+        {
+          "x": 3,
+          "y": 40,
+          "diameter": 3
+        },
+        {
+          "x": 40,
+          "y": 40,
+          "diameter": 3
+        }
+      ]
+    },
+    "height_total": 27,
+    "accuracy": 1,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/modules/l298n.js:162-171"
+    }
+  },
+  "ratings": {
+    "vs_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VS"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 50,
+        "source": {
+          "src": "facts",
+          "loc": "Absolute maximum ratings, VS"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vs_operating": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VS"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 4.8,
+        "max": 46,
+        "source": {
+          "src": "facts",
+          "loc": "Recommended operating conditions, VS: VIH + 2.5 V to 46 V"
+        },
+        "conditions": "The 4.8 V minimum is VIH 2.3 V plus 2.5 V, worked out here."
+      },
+      "used_by_model": "none"
+    },
+    "vs_module_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VS"
+        ]
+      },
+      "description": {
+        "en": "Highest motor supply the board survives while its regulator is in use. The 78M05 input and the 220 uF capacitor on VS are both 35 V parts."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 35,
+        "source": {
+          "src": "facts",
+          "loc": "Features: input voltage (LM78M05 product page, via the fact sheet)"
+        },
+        "conditions": "While the 5V-EN jumper is fitted. The capacitor rating is printed on the part (35V), see the fact sheet."
+      },
+      "used_by_model": "none"
+    },
+    "vs_min_for_logic": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "VS"
+        ]
+      },
+      "description": {
+        "en": "Lowest motor supply that still gives the logic a working 5 V through the regulator."
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 6.5,
+        "confidence": "medium",
+        "derived_from": [
+          "vss_range.manufacturer",
+          "regulator_dropout.simulation"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:218 power.mcu min 6.5"
+        },
+        "rationale": {
+          "en": "VSS needs 4.5 V and the 78M05 needs about 2 V of headroom, so 6.5 V. The product page says 1.8 V typical dropout, which would give 6.3 V; the model rounds up."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vss_range": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "P5V"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 4.5,
+        "typ": 5,
+        "max": 7,
+        "source": {
+          "src": "facts",
+          "loc": "Electrical characteristics, VSS (logic supply)"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "v5_level": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "P5V"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 5,
+        "source": {
+          "src": "facts",
+          "loc": "Product page: 5 V output"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "regulator_dropout": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "regulator"
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 1.8,
+        "source": {
+          "src": "facts",
+          "loc": "Product page: dropout"
+        }
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 2,
+        "confidence": "medium",
+        "derived_from": [
+          "regulator_dropout.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:214 rails 5V dropout: 2"
+        },
+        "rationale": {
+          "en": "Rounded up from 1.8 V so the model errs towards an early brown-out."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "regulator_current_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "P5V"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 0.5,
+        "source": {
+          "src": "facts",
+          "loc": "Product page: 0.5 A"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "logic_low_max": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "IN1",
+          "IN2",
+          "IN3",
+          "IN4",
+          "ENA",
+          "ENB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 1.5,
+        "source": {
+          "src": "facts",
+          "loc": "Electrical characteristics, input low voltage"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "logic_high_min": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "IN1",
+          "IN2",
+          "IN3",
+          "IN4",
+          "ENA",
+          "ENB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 2.3,
+        "source": {
+          "src": "facts",
+          "loc": "Electrical characteristics, input high voltage"
+        },
+        "conditions": "So a 3.3 V controller can drive the inputs."
+      },
+      "used_by_model": "none"
+    },
+    "input_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "IN1",
+          "IN2",
+          "IN3",
+          "IN4",
+          "ENA",
+          "ENB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": -0.3,
+        "max": 7,
+        "source": {
+          "src": "facts",
+          "loc": "Absolute maximum ratings, Vi and Ven"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "channel_current_dc": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 2,
+        "source": {
+          "src": "facts",
+          "loc": "Absolute maximum ratings, DC output current per channel"
+        },
+        "conditions": "2.5 A repetitive, 3 A for 100 microseconds."
+      },
+      "used_by_model": "none"
+    },
+    "saturation_drop_1a": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "description": {
+        "en": "Voltage lost across the upper plus lower switch at 1 A."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 1.8,
+        "typ": 2.55,
+        "max": 3.2,
+        "source": {
+          "src": "facts",
+          "loc": "VCEsat(H) + VCEsat(L) at IL = 1 A"
+        },
+        "conditions": "The totals are the sum of the two table rows, worked out in docs/facts/l298n.md section 3.3."
+      },
+      "used_by_model": "none"
+    },
+    "saturation_drop_2a": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 3.7,
+        "max": 4.9,
+        "source": {
+          "src": "facts",
+          "loc": "VCEsat(H) + VCEsat(L) at IL = 2 A"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "drop_fit_offset": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 1.4,
+        "confidence": "medium",
+        "derived_from": [
+          "saturation_drop_1a.manufacturer",
+          "saturation_drop_2a.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:28"
+        },
+        "rationale": {
+          "en": "A straight line through the typical totals at 1 A (2.55 V) and 2 A (3.7 V): drop = 1.4 V + 1.15 ohm x I. Exact at both points. Below 0.8 A the datasheet has no data and the line is extrapolated."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "drop_fit_slope": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 1.15,
+        "confidence": "medium",
+        "derived_from": [
+          "saturation_drop_1a.manufacturer",
+          "saturation_drop_2a.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:28"
+        },
+        "rationale": {
+          "en": "The slope of the same line: (3.7 V - 2.55 V) / 1 A."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "run_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "description": {
+        "en": "Motor current the module assumes when a bridge is on and the motor is not stalled."
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.6,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:25"
+        },
+        "rationale": {
+          "en": "One TT gear motor pushing a small robot, the figure of the original bench. This is a property of the motor, not of the driver, and should come from the attached motor part."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "motor_winding_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "bridges"
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 3,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:26"
+        },
+        "rationale": {
+          "en": "A TT motor winding. Stall current at 7.4 V is then about 1.45 A. Also a motor property that belongs on the motor part."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "quiescent_current_vs": {
+      "measure": "current",
+      "role": "consumption",
+      "scope": {
+        "pins": [
+          "VS"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "typ": 0.05,
+        "max": 0.07,
+        "source": {
+          "src": "facts",
+          "loc": "Electrical characteristics, IS with enable high and input high"
+        }
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.05,
+        "confidence": "medium",
+        "derived_from": [
+          "quiescent_current_vs.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:61 iBatt: ... + .05"
+        },
+        "rationale": {
+          "en": "The typical value for inputs high, applied whenever VS is above 0.5 V whatever the inputs are. With inputs low the chip draws 13 mA typical."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "commutation_frequency_max": {
+      "measure": "frequency",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "ENA",
+          "ENB"
+        ]
+      },
+      "manufacturer": {
+        "unit": "Hz",
+        "typ": 25000,
+        "max": 40000,
+        "source": {
+          "src": "facts",
+          "loc": "Electrical characteristics, commutation frequency"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "rth_junction_case": {
+      "measure": "thermal_resistance",
+      "role": "thermal",
+      "scope": {
+        "part": true
+      },
+      "manufacturer": {
+        "unit": "C_per_W",
+        "value": 3,
+        "source": {
+          "src": "facts",
+          "loc": "Thermal data, Rth j-case"
+        },
+        "conditions": "The fact sheet gives 3 C/W without saying min, typ or max."
+      },
+      "used_by_model": "none"
+    },
+    "rth_case_sink": {
+      "measure": "thermal_resistance",
+      "role": "thermal",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "C_per_W",
+        "value": 1,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:27"
+        },
+        "rationale": {
+          "en": "A guess for the tab pressed against the heatsink. Constant in figures/modules/l298n.js:27, no source found."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "rth_sink_air": {
+      "measure": "thermal_resistance",
+      "role": "thermal",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "C_per_W",
+        "value": 12,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/l298n.js:27"
+        },
+        "rationale": {
+          "en": "Assumed for the stock fin; the maker publishes no figure and the fact sheet guesses 10 to 15 C/W. Constant in figures/modules/l298n.js:27."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "tj_max": {
+      "measure": "temperature",
+      "role": "abs_max",
+      "scope": {
+        "part": true
+      },
+      "manufacturer": {
+        "unit": "degC",
+        "max": 130,
+        "source": {
+          "src": "facts",
+          "loc": "Thermal data, operating junction temperature -25 to 130 degC"
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "protocols": [
+    {
+      "id": "direction",
+      "kind": "gpio",
+      "role": "peripheral",
+      "pins": {
+        "in1": "IN1",
+        "in2": "IN2",
+        "in3": "IN3",
+        "in4": "IN4"
+      },
+      "status": "not-modelled-yet"
+    },
+    {
+      "id": "enable_pwm",
+      "kind": "pwm",
+      "role": "peripheral",
+      "pins": {
+        "ena": "ENA",
+        "enb": "ENB"
+      },
+      "speed_max": "commutation_frequency_max",
+      "params": {
+        "duty_to_speed": "linear average"
+      },
+      "status": "not-modelled-yet"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "motor_supply",
+        "pins": [
+          "VS"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vs_operating",
+        "current": "quiescent_current_vs"
+      },
+      {
+        "id": "logic_supply_external",
+        "pins": [
+          "P5V"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vss_range",
+        "condition": "5V-EN jumper removed"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "logic_5v",
+        "pin": "P5V",
+        "nominal": {
+          "unit": "V",
+          "value": 5
+        },
+        "source": "linear-regulator",
+        "dropout": "regulator_dropout",
+        "current_max": "regulator_current_max",
+        "condition": "5V-EN jumper fitted"
+      }
+    ],
+    "consumption": [
+      {
+        "id": "idle_inputs_high",
+        "mode": {
+          "en": "Powered, inputs high"
+        },
+        "rating": "quiescent_current_vs"
+      }
+    ],
+    "protection": [
+      {
+        "kind": "reverse-polarity",
+        "present": false,
+        "note": {
+          "en": "None. A reversed supply sends current through the flyback diodes."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1 and section 6"
+        }
+      },
+      {
+        "kind": "overcurrent",
+        "present": false,
+        "note": {
+          "en": "The current-sense pins are tied to ground, so nothing limits current."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1"
+        }
+      },
+      {
+        "kind": "short-circuit",
+        "present": false,
+        "source": {
+          "src": "facts"
+        }
+      },
+      {
+        "kind": "overtemperature",
+        "present": true,
+        "note": {
+          "en": "The chip has it; the datasheet gives no trip temperature."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "front page"
+        }
+      },
+      {
+        "kind": "undervoltage-lockout",
+        "present": false,
+        "source": {
+          "src": "facts"
+        }
+      },
+      {
+        "kind": "flyback",
+        "present": true,
+        "note": {
+          "en": "Eight M7 diodes, output to VS and ground to output."
+        },
+        "source": {
+          "src": "facts"
+        }
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "ena_jumper",
+      "name": {
+        "en": "ENA jumper cap"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": true,
+      "affects": [
+        "ENA",
+        "bridges"
+      ]
+    },
+    {
+      "id": "enb_jumper",
+      "name": {
+        "en": "ENB jumper cap"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": true,
+      "affects": [
+        "ENB",
+        "bridges"
+      ]
+    },
+    {
+      "id": "reg_jumper",
+      "name": {
+        "en": "5V-EN jumper cap"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": true,
+      "affects": [
+        "P5V",
+        "regulator"
+      ]
+    }
+  ],
+  "mechanics": {
+    "driver": {
+      "kind": "h-bridge",
+      "decay": "fast",
+      "vdrop_v": 2.55,
+      "i_max_a": 2,
+      "pwm_max_hz": 25000,
+      "source": {
+        "src": "facts",
+        "loc": "vdrop_v: section 3.3 (2.55 V typical at 1 A); i_max_a: 3.2 (2 A DC); pwm_max_hz: 3.2 (25 kHz typical); decay: 3.5 (PWM on EN)"
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "Per channel: enable high and IN1 different from IN2 drives the motor, equal inputs brake, enable low lets it coast. The motor sees the supply minus the switch drop. A regulator makes 5 V from the supply when its jumper is fitted."
+    },
+    "layers": [
+      {
+        "id": "bridges",
+        "domain": "analog",
+        "reads": [
+          "IN1",
+          "IN2",
+          "IN3",
+          "IN4",
+          "ENA",
+          "ENB",
+          "VS",
+          "ena_jumper",
+          "enb_jumper"
+        ],
+        "drives": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4"
+        ],
+        "summary": {
+          "en": "Two bipolar H-bridges as a closed-form function of the input levels and the supply."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The bridge is a function in the figure page. The Studio has no bridge model yet, so the outputs do not move."
+          }
+        }
+      },
+      {
+        "id": "regulator",
+        "domain": "power",
+        "reads": [
+          "VS",
+          "reg_jumper"
+        ],
+        "drives": [
+          "P5V"
+        ],
+        "summary": {
+          "en": "78M05: output is 5 V, or the input minus the dropout when the input is too low."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The regulator rule lives in the figure engine's power tree. The solver has no regulator element yet."
+          }
+        }
+      },
+      {
+        "id": "heat",
+        "domain": "thermal",
+        "reads": [
+          "bridges"
+        ],
+        "summary": {
+          "en": "Steady-state temperature: ambient plus dissipated power times the series thermal resistance."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The temperature is computed in the figure page only, and nothing in the Studio reads it."
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "overtemperature_cutout",
+      "name": {
+        "en": "Overtemperature cut-out on a stalled motor"
+      },
+      "cause_id": "motor-stall",
+      "symptom_ids": [
+        "x-motor-stutters",
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "junction_temperature",
+          "target": "part",
+          "op": ">",
+          "threshold": {
+            "rating": "tj_max",
+            "pick": "max"
+          }
+        }
+      ],
+      "effect": {
+        "state": "thermal_cutout",
+        "latched": false,
+        "recovers_when": "the chip cools",
+        "detail": {
+          "en": "The outputs switch off, the motor coasts, and it restarts as the chip cools."
+        }
+      },
+      "derivation": {
+        "en": "The datasheet names overtemperature protection but gives no trip temperature, so the operating junction maximum of 130 C stands in for it. Today the cut-out is not evaluated from the computed junction temperature: it is a timer."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "figurejs",
+        "loc": "figures/modules/l298n.js:56"
+      },
+      "implemented_as": "scripted",
+      "hints": [
+        {
+          "level": 1,
+          "text": {
+            "en": "The motor runs, then stutters. Touch nothing yet: what is the motor being asked to do?"
+          }
+        },
+        {
+          "level": 2,
+          "text": {
+            "en": "Is the wheel blocked? A blocked motor draws its stall current."
+          }
+        },
+        {
+          "level": 3,
+          "text": {
+            "en": "The motor is stalled, the chip overheats and cuts out until it cools. Free the wheel or use a stronger driver."
+          }
+        }
+      ]
+    },
+    {
+      "id": "reversed_supply_burn",
+      "name": {
+        "en": "Burned by a reversed supply"
+      },
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead",
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage_reverse",
+          "target": "VS",
+          "op": ">",
+          "threshold": {
+            "literal": {
+              "unit": "V",
+              "value": 1.4
+            }
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the module is replaced",
+        "detail": {
+          "en": "The regulator, which the supply reaches first, fails."
+        }
+      },
+      "derivation": {
+        "en": "Reverse voltage forward-biases two series diodes, D5-D8 then D1-D4, so it conducts above about two diode drops. The 1.4 V value is two drops of 0.7 V, an iynk estimate. In the engine the burn is triggered by the injected fault flag, not by this voltage."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "facts",
+        "loc": "section 6, reverse polarity"
+      },
+      "implemented_as": "scripted"
+    },
+    {
+      "id": "supply_too_high",
+      "name": {
+        "en": "Regulator and capacitor over-voltage"
+      },
+      "cause_id": "x-l298n-supply-too-high",
+      "symptom_ids": [
+        "part-hot",
+        "part-dead"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage",
+          "target": "VS",
+          "op": ">",
+          "threshold": {
+            "rating": "vs_module_max",
+            "pick": "max"
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the module is replaced",
+        "detail": {
+          "en": "The 78M05 fails, often short, and can put the motor supply onto the +5V rail."
+        }
+      },
+      "derivation": {
+        "en": "The 78M05 takes 35 V at most and the capacitor on VS is a 35 V part. The rule applies while the 5V-EN jumper is fitted; with it removed the L298 limit of 46 V applies."
+      },
+      "basis": "manufacturer",
+      "source": {
+        "src": "facts",
+        "loc": "Features: input voltage"
+      },
+      "implemented_as": "not-implemented"
+    },
+    {
+      "id": "supply_too_low",
+      "name": {
+        "en": "Logic starved by a low supply"
+      },
+      "cause_id": "x-l298n-supply-too-low",
+      "symptom_ids": [
+        "x-motors-dead",
+        "mcu-resets"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage",
+          "target": "VS",
+          "op": "<",
+          "threshold": {
+            "rating": "vs_min_for_logic",
+            "pick": "value"
+          }
+        }
+      ],
+      "effect": {
+        "state": "reset",
+        "latched": false,
+        "recovers_when": "the supply rises above the threshold",
+        "detail": {
+          "en": "The logic supply falls below 4.5 V, so the module and a controller powered from it stop."
+        }
+      },
+      "derivation": {
+        "en": "VSS minimum 4.5 V plus a 2 V regulator dropout, 6.5 V. See vs_min_for_logic."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "figurejs",
+        "loc": "figures/modules/l298n.js: power.mcu min"
+      },
+      "implemented_as": "not-implemented"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "reverse_supply",
+      "kind": "reversed_supply",
+      "target": {
+        "rail": "VS"
+      },
+      "legacy_id": "reverse-polarity:bench",
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead",
+        "part-hot"
+      ],
+      "description": {
+        "en": "Connect the battery the wrong way round."
+      }
+    },
+    {
+      "id": "stall",
+      "kind": "overload",
+      "target": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4"
+        ]
+      },
+      "legacy_id": "stall",
+      "cause_id": "motor-stall",
+      "symptom_ids": [
+        "x-motor-stutters",
+        "part-hot"
+      ],
+      "description": {
+        "en": "Block the motors so they stall."
+      }
+    },
+    {
+      "id": "cold_motor_a",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "OUT1",
+          "OUT2"
+        ]
+      },
+      "legacy_id": "cold:J2",
+      "cause_id": "x-connection-cold-joint",
+      "symptom_ids": [
+        "x-motor-intermittent"
+      ],
+      "description": {
+        "en": "A cracked joint on the motor A terminal."
+      }
+    },
+    {
+      "id": "no_ena_cap",
+      "kind": "option_removed",
+      "target": {
+        "parameter": "ena_jumper"
+      },
+      "legacy_id": "missing:JPA",
+      "cause_id": "floating-input",
+      "symptom_ids": [
+        "x-motor-dead-no-enable"
+      ],
+      "description": {
+        "en": "Pull the ENA cap and leave ENA unconnected."
+      }
+    },
+    {
+      "id": "no_reg_cap",
+      "kind": "option_removed",
+      "target": {
+        "parameter": "reg_jumper"
+      },
+      "legacy_id": "missing:JP5",
+      "cause_id": "x-l298n-regulator-jumper-removed",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "Pull the 5V-EN cap, so the +5V pin has no output."
+      }
+    },
+    {
+      "id": "supply_6v",
+      "kind": "wrong_supply_voltage",
+      "target": {
+        "rail": "VS"
+      },
+      "value": {
+        "unit": "V",
+        "value": 6
+      },
+      "legacy_id": "wrong-voltage:bench:6",
+      "cause_id": "x-l298n-supply-too-low",
+      "symptom_ids": [
+        "x-motors-dead",
+        "mcu-resets"
+      ],
+      "description": {
+        "en": "Power the module from 6 V, as four AA cells would."
+      }
+    },
+    {
+      "id": "supply_36v",
+      "kind": "wrong_supply_voltage",
+      "target": {
+        "rail": "VS"
+      },
+      "value": {
+        "unit": "V",
+        "value": 36
+      },
+      "legacy_id": "wrong-voltage:bench:36",
+      "cause_id": "x-l298n-supply-too-high",
+      "symptom_ids": [
+        "part-hot",
+        "part-dead"
+      ],
+      "description": {
+        "en": "Power the module from 36 V."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing runs in the Studio yet. The page lists the limits of the board, its seven faults and the truth table of one channel for reading."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The two H-bridges: drive, brake and coast, with the enable as a duty from 0 to 1."
+      },
+      {
+        "en": "The voltage lost in the switches, which the figure fits to the datasheet typical totals at 1 A and 2 A."
+      },
+      {
+        "en": "The 5V-EN regulator, and the over-voltage and under-voltage thresholds the board is known to have."
+      },
+      {
+        "en": "Heat in the chip and the overtemperature cut-out."
+      },
+      {
+        "en": "Motor back-EMF, inductance and the flyback current through the eight diodes."
+      },
+      {
+        "en": "Switching loss, PWM frequency limits, ripple, damage above 2 A and any current limit."
+      },
+      {
+        "en": "The analog level on the inputs, clone chips and part-to-part variation."
+      }
+    ],
+    "mocked": [
+      {
+        "en": "The overtemperature cut-out is a timer: with the stall fault set, the outputs switch off for 2 s of every 5 s once 6 s have passed."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "motor supply",
+        "min": 4.8,
+        "max": 46,
+        "unit": "V"
+      },
+      {
+        "measure": "channel current",
+        "min": 0.8,
+        "max": 2.4,
+        "unit": "A",
+        "note": {
+          "en": "The range of the datasheet curve the drop fit follows."
+        }
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "load_not_read",
+        "text": {
+          "en": "The bridge assumes a fixed 0.6 A motor and a 3 ohm stall resistance instead of reading the motor that is attached."
+        },
+        "evidence": "figures/modules/l298n.js:25-26 and :40-47"
+      },
+      {
+        "id": "cutout_is_timer",
+        "text": {
+          "en": "The overtemperature cut-out switches the outputs off for 2 s of every 5 s once 6 s have passed with the stall fault set. It does not read the computed junction temperature."
+        },
+        "evidence": "figures/modules/l298n.js:56"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks the drop fit or the truth table against the datasheet; the existing tests check texts and ids only."
+        },
+        "evidence": "src/content/robotics/l298n.test.ts"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": []
+      },
+      {
+        "language": "micropython",
+        "libraries": []
+      }
+    ]
+  },
+  "compatibility": {
+    "works_with": [
+      "core.uno-r3",
+      "core.esp32-devkitc"
+    ],
+    "rules": [
+      {
+        "id": "v5_into_3v3",
+        "kind": "logic_level_mismatch",
+        "severity": "error",
+        "params": {
+          "pin": "P5V",
+          "limit_rating": "v5_level"
+        },
+        "message": {
+          "en": "The +5V pin is 5 V. Do not wire it to a 3.3 V controller pin: it can destroy the controller. The IN pins accept 3.3 V."
+        }
+      },
+      {
+        "id": "supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VS",
+          "rating": "vs_operating"
+        },
+        "message": {
+          "en": "The motor supply is outside 4.8 V to 46 V."
+        }
+      },
+      {
+        "id": "remove_jumper_high",
+        "kind": "jumper_state",
+        "severity": "warning",
+        "params": {
+          "parameter": "reg_jumper",
+          "value": false,
+          "when_pin": "VS",
+          "above_volts": 12
+        },
+        "message": {
+          "en": "Above 12 V, take off the 5V-EN jumper and feed the logic from a separate 5 V supply."
+        }
+      },
+      {
+        "id": "common_ground",
+        "kind": "needs_common_ground",
+        "severity": "warning",
+        "params": {
+          "pin": "GND"
+        },
+        "message": {
+          "en": "Join the controller ground to the GND terminal, or the inputs have no reference."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "module",
+        "id": "l298n",
+        "path": "public/figures/modules/l298n.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "IN1",
+        "IN2",
+        "IN3",
+        "IN4",
+        "ENA",
+        "P5V",
+        "ENB",
+        "VS",
+        "REGIN",
+        "GND",
+        "OUT2",
+        "OUT1",
+        "OUT4",
+        "OUT3"
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VS": "left",
+        "GND": "left",
+        "IN1": "bottom",
+        "IN2": "bottom",
+        "IN3": "bottom",
+        "IN4": "bottom",
+        "ENA": "bottom",
+        "ENB": "bottom",
+        "OUT1": "top",
+        "OUT2": "top",
+        "OUT3": "right",
+        "OUT4": "right",
+        "P5V": "left",
+        "REGIN": "left"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-terminal-module",
+      "label": "L298N",
+      "body_colour": "#c8282e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Datasheet figures: STMicroelectronics L298, cited through docs/facts/l298n.md, not redistributed."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/l298n.js and docs/facts/l298n.md.",
+        "behaviour_change": false
+      },
+      {
+        "version": "1.0.1",
+        "date": "2026-10-31",
+        "note": "Added the mechanics driver block for the robot engine.",
+        "behaviour_change": false
+      }
+    ],
+    "modified": "2026-10-31"
+  },
+  "x_legacy_model": [
+    {
+      "ref": "module:l298n-bridge@1",
+      "path": "figures/modules/l298n.js",
+      "lines": "25-28 and 40-47"
+    },
+    {
+      "ref": "power:linear-regulator@1",
+      "path": "figures/engine/bench.js",
+      "lines": "257"
+    },
+    {
+      "ref": "thermal:series-steady@1",
+      "path": "figures/modules/l298n.js",
+      "lines": "49-61"
+    }
+  ]
+}

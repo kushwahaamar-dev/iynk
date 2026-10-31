@@ -1,0 +1,2319 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [],
+    "owners": [
+      "usr_amar"
+    ],
+    "visibility": "private"
+  },
+  "actors": [
+    {
+      "id": "usr_amar",
+      "name": "Amar"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      "firmware": {
+        "entry": "src_speed",
+        "language": "arduino-cpp",
+        "libraries": [],
+        "sources": [
+          "src_speed"
+        ]
+      },
+      "id": "brd_uno",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.lipo-2s",
+        "version": "1.0.1"
+      },
+      "id": "cmp_bat",
+      "refdes": "BT1"
+    },
+    {
+      "definition": {
+        "ref": "core.caster-ball",
+        "version": "1.0.0"
+      },
+      "id": "cmp_caster",
+      "refdes": "C1"
+    },
+    {
+      "definition": {
+        "ref": "core.chassis-2wd",
+        "version": "1.0.0"
+      },
+      "id": "cmp_chassis",
+      "refdes": "CH1"
+    },
+    {
+      "definition": {
+        "ref": "core.tb6612fng-module",
+        "version": "1.0.1"
+      },
+      "id": "cmp_drv",
+      "refdes": "U2"
+    },
+    {
+      "definition": {
+        "ref": "core.tt-motor-encoder",
+        "version": "1.0.0"
+      },
+      "id": "cmp_motor_l",
+      "refdes": "M1"
+    },
+    {
+      "definition": {
+        "ref": "core.tt-motor-encoder",
+        "version": "1.0.0"
+      },
+      "id": "cmp_motor_r",
+      "refdes": "M2"
+    },
+    {
+      "definition": {
+        "ref": "core.wheel-65",
+        "version": "1.0.0"
+      },
+      "id": "cmp_wheel_l",
+      "refdes": "W1"
+    },
+    {
+      "definition": {
+        "ref": "core.wheel-65",
+        "version": "1.0.0"
+      },
+      "id": "cmp_wheel_r",
+      "refdes": "W2"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "mechanical",
+              "designator": "M",
+              "id": "MOUNT",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "mechanical"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.caster-ball",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "mechanical",
+              "designator": "D",
+              "id": "DECK",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "mechanical"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.chassis-2wd",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": "full",
+              "id": "demo",
+              "type": "enum",
+              "values": [
+                "full",
+                "nominal",
+                "low"
+              ]
+            }
+          ],
+          "pins": [
+            {
+              "class": "power",
+              "designator": "+",
+              "id": "PLUS",
+              "polarity": "positive",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "ground",
+              "designator": "-",
+              "id": "MINUS",
+              "polarity": "negative",
+              "position": {
+                "x": 2.54,
+                "y": 0
+              },
+              "type": "ground"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.lipo-2s",
+        "version": "1.0.1"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "ground",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "GND2",
+                "GND3"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "class": "power",
+              "designator": "VM",
+              "id": "VM",
+              "position": {
+                "x": 2.54,
+                "y": 19.05
+              },
+              "type": "power_in"
+            },
+            {
+              "class": "power",
+              "designator": "VCC",
+              "id": "VCC",
+              "position": {
+                "x": 2.54,
+                "y": 16.51
+              },
+              "type": "power_in"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND",
+              "position": {
+                "x": 2.54,
+                "y": 13.97
+              },
+              "type": "ground"
+            },
+            {
+              "class": "power",
+              "designator": "A01",
+              "id": "A01",
+              "position": {
+                "x": 2.54,
+                "y": 11.43
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "power",
+              "designator": "A02",
+              "id": "A02",
+              "position": {
+                "x": 2.54,
+                "y": 8.89
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "power",
+              "designator": "B02",
+              "id": "B02",
+              "position": {
+                "x": 2.54,
+                "y": 6.35
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "power",
+              "designator": "B01",
+              "id": "B01",
+              "position": {
+                "x": 2.54,
+                "y": 3.81
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND2",
+              "position": {
+                "x": 2.54,
+                "y": 1.27
+              },
+              "type": "ground"
+            },
+            {
+              "class": "digital",
+              "designator": "PWMA",
+              "id": "PWMA",
+              "position": {
+                "x": 17.78,
+                "y": 19.05
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "AIN2",
+              "id": "AIN2",
+              "position": {
+                "x": 17.78,
+                "y": 16.51
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "AIN1",
+              "id": "AIN1",
+              "position": {
+                "x": 17.78,
+                "y": 13.97
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "STBY",
+              "id": "STBY",
+              "position": {
+                "x": 17.78,
+                "y": 11.43
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "BIN1",
+              "id": "BIN1",
+              "position": {
+                "x": 17.78,
+                "y": 8.89
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "BIN2",
+              "id": "BIN2",
+              "position": {
+                "x": 17.78,
+                "y": 6.35
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "PWMB",
+              "id": "PWMB",
+              "position": {
+                "x": 17.78,
+                "y": 3.81
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND3",
+              "position": {
+                "x": 17.78,
+                "y": 1.27
+              },
+              "type": "ground"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.tb6612fng-module",
+        "version": "1.0.1"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "passive",
+              "designator": "+",
+              "id": "PLUS",
+              "polarity": "positive",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "designator": "-",
+              "id": "MINUS",
+              "polarity": "negative",
+              "position": {
+                "x": 2.54,
+                "y": 0
+              },
+              "type": "passive"
+            },
+            {
+              "class": "power",
+              "designator": "V",
+              "id": "VCC",
+              "polarity": "positive",
+              "position": {
+                "x": 5.08,
+                "y": 0
+              },
+              "type": "power_in"
+            },
+            {
+              "class": "ground",
+              "designator": "G",
+              "id": "GND",
+              "polarity": "negative",
+              "position": {
+                "x": 7.62,
+                "y": 0
+              },
+              "type": "ground"
+            },
+            {
+              "class": "digital",
+              "designator": "A",
+              "id": "A",
+              "position": {
+                "x": 10.16,
+                "y": 0
+              },
+              "type": "digital_out"
+            },
+            {
+              "class": "digital",
+              "designator": "B",
+              "id": "B",
+              "position": {
+                "x": 12.7,
+                "y": 0
+              },
+              "type": "digital_out"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.tt-motor-encoder",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_D11",
+              "kind": "internal-short",
+              "pins": [
+                "D11",
+                "ICSP_4"
+              ]
+            },
+            {
+              "id": "g_D12",
+              "kind": "internal-short",
+              "pins": [
+                "D12",
+                "ICSP_1"
+              ]
+            },
+            {
+              "id": "g_D13",
+              "kind": "internal-short",
+              "pins": [
+                "D13",
+                "ICSP_3"
+              ]
+            },
+            {
+              "id": "g_GND",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "POWER_6",
+                "POWER_7",
+                "ICSP_6",
+                "ICSP1_6"
+              ]
+            },
+            {
+              "id": "g_RESET",
+              "kind": "internal-short",
+              "pins": [
+                "RESET",
+                "ICSP_5"
+              ]
+            },
+            {
+              "id": "g_P5V",
+              "kind": "internal-short",
+              "pins": [
+                "P5V",
+                "ICSP_2",
+                "ICSP1_2"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "designator": "D0",
+              "header": "IOL",
+              "id": "D0",
+              "net": "D0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D1",
+              "header": "IOL",
+              "id": "D1",
+              "net": "D1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D2",
+              "header": "IOL",
+              "id": "D2",
+              "net": "D2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D3",
+              "header": "IOL",
+              "id": "D3",
+              "net": "D3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D4",
+              "header": "IOL",
+              "id": "D4",
+              "net": "D4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D5",
+              "header": "IOL",
+              "id": "D5",
+              "net": "D5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D6",
+              "header": "IOL",
+              "id": "D6",
+              "net": "D6",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D7",
+              "header": "IOL",
+              "id": "D7",
+              "net": "D7",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D8",
+              "header": "IOH",
+              "id": "D8",
+              "net": "D8",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D9",
+              "header": "IOH",
+              "id": "D9",
+              "net": "D9",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D10",
+              "header": "IOH",
+              "id": "D10",
+              "net": "D10",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D11",
+              "header": "IOH",
+              "id": "D11",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D12",
+              "header": "IOH",
+              "id": "D12",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D13",
+              "header": "IOH",
+              "id": "D13",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "IOH",
+              "id": "GND",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "AREF",
+              "header": "IOH",
+              "id": "AREF",
+              "net": "AREF",
+              "type": "analog_in"
+            },
+            {
+              "designator": "SDA",
+              "header": "IOH",
+              "id": "SDA",
+              "net": "SDA",
+              "type": "digital_io"
+            },
+            {
+              "designator": "SCL",
+              "header": "IOH",
+              "id": "SCL",
+              "net": "SCL",
+              "type": "digital_io"
+            },
+            {
+              "designator": "NC",
+              "header": "POWER",
+              "id": "NC",
+              "net": "NC",
+              "type": "nc"
+            },
+            {
+              "designator": "IOREF",
+              "header": "POWER",
+              "id": "IOREF",
+              "net": "IOREF",
+              "type": "passive"
+            },
+            {
+              "designator": "RESET",
+              "header": "POWER",
+              "id": "RESET",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "3V3",
+              "header": "POWER",
+              "id": "P3V3",
+              "net": "3V3",
+              "type": "power_io"
+            },
+            {
+              "designator": "5V",
+              "header": "POWER",
+              "id": "P5V",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_7",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "VIN",
+              "header": "POWER",
+              "id": "VIN",
+              "net": "VIN",
+              "type": "power_io"
+            },
+            {
+              "designator": "A0",
+              "header": "AD",
+              "id": "A0",
+              "net": "A0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A1",
+              "header": "AD",
+              "id": "A1",
+              "net": "A1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A2",
+              "header": "AD",
+              "id": "A2",
+              "net": "A2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A3",
+              "header": "AD",
+              "id": "A3",
+              "net": "A3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A4",
+              "header": "AD",
+              "id": "A4",
+              "net": "A4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A5",
+              "header": "AD",
+              "id": "A5",
+              "net": "A5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MISO",
+              "header": "ICSP",
+              "id": "ICSP_1",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP",
+              "id": "ICSP_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK",
+              "header": "ICSP",
+              "id": "ICSP_3",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI",
+              "header": "ICSP",
+              "id": "ICSP_4",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET",
+              "header": "ICSP",
+              "id": "ICSP_5",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP",
+              "id": "ICSP_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "MISO2",
+              "header": "ICSP1",
+              "id": "MISO2",
+              "net": "MISO2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP1",
+              "id": "ICSP1_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK2",
+              "header": "ICSP1",
+              "id": "SCK2",
+              "net": "SCK2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI2",
+              "header": "ICSP1",
+              "id": "MOSI2",
+              "net": "MOSI2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET2",
+              "header": "ICSP1",
+              "id": "RESET2",
+              "net": "RESET2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP1",
+              "id": "ICSP1_6",
+              "net": "GND",
+              "type": "ground"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "mechanical",
+              "designator": "S",
+              "id": "SHAFT",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "mechanical"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.wheel-65",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": []
+  },
+  "domains": {
+    "robotics": {
+      "data": {
+        "arena": {
+          "floor": {
+            "size_mm": [
+              1800,
+              1200
+            ],
+            "surface": "floor"
+          },
+          "start": {
+            "x_mm": -700,
+            "y_mm": 0,
+            "yaw_deg": 0
+          },
+          "statics": [
+            {
+              "id": "wall_n",
+              "pose": {
+                "position_mm": [
+                  0,
+                  610,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                1800,
+                20,
+                60
+              ],
+              "surface": "wall"
+            },
+            {
+              "id": "wall_s",
+              "pose": {
+                "position_mm": [
+                  0,
+                  -610,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                1800,
+                20,
+                60
+              ],
+              "surface": "wall"
+            },
+            {
+              "id": "wall_e",
+              "pose": {
+                "position_mm": [
+                  910,
+                  0,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                20,
+                1200,
+                60
+              ],
+              "surface": "wall"
+            },
+            {
+              "id": "wall_w",
+              "pose": {
+                "position_mm": [
+                  -910,
+                  0,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                20,
+                1200,
+                60
+              ],
+              "surface": "wall"
+            }
+          ],
+          "tracks": []
+        },
+        "bodies": {
+          "bdy_caster": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0,
+            "restitution": 0
+          },
+          "bdy_chassis": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0.3,
+            "restitution": 0
+          },
+          "bdy_wheel_l": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0.9,
+            "restitution": 0
+          },
+          "bdy_wheel_r": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0.9,
+            "restitution": 0
+          }
+        },
+        "joints": {
+          "jnt_wheel_l": {
+            "damping": 0.0005,
+            "friction_nm": 0.002
+          },
+          "jnt_wheel_r": {
+            "damping": 0.0005,
+            "friction_nm": 0.002
+          }
+        },
+        "physics": {
+          "ccd": "auto",
+          "gravity_mps2": [
+            0,
+            0,
+            -9.81
+          ],
+          "length_scale": 1,
+          "params": {
+            "solver_iterations": 4
+          },
+          "sleeping": false
+        },
+        "sensors": [],
+        "surfaces": [
+          {
+            "crr": 0.02,
+            "id": "floor",
+            "mu": 0.8,
+            "name": "Matte white board",
+            "reflectance": 0.85
+          },
+          {
+            "crr": 0,
+            "id": "wall",
+            "mu": 0.5,
+            "name": "Foam board wall",
+            "reflectance": 0.6
+          }
+        ],
+        "wheels": {
+          "jnt_wheel_l": {
+            "crr": 0.02,
+            "radius_mm": 32.5,
+            "surface_mu": 0.8,
+            "width_mm": 26
+          },
+          "jnt_wheel_r": {
+            "crr": 0.02,
+            "radius_mm": 32.5,
+            "surface_mu": 0.8,
+            "width_mm": 26
+          }
+        }
+      },
+      "schemaVersion": "1.0"
+    }
+  },
+  "ext": {
+    "x-iynk-robot": {
+      "loopPeriodUs": 20000,
+      "loopPin": "D13"
+    }
+  },
+  "format": "iynk.project",
+  "guide": {
+    "features": [
+      {
+        "icon": "play",
+        "text": "Encoder counts: how two interrupt pins turn wheel rotation into a speed you can read."
+      },
+      {
+        "icon": "board",
+        "text": "A PI loop: the step response shows rise time, overshoot and settling time."
+      },
+      {
+        "icon": "tip",
+        "text": "Loop timing: a slow loop makes the same gains oscillate."
+      }
+    ],
+    "hints": [
+      "The speed reads the wrong way round: one encoder runs backward. Check the left encoder channels A and B.",
+      "The speed keeps swinging around the target: look at the loop period on pin 13. A slow loop turns the same gains into an oscillation.",
+      "The robot resets as soon as the motors start: look at the battery voltage while the motors start.",
+      "The robot veers or turns the wrong way: one motor runs backward. Check the left motor leads.",
+      "The left wheel spins and the speed reads low: the wheel is slipping, so look at the grip under it.",
+      "Still stuck? Compare each reading with the run before you changed anything."
+    ],
+    "kind": "challenge",
+    "lede": "A two-wheel robot that holds 0.2 m/s with encoders and a PI loop, and a step response you can tune.",
+    "level": "project",
+    "overview": "Each gear motor now has an encoder. The Uno counts the pulses on interrupt pins, turns the counts into a speed and adjusts the PWM so the speed settles on the target. Change the gains and watch the step response.",
+    "pins": [
+      {
+        "color": "orange",
+        "pin": "D5",
+        "role": "Left motor speed",
+        "to": "TB6612 PWMA"
+      },
+      {
+        "color": "green",
+        "pin": "D7",
+        "role": "Left motor direction",
+        "to": "TB6612 AIN1"
+      },
+      {
+        "color": "green",
+        "pin": "D8",
+        "role": "Left motor direction",
+        "to": "TB6612 AIN2"
+      },
+      {
+        "color": "orange",
+        "pin": "D6",
+        "role": "Right motor speed",
+        "to": "TB6612 PWMB"
+      },
+      {
+        "color": "yellow",
+        "pin": "D10",
+        "role": "Right motor direction",
+        "to": "TB6612 BIN1"
+      },
+      {
+        "color": "yellow",
+        "pin": "D4",
+        "role": "Right motor direction",
+        "to": "TB6612 BIN2"
+      },
+      {
+        "color": "blue",
+        "pin": "D2",
+        "role": "Left encoder A (interrupt)",
+        "to": "Left motor encoder A"
+      },
+      {
+        "color": "blue",
+        "pin": "D11",
+        "role": "Left encoder B",
+        "to": "Left motor encoder B"
+      },
+      {
+        "color": "purple",
+        "pin": "D3",
+        "role": "Right encoder A (interrupt)",
+        "to": "Right motor encoder A"
+      },
+      {
+        "color": "purple",
+        "pin": "D12",
+        "role": "Right encoder B",
+        "to": "Right motor encoder B"
+      },
+      {
+        "color": "grey",
+        "pin": "D13",
+        "role": "Loop heartbeat",
+        "to": "Logic analyzer"
+      }
+    ],
+    "specs": [
+      {
+        "label": "Board",
+        "value": "Arduino Uno R3"
+      },
+      {
+        "label": "Driver",
+        "value": "TB6612FNG module"
+      },
+      {
+        "label": "Motors",
+        "value": "Two TT gear motors with encoders, 48:1"
+      },
+      {
+        "label": "Encoder",
+        "value": "11 pulses per motor revolution, 528 per wheel revolution (iynk assumption)"
+      },
+      {
+        "label": "Target",
+        "value": "0.2 m/s, stepped on at 2 s"
+      },
+      {
+        "label": "What it models",
+        "value": "Motor torque and back-EMF, the gearbox, encoder edges, wheel grip, battery sag and loop timing. It does not model encoder noise or wheel flex."
+      }
+    ],
+    "steps": [
+      "Build the drive base, then use the motors with encoders. Wire each encoder's V to 5 V and G to ground.",
+      "Wire the left encoder A to D2 and B to D11, and the right encoder A to D3 and B to D12.",
+      "Press Run. The target steps from 0 to 0.2 m/s at 2 s and the PID panel draws the step response.",
+      "Change KP and KI in the sketch and run again: watch rise time, overshoot and settling time move.",
+      "Open the loop timing view, then enable the slow loop fault and run again."
+    ],
+    "title": "Speed control"
+  },
+  "history": {
+    "baseChain": "270b5b75114c9735eeb9782a7dd1ad2f582afa9ac1608c91d39f256d8fe56e52",
+    "baseRevision": 0,
+    "checkpoints": [],
+    "ops": []
+  },
+  "id": "prj_robot-speed-control",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "mechanical": {
+    "bodies": [
+      {
+        "component": "cmp_caster",
+        "frame": "frm_caster",
+        "id": "bdy_caster",
+        "mass_g": 6,
+        "name": "Caster ball",
+        "shape": {
+          "kind": "sphere",
+          "radius_mm": 7.5
+        }
+      },
+      {
+        "com_mm": [
+          -35,
+          0,
+          -8
+        ],
+        "component": "cmp_chassis",
+        "frame": "frm_plate",
+        "id": "bdy_chassis",
+        "mass_g": 290,
+        "name": "Chassis with electronics (iynk estimate)",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            160,
+            110,
+            20
+          ]
+        }
+      },
+      {
+        "component": "cmp_wheel_l",
+        "frame": "frm_wheel_l",
+        "id": "bdy_wheel_l",
+        "mass_g": 25,
+        "name": "Left wheel",
+        "shape": {
+          "height_mm": 26,
+          "kind": "cylinder",
+          "radius_mm": 32.5
+        }
+      },
+      {
+        "component": "cmp_wheel_r",
+        "frame": "frm_wheel_r",
+        "id": "bdy_wheel_r",
+        "mass_g": 25,
+        "name": "Right wheel",
+        "shape": {
+          "height_mm": 26,
+          "kind": "cylinder",
+          "radius_mm": 32.5
+        }
+      }
+    ],
+    "frames": [
+      {
+        "id": "frm_caster",
+        "name": "Caster ball",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            -95,
+            0,
+            7.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_plate",
+        "name": "Chassis plate",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            -10,
+            0,
+            30
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_robot",
+        "name": "Robot (ground under the axle midpoint)",
+        "parent": "world",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_wheel_l",
+        "name": "Left wheel",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            0,
+            70,
+            32.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_wheel_r",
+        "name": "Right wheel",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            0,
+            -70,
+            32.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "joints": [
+      {
+        "child": "bdy_caster",
+        "id": "jnt_caster",
+        "kind": "fixed",
+        "origin": {
+          "position_mm": [
+            -85,
+            0,
+            -22.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        },
+        "parent": "bdy_chassis"
+      },
+      {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "child": "bdy_wheel_l",
+        "drive": {
+          "component": "cmp_motor_l"
+        },
+        "id": "jnt_wheel_l",
+        "kind": "wheel",
+        "origin": {
+          "position_mm": [
+            10,
+            70,
+            2.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        },
+        "parent": "bdy_chassis"
+      },
+      {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "child": "bdy_wheel_r",
+        "drive": {
+          "component": "cmp_motor_r"
+        },
+        "id": "jnt_wheel_r",
+        "kind": "wheel",
+        "origin": {
+          "position_mm": [
+            10,
+            -70,
+            2.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        },
+        "parent": "bdy_chassis"
+      }
+    ],
+    "mounts": [
+      {
+        "component": "cmp_bat",
+        "frame": "frm_plate",
+        "id": "mnt_bat",
+        "pose": {
+          "position_mm": [
+            -60,
+            0,
+            -2
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_drv",
+        "frame": "frm_plate",
+        "id": "mnt_drv",
+        "pose": {
+          "position_mm": [
+            30,
+            0,
+            8
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_motor_l",
+        "frame": "frm_plate",
+        "id": "mnt_motor_l",
+        "pose": {
+          "position_mm": [
+            10,
+            50,
+            2.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_motor_r",
+        "frame": "frm_plate",
+        "id": "mnt_motor_r",
+        "pose": {
+          "position_mm": [
+            10,
+            -50,
+            2.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "brd_uno",
+        "frame": "frm_plate",
+        "id": "mnt_uno",
+        "pose": {
+          "position_mm": [
+            -25,
+            0,
+            12
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "meta": {
+    "createdAt": "2026-10-27T12:00:00.000Z",
+    "description": "The drive base with a two-channel encoder on each gear motor. The sketch counts encoder edges with interrupts, works out the speed and holds 0.2 m/s with a PI loop; the target steps from 0 at 2 s. Part values are iynk assumptions unless a part says otherwise.",
+    "kind": "template",
+    "locale": "en",
+    "tags": [
+      "robot",
+      "speed-control",
+      "encoder",
+      "pid",
+      "uno",
+      "tb6612"
+    ],
+    "title": "Speed control",
+    "updatedAt": "2026-10-27T12:00:00.000Z"
+  },
+  "nets": [
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "P5V"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "STBY"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "VCC"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "VCC"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "VCC"
+        }
+      ],
+      "id": "net_5v",
+      "name": "5V"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D7"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "AIN1"
+        }
+      ],
+      "id": "net_ain1",
+      "name": "AIN1"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D8"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "AIN2"
+        }
+      ],
+      "id": "net_ain2",
+      "name": "AIN2"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D10"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "BIN1"
+        }
+      ],
+      "id": "net_bin1",
+      "name": "BIN1"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D4"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "BIN2"
+        }
+      ],
+      "id": "net_bin2",
+      "name": "BIN2"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D2"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "A"
+        }
+      ],
+      "id": "net_encl_a",
+      "name": "ENC_L_A"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D11"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "B"
+        }
+      ],
+      "id": "net_encl_b",
+      "name": "ENC_L_B"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D3"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "A"
+        }
+      ],
+      "id": "net_encr_a",
+      "name": "ENC_R_A"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D12"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "B"
+        }
+      ],
+      "id": "net_encr_b",
+      "name": "ENC_R_B"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_bat",
+          "p": "MINUS"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "GND"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "A01"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "PLUS"
+        }
+      ],
+      "id": "net_ml1",
+      "name": "M1+"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "A02"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "MINUS"
+        }
+      ],
+      "id": "net_ml2",
+      "name": "M1-"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "B01"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "PLUS"
+        }
+      ],
+      "id": "net_mr1",
+      "name": "M2+"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "B02"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "MINUS"
+        }
+      ],
+      "id": "net_mr2",
+      "name": "M2-"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D5"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "PWMA"
+        }
+      ],
+      "id": "net_pwma",
+      "name": "PWMA"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D6"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "PWMB"
+        }
+      ],
+      "id": "net_pwmb",
+      "name": "PWMB"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "VIN"
+        },
+        {
+          "c": "cmp_bat",
+          "p": "PLUS"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "VM"
+        }
+      ],
+      "id": "net_vbat",
+      "name": "VBAT"
+    }
+  ],
+  "parameters": [],
+  "provenance": {
+    "createdBy": "usr_amar",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0-spec"
+    },
+    "origin": {
+      "kind": "template",
+      "template": "iynk/templates/speed-control"
+    }
+  },
+  "revision": 0,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 20000,
+    "faults": [
+      {
+        "cause_id": "battery-sag-reset",
+        "enabled": false,
+        "id": "flt_brownout",
+        "kind": "brownout",
+        "note": "Weak pack: the Uno resets when both motors start.",
+        "symptom_ids": [
+          "robot-resets-at-start",
+          "mcu-resets"
+        ],
+        "target": {
+          "net": "net_vbat"
+        }
+      },
+      {
+        "cause_id": "encoder-channel-swapped",
+        "enabled": false,
+        "id": "flt_enc_swap",
+        "kind": "wrong-connection",
+        "note": "The left encoder channels are swapped: the left count runs backward, so the speed estimate is wrong.",
+        "symptom_ids": [
+          "encoder-count-wrong"
+        ],
+        "target": {
+          "nets": [
+            "net_encl_a",
+            "net_encl_b"
+          ]
+        }
+      },
+      {
+        "cause_id": "motor-direction-reversed",
+        "enabled": false,
+        "id": "flt_motor_swap",
+        "kind": "wrong-connection",
+        "note": "Swaps the left motor leads: the left wheel turns the wrong way, so the robot veers and the turn comes out wrong.",
+        "symptom_ids": [
+          "robot-turns-wrong-way"
+        ],
+        "target": {
+          "nets": [
+            "net_ml1",
+            "net_ml2"
+          ]
+        }
+      },
+      {
+        "cause_id": "loop-too-slow",
+        "enabled": false,
+        "id": "flt_slow_loop",
+        "kind": "param",
+        "note": "A delay(40) in loop(): the loop runs at half the rate the gains were tuned for, and the speed oscillates.",
+        "params": {
+          "flag": "SLOW_LOOP",
+          "source": "src_speed",
+          "value": true
+        },
+        "symptom_ids": [
+          "speed-oscillates"
+        ],
+        "target": {
+          "component": "brd_uno"
+        }
+      },
+      {
+        "cause_id": "wheel-slip",
+        "enabled": false,
+        "id": "flt_wheel_slip",
+        "kind": "param",
+        "note": "The left wheel grips a quarter as well: it spins and the robot drifts.",
+        "params": {
+          "joint": "jnt_wheel_l",
+          "surface_mu_scale": 0.25
+        },
+        "symptom_ids": [
+          "wheel-spins-no-motion"
+        ],
+        "target": {
+          "component": "cmp_wheel_l"
+        }
+      }
+    ],
+    "physics": {
+      "engine": "rapier",
+      "step_hz": 240
+    },
+    "runtimes": [
+      {
+        "board": "brd_uno",
+        "engine": "iynk-interp",
+        "id": "rtm_main"
+      }
+    ],
+    "seed": 1,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [],
+      "script": []
+    }
+  },
+  "sources": [
+    {
+      "board": "brd_uno",
+      "content": "// Speed control: hold 0.2 m/s with the encoders and a PI loop. The target steps from 0 to 0.2 m/s at 2 s.\n// The controller is the reference PID of the iynk instrument; the response is the speed worked out from the encoder counts.\nconst int PWMA = 5, AIN1 = 7, AIN2 = 8;      // left motor\nconst int PWMB = 6, BIN1 = 10, BIN2 = 4;     // right motor\nconst int STBY = 9;\nconst int ENC_L_A = 2, ENC_L_B = 11;         // left encoder; A is on an interrupt pin\nconst int ENC_R_A = 3, ENC_R_B = 12;         // right encoder\nconst int LOOP_PIN = 13;                     // flips at the top of loop(), so the loop period shows on the logic analyzer\n\nconst bool SLOW_LOOP = false;                // the loop-too-slow fault sets this to true\n\nconst float COUNTS_PER_REV = 528.0;          // 11 pulses per motor revolution on channel A, times the 48:1 gearbox (iynk assumption)\nconst float WHEEL_CIRC_M = 0.2042;           // 65 mm wheel\nconst float TARGET_MPS = 0.2;\nconst unsigned long STEP_MS = 2000;\n\nconst float KP = 1.5;\nconst float KI = 5.0;\nconst float KD = 0.01;\nconst float TF = 0.04;                       // derivative filter time constant, seconds\nconst float I_MAX = 0.5;\nconst float U_MIN = 0.0;\nconst float U_MAX = 1.0;\n\nvolatile long leftCount = 0;\nvolatile long rightCount = 0;\n\nfloat integral = 0;\nfloat dFilt = 0;\nfloat lastY = 0;\nlong lastLeft = 0;\nlong lastRight = 0;\nunsigned long lastStep = 0;\nbool heartbeat = false;\n\nvoid countLeft() {\n  if (digitalRead(ENC_L_B)) leftCount--;\n  else leftCount++;\n}\n\nvoid countRight() {\n  if (digitalRead(ENC_R_B)) rightCount--;\n  else rightCount++;\n}\n\nvoid wheel(int in1, int in2, int pwm, int speed) {\n  digitalWrite(in1, speed >= 0 ? HIGH : LOW);\n  digitalWrite(in2, speed >= 0 ? LOW : HIGH);\n  analogWrite(pwm, constrain(abs(speed), 0, 255));\n}\n\nvoid drive(int speed) {\n  wheel(AIN1, AIN2, PWMA, speed);\n  wheel(BIN1, BIN2, PWMB, speed);\n}\n\nvoid setup() {\n  Serial.begin(115200);\n  for (int p = 4; p <= 10; p++) pinMode(p, OUTPUT);\n  pinMode(LOOP_PIN, OUTPUT);\n  pinMode(ENC_L_A, INPUT);\n  pinMode(ENC_L_B, INPUT);\n  pinMode(ENC_R_A, INPUT);\n  pinMode(ENC_R_B, INPUT);\n  attachInterrupt(digitalPinToInterrupt(ENC_L_A), countLeft, RISING);\n  attachInterrupt(digitalPinToInterrupt(ENC_R_A), countRight, RISING);\n  digitalWrite(STBY, HIGH);\n  lastStep = millis();\n}\n\nvoid loop() {\n  heartbeat = !heartbeat;\n  digitalWrite(LOOP_PIN, heartbeat);\n\n  unsigned long now = millis();\n  float dt = (now - lastStep) / 1000.0;\n  lastStep = now;\n\n  noInterrupts();\n  long left = leftCount;\n  long right = rightCount;\n  interrupts();\n\n  float turns = ((left - lastLeft) + (right - lastRight)) / 2.0 / COUNTS_PER_REV;\n  lastLeft = left;\n  lastRight = right;\n  float y = dt > 0 ? turns * WHEEL_CIRC_M / dt : 0;\n\n  float setpoint = now < STEP_MS ? 0.0 : TARGET_MPS;\n  float e = setpoint - y;\n  float a = dt / (dt + TF);\n  if (dt > 0) dFilt += a * ((lastY - y) / dt - dFilt);   // the first pass has dt 0\n  lastY = y;\n\n  float p = KP * e;\n  float d = KD * dFilt;\n  float iNext = constrain(integral + KI * dt * e, -I_MAX, I_MAX);\n  float raw = p + iNext + d;\n  bool winding = (raw > U_MAX && e > 0) || (raw < U_MIN && e < 0);\n  if (!winding) integral = iNext;\n  float u = constrain(p + integral + d, U_MIN, U_MAX);\n\n  drive((int)(u * 255));\n\n  Serial.print(\"pid \");\n  Serial.print(now);\n  Serial.print(\" \");\n  Serial.print(setpoint, 4);\n  Serial.print(\" \");\n  Serial.print(y, 4);\n  Serial.print(\" \");\n  Serial.print(u, 4);\n  Serial.print(\" \");\n  Serial.println(integral, 4);\n\n  delay(SLOW_LOOP ? 40 : 20);\n}\n",
+      "id": "src_speed",
+      "language": "arduino-cpp",
+      "path": "speed.ino",
+      "role": "firmware"
+    }
+  ],
+  "tests": [
+    {
+      "checks": [
+        {
+          "id": "c1",
+          "kind": "runs",
+          "label": "Runs for the whole 20 s",
+          "minMs": 20000,
+          "visibility": "visible"
+        },
+        {
+          "byMs": 20000,
+          "id": "c2",
+          "kind": "serial",
+          "label": "Prints the PID lines",
+          "match": "pid ",
+          "minCount": 500,
+          "regex": false,
+          "visibility": "visible"
+        }
+      ],
+      "id": "speed",
+      "name": "Holds the target speed",
+      "runMs": 20000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_sch",
+      "kind": "schematic",
+      "name": "Schematic",
+      "placements": [
+        {
+          "c": "brd_uno",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bat",
+          "x_mm": 120,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_drv",
+          "x_mm": 60,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_motor_l",
+          "x_mm": 120,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_motor_r",
+          "x_mm": 180,
+          "y_mm": 0
+        }
+      ],
+      "wires": [
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s1",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "VCC"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "A01"
+          },
+          "id": "wir_s12",
+          "net": "net_ml1",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "PLUS"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "A02"
+          },
+          "id": "wir_s13",
+          "net": "net_ml2",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "MINUS"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "B01"
+          },
+          "id": "wir_s14",
+          "net": "net_mr1",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "PLUS"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "B02"
+          },
+          "id": "wir_s15",
+          "net": "net_mr2",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "MINUS"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D5"
+          },
+          "id": "wir_s16",
+          "net": "net_pwma",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "PWMA"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D6"
+          },
+          "id": "wir_s17",
+          "net": "net_pwmb",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "PWMB"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s2",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "STBY"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "PLUS"
+          },
+          "id": "wir_s26",
+          "net": "net_vbat",
+          "to": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "VIN"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "PLUS"
+          },
+          "id": "wir_s27",
+          "net": "net_vbat",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "VM"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s30",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "VCC"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s31",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "VCC"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s32",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s33",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D2"
+          },
+          "id": "wir_s34",
+          "net": "net_encl_a",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D11"
+          },
+          "id": "wir_s35",
+          "net": "net_encl_b",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "B"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D3"
+          },
+          "id": "wir_s36",
+          "net": "net_encr_a",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D12"
+          },
+          "id": "wir_s37",
+          "net": "net_encr_b",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "B"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D7"
+          },
+          "id": "wir_s4",
+          "net": "net_ain1",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "AIN1"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D8"
+          },
+          "id": "wir_s5",
+          "net": "net_ain2",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "AIN2"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D10"
+          },
+          "id": "wir_s6",
+          "net": "net_bin1",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "BIN1"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D4"
+          },
+          "id": "wir_s7",
+          "net": "net_bin2",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "BIN2"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s8",
+          "net": "net_gnd",
+          "to": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s9",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "GND"
+          }
+        }
+      ]
+    }
+  ]
+}

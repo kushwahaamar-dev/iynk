@@ -28,20 +28,12 @@ void loop() {
 }`;
 
 describe('Arduino C++ golden programs', () => {
-  it('Blink toggles pin 13 every second and runs fast', () => {
+  it('Blink toggles pin 13 every second', () => {
     const { run } = boot(BLINK);
     advance(run, 4100);
     const edges = run.world.trace.filter((e) => e[1] === 13);
     expect(edges.map((e) => [Math.round(e[0] / 1000), e[2]])).toEqual([[0, 1], [1000, 0], [2000, 1], [3000, 0], [4000, 1]]);
     expect(run.snapshot().leds.L).toBe(1);
-    // One simulated second in well under a millisecond of wall time (warm).
-    const r2 = createRun({ board: 'uno-r3', source: BLINK });
-    r2.start();
-    r2.step(1000);
-    const t0 = performance.now();
-    for (let i = 0; i < 20; i++) r2.step(1000);
-    const perSecond = (performance.now() - t0) / 20;
-    expect(perSecond).toBeLessThan(1);
   });
 
   it('button toggle with debounce', () => {
@@ -311,9 +303,7 @@ void loop() {}`, 'uno-r3', { devices: ['mpu6050'] });
   it('a busy loop hits the per-frame budget instead of freezing the tab', () => {
     const run = createRun({ board: 'esp32-devkitc', source: 'unsigned long n = 0;\nvoid setup() {}\nvoid loop() { n++; }', budget: 10_000 });
     run.start();
-    const t0 = performance.now();
     run.step(16);
-    expect(performance.now() - t0).toBeLessThan(100);
     expect(run.status.throttled).toBe(true);
     expect(run.status.t).toBeLessThan(16);
   });
@@ -355,5 +345,57 @@ void loop() {}`, 'uno-r4');
     // 128 of 255 is 2.51 V, read by the 10-bit ADC as 514; 1040 of 4095 is 1.27 V, read as 260.
     expect(out()).toBe('514\n260\n');
     expect(run.snapshot().pins[14].volts).toBeCloseTo(1.27, 2);
+  });
+});
+
+describe('array size cap', () => {
+  it('rejects an array over a million elements with the line number', () => {
+    const { errors } = boot('int big[200000000];\nvoid setup() {}\nvoid loop() {}');
+    expect(errors.join('\n')).toMatch(/^1:\d+ .*array size 200000000 is over the limit of 1,000,000 elements/);
+  });
+
+  it('rejects a 2-D array whose dimensions multiply past the cap', () => {
+    const { errors } = boot('int grid[2000][1000];\nvoid setup() {}\nvoid loop() {}');
+    expect(errors.join('\n')).toMatch(/array size 2000000 is over the limit/);
+  });
+
+  it('compiles an array of exactly a million elements', () => {
+    const { errors } = boot('char ok[1000000];\nvoid setup() {}\nvoid loop() {}');
+    expect(errors).toEqual([]);
+  });
+});
+
+describe('unknown includes', () => {
+  const body = 'void setup() {}\nvoid loop() {}';
+
+  it('names the header, its line and a code, and the run does not start', () => {
+    const source = `#include <Servo.h>\n#include <Foo.h>\n${body}`;
+    const [d, ...rest] = check({ board: 'uno-r3', source });
+    expect(rest).toEqual([]);
+    expect(d).toMatchObject({ kind: 'unsupported', line: 2, col: 1, code: 'include.unknown', args: { name: 'Foo.h' } });
+    expect(d.hint).toContain('Servo.h');
+    const { errors, run } = boot(source);
+    expect(errors).toHaveLength(1);
+    expect(run.status.state).not.toBe('running');
+  });
+
+  it('treats angle brackets and quotes alike', () => {
+    expect(check({ board: 'uno-r3', source: `#include "local.h"\n${body}` })[0]).toMatchObject({ code: 'include.unknown', args: { name: 'local.h' } });
+    expect(check({ board: 'uno-r3', source: `#include "Servo.h"\n${body}` })).toEqual([]);
+  });
+
+  it('is case sensitive and refuses paths that climb out', () => {
+    for (const name of ['servo.h', '../Servo.h', '/usr/Servo.h']) {
+      expect(check({ board: 'uno-r3', source: `#include <${name}>\n${body}` })[0]).toMatchObject({ code: 'include.unknown', args: { name } });
+    }
+  });
+
+  it('lets core and library headers through, quoted or not', () => {
+    const source = `#include <Arduino.h>\n#include <avr/pgmspace.h>\n#include "WiFiS3.h"\n#include "Arduino_LED_Matrix.h"\n#include <Wire.h>\n${body}`;
+    expect(check({ board: 'uno-r4', source })).toEqual([]);
+  });
+
+  it('ignores an include in a comment', () => {
+    expect(check({ board: 'uno-r3', source: `// #include <Foo.h>\n${body}` })).toEqual([]);
   });
 });

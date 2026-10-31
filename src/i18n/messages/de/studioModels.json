@@ -1,0 +1,43 @@
+{
+  "title": "Was es abbildet",
+  "chip": "Modellstufe",
+  "tiers": {
+    "T0": {
+      "name": "Illustration",
+      "meaning": "Nur gezeichnet. Dafür wird nichts berechnet."
+    },
+    "T1": {
+      "name": "Lernmodell",
+      "meaning": "Ein einfaches Modell, das zeigt, wie sich das Teil verhält. Nicht exakt."
+    },
+    "T2": {
+      "name": "Berechnetes Modell",
+      "meaning": "Die Werte stammen aus den Zahlen des Datenblatts."
+    },
+    "T3": {
+      "name": "Führt deine Firmware aus",
+      "meaning": "Das echte Chipprogramm läuft Befehl für Befehl."
+    },
+    "none": {
+      "name": "Keine Stufe",
+      "meaning": "Für dieses Teil ist keine Modellstufe gesetzt."
+    }
+  },
+  "status": {
+    "modelled": "Abgebildet",
+    "partly-modelled": "Teilweise abgebildet",
+    "not-modelled-yet": "Noch nicht abgebildet"
+  },
+  "engine": {
+    "label": "Engine",
+    "value": "Interpreter für eine Teilmenge von Arduino-C++, digitales Pinmodell"
+  },
+  "boardNotes": "Hinweise zum Board",
+  "notModelledHelp": "Noch nicht abgebildet heißt: Das Teil ist gezeichnet und verdrahtet, aber dafür wird nichts berechnet.",
+  "models": "Was es abbildet",
+  "notModelled": "Was es nicht abbildet",
+  "showAll": "Alle anzeigen",
+  "showLess": "Weniger anzeigen",
+  "unknownPart": "unbekanntes Teil",
+  "empty": "In diesem Projekt sind noch keine Teile."
+}

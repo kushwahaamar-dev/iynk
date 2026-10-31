@@ -39,7 +39,7 @@ export function Quiz({ quiz }: { quiz: NonNullable<Lesson["quiz"]> }) {
   const [checked, setChecked] = useState(false);
   const score = quiz.questions.filter((q) => picks[q.id] === q.answer).length;
   return (
-    <div className="flex flex-col gap-5" data-testid="lesson-quiz">
+    <div className="flex flex-col gap-4" data-testid="lesson-quiz">
       {quiz.questions.map((q) => {
         const right = picks[q.id] === q.answer;
         return (
@@ -51,7 +51,7 @@ export function Quiz({ quiz }: { quiz: NonNullable<Lesson["quiz"]> }) {
                 <label
                   key={o}
                   className={cx(
-                    "flex min-h-11 cursor-pointer items-center gap-3 rounded-ink-sm border-[1.5px] px-3 py-2 text-sm leading-snug",
+                    "flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm leading-snug",
                     checked && picked ? (right ? "on-fill border-good bg-good-bg" : "on-fill border-bad bg-bad-bg") : picked ? "border-ink" : "border-rule hover:bg-sunken",
                   )}
                 >
@@ -105,7 +105,7 @@ export function LessonInfo({ lesson }: { lesson: Lesson }) {
             <ul className="flex flex-col gap-2">
               {lesson.features.map((f) => (
                 <li key={f.text} className="flex gap-2">
-                  <span aria-hidden="true" className="mt-2 inline-block size-2 shrink-0 rounded-full bg-mustard-m" />
+                  <span aria-hidden="true" className="mt-2 inline-block size-2 shrink-0 rounded-full bg-accent" />
                   <span>{tc(f.text)}</span>
                 </li>
               ))}
@@ -136,14 +136,14 @@ export function LessonInfo({ lesson }: { lesson: Lesson }) {
                 <tbody>
                   {lesson.pins.map((p) => (
                     <tr key={p.pin} className="border-t border-rule">
-                      <td className="py-1.5">
+                      <td className="py-2">
                         <span className="flex items-center gap-2">
                           <WireDot color={p.color} />
                           <code>{p.pin}</code>
                         </span>
                       </td>
-                      <td className="py-1.5">{tc(p.to)}</td>
-                      <td className="py-1.5">{tc(p.role)}</td>
+                      <td className="py-2">{tc(p.to)}</td>
+                      <td className="py-2">{tc(p.role)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -158,7 +158,7 @@ export function LessonInfo({ lesson }: { lesson: Lesson }) {
             id: "steps",
             label: t("lesson.steps"),
             content: (
-              <ol className="ms-5 flex list-decimal flex-col gap-2">
+              <ol className="ms-4 flex list-decimal flex-col gap-2">
                 {lesson.steps.map((s) => (
                   <li key={s}>{tc(s)}</li>
                 ))}
@@ -175,8 +175,8 @@ export function LessonInfo({ lesson }: { lesson: Lesson }) {
             content: (
               <dl className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
                 {lesson.specs.map((s) => (
-                  <div key={s.label} className="border-t-[1.5px] border-rule py-2">
-                    <dt className="ink-label">{tc(s.label)}</dt>
+                  <div key={s.label} className="border-t border-rule py-2">
+                    <dt className="field-label">{tc(s.label)}</dt>
                     <dd className="font-medium">{tc(s.value)}</dd>
                   </div>
                 ))}

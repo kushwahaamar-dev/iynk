@@ -436,5 +436,7 @@
       "reverse": "{part}：装反了，不亮",
       "open": "{part}：未连接"
     }
-  }
+  },
+  "openInStudio": "在 Studio 中打开",
+  "lessonView": "课程视图：完整编辑器在 Studio 中"
 }

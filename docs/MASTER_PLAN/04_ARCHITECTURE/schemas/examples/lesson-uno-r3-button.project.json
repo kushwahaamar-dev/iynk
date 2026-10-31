@@ -1,0 +1,1610 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [],
+    "owners": [
+      "usr_amar"
+    ],
+    "visibility": "private"
+  },
+  "actors": [
+    {
+      "id": "usr_amar",
+      "name": "Amar"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      "firmware": {
+        "entry": "src_sketch",
+        "language": "arduino-cpp",
+        "libraries": [],
+        "sources": [
+          "src_sketch"
+        ]
+      },
+      "id": "brd_uno",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.breadboard-half",
+        "version": "1.0.0"
+      },
+      "id": "cmp_bb1",
+      "refdes": "BB1"
+    },
+    {
+      "definition": {
+        "ref": "core.push-button-6mm",
+        "version": "1.0.0"
+      },
+      "id": "cmp_btn1",
+      "refdes": "BTN1"
+    },
+    {
+      "definition": {
+        "ref": "core.led-5mm",
+        "version": "1.0.0"
+      },
+      "id": "cmp_led1",
+      "params": {
+        "color": {
+          "param": "par_color"
+        }
+      },
+      "refdes": "LED1"
+    },
+    {
+      "definition": {
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      "id": "cmp_res1",
+      "params": {
+        "ohms": 10000
+      },
+      "refdes": "RES1"
+    },
+    {
+      "definition": {
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      "id": "cmp_res2",
+      "params": {
+        "ohms": 220
+      },
+      "refdes": "RES2"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "params": [],
+          "pins": [],
+          "role": "surface"
+        },
+        "origin": "builtin",
+        "ref": "core.breadboard-half",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": "red",
+              "id": "color",
+              "type": "enum",
+              "values": [
+                "red",
+                "yellow",
+                "green",
+                "blue",
+                "white"
+              ]
+            }
+          ],
+          "pins": [
+            {
+              "designator": "A",
+              "id": "A",
+              "type": "passive"
+            },
+            {
+              "designator": "K",
+              "id": "K",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.led-5mm",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_a",
+              "kind": "internal-short",
+              "pins": [
+                "P1",
+                "P2"
+              ]
+            },
+            {
+              "id": "g_b",
+              "kind": "internal-short",
+              "pins": [
+                "P3",
+                "P4"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "designator": "1",
+              "id": "P1",
+              "type": "passive"
+            },
+            {
+              "designator": "2",
+              "id": "P2",
+              "type": "passive"
+            },
+            {
+              "designator": "3",
+              "id": "P3",
+              "type": "passive"
+            },
+            {
+              "designator": "4",
+              "id": "P4",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.push-button-6mm",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": 220,
+              "id": "ohms",
+              "max": 1000000000,
+              "min": 0.001,
+              "type": "number",
+              "unit": "ohm"
+            }
+          ],
+          "pins": [
+            {
+              "designator": "1",
+              "id": "P1",
+              "type": "passive"
+            },
+            {
+              "designator": "2",
+              "id": "P2",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_D11",
+              "kind": "internal-short",
+              "pins": [
+                "D11",
+                "ICSP_4"
+              ]
+            },
+            {
+              "id": "g_D12",
+              "kind": "internal-short",
+              "pins": [
+                "D12",
+                "ICSP_1"
+              ]
+            },
+            {
+              "id": "g_D13",
+              "kind": "internal-short",
+              "pins": [
+                "D13",
+                "ICSP_3"
+              ]
+            },
+            {
+              "id": "g_GND",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "POWER_6",
+                "POWER_7",
+                "ICSP_6",
+                "ICSP1_6"
+              ]
+            },
+            {
+              "id": "g_RESET",
+              "kind": "internal-short",
+              "pins": [
+                "RESET",
+                "ICSP_5"
+              ]
+            },
+            {
+              "id": "g_P5V",
+              "kind": "internal-short",
+              "pins": [
+                "P5V",
+                "ICSP_2",
+                "ICSP1_2"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "designator": "D0",
+              "header": "IOL",
+              "id": "D0",
+              "net": "D0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D1",
+              "header": "IOL",
+              "id": "D1",
+              "net": "D1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D2",
+              "header": "IOL",
+              "id": "D2",
+              "net": "D2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D3",
+              "header": "IOL",
+              "id": "D3",
+              "net": "D3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D4",
+              "header": "IOL",
+              "id": "D4",
+              "net": "D4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D5",
+              "header": "IOL",
+              "id": "D5",
+              "net": "D5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D6",
+              "header": "IOL",
+              "id": "D6",
+              "net": "D6",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D7",
+              "header": "IOL",
+              "id": "D7",
+              "net": "D7",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D8",
+              "header": "IOH",
+              "id": "D8",
+              "net": "D8",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D9",
+              "header": "IOH",
+              "id": "D9",
+              "net": "D9",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D10",
+              "header": "IOH",
+              "id": "D10",
+              "net": "D10",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D11",
+              "header": "IOH",
+              "id": "D11",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D12",
+              "header": "IOH",
+              "id": "D12",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D13",
+              "header": "IOH",
+              "id": "D13",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "IOH",
+              "id": "GND",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "AREF",
+              "header": "IOH",
+              "id": "AREF",
+              "net": "AREF",
+              "type": "analog_in"
+            },
+            {
+              "designator": "SDA",
+              "header": "IOH",
+              "id": "SDA",
+              "net": "SDA",
+              "type": "digital_io"
+            },
+            {
+              "designator": "SCL",
+              "header": "IOH",
+              "id": "SCL",
+              "net": "SCL",
+              "type": "digital_io"
+            },
+            {
+              "designator": "NC",
+              "header": "POWER",
+              "id": "NC",
+              "net": "NC",
+              "type": "nc"
+            },
+            {
+              "designator": "IOREF",
+              "header": "POWER",
+              "id": "IOREF",
+              "net": "IOREF",
+              "type": "passive"
+            },
+            {
+              "designator": "RESET",
+              "header": "POWER",
+              "id": "RESET",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "3V3",
+              "header": "POWER",
+              "id": "P3V3",
+              "net": "3V3",
+              "type": "power_io"
+            },
+            {
+              "designator": "5V",
+              "header": "POWER",
+              "id": "P5V",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_7",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "VIN",
+              "header": "POWER",
+              "id": "VIN",
+              "net": "VIN",
+              "type": "power_io"
+            },
+            {
+              "designator": "A0",
+              "header": "AD",
+              "id": "A0",
+              "net": "A0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A1",
+              "header": "AD",
+              "id": "A1",
+              "net": "A1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A2",
+              "header": "AD",
+              "id": "A2",
+              "net": "A2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A3",
+              "header": "AD",
+              "id": "A3",
+              "net": "A3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A4",
+              "header": "AD",
+              "id": "A4",
+              "net": "A4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A5",
+              "header": "AD",
+              "id": "A5",
+              "net": "A5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MISO",
+              "header": "ICSP",
+              "id": "ICSP_1",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP",
+              "id": "ICSP_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK",
+              "header": "ICSP",
+              "id": "ICSP_3",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI",
+              "header": "ICSP",
+              "id": "ICSP_4",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET",
+              "header": "ICSP",
+              "id": "ICSP_5",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP",
+              "id": "ICSP_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "MISO2",
+              "header": "ICSP1",
+              "id": "MISO2",
+              "net": "MISO2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP1",
+              "id": "ICSP1_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK2",
+              "header": "ICSP1",
+              "id": "SCK2",
+              "net": "SCK2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI2",
+              "header": "ICSP1",
+              "id": "MOSI2",
+              "net": "MOSI2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET2",
+              "header": "ICSP1",
+              "id": "RESET2",
+              "net": "RESET2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP1",
+              "id": "ICSP1_6",
+              "net": "GND",
+              "type": "ground"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": []
+  },
+  "format": "iynk.project",
+  "guide": {
+    "callouts": [
+      {
+        "target": "BTN1",
+        "text": {
+          "de": "Ein Druck verbindet Spalte 8 (5 V) mit Spalte 10 (D2).",
+          "en": "Pressing joins column 8 (5 V) to column 10 (D2).",
+          "es": "Al pulsar se une la columna 8 (5 V) con la columna 10 (D2).",
+          "fr": "Un appui relie la colonne 8 (5 V) à la colonne 10 (D2).",
+          "hi": "दबाने पर कॉलम 8 (5 V) कॉलम 10 (D2) से जुड़ जाता है।",
+          "zh": "按下时把第 8 列（5 V）和第 10 列（D2）连通。"
+        }
+      },
+      {
+        "target": "RES1",
+        "text": {
+          "de": "Pull-down: Ohne ihn hängt D2 in der Luft und liest Zufallswerte.",
+          "en": "Pull-down: without it D2 floats and reads at random.",
+          "es": "Pull-down: sin ella, D2 queda flotando y lee valores al azar.",
+          "fr": "Pull-down : sans elle, D2 flotte et lit n'importe quoi.",
+          "hi": "पुल-डाउन: इसके बिना D2 तैरता रहता है और बेतरतीब मान पढ़ता है।",
+          "zh": "下拉电阻：没有它，D2 处于悬空状态，读数是随机的。"
+        }
+      },
+      {
+        "target": "LED1",
+        "text": {
+          "de": "Leuchtet über D13.",
+          "en": "Lit by D13.",
+          "es": "Lo enciende D13.",
+          "fr": "Allumée par D13.",
+          "hi": "D13 से जलती है।",
+          "zh": "由 D13 点亮。"
+        }
+      },
+      {
+        "target": "IOL",
+        "text": {
+          "de": "D2 liegt auf der rechten Buchsenleiste.",
+          "en": "D2 is on the right-hand header.",
+          "es": "D2 está en el conector de la derecha.",
+          "fr": "D2 est sur le connecteur de droite.",
+          "hi": "D2 दाईं ओर वाले हेडर पर है।",
+          "zh": "D2 在右侧的排针上。"
+        }
+      }
+    ],
+    "features": [
+      {
+        "icon": "play",
+        "text": {
+          "de": "Drück den Taster in der Abbildung, während der Code läuft",
+          "en": "Press the button in the figure while the code runs",
+          "es": "Pulsa el botón en la figura mientras se ejecuta el código",
+          "fr": "Appuyez sur le bouton dans la figure pendant que le code tourne",
+          "hi": "कोड चलते समय चित्र में बटन दबाएँ",
+          "zh": "代码运行时，在图上按下按钮"
+        }
+      },
+      {
+        "icon": "info",
+        "text": {
+          "de": "Warum ein offener Eingang Unsinn liest",
+          "en": "Why a floating input reads nonsense",
+          "es": "Por qué una entrada flotante lee tonterías",
+          "fr": "Pourquoi une entrée flottante lit n'importe quoi",
+          "hi": "तैरता हुआ इनपुट बेतुकी रीडिंग क्यों देता है",
+          "zh": "为什么悬空的输入会读出乱七八糟的值"
+        }
+      },
+      {
+        "icon": "tip",
+        "text": {
+          "de": "Halten oder umschalten: Ein Chip ändert die Logik",
+          "en": "Hold or toggle: one chip changes the logic",
+          "es": "Mantener o alternar: una opción cambia la lógica",
+          "fr": "Maintien ou bascule : une pastille change la logique",
+          "hi": "दबाए रखें या टॉगल करें: एक चिप लॉजिक बदल देती है",
+          "zh": "按住还是切换：一个开关就能改变逻辑"
+        }
+      }
+    ],
+    "hints": [
+      {
+        "de": "Nimm den Pull-down heraus, und D2 fängt Störungen von deinem Finger ein: Die LED flackert von selbst.",
+        "en": "Take the pull-down out and D2 picks up noise from your finger: the LED flickers on its own.",
+        "es": "Quita la pull-down y D2 capta el ruido de tu dedo: el LED parpadea solo.",
+        "fr": "Retirez le pull-down et D2 capte le bruit de votre doigt : la LED vacille toute seule.",
+        "hi": "पुल-डाउन निकाल दें तो D2 आपकी उँगली से नॉइज़ पकड़ लेता है: LED अपने-आप टिमटिमाने लगती है।",
+        "zh": "拿掉下拉电阻，D2 会从你的手指上拾取噪声：LED 自己就闪起来了。"
+      },
+      {
+        "de": "Kontakte prellen ein paar ms lang. Ohne die 30 ms Wartezeit kann ein einziger Druck die LED mehrmals umschalten.",
+        "en": "Contacts bounce for a few ms. Without the 30 ms wait, one press can toggle the LED several times.",
+        "es": "Los contactos rebotan durante unos ms. Sin la espera de 30 ms, una sola pulsación puede cambiar el LED varias veces.",
+        "fr": "Les contacts rebondissent pendant quelques ms. Sans l'attente de 30 ms, un seul appui peut inverser la LED plusieurs fois.",
+        "hi": "कॉन्टैक्ट कुछ ms तक उछलते हैं। 30 ms के इंतज़ार के बिना एक ही दबाव LED को कई बार पलट सकता है।",
+        "zh": "触点会抖动几毫秒。没有 30 ms 的等待，按一次可能让 LED 切换好几次。"
+      },
+      {
+        "de": "Mit INPUT_PULLUP könntest du den Widerstand weglassen, aber dann liest ein Druck LOW.",
+        "en": "INPUT_PULLUP would let you skip the resistor, but then pressed reads LOW.",
+        "es": "Con INPUT_PULLUP te ahorrarías la resistencia, pero entonces pulsado lee LOW.",
+        "fr": "INPUT_PULLUP vous éviterait la résistance, mais alors un appui se lit LOW.",
+        "hi": "INPUT_PULLUP से आप रेज़िस्टर छोड़ सकते हैं, लेकिन तब दबाने पर LOW पढ़ा जाता है।",
+        "zh": "用 INPUT_PULLUP 可以省掉电阻，但那样按下时读到的是 LOW。"
+      }
+    ],
+    "kind": "lesson",
+    "lede": {
+      "de": "Endlich ein Eingang: Ein Taster an D2 entscheidet, wann die LED an D13 leuchtet. Halt ihn gedrückt, damit die LED leuchtet, oder stell den Code so um, dass jeder Druck sie umschaltet.",
+      "en": "An input at last: a push button on D2 decides when the LED on D13 lights. Hold it to light the LED, or switch the code so each press toggles it.",
+      "es": "Por fin una entrada: un pulsador en D2 decide cuándo se enciende el LED de D13. Mantenlo pulsado para encender el LED, o cambia el código para que cada pulsación lo encienda o lo apague.",
+      "fr": "Enfin une entrée : un bouton-poussoir sur D2 décide quand la LED de D13 s'allume. Maintenez-le pour allumer la LED, ou modifiez le code pour que chaque appui l'inverse.",
+      "hi": "आखिरकार एक इनपुट: D2 पर लगा पुश बटन तय करता है कि D13 वाली LED कब जले। LED जलाने के लिए उसे दबाए रखें, या कोड बदलें ताकि हर बार दबाने पर LED पलट जाए।",
+      "zh": "终于有输入了：D2 上的按钮决定 D13 上的 LED 何时点亮。按住它点亮 LED，或者切换代码，让每按一次就切换一次。"
+    },
+    "legacyFigure": {
+      "circuit": "button",
+      "page": "/figures/boards/uno-r3.html",
+      "sheets": [
+        "board",
+        "breadboard",
+        "schematic",
+        "power"
+      ]
+    },
+    "level": "input",
+    "order": 3,
+    "pins": [
+      {
+        "color": "red",
+        "pin": "5V",
+        "role": {
+          "de": "Ein Druck verbindet sie mit D2.",
+          "en": "Pressing connects it to D2.",
+          "es": "Al pulsar se conecta a D2.",
+          "fr": "Un appui le relie à D2.",
+          "hi": "दबाने पर यह D2 से जुड़ जाता है।",
+          "zh": "按下时把它连到 D2。"
+        },
+        "to": {
+          "de": "Eine Seite des Tasters",
+          "en": "One side of the button",
+          "es": "Un lado del pulsador",
+          "fr": "Un côté du bouton",
+          "hi": "बटन की एक तरफ़",
+          "zh": "按钮的一侧"
+        }
+      },
+      {
+        "color": "blue",
+        "pin": "D2",
+        "role": {
+          "de": "Liest HIGH, solange gedrückt, sonst LOW.",
+          "en": "Reads HIGH while pressed, LOW otherwise.",
+          "es": "Lee HIGH mientras está pulsado y LOW si no.",
+          "fr": "Lit HIGH quand on appuie, LOW sinon.",
+          "hi": "दबाने पर HIGH पढ़ता है, वरना LOW।",
+          "zh": "按下时读到 HIGH，否则读到 LOW。"
+        },
+        "to": {
+          "de": "Die andere Seite des Tasters und der 10-kΩ-Pull-down",
+          "en": "The other side of the button, and the 10 kΩ pull-down",
+          "es": "El otro lado del pulsador y la pull-down de 10 kΩ",
+          "fr": "L'autre côté du bouton, et le pull-down de 10 kΩ",
+          "hi": "बटन की दूसरी तरफ़, और 10 kΩ पुल-डाउन",
+          "zh": "按钮的另一侧，以及 10 kΩ 下拉电阻"
+        }
+      },
+      {
+        "color": "black",
+        "pin": "GND",
+        "role": {
+          "de": "Hält D2 auf LOW, wenn der Taster losgelassen ist, und nimmt den Strom der LED zurück.",
+          "en": "Holds D2 LOW when the button is up, and returns the LED's current.",
+          "es": "Mantiene D2 en LOW con el pulsador suelto y recoge la corriente del LED.",
+          "fr": "Maintient D2 à LOW quand le bouton est relâché, et reçoit le courant de retour de la LED.",
+          "hi": "बटन छूटा होने पर D2 को LOW रखता है, और LED का करंट वापस ले जाता है।",
+          "zh": "按钮松开时让 D2 保持 LOW，并让 LED 的电流回流。"
+        },
+        "to": {
+          "de": "Pull-down und LED",
+          "en": "Pull-down and LED",
+          "es": "La pull-down y el LED",
+          "fr": "Pull-down et LED",
+          "hi": "पुल-डाउन और LED",
+          "zh": "下拉电阻和 LED"
+        }
+      },
+      {
+        "color": "orange",
+        "pin": "D13",
+        "role": {
+          "de": "Lässt die LED leuchten.",
+          "en": "Lights the LED.",
+          "es": "Enciende el LED.",
+          "fr": "Allume la LED.",
+          "hi": "LED जलाता है।",
+          "zh": "点亮 LED。"
+        },
+        "to": {
+          "de": "220-Ω-Widerstand und die LED",
+          "en": "220 Ω resistor and the LED",
+          "es": "La resistencia de 220 Ω y el LED",
+          "fr": "Résistance de 220 Ω et LED",
+          "hi": "220 Ω रेज़िस्टर और LED",
+          "zh": "220 Ω 电阻和 LED"
+        }
+      }
+    ],
+    "quizzes": [
+      {
+        "id": "button-quiz",
+        "questions": [
+          {
+            "answer": 0,
+            "id": "q1",
+            "options": [
+              {
+                "de": "Er hält D2 auf LOW, solange der Taster losgelassen ist",
+                "en": "Holds D2 LOW while the button is up",
+                "es": "Mantiene D2 en LOW mientras el pulsador está suelto",
+                "fr": "Elle maintient D2 à LOW quand le bouton est relâché",
+                "hi": "बटन छूटा होने पर D2 को LOW रखता है",
+                "zh": "按钮松开时让 D2 保持 LOW"
+              },
+              {
+                "de": "Er schützt die LED",
+                "en": "Protects the LED",
+                "es": "Protege el LED",
+                "fr": "Elle protège la LED",
+                "hi": "LED की रक्षा करता है",
+                "zh": "保护 LED"
+              },
+              {
+                "de": "Er bremst den Taster",
+                "en": "Slows the button down",
+                "es": "Hace más lento el pulsador",
+                "fr": "Elle ralentit le bouton",
+                "hi": "बटन को धीमा करता है",
+                "zh": "让按钮反应慢一点"
+              }
+            ],
+            "q": {
+              "de": "Was macht der 10-kΩ-Widerstand?",
+              "en": "What does the 10 kΩ resistor do?",
+              "es": "¿Qué hace la resistencia de 10 kΩ?",
+              "fr": "À quoi sert la résistance de 10 kΩ ?",
+              "hi": "10 kΩ रेज़िस्टर क्या करता है?",
+              "zh": "10 kΩ 电阻有什么作用？"
+            },
+            "why": {
+              "de": "Er ist ein Pull-down. Ohne ihn ist D2 bei losgelassenem Taster mit nichts verbunden, und ein offener Eingang liest Zufallswerte.",
+              "en": "It is a pull-down. Without it D2 is connected to nothing when the button is up, and an unconnected input reads at random.",
+              "es": "Es una pull-down. Sin ella, D2 no está conectado a nada con el pulsador suelto, y una entrada sin conectar lee al azar.",
+              "fr": "C'est un pull-down. Sans elle, D2 n'est relié à rien quand le bouton est relâché, et une entrée non connectée lit au hasard.",
+              "hi": "यह पुल-डाउन है। इसके बिना बटन छूटा होने पर D2 किसी से नहीं जुड़ा होता, और बिना जुड़ा इनपुट बेतरतीब मान पढ़ता है।",
+              "zh": "它是下拉电阻。没有它，按钮松开时 D2 什么都没连，而悬空的输入读数是随机的。"
+            }
+          },
+          {
+            "answer": 2,
+            "id": "q2",
+            "options": [
+              {
+                "de": "Um Strom zu sparen",
+                "en": "To save power",
+                "es": "Para ahorrar energía",
+                "fr": "Pour économiser de l'énergie",
+                "hi": "पावर बचाने के लिए",
+                "zh": "为了省电"
+              },
+              {
+                "de": "Um den Taster schneller zu lesen",
+                "en": "To read the button faster",
+                "es": "Para leer el pulsador más rápido",
+                "fr": "Pour lire le bouton plus vite",
+                "hi": "बटन को जल्दी पढ़ने के लिए",
+                "zh": "为了更快地读取按钮"
+              },
+              {
+                "de": "Um nur auf den Moment des Drückens zu reagieren",
+                "en": "To react only to the moment of pressing",
+                "es": "Para reaccionar solo en el momento de pulsar",
+                "fr": "Pour ne réagir qu'au moment de l'appui",
+                "hi": "सिर्फ़ दबाने के पल पर प्रतिक्रिया देने के लिए",
+                "zh": "为了只对按下的那一刻作出反应"
+              }
+            ],
+            "q": {
+              "de": "Warum vergleicht der Code im Umschaltmodus now mit last?",
+              "en": "In toggle mode, why does the code compare now with last?",
+              "es": "En el modo alternar, ¿por qué compara el código now con last?",
+              "fr": "En mode bascule, pourquoi le code compare-t-il now et last ?",
+              "hi": "टॉगल मोड में कोड now की तुलना last से क्यों करता है?",
+              "zh": "在切换模式下，代码为什么要比较 now 和 last？"
+            },
+            "why": {
+              "de": "now == HIGH und last == LOW ist nur in dem Durchlauf von loop() wahr, in dem der Druck beginnt, also schaltet ein gehaltener Taster nur einmal um.",
+              "en": "now == HIGH and last == LOW is true only in the loop where the press starts, so a held button toggles once.",
+              "es": "now == HIGH y last == LOW solo se cumple en la vuelta del loop en la que empieza la pulsación, así que un botón mantenido alterna una sola vez.",
+              "fr": "now == HIGH et last == LOW n'est vrai que dans le tour de boucle où l'appui commence : un bouton maintenu ne bascule donc qu'une fois.",
+              "hi": "now == HIGH और last == LOW सिर्फ़ उसी loop में सच होता है जिसमें दबाव शुरू होता है, इसलिए दबाए रखा गया बटन सिर्फ़ एक बार टॉगल करता है।",
+              "zh": "只有在按下刚开始的那一次 loop 里，now == HIGH 且 last == LOW 才成立，所以按住不放只会切换一次。"
+            }
+          }
+        ]
+      }
+    ],
+    "references": [
+      {
+        "title": "Arduino UNO R3 datasheet (A000066)",
+        "url": "https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf"
+      },
+      {
+        "title": "Arduino UNO R3 schematic (A000066)",
+        "url": "https://docs.arduino.cc/resources/schematics/A000066-schematics.pdf"
+      },
+      {
+        "title": "Arduino UNO R3 full pinout (A000066)",
+        "url": "https://docs.arduino.cc/resources/pinouts/A000066-full-pinout.pdf"
+      }
+    ],
+    "serialSample": {
+      "baud": 9600,
+      "lines": []
+    },
+    "specs": [
+      {
+        "label": {
+          "de": "Pull-down",
+          "en": "Pull-down",
+          "es": "Pull-down",
+          "fr": "Pull-down",
+          "hi": "पुल-डाउन",
+          "zh": "下拉电阻"
+        },
+        "value": {
+          "de": "10 kΩ von D2 nach GND",
+          "en": "10 kΩ from D2 to GND",
+          "es": "10 kΩ de D2 a GND",
+          "fr": "10 kΩ de D2 à GND",
+          "hi": "D2 से GND तक 10 kΩ",
+          "zh": "从 D2 到 GND 10 kΩ"
+        }
+      },
+      {
+        "label": {
+          "de": "HIGH-Schwelle",
+          "en": "HIGH threshold",
+          "es": "Umbral de HIGH",
+          "fr": "Seuil HIGH",
+          "hi": "HIGH की सीमा",
+          "zh": "HIGH 阈值"
+        },
+        "value": {
+          "de": "Über 3,0 V",
+          "en": "Above 3.0 V",
+          "es": "Por encima de 3,0 V",
+          "fr": "Au-dessus de 3,0 V",
+          "hi": "3.0 V से ऊपर",
+          "zh": "高于 3.0 V"
+        }
+      },
+      {
+        "label": {
+          "de": "LOW-Schwelle",
+          "en": "LOW threshold",
+          "es": "Umbral de LOW",
+          "fr": "Seuil LOW",
+          "hi": "LOW की सीमा",
+          "zh": "LOW 阈值"
+        },
+        "value": {
+          "de": "Unter 1,5 V",
+          "en": "Below 1.5 V",
+          "es": "Por debajo de 1,5 V",
+          "fr": "En dessous de 1,5 V",
+          "hi": "1.5 V से नीचे",
+          "zh": "低于 1.5 V"
+        }
+      },
+      {
+        "label": {
+          "de": "Kontaktprellen",
+          "en": "Contact bounce",
+          "es": "Rebote del contacto",
+          "fr": "Rebond du contact",
+          "hi": "कॉन्टैक्ट बाउंस",
+          "zh": "触点抖动"
+        },
+        "value": {
+          "de": "Bis zu 5 ms Geflatter",
+          "en": "Up to 5 ms of chatter",
+          "es": "Hasta 5 ms de rebotes",
+          "fr": "Jusqu'à 5 ms de crépitement",
+          "hi": "5 ms तक की खड़खड़ाहट",
+          "zh": "最多 5 ms 的抖动"
+        }
+      },
+      {
+        "label": {
+          "de": "Strom durch den Taster",
+          "en": "Current through the button",
+          "es": "Corriente por el pulsador",
+          "fr": "Courant dans le bouton",
+          "hi": "बटन से बहने वाला करंट",
+          "zh": "流过按钮的电流"
+        },
+        "value": {
+          "de": "5 V ÷ 10 kΩ = 0,5 mA",
+          "en": "5 V ÷ 10 kΩ = 0.5 mA",
+          "es": "5 V ÷ 10 kΩ = 0,5 mA",
+          "fr": "5 V ÷ 10 kΩ = 0,5 mA",
+          "hi": "5 V ÷ 10 kΩ = 0.5 mA",
+          "zh": "5 V ÷ 10 kΩ = 0.5 mA"
+        }
+      }
+    ],
+    "starter": {
+      "source": "src_sketch",
+      "splices": {
+        "color": {
+          "blue": "blue",
+          "green": "green",
+          "red": "red",
+          "white": "white",
+          "yellow": "yellow"
+        },
+        "logic": {
+          "hold": "  digitalWrite(LED, now);",
+          "toggle": "  if (now == HIGH && last == LOW) {\n    lit = !lit;\n    digitalWrite(LED, lit);\n    delay(30);\n  }"
+        }
+      },
+      "template": "const int BUTTON = 2;\nconst int LED = 13;\n\nint last = LOW;    // {{t:lessons.button.code.last}}\nbool lit = false;  // {{t:lessons.button.code.lit}}\n\nvoid setup() {\n  pinMode(BUTTON, INPUT);  // {{t:lessons.button.code.input}}\n  pinMode(LED, OUTPUT);\n}\n\nvoid loop() {\n  int now = digitalRead(BUTTON);\n{{p:logic}}\n  last = now;\n}\n"
+    },
+    "steps": [
+      {
+        "de": "Folge 5V zur einen Seite des Tasters und D2 zur anderen. Der 10-kΩ-Widerstand zieht D2 auf GND.",
+        "en": "Follow 5V to one side of the button and D2 to the other. The 10 kΩ resistor ties D2 to GND.",
+        "es": "Sigue 5V hasta un lado del pulsador y D2 hasta el otro. La resistencia de 10 kΩ une D2 con GND.",
+        "fr": "Suivez le 5V jusqu'à un côté du bouton, et D2 jusqu'à l'autre. La résistance de 10 kΩ relie D2 à GND.",
+        "hi": "5V को बटन की एक तरफ़ तक और D2 को दूसरी तरफ़ तक देखें। 10 kΩ रेज़िस्टर D2 को GND से बाँधे रखता है।",
+        "zh": "顺着 5V 找到按钮的一侧，D2 连在另一侧。10 kΩ 电阻把 D2 接到 GND。"
+      },
+      {
+        "de": "Drück auf „Ausführen“, dann halt den Taster gedrückt: Die LED leuchtet, solange du ihn hältst.",
+        "en": "Press Run, then press and hold the button: the LED lights while you hold it.",
+        "es": "Pulsa Ejecutar y luego mantén pulsado el botón: el LED se enciende mientras lo mantienes.",
+        "fr": "Appuyez sur Exécuter, puis maintenez le bouton enfoncé : la LED s'allume tant que vous le tenez.",
+        "hi": "‘चलाएँ’ दबाएँ, फिर बटन दबाकर रखें: जब तक आप उसे दबाए रखते हैं, LED जलती है।",
+        "zh": "按“运行”，然后按住按钮：按着的时候 LED 亮。"
+      },
+      {
+        "de": "Stell „Der Taster“ auf „Bei jedem Druck umschalten“ und führ den Code noch einmal aus: Jetzt schaltet jeder Druck die LED um.",
+        "en": "Switch Button does to Toggle on each press and run again: now every press flips the LED.",
+        "es": "Cambia El pulsador a Alterna con cada pulsación y vuelve a ejecutar: ahora cada pulsación cambia el LED.",
+        "fr": "Passez « Le bouton » sur « Bascule à chaque appui » et relancez : maintenant chaque appui inverse la LED.",
+        "hi": "‘बटन क्या करे’ को ‘हर बार दबाने पर पलटे’ पर बदलें और फिर से चलाएँ: अब हर दबाव LED को पलट देता है।",
+        "zh": "把“按钮的作用”改成“每按一次切换”，再运行一次：现在每按一次，LED 翻转一次。"
+      },
+      {
+        "de": "Schau dir den Code an: Umgeschaltet wird nur, wenn der Messwert von LOW auf HIGH wechselt, also bewirkt Gedrückthalten nichts weiter.",
+        "en": "Watch the code: toggling only happens when the reading goes from LOW to HIGH, so holding the button does nothing more.",
+        "es": "Fíjate en el código: solo alterna cuando la lectura pasa de LOW a HIGH, así que mantener el botón pulsado no hace nada más.",
+        "fr": "Regardez le code : la bascule n'a lieu que quand la lecture passe de LOW à HIGH, donc maintenir le bouton ne fait rien de plus.",
+        "hi": "कोड देखें: टॉगल सिर्फ़ तब होता है जब रीडिंग LOW से HIGH होती है, इसलिए बटन दबाए रखने से आगे कुछ नहीं होता।",
+        "zh": "看代码：只有读数从 LOW 变成 HIGH 时才会切换，所以一直按着也不会再有变化。"
+      }
+    ],
+    "title": {
+      "de": "Einen Taster drücken",
+      "en": "Push a button",
+      "es": "Pulsa un botón",
+      "fr": "Appuyer sur un bouton",
+      "hi": "बटन दबाएँ",
+      "zh": "按下按钮"
+    }
+  },
+  "history": {
+    "baseChain": "6928904c692b1f8728bb181a49051ae107d390198c77d15f7b008c3f3e5758ff",
+    "baseRevision": 0,
+    "checkpoints": [],
+    "ops": []
+  },
+  "id": "prj_uno-r3-button",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "meta": {
+    "createdAt": "2026-10-27T12:00:00.000Z",
+    "description": "An input at last: a push button on D2 decides when the LED on D13 lights. Hold it to light the LED, or switch the code so each press toggles it.",
+    "kind": "lesson",
+    "locale": "en",
+    "tags": [
+      "uno",
+      "lesson",
+      "input"
+    ],
+    "title": "Push a button",
+    "updatedAt": "2026-10-27T12:00:00.000Z"
+  },
+  "nets": [
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "P5V"
+        },
+        {
+          "c": "cmp_btn1",
+          "p": "P1"
+        }
+      ],
+      "id": "net_5v",
+      "name": "5V"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D13"
+        },
+        {
+          "c": "cmp_res2",
+          "p": "P1"
+        }
+      ],
+      "id": "net_d13",
+      "name": "D13"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D2"
+        },
+        {
+          "c": "cmp_btn1",
+          "p": "P3"
+        },
+        {
+          "c": "cmp_res1",
+          "p": "P1"
+        }
+      ],
+      "id": "net_d2",
+      "name": "D2"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_led1",
+          "p": "K"
+        },
+        {
+          "c": "cmp_res1",
+          "p": "P2"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_led1",
+          "p": "A"
+        },
+        {
+          "c": "cmp_res2",
+          "p": "P2"
+        }
+      ],
+      "id": "net_led1a_res2p2"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "par_color",
+      "kind": "choice",
+      "label": "LED colour",
+      "name": "color",
+      "options": [
+        {
+          "label": {
+            "de": "Rot",
+            "en": "Red",
+            "es": "Rojo",
+            "fr": "Rouge",
+            "hi": "लाल",
+            "zh": "红色"
+          },
+          "value": "red"
+        },
+        {
+          "label": {
+            "de": "Gelb",
+            "en": "Yellow",
+            "es": "Amarillo",
+            "fr": "Jaune",
+            "hi": "पीला",
+            "zh": "黄色"
+          },
+          "value": "yellow"
+        },
+        {
+          "label": {
+            "de": "Grün",
+            "en": "Green",
+            "es": "Verde",
+            "fr": "Verte",
+            "hi": "हरा",
+            "zh": "绿色"
+          },
+          "value": "green"
+        },
+        {
+          "label": {
+            "de": "Blau",
+            "en": "Blue",
+            "es": "Azul",
+            "fr": "Bleue",
+            "hi": "नीला",
+            "zh": "蓝色"
+          },
+          "value": "blue"
+        },
+        {
+          "label": {
+            "de": "Weiß",
+            "en": "White",
+            "es": "Blanco",
+            "fr": "Blanche",
+            "hi": "सफ़ेद",
+            "zh": "白色"
+          },
+          "value": "white"
+        }
+      ],
+      "value": "red"
+    },
+    {
+      "id": "par_logic",
+      "kind": "choice",
+      "label": "Button does",
+      "name": "logic",
+      "options": [
+        {
+          "label": {
+            "de": "Leuchten, solange gedrückt",
+            "en": "Light while held",
+            "es": "Enciende mientras lo pulsas",
+            "fr": "Allume tant qu'on appuie",
+            "hi": "दबाए रखने तक जले",
+            "zh": "按住时亮"
+          },
+          "value": "hold"
+        },
+        {
+          "label": {
+            "de": "Bei jedem Druck umschalten",
+            "en": "Toggle on each press",
+            "es": "Alterna con cada pulsación",
+            "fr": "Bascule à chaque appui",
+            "hi": "हर बार दबाने पर पलटे",
+            "zh": "每按一次切换"
+          },
+          "value": "toggle"
+        }
+      ],
+      "value": "hold"
+    }
+  ],
+  "provenance": {
+    "contributors": [],
+    "createdBy": "usr_amar",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0-spec"
+    },
+    "origin": {
+      "at": "2026-10-27T12:00:00.000Z",
+      "catalogue": {
+        "child": "button",
+        "id": "uno-r3",
+        "lab": "board"
+      },
+      "kind": "migration",
+      "tool": "iynk-catalogue-convert/0.1 (spec prototype)"
+    },
+    "thirdParty": [
+      {
+        "id": "tp1",
+        "kind": "text",
+        "review": "unchecked",
+        "source": {
+          "title": "Third-party lesson sites named in D-017"
+        },
+        "what": "Lesson order, wording and timings may follow a third-party lesson site (F-197 review pending)"
+      }
+    ]
+  },
+  "revision": 0,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 3000,
+    "faults": [],
+    "runtimes": [
+      {
+        "board": "brd_uno",
+        "engine": "iynk-interp",
+        "id": "rtm_main"
+      }
+    ],
+    "seed": 1,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [
+        {
+          "component": "cmp_btn1",
+          "default": 0,
+          "device": {
+            "bounceMs": 5,
+            "kind": "button",
+            "pull": "external-down"
+          },
+          "gesture": "press",
+          "id": "button",
+          "label": {
+            "de": "Taster an D2",
+            "en": "Button on D2",
+            "es": "Pulsador en D2",
+            "fr": "Bouton sur D2",
+            "hi": "D2 पर बटन",
+            "zh": "D2 上的按钮"
+          },
+          "max": 1,
+          "min": 0,
+          "pins": [
+            {
+              "c": "brd_uno",
+              "p": "D2"
+            }
+          ],
+          "quantity": "button",
+          "step": 1
+        }
+      ],
+      "script": [
+        {
+          "input": "button",
+          "t": 500,
+          "value": 1
+        },
+        {
+          "input": "button",
+          "t": 1200,
+          "value": 0
+        },
+        {
+          "input": "button",
+          "t": 2000,
+          "value": 1
+        },
+        {
+          "input": "button",
+          "t": 2600,
+          "value": 0
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "board": "brd_uno",
+      "content": "const int BUTTON = 2;\nconst int LED = 13;\n\nint last = LOW;    // the reading from the last loop\nbool lit = false;  // is the LED on? (toggle mode)\n\nvoid setup() {\n  pinMode(BUTTON, INPUT);  // the 10 kΩ pull-down holds D2 LOW\n  pinMode(LED, OUTPUT);\n}\n\nvoid loop() {\n  int now = digitalRead(BUTTON);\n  digitalWrite(LED, now);\n  last = now;\n}\n",
+      "id": "src_sketch",
+      "language": "arduino-cpp",
+      "path": "sketch.ino",
+      "role": "firmware"
+    }
+  ],
+  "tests": [
+    {
+      "checks": [
+        {
+          "after": {
+            "input": "button",
+            "t": 500,
+            "value": 1
+          },
+          "id": "c1",
+          "kind": "responds",
+          "label": {
+            "de": "D13 geht innerhalb von 60 ms nach dem ersten Druck auf HIGH",
+            "en": "D13 goes HIGH within 60 ms of the first press",
+            "es": "D13 pasa a HIGH en menos de 60 ms después de la primera pulsación",
+            "fr": "D13 passe à HIGH moins de 60 ms après le premier appui",
+            "hi": "पहली बार दबाने के 60 ms के अंदर D13 HIGH हो जाता है",
+            "zh": "第一次按下后 60 ms 内 D13 变为 HIGH"
+          },
+          "mode": "out",
+          "pin": "D13",
+          "v": [
+            1,
+            1
+          ],
+          "visibility": "visible",
+          "withinMs": 60
+        },
+        {
+          "atMs": 900,
+          "id": "c2",
+          "kind": "pin-level",
+          "label": {
+            "de": "Die LED ist an, solange der Taster gedrückt ist",
+            "en": "The LED is on while the button is held",
+            "es": "El LED está encendido mientras se mantiene pulsado el botón",
+            "fr": "La LED est allumée tant que le bouton est maintenu",
+            "hi": "बटन दबाए रखने तक LED जली रहती है",
+            "zh": "按住按钮时 LED 亮着"
+          },
+          "level": 1,
+          "pin": "D13",
+          "visibility": "visible"
+        },
+        {
+          "atMs": 2900,
+          "id": "c3",
+          "kind": "pin-level",
+          "label": {
+            "de": "Am Ende ist die LED wieder aus",
+            "en": "The LED is off again at the end",
+            "es": "Al final el LED vuelve a estar apagado",
+            "fr": "La LED est de nouveau éteinte à la fin",
+            "hi": "आखिर में LED फिर से बुझ जाती है",
+            "zh": "最后 LED 又熄灭了"
+          },
+          "level": 0,
+          "pin": "D13",
+          "visibility": "visible"
+        },
+        {
+          "id": "c4",
+          "kind": "code",
+          "label": {
+            "de": "Der Code liest den Taster mit digitalRead()",
+            "en": "The code reads the button with digitalRead()",
+            "es": "El código lee el pulsador con digitalRead()",
+            "fr": "Le code lit le bouton avec digitalRead()",
+            "hi": "कोड digitalRead() से बटन पढ़ता है",
+            "zh": "代码用 digitalRead() 读取按钮"
+          },
+          "must": [
+            "digitalRead(BUTTON)"
+          ],
+          "mustNot": [],
+          "visibility": "visible"
+        }
+      ],
+      "id": "main",
+      "name": {
+        "de": "Einen Taster drücken",
+        "en": "Push a button",
+        "es": "Pulsa un botón",
+        "fr": "Appuyer sur un bouton",
+        "hi": "बटन दबाएँ",
+        "zh": "按下按钮"
+      },
+      "runMs": 3000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_bb",
+      "kind": "breadboard",
+      "name": "Breadboard",
+      "placements": [
+        {
+          "c": "brd_uno",
+          "x_mm": -90,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bb1",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_btn1",
+          "legs": {
+            "P1": "e8",
+            "P2": "f8",
+            "P3": "e10",
+            "P4": "f10"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_led1",
+          "legs": {
+            "A": "c19",
+            "K": "c20"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_res1",
+          "legs": {
+            "P1": "b10",
+            "P2": "b14"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_res2",
+          "legs": {
+            "P1": "b15",
+            "P2": "b19"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        }
+      ],
+      "surface": "cmp_bb1",
+      "wires": [
+        {
+          "color": "red",
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_1",
+          "net": "net_5v",
+          "to": {
+            "hole": "a8",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        },
+        {
+          "color": "blue",
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D2"
+          },
+          "id": "wir_2",
+          "net": "net_d2",
+          "to": {
+            "hole": "a10",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        },
+        {
+          "color": "black",
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "GND"
+          },
+          "id": "wir_3",
+          "net": "net_gnd",
+          "to": {
+            "hole": "a14",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        },
+        {
+          "color": "orange",
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D13"
+          },
+          "id": "wir_4",
+          "net": "net_d13",
+          "to": {
+            "hole": "a15",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        },
+        {
+          "color": "black",
+          "from": {
+            "hole": "e14",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          },
+          "id": "wir_5",
+          "net": "net_gnd",
+          "to": {
+            "hole": "e20",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        }
+      ]
+    }
+  ]
+}

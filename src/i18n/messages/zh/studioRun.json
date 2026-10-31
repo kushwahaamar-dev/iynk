@@ -1,0 +1,71 @@
+{
+  "bar": {
+    "label": "运行控制",
+    "run": "运行",
+    "restart": "重新运行",
+    "stop": "停止",
+    "reset": "重置",
+    "time": "模拟时间",
+    "behind": "运行速度慢于真实时间",
+    "stale": "本次运行开始后项目已更改。重新运行即可使用更改。"
+  },
+  "phase": {
+    "idle": "就绪",
+    "starting": "正在启动",
+    "running": "运行中",
+    "paused": "已暂停",
+    "stopped": "已停止",
+    "done": "已结束",
+    "error": "无法运行",
+    "limit": "因达到上限而停止",
+    "killed": "模拟器已重启"
+  },
+  "limit": {
+    "statements": "代码执行了太多步骤，却没有完成一轮。请检查是否有永不结束的循环。",
+    "operations": "某个表达式需要太多运算。请检查它所用的数字。",
+    "memory": "代码使用的内存超出了模拟器允许的范围。",
+    "time": "运行耗时过长，已被停止。"
+  },
+  "killed": "模拟器停止响应，已重启。你的项目没有改变。",
+  "noDetail": "代码无法启动。",
+  "problems": {
+    "one": "1 个问题",
+    "other": "{count} 个问题"
+  },
+  "serial": {
+    "title": "串口输出",
+    "lines": "串口行",
+    "empty": "还没有输出。运行项目即可看到代码发送的内容。",
+    "clear": "清空",
+    "copy": "复制",
+    "copied": "已复制到剪贴板",
+    "copyFailed": "浏览器不允许复制。",
+    "input": "要发送的文本",
+    "placeholder": "输入一行后按 Enter",
+    "send": "发送",
+    "dropped": {
+      "one": "已丢弃 1 行较早的内容",
+      "other": "已丢弃 {count} 行较早的内容"
+    },
+    "newLines": {
+      "one": "1 行新内容",
+      "other": "{count} 行新内容"
+    }
+  },
+  "overlay": {
+    "on": "亮",
+    "off": "灭",
+    "duty": "占空比 {percent}%",
+    "pressed": "按下",
+    "released": "松开",
+    "tone": "{hz} Hz",
+    "silent": "静音",
+    "position": "{percent}%",
+    "notModelled": "尚未建模"
+  },
+  "commands": {
+    "run": "运行项目",
+    "stop": "停止运行",
+    "reset": "重置运行"
+  }
+}

@@ -1,0 +1,284 @@
+{
+  "title": "Bauteil-Editor",
+  "newTitle": "Neues Bauteil",
+  "editTitle": "{name} bearbeiten",
+  "close": "Schließen",
+  "readOnly": "Zum Bearbeiten eines Bauteils braucht es einen breiteren Bildschirm. Lesen kannst du es hier.",
+  "copyNote": "Dieses Bauteil gehört zu iynk. Beim Speichern entsteht deine eigene Kopie als {id}.",
+  "notFound": "Dieses Bauteil ist nicht in der Bibliothek, daher ist dies ein neues.",
+  "restored": "Dein ungespeicherter Entwurf wurde wiederhergestellt.",
+  "startOver": "Neu beginnen",
+  "tabs": {
+    "label": "Abschnitte des Bauteils",
+    "identity": "Identität",
+    "pins": "Pins",
+    "footprint": "Bauform",
+    "json": "JSON",
+    "ratings": "Kennwerte",
+    "model": "Modell"
+  },
+  "identity": {
+    "name": "Name",
+    "nameHint": "Wird in der Bibliothek und auf der Arbeitsfläche angezeigt.",
+    "manufacturer": "Hersteller",
+    "model": "Teilenummer",
+    "category": "Kategorie",
+    "kind": "Art",
+    "description": "Beschreibung",
+    "savedAs": "Wird gespeichert als {id}"
+  },
+  "pins": {
+    "heading": "Pins",
+    "add": "Pin hinzufügen",
+    "empty": "Noch keine Pins. Füge den ersten hinzu.",
+    "col": {
+      "id": "Id",
+      "name": "Name",
+      "designator": "Beschriftung am Bauteil",
+      "type": "Typ",
+      "class": "Klasse",
+      "polarity": "Polarität"
+    },
+    "cell": "Pin {n}, {column}",
+    "noPolarity": "Keine",
+    "remove": "Pin {n} entfernen",
+    "removeTitle": "Diesen Pin entfernen?",
+    "removeBody": "Pin {id} verschwindet aus dem Bauteil, ebenso aus jeder Gruppe und jedem Grenzwert, die ihn nennen.",
+    "removeConfirm": "Pin entfernen",
+    "removeKeep": "Pin behalten",
+    "added": "Pin hinzugefügt. Das Bauteil hat {count} Pins.",
+    "removed": "Pin {id} entfernt. Das Bauteil hat {count} Pins.",
+    "cascade": "Wegen des Pins ebenfalls geändert: {where}",
+    "groups": {
+      "heading": "Gruppen",
+      "hint": "Pins einer Gruppe sind im Bauteil miteinander verbunden.",
+      "add": "Gruppe hinzufügen",
+      "empty": "Keine Gruppen.",
+      "kindLabel": "Wie {id} seine Pins verbindet",
+      "pinsLabel": "Pins in Gruppe {id}",
+      "remove": "Gruppe {id} entfernen",
+      "kind": {
+        "internal-short": "Innen kurzgeschlossen",
+        "strip": "Leiste",
+        "plane": "Fläche"
+      }
+    }
+  },
+  "footprint": {
+    "heading": "Größe und Zeichnung",
+    "width": "Breite (mm)",
+    "height": "Höhe (mm)",
+    "depth": "Tiefe (mm)",
+    "accuracy": "Genauigkeit (mm)",
+    "renderer": "Zeichenstil",
+    "label": "Beschriftung der Zeichnung",
+    "colour": "Gehäusefarbe",
+    "showLabels": "Pin-Beschriftungen zeigen",
+    "positions": "Pin-Positionen",
+    "x": "Pin {id}, x (mm)",
+    "y": "Pin {id}, y (mm)",
+    "unplaced": "Noch nicht platziert",
+    "previewLabel": "Vorschau der Bauteilzeichnung",
+    "outside": "Diese Pins liegen außerhalb des gezeichneten Gehäuses: {pins}",
+    "art": {
+      "heading": "Bild",
+      "hint": "Eine SVG- oder PNG-Datei. Ohne Bild wird das Bauteil aus Größe und Pins oben gezeichnet.",
+      "upload": "Bild wählen",
+      "remove": "Bild entfernen",
+      "license": "Lizenz des Bilds",
+      "stripped": "Aus dem Bild entfernt: {what}",
+      "error": {
+        "too-big": "Die Datei ist zu groß.",
+        "not-xml": "Die Datei ist kein gültiges SVG.",
+        "doctype": "Das SVG enthält eine Dokumenttyp-Deklaration, die nicht erlaubt ist.",
+        "entity": "Das SVG definiert Entitäten, was nicht erlaubt ist.",
+        "cdata": "Das SVG enthält einen CDATA-Abschnitt, der nicht erlaubt ist.",
+        "processing-instruction": "Das SVG enthält eine Verarbeitungsanweisung, die nicht erlaubt ist.",
+        "depth": "Das SVG ist zu tief verschachtelt.",
+        "too-many-elements": "Das SVG hat zu viele Elemente.",
+        "root-not-svg": "Die Datei beginnt nicht mit einem svg-Element.",
+        "no-viewbox": "Das SVG hat keine viewBox.",
+        "empty": "Das Bild zeichnet nichts.",
+        "png-signature": "Die Datei ist keine PNG-Datei.",
+        "png-header": "Der PNG-Header ist beschädigt.",
+        "png-too-large": "Das PNG ist größer als 2048 mal 2048 Pixel.",
+        "png-truncated": "Die PNG-Datei ist abgeschnitten."
+      }
+    }
+  },
+  "json": {
+    "label": "Bauteilbeschreibung als JSON",
+    "hint": "Änderungen hier ersetzen das Formular, wenn du diesen Tab verlässt. Behebe zuerst einen Lesefehler."
+  },
+  "issues": {
+    "heading": "Probleme",
+    "none": "Keine Probleme gefunden.",
+    "count": "{count} zu beheben",
+    "sections": {
+      "identity": "Identität",
+      "pins": "Pins",
+      "footprint": "Bauform",
+      "rest": "Sonstiges",
+      "ratings": "Kennwerte",
+      "model": "Modell"
+    }
+  },
+  "save": {
+    "button": "Bauteil speichern",
+    "saving": "Wird gespeichert",
+    "blocked": "Behebe {count} Probleme vor dem Speichern.",
+    "saved": "Gespeichert als {key}",
+    "version": "Version",
+    "because": "Gespeichert als {version}, weil {reasons}",
+    "lower": "Nimm {version} oder höher.",
+    "conflict": "Ein anderes Bauteil mit dieser Id und Version ist schon gespeichert. Gespeichert: {installed}. Deins: {incoming}. Ändere Version oder Id und speichere erneut.",
+    "full": "Der Speicher ist voll. Gib Platz frei und speichere erneut.",
+    "failed": "Das Bauteil wurde nicht gespeichert. Versuche es erneut."
+  },
+  "discard": {
+    "title": "Ohne Speichern verlassen?",
+    "body": "Deine Änderungen bleiben als Entwurf in diesem Browser, bis du neu beginnst.",
+    "confirm": "Verlassen",
+    "keep": "Weiter bearbeiten"
+  },
+  "ratings": {
+    "heading": "Kennwerte",
+    "hint": "Grenzwerte und typische Werte. Jeder kann vom Hersteller, aus deiner eigenen Annahme oder aus einer Labormessung stammen. Die Simulation liest einen davon.",
+    "empty": "Noch keine Kennwerte. Ein Modell schreibt die, die es braucht, und du kannst weitere ergänzen.",
+    "descriptionHint": "Wofür dieser Kennwert steht",
+    "remove": "Kennwert {key} entfernen",
+    "slot": {
+      "manufacturer": "Vom Hersteller angegeben",
+      "simulation": "Annahme von iynk",
+      "measured": "Am Messplatz gemessen"
+    },
+    "usedBy": "Von der Simulation verwendet",
+    "add": {
+      "manufacturer": "Herstellerwert ergänzen",
+      "simulation": "Annahme ergänzen"
+    },
+    "measuredNote": "Messwerte vom Messplatz ergänzt du in der JSON-Ansicht.",
+    "reads": "Die Simulation liest, {key}",
+    "readsNone": "Nichts",
+    "value": "{key}, Wert in {unit}",
+    "source": "{key}, Herkunft der Zahl",
+    "why": "{key}, Begründung der Zahl",
+    "range": "min {min}, typisch {typ}, max {max} {unit}",
+    "needSource": "Wähle, woher die Zahl für {key} stammt.",
+    "chooseSource": "Quelle wählen",
+    "confidence": "Vertrauen: gering",
+    "removeSlot": "Wert {slot} von {key} entfernen",
+    "measure": "Größe",
+    "measures": {
+      "voltage": "Spannung",
+      "current": "Strom",
+      "power": "Leistung",
+      "resistance": "Widerstand",
+      "time": "Zeit",
+      "temperature": "Temperatur",
+      "frequency": "Frequenz",
+      "ratio": "Verhältnis"
+    },
+    "addRating": "Kennwert hinzufügen",
+    "sources": {
+      "heading": "Quellen",
+      "hint": "Woher deine Zahlen stammen. Eine Zahl aus dem Datenblatt eines Herstellers braucht eine davon.",
+      "empty": "Noch keine Quellen.",
+      "title": "Titel von {id}",
+      "url": "Link zu {id}",
+      "kind": "Art von {id}",
+      "reliability": "Wie sehr {id} zu trauen ist",
+      "levels": {
+        "primary": "Das Dokument des Herstellers",
+        "secondary": "Aus zweiter Hand",
+        "unverified": "Nicht geprüft"
+      },
+      "remove": "Quelle {id} entfernen",
+      "add": "Quelle hinzufügen"
+    }
+  },
+  "model": {
+    "heading": "Modell",
+    "hint": "Wähle, wie sich das Bauteil verhält. Ein Modell hier ist ein Lehrmodell, ein Ausgangspunkt, den du in der JSON-Ansicht verfeinern kannst.",
+    "sequentialNote": "Eine Wahrheitstabelle hat kein Gedächtnis, deshalb gibt es hier keine Flipflops und Zähler.",
+    "template": "Modellvorlage",
+    "choose": "Vorlage wählen",
+    "names": {
+      "resistor-like": "Widerstandsähnlich",
+      "switch": "Schalter",
+      "led-like": "LED-ähnlich",
+      "truth-table": "Wahrheitstabelle",
+      "analog-sensor": "Analogsensor",
+      "not-modelled": "Nicht modelliert"
+    },
+    "current": "Aktuelles Modell: {name}",
+    "apply": "Dieses Modell verwenden",
+    "replaces": "Das ersetzt Schicht, Test und Kennwerte des vorherigen Modells. Kennwerte, die du selbst ergänzt hast, bleiben.",
+    "fields": {
+      "ohms": "Widerstand (Ohm)",
+      "momentary": "Springt beim Loslassen zurück",
+      "vf": "Flussspannung (V)",
+      "imax": "Höchster Strom (mA)",
+      "unit": "Einheit des Werts",
+      "min": "Niedrigster Wert",
+      "max": "Höchster Wert",
+      "reason": "Warum es nicht modelliert ist",
+      "inputs": "Eingangspins",
+      "outputs": "Ausgangspins",
+      "delay": "Verzögerung (ns)",
+      "drive": "Ausgangswiderstand (Ohm)"
+    },
+    "problems": {
+      "range": "Gib eine Zahl von {min} bis {max} ein.",
+      "pins": "Dieses Modell braucht mindestens {need} Pins. Lege sie im Reiter Pins an.",
+      "empty": {
+        "inputs": "Wähle mindestens einen Eingangspin.",
+        "outputs": "Wähle mindestens einen Ausgangspin.",
+        "rows": "Füge mindestens eine Zeile hinzu."
+      },
+      "tooMany": {
+        "inputs": "Eine Tabelle hat höchstens {max} Eingänge.",
+        "outputs": "Eine Tabelle hat höchstens {max} Ausgänge.",
+        "rows": "Eine Tabelle hat höchstens {max} Zeilen."
+      },
+      "overlap": "Ein Pin kann nicht Eingang und Ausgang zugleich sein.",
+      "order": "Der niedrigste Wert muss unter dem höchsten liegen.",
+      "reason": "Sag, warum es nicht modelliert ist."
+    },
+    "table": {
+      "caption": "Zeilen der Wahrheitstabelle, die erste passende Zeile gilt",
+      "row": "Zeile",
+      "cell": "Zeile {n}, {name}",
+      "add": "Zeile hinzufügen",
+      "complete": "Tabelle vervollständigen",
+      "remove": "Zeile {n} entfernen",
+      "count": "{count} von {max} Zeilen",
+      "limit": "Eine Tabelle fasst höchstens {max} Zeilen.",
+      "noColumns": "Wähle zuerst die Ein- und Ausgangspins.",
+      "shadowed": "Zeile {n} wird nie erreicht: Eine frühere Zeile deckt sie ab.",
+      "moreShadowed": "{count} weitere Zeilen werden nie erreicht.",
+      "added": "Zeile hinzugefügt. Die Tabelle hat {count} Zeilen.",
+      "removed": "Zeile {n} entfernt. Die Tabelle hat {count} Zeilen.",
+      "completed": "{count} Zeilen für die fehlenden Eingangskombinationen hinzugefügt."
+    }
+  },
+  "palette": {
+    "mine": "Meins",
+    "from": "Von {sender}",
+    "imported": "Importiert",
+    "addPart": "Teil hinzufügen",
+    "importPack": "Paket importieren",
+    "addNamed": "{name} als neues Teil hinzufügen",
+    "notSaved": "In diesem Browsermodus werden Teile nicht gespeichert.",
+    "reading": "Das Paket wird gelesen",
+    "importFailed": "Das Paket konnte nicht hinzugefügt werden. Es wurde nichts geändert.",
+    "conflict": "Ein anderes Teil mit derselben ID und Version ist schon gespeichert. Es wurde nichts geändert.",
+    "added": {
+      "one": "{count} Teil zu deiner Bibliothek hinzugefügt.",
+      "other": "{count} Teile zu deiner Bibliothek hinzugefügt."
+    },
+    "used": "Zu diesem Projekt hinzugefügt.",
+    "pickPack": "Teilepaket auswählen",
+    "readFailed": "Diese Datei konnte nicht gelesen werden."
+  }
+}

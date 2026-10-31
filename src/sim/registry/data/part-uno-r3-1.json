@@ -1,0 +1,83 @@
+{
+  "id": "part:uno-r3@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Arduino UNO Rev3 board",
+  "tier": "T1",
+  "layers": [
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "pins",
+      "text": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3"
+    },
+    {
+      "id": "adc",
+      "text": "10-bit analog reads against a 5 V reference"
+    },
+    {
+      "id": "buses",
+      "text": "I2C master on SDA and SCL, serial output and the L LED on D13"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "avr",
+      "text": "The AVR core, timers, bootloader and flash behaviour when the interpreter runs the sketch"
+    },
+    {
+      "id": "power",
+      "text": "The 5 V and 3.3 V regulators, the USB power switch and the brown-out level"
+    },
+    {
+      "id": "limits",
+      "text": "Pin current limits and the ICSP headers"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "headless-tests",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/headless.test.ts",
+      "result": {
+        "n": 5,
+        "passed": 5,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    },
+    {
+      "id": "pin-model-tests",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/pin-model.test.ts",
+      "result": {
+        "n": 26,
+        "passed": 26,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No electrical ratings are listed, so no pin-overload check exists for this board"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

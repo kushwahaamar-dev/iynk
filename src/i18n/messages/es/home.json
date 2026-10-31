@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "title": "iynk: un laboratorio de hardware en tu navegador",
+    "description": "Un banco de trabajo de código abierto para circuitos, placas, robots y drones. Conecta piezas, escribe código, ejecútalo y rómpelo a propósito, en tu navegador y sin cuenta."
+  },
+  "hero": {
+    "kicker": "Banco de trabajo de hardware de código abierto",
+    "title": "Aprende hardware conectándolo,\nejecutándolo y rompiéndolo",
+    "lede": "iynk es un banco de trabajo de código abierto para circuitos, placas, robots y drones. Conecta piezas, escribe código, ejecútalo y mira cómo responde la simulación, todo en tu navegador.",
+    "cta": "Abrir el banco de trabajo",
+    "browse": "Ver las placas",
+    "reassure": "Sin cuenta. Nada que instalar. Tu trabajo se queda en este navegador.",
+    "proof": "{boards} placas, {benches} bancos de robótica y {drones} drones, todos ejecutables.",
+    "figure": "Arduino Uno R3 ejecutando Blink en una protoboard, en vivo: arrastra para girarlo"
+  },
+  "tagline": {
+    "text": "Conecta una pieza al revés y mira cómo falla. Corrígelo y mira cómo funciona. Es entonces cuando la hoja de datos por fin cobra sentido."
+  },
+  "benefits": {
+    "title": "Lo que puedes hacer aquí",
+    "see": {
+      "title": "Mira pensar al circuito",
+      "text": "Gira una placa 3D dibujada a mano, alterna entre protoboard y esquema, y mira cómo cambian los pines y la corriente mientras corre el código."
+    },
+    "code": {
+      "title": "Escribe código y obtén un resultado",
+      "text": "Edita C++ de Arduino, MicroPython o Verilog y pulsa Ejecutar. La simulación mueve la figura, los pines y el monitor serie."
+    },
+    "break": {
+      "title": "Rómpelo y aprende por qué",
+      "text": "Deja fuera una resistencia, monta una pieza al revés, conecta un motor al pin equivocado. Cada fallo explica qué falló y cómo arreglarlo."
+    },
+    "fly": {
+      "title": "Vuela lo que construiste",
+      "text": "Dimensiona un dron con el cálculo de empuje y peso, supera las pruebas de seguridad y vuélalo en un circuito para mejorar tus mejores marcas."
+    }
+  },
+  "labs": {
+    "title": "Tres laboratorios",
+    "open": "Abrir {lab}",
+    "boards": {
+      "text": "Del Arduino Uno R3 a dos placas FPGA: lecciones, un editor de código en vivo, vistas de esquema y de protoboard, un monitor serie y fallos que se producen de verdad.",
+      "unit": "placas"
+    },
+    "robotics": {
+      "text": "Controladores de motor, sensores y etapas de potencia, montados pieza a pieza con estado en vivo y consumo de corriente.",
+      "unit": "bancos"
+    },
+    "drones": {
+      "text": "De un Tiny Whoop a un octocóptero: constrúyelo pieza a pieza, revisa los cálculos, supera las pruebas de seguridad y después vuela.",
+      "unit": "drones"
+    }
+  },
+  "how": {
+    "title": "Cómo funciona",
+    "1": {
+      "title": "Elige una pieza",
+      "text": "Elige una placa, un banco de robótica o un dron. Cada uno se abre como una figura que puedes girar y desmontar."
+    },
+    "2": {
+      "title": "Conéctalo y escribe código",
+      "text": "Sigue una lección o empieza con Blink. El editor, la distribución de pines y el monitor serie están junto a la figura."
+    },
+    "3": {
+      "title": "Ejecútalo y después rómpelo",
+      "text": "Pulsa Ejecutar. Activa un fallo, lee la comprobación que falló, corrígelo y ejecútalo de nuevo."
+    }
+  },
+  "proof": {
+    "title": "Qué se ejecuta y qué se simula",
+    "runs": {
+      "title": "Qué se ejecuta en tu navegador",
+      "1": "Tu C++ de Arduino, MicroPython y Verilog se ejecutan en intérpretes dentro de la página, con un reloj fijo, así que el mismo código da el mismo resultado.",
+      "2": "Los pines, el monitor serie y la figura responden a tu código.",
+      "3": "Un solucionador de circuitos decide qué provoca un error y muestra la corriente."
+    },
+    "sim": {
+      "title": "Qué se simula",
+      "1": "Las piezas siguen modelos de sus hojas de datos, no el silicio real.",
+      "2": "Los tiempos siguen el reloj de la simulación, no el de un chip.",
+      "3": "Tu código no se compila para la placa."
+    },
+    "fidelity": "iynk ejecuta tu código en su propio intérprete, no en un chip real. Enseña cómo se comportan las piezas; no sustituye a un banco de pruebas, a un compilador ni a una hoja de datos."
+  },
+  "faq": {
+    "title": "Preguntas",
+    "1": {
+      "q": "¿Necesito una cuenta?",
+      "a": "No. No hay nada que registrar. Tu progreso y tus ajustes se quedan en este navegador."
+    },
+    "2": {
+      "q": "¿Es gratis?",
+      "a": "Sí. Es de código abierto y no tiene nivel de pago. Si ejecutas tu propia copia, las claves de IA o de búsqueda que añadas son tuyas."
+    },
+    "3": {
+      "q": "¿Qué idiomas habla?",
+      "a": "Inglés, español, francés, alemán, chino e hindi, incluidas las etiquetas dentro de las figuras."
+    },
+    "4": {
+      "q": "¿Mi código se ejecuta en una placa real?",
+      "a": "No. Se ejecuta en el intérprete propio de iynk dentro de la página. Para usar una placa real sigues necesitando un compilador y un banco de pruebas."
+    },
+    "5": {
+      "q": "¿Qué tan precisa es la simulación?",
+      "a": "Las piezas siguen modelos sencillos y el reloj es determinista. Toma los resultados como material de aprendizaje, no como una prueba de tu hardware."
+    },
+    "6": {
+      "q": "¿Qué necesitan las funciones de IA?",
+      "a": "Son opcionales. Añade tu propia clave en Ajustes, Claves y uso, y se activan el compañero y la búsqueda de tiendas. Todo lo demás funciona sin ella."
+    },
+    "7": {
+      "q": "¿Dónde se guarda mi trabajo?",
+      "a": "En este navegador y en este dispositivo. Si borras los datos del sitio, desaparece."
+    },
+    "8": {
+      "q": "¿Puedo leer o cambiar el código?",
+      "a": "Sí. El código fuente está en GitHub, con una guía para ejecutar tu propia copia y otra para colaborar."
+    }
+  },
+  "open": {
+    "title": "Código abierto",
+    "text": "Léelo, ejecuta tu propia copia o envía una corrección.",
+    "readme": "Leer el README",
+    "selfHost": "Ejecutar tu propia copia",
+    "contribute": "Colaborar"
+  },
+  "end": {
+    "title": "El banco de trabajo está listo.",
+    "text": "Elige una placa y pulsa Ejecutar. No hay nada que instalar ni cuenta que crear.",
+    "cta": "Abrir el banco de trabajo"
+  }
+}

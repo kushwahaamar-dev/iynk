@@ -141,6 +141,7 @@
     "focusFigure": "Entrar en la figura",
     "selected": "Pieza seleccionada",
     "walk": "Más bancos",
+    "concept": "modelo conceptual: simulación de la API de Python, no es Raspberry Pi OS ni un grafo de ROS 2 en ejecución",
     "tabs": {
       "label": "Paneles del banco",
       "steps": "Pasos",

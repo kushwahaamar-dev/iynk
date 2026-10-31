@@ -2,6 +2,8 @@
 // settings together. Reads are cached by the raw string, so React's
 // useSyncExternalStore gets the same object until something is written.
 
+import { boardDone, facadeActive, labDone, labQuiz, labsActive, learnStore, startLegacyImport } from "../learn/facade";
+
 export const STORAGE_KEY = "iynk:v1";
 export const STORAGE_VERSION = 1;
 
@@ -14,7 +16,9 @@ export type Settings = {
   lofi: boolean;
   labels: boolean;
   reduceMotion: boolean;
-  /** Anonymous usage events (src/lib/telemetry). On unless the learner opts out. */
+  /** Technical words show the English term beside the translated one (src/components/ui/Term). */
+  englishTerms: boolean;
+  /** Anonymous usage events (src/lib/telemetry). Off until the learner turns it on. */
   telemetry: boolean;
 };
 
@@ -35,7 +39,8 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   lofi: false,
   labels: true,
   reduceMotion: false,
-  telemetry: true,
+  englishTerms: true,
+  telemetry: false,
 });
 
 /** What the server renders and what a first visit starts from: nothing saved. */
@@ -102,6 +107,7 @@ function normalize(doc: Record<string, unknown>): Saved {
     lofi: typeof raw.lofi === "boolean" ? raw.lofi : DEFAULT_SETTINGS.lofi,
     labels: typeof raw.labels === "boolean" ? raw.labels : DEFAULT_SETTINGS.labels,
     reduceMotion: typeof raw.reduceMotion === "boolean" ? raw.reduceMotion : DEFAULT_SETTINGS.reduceMotion,
+    englishTerms: typeof raw.englishTerms === "boolean" ? raw.englishTerms : DEFAULT_SETTINGS.englishTerms,
     telemetry: typeof raw.telemetry === "boolean" ? raw.telemetry : DEFAULT_SETTINGS.telemetry,
   };
 
@@ -122,7 +128,7 @@ let cached: Saved = EMPTY_SAVED;
 // Used when storage cannot be written, so the session still remembers.
 let memoryOnly: Saved | null = null;
 
-export function getSaved(): Saved {
+function readStored(): Saved {
   if (memoryOnly) return memoryOnly;
   const raw = readRaw();
   if (raw !== cachedRaw) {
@@ -134,6 +140,28 @@ export function getSaved(): Saved {
     }
   }
   return cached;
+}
+
+let overlay: { base: Saved; snapshot: ReadonlyMap<string, unknown>; saved: Saved } | null = null;
+
+/**
+ * Once the imports have run and the records are loaded, they answer for the board, bench and craft keys. The old keys stay in the
+ * answer too, so a lesson whose template is missing never reads as not done.
+ */
+export function getSaved(): Saved {
+  const base = readStored();
+  const boards = facadeActive();
+  const labs = labsActive();
+  if (!boards && !labs) return base;
+  const snapshot = learnStore().snapshot();
+  if (overlay?.base === base && overlay.snapshot === snapshot) return overlay.saved;
+  const saved = {
+    ...base,
+    done: { ...base.done, ...(boards ? boardDone(snapshot) : {}), ...(labs ? labDone(snapshot) : {}) },
+    quiz: labs ? labQuiz(snapshot, base.quiz) : base.quiz,
+  };
+  overlay = { base, snapshot, saved };
+  return saved;
 }
 
 export function getServerSaved(): Saved {
@@ -151,7 +179,7 @@ export function updateSaved(change: (current: Saved) => Saved): Saved {
   if (typeof window === "undefined") {
     throw new Error("iynk progress: saved progress and settings can only change in the browser.");
   }
-  const current = getSaved();
+  const current = readStored();
   const next = change(current);
   if (next === current) return current;
   const raw = JSON.stringify(next);
@@ -170,11 +198,20 @@ export function updateSaved(change: (current: Saved) => Saved): Saved {
 /** Same-tab writes notify directly; other tabs arrive as storage events. */
 export function subscribeSaved(listener: () => void): () => void {
   listeners.add(listener);
+  const records = learnStore();
+  let live = true;
+  const stopRecords = records.subscribe(listener);
+  void records.ready.then(() => {
+    if (live) listener();
+  });
+  startLegacyImport(notify);
   const onStorage = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY || event.key === null) listener();
   };
   window.addEventListener("storage", onStorage);
   return () => {
+    live = false;
+    stopRecords();
     listeners.delete(listener);
     window.removeEventListener("storage", onStorage);
   };

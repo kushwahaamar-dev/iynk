@@ -62,9 +62,9 @@ type ReadingProps = {
 export function Reading({ label, value, tone = "ink", compact, className, ...rest }: ReadingProps) {
   return (
     <div className={cx("min-w-0", className)} title={compact ? `${label}: ${value}` : undefined} {...rest}>
-      <div className={cx("ink-label", compact && "truncate")}>{label}</div>
+      <div className={cx("kicker", compact && "truncate")}>{label}</div>
       {/* tabular-nums, not .tabular: in Hindi and Chinese a word like "Running" then takes the body face. */}
-      <div className={cx("font-ui font-bold leading-snug tabular-nums", compact ? "truncate text-base" : "break-words text-base", TONE[tone])}>{value}</div>
+      <div className={cx("font-ui font-semibold tabular-nums", compact ? "truncate text-base" : "break-words text-lg", TONE[tone])}>{value}</div>
     </div>
   );
 }
@@ -94,7 +94,7 @@ export function LiveStrip({ bench, figure, draw, t, tx }: Omit<Props, "headingId
   // The supply in use: a bench lists every input it could run from, most of them idle.
   const supply = draw.supplies.reduce<(typeof draw.supplies)[number] | undefined>((most, next) => (!most || next.ma > most.ma ? next : most), undefined);
   return (
-    <div className="grid shrink-0 grid-cols-3 gap-3 border-b-[1.5px] border-rule px-4 py-2.5" data-live-strip>
+    <div className="grid shrink-0 grid-cols-3 gap-3 border-b border-rule px-4 py-3" data-live-strip>
       <Reading compact label={t("status.figure")} value={state.text} tone={state.tone} />
       {field && main ? <Reading compact label={tx(field.label)} value={main.text} tone={main.tone} /> : <span />}
       {supply ? (
@@ -136,7 +136,7 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col">
-      <h2 id={headingId} className="font-head text-lg">
+      <h2 id={headingId} className="text-lg">
         {t("status.heading")}
       </h2>
 
@@ -146,7 +146,7 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
         </Callout>
       ) : null}
 
-      <div className="mt-3 border-y-[1.5px] border-rule py-3">
+      <div className="mt-3 border-y border-rule py-3">
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
           <Reading label={t("status.figure")} value={state.text} tone={state.tone} />
           {programField ? <Reading label={t("modes.pick")} value={program ?? t("status.none")} /> : null}
@@ -157,10 +157,10 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
         </div>
         {rails.length > 0 ? (
           <Fold summary={t("status.rails")} className="mt-2 text-sm">
-            <dl className="mt-1 flex flex-wrap gap-x-5 gap-y-1">
+            <dl className="mt-1 flex flex-wrap gap-x-4 gap-y-2">
               {rails.map(([name, volts]) => (
-                <div key={name} className="flex items-baseline gap-1.5">
-                  <dt className="tabular font-ui text-muted">{name}</dt>
+                <div key={name} className="flex items-baseline gap-2">
+                  <dt className="tabular text-muted">{name}</dt>
                   <dd className="tabular font-ui font-semibold">{t("status.units.volts", { v: volts })}</dd>
                 </div>
               ))}
@@ -170,7 +170,7 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
       </div>
 
       <div className="mt-4 flex flex-col" aria-label={t("current.heading")} role="group">
-        <h3 className="font-head text-base">{t("current.heading")}</h3>
+        <h3 className="text-base">{t("current.heading")}</h3>
         <div className="mt-1 flex flex-col divide-y divide-rule">
           {draw.supplies.map((supply) => {
             const { name, limit } = splitSupply(tx(supply.label), t("status.units.volts", { v: supply.volts }));
@@ -184,7 +184,7 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
                   warn={supply.limitMa * 0.8}
                   danger={supply.limitMa}
                 />
-                <p className="mt-1.5 text-sm">
+                <p className="mt-2 text-sm">
                   {limit ? <span className="text-muted">{t("current.limit", { limit })} · </span> : null}
                   {supply.over ? (
                     <strong className="text-bad">{t("current.over", { ma: -supply.headroomMa })}</strong>

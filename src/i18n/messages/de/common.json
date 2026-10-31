@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Entdecken · Verstehen · Bauen",
-    "description": "Ein praktisches Hardware-Labor im Browser: Boards, Roboter und Drohnen bauen, verdrahten, programmieren, kaputt machen und fliegen."
+    "tagline": "Entdecken, verstehen, bauen",
+    "description": "Ein Hardware-Labor in deinem Browser. Boards, Roboter und Drohnen bauen, verdrahten, programmieren, kaputt machen und fliegen."
   },
   "a11y": {
     "skipToContent": "Zum Hauptinhalt springen"
@@ -12,6 +12,7 @@
     "title": "Diese Seite liegt nicht auf der Werkbank",
     "body": "Vielleicht ist die Adresse falsch geschrieben, oder die Seite ist umgezogen. Wähle ein Labor, um weiterzumachen.",
     "home": "Zurück zur Übersicht",
+    "search": "Website durchsuchen",
     "boards": "Board-Labor",
     "robotics": "Robotik-Labor",
     "drones": "Drohnen-Labor"
@@ -41,7 +42,6 @@
         "partner": "Partner",
         "together": "Gemeinsam",
         "real": "In echt bauen",
-        "passport": "Pass",
         "hardware": "Hardware"
       }
     },
@@ -53,10 +53,111 @@
     "motion": {
       "label": "Bewegung reduzieren"
     },
+    "terms": {
+      "label": "Englische Begriffe",
+      "toggle": "Englische Begriffe anzeigen"
+    },
     "usage": {
       "label": "Anonyme Nutzungszahlen",
-      "body": "iynk zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
-      "toggle": "Anonyme Nutzungszahlen teilen"
+      "body": "iynk schreibt, was in den Laboren passiert, in ein Protokoll in diesem Browser. Nichts wird irgendwohin gesendet. Fehler werden immer protokolliert, und du kannst das Protokoll unter Schlüssel und Nutzung lesen, kopieren oder löschen.",
+      "toggle": "Ein lokales Protokoll dessen führen, was in den Laboren passiert (bleibt in diesem Browser)"
+    },
+    "log": {
+      "title": "Lokales Protokoll",
+      "notice": "Bleibt in diesem Browser. Nichts wird gesendet.",
+      "empty": "Noch nichts protokolliert.",
+      "clear": "Leeren",
+      "copy": "Für einen Fehlerbericht kopieren",
+      "copied": "Kopiert",
+      "manual": "Das Kopieren wurde blockiert. Markiere diesen Text und kopiere ihn selbst."
+    },
+    "keys": {
+      "open": "Schlüssel und Nutzung",
+      "title": "Schlüssel und Nutzung",
+      "close": "Schlüssel und Nutzung schließen",
+      "notice": "Bleibt nur in diesem Browser. Er wird bei jedem Aufruf an deinen eigenen iynk-Server gesendet und dort nicht gespeichert.",
+      "ai": {
+        "label": "KI-Schlüssel",
+        "labelOptional": "Name für diesen Schlüssel (optional)"
+      },
+      "search": {
+        "label": "Suchschlüssel"
+      },
+      "server": {
+        "label": "Server-Token",
+        "hint": "Nur nötig, wenn dein iynk-Server eines verlangt."
+      },
+      "save": "Speichern",
+      "remove": "Entfernen",
+      "saved": "Gespeichert: …{tail}",
+      "errors": {
+        "empty": "Füge einen vollständigen Schlüssel ein (mindestens 8 Zeichen).",
+        "tooLong": "Das sind mehr als 512 Zeichen.",
+        "badChars": "Schlüssel bestehen nur aus Buchstaben, Ziffern und Symbolen, ohne Leerzeichen.",
+        "notPersisted": "Wird nach dem Schließen dieses Tabs nicht gespeichert (dieser Browser blockiert den Speicher)"
+      }
+    },
+    "meter": {
+      "tokensToday": "Tokens heute",
+      "searchesMonth": "Suchen in diesem Monat",
+      "ofCap": "{used} von {cap}",
+      "aiLine": "Diesen Monat: {month} Tokens.",
+      "searchLine": "Heute: {today}.",
+      "unavailable": "Nicht verfügbar",
+      "noKey": "Füge oben einen Schlüssel ein, um die Nutzung zu sehen.",
+      "off": "Das ist auf diesem Server ausgeschaltet.",
+      "aiOff": "KI ist auf diesem Server ausgeschaltet.",
+      "searchOff": "Die Suche ist auf diesem Server ausgeschaltet.",
+      "failed": "Nutzung konnte nicht gelesen werden",
+      "retry": "Erneut versuchen"
+    },
+    "notSetUp": {
+      "serverOff": "{what} ist auf diesem Server abgeschaltet.",
+      "needsKey": "{what} braucht deinen eigenen Schlüssel.",
+      "openKeys": "Schlüssel und Nutzung öffnen",
+      "fix": {
+        "ai": "Füge unter Schlüssel und Nutzung einen KI-Schlüssel ein.",
+        "search": "Füge unter Schlüssel und Nutzung einen Suchschlüssel ein.",
+        "server": "Bitte die Person, die diesen Server betreibt, es einzuschalten."
+      }
+    },
+    "state": {
+      "loading": "Wird geladen",
+      "empty": "Noch nichts hier",
+      "error": "Etwas ist schiefgelaufen. Versuche es erneut.",
+      "retry": "Erneut versuchen"
+    },
+    "error": {
+      "title": "Etwas ist schiefgelaufen",
+      "text": "Auf dieser Seite ist ein Problem aufgetreten. Versuche es erneut oder gehe zurück zum Start.",
+      "reference": "Referenz: {digest}",
+      "home": "Zurück zum Start"
+    },
+    "server": {
+      "title": "Server",
+      "address": "Serveradresse",
+      "status": {
+        "off": "Dafür braucht es einen Server. Es ist keiner eingerichtet.",
+        "unreachable": "Dieser Server ist nicht erreichbar.",
+        "unreachableHint": "Falls diese Adresse auf einem anderen Origin liegt: Steht sie in IYNK_CONNECT_ORIGINS?",
+        "ready": "Verbunden.",
+        "needsEnrol": "Dieser Server braucht einen Anmeldecode von der Person, die ihn betreibt.",
+        "closed": "Dieser Server nimmt gerade keine neuen Leute auf.",
+        "checking": "Dieser Server wird geprüft.",
+        "insecure": "Browser erlauben die Anmeldung nur über https. Nimm eine https-Adresse oder localhost.",
+        "upgrade": "Dieser Server braucht eine neuere Version von iynk. Aktualisiere die App."
+      },
+      "enrolled": "Du bist auf diesem Server angemeldet.",
+      "signOut": "Abmelden",
+      "leave": {
+        "title": "Diesen Server verlassen",
+        "body": "Du wirst vom Server entfernt und deine Buddy-Liste dort wird gelöscht. Deine Projekte bleiben in diesem Browser.",
+        "confirm": "Server verlassen",
+        "grace": "Du hast {hours} Stunden Zeit, es dir anders zu überlegen.",
+        "cancel": "Konto behalten"
+      },
+      "guide": "Buddys brauchen einen Server. Die Anleitung zum Selbsthosten zeigt, wie du einen betreibst.",
+      "addressInvalid": "Gib eine Adresse wie https://iynk.example ein, ohne Pfad."
     }
   }
 }

@@ -1,0 +1,17 @@
+{
+  "description": "Une carte de développement ESP8266 avec module ESP-12E, puce USB-série CP2102 et régulateur 3,3 V, avec deux LED qui s'allument à l'état bas.",
+  "summary": "La carte exécute votre sketch dans l'interpréteur iynk. Les broches, le PWM, l'I2C, la liaison série et le timing suivent le profil de carte nodemcu. Ce n'est pas la puce ESP8266.",
+  "layer": "Environnement d'exécution du firmware.",
+  "led": "LED de la carte, s'allume à l'état bas.",
+  "models": {
+    "1": "Sous-ensemble d'Arduino C++ exécuté par l'interpréteur avec le brochage de la NodeMCU, où D4 est GPIO2.",
+    "2": "E/S numériques sur D0 à D8, TX, RX, SD2 et SD3, PWM sur tous les GPIO, interruptions sur tous les GPIO sauf GPIO16 (D0).",
+    "3": "Lecture analogique 10 bits sur A0 via le diviseur de la carte, maître I2C sur D2 et D1, sortie série et les deux LED de GPIO2 et GPIO16, qui s'allument à l'état bas."
+  },
+  "not": {
+    "1": "Le cœur Xtensa L106, la pile Wi-Fi et le comportement de la flash. Le simulateur de requêtes des leçons de serveur web n'est pas une radio.",
+    "2": "Les broches de mode de démarrage GPIO0, GPIO2 et GPIO15.",
+    "3": "Le pont CP2102 et les limites du régulateur 3,3 V."
+  },
+  "gap": "Les LED de la carte s'allument à l'état bas : digitalWrite(LED_BUILTIN, LOW) les allume. Les numéros D ne sont pas des numéros GPIO : D4 est GPIO2. A0 lit de 0 à 3,3 V via un diviseur, et GPIO16 n'a pas d'interruption. Aucune valeur électrique maximale n'est encore indiquée, donc cette carte n'a pas de contrôle de surcharge des broches."
+}

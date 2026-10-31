@@ -1,0 +1,337 @@
+{
+  "breakIt": {
+    "title": "Rómpelo",
+    "lede": "Pon una avería en tu circuito y mira qué hace el modelo. Tu proyecto no cambia y Restaurar lo devuelve todo.",
+    "pick": "Elige una avería",
+    "surprise": "Sorpréndeme",
+    "restore": "Restaurar",
+    "forBuddy": "Para un amigo",
+    "applied": "Avería aplicada. Ejecuta el circuito para ver el efecto.",
+    "none": "Aún no se pueden inyectar averías aquí.",
+    "explain": "¿Qué pasó?",
+    "undone": "Avería quitada.",
+    "needsDescriptor": "Esta pieza aún no describe sus fallos, así que no se puede romper.",
+    "family": {
+      "wiring": "Cableado",
+      "power": "Alimentación",
+      "code": "Código",
+      "bus": "Buses",
+      "value": "Valores",
+      "mechanical": "Mecánico",
+      "flight": "Vuelo"
+    },
+    "where": {
+      "partPin": "{part}, pin {pin}",
+      "part": "{part}",
+      "nets": "entre {a} y {b}"
+    },
+    "apply": "Rómpelo",
+    "why": "Por qué ocurre",
+    "seed": "Semilla {seed}. Repite con este número.",
+    "restarted": "Avería aplicada. La ejecución empieza de nuevo desde el tiempo cero.",
+    "inProject": "En este proyecto",
+    "inProjectNone": "Este proyecto no guarda ninguna avería.",
+    "turnOn": "Activar",
+    "turnOff": "Desactivar",
+    "nowOn": "Avería activada.",
+    "nowOff": "Avería desactivada.",
+    "on": "Activa",
+    "off": "Inactiva",
+    "faultsOn": "Averías activas: {count}",
+    "hidden": "Una avería oculta",
+    "duplicate": "Esa avería ya está en este proyecto.",
+    "limit": "Este proyecto ya tiene todas las averías que admite.",
+    "noCandidate": "Aquí no se puede añadir ninguna avería de ese tipo.",
+    "buddyDone": "Copia sellada guardada para un amigo."
+  },
+  "diagnose": {
+    "title": "Encuentra la avería",
+    "symptomHeading": "Lo que ves",
+    "pickHeading": "¿Cuál es la causa?",
+    "pick": "Elige la causa más probable",
+    "right": "Correcto. Esa es la causa.",
+    "wrong": "Esa no es.",
+    "tryAgain": "Inténtalo de nuevo",
+    "giveUp": "Rendirse",
+    "showCause": "Mostrar la causa",
+    "hideCause": "Ocultar la causa",
+    "fixHeading": "Cómo arreglarlo",
+    "noEvidence": "No se registró evidencia en esta ejecución.",
+    "sealedInfo": "La respuesta está sellada hasta que elijas o te rindas.",
+    "addNote": "Añadir una nota",
+    "skip": "Omitir",
+    "transferTitle": "¿Pasa lo mismo en otro circuito?",
+    "readings": "Mediciones para probar",
+    "notes": "Tus notas",
+    "notesEmpty": "Todavía no hay nada anotado.",
+    "addToNotes": "Añadir a las notas",
+    "nothingToNote": "Haz una medición o ejecuta el código primero.",
+    "diagnoseNow": "Sé cuál es la causa",
+    "runFirst": "Ejecuta el circuito y observa primero.",
+    "submit": "Comprobar mi respuesta",
+    "confidenceLabel": "¿Qué tan seguro estás?",
+    "confidence": {
+      "guess": "Una suposición",
+      "think": "Creo que sí",
+      "sure": "Seguro"
+    },
+    "wrongWhy": "Mide otra cosa o abre una pista, y vuelve a elegir.",
+    "rightNext": "Arréglalo y ejecuta el circuito para comprobarlo.",
+    "editable": "El circuito ya se puede editar.",
+    "remedyHeading": "¿Qué arreglo funciona?",
+    "remedyWrong": "Ese arreglo no elimina el síntoma.",
+    "remedyApplied": "Arreglo aplicado. Ejecuta el circuito para comprobarlo.",
+    "explanationHeading": "Qué pasó",
+    "state": {
+      "presented": "Se muestra el síntoma",
+      "observing": "Mirando la evidencia",
+      "picking": "Eligiendo una causa",
+      "fixing": "Arreglando el circuito",
+      "verified": "Arreglado y comprobado",
+      "revealed": "Causa revelada"
+    }
+  },
+  "hint": {
+    "title": "Pistas",
+    "level": {
+      "1": "Un empujón sobre qué mirar",
+      "2": "La zona del circuito que hay que mirar",
+      "3": "El tipo de avería y la pieza, no la solución"
+    },
+    "open": "Abrir pista",
+    "generated": "Escrita por el modelo para este circuito",
+    "locked": "Bloqueada hasta que abras la pista anterior",
+    "none": "No hay pista para esta avería."
+  },
+  "record": {
+    "title": "Registro del diagnóstico",
+    "cause": "Causa",
+    "symptom": "Síntoma",
+    "evidence": "Evidencia",
+    "hintLevel": "Nivel de pista usado",
+    "export": "Exportar",
+    "copy": "Copiar",
+    "logOn": "Guardar un registro local en este dispositivo",
+    "logOff": "El registro local está desactivado",
+    "clear": "Borrar el registro",
+    "outcome": {
+      "clean": "Resuelto por tu cuenta",
+      "assisted": "Resuelto con una pista",
+      "helped": "Resuelto con ayuda de la escalera",
+      "revealed": "Causa mostrada tras rendirse"
+    },
+    "empty": "No se registró ninguna prueba, así que fue una suposición.",
+    "time": "Tiempo",
+    "reference": "Referencia",
+    "kind": "Tipo",
+    "value": "Valor",
+    "tier": "Nivel",
+    "provenance": "Cómo se obtuvo",
+    "outcomeLabel": "Resultado",
+    "more": "No se muestran {count} entradas más.",
+    "settings": "Abrir ajustes",
+    "line": "{kind} {ref} a los {ms} ms: {value} ({tier}, {provenance})",
+    "tierName": {
+      "T0": "Ilustración",
+      "T1": "Modelo didáctico",
+      "T2": "Modelo calculado",
+      "T3": "Ejecuta tu firmware"
+    }
+  },
+  "fidelity": {
+    "notChecked": "No comprobado con hardware real. Esto es lo que dice el modelo, no lo que midió un banco de pruebas.",
+    "checked": "Comprobado con una medición real de banco.",
+    "outside": "Fuera de lo que cubre el modelo.",
+    "modelOnly": "Solo lo muestra el modelo. No se midió ninguna pieza real.",
+    "mocked": "Este valor viene de una simulación fingida, no de un modelo de la pieza."
+  },
+  "check": {
+    "title": "Revisión del circuito",
+    "run": "Revisar el circuito",
+    "none": "No se encontró nada mal.",
+    "found": "Problemas encontrados",
+    "skipped": "Omitido: la revisión no vio lo bastante de esta pieza o red.",
+    "footer": "Omitidas: {skipped}. Reglas que fallaron: {errors}.",
+    "disabledSealed": "No disponible mientras el reto siga sin resolver, porque la revisión daría la respuesta.",
+    "disabledRunning": "Hay una revisión en curso.",
+    "disabledWorker": "El simulador todavía no está listo."
+  },
+  "scan": {
+    "title": "Escaneo I2C",
+    "run": "Escanear el bus",
+    "found": "Dispositivos encontrados",
+    "none": "Ningún dispositivo respondió.",
+    "pins": "Pines usados",
+    "noPins": "No hay pines I2C conectados.",
+    "tally": "{found} de {probed} direcciones respondieron",
+    "address": "Dirección",
+    "status": "Estado",
+    "answered": "Respondió",
+    "scanning": "Escaneando el bus",
+    "failed": "No se pudo hacer el escaneo. Reinicia la simulación e inténtalo de nuevo."
+  },
+  "evidence": {
+    "kind": {
+      "pin-level": "Nivel del pin",
+      "net-voltage": "Tensión de la red",
+      "branch-current": "Corriente de la rama",
+      "serial-line": "Línea serie",
+      "state": "Estado de la pieza",
+      "timeline": "Línea de tiempo"
+    }
+  },
+  "provenance": {
+    "computed": "Calculado por el solucionador",
+    "approximation": "Una aproximación",
+    "mocked": "Un valor simulado"
+  },
+  "cause": {
+    "led-no-series-resistor": {
+      "title": "LED sin resistencia en serie",
+      "why": "Nada limita la corriente del LED, así que consume mucho más de lo debido.",
+      "fix": "Pon una resistencia en serie con el LED."
+    },
+    "led-reversed": {
+      "title": "LED al revés",
+      "why": "Un LED solo conduce en un sentido. Aquí está al revés y no pasa corriente.",
+      "fix": "Gira el LED para que la pata larga mire al lado positivo."
+    },
+    "output-contention": {
+      "title": "Dos salidas peleando",
+      "why": "Dos pines llevan la misma red a niveles distintos y se empujan entre sí.",
+      "fix": "Maneja la red con una sola salida, o pon el otro pin como entrada."
+    },
+    "supply-shorted-to-ground": {
+      "title": "Alimentación en cortocircuito a tierra",
+      "why": "Un camino casi sin resistencia une la alimentación con tierra y la corriente es enorme.",
+      "fix": "Quita la conexión directa entre la alimentación y tierra."
+    },
+    "floating-input": {
+      "title": "Entrada flotante",
+      "why": "Un pin de entrada no está conectado a nada, así que capta ruido y lee niveles al azar.",
+      "fix": "Fija el pin a un nivel conocido con un pull-up o pull-down."
+    },
+    "part-not-powered": {
+      "title": "Pieza sin alimentación",
+      "why": "La pieza no tiene tensión en su pin de alimentación, así que no hace nada.",
+      "fix": "Conecta el pin de alimentación a la fuente."
+    },
+    "button-no-pulldown": {
+      "title": "Botón sin pull-down",
+      "why": "La entrada del botón no tiene resistencia a un nivel conocido y flota con el botón abierto.",
+      "fix": "Añade una resistencia pull-down o activa el pull-up en el código."
+    },
+    "open-connection": {
+      "title": "Conexión abierta",
+      "why": "Un cable o pata no llega a su destino, así que el camino está roto.",
+      "fix": "Completa la conexión."
+    },
+    "swapped-pins": {
+      "title": "Pines intercambiados",
+      "why": "Dos pines están en el lugar del otro, así que las señales llegan a pines equivocados.",
+      "fix": "Conecta cada pin a su lugar."
+    },
+    "wrong-value": {
+      "title": "Valor equivocado",
+      "why": "Una pieza tiene un valor que no encaja con el circuito, así que el resultado falla.",
+      "fix": "Usa el valor que necesita el circuito."
+    },
+    "missing-ground": {
+      "title": "Falta tierra",
+      "why": "El circuito no tiene retorno a tierra, así que la corriente no puede cerrar su lazo.",
+      "fix": "Conecta el pin de tierra al riel de tierra."
+    },
+    "wrong-pin-in-code": {
+      "title": "Pin equivocado en el código",
+      "why": "El código usa un número de pin distinto al que tiene cableado la pieza.",
+      "fix": "Usa el número de pin al que está cableada la pieza."
+    },
+    "i2c-missing-pullup": {
+      "title": "Falta el pull-up de I2C",
+      "why": "Las líneas I2C no tienen resistencias pull-up y nunca suben a nivel alto.",
+      "fix": "Añade una resistencia pull-up de cada línea I2C a la alimentación."
+    },
+    "pin-overcurrent": {
+      "title": "Sobrecorriente en un pin",
+      "why": "Un pin da más corriente de la que puede entregar con seguridad.",
+      "fix": "Maneja la carga con un transistor o usa una resistencia mayor."
+    },
+    "brownout": {
+      "title": "Caída de tensión",
+      "why": "La alimentación cae con la carga y la placa se reinicia o falla.",
+      "fix": "Alimenta la carga con otra fuente o reduce la carga."
+    },
+    "reverse-polarity": {
+      "title": "Polaridad invertida",
+      "why": "La alimentación está conectada al revés.",
+      "fix": "Conecta positivo con positivo y negativo con negativo."
+    },
+    "bus-device-not-modelled": {
+      "title": "Dispositivo del bus sin modelo",
+      "why": "Un dispositivo del bus aún no tiene modelo, así que no puede responder aquí.",
+      "fix": "Revisa el cableado y el código con la hoja de datos; este simulador no puede mostrar el dispositivo."
+    },
+    "library-not-modelled": {
+      "title": "Librería sin modelo",
+      "why": "El sketch usa una librería que el simulador no modela, así que sus llamadas no tienen efecto.",
+      "fix": "Prueba la librería en una placa real."
+    },
+    "x-code.serial-baud-mismatch": {
+      "title": "Baudios distintos en serie",
+      "why": "El sketch y el monitor usan baudios distintos y el texto sale ilegible.",
+      "fix": "Pon los mismos baudios en ambos."
+    },
+    "x-code.pin-mode-wrong": {
+      "title": "Modo de pin equivocado",
+      "why": "El pin se usa como salida o entrada pero se configuró al revés.",
+      "fix": "Llama a pinMode con el modo que necesita el código."
+    }
+  },
+  "symptom": {
+    "led-dark": "El LED sigue apagado",
+    "led-dim": "El LED brilla poco",
+    "led-burnt": "El LED se quemó",
+    "part-dead": "La pieza no hace nada",
+    "part-hot": "La pieza se calienta",
+    "i2c-no-ack": "El dispositivo no responde por I2C",
+    "reading-erratic": "La lectura salta",
+    "button-erratic": "El botón se activa solo",
+    "supply-collapses": "La tensión de alimentación se hunde",
+    "mcu-resets": "La placa se reinicia sin parar",
+    "pin-level-wrong": "Un pin muestra el nivel equivocado",
+    "pin-overloaded": "Un pin está sobrecargado",
+    "serial-garbled": "El texto serie sale ilegible",
+    "code-no-effect": "El código no tiene efecto"
+  },
+  "hintTemplate": {
+    "wiring": {
+      "1": "Sigue la señal desde el origen hasta la pieza.",
+      "2": "Mira las conexiones alrededor de {part}.",
+      "3": "Comprueba a qué está conectado el pin {pin} de {part}."
+    },
+    "power": {
+      "1": "Piensa de dónde viene la energía y por dónde vuelve.",
+      "2": "Mira la alimentación y la tierra alrededor de {part}.",
+      "3": "Comprueba la tensión en {net}; debería rondar {expected} {unit}."
+    },
+    "code": {
+      "1": "Compara lo que dice el código con lo que hace el circuito.",
+      "2": "Mira las líneas de código que tocan {part}.",
+      "3": "Comprueba qué pin usa el código para {part} y cómo está configurado."
+    },
+    "bus": {
+      "1": "Piensa en lo que necesitan los dos extremos del bus.",
+      "2": "Mira las líneas del bus que llegan a {part}.",
+      "3": "Comprueba las líneas de {net} y a qué están conectadas."
+    },
+    "value": {
+      "1": "Piensa si los números encajan con la pieza.",
+      "2": "Mira el valor de {part}.",
+      "3": "Comprueba que {value} {unit} encaja con {part}; se espera cerca de {expected} {unit}."
+    }
+  },
+  "dock": {
+    "title": "Fallos",
+    "noWorker": "Este navegador no puede ejecutar el simulador, así que los fallos no están disponibles."
+  }
+}

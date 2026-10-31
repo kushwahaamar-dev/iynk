@@ -1,0 +1,1409 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iynk:schema:drone-domain:1.0",
+  "title": "iynk drone domain data",
+  "description": "The value of domains.drone.data when domains.drone.schemaVersion is 1.x. Source of truth: DRONE_ARCHITECTURE.md sections 5.3, 5.4 and 9.2 (the brief points at \"section 7\", which is the flight dynamics; the document structure is 5.3). Body frame FLU (+x forward, +y left, +z up); lengths in mm or m as the field suffix says, angles in degrees, time as integer nanoseconds on the simulation clock. Gain and rate ranges below are structural bounds (HYPOTHESIS); the per-setting ranges from the CLI limits table are tighter and are applied by tools/validate-project.mjs when a limits table is passed.",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "enum": [
+        "multirotor",
+        "legacy-craft"
+      ],
+      "description": "legacy-craft: the 13 migrated crafts keep their own model."
+    },
+    "legacy": {
+      "type": "object",
+      "properties": {
+        "contentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "calcModelId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "flightModelId": {
+          "const": "flight-game@1"
+        }
+      },
+      "required": [
+        "contentId",
+        "calcModelId",
+        "flightModelId"
+      ],
+      "additionalProperties": false,
+      "description": "Set only for legacy-craft."
+    },
+    "thrustSource": {
+      "enum": [
+        "legacy-calc",
+        "parts"
+      ],
+      "description": "Exactly one thrust source per craft (ADR-0710): legacy-craft uses legacy-calc, multirotor uses parts."
+    },
+    "motors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/LocalId"
+          },
+          "motor": {
+            "type": "string",
+            "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "prop": {
+            "type": "string",
+            "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "esc": {
+            "type": "string",
+            "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "esc_channel": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "mount": {
+            "type": "string",
+            "pattern": "^mnt_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "spin": {
+            "enum": [
+              "cw",
+              "ccw"
+            ]
+          },
+          "prop_spin": {
+            "enum": [
+              "cw",
+              "ccw"
+            ],
+            "description": "Propeller handedness. prop_spin different from spin is allowed: it is a fault the person can inject or make by mistake (DB-C-11)."
+          }
+        },
+        "required": [
+          "id",
+          "motor",
+          "prop",
+          "esc",
+          "esc_channel",
+          "mount",
+          "spin",
+          "prop_spin"
+        ],
+        "additionalProperties": false,
+        "description": "motor has mechanics.bldc, prop has mechanics.rotor (DRONE 6.1)."
+      },
+      "maxItems": 12,
+      "minItems": 3
+    },
+    "battery": {
+      "type": "string",
+      "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+      "maxLength": 72
+    },
+    "controller": {
+      "type": "string",
+      "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+      "maxLength": 72
+    },
+    "fcParams": {
+      "$ref": "#/$defs/FcParams"
+    },
+    "flight": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "enum": [
+            "flight-game@1",
+            "multirotor-rigid@1"
+          ]
+        },
+        "step_hz": {
+          "enum": [
+            500,
+            1000,
+            2000
+          ],
+          "description": "Rigid model only. Range from SIM_ARCH 6.2 (0.5 to 2 ms)."
+        },
+        "pid_hz": {
+          "enum": [
+            500,
+            1000,
+            2000
+          ],
+          "description": "Rigid model only. Must divide step_hz and not exceed it (semantic check DB-C-12)."
+        }
+      },
+      "required": [
+        "model"
+      ],
+      "additionalProperties": false
+    },
+    "environment": {
+      "$ref": "#/$defs/DroneEnvironment"
+    },
+    "course": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "builtin": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 48
+            }
+          },
+          "required": [
+            "builtin"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/CourseSpec"
+        }
+      ],
+      "description": "An existing course id, or a user course."
+    },
+    "bench": {
+      "type": "object",
+      "properties": {
+        "propsOff": {
+          "const": true
+        }
+      },
+      "required": [
+        "propsOff"
+      ],
+      "additionalProperties": false,
+      "description": "Bench checks always run with props off."
+    },
+    "ext": {
+      "$ref": "#/$defs/Ext"
+    }
+  },
+  "required": [
+    "kind",
+    "thrustSource",
+    "flight",
+    "environment",
+    "course",
+    "bench"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "multirotor"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "thrustSource": {
+            "const": "parts"
+          }
+        },
+        "required": [
+          "motors",
+          "battery",
+          "controller",
+          "fcParams"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "legacy-craft"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "thrustSource": {
+            "const": "legacy-calc"
+          }
+        },
+        "required": [
+          "legacy"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "legacy"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "flight": {
+            "type": "object",
+            "properties": {
+              "model": {
+                "const": "multirotor-rigid@1"
+              }
+            },
+            "required": [
+              "model"
+            ]
+          }
+        },
+        "required": [
+          "flight"
+        ]
+      },
+      "then": {
+        "properties": {
+          "flight": {
+            "type": "object",
+            "required": [
+              "step_hz",
+              "pid_hz"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "LocalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,47}$",
+      "description": "Unique inside its parent collection only. Never used across collections."
+    },
+    "Ext": {
+      "type": "object",
+      "description": "Namespaced extension data. Keys are \"x-name\" or reverse-DNS names. Preserved verbatim by readers that do not know them. Never used for fields the core needs.",
+      "propertyNames": {
+        "pattern": "^(x-[a-z0-9-]{1,40}|[a-z0-9]+(\\.[a-z0-9-]+)+)$"
+      },
+      "maxProperties": 16
+    },
+    "FcParams": {
+      "type": "object",
+      "properties": {
+        "rates": {
+          "type": "object",
+          "properties": {
+            "roll": {
+              "type": "object",
+              "properties": {
+                "rc_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "expo": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "super_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "rc_rate",
+                "expo",
+                "super_rate"
+              ],
+              "additionalProperties": false,
+              "description": "Rates, per axis."
+            },
+            "pitch": {
+              "type": "object",
+              "properties": {
+                "rc_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "expo": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "super_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "rc_rate",
+                "expo",
+                "super_rate"
+              ],
+              "additionalProperties": false,
+              "description": "Rates, per axis."
+            },
+            "yaw": {
+              "type": "object",
+              "properties": {
+                "rc_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "expo": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "super_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "rc_rate",
+                "expo",
+                "super_rate"
+              ],
+              "additionalProperties": false,
+              "description": "Rates, per axis."
+            }
+          },
+          "required": [
+            "roll",
+            "pitch",
+            "yaw"
+          ],
+          "additionalProperties": false,
+          "description": "CLI mapping: roll_rc_rate, roll_expo, roll_srate and the pitch and yaw equivalents (quad5.ts settings)."
+        },
+        "pid": {
+          "type": "object",
+          "properties": {
+            "p_roll": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "i_roll": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "d_roll": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ff_roll": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "p_pitch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "i_pitch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "d_pitch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ff_pitch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "p_yaw": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "i_yaw": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "d_yaw": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "ff_yaw": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          },
+          "required": [
+            "p_roll",
+            "i_roll",
+            "d_roll",
+            "ff_roll",
+            "p_pitch",
+            "i_pitch",
+            "d_pitch",
+            "ff_pitch",
+            "p_yaw",
+            "i_yaw",
+            "d_yaw",
+            "ff_yaw"
+          ],
+          "additionalProperties": false,
+          "description": "iynk units. Betaflight internal scale factors are not copied (DRONE 5.4, council Q13)."
+        },
+        "filters": {
+          "type": "object",
+          "properties": {
+            "gyro_lpf_hz": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4000
+            },
+            "dterm_lpf_hz": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4000
+            }
+          },
+          "required": [
+            "gyro_lpf_hz",
+            "dterm_lpf_hz"
+          ],
+          "additionalProperties": false,
+          "description": "0 turns the filter off. The notch filter is not-modelled-yet and has no field."
+        },
+        "mixer": {
+          "type": "object",
+          "properties": {
+            "airmode": {
+              "type": "boolean"
+            },
+            "idle_percent": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 30
+            },
+            "thrust_linearisation": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "airmode",
+            "idle_percent",
+            "thrust_linearisation"
+          ],
+          "additionalProperties": false
+        },
+        "angle": {
+          "type": "object",
+          "properties": {
+            "limit_deg": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 90
+            },
+            "strength": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 255
+            }
+          },
+          "required": [
+            "limit_deg",
+            "strength"
+          ],
+          "additionalProperties": false,
+          "description": "CLI mapping: angle_limit, angle_p_gain."
+        },
+        "failsafe": {
+          "type": "object",
+          "properties": {
+            "rx_loss_action": {
+              "enum": [
+                "drop",
+                "land"
+              ]
+            },
+            "delay_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            }
+          },
+          "required": [
+            "rx_loss_action",
+            "delay_ms"
+          ],
+          "additionalProperties": false,
+          "description": "CLI mapping: failsafe_procedure, failsafe_delay (the CLI counts 0.1 s units)."
+        },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "arm",
+                  "angle",
+                  "horizon",
+                  "acro",
+                  "turtle",
+                  "failsafe",
+                  "beeper"
+                ]
+              },
+              "aux": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8
+              },
+              "range_us": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 900,
+                  "maximum": 2100
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": [
+              "mode",
+              "aux",
+              "range_us"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "rates",
+        "pid",
+        "filters",
+        "mixer",
+        "angle",
+        "failsafe",
+        "modes"
+      ],
+      "additionalProperties": false,
+      "description": "Flat groups. Defaults are per craft class and come from the template with a source note."
+    },
+    "DroneEnvironment": {
+      "type": "object",
+      "properties": {
+        "temperature_degC": {
+          "type": "number",
+          "minimum": -80,
+          "maximum": 100
+        },
+        "pressure_pa": {
+          "type": "number",
+          "minimum": 1000,
+          "maximum": 120000
+        },
+        "altitude_msl_m": {
+          "type": "number",
+          "minimum": -500,
+          "maximum": 9000
+        },
+        "wind": {
+          "type": "object",
+          "properties": {
+            "mean_mps": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -100,
+                "maximum": 100
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "gust": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "none",
+                    "ou"
+                  ]
+                },
+                "sigma_mps": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 50
+                },
+                "tau_s": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 600
+                }
+              },
+              "required": [
+                "kind",
+                "sigma_mps",
+                "tau_s"
+              ],
+              "additionalProperties": false
+            },
+            "discrete": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "at_ns": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 36000000000000
+                  },
+                  "v_g_mps": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "duration_ns": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 3600000000000
+                  }
+                },
+                "required": [
+                  "at_ns",
+                  "v_g_mps",
+                  "duration_ns"
+                ],
+                "additionalProperties": false,
+                "description": "Discrete '1 - cosine' gust: v = v_g / 2 (1 - cos(pi t / T)). DRONE 9.2 names GustEvent without defining it; this is its definition."
+              },
+              "maxItems": 32
+            }
+          },
+          "required": [
+            "mean_mps",
+            "gust"
+          ],
+          "additionalProperties": false
+        },
+        "sensorFailures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "at_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 36000000000000
+              },
+              "sensor": {
+                "enum": [
+                  "gyro",
+                  "accel",
+                  "baro",
+                  "gps",
+                  "rx"
+                ]
+              },
+              "mode": {
+                "enum": [
+                  "dropout",
+                  "stuck",
+                  "bias",
+                  "noise-x10"
+                ]
+              },
+              "duration_ns": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 36000000000000
+              }
+            },
+            "required": [
+              "at_ns",
+              "sensor",
+              "mode"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "temperature_degC",
+        "altitude_msl_m",
+        "wind",
+        "sensorFailures"
+      ],
+      "additionalProperties": false,
+      "description": "Stored form; toEnvironmentState() is the only converter to the engine type (DRONE 9.2). pressure_pa absent: computed from altitude_msl_m."
+    },
+    "CourseSpec": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "gates",
+            "checkpoints",
+            "mission"
+          ]
+        },
+        "field_m": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 2000
+        },
+        "pad_m": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000,
+            "maximum": 1000
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "ground": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "ceiling_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000
+        },
+        "solids": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "box"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "z_m": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "w_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2000
+                  },
+                  "d_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2000
+                  },
+                  "h_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "yaw_deg": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m",
+                  "w_m",
+                  "d_m",
+                  "h_m"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "house"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "w_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2000
+                  },
+                  "d_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2000
+                  },
+                  "h_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "yaw_deg": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  },
+                  "roof_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "roofCol": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m",
+                  "w_m",
+                  "d_m",
+                  "h_m"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "cyl"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "z_m": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "r_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "h_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "r1_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "n": {
+                    "type": "integer",
+                    "minimum": 3,
+                    "maximum": 64
+                  },
+                  "rot_deg": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m",
+                  "r_m",
+                  "h_m"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "tree"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "h_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 200
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "pole"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "h_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "r_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 50
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m",
+                  "h_m"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "flat"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "w_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2000
+                  },
+                  "d_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 2000
+                  },
+                  "yaw_deg": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  "ink": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m",
+                  "w_m",
+                  "d_m"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "disc"
+                  },
+                  "x_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "y_m": {
+                    "type": "number",
+                    "minimum": -10000,
+                    "maximum": 10000
+                  },
+                  "col": {
+                    "type": "string",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "kind": {
+                    "enum": [
+                      "tree",
+                      "roof",
+                      "wall",
+                      "pole",
+                      "gate",
+                      "building",
+                      "pillar",
+                      "tower",
+                      "barrel",
+                      "obstacle"
+                    ]
+                  },
+                  "solid": {
+                    "type": "boolean",
+                    "description": "false: drawn, but the craft flies through it."
+                  },
+                  "r_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 32
+                  }
+                },
+                "required": [
+                  "type",
+                  "x_m",
+                  "y_m",
+                  "r_m"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "maxItems": 64
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "x_m": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "y_m": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "heading_deg": {
+                "type": "number",
+                "minimum": -360,
+                "maximum": 360
+              },
+              "w_m": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 100
+              },
+              "h_m": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 100
+              },
+              "z_m": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "col": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              }
+            },
+            "required": [
+              "x_m",
+              "y_m",
+              "heading_deg",
+              "w_m",
+              "h_m"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "English label; translated through the course text table."
+              },
+              "x_m": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "y_m": {
+                "type": "number",
+                "minimum": -10000,
+                "maximum": 10000
+              },
+              "z_m": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 1000
+              },
+              "r_m": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1000
+              },
+              "heading_deg": {
+                "type": "number",
+                "minimum": -360,
+                "maximum": 360
+              },
+              "land": {
+                "type": "boolean"
+              },
+              "action": {
+                "enum": [
+                  "photo",
+                  "drop",
+                  "spray-on",
+                  "spray-off",
+                  "land"
+                ]
+              }
+            },
+            "required": [
+              "label",
+              "x_m",
+              "y_m",
+              "z_m",
+              "r_m"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "field_m",
+        "pad_m",
+        "ground",
+        "solids",
+        "gates",
+        "checkpoints"
+      ],
+      "additionalProperties": false,
+      "description": "User course. Caps from DRONE 5.3: 64 solids, 32 gates, field up to 2,000 m. Field names follow Course in src/lib/flight/types.ts:~187 with a unit suffix; missions are not in v1 of the document form."
+    }
+  }
+}

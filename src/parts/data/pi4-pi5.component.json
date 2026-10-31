@@ -1,0 +1,596 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.pi4-pi5",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Raspberry Pi",
+    "model": "Raspberry Pi 4 Model B and Raspberry Pi 5",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "pi4-pi5"
+    ],
+    "description": {
+      "i18n_key": "parts.pi4-pi5.description",
+      "en": "A Raspberry Pi 4 Model B or Raspberry Pi 5 single-board computer with a 40-pin GPIO header, modelled as a Python API."
+    },
+    "chip": {
+      "manufacturer": "Broadcom",
+      "model": "BCM2712"
+    },
+    "primary_source": "brief",
+    "tags": [
+      "bcm2711",
+      "bcm2712",
+      "raspberry-pi",
+      "single-board-computer",
+      "python",
+      "gpiozero"
+    ]
+  },
+  "sources": [
+    {
+      "id": "brief",
+      "kind": "datasheet",
+      "title": "Raspberry Pi 5 product brief",
+      "publisher": "Raspberry Pi Ltd",
+      "url": "https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-product-brief.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the document in full."
+    },
+    {
+      "id": "pi4",
+      "kind": "datasheet",
+      "title": "Raspberry Pi 4 Model B datasheet",
+      "publisher": "Raspberry Pi Ltd",
+      "url": "https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the document in full."
+    },
+    {
+      "id": "gpiozero",
+      "kind": "library",
+      "title": "gpiozero documentation",
+      "publisher": "gpiozero",
+      "url": "https://gpiozero.readthedocs.io/en/stable/",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/undefined.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile pi4-pi5) and src/content/boards/pi4-pi5.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J8",
+      "kind": "header",
+      "pins": [
+        "P3V3",
+        "P5V",
+        "GPIO2",
+        "J8_4",
+        "GPIO3",
+        "GND",
+        "GPIO4",
+        "GPIO14",
+        "J8_9",
+        "GPIO15",
+        "GPIO17",
+        "GPIO18",
+        "GPIO27",
+        "J8_14",
+        "GPIO22",
+        "GPIO23",
+        "J8_17",
+        "GPIO24",
+        "GPIO10",
+        "J8_20",
+        "GPIO9",
+        "GPIO25",
+        "GPIO11",
+        "GPIO8",
+        "J8_25",
+        "GPIO7",
+        "GPIO0",
+        "GPIO1",
+        "GPIO5",
+        "J8_30",
+        "GPIO6",
+        "GPIO12",
+        "GPIO13",
+        "J8_34",
+        "GPIO19",
+        "GPIO16",
+        "GPIO26",
+        "GPIO20",
+        "J8_39",
+        "GPIO21"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "P3V3",
+      "designator": "3V3",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J8"
+    },
+    {
+      "id": "P5V",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO2",
+      "designator": "GPIO2",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_4",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO3",
+      "designator": "GPIO3",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO4",
+      "designator": "GPIO4",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO14",
+      "designator": "GPIO14",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_9",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO15",
+      "designator": "GPIO15",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO17",
+      "designator": "GPIO17",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO18",
+      "designator": "GPIO18",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO27",
+      "designator": "GPIO27",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_14",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO22",
+      "designator": "GPIO22",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO23",
+      "designator": "GPIO23",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_17",
+      "designator": "3V3",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO24",
+      "designator": "GPIO24",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO10",
+      "designator": "GPIO10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_20",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO9",
+      "designator": "GPIO9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO25",
+      "designator": "GPIO25",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO11",
+      "designator": "GPIO11",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO8",
+      "designator": "GPIO8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_25",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO7",
+      "designator": "GPIO7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO0",
+      "designator": "GPIO0",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.pi4-pi5.ideeprom",
+        "en": "Reserved for the HAT identification EEPROM. Leave it alone."
+      }
+    },
+    {
+      "id": "GPIO1",
+      "designator": "GPIO1",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.pi4-pi5.ideeprom",
+        "en": "Reserved for the HAT identification EEPROM. Leave it alone."
+      }
+    },
+    {
+      "id": "GPIO5",
+      "designator": "GPIO5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_30",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO6",
+      "designator": "GPIO6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO12",
+      "designator": "GPIO12",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO13",
+      "designator": "GPIO13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_34",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO19",
+      "designator": "GPIO19",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO16",
+      "designator": "GPIO16",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO26",
+      "designator": "GPIO26",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "GPIO20",
+      "designator": "GPIO20",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "J8_39",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J8"
+    },
+    {
+      "id": "GPIO21",
+      "designator": "GPIO21",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J8",
+      "logic_family": "lvcmos-3v3"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "J8_9",
+        "J8_14",
+        "J8_20",
+        "J8_25",
+        "J8_30",
+        "J8_34",
+        "J8_39"
+      ]
+    }
+  ],
+  "ratings": {},
+  "parameters": [
+    {
+      "id": "variant",
+      "name": {
+        "i18n_key": "parts.pi4-pi5.variant",
+        "en": "Variant"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "pi4",
+      "values": [
+        "pi4",
+        "pi5"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.pi4-pi5.summary",
+      "en": "The board runs the user's program in the iynk interpreter, in Python with gpiozero. It is a Python API model, not Raspberry Pi OS. Pins, PWM, I2C and timing follow the pi4-pi5 board profile."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.pi4-pi5.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile pi4-pi5 in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T0",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.pi4-pi5.models.1",
+        "en": "Python subset run by the interpreter with the Raspberry Pi BCM pin numbers (GPIO17 is physical pin 11)."
+      },
+      {
+        "i18n_key": "parts.pi4-pi5.models.2",
+        "en": "Digital I/O, PWM and edge callbacks on GPIO0 to GPIO27 through gpiozero, and RPi.GPIO on the Pi 4."
+      },
+      {
+        "i18n_key": "parts.pi4-pi5.models.3",
+        "en": "I2C master on GPIO2 and GPIO3 and serial output. The Pi 4 and the Pi 5 differ only in clock speed."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.pi4-pi5.not.1",
+        "en": "Linux, the desktop and Raspberry Pi OS: this is a Python API model, not an operating system."
+      },
+      {
+        "i18n_key": "parts.pi4-pi5.not.2",
+        "en": "The camera, display, network, USB and PCI Express stacks."
+      },
+      {
+        "i18n_key": "parts.pi4-pi5.not.3",
+        "en": "Analog inputs: the board has none, so an ADC chip such as the MCP3008 is needed."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.pi4-pi5.gap",
+          "en": "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a program on the pi4-pi5 profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "python",
+        "libraries": [
+          {
+            "name": "gpiozero",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "pi4-pi5",
+        "path": "public/figures/boards/pi4-pi5.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Raspberry Pi 4 / 5",
+      "body_colour": "#1f7a3d",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the 40 rows of src/content/boards/pi4-pi5.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

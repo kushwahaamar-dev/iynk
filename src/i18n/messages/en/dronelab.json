@@ -1,16 +1,16 @@
 {
   "meta": {
-    "indexTitle": "Drone Lab",
-    "indexDescription": "Design, wire, build, smoke-test and fly 13 hand-inked drones, from a Tiny Whoop to a heavy-lift octocopter.",
-    "craftTitle": "{title} · Drone Lab",
+    "indexTitle": "Drone lab",
+    "indexDescription": "Design, wire, build, smoke test and fly 13 hand drawn drones, from a Tiny Whoop to a heavy lift octocopter.",
+    "craftTitle": "{title} · Drone lab",
     "craftDescription": "{title}: pick the parts with live calculations, build it part by part, run the safety tests, configure it in the {cli} and fly it.",
     "flyTitle": "Fly the {title}",
     "flyDescription": "Fly the {title} you designed on the iynk range: chase view or FPV goggles, keyboard, touch sticks or a gamepad."
   },
   "index": {
-    "title": "Drone Lab",
+    "title": "Drone lab",
     "kicker": "Multirotors and fixed wings",
-    "lede": "Hand-inked drones you design, build and then fly.",
+    "lede": "Hand drawn drones you design, build and then fly.",
     "fig": "Fig. {n}",
     "progress": "Progress",
     "progressValue": "{done}/{total}",
@@ -62,7 +62,7 @@
     "ducted": "ducted",
     "3-inch": "3-inch",
     "long-range": "long range",
-    "gps-rescue": "GPS Rescue",
+    "gps-rescue": "GPS rescue",
     "7-inch": "7-inch",
     "racing": "racing",
     "gps": "GPS",
@@ -89,13 +89,13 @@
   },
   "workspace": {
     "fig": "Fig. {n}",
-    "crumbs": "Drone Lab",
+    "crumbs": "Drone lab",
     "back": "All crafts",
     "meet": "Meet the {noun}",
     "practice": "Practice task",
     "fly": "Fly it",
     "flyReady": "Ready to fly",
-    "flyNotReady": "Finish the build and the safety tests first, or fly the factory-built craft.",
+    "flyNotReady": "Finish the build and the safety tests first, or fly the factory build.",
     "progress": "Progress",
     "progressLabel": "{done} of {total} done in this workshop: the build, tests, quizzes and courses",
     "sections": "Workshop sections",
@@ -135,14 +135,14 @@
     "props": "Props",
     "results": "Calculated for this build",
     "tiles": {
-      "auw": "All-up weight",
+      "auw": "Takeoff weight",
       "tw": "Thrust : weight",
       "hoverThr": "Hover throttle",
       "cruiseThr": "Cruise throttle",
       "maxA": "Max current",
       "hoverMin": "Hover time",
       "cruiseMin": "Cruise time",
-      "flyMin": "Hard-flying time",
+      "flyMin": "Hard flying time",
       "speed": "Cruise speed"
     },
     "units": {
@@ -162,7 +162,7 @@
       "esc-overcurrent": "Each motor pulls about {perMotor} A at full throttle, more than its {esc} A ESC is rated for.",
       "battery-overcurrent": "Full throttle draws {maxA} A, more than this pack can deliver ({limit} A): it will sag and heat up.",
       "prop-clash": "{span} mm props are wider than the {chord} mm between neighbouring motors: the blades would hit each other.",
-      "tail-heavy": "This pack sits the centre of gravity behind the mark: a tail-heavy wing stalls and is hard to recover.",
+      "tail-heavy": "This pack puts the centre of gravity behind the mark: a wing that is heavy at the tail stalls and is hard to recover.",
       "short-flight": "Only {min} minutes of hard flying: plan short packs or a bigger battery."
     },
     "levels": {
@@ -211,7 +211,7 @@
   },
   "wiring": {
     "title": "Wiring",
-    "lede": "Every connection on the craft. Choose one to select both ends on the figure, or open the hand-inked wiring sheet.",
+    "lede": "Every connection on the craft. Choose one to select both ends on the figure, or open the hand drawn wiring sheet.",
     "show": "Show the wiring sheet",
     "hide": "Back to the 3D bench",
     "from": "From",
@@ -239,9 +239,9 @@
     "procedure": "How it is done",
     "count": "Tests {done}/{total}",
     "kinds": {
-      "smoke-stopper": "A smoke stopper (a fuse or current-limiting lamp in the battery lead) goes between the pack and the craft for the very first power-up. If something is shorted, the lamp lights instead of the ESC burning.",
+      "smoke-stopper": "A smoke stopper (a fuse or lamp that limits current in the battery lead) goes between the pack and the craft for the very first power up. If something is shorted, the lamp lights instead of the ESC burning.",
       "motor-direction": "Props off, battery in: spin each motor alone from the Motors tab and compare its direction with the frame diagram. A wrong one is reversed in the ESC configurator, never by guessing.",
-      "accel-calibration": "With the craft on a level surface, calibrate the accelerometer so the self-levelling modes know which way is down.",
+      "accel-calibration": "With the craft on a level surface, calibrate the accelerometer so the modes that level the craft know which way is down.",
       "compass-calibration": "Rotate the craft through every axis until the compass calibration completes, far from steel and power cables.",
       "airspeed-calibration": "Cover the pitot tube from the wind and zero the airspeed sensor before the flight.",
       "cg-check": "Balance the airframe on your fingertips at the marked CG point: it should sit level or very slightly nose down.",
@@ -250,10 +250,10 @@
       "tilt-servo-test": "Move the tilt servos from hover to forward flight and back: both must reach the same angle without binding.",
       "failsafe": "Props off and armed, switch the radio off: the craft must carry out its failsafe action, not hold the last stick positions.",
       "gps-lock": "Wait for enough satellites and a good position fix before arming in a GPS mode.",
-      "arming-checks": "Read the pre-arm messages: every check must pass before the autopilot lets you arm.",
+      "arming-checks": "Read the messages before arming: every check must pass before the autopilot lets you arm.",
       "motor-redundancy": "Stop one motor on the bench: the mixer must still hold the craft level on the remaining motors.",
       "radio-link": "Check the link quality and that every stick and switch moves the right channel.",
-      "transition": "Practise the change from hover to wing-borne flight and back at a safe height.",
+      "transition": "Practise the change from hover to flying on the wing and back at a safe height.",
       "prop-clearance": "Battery out, props on: turn each prop by hand inside its duct. It must turn freely with an even gap to the wall all round; a rub or a chipped tip shakes the camera and shows as jello in the footage."
     }
   },
@@ -302,7 +302,7 @@
     "broken": "Broken on purpose",
     "rules": {
       "built": "Every part is fitted",
-      "capFault": "No vented capacitor (unplug and re-seat the {part} the right way)",
+      "capFault": "No vented capacitor (unplug and reseat the {part} the right way)",
       "smoke": "Smoke stopper test passed",
       "motors": "Motor direction checked with the props off",
       "acc": "Accelerometer calibrated",
@@ -339,7 +339,7 @@
       "pitchRoll": "Pitch and roll",
       "arm": "Arm or disarm",
       "reset": "Reset to the pad",
-      "fpv": "First-person (FPV) view"
+      "fpv": "First person (FPV) view"
     },
     "keys": {
       "question": "?",

@@ -1,0 +1,19 @@
+{
+  "description": "Una placa FPGA Terasic DE10-Lite con chip Intel MAX 10 10M50, 10 interruptores, 2 pulsadores, 10 LED, seis pantallas de siete segmentos y una cabecera Arduino.",
+  "summary": "La placa ejecuta tu Verilog en el simulador por ciclos de iynk. Los puertos sustituyen a los pines: interruptores, pulsadores, LED, las pantallas de siete segmentos y las salidas de la cabecera Arduino. No sintetiza el diseño ni comprueba sus tiempos.",
+  "layer": "Entorno de ejecución del firmware.",
+  "clock": "Entrada de reloj: 50 MHz en la placa.",
+  "activelow": "Activo en bajo: 0 significa pulsado o encendido.",
+  "outputonly": "Solo salida en el simulador.",
+  "models": {
+    "1": "Subconjunto de Verilog que el simulador por ciclos ejecuta con los puertos de la DE10-Lite, un pin por cada bit de puerto.",
+    "2": "Interruptores, pulsadores (activos en bajo), LED, las seis pantallas de siete segmentos (activas en bajo) y la cabecera Arduino como salidas.",
+    "3": "Un diseño que declara CLK_HZ se ejecuta a 100 kHz en lugar de al reloj de 50 MHz de la placa."
+  },
+  "not": {
+    "1": "Síntesis, cierre de tiempos y archivos de restricciones.",
+    "2": "El ADC, el acelerómetro, VGA y la SDRAM.",
+    "3": "El tamaño de la RAM de bloques y los límites eléctricos de los pines."
+  },
+  "gap": "Todavía no hay valores eléctricos máximos indicados, así que no existe una comprobación de sobrecarga de pines para esta placa."
+}

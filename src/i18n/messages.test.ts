@@ -1,9 +1,9 @@
 // @vitest-environment node
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, test } from "vitest";
+import { describe, expect, expectTypeOf, test } from "vitest";
 import { LOCALES } from "./config";
-import { NAMESPACES } from "./namespaces";
+import { NAMESPACES, type Messages, type Namespace } from "./namespaces";
 import { messageAt, messageKeys } from "./translate";
 
 const root = join(process.cwd(), "src/i18n/messages");
@@ -48,5 +48,42 @@ test("the common strings are translated, not copied from English", () => {
     const translated = read(locale, "common");
     expect(leaf(translated, "notFound.title"), locale).not.toBe(leaf(english, "notFound.title"));
     expect(leaf(translated, "client.figure.loading"), locale).not.toBe(leaf(english, "client.figure.loading"));
+  }
+});
+
+test("the Messages type has exactly the listed namespaces", () => {
+  expectTypeOf<keyof Messages>().toEqualTypeOf<Namespace>();
+  expect(new Set(NAMESPACES).size).toBe(NAMESPACES.length);
+});
+
+test("a removed namespace is gone", () => {
+  expect(NAMESPACES).not.toContain(["sol", "ana"].join(""));
+});
+
+test("the strings of removed features are gone from every language", () => {
+  const removed: [string, string][] = [
+    ["ai", "story"],
+    ["ai", `tools.tabs.${["pass", "port"].join("")}`],
+    ["common", `client.dock.tabs.${["pass", "port"].join("")}`],
+    ["shell", `nav.${["pass", "port"].join("")}`],
+    ["shell", "nav.verify"],
+    ["together", "lobby.buddies"],
+    ["together", "lobby.plan"],
+    ["together", "lobby.aiOff"],
+  ];
+  for (const locale of LOCALES) {
+    for (const [ns, key] of removed) {
+      expect(messageAt(read(locale, ns), key), `${locale}/${ns}.json ${key}`).toBeUndefined();
+    }
+  }
+});
+
+test("Studio strings never say validated and never use an em dash", () => {
+  for (const locale of LOCALES) {
+    for (const ns of NAMESPACES.filter((name) => name.startsWith("studio"))) {
+      const text = readFileSync(file(locale, ns), "utf8");
+      expect(text.toLowerCase(), `${locale}/${ns}.json`).not.toContain("validated");
+      expect(text, `${locale}/${ns}.json`).not.toContain("—");
+    }
   }
 });

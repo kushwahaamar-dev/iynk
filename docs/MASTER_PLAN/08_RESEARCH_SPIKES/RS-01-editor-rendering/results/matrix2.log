@@ -1,0 +1,124 @@
+== headed chromium 1
+13:50  up 21 days, 11:06, 1 user, load averages: 4.03 3.97 3.81
+chromium 1x svg-plain pan-1x: p50 8.3 p95 9.0 max 9.4 jsP95 0.10 frames 600 nodes 48601 load 4.03
+chromium 1x svg-plain pan-fit: p50 25.0 p95 25.8 max 33.6 jsP95 0.10 frames 216 nodes 48601 load 4.03
+chromium 1x svg-plain zoom: p50 8.4 p95 25.0 max 33.4 jsP95 0.10 frames 461 nodes 48601 load 4.03
+chromium 1x svg-plain drag: p50 8.3 p95 8.8 max 16.6 jsP95 0.10 frames 600 nodes 48601 load 4.02
+chromium 1x svg-plain hover: p50 8.3 p95 8.8 max 9.3 jsP95 0.00 frames 600 nodes 48601 load 4.19
+chromium 1x svg-cull pan-1x: p50 8.3 p95 9.1 max 9.4 jsP95 0.10 frames 600 nodes 48601 load 3.93
+chromium 1x svg-cull pan-fit: p50 25.0 p95 25.2 max 33.3 jsP95 0.10 frames 214 nodes 48601 load 3.94
+chromium 1x svg-cull zoom: p50 8.3 p95 25.0 max 41.7 jsP95 0.10 frames 478 nodes 48601 load 3.86
+chromium 1x svg-cull drag: p50 8.3 p95 8.9 max 9.4 jsP95 0.10 frames 601 nodes 48601 load 4.03
+chromium 1x svg-cull hover: p50 8.3 p95 8.7 max 9.4 jsP95 0.00 frames 601 nodes 48601 load 3.95
+chromium 1x svg-lod pan-1x: p50 10.0 p95 10.4 max 11.0 jsP95 0.10 frames 500 nodes 49601 load 4.03
+chromium 1x svg-lod pan-fit: p50 10.0 p95 10.6 max 11.0 jsP95 0.10 frames 501 nodes 49601 load 3.87
+chromium 1x svg-lod zoom: p50 10.0 p95 10.7 max 20.0 jsP95 0.10 frames 495 nodes 49601 load 3.51
+chromium 1x svg-lod drag: p50 10.0 p95 10.3 max 10.9 jsP95 0.10 frames 501 nodes 49601 load 3.31
+chromium 1x svg-lod hover: p50 10.0 p95 10.6 max 11.1 jsP95 0.00 frames 500 nodes 49601 load 3.28
+chromium 1x svg-use pan-1x: p50 10.0 p95 10.7 max 30.1 jsP95 0.10 frames 498 nodes 4465 load 3.1
+chromium 1x svg-use pan-fit: p50 20.0 p95 30.4 max 40.0 jsP95 0.10 frames 214 nodes 4465 load 3.25
+chromium 1x svg-use zoom: p50 10.0 p95 20.3 max 30.7 jsP95 0.10 frames 415 nodes 4465 load 5.15
+chromium 1x svg-use drag: p50 10.0 p95 10.5 max 11.0 jsP95 0.10 frames 501 nodes 4465 load 5.3
+chromium 1x svg-use hover: p50 10.0 p95 10.5 max 11.1 jsP95 0.10 frames 500 nodes 4465 load 5.2
+chromium 1x react pan-1x: p50 8.3 p95 8.8 max 9.3 jsP95 0.20 frames 601 nodes 48601 load 5.02
+chromium 1x react pan-fit: p50 25.0 p95 25.3 max 34.2 jsP95 0.10 frames 217 nodes 48601 load 4.94
+chromium 1x react zoom: p50 8.4 p95 25.0 max 41.7 jsP95 0.10 frames 457 nodes 48601 load 4.71
+chromium 1x react drag: p50 8.3 p95 8.5 max 9.4 jsP95 0.40 frames 601 nodes 48601 load 4.81
+chromium 1x react hover: p50 8.3 p95 8.7 max 16.7 jsP95 0.50 frames 597 nodes 48601 load 4.99
+chromium 1x canvas pan-1x: p50 8.3 p95 8.7 max 9.3 jsP95 3.80 frames 601 nodes 1 load 4.67
+chromium 1x canvas pan-fit: p50 25.0 p95 33.6 max 41.8 jsP95 35.40 frames 208 nodes 1 load 4.69
+chromium 1x canvas zoom: p50 8.3 p95 25.0 max 41.7 jsP95 20.80 frames 478 nodes 1 load 4.48
+chromium 1x canvas drag: p50 8.3 p95 8.5 max 9.3 jsP95 4.20 frames 600 nodes 1 load 4.2
+chromium 1x canvas hover: p50 8.3 p95 9.1 max 9.4 jsP95 5.40 frames 601 nodes 1 load 4.34
+wrote results/headed-chromium-1x-500p-dpr1-1793127178945.json
+== headed chromium 4
+13:52  up 21 days, 11:08, 1 user, load averages: 4.38 4.15 3.90
+chromium 4x svg-plain pan-1x: p50 16.9 p95 25.2 max 26.0 jsP95 0.30 frames 266 nodes 48601 load 4.38
+chromium 4x svg-plain pan-fit: p50 24.9 p95 25.9 max 33.4 jsP95 0.30 frames 212 nodes 48601 load 4.11
+chromium 4x svg-plain zoom: p50 34.1 p95 42.4 max 42.6 jsP95 0.60 frames 136 nodes 48601 load 4.34
+chromium 4x svg-plain drag: p50 17.5 p95 25.8 max 26.0 jsP95 0.60 frames 243 nodes 48601 load 4.15
+chromium 4x svg-plain hover: p50 8.4 p95 16.7 max 17.6 jsP95 0.00 frames 518 nodes 48601 load 4.22
+chromium 4x svg-cull pan-1x: p50 8.5 p95 17.4 max 25.4 jsP95 0.70 frames 460 nodes 48601 load 4.2
+chromium 4x svg-cull pan-fit: p50 25.2 p95 34.1 max 42.3 jsP95 0.50 frames 181 nodes 48601 load 4.11
+chromium 4x svg-cull zoom: p50 25.5 p95 49.9 max 65.8 jsP95 0.70 frames 170 nodes 48601 load 4.26
+chromium 4x svg-cull drag: p50 9.1 p95 17.4 max 25.6 jsP95 0.60 frames 421 nodes 48601 load 4.07
+chromium 4x svg-cull hover: p50 8.3 p95 9.2 max 9.4 jsP95 0.00 frames 602 nodes 48601 load 4.06
+chromium 4x svg-lod pan-1x: p50 8.4 p95 16.9 max 17.7 jsP95 0.70 frames 515 nodes 49601 load 4.22
+chromium 4x svg-lod pan-fit: p50 8.3 p95 9.2 max 9.4 jsP95 0.10 frames 601 nodes 49601 load 4.36
+chromium 4x svg-lod zoom: p50 25.0 p95 34.1 max 109.0 jsP95 0.80 frames 190 nodes 49601 load 4.25
+chromium 4x svg-lod drag: p50 9.3 p95 17.3 max 24.9 jsP95 0.70 frames 404 nodes 49601 load 4.55
+chromium 4x svg-lod hover: p50 8.3 p95 9.2 max 9.4 jsP95 0.00 frames 600 nodes 49601 load 4.75
+chromium 4x svg-use pan-1x: p50 25.0 p95 83.4 max 116.6 jsP95 0.70 frames 126 nodes 4465 load 4.61
+chromium 4x svg-use pan-fit: p50 83.3 p95 108.5 max 133.3 jsP95 0.10 frames 63 nodes 4465 load 4.64
+chromium 4x svg-use zoom: p50 158.3 p95 541.6 max 1158.3 jsP95 0.10 frames 24 nodes 4465 load 4.78
+chromium 4x svg-use drag: p50 58.5 p95 83.3 max 83.4 jsP95 0.20 frames 79 nodes 4465 load 4.72
+chromium 4x svg-use hover: p50 8.4 p95 66.7 max 91.8 jsP95 0.10 frames 275 nodes 4465 load 4.42
+chromium 4x react pan-1x: p50 17.1 p95 25.3 max 25.9 jsP95 0.70 frames 262 nodes 48601 load 4.15
+chromium 4x react pan-fit: p50 24.9 p95 31.1 max 34.0 jsP95 0.70 frames 215 nodes 48601 load 3.97
+chromium 4x react zoom: p50 33.6 p95 42.3 max 42.6 jsP95 0.80 frames 140 nodes 48601 load 3.9
+chromium 4x react drag: p50 17.6 p95 25.8 max 26.0 jsP95 1.70 frames 241 nodes 48601 load 3.66
+chromium 4x react hover: p50 8.4 p95 16.9 max 17.6 jsP95 1.10 frames 521 nodes 48601 load 3.53
+chromium 4x canvas pan-1x: p50 16.6 p95 24.9 max 33.4 jsP95 15.80 frames 322 nodes 1 load 3.78
+chromium 4x canvas pan-fit: p50 50.1 p95 58.8 max 59.1 jsP95 54.00 frames 96 nodes 1 load 3.56
+chromium 4x canvas zoom: p50 8.5 p95 49.3 max 58.4 jsP95 39.40 frames 361 nodes 1 load 3.51
+chromium 4x canvas drag: p50 16.9 p95 25.5 max 26.0 jsP95 17.90 frames 259 nodes 1 load 3.39
+chromium 4x canvas hover: p50 8.4 p95 16.8 max 17.6 jsP95 16.50 frames 516 nodes 1 load 3.36
+wrote results/headed-chromium-4x-500p-dpr1-1793127346717.json
+== headed chromium 6
+13:55  up 21 days, 11:11, 1 user, load averages: 3.17 3.89 3.85
+chromium 6x svg-plain pan-1x: p50 25.9 p95 34.2 max 41.7 jsP95 0.70 frames 173 nodes 48601 load 3.17
+chromium 6x svg-plain pan-fit: p50 33.3 p95 34.2 max 41.8 jsP95 0.50 frames 156 nodes 48601 load 5.08
+chromium 6x svg-plain zoom: p50 57.7 p95 66.6 max 67.5 jsP95 0.90 frames 92 nodes 48601 load 6.43
+chromium 6x svg-plain drag: p50 33.1 p95 34.2 max 42.6 jsP95 0.90 frames 163 nodes 48601 load 6.47
+chromium 6x svg-plain hover: p50 8.4 p95 25.3 max 33.3 jsP95 0.00 frames 450 nodes 48601 load 10.19
+chromium 6x svg-cull pan-1x: p50 16.7 p95 25.7 max 34.0 jsP95 1.20 frames 292 nodes 48601 load 9.54
+chromium 6x svg-cull pan-fit: p50 41.7 p95 57.9 max 83.0 jsP95 0.80 frames 115 nodes 48601 load 8.93
+chromium 6x svg-cull zoom: p50 42.1 p95 75.9 max 108.3 jsP95 1.20 frames 101 nodes 48601 load 8.46
+chromium 6x svg-cull drag: p50 17.5 p95 25.8 max 33.7 jsP95 1.20 frames 247 nodes 48601 load 8.02
+chromium 6x svg-cull hover: p50 8.3 p95 16.7 max 17.5 jsP95 0.00 frames 544 nodes 48601 load 7.7
+chromium 6x svg-lod pan-1x: p50 16.6 p95 25.0 max 34.0 jsP95 1.10 frames 317 nodes 49601 load 7.32
+chromium 6x svg-lod pan-fit: p50 8.3 p95 9.2 max 9.4 jsP95 0.20 frames 601 nodes 49601 load 7.3
+chromium 6x svg-lod zoom: p50 41.0 p95 58.2 max 184.1 jsP95 1.20 frames 121 nodes 49601 load 6.87
+chromium 6x svg-lod drag: p50 17.0 p95 25.8 max 41.7 jsP95 1.10 frames 254 nodes 49601 load 7.12
+chromium 6x svg-lod hover: p50 8.4 p95 16.7 max 17.7 jsP95 0.00 frames 537 nodes 49601 load 6.71
+chromium 6x svg-use pan-1x: p50 33.2 p95 34.2 max 41.3 jsP95 0.50 frames 162 nodes 4465 load 6.41
+chromium 6x svg-use pan-fit: p50 33.4 p95 42.0 max 49.1 jsP95 0.90 frames 144 nodes 4465 load 6.94
+chromium 6x svg-use zoom: p50 66.6 p95 75.6 max 75.9 jsP95 0.70 frames 77 nodes 4465 load 6.62
+chromium 6x svg-use drag: p50 33.3 p95 40.7 max 42.3 jsP95 0.90 frames 154 nodes 4465 load 6.25
+chromium 6x svg-use hover: p50 8.4 p95 25.2 max 34.1 jsP95 0.10 frames 451 nodes 4465 load 5.91
+chromium 6x react pan-1x: p50 25.9 p95 34.1 max 42.5 jsP95 1.20 frames 172 nodes 48601 load 5.38
+chromium 6x react pan-fit: p50 33.3 p95 41.1 max 41.8 jsP95 1.20 frames 153 nodes 48601 load 5.11
+chromium 6x react zoom: p50 57.9 p95 64.1 max 67.6 jsP95 1.30 frames 90 nodes 48601 load 5.18
+chromium 6x react drag: p50 33.7 p95 42.4 max 74.1 jsP95 3.50 frames 138 nodes 48601 load 4.85
+chromium 6x react hover: p50 8.4 p95 25.3 max 34.1 jsP95 1.80 frames 444 nodes 48601 load 4.62
+chromium 6x canvas pan-1x: p50 25.0 p95 33.4 max 50.0 jsP95 24.60 frames 202 nodes 1 load 4.49
+chromium 6x canvas pan-fit: p50 83.5 p95 100.1 max 100.7 jsP95 93.90 frames 59 nodes 1 load 4.21
+chromium 6x canvas zoom: p50 8.8 p95 74.2 max 84.3 jsP95 55.50 frames 279 nodes 1 load 4.19
+chromium 6x canvas drag: p50 32.7 p95 34.2 max 42.2 jsP95 27.20 frames 166 nodes 1 load 4.18
+chromium 6x canvas hover: p50 8.4 p95 25.3 max 34.1 jsP95 24.80 frames 446 nodes 1 load 4
+wrote results/headed-chromium-6x-500p-dpr1-1793127514480.json
+== headless lod 1
+13:58  up 21 days, 11:14, 1 user, load averages: 4.36 4.81 4.31
+chromium 1x svg-lod pan-1x: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 49601 load 4.36
+chromium 1x svg-lod pan-fit: p50 16.7 p95 16.8 max 16.8 jsP95 0.10 frames 301 nodes 49601 load 4.41
+chromium 1x svg-lod zoom: p50 16.7 p95 16.8 max 33.4 jsP95 0.10 frames 300 nodes 49601 load 4.14
+chromium 1x svg-lod drag: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 49601 load 3.96
+chromium 1x svg-lod hover: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 49601 load 3.89
+wrote results/chromium-1x-500p-dpr1-1793127542612.json
+== headless lod 4
+13:59  up 21 days, 11:14, 1 user, load averages: 3.81 4.64 4.26
+chromium 4x svg-lod pan-1x: p50 16.7 p95 16.7 max 16.8 jsP95 0.40 frames 301 nodes 49601 load 3.81
+chromium 4x svg-lod pan-fit: p50 16.7 p95 16.7 max 16.8 jsP95 0.20 frames 301 nodes 49601 load 3.59
+chromium 4x svg-lod zoom: p50 16.7 p95 33.4 max 116.8 jsP95 0.80 frames 199 nodes 49601 load 3.83
+chromium 4x svg-lod drag: p50 16.7 p95 16.7 max 16.8 jsP95 0.50 frames 301 nodes 49601 load 3.92
+chromium 4x svg-lod hover: p50 16.7 p95 16.8 max 33.3 jsP95 0.10 frames 299 nodes 49601 load 4.17
+wrote results/chromium-4x-500p-dpr1-1793127570711.json
+== headless lod 6
+13:59  up 21 days, 11:15, 1 user, load averages: 4.16 4.63 4.27
+chromium 6x svg-lod pan-1x: p50 16.7 p95 33.3 max 33.5 jsP95 1.10 frames 270 nodes 49601 load 4.16
+chromium 6x svg-lod pan-fit: p50 16.7 p95 16.7 max 16.8 jsP95 0.40 frames 301 nodes 49601 load 3.98
+chromium 6x svg-lod zoom: p50 50.0 p95 66.8 max 183.3 jsP95 1.10 frames 102 nodes 49601 load 5.35
+chromium 6x svg-lod drag: p50 16.7 p95 33.3 max 33.5 jsP95 1.10 frames 263 nodes 49601 load 5.48
+chromium 6x svg-lod hover: p50 16.7 p95 16.7 max 33.3 jsP95 0.00 frames 299 nodes 49601 load 5.12
+wrote results/chromium-6x-500p-dpr1-1793127598867.json
+ALLDONE2

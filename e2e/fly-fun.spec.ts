@@ -1,14 +1,10 @@
-import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import data from "../src/components/data/messages/en.json";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import flight from "../src/i18n/messages/en/flight.json";
-import together from "../src/i18n/messages/en/together.json";
-import { dockCopy, openDock } from "./dock-shared";
 
-// The fly page's fun (BUILD-PLAN §3.2 item 8): a friend's craft flies beside you as a ghost, a crash replays in slow
-// motion and says why, and a daily challenge link opens the day's course. Rooms run on the one-browser fallback
-// (a BroadcastChannel), so the two screens are two tabs of one context, as in room.spec.ts.
+// The fly page's fun (BUILD-PLAN §3.2 item 8): your best lap flies beside you as a ghost, a crash replays in slow
+// motion and says why, and a daily challenge link opens the day's course.
 
-const ANA = { v: 1, name: "Ana", color: "#ef6a4c" };
 const main = (page: Page) => page.locator("main#main-en");
 // a client-side move to another craft keeps the page it left in the tree, hidden
 const challengeCard = (page: Page) => main(page).locator('[data-testid="daily-challenge"]:visible');
@@ -22,12 +18,6 @@ function watchErrors(page: Page) {
     if (message.type() === "error" && /hydrat|did not match|Minified React error/i.test(message.text())) errors.push(message.text());
   });
   return errors;
-}
-
-async function seedIdentity(context: BrowserContext) {
-  await context.addInitScript((identity) => {
-    if (!localStorage.getItem("iynk:together:v1")) localStorage.setItem("iynk:together:v1", JSON.stringify(identity));
-  }, ANA);
 }
 
 async function openFly(page: Page, url: string) {
@@ -44,43 +34,18 @@ async function pickMode(page: Page, mode: string) {
   }).toPass({ timeout: 30_000 });
 }
 
-test("a friend's craft flies a lap beside you as a ghost with their name", async ({ context }) => {
-  test.setTimeout(120_000);
-  await seedIdentity(context);
-  const a = await context.newPage();
-  const errorsA = watchErrors(a);
-  await openFly(a, "/en/drones/quad5/fly");
-  const dockA = await openDock(a, false);
-  await dockA.getByRole("tab", { name: dockCopy.tabs.together }).click();
-  await dockA.getByRole("button", { name: together.panel.start }).click();
-  await expect(a).toHaveURL(/[?&]room=[a-z0-9]{6}/);
-
-  const b = await context.newPage();
-  const errorsB = watchErrors(b);
-  await openFly(b, a.url());
-  const dockB = await openDock(b, false);
-  const two = fill(together.bar.people.other, { count: "2" });
-  await expect(dockB.getByText(two)).toBeVisible({ timeout: 15_000 });
-  await expect(dockA.getByText(two)).toBeVisible();
-
-  // B waits on the pad, with the autopilot's line parked at the start gate until B's lap starts
-  await expect(range(b).locator("#overlay .glabel", { hasText: flight.ghosts.labelPace })).toBeVisible({ timeout: 15_000 });
-  await expect(range(b).locator("#overlay .glabel", { hasText: ANA.name })).toHaveCount(0);
-
-  // A hands the race to the autopilot and takes off from the pad beside B
-  await a.bringToFront();
-  await pickMode(a, "demo");
-  await main(a).getByRole("button", { name: flight.buttons.arm, exact: true }).click();
-
-  // on B's range: a ghost craft with A's name tag, and it moves
-  await expect(range(b).locator("#overlay .glabel", { hasText: ANA.name })).toBeVisible({ timeout: 15_000 });
-  const ghost = range(b).locator("#iso .ghostcraft");
-  await expect(ghost).toHaveCount(2);
-  const before = await ghost.evaluateAll((gs) => gs.map((g) => g.innerHTML).join("|"));
-  await expect.poll(() => ghost.evaluateAll((gs) => gs.map((g) => g.innerHTML).join("|")), { timeout: 10_000 }).not.toBe(before);
-  await expect(main(a).getByTestId("flight-message")).toHaveText(/Gate \d+ of \d+/, { timeout: 60_000 });
-  expect(errorsA).toEqual([]);
-  expect(errorsB).toEqual([]);
+test("your best lap flies beside you as a ghost", async ({ page }) => {
+  test.setTimeout(90_000);
+  const errors = watchErrors(page);
+  const poses = Array.from({ length: 40 }, (_, i) => [i * 0.5, 1.5, 0, 0, 0, 0]);
+  await page.addInitScript((track) => {
+    localStorage.setItem("iynk:ghost:v1:quad5:race", JSON.stringify(track));
+  }, { v: 1, craft: "quad5", course: "race", time: 12.3, dt: 0.05, poses });
+  await openFly(page, "/en/drones/quad5/fly");
+  const best = main(page).getByTestId("ghost-best");
+  await expect(best).toHaveAttribute("data-on", "true", { timeout: 20_000 });
+  await expect(best).toContainText(fill(flight.ghosts.best, { time: "12.30" }));
+  expect(errors).toEqual([]);
 });
 
 test("break it: a backwards flight controller flips, the crash replays in slow motion, says why and fixes in one click", async ({ page }) => {
@@ -149,9 +114,6 @@ test("a daily challenge link opens the day's craft and course, with the time to 
   await expect(shared).toHaveAttribute("data-course", course);
   await expect(main(page).locator('[data-testid="flight-range"]:visible')).toHaveAttribute("data-course", course);
   await expect(shared.getByTestId("challenge-beat")).toHaveText(fill(flight.challenge.beat, { by: "Ana", time: "12.34" }));
-  // the day's board: with no database on this deployment it says so instead of breaking
-  await expect(main(page).getByText(data.leaderboard.title, { exact: true })).toBeVisible();
-  await expect(main(page).getByText(data.leaderboard.offTitle)).toBeVisible();
 
   // an old day's link flies that day's challenge
   await openFly(page, `/en/drones/${craft}/fly?challenge=2026-01-01`);

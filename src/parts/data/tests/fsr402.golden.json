@@ -1,0 +1,20 @@
+{
+  "id": "fsr402_series_10k",
+  "kind": "golden-trace",
+  "shape": "series2",
+  "description": "The unloaded sensor in series with 10 kilohm from a 5 V supply, the pull-down divider of the lesson.",
+  "circuit": {
+    "supply_v": 5,
+    "series_ohm": 10000
+  },
+  "expect": [
+    {
+      "quantity": "i_a",
+      "value": 4.995005e-07,
+      "tol": {
+        "rel": 0.001
+      }
+    }
+  ],
+  "derivation": "resistance_unloaded min is 10 megohm, so the loop current is 5 V / (10 000 000 + 10 000) ohm = 4.995005e-07 A."
+}

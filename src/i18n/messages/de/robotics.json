@@ -88,7 +88,7 @@
     },
     "lm2596": {
       "name": "Abwärtswandler LM2596",
-      "teaches": "Versorgung und Brown-outs: Dreh am Trimmpoti, um den Ausgang an einem LiPo einzustellen, und sieh dann zu, wie ein blockierter Motor eine gemeinsame Schiene nach unten zieht."
+      "teaches": "Versorgung und Brownouts: Dreh am Trimmpoti, um den Ausgang an einem LiPo einzustellen, und sieh dann zu, wie ein blockierter Motor eine gemeinsame Schiene nach unten zieht."
     },
     "pi5-ros2": {
       "name": "Raspberry Pi 5",
@@ -120,7 +120,7 @@
     "rc-timing": "RC-Timing",
     "power": "Stromversorgung",
     "buck": "Abwärtswandler",
-    "brownout": "Brown-out",
+    "brownout": "Brownout",
     "linux": "Linux",
     "ros2": "ROS 2"
   },
@@ -141,6 +141,7 @@
     "focusFigure": "In die Abbildung wechseln",
     "selected": "Ausgewähltes Bauteil",
     "walk": "Weitere Werkbänke",
+    "concept": "Konzeptmodell: Python-API als Attrappe, kein Raspberry Pi OS und kein laufender ROS-2-Graph",
     "tabs": {
       "label": "Bereiche der Werkbank",
       "steps": "Schritte",
@@ -181,7 +182,7 @@
     "fix": "Lösung",
     "kinds": {
       "reverse-polarity": "Verpolung",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "wrong-voltage": "falsche Spannung",
       "cold-solder": "kalte Lötstelle",
       "short": "Kurzschluss",
@@ -204,7 +205,7 @@
       "powered": "Unter Strom",
       "running": "Läuft",
       "uploading": "Upload läuft",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "fault": "Fehler",
       "reset": "Im Reset"
     },
@@ -234,7 +235,7 @@
     "supply": "{label} · {volts} V",
     "headroom": "{ma} mA Reserve",
     "limit": "Grenze {limit}",
-    "over": "{ma} mA über der Grenze: Die Versorgung bricht ein und das Board bekommt einen Brown-out",
+    "over": "{ma} mA über der Grenze: Die Versorgung bricht ein und das Board bekommt einen Brownout",
     "loads": "Wer den Strom zieht",
     "idle": "Gerade zieht nichts Strom aus dieser Versorgung",
     "load": "{ma} mA"

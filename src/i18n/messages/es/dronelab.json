@@ -62,7 +62,7 @@
     "ducted": "con conductos",
     "3-inch": "3 pulgadas",
     "long-range": "largo alcance",
-    "gps-rescue": "GPS Rescue",
+    "gps-rescue": "GPS rescue",
     "7-inch": "7 pulgadas",
     "racing": "carreras",
     "gps": "GPS",
@@ -156,8 +156,8 @@
     "checksTitle": "Comprobaciones",
     "checks": {
       "over-spin": "{kv} KV con {cells}S hace girar las hélices muy por encima de lo que aguantan los motores y el ESC: espera motores calientes y una desincronización.",
-      "weak": "Una relación empuje-peso de {tw} : 1 está por debajo del {minTW} : 1 que necesita este tipo de vuelo.",
-      "cannot-hover": "Una relación empuje-peso de {tw} : 1 es menor que 1: no puede ni levantarse del suelo.",
+      "weak": "Una relación entre empuje y peso de {tw} : 1 está por debajo del {minTW} : 1 que necesita este tipo de vuelo.",
+      "cannot-hover": "Una relación entre empuje y peso de {tw} : 1 es menor que 1: no puede ni levantarse del suelo.",
       "hover-high": "Se mantiene en estacionario al {pct} % de acelerador: muy poco margen para subir o corregir una ráfaga.",
       "esc-overcurrent": "Cada motor consume unos {perMotor} A a todo gas, más de lo que admite su ESC de {esc} A.",
       "battery-overcurrent": "A todo gas consume {maxA} A, más de lo que puede dar esta batería ({limit} A): su tensión caerá y se calentará.",
@@ -311,7 +311,7 @@
       "throttle": "Acelerador a cero al armar",
       "mistakes": "Pieza colocada al revés: {code}"
     },
-    "factory": "Fly the factory-built craft instead",
+    "factory": "Montaje de fábrica",
     "factoryNote": "Montaje de fábrica: todas las piezas bien puestas y todas las pruebas superadas.",
     "benchBuild": "Fly my bench build",
     "courses": "Circuitos",

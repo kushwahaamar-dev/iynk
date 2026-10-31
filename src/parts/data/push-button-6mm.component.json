@@ -1,0 +1,325 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.push-button-6mm",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "6 x 6 mm tactile push button, 4 legs",
+    "generic": true,
+    "refdes_prefix": "SW",
+    "kind": "discrete",
+    "category": "mechanical",
+    "description": {
+      "i18n_key": "parts.push-button-6mm.description",
+      "en": "A 6 mm tactile button with four legs. The two legs facing each other across the body are always joined; pressing joins the two pairs."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "push-button"
+    ],
+    "tags": [
+      "button",
+      "switch",
+      "input",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 6: 6 x 6 mm tactile push button",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. Its numbers cite the sources it lists; this descriptor did not read those sources itself."
+    },
+    {
+      "id": "partjs",
+      "kind": "own-estimate",
+      "title": "figures/parts/push-button.js: the elec() line (pairs, 50 mA, 24 V, 5 ms bounce)",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Legs are 1 to 4 in the figure and P1 to P4 here by rule C-LEG."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: button element",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Joins the pairs, and joins the two pairs while pressed. A button with both switched legs in one breadboard strip is flagged as shorted."
+    }
+  ],
+  "pins": [
+    {
+      "id": "P1",
+      "designator": "1",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.5,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Always joined to P2."
+      }
+    },
+    {
+      "id": "P2",
+      "designator": "2",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Always joined to P1."
+      }
+    },
+    {
+      "id": "P3",
+      "designator": "3",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 6.5,
+        "y": 4.5
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Always joined to P4."
+      }
+    },
+    {
+      "id": "P4",
+      "designator": "4",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 4.5
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Always joined to P3."
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_a",
+      "kind": "internal-short",
+      "pins": [
+        "P1",
+        "P2"
+      ]
+    },
+    {
+      "id": "g_b",
+      "kind": "internal-short",
+      "pins": [
+        "P3",
+        "P4"
+      ]
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "6 x 6 mm tactile, 4 legs",
+    "body": {
+      "w": 6,
+      "h": 6,
+      "d": 4.3
+    },
+    "accuracy": 0.5,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 6"
+    }
+  },
+  "ratings": {},
+  "parameters": [],
+  "behaviour": {
+    "summary": {
+      "en": "A switch between two pairs of legs. Each pair is always joined; pressing joins the pairs."
+    },
+    "layers": [
+      {
+        "id": "contact",
+        "domain": "analog",
+        "reads": [
+          "P1",
+          "P2",
+          "P3",
+          "P4"
+        ],
+        "summary": {
+          "en": "The solver joins P1 with P2 and P3 with P4, and joins the two pairs while the button is pressed (a state the page sets, not a part setting)."
+        },
+        "model": {
+          "kind": "element",
+          "element": "button",
+          "terminals": {
+            "a1": "P1",
+            "a2": "P2",
+            "b1": "P3",
+            "b2": "P4"
+          },
+          "params": {
+            "imax": {
+              "value": 0.05,
+              "unit": "A",
+              "source": {
+                "src": "partjs",
+                "loc": "figures/parts/push-button.js:43"
+              },
+              "rationale": {
+                "en": "The top of the 1 to 50 mA contact rating the fact sheet gives for the Omron B3F."
+              }
+            },
+            "vmax": {
+              "value": 24,
+              "unit": "V",
+              "source": {
+                "src": "partjs",
+                "loc": "figures/parts/push-button.js:43"
+              },
+              "rationale": {
+                "en": "The top of the 3 to 24 V DC contact rating the fact sheet gives for the Omron B3F."
+              }
+            },
+            "bounce": {
+              "value": 0.005,
+              "unit": "s",
+              "source": {
+                "src": "partjs",
+                "loc": "figures/parts/push-button.js:43"
+              },
+              "rationale": {
+                "en": "The 5 ms maximum bounce the fact sheet gives for the Omron B3F."
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Two always-joined pairs of legs, and a press that joins the pairs."
+      },
+      {
+        "en": "A button whose switched legs sit in one breadboard strip counts as shorted."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Contact bounce, contact resistance and the 50 mA and 24 V contact ratings: the numbers are stored but no check reads them."
+      },
+      {
+        "en": "Operating force and travel."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "ratings_unused",
+        "text": {
+          "en": "imax, vmax and bounce are passed to the solver, which does not read them yet."
+        }
+      }
+    ],
+    "solver_requires": [
+      "button"
+    ],
+    "tests": [
+      {
+        "id": "press_pulls_d2",
+        "kind": "golden-trace",
+        "file": "figures/engine/bench-solve.test.mjs",
+        "note": "A pressed button pulls D2 high through the lesson circuit and an unpressed one leaves it low."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "push-button",
+        "path": "public/figures/parts/push-button.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "span": [
+        2,
+        3
+      ]
+    },
+    "schematic": {
+      "symbol": "switch"
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Button",
+      "body_colour": "#1c1c1c",
+      "show_pin_labels": false
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-28",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-28",
+        "note": "First descriptor, from figures/parts/push-button.js, figures/engine/bench-solve.js and docs/facts/la-components.md.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

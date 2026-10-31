@@ -1,0 +1,18 @@
+{
+  "description": "Une carte de développement 5 V avec un Renesas RA4M1 Cortex-M4 à 48 MHz, en versions Minima et WiFi, avec les connecteurs de l’UNO, un CAN 14 bits et un CNA sur A0.",
+  "summary": "La carte exécute le sketch dans l’interpréteur d’iynk. Les broches, le PWM, l’I2C, la liaison série et le temps suivent le profil de carte uno-r4. Ce n’est pas la puce Renesas RA4M1.",
+  "layer": "Environnement d’exécution du firmware.",
+  "variant": "Variante",
+  "models": {
+    "1": "Sous-ensemble d’Arduino C++ exécuté par l’interpréteur avec le brochage de l’UNO R4, int sur 32 bits et double sur 64 bits.",
+    "2": "E/S numériques sur D0 à D13 et A0 à A5, PWM sur D3, D5, D6, D9, D10 et D11, interruptions sur D2 et D3.",
+    "3": "Lectures analogiques jusqu’à 14 bits avec analogReadResolution, maître I2C sur SDA et SCL, sortie série et la LED L sur D13."
+  },
+  "not": {
+    "1": "Les périphériques Renesas autres que les E/S numériques, l’I2C et la liaison série.",
+    "2": "La bibliothèque de la matrice LED 12x8 et la radio ESP32-S3 de la version WiFi.",
+    "3": "Le CNA de A0 comme valeur de sortie analogique.",
+    "4": "La limite de 8 mA par broche n’est pas appliquée."
+  },
+  "gap": "La version WiFi est modélisée comme la Minima : la matrice LED et la radio ne font rien. Aucune limite électrique n’est encore renseignée, donc cette carte n’a pas de contrôle de surcharge de broche."
+}

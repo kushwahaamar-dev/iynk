@@ -218,3 +218,46 @@ describe('accessibility (DR audit: axe nested-interactive)', () => {
     expect(await nested()).toEqual([]);
   });
 });
+
+describe('advanceUntil steps simulated time', () => {
+  const frozen = () => loadFigure(buildFigure('drones/octo'), { path: '/figures/drones/octo.html', frozenClock: true });
+  const gear = async () => {
+    page = await frozen();
+    const SD = page.drone, st = SD.api.st;
+    SD.actions.build(st);
+    SD.advanceUntil(() => !st.test && !st.queue.length, 120);
+    SD.actions.plugIn(st);
+    SD.advanceUntil(() => !st.test && !st.queue.length, 120);
+    SD.craft().buttons.find((b) => b.id === 'gear').onClick(SD.api);
+    return { SD, st };
+  };
+
+  it('returns true and leaves no test running once the test is done', async () => {
+    const { SD, st } = await gear();
+    expect(SD.advanceUntil(() => !st.test, 120)).toBe(true);
+    expect(st.test).toBeNull();
+  });
+
+  it('returns false without throwing when the time runs out first', async () => {
+    const { SD, st } = await gear();
+    expect(SD.advanceUntil(() => !st.test, 0.1)).toBe(false);
+  });
+
+  it('gives the same report for the same scenario', async () => {
+    const first = await gear();
+    first.SD.advanceUntil(() => !first.st.test, 120);
+    const a = JSON.stringify(first.SD.report());
+    page.close();
+    const second = await gear();
+    second.SD.advanceUntil(() => !second.st.test, 120);
+    expect(JSON.stringify(second.SD.report())).toBe(a);
+  });
+
+  it('does not move time with a frozen clock while real time passes', async () => {
+    page = await frozen();
+    const st = page.drone.api.st, t = st.t;
+    page.drone.actions.build(st);
+    await new Promise((r) => setTimeout(r, 100));
+    expect(st.t).toBe(t);
+  });
+});

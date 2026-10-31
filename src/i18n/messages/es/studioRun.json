@@ -1,0 +1,71 @@
+{
+  "bar": {
+    "label": "Controles de ejecución",
+    "run": "Ejecutar",
+    "restart": "Reiniciar",
+    "stop": "Detener",
+    "reset": "Restablecer",
+    "time": "Tiempo simulado",
+    "behind": "Va más lento que el tiempo real",
+    "stale": "El proyecto cambió después de iniciar esta ejecución. Reinicia para usar el cambio."
+  },
+  "phase": {
+    "idle": "Listo",
+    "starting": "Iniciando",
+    "running": "En marcha",
+    "paused": "En pausa",
+    "stopped": "Detenido",
+    "done": "Terminado",
+    "error": "No se pudo ejecutar",
+    "limit": "Detenido por un límite",
+    "killed": "Simulador reiniciado"
+  },
+  "limit": {
+    "statements": "El código ejecutó demasiados pasos sin terminar una vuelta. Busca un bucle que no acaba.",
+    "operations": "Una expresión necesitó demasiadas operaciones. Revisa los números con los que trabaja.",
+    "memory": "El código usó más memoria de la que permite el simulador.",
+    "time": "La ejecución tardó demasiado y se detuvo."
+  },
+  "killed": "El simulador dejó de responder y se reinició. Tu proyecto no cambió.",
+  "noDetail": "No se pudo iniciar el código.",
+  "problems": {
+    "one": "1 problema",
+    "other": "{count} problemas"
+  },
+  "serial": {
+    "title": "Salida serie",
+    "lines": "Líneas serie",
+    "empty": "Aún no se ha impreso nada. Ejecuta el proyecto para ver lo que envía el código.",
+    "clear": "Borrar",
+    "copy": "Copiar",
+    "copied": "Copiado al portapapeles",
+    "copyFailed": "El navegador no permitió copiar.",
+    "input": "Texto para enviar",
+    "placeholder": "Escribe una línea y pulsa Intro",
+    "send": "Enviar",
+    "dropped": {
+      "one": "1 línea anterior descartada",
+      "other": "{count} líneas anteriores descartadas"
+    },
+    "newLines": {
+      "one": "1 línea nueva",
+      "other": "{count} líneas nuevas"
+    }
+  },
+  "overlay": {
+    "on": "encendido",
+    "off": "apagado",
+    "duty": "ciclo {percent} %",
+    "pressed": "pulsado",
+    "released": "suelto",
+    "tone": "{hz} Hz",
+    "silent": "en silencio",
+    "position": "{percent} %",
+    "notModelled": "aún sin modelo"
+  },
+  "commands": {
+    "run": "Ejecutar el proyecto",
+    "stop": "Detener la ejecución",
+    "reset": "Restablecer la ejecución"
+  }
+}

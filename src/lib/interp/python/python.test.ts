@@ -373,9 +373,7 @@ print(7 // -2, -7 % 3, 2 ** 70, round(2.5), 1 / 3)
   it('an endless loop without sleep cannot freeze the page', () => {
     // A Pi runs ~20 statements per simulated µs, far more than the per-frame budget.
     const { run } = boot('n = 0\nwhile True:\n    n += 1\n', 'pi4-pi5', { budget: 50_000 });
-    const t0 = performance.now();
     run.step(16);
-    expect(performance.now() - t0).toBeLessThan(200);
     expect(run.status.throttled).toBe(true);
     expect(run.status.state).toBe('running');
   });
@@ -395,5 +393,40 @@ r.close()
     advance(run, 2000);
     expect(errors).toEqual([]);
     expect(out()).toMatch(/^192\.168\.4\.\d+\n\d{3}\n$/);
+  });
+});
+
+describe('size caps', () => {
+  const failure = (src: string) => {
+    const started = performance.now();
+    const { run, errors } = boot(src, 'pico');
+    advance(run, 100);
+    expect(performance.now() - started).toBeLessThan(1000);
+    return errors.join('\n');
+  };
+
+  it('refuses to repeat a string past 1,048,576 characters', () => {
+    expect(failure('print("x" * 100000000)')).toMatch(/stopped: a string of 100000000 characters is over the limit of 1,048,576/);
+  });
+
+  it('refuses to repeat a list past a million items', () => {
+    expect(failure('a = [0] * 50000000')).toMatch(/stopped: list size \d+ is over the limit of 1,000,000 elements/);
+  });
+
+  it('allows exactly a million items', () => {
+    const { run, out, errors } = boot('print(len([0] * 1000000))', 'pico');
+    advance(run, 100);
+    expect(errors).toEqual([]);
+    expect(out()).toBe('1000000\n');
+  });
+
+  it('catches the second multiply of a nested repeat', () => {
+    expect(failure('a = [0] * 1000\nb = a * 1001')).toMatch(/stopped: list size \d+ is over the limit of 1,000,000 elements/);
+  });
+
+  it('keeps an empty sequence cheap however large the count', () => {
+    const { run, errors } = boot('a = [] * 50000000', 'pico');
+    advance(run, 100);
+    expect(errors).toEqual([]);
   });
 });

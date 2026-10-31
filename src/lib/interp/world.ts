@@ -2,11 +2,15 @@ import type { DeviceModel } from '@/content/schema';
 import { VirtualClock } from './clock';
 import { type BoardProfile, hasPwm } from './profiles';
 import type { I2CDevice } from './devices';
+import { createInterpBus, type InterpBus } from '@/sim/mcu/bus-port';
 
 type OnboardSensor = Extract<DeviceModel, { kind: 'onboard' }>['sensor'];
 
 export type PinMode = 'unset' | 'input' | 'input_pullup' | 'input_pulldown' | 'output' | 'open_drain';
 export type Edge = 'rising' | 'falling' | 'change' | 'low' | 'high';
+
+/** Volts the circuit puts on a pin, or null when nothing is connected to it. */
+export type AnalogSource = (pin: number) => number | null;
 
 export interface PinState {
   mode: PinMode;
@@ -38,6 +42,8 @@ export interface PinView {
 }
 
 export interface Snapshot {
+  /** Pin edges that did not fit in the trace; absent when none were lost. */
+  droppedEdges?: number;
   /** Simulated time in ms. */
   t: number;
   pins: Record<number, PinView>;
@@ -104,16 +110,21 @@ export interface WorldOptions {
   networks?: WifiNetwork[];
   /** Fake internet for HTTP clients: URL → response body. */
   web?: Record<string, string>;
+  /** How many pin edges `trace` keeps before it counts them in `droppedEdges` instead. */
+  traceCap?: number;
 }
+
+const DEFAULT_TRACE_CAP = 20_000;
+const DEFAULT_SEED = 0x2545f491;
 
 /** xorshift32: small, fast, deterministic. */
 export class Rng {
   private s: number;
-  constructor(seed = 0x2545f491) {
-    this.s = seed >>> 0 || 0x2545f491;
+  constructor(seed = DEFAULT_SEED) {
+    this.s = seed >>> 0 || DEFAULT_SEED;
   }
   seed(v: number): void {
-    this.s = v >>> 0 || 0x2545f491;
+    this.s = v >>> 0 || DEFAULT_SEED;
   }
   next(): number {
     let x = this.s;
@@ -129,6 +140,13 @@ export class Rng {
   }
 }
 
+/** FNV-1a over the label, started from the seed: one reproducible stream start per label. */
+function hashSeed(seed: number, label: string): number {
+  let h = (0x811c9dc5 ^ seed) >>> 0;
+  for (let i = 0; i < label.length; i++) h = Math.imul(h ^ label.charCodeAt(i), 0x01000193) >>> 0;
+  return h;
+}
+
 /**
  * The board's electrical world: pins, ADC, PWM, interrupts, serial, I²C
  * devices, displays and the Wi-Fi/HTTP sim. Interpreters talk to it; the host
@@ -138,12 +156,26 @@ export class World {
   readonly profile: BoardProfile;
   readonly clock = new VirtualClock();
   readonly rng: Rng;
+  private readonly seed: number;
+  private readonly noise = new Map<number, Rng>();
   readonly pins = new Map<number, PinState>();
   readonly i2c = new Map<number, I2CDevice>();
+  readonly bus: InterpBus = createInterpBus({
+    nowUs: () => this.clock.now,
+    onEvent: (e) => {
+      if (e.kind === 'rise-time' || e.kind === 'spi-mode') this.warn(e.detail);
+    },
+  });
+  /** Who answers a library call: `library` devices the sketch attached, or only the devices wired in the netlist. */
+  deviceSource: 'library' | 'netlist' = 'library';
+  /** Set by the netlist binding: `Wire.begin` calls it with the pins the sketch names. */
+  i2cBinder: ((sda: number, scl: number) => void) | null = null;
   /** Pending interrupt handlers, run by the interpreter between statements. */
   readonly irqQueue: Array<() => void> = [];
   private irqs: IrqHandler[] = [];
   private pinListeners: Array<(pin: number, level: 0 | 1) => void> = [];
+  private pwmListeners: Array<(pin: number) => void> = [];
+  private analogSource: AnalogSource | null = null;
   private serialIn = '';
   serialOut: SerialSink = () => {};
   /** Warnings for the learner (wrong pin for PWM, 5 V into a 3.3 V pin...). */
@@ -151,8 +183,10 @@ export class World {
   adcBits: number;
   pwmBits: number;
   interruptsEnabled = true;
-  /** Edge trace for lesson checks: [µs, pin, level]. Capped. */
+  /** Edge trace for lesson checks: [µs, pin, level]. Capped at `traceCap`; the edges beyond it are counted in `droppedEdges`. */
   readonly trace: Array<[number, number, 0 | 1]> = [];
+  readonly traceCap: number;
+  droppedEdges = 0;
   readonly damaged = new Set<number>();
   /** Warnings already shown, so a loop does not repeat them. */
   readonly warned = new Set<string>();
@@ -164,6 +198,8 @@ export class World {
    * An accelerometer is an I²C device instead (the micro:bit's answers at 0x19, an `mpu6050` input moves it).
    */
   readonly onboard = new Map<OnboardSensor, number>();
+  /** The room around the board by channel (`environment.temperature`...), as the world script and the host set it. */
+  private readonly env = new Map<string, number>();
   powered = true;
   supplyV: number;
   // Displays and peripherals the libraries write into.
@@ -186,7 +222,9 @@ export class World {
 
   constructor(profile: BoardProfile, opts: WorldOptions = {}) {
     this.profile = profile;
-    this.rng = new Rng(opts.seed);
+    this.seed = opts.seed ?? DEFAULT_SEED;
+    this.traceCap = opts.traceCap ?? DEFAULT_TRACE_CAP;
+    this.rng = new Rng(this.seed);
     this.adcBits = profile.adcBits;
     this.pwmBits = profile.pwmBits;
     this.supplyV = profile.logicV;
@@ -203,6 +241,16 @@ export class World {
 
   get now(): number {
     return this.clock.now;
+  }
+
+  setEnv(channel: string, value: number): void {
+    if (this.env.get(channel) === value) return;
+    this.env.set(channel, value);
+    this.touch();
+  }
+
+  getEnv(channel: string): number | undefined {
+    return this.env.get(channel);
   }
 
   /** Mark the snapshot dirty (displays call this after drawing). */
@@ -243,6 +291,16 @@ export class World {
     return (this.rng.next() & 1) as 0 | 1;
   }
 
+  /** What a floating analog input picks up. Each pin has its own stream, so reading one pin never moves the values of another. */
+  floatNoise(n: number): Rng {
+    let stream = this.noise.get(n);
+    if (!stream) {
+      stream = new Rng(hashSeed(this.seed, `noise:${n}`));
+      this.noise.set(n, stream);
+    }
+    return stream;
+  }
+
   setMode(n: number, mode: PinMode): void {
     const p = this.pin(n);
     if (mode === 'output' && this.profile.inputOnlyPins?.includes(n)) {
@@ -259,10 +317,12 @@ export class World {
     }
     if (p.mode === mode) return;
     const before = this.level(n);
+    const pwmBefore = this.pwmKey(n);
     p.mode = mode;
     if (mode !== 'output') p.duty = null;
     this.touch();
     this.edge(n, before);
+    this.pwmEdge(n, pwmBefore, before);
   }
 
   digitalWrite(n: number, v: number): void {
@@ -284,17 +344,20 @@ export class World {
     }
     if (p.out === level && p.duty === null && !p.toneHz) return;
     const before = this.level(n);
+    const pwmBefore = this.pwmKey(n);
     p.out = level;
     p.duty = null;
     p.toneHz = 0;
     this.touch();
     this.edge(n, before);
+    this.pwmEdge(n, pwmBefore, before);
   }
 
   /** analogWrite(): real PWM on PWM pins; on other pins Arduino sets HIGH at >= half scale. */
   analogWrite(n: number, value: number, maxValue = (1 << this.pwmBits) - 1, hz = 490): void {
     const p = this.pin(n);
     const before = this.level(n);
+    const pwmBefore = this.pwmKey(n);
     const prev = `${p.mode}${p.out}${p.duty}${p.pwmHz}`;
     if (p.mode !== 'output') p.mode = 'output';
     const v = Math.max(0, Math.min(maxValue, value));
@@ -318,21 +381,31 @@ export class World {
     if (prev === `${p.mode}${p.out}${p.duty}${p.pwmHz}`) return;
     this.touch();
     this.edge(n, before);
+    this.pwmEdge(n, pwmBefore, before);
+  }
+
+  /** Where the circuit solver puts the voltage on a pin; null removes it and `analogRead` goes back to the pin's own state. */
+  setAnalogSource(source: AnalogSource | null): void {
+    this.analogSource = source;
   }
 
   /** Raw ADC reading from the voltage on the pin. */
   analogRead(n: number, bits = this.adcBits): number {
     const p = this.pin(n);
     const max = (1 << bits) - 1;
-    let v = p.volts;
+    const solved = this.analogSource?.(n) ?? null;
+    let v = solved ?? p.volts;
     if (v === null) {
       if (p.ext !== null) v = p.ext ? this.profile.adcVref : 0;
       else if (p.dac !== null) v = p.dac;
       else if (p.mode === 'output') v = this.level(n) ? this.profile.logicV : 0;
       else if (p.mode === 'input_pullup') v = this.profile.logicV;
-      else return Math.floor(this.rng.float() * max * 0.25 + max * 0.3); // floating: noise
+      else return Math.floor(this.floatNoise(n).float() * max * 0.25 + max * 0.3);
     }
     if (this.damaged.has(n)) return 0;
+    if (solved !== null || this.profile.id === 'uno-r3' || this.profile.id === 'nano') {
+      return Math.max(0, Math.min(max, Math.floor((v * (max + 1)) / this.profile.adcVref)));
+    }
     return Math.max(0, Math.min(max, Math.round((v / this.profile.adcVref) * max)));
   }
 
@@ -369,10 +442,26 @@ export class World {
     this.pinListeners.push(fn);
   }
 
+  /** Called when a pin's PWM duty or frequency changes without a level edge, which tells the pin listeners already. */
+  onPwmWrite(fn: (pin: number) => void): void {
+    this.pwmListeners.push(fn);
+  }
+
+  private pwmKey(n: number): string {
+    const p = this.pin(n);
+    return p.duty === null ? '' : `${p.duty}@${p.pwmHz}`;
+  }
+
+  private pwmEdge(n: number, before: string, levelBefore: 0 | 1): void {
+    if (this.pwmKey(n) === before || this.level(n) !== levelBefore) return;
+    for (const l of this.pwmListeners) l(n);
+  }
+
   private edge(n: number, before: 0 | 1): void {
     const after = this.level(n);
     if (after === before) return;
-    if (this.trace.length < 20000) this.trace.push([this.clock.now, n, after]);
+    if (this.trace.length < this.traceCap) this.trace.push([this.clock.now, n, after]);
+    else this.droppedEdges++;
     for (const l of this.pinListeners) l(n, after);
     for (const h of this.irqs) {
       if (h.pin !== n) continue;
@@ -432,23 +521,35 @@ export class World {
 
   addDevice(dev: I2CDevice): void {
     this.i2c.set(dev.address, dev);
+    if (this.deviceSource === 'library') this.bus.attachLegacy(dev);
     dev.attach?.(this);
     this.touch();
   }
 
+  /** `Wire.begin()` names no pins, so the board's own I²C pins stand in. */
+  bindI2c(sda?: number, scl?: number): void {
+    const pins = sda !== undefined && scl !== undefined ? { sda, scl } : this.profile.i2c;
+    if (pins) this.i2cBinder?.(pins.sda, pins.scl);
+  }
+
+  /** One I²C transaction on the bus model. The caller advances virtual time by `costUs`. */
+  i2cTransfer(addr7: number, write: number[], readN: number): ReturnType<InterpBus['i2c']> {
+    const result = this.bus.i2c(addr7, write, readN);
+    this.touch();
+    return result;
+  }
+
+  spiTransfer(byte: number): ReturnType<InterpBus['spi']> {
+    return this.bus.spi(byte);
+  }
+
   /** Write bytes to a device; returns false (NACK) when nothing answers. */
   i2cWrite(addr: number, bytes: number[]): boolean {
-    const d = this.i2c.get(addr);
-    if (!d) return false;
-    d.write(bytes);
-    this.touch();
-    return true;
+    return this.i2cTransfer(addr, bytes, 0).ack;
   }
 
   i2cRead(addr: number, n: number): number[] {
-    const d = this.i2c.get(addr);
-    if (!d) return [];
-    return d.read(n);
+    return this.i2cTransfer(addr, [], n).bytes;
   }
 
   // Wi-Fi -----------------------------------------------------------------------
@@ -538,6 +639,7 @@ export class World {
     const pixels: Record<number, [number, number, number][]> = {};
     for (const [pin, arr] of this.pixels) pixels[pin] = arr.map((c) => [c[0], c[1], c[2]]);
     const snap: Snapshot = { t: Math.round(this.clock.now / 100) / 10, pins, leds, pixels, powered: this.powered };
+    if (this.droppedEdges > 0) snap.droppedEdges = this.droppedEdges;
     if (this.matrix) snap.matrix = { w: this.matrix.w, h: this.matrix.h, px: this.matrix.px.slice() };
     if (this.oled) snap.oled = { w: this.oled.w, h: this.oled.h, on: this.oled.on, inverted: this.oled.inverted, contrast: this.oled.contrast, rows: oledRows(this.oled.fb, this.oled.w, this.oled.h), texts: this.oled.texts.map((t) => ({ ...t })) };
     if (this.lcd) snap.lcd = { ...this.lcd, text: this.lcd.text.slice(), cursor: [this.lcd.cursor[0], this.lcd.cursor[1]] };

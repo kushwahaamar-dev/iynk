@@ -1,0 +1,17 @@
+{
+  "description": "A 5 V breadboard-friendly board with an ATmega328P, an FT232RNL USB-serial chip, 14 digital pins, 8 analog inputs and an ICSP header.",
+  "summary": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the nano board profile. It is not the ATmega328P chip.",
+  "layer": "Firmware runtime.",
+  "models": {
+    "1": "Arduino-C++ subset run by the interpreter with the Nano pin map.",
+    "2": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3.",
+    "3": "10-bit analog reads against a 5 V reference on A0 to A7, I2C master on SDA and SCL, serial output, and the L LED on D13."
+  },
+  "not": {
+    "1": "The AVR core, timers, bootloader and flash behaviour.",
+    "2": "The FT232RNL USB-serial bridge and the auto-reset circuit.",
+    "3": "The 5 V and 3.3 V regulators, the VIN limits and the brown-out level.",
+    "4": "EEPROM wear and the ICSP header."
+  },
+  "gap": "A6 and A7 are analog inputs only: digitalRead and pinMode do not work on them. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

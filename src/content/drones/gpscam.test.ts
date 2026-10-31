@@ -83,22 +83,13 @@ describe('gpscam flight', () => {
   });
 });
 
-describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
+describe('gpscam craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => gpscam.tests.find((t) => t.id === id)!;
-  /**
-   * The checks run on the figure's clock: animation frames, which jsdom spaces out and the engine caps per frame, so
-   * a 4 s calibration takes 6 s of real time on an idle machine and much longer on a busy one. Wait for the result.
-   */
-  const until = async (id: string, want: 'passed' | 'failed', ms = 120000) => {
-    const end = Date.now() + ms;
-    while (fig!.status(test(id)) !== want && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
-    return fig!.status(test(id));
-  };
 
   it('calibrates the compass only with the props off', async () => {
     fig = await openFigure('gpscam');
@@ -110,7 +101,7 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.status(test('compass'))).toBe('failed');
     await fig.remove('PROPS');
     await fig.press('compass');
-    expect(await until('compass', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('compass')) === 'passed')).toBe(true);
     expect(fig.page.notes()).toEqual([]);
   });
 
@@ -122,7 +113,7 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     await fig.press('prearm');
     expect(fig.status(test('prearm'))).toBe('failed');
     await fig.press('gps');
-    expect(await until('gps', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('gps')) === 'passed')).toBe(true);
     await fig.press('prearm');
     expect(fig.status(test('prearm'))).toBe('passed');
   });
@@ -133,10 +124,10 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.status(test('compass'))).toBe('failed');
     await fig.remove('PROPS');
     await fig.press('compass');
-    expect(await until('compass', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('compass')) === 'passed')).toBe(true);
     await fig.run('plugIn');
     await fig.press('gps');
-    expect(await until('gps', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('gps')) === 'passed')).toBe(true);
     await fig.press('prearm');
     expect(fig.status(test('prearm'))).toBe('failed');
     expect((fig.state().log as { lines: string[] }).lines.at(-1)).toBe('PreArm: Compasses inconsistent');
@@ -151,7 +142,7 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     await fig.remove('PROPS');
     await fig.run('plugIn');
     await fig.press('failsafe');
-    expect(await until('failsafe', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('failsafe')) === 'passed')).toBe(true);
     await fig.run('unplug');
     await fig.remove('RX');
     await fig.add('RX');
@@ -164,7 +155,7 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.status(test('gimbal'))).toBe('failed');
     await fig.run('plugIn');
     await fig.press('gimbal');
-    expect(await until('gimbal', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('gimbal')) === 'passed')).toBe(true);
     await fig.run('unplug');
     await fig.remove('GIMBAL');
     await fig.add('GIMBAL');

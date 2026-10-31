@@ -1,0 +1,27 @@
+{
+  "id": "diode_series_1k",
+  "kind": "golden-trace",
+  "shape": "series2",
+  "description": "The diode in series with 1 kilohm from a 5 V supply.",
+  "circuit": {
+    "supply_v": 5,
+    "series_ohm": 1000
+  },
+  "expect": [
+    {
+      "quantity": "i_a",
+      "value": 0.0042991,
+      "tol": {
+        "rel": 0.01
+      }
+    },
+    {
+      "quantity": "v_part_v",
+      "value": 0.70086,
+      "tol": {
+        "rel": 0.01
+      }
+    }
+  ],
+  "derivation": "With vf 0.7 V and rd 0.2 ohm the current is (5 - 0.7) / (1000 + 0.2) = 0.0042991 A and the diode drops 0.7 + 0.2 x i = 0.70086 V."
+}

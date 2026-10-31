@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "title": "iynk: ein Hardware-Labor im Browser",
+    "description": "Eine Open-Source-Werkbank für Schaltungen, Boards, Roboter und Drohnen. Bauteile verdrahten, Code schreiben, ausführen und absichtlich kaputt machen, im Browser und ohne Konto."
+  },
+  "hero": {
+    "kicker": "Open-Source-Werkbank für Hardware",
+    "title": "Hardware lernen, indem du sie verdrahtest,\nlaufen lässt und kaputt machst",
+    "lede": "iynk ist eine Open-Source-Werkbank für Schaltungen, Boards, Roboter und Drohnen. Verdrahte Bauteile, schreibe Code, führe ihn aus und sieh, wie die Simulation antwortet, alles in deinem Browser.",
+    "cta": "Werkbank öffnen",
+    "browse": "Boards ansehen",
+    "reassure": "Kein Konto. Nichts zu installieren. Deine Arbeit bleibt in diesem Browser.",
+    "proof": "{boards} Boards, {benches} Robotik-Werkbänke und {drones} Drohnen, alle lauffähig.",
+    "figure": "Arduino Uno R3 mit Blink auf einem Steckbrett, live: zum Drehen ziehen"
+  },
+  "tagline": {
+    "text": "Verdrahte ein Bauteil falsch und sieh zu, wie es scheitert. Behebe den Fehler und sieh zu, wie es funktioniert. Genau dann ergibt das Datenblatt endlich Sinn."
+  },
+  "benefits": {
+    "title": "Was du hier tun kannst",
+    "see": {
+      "title": "Sieh der Schaltung beim Denken zu",
+      "text": "Drehe ein von Hand gezeichnetes 3D-Board, wechsle zwischen Steckbrett und Schaltplan und beobachte, wie sich Pins und Strom ändern, während der Code läuft."
+    },
+    "code": {
+      "title": "Code schreiben und ein Ergebnis sehen",
+      "text": "Bearbeite Arduino-C++, MicroPython oder Verilog und drücke auf Ausführen. Die Simulation steuert die Abbildung, die Pins und den seriellen Monitor."
+    },
+    "break": {
+      "title": "Mach es kaputt und lerne, warum",
+      "text": "Lass einen Widerstand weg, setze ein Bauteil verkehrt herum ein, schließe einen Motor am falschen Pin an. Jeder Fehler erklärt, was ausfiel und wie du ihn behebst."
+    },
+    "fly": {
+      "title": "Fliege, was du gebaut hast",
+      "text": "Dimensioniere eine Drohne mit Schub- und Gewichtsrechnung, bestehe die Sicherheitstests und fliege sie auf einem Parcours gegen deine Bestzeiten."
+    }
+  },
+  "labs": {
+    "title": "Drei Labore",
+    "open": "{lab} öffnen",
+    "boards": {
+      "text": "Vom Arduino Uno R3 bis zu zwei FPGA-Boards: Lektionen, ein Live-Code-Editor, Schaltplan- und Steckbrettansicht, ein serieller Monitor und Fehler, die wirklich auftreten.",
+      "unit": "Boards"
+    },
+    "robotics": {
+      "text": "Motortreiber, Sensoren und Leistungsstufen, Bauteil für Bauteil aufgebaut, mit Live-Status und Stromaufnahme.",
+      "unit": "Werkbänke"
+    },
+    "drones": {
+      "text": "Vom Tiny Whoop bis zum Oktokopter: Baue sie Bauteil für Bauteil auf, prüfe die Rechnung, bestehe die Sicherheitstests und fliege dann.",
+      "unit": "Drohnen"
+    }
+  },
+  "how": {
+    "title": "So funktioniert es",
+    "1": {
+      "title": "Ein Teil wählen",
+      "text": "Wähle ein Board, eine Robotik-Werkbank oder eine Drohne. Jedes öffnet sich als Abbildung, die du drehen und zerlegen kannst."
+    },
+    "2": {
+      "title": "Verdrahten und Code schreiben",
+      "text": "Folge einer Lektion oder starte mit Blink. Editor, Pinbelegung und serieller Monitor liegen neben der Abbildung."
+    },
+    "3": {
+      "title": "Ausführen, dann kaputt machen",
+      "text": "Drücke auf Ausführen. Schalte einen Fehler ein, lies die fehlgeschlagene Prüfung, behebe ihn und führe es erneut aus."
+    }
+  },
+  "proof": {
+    "title": "Was läuft und was simuliert wird",
+    "runs": {
+      "title": "Was in deinem Browser läuft",
+      "1": "Dein Arduino-C++, MicroPython und Verilog laufen in Interpretern innerhalb der Seite, mit festem Takt, sodass derselbe Code dasselbe Ergebnis liefert.",
+      "2": "Pins, serieller Monitor und Abbildung reagieren auf deinen Code.",
+      "3": "Ein Schaltungslöser entscheidet, was ein Fehler bewirkt, und zeigt den Strom."
+    },
+    "sim": {
+      "title": "Was simuliert wird",
+      "1": "Die Bauteile folgen Modellen ihrer Datenblätter, nicht dem echten Silizium.",
+      "2": "Das Timing folgt dem Simulationstakt, nicht dem eines Chips.",
+      "3": "Dein Code wird nicht für das Board kompiliert."
+    },
+    "fidelity": "iynk führt deinen Code in einem eigenen Interpreter aus, nicht auf einem echten Chip. Es zeigt, wie sich Bauteile verhalten; es ersetzt keine Werkbank, keinen Compiler und kein Datenblatt."
+  },
+  "faq": {
+    "title": "Fragen",
+    "1": {
+      "q": "Brauche ich ein Konto?",
+      "a": "Nein. Du musst dich nirgends eintragen. Dein Fortschritt und deine Einstellungen bleiben in diesem Browser."
+    },
+    "2": {
+      "q": "Ist es kostenlos?",
+      "a": "Ja. Es ist Open Source und hat keine Bezahlstufe. Wenn du eine eigene Kopie betreibst, gehören alle KI- oder Suchschlüssel, die du hinzufügst, dir."
+    },
+    "3": {
+      "q": "Welche Sprachen spricht es?",
+      "a": "Englisch, Spanisch, Französisch, Deutsch, Chinesisch und Hindi, einschließlich der Beschriftungen in den Abbildungen."
+    },
+    "4": {
+      "q": "Läuft mein Code auf einem echten Board?",
+      "a": "Nein. Er läuft im eigenen Interpreter von iynk auf der Seite. Für ein echtes Board brauchst du weiterhin einen Compiler und eine Werkbank."
+    },
+    "5": {
+      "q": "Wie genau ist die Simulation?",
+      "a": "Bauteile folgen einfachen Modellen und der Takt ist deterministisch. Nimm die Ergebnisse als Lernhilfe, nicht als Test deiner Hardware."
+    },
+    "6": {
+      "q": "Was brauchen die KI-Funktionen?",
+      "a": "Sie sind optional. Füge unter Einstellungen, Schlüssel und Nutzung deinen eigenen Schlüssel hinzu, dann werden der Partner und die Shop-Suche aktiv. Alles andere funktioniert auch ohne."
+    },
+    "7": {
+      "q": "Wo wird meine Arbeit gespeichert?",
+      "a": "In diesem Browser auf diesem Gerät. Wenn du die Websitedaten löschst, ist sie weg."
+    },
+    "8": {
+      "q": "Kann ich den Code lesen oder ändern?",
+      "a": "Ja. Der Quellcode liegt auf GitHub, mit einer Anleitung für den Betrieb einer eigenen Kopie und einer zum Mitmachen."
+    }
+  },
+  "open": {
+    "title": "Open Source",
+    "text": "Lies ihn, betreibe eine eigene Kopie oder schicke eine Korrektur.",
+    "readme": "README lesen",
+    "selfHost": "Eigene Kopie betreiben",
+    "contribute": "Mitmachen"
+  },
+  "end": {
+    "title": "Die Werkbank ist bereit.",
+    "text": "Wähle ein Board und drücke auf Ausführen. Es gibt nichts zu installieren und kein Konto anzulegen.",
+    "cta": "Werkbank öffnen"
+  }
+}

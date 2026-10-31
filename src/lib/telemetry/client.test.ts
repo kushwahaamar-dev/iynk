@@ -1,151 +1,162 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-type Client = typeof import("./client");
+import { bugReportText, clearLog, installErrorCapture, logError, readLog, tally, track } from "./client";
 
 const fetchMock = vi.fn<typeof fetch>();
-let beacons: { url: string; body: string }[] = [];
-
-async function fresh(db: boolean, telemetryStatus = 202): Promise<Client> {
-  vi.resetModules();
-  fetchMock.mockImplementation(async (input) => {
-    const url = String(input);
-    if (url === "/api/status") return Response.json({ features: { db } });
-    if (url === "/api/telemetry") return new Response(null, { status: telemetryStatus });
-    throw new Error(`unexpected ${url}`);
-  });
-  return import("./client");
-}
-
-const posts = () =>
-  fetchMock.mock.calls
-    .filter(([url]) => url === "/api/telemetry")
-    .map(([, init]) => JSON.parse(String(init?.body)) as { events: { kind: string; data: Record<string, unknown>; room?: string; item?: string; session: string }[]; sentAt: number });
+const sendBeacon = vi.fn<(url: string, body?: BodyInit | null) => boolean>(() => true);
 
 beforeEach(() => {
   fetchMock.mockReset();
+  sendBeacon.mockClear();
   vi.stubGlobal("fetch", fetchMock);
-  beacons = [];
-  Object.defineProperty(navigator, "sendBeacon", {
-    configurable: true,
-    value: (url: string, body: Blob) => {
-      void body.text().then((text) => beacons.push({ url, body: text }));
-      return true;
-    },
-  });
-  localStorage.clear();
+  Object.defineProperty(navigator, "sendBeacon", { configurable: true, value: sendBeacon });
+  localStorage.setItem("iynk:v1", JSON.stringify({ v: 1, settings: { telemetry: true } }));
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  vi.useRealTimers();
+  vi.restoreAllMocks();
+  localStorage.clear();
 });
 
-describe("telemetry client", () => {
-  it("keeps one random session id per browser", async () => {
-    const a = await fresh(true);
-    const id = a.telemetrySession();
-    expect(id).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
-    const b = await fresh(true);
-    expect(b.telemetrySession()).toBe(id);
+it("track makes no fetch and no sendBeacon call even with telemetry saved as true", () => {
+  track("lesson.pass", { lesson: "a" });
+  track("flight.lap");
+  window.dispatchEvent(new Event("pagehide"));
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(sendBeacon).not.toHaveBeenCalled();
+});
+
+it("tally makes no network call", () => {
+  tally("led.blink", 5);
+  window.dispatchEvent(new Event("pagehide"));
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(sendBeacon).not.toHaveBeenCalled();
+});
+
+it("registers no visibilitychange listener", () => {
+  const add = vi.spyOn(document, "addEventListener");
+  track("flight.lap");
+  tally("led.blink");
+  expect(add).not.toHaveBeenCalledWith("visibilitychange", expect.anything());
+});
+
+const CANARY = "iynk-canary-KEY-0001-do-not-use";
+
+describe("local log", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    clearLog();
   });
 
-  it("batches events with the context and sends them on flush", async () => {
-    const t = await fresh(true);
-    t.setTelemetryContext({ room: "ab23cd", item: "uno-r3" });
-    t.track("lesson.attempt", { lesson: "blink" });
-    t.track("fault", { code: "reversed-led" });
-    await t.flush();
-    const [batch] = posts();
-    expect(batch.events.map((e) => e.kind)).toEqual(["lesson.attempt", "fault"]);
-    expect(batch.events[0]).toMatchObject({ room: "ab23cd", item: "uno-r3", data: { lesson: "blink" } });
-    expect(typeof batch.sentAt).toBe("number");
+  afterEach(() => {
+    clearLog();
+    vi.useRealTimers();
   });
 
-  it("sends a lap right away and tells listeners once it is stored", async () => {
-    const t = await fresh(true);
-    const seen: string[][] = [];
-    t.onFlushed((kinds) => seen.push([...kinds]));
-    t.track("flight.lap", { course: "quad5-bando", timeMs: 41_000, name: "Ada" });
-    await vi.waitFor(() => expect(seen).toEqual([["flight.lap"]]));
+  it("keeps the newest 200 entries, oldest dropped first", () => {
+    for (let i = 0; i < 205; i += 1) {
+      logError(`e${i}`);
+      vi.advanceTimersByTime(1);
+    }
+    const log = readLog();
+    expect(log).toHaveLength(200);
+    expect(log[0]?.name).toBe("e5");
+    expect(log.at(-1)?.name).toBe("e204");
   });
 
-  it("is a no-op when the deployment has no database", async () => {
-    const t = await fresh(false);
-    t.track("lesson.pass", { lesson: "blink" });
-    await t.flush();
-    t.track("lesson.pass", { lesson: "fade" });
-    await t.flush();
-    expect(posts()).toHaveLength(0);
-    expect(fetchMock.mock.calls.filter(([url]) => url === "/api/status")).toHaveLength(1);
+  it("redacts a stored key from the detail and truncates to 500 characters", () => {
+    localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, search: { key: CANARY } }));
+    logError("ai.call", `provider said no to ${CANARY}`);
+    expect(readLog()[0]?.detail).toBe("provider said no to [key]");
+    logError("long", "x".repeat(900));
+    expect(readLog()[1]?.detail).toHaveLength(500);
   });
 
-  it("stops after the server answers 503", async () => {
-    const t = await fresh(true, 503);
-    t.track("ai.call", {});
-    await t.flush();
-    t.track("ai.call", {});
-    await t.flush();
-    expect(posts()).toHaveLength(1);
+  it("collapses repeats within a second into one entry with a count", () => {
+    logError("boom", "same");
+    vi.advanceTimersByTime(300);
+    logError("boom", "same");
+    logError("boom", "same");
+    expect(readLog()).toHaveLength(1);
+    expect(readLog()[0]?.detail).toBe("same (x3)");
+    vi.advanceTimersByTime(1500);
+    logError("boom", "same");
+    expect(readLog()).toHaveLength(2);
   });
 
-  it("keeps the events and retries after a server error", async () => {
-    const t = await fresh(true, 502);
-    t.track("hw.connect", { board: "uno" });
-    await t.flush();
-    fetchMock.mockImplementation(async (input) =>
-      String(input) === "/api/status" ? Response.json({ features: { db: true } }) : new Response(null, { status: 202 }),
-    );
-    await t.flush();
-    const all = posts();
-    expect(all).toHaveLength(2);
-    expect(all[1].events.map((e) => e.kind)).toEqual(["hw.connect"]);
+  it("writes to storage once after 250 ms", () => {
+    logError("a");
+    logError("b", "x");
+    expect(localStorage.getItem("iynk:log:v1")).toBeNull();
+    vi.advanceTimersByTime(250);
+    expect(JSON.parse(localStorage.getItem("iynk:log:v1") ?? "[]")).toHaveLength(2);
+    clearLog();
+    expect(localStorage.getItem("iynk:log:v1")).toBeNull();
   });
 
-  it("samples flight.sample at 1 Hz and tallies LED blinks into one event", async () => {
-    vi.useFakeTimers({ now: Date.parse("2026-10-24T20:00:00Z"), toFake: ["Date"] });
-    const t = await fresh(true);
-    t.track("flight.sample", { alt: 1 });
-    t.track("flight.sample", { alt: 2 });
-    vi.setSystemTime(Date.parse("2026-10-24T20:00:01Z"));
-    t.track("flight.sample", { alt: 3 });
-    t.tally("led.blink", 3);
-    t.tally("led.blink", 4);
-    await t.flush();
-    const [batch] = posts();
-    expect(batch.events.filter((e) => e.kind === "flight.sample").map((e) => e.data.alt)).toEqual([1, 3]);
-    expect(batch.events.filter((e) => e.kind === "led.blink").map((e) => e.data.count)).toEqual([7]);
+  it("records window errors and rejections until the remover is called", () => {
+    const remove = installErrorCapture();
+    window.dispatchEvent(new ErrorEvent("error", { message: "boom" }));
+    window.dispatchEvent(Object.assign(new Event("unhandledrejection"), { reason: new TypeError("nope") }));
+    remove();
+    window.dispatchEvent(new ErrorEvent("error", { message: "after" }));
+    expect(readLog().map((e) => [e.kind, e.name, e.detail])).toEqual([
+      ["error", "window.error", "boom"],
+      ["error", "unhandledrejection", "TypeError: nope"],
+    ]);
   });
 
-  it("sends nothing once usage sharing is unticked, and drops what was queued", async () => {
-    const t = await fresh(true);
-    const { setSetting } = await import("@/lib/settings/settings");
-    t.track("lesson.attempt", { key: "board:uno-r3:lesson:blink" });
-    t.tally("led.blink", 2);
-    setSetting("telemetry", false);
-    t.track("lesson.pass", { key: "board:uno-r3:lesson:blink" });
-    t.track("flight.lap", { course: "quad5-gates", timeMs: 12_000 });
-    t.tally("led.blink", 5);
-    await t.flush();
-    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
-    document.dispatchEvent(new Event("visibilitychange"));
-    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
-    expect(posts()).toHaveLength(0);
-    expect(beacons).toHaveLength(0);
-    // ticked again: new events go out, the dropped ones never do
-    setSetting("telemetry", true);
-    t.track("fault", { code: "short-5v" });
-    await t.flush();
-    expect(posts().flatMap((b) => b.events.map((e) => e.kind))).toEqual(["fault"]);
+  it("does not throw when storage fails", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("quota");
+    });
+    expect(() => {
+      logError("still works");
+      vi.advanceTimersByTime(250);
+    }).not.toThrow();
+    expect(readLog()).toHaveLength(1);
   });
 
-  it("hands the queue to sendBeacon when the page is hidden", async () => {
-    const t = await fresh(true);
-    t.track("room.join", { peers: 2 });
-    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
-    document.dispatchEvent(new Event("visibilitychange"));
-    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
-    await vi.waitFor(() => expect(beacons).toHaveLength(1));
-    expect(beacons[0].url).toBe("/api/telemetry");
-    expect(JSON.parse(beacons[0].body).events[0].kind).toBe("room.join");
+  it("logs events only while the usage switch is on, and stringifies circular data", () => {
+    localStorage.setItem("iynk:v1", JSON.stringify({ v: 1, settings: { telemetry: false } }));
+    track("flight.lap", { course: "a", timeMs: 1 });
+    expect(readLog()).toHaveLength(0);
+    localStorage.setItem("iynk:v1", JSON.stringify({ v: 1, settings: { telemetry: true } }));
+    const loop: Record<string, unknown> = { course: "a", timeMs: 1 };
+    loop.self = loop;
+    track("flight.lap", loop as { course: string; timeMs: number });
+    tally("led.blink", 4);
+    expect(readLog().map((e) => [e.kind, e.name, e.detail])).toEqual([
+      ["event", "flight.lap", '{"course":"a","timeMs":1,"self":"[circular]"}'],
+      ["event", "led.blink", '{"count":4}'],
+    ]);
+  });
+
+  it("makes no network call from any log function", () => {
+    const remove = installErrorCapture();
+    logError("a", "b");
+    track("flight.lap");
+    tally("led.blink");
+    bugReportText();
+    clearLog();
+    remove();
+    vi.advanceTimersByTime(500);
+    window.dispatchEvent(new Event("pagehide"));
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(sendBeacon).not.toHaveBeenCalled();
+  });
+
+  it("builds a bug report from the last 50 entries with the key redacted", () => {
+    localStorage.setItem("iynk:keys:v1", JSON.stringify({ v: 1, search: { key: CANARY } }));
+    for (let i = 0; i < 60; i += 1) {
+      logError(`e${i}`, i === 59 ? CANARY : undefined);
+      vi.advanceTimersByTime(1);
+    }
+    const text = bugReportText();
+    expect(text).not.toContain(CANARY);
+    expect(text).toContain("e59 [key]");
+    expect(text).toContain("e10");
+    expect(text).not.toContain("e9 ");
+    expect(text).toContain("user agent:");
   });
 });

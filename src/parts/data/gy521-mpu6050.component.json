@@ -1,0 +1,1422 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.gy521-mpu6050",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic (unbranded breakout)",
+    "model": "GY-521 breakout with MPU-6050",
+    "generic": true,
+    "kind": "sensor",
+    "category": "sensor",
+    "description": {
+      "i18n_key": "parts.gy521-mpu6050.description",
+      "en": "A 6-axis motion sensor on I2C: a 3-axis gyroscope, a 3-axis accelerometer and a temperature sensor, on a small board with a 3.3 V regulator and pull-ups."
+    },
+    "chip": {
+      "manufacturer": "TDK InvenSense",
+      "model": "MPU-6050",
+      "package": "QFN-24 4 x 4 x 0.9 mm"
+    },
+    "primary_source": "ps_mpu",
+    "lifecycle": "nrnd",
+    "legacy_ids": [
+      "mpu6050"
+    ],
+    "tags": [
+      "imu",
+      "gyroscope",
+      "accelerometer",
+      "i2c",
+      "robotics",
+      "drone"
+    ]
+  },
+  "sources": [
+    {
+      "id": "ps_mpu",
+      "kind": "datasheet",
+      "title": "MPU-6000 and MPU-6050 Product Specification, PS-MPU-6000A-00",
+      "publisher": "InvenSense (TDK)",
+      "url": "https://cdn.sparkfun.com/datasheets/Components/General%20IC/PS-MPU-6000A.pdf",
+      "revision": "Rev 3.1, 10/24/2011 (latest is Rev 3.4)",
+      "retrieved": "2026-10-24",
+      "reliability": "primary",
+      "note": "Read from a SparkFun mirror; the official site blocked the download."
+    },
+    {
+      "id": "rm_mpu",
+      "kind": "datasheet",
+      "title": "MPU-6000 and MPU-6050 Register Map and Descriptions, RM-MPU-6000A-00",
+      "publisher": "InvenSense (TDK)",
+      "url": "https://cdn.sparkfun.com/datasheets/Sensors/Accelerometers/RM-MPU-6000A.pdf",
+      "revision": "Rev 4.0, 03/09/2012",
+      "retrieved": "2026-10-24",
+      "reliability": "primary"
+    },
+    {
+      "id": "gy521_sch",
+      "kind": "schematic",
+      "title": "MPU6050-V1-SCH (GY-521 schematic)",
+      "publisher": "Arduino Playground",
+      "url": "https://playground.arduino.cc/uploads/Main/MPU6050-V1-SCH/index.jpg",
+      "retrieved": "2026-10-24",
+      "reliability": "secondary",
+      "note": "Read as an image and transcribed. The only schematic in circulation; several board variants exist."
+    },
+    {
+      "id": "playground",
+      "kind": "application-note",
+      "title": "MPU-6050 Accelerometer + Gyro",
+      "publisher": "Arduino Playground",
+      "url": "https://playground.arduino.cc/Main/MPU-6050/",
+      "retrieved": "2026-10-24",
+      "reliability": "secondary",
+      "note": "Pull-ups are 10k on some boards and 2.2k on others; 5 V on VCC is preferred."
+    },
+    {
+      "id": "photo",
+      "kind": "photo",
+      "title": "GY-521 MPU-6050 Module photo, component side",
+      "publisher": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:GY-521_MPU-6050_Module_3_Axis_Gyroscope_%2B_Accelerometer_0487.jpg",
+      "retrieved": "2026-10-24",
+      "reliability": "secondary",
+      "note": "Layout and markings. The photographed board has a different LDO (A249) and 2.2k pull-ups from the iynk default."
+    },
+    {
+      "id": "xc6206",
+      "kind": "datasheet",
+      "title": "XC6206 series datasheet excerpt (the 662K regulator)",
+      "publisher": "Torex, via a mirror",
+      "url": "https://html.alldatasheet.net/html-pdf/244190/TOREX/XC6206P182LL/638/4/XC6206P182LL.html",
+      "retrieved": "2026-10-24",
+      "reliability": "unverified",
+      "note": "Seen as a search excerpt; the page itself returned 403. A second source (UMW) states 8 V and 100 mA."
+    },
+    {
+      "id": "umw_digikey",
+      "kind": "product-page",
+      "title": "UMW XC6206P332MR listing (second source of the 662K regulator)",
+      "publisher": "DigiKey",
+      "url": "https://www.digikey.jp/en/products/detail/umw/XC6206P332MR/17635277",
+      "retrieved": "2026-10-24",
+      "reliability": "secondary",
+      "note": "Gives 3.3 V fixed, SOT-23-3, input 8 V max, 100 mA, dropout 0.24 V max at 50 mA. The marking 662K is matched to this part from seller listings."
+    },
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "MPU-6050 on a GY-521 breakout: fact sheet",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/mpu6050.md. Board positions are estimated from one photo, about 0.3 mm."
+    },
+    {
+      "id": "modulejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/mpu6050.js: board model and elec block",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "devicets",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/devices.ts: class Mpu6050",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "VCC",
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 1.4,
+        "y": 19.03
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 1.4,
+        "y": 16.49
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "SCL",
+      "name": {
+        "en": "I2C clock"
+      },
+      "designator": "SCL",
+      "type": "digital_in",
+      "class": "bus",
+      "position": {
+        "x": 1.4,
+        "y": 13.95
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3",
+      "pull": {
+        "kind": "on-board",
+        "to": "up",
+        "rating": "i2c_pullup_ohms",
+        "rail": "V3V3"
+      }
+    },
+    {
+      "id": "SDA",
+      "name": {
+        "en": "I2C data"
+      },
+      "designator": "SDA",
+      "type": "open_drain",
+      "class": "bus",
+      "position": {
+        "x": 1.4,
+        "y": 11.41
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3",
+      "pull": {
+        "kind": "on-board",
+        "to": "up",
+        "rating": "i2c_pullup_ohms",
+        "rail": "V3V3"
+      }
+    },
+    {
+      "id": "XDA",
+      "name": {
+        "en": "Auxiliary I2C data"
+      },
+      "designator": "XDA",
+      "type": "open_drain",
+      "class": "bus",
+      "position": {
+        "x": 1.4,
+        "y": 8.87
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "en": "The chip's own I2C master, for an outside magnetometer. Not modelled."
+      }
+    },
+    {
+      "id": "XCL",
+      "name": {
+        "en": "Auxiliary I2C clock"
+      },
+      "designator": "XCL",
+      "type": "open_drain",
+      "class": "bus",
+      "position": {
+        "x": 1.4,
+        "y": 6.33
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "AD0",
+      "name": {
+        "en": "Address select"
+      },
+      "designator": "AD0",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.4,
+        "y": 3.79
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3",
+      "pull": {
+        "kind": "on-board",
+        "to": "down",
+        "rating": "ad0_pulldown_ohms",
+        "unless_parameter": "no_ad0_pulldown"
+      },
+      "note": {
+        "en": "Low gives address 0x68, high gives 0x69. Do not tie it to 5 V."
+      }
+    },
+    {
+      "id": "INT",
+      "name": {
+        "en": "Interrupt"
+      },
+      "designator": "INT",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 1.4,
+        "y": 1.25
+      },
+      "connector": "H1",
+      "logic_family": "lvcmos-3v3"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "H1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "VCC",
+        "GND",
+        "SCL",
+        "SDA",
+        "XDA",
+        "XCL",
+        "AD0",
+        "INT"
+      ],
+      "note": {
+        "en": "A loose straight header and a loose right-angle header ship with the board; the maker solders one."
+      }
+    }
+  ],
+  "internal_nets": [
+    "V3V3"
+  ],
+  "dimensions": {
+    "package": "breakout board",
+    "body": {
+      "w": 15.6,
+      "h": 20.3,
+      "d": 4.0
+    },
+    "board": {
+      "w": 15.6,
+      "h": 20.3,
+      "thickness": 1.6,
+      "corner_radius": 0,
+      "mounting_holes": [
+        {
+          "x": 12.9,
+          "y": 17.9,
+          "diameter": 3
+        },
+        {
+          "x": 12.9,
+          "y": 2.7,
+          "diameter": 3
+        }
+      ]
+    },
+    "height_total": 12,
+    "accuracy": 0.3,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 2.2 to 2.4"
+    }
+  },
+  "ratings": {
+    "vcc_recommended": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.3,
+        "max": 5.5,
+        "confidence": "medium",
+        "source": {
+          "src": "modulejs",
+          "loc": "figures/modules/mpu6050.js: elec.pins.VCC range [3.3, 5.5]"
+        },
+        "rationale": {
+          "en": "5 V is preferred and 3.3 V works on most boards. The fact sheet gives about 3.5 V as the lower end on a 662K board; the model lets 3.3 V through."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vcc_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 6,
+        "source": {
+          "src": "xc6206",
+          "loc": "Absolute maximum, input voltage"
+        },
+        "conditions": "The Torex excerpt says 6.0 V maximum input; the fact sheet calls it the absolute maximum. A second source of the same part states 8 V."
+      },
+      "used_by_model": "manufacturer"
+    },
+    "vdd_chip_range": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "layer": "imu"
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 2.375,
+        "max": 3.46,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Electrical characteristics, VDD"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "logic_input_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "SCL",
+          "SDA",
+          "XDA",
+          "XCL",
+          "AD0",
+          "INT"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 3.8,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Absolute maximum ratings: VDD + 0.5 V"
+        },
+        "conditions": "VDD 3.3 V plus 0.5 V. The pins are not 5 V tolerant."
+      },
+      "used_by_model": "none"
+    },
+    "ldo_output": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "ldo"
+      },
+      "manufacturer": {
+        "unit": "V",
+        "typ": 3.3,
+        "source": {
+          "src": "umw_digikey",
+          "loc": "Product attributes: output voltage 3.3 V"
+        },
+        "conditions": "The marking 662K is read as this part from seller listings; not confirmed on the board."
+      },
+      "used_by_model": "none"
+    },
+    "ldo_dropout": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "ldo"
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 0.24,
+        "source": {
+          "src": "umw_digikey",
+          "loc": "Dropout at 50 mA"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "supply_current_active": {
+      "measure": "current",
+      "role": "consumption",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "typ": 0.0038,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Electrical characteristics: gyro and accelerometer on, DMP off"
+        },
+        "conditions": "Chip only. The board adds the regulator's quiescent current and the power LED."
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.005,
+        "confidence": "low",
+        "source": {
+          "src": "modulejs",
+          "loc": "figures/modules/mpu6050.js: elec.pins.VCC mA: 5"
+        },
+        "rationale": {
+          "en": "The fact sheet puts the whole board at about 5 mA: the chip at 3.9 mA, the power LED at about 1.3 mA (computed) and the regulator quiescent current."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "supply_current_sleep": {
+      "measure": "current",
+      "role": "consumption",
+      "scope": {
+        "layer": "imu"
+      },
+      "manufacturer": {
+        "unit": "A",
+        "typ": 5e-06,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Electrical characteristics: sleep mode"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "i2c_pullup_ohms": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "SCL",
+          "SDA"
+        ]
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 4700,
+        "confidence": "medium",
+        "source": {
+          "src": "gy521_sch",
+          "loc": "R4 and R5"
+        },
+        "rationale": {
+          "en": "The schematic and the Fritzing part give 4.7k. The photographed board has 2.2k and some boards have 10k; the model uses one value."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "ad0_pulldown_ohms": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "AD0"
+        ]
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 4700,
+        "confidence": "high",
+        "source": {
+          "src": "gy521_sch",
+          "loc": "R6"
+        },
+        "rationale": {
+          "en": "4.7k to ground on the schematic and on the photographed board."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "power_led_series_ohms": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "power_led"
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 1000,
+        "confidence": "high",
+        "source": {
+          "src": "gy521_sch",
+          "loc": "R201"
+        },
+        "rationale": {
+          "en": "1k on the schematic and on the photographed board."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "i2c_speed_max": {
+      "measure": "frequency",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "SCL"
+        ]
+      },
+      "manufacturer": {
+        "unit": "Hz",
+        "max": 400000,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Serial interface: I2C fast mode"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "startup_time": {
+      "measure": "time",
+      "role": "timing",
+      "scope": {
+        "layer": "imu"
+      },
+      "manufacturer": {
+        "unit": "s",
+        "typ": 0.02,
+        "max": 0.1,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Electrical characteristics: start-up time for register read and write"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "gyro_zero_rate_tolerance": {
+      "measure": "rate",
+      "role": "characteristic",
+      "scope": {
+        "layer": "imu"
+      },
+      "manufacturer": {
+        "unit": "deg_per_s",
+        "min": -20,
+        "max": 20,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Gyroscope specifications: ZRO initial tolerance, 25 C"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "gyro_noise_rms": {
+      "measure": "rate",
+      "role": "characteristic",
+      "scope": {
+        "layer": "imu"
+      },
+      "manufacturer": {
+        "unit": "deg_per_s",
+        "typ": 0.05,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Gyroscope specifications: total RMS noise, DLPF_CFG = 2"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "accel_zero_g_tolerance_xy": {
+      "measure": "acceleration",
+      "role": "characteristic",
+      "scope": {
+        "layer": "imu"
+      },
+      "manufacturer": {
+        "unit": "g0",
+        "min": -0.05,
+        "max": 0.05,
+        "source": {
+          "src": "ps_mpu",
+          "loc": "Accelerometer specifications: zero-g initial calibration tolerance, X and Y"
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "protocols": [
+    {
+      "id": "host_i2c",
+      "kind": "i2c",
+      "role": "slave",
+      "pins": {
+        "scl": "SCL",
+        "sda": "SDA"
+      },
+      "params": {
+        "address": 104,
+        "alt_address": 105,
+        "address_select_pin": "AD0",
+        "register_reset_pwr_mgmt_1": 64,
+        "who_am_i": 104
+      },
+      "speed_max": "i2c_speed_max",
+      "status": "modelled"
+    },
+    {
+      "id": "aux_i2c",
+      "kind": "i2c",
+      "role": "master",
+      "pins": {
+        "scl": "XCL",
+        "sda": "XDA"
+      },
+      "status": "not-modelled-yet"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "supply",
+        "pins": [
+          "VCC"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vcc_recommended",
+        "current": "supply_current_active"
+      }
+    ],
+    "consumption": [
+      {
+        "id": "active",
+        "mode": {
+          "en": "Gyroscope and accelerometer on"
+        },
+        "rating": "supply_current_active"
+      },
+      {
+        "id": "sleep",
+        "mode": {
+          "en": "Sleep (power-on state)"
+        },
+        "rating": "supply_current_sleep"
+      }
+    ],
+    "protection": [
+      {
+        "kind": "reverse-polarity",
+        "present": false,
+        "note": {
+          "en": "No diode and no fuse."
+        },
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3.5"
+        }
+      },
+      {
+        "kind": "overvoltage",
+        "present": false,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3.5"
+        }
+      },
+      {
+        "kind": "esd",
+        "present": true,
+        "note": {
+          "en": "The chip has 2 kV HBM protection; the board adds none."
+        },
+        "source": {
+          "src": "ps_mpu"
+        }
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "no_ad0_pulldown",
+      "name": {
+        "en": "AD0 pull-down left out"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": false,
+      "affects": [
+        "AD0",
+        "host_i2c"
+      ]
+    },
+    {
+      "id": "no_cpout_cap",
+      "name": {
+        "en": "CPOUT capacitor left out"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": false,
+      "affects": [
+        "imu"
+      ]
+    }
+  ],
+  "physical_inputs": [
+    {
+      "id": "accel",
+      "name": {
+        "en": "Acceleration, sensor frame"
+      },
+      "unit": "g0",
+      "axes": 3,
+      "range": {
+        "min": -16,
+        "max": 16
+      },
+      "world_channel": "imu.accel"
+    },
+    {
+      "id": "gyro",
+      "name": {
+        "en": "Angular rate, sensor frame"
+      },
+      "unit": "deg_per_s",
+      "axes": 3,
+      "range": {
+        "min": -2000,
+        "max": 2000
+      },
+      "world_channel": "imu.gyro"
+    },
+    {
+      "id": "die_temp",
+      "name": {
+        "en": "Die temperature"
+      },
+      "unit": "degC",
+      "axes": 1,
+      "range": {
+        "min": -40,
+        "max": 85
+      },
+      "world_channel": "imu.die_temp"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A register-level I2C slave at 0x68 or 0x69. It wakes asleep and reads zero until the host clears the sleep bit. Readings are the world's acceleration, rate and temperature scaled by the selected range, plus a constant gyro bias."
+    },
+    "layers": [
+      {
+        "id": "ldo",
+        "domain": "power",
+        "reads": [
+          "VCC"
+        ],
+        "drives": [
+          "V3V3"
+        ],
+        "summary": {
+          "en": "662K regulator: 3.3 V from VCC."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The 3.3 V regulator is a rule in the figure page's power tree (figures/modules/mpu6050.js, power.rails). The solver has no linear regulator element, so the Studio does not run it."
+          }
+        }
+      },
+      {
+        "id": "imu",
+        "domain": "protocol",
+        "reads": [
+          "SCL",
+          "SDA",
+          "AD0",
+          "accel",
+          "gyro",
+          "die_temp",
+          "no_cpout_cap"
+        ],
+        "drives": [
+          "SDA",
+          "INT"
+        ],
+        "summary": {
+          "en": "Register map of the MPU-6050 for the sample registers, range selects, sleep and reset bits and WHO_AM_I."
+        },
+        "model": {
+          "kind": "builtin",
+          "ref": "device:i2c/mpu6050@1",
+          "params": {
+            "accel_lsb_per_g_fs0": {
+              "value": 16384,
+              "unit": "1",
+              "source": {
+                "src": "ps_mpu",
+                "loc": "Accelerometer sensitivity scale factor, AFS_SEL = 0"
+              },
+              "rationale": {
+                "en": "Datasheet value. The other ranges halve it: 8192, 4096, 2048."
+              }
+            },
+            "gyro_lsb_per_dps_fs0": {
+              "value": 131,
+              "unit": "1",
+              "source": {
+                "src": "ps_mpu",
+                "loc": "Gyroscope sensitivity scale factor, FS_SEL = 0"
+              },
+              "rationale": {
+                "en": "Datasheet value. The other ranges halve it; the code uses 131 / 2^n where the datasheet prints 65.5, 32.8 and 16.4."
+              }
+            },
+            "temp_lsb_per_degc": {
+              "value": 340,
+              "unit": "1",
+              "source": {
+                "src": "rm_mpu",
+                "loc": "TEMP_OUT: T = TEMP_OUT / 340 + 36.53"
+              },
+              "rationale": {
+                "en": "Register map formula."
+              }
+            },
+            "temp_offset": {
+              "value": 36.53,
+              "unit": "degC",
+              "source": {
+                "src": "rm_mpu",
+                "loc": "TEMP_OUT"
+              },
+              "rationale": {
+                "en": "Register map formula."
+              }
+            },
+            "gyro_bias_x": {
+              "value": 0.6,
+              "unit": "deg_per_s",
+              "source": {
+                "src": "devicets",
+                "loc": "src/lib/interp/devices.ts: gyroBias"
+              },
+              "rationale": {
+                "en": "A constant bias chosen inside the datasheet's plus or minus 20 deg/s tolerance, so integrating the raw rate drifts as a real part does."
+              }
+            },
+            "gyro_bias_y": {
+              "value": -0.4,
+              "unit": "deg_per_s",
+              "source": {
+                "src": "devicets",
+                "loc": "src/lib/interp/devices.ts: gyroBias"
+              },
+              "rationale": {
+                "en": "As gyro_bias_x."
+              }
+            },
+            "gyro_bias_z": {
+              "value": 0.25,
+              "unit": "deg_per_s",
+              "source": {
+                "src": "devicets",
+                "loc": "src/lib/interp/devices.ts: gyroBias"
+              },
+              "rationale": {
+                "en": "As gyro_bias_x."
+              }
+            }
+          },
+          "implementation": {
+            "path": "src/sim/devices/data/mpu6050.device.json",
+            "note": "The Studio binds this register map. The fuller register set that the constants above describe is class Mpu6050 in src/lib/interp/devices.ts, lines 21-102, which the sketch interpreter uses."
+          }
+        }
+      },
+      {
+        "id": "power_led",
+        "domain": "optical",
+        "reads": [
+          "VCC"
+        ],
+        "summary": {
+          "en": "The red power LED lights when the regulator output is live."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The figure page lights the power LED from the 3.3 V rail. The Studio has no rail indicator model."
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "supply_too_high",
+      "name": {
+        "en": "Regulator over-voltage"
+      },
+      "cause_id": "x-mpu6050.supply-too-high",
+      "symptom_ids": [
+        "part-dead",
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage",
+          "target": "VCC",
+          "op": ">",
+          "threshold": {
+            "rating": "vcc_abs_max",
+            "pick": "max"
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the board is replaced"
+      },
+      "derivation": {
+        "en": "The 662K regulator's maximum input is 6 V on the Torex excerpt (8 V on a second source). The model takes the lower figure."
+      },
+      "basis": "manufacturer",
+      "source": {
+        "src": "modulejs",
+        "loc": "figures/modules/mpu6050.js: elec.pins.VCC max: 6"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "reversed_supply_burn",
+      "name": {
+        "en": "Reversed supply"
+      },
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead",
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage_reverse",
+          "target": "VCC",
+          "op": ">",
+          "threshold": {
+            "literal": {
+              "unit": "V",
+              "value": 0.7
+            }
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the board is replaced"
+      },
+      "derivation": {
+        "en": "There is no protection diode, so current flows backwards through the regulator and the chip's ESD diodes above one diode drop (0.7 V, an iynk estimate). The fact sheet says a few seconds at 5 V usually kills the regulator and can kill the sensor."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "factsheet",
+        "loc": "section 6, reverse polarity"
+      },
+      "implemented_as": "scripted"
+    },
+    {
+      "id": "five_volt_on_logic_pin",
+      "name": {
+        "en": "5 V on a 3.3 V logic pin"
+      },
+      "cause_id": "x-mpu6050.5v-on-logic-pin",
+      "symptom_ids": [
+        "x-i2c-odd-currents",
+        "x-sensor-latent-damage"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage",
+          "target": "AD0",
+          "op": ">",
+          "threshold": {
+            "rating": "logic_input_abs_max",
+            "pick": "max"
+          }
+        }
+      ],
+      "effect": {
+        "state": "degraded",
+        "latched": true,
+        "detail": {
+          "en": "Current flows into the pin's protection diode and back-powers the 3.3 V rail. The sensor often still works at first."
+        }
+      },
+      "derivation": {
+        "en": "The pins are limited to VDD + 0.5 V, 3.8 V. Wiring AD0 to 5 V to pick 0x69 is the usual way to exceed it; the same holds for SDA and SCL pulled to 5 V."
+      },
+      "basis": "manufacturer",
+      "source": {
+        "src": "ps_mpu",
+        "loc": "Absolute maximum ratings"
+      },
+      "implemented_as": "not-implemented"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "cold_sda",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "SDA"
+        ]
+      },
+      "legacy_id": "cold:H1.4",
+      "cause_id": "x-connection.cold-joint",
+      "symptom_ids": [
+        "i2c-no-ack"
+      ],
+      "description": {
+        "en": "A cracked joint on the SDA header pin."
+      }
+    },
+    {
+      "id": "no_ad0_pulldown",
+      "kind": "option_removed",
+      "target": {
+        "parameter": "no_ad0_pulldown"
+      },
+      "legacy_id": "missing:R6",
+      "cause_id": "floating-input",
+      "symptom_ids": [
+        "i2c-no-ack"
+      ],
+      "description": {
+        "en": "Leave out the AD0 pull-down, so the address moves to 0x69 in the model."
+      }
+    },
+    {
+      "id": "no_cpout_cap",
+      "kind": "option_removed",
+      "target": {
+        "parameter": "no_cpout_cap"
+      },
+      "legacy_id": "missing:C14",
+      "cause_id": "x-mpu6050.no-charge-pump-cap",
+      "symptom_ids": [
+        "x-gyro-noisy"
+      ],
+      "description": {
+        "en": "Leave out the 2.2 nF CPOUT capacitor, so the gyro output is noisy."
+      }
+    },
+    {
+      "id": "short_rail",
+      "kind": "short_pins",
+      "target": {
+        "pins": [
+          "VCC",
+          "GND"
+        ]
+      },
+      "legacy_id": "short:3V3:GND",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "Short the 3.3 V rail to ground."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "The I2C slave at 0x68 or 0x69 with the sample, range, sleep, reset and WHO_AM_I registers."
+      },
+      {
+        "en": "Power-on in sleep: samples read 0 until the host clears the sleep bit."
+      },
+      {
+        "en": "Sensitivity per range for the accelerometer, gyroscope and temperature, with 16-bit signed output and clamping."
+      },
+      {
+        "en": "A constant gyro bias, so integrating the rate drifts."
+      },
+      {
+        "en": "The board's over-voltage and reversed-supply failures."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Noise, temperature drift and part-to-part spread: the datasheet gives them and the model does not apply them."
+      },
+      {
+        "en": "The digital low-pass filter, sample-rate divider, FIFO, interrupts and the DMP."
+      },
+      {
+        "en": "The auxiliary I2C master and any magnetometer behind it."
+      },
+      {
+        "en": "I2C timing: clock speed, clock stretching and start-up delay."
+      },
+      {
+        "en": "Pull-up variants of 2.2k or 10k, and the second regulator type (A249)."
+      },
+      {
+        "en": "Damage from 5 V on the logic pins."
+      },
+      {
+        "en": "The 3.3 V regulator and the power LED: both are rules in the figure page, not in the solver."
+      },
+      {
+        "en": "In the Studio's register map only ACCEL_ZOUT, PWR_MGMT_1 and WHO_AM_I exist. The gyroscope, temperature, X and Y registers and the range selects are in the sketch interpreter's class only."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "acceleration",
+        "min": -16,
+        "max": 16,
+        "unit": "g0"
+      },
+      {
+        "measure": "angular rate",
+        "min": -2000,
+        "max": 2000,
+        "unit": "deg_per_s"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "figure_text_separate",
+        "text": {
+          "en": "The module figure prints its own sample text from a second, simpler model, not from this register model."
+        },
+        "evidence": "figures/modules/mpu6050.js:55-62"
+      },
+      {
+        "id": "no_datasheet_test",
+        "text": {
+          "en": "One test reads 1 g on Z after waking the chip; no test checks the sensitivities or the reset values against the datasheet."
+        },
+        "evidence": "src/lib/interp/arduino/arduino.test.ts:293"
+      },
+      {
+        "id": "two_register_models",
+        "text": {
+          "en": "Two models of the chip exist: the Studio's register map and the sketch interpreter's class. They agree on WHO_AM_I, the sleep bit and the Z reading but not on the rest."
+        },
+        "evidence": "src/sim/devices/data/mpu6050.device.json and src/lib/interp/devices.ts:21-102"
+      }
+    ],
+    "solver_requires": [],
+    "tests": [
+      {
+        "id": "wake_and_read_1g",
+        "kind": "golden-trace",
+        "file": "src/lib/interp/arduino/arduino.test.ts",
+        "note": "Test 'MPU-6050 over raw Wire reads 1 g on Z after waking it'."
+      },
+      {
+        "id": "binds_and_who_am_i",
+        "kind": "conformance",
+        "state": "present",
+        "file": "src/parts/data/tests/gy521-mpu6050.conformance.json",
+        "note": "The builtin layer binds to the registered device, which answers WHO_AM_I with 0x68."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported",
+            "note": {
+              "en": "Raw register access works."
+            }
+          },
+          {
+            "name": "Adafruit MPU6050",
+            "version": "2.2.9",
+            "install": "Adafruit MPU6050",
+            "url": "https://github.com/adafruit/Adafruit_MPU6050",
+            "source": {
+              "src": "factsheet",
+              "loc": "section 1, item 6"
+            },
+            "iynk_support": "unsupported",
+            "note": {
+              "en": "Needs Adafruit BusIO and Unified Sensor classes that the interpreter does not run. It must give a named diagnostic, not silence."
+            }
+          },
+          {
+            "name": "MPU6050 (ElectronicCats, I2Cdevlib port)",
+            "version": "1.4.5",
+            "install": "MPU6050",
+            "url": "https://github.com/ElectronicCats/mpu6050",
+            "source": {
+              "src": "factsheet",
+              "loc": "section 1, item 8"
+            },
+            "iynk_support": "unsupported"
+          }
+        ]
+      },
+      {
+        "language": "micropython",
+        "libraries": []
+      }
+    ]
+  },
+  "compatibility": {
+    "works_with": [
+      "core.uno-r3",
+      "core.esp32-devkitc",
+      "core.pico"
+    ],
+    "rules": [
+      {
+        "id": "no_5v_logic",
+        "kind": "logic_level_mismatch",
+        "severity": "error",
+        "params": {
+          "pin": "AD0",
+          "limit_rating": "logic_input_abs_max"
+        },
+        "message": {
+          "en": "AD0, SDA and SCL tolerate 3.8 V at most. Use 3.3 V to select address 0x69, and do not pull SDA or SCL up to 5 V."
+        }
+      },
+      {
+        "id": "supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VCC",
+          "rating": "vcc_abs_max"
+        },
+        "message": {
+          "en": "VCC above 6 V destroys the regulator."
+        }
+      },
+      {
+        "id": "i2c_address",
+        "kind": "bus_address_unique",
+        "severity": "error",
+        "params": {
+          "protocol": "host_i2c"
+        },
+        "message": {
+          "en": "Another device on this bus answers at the same address. Change AD0 or the other device."
+        }
+      },
+      {
+        "id": "pullups_present",
+        "kind": "needs_pullup",
+        "severity": "info",
+        "params": {
+          "pin": "SDA",
+          "min_ohms": 1000,
+          "max_ohms": 10000
+        },
+        "message": {
+          "en": "The board already has pull-ups on SDA and SCL. Adding more in parallel is rarely needed."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "mpu6050",
+        "path": "public/figures/parts/mpu6050.html",
+        "engine": "colorfigures-bench",
+        "sha256": "e883aaf2c8f61eb329cf018860a88b9c6b50cfde9769643e91b555b291d8ecf7"
+      },
+      "legs": [
+        "VCC",
+        "GND",
+        "SCL",
+        "SDA",
+        "XDA",
+        "XCL",
+        "AD0",
+        "INT"
+      ],
+      "span": [
+        7,
+        7
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VCC": "top",
+        "GND": "bottom",
+        "SCL": "left",
+        "SDA": "left",
+        "AD0": "left",
+        "INT": "right",
+        "XDA": "right",
+        "XCL": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "MPU-6050",
+      "body_colour": "#1d63c6",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Datasheet figures: TDK InvenSense MPU-6000/MPU-6050 Product Specification and Register Map, cited, not redistributed."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/mpu6050.js, figures/parts/mpu6050.js, src/lib/interp/devices.ts and docs/facts/mpu6050.md.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_module_figure": {
+    "id": "mpu6050",
+    "path": "public/figures/modules/mpu6050.html",
+    "sha256": "454f113a166d942113eb8c482dc3b8f5184f0dd0d85b100eed03748600277e74"
+  },
+  "x_legacy_model": [
+    {
+      "ref": "power:linear-regulator@1",
+      "path": "figures/modules/mpu6050.js",
+      "lines": "83 and 108, part U2 and the 3V3 rail with reg 3.3 and dropout 0.25"
+    },
+    {
+      "ref": "indicator:rail-led@1",
+      "path": "figures/modules/mpu6050.js",
+      "lines": "96, part D1 with led rail 3V3 via R201"
+    }
+  ]
+}

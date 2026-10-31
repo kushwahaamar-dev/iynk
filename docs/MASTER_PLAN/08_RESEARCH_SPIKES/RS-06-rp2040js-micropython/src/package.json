@@ -1,0 +1,19 @@
+{
+  "name": "rs-06",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "esbuild": "^0.28.2",
+    "playwright": "^1.64.1",
+    "rp2040js": "^1.4.1",
+    "uf2": "^2.0.0"
+  }
+}

@@ -34,7 +34,8 @@ export async function getDictionary(locale: Locale): Promise<Messages> {
 
 /** t() for one namespace: `const t = await getT(lang, "common"); t("notFound.title")`. */
 export async function getT<N extends Namespace>(locale: Locale, ns: N): Promise<Translate<Messages[N]>> {
-  return createTranslator(locale, await getMessages(locale, ns), `${locale}/${ns}`);
+  const messages: Messages[N] = await getMessages(locale, ns);
+  return createTranslator(locale, messages, `${locale}/${ns}`);
 }
 
 const loadContent = cache(async (locale: Locale, lab: ContentLab, id: string): Promise<unknown> => {

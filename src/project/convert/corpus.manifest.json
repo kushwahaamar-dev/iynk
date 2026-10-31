@@ -1,0 +1,1262 @@
+[
+  {
+    "id": "prj_basys3-blink",
+    "kind": "lesson",
+    "item": "board/basys3",
+    "stateHash": "45cdcf6261123243aa2dc0d875c6d64b1c590946ab55edc2d3a10beee99109c7",
+    "canonicalBytes": 36756,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_basys3-counter",
+    "kind": "lesson",
+    "item": "board/basys3",
+    "stateHash": "d74dcf5ef1a8a7af79eb497f2d0856e9687aa8dc0b952b311c12931b57f1cdc7",
+    "canonicalBytes": 42701,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_basys3-display",
+    "kind": "lesson",
+    "item": "board/basys3",
+    "stateHash": "b8c874c3f4873f1ffbe942f62e15eead6623c218a68ff393d73c2075880eb552",
+    "canonicalBytes": 42739,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_basys3-gates",
+    "kind": "lesson",
+    "item": "board/basys3",
+    "stateHash": "e08ecbafff08c79386ddc02215e8f6acb792716590ce60fc8cc3d420716e3bff",
+    "canonicalBytes": 38336,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_basys3-pwm",
+    "kind": "lesson",
+    "item": "board/basys3",
+    "stateHash": "0c3782e9f99ae03c1136462b05b42af5fdba57ece37f84e397070465593a9d96",
+    "canonicalBytes": 64576,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_basys3-tour",
+    "kind": "tour",
+    "item": "board/basys3",
+    "stateHash": "5d87fa80fd7b8fd547f64b577353b6d3bc4e18d32137d78111e970702b089c04",
+    "canonicalBytes": 46207,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-a4988",
+    "kind": "bench",
+    "item": "robotics/a4988",
+    "stateHash": "6645d73d4abc4ac0c28d17dfa8fa9c807513e23b9d5f4c22538fbddf36fa13b2",
+    "canonicalBytes": 174655,
+    "nets": 9,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-esp32-s3-build",
+    "kind": "bench",
+    "item": "robotics/esp32-s3-build",
+    "stateHash": "b8bcded4aefcfe4c6214f1d65cf7310f630bcf405f4342f6fd2bcdeaedf66d48",
+    "canonicalBytes": 156437,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-hc-sr04",
+    "kind": "bench",
+    "item": "robotics/hc-sr04",
+    "stateHash": "f3c406ee716bc950cb15284d04508eaa8cd9a3bf9653e4e411fcdfc0e1069d95",
+    "canonicalBytes": 113699,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-l298n",
+    "kind": "bench",
+    "item": "robotics/l298n",
+    "stateHash": "5665cd0a9c8c819a7dd8201e8a3ca71c473ce90303f7bc66c6b30e22b4f78829",
+    "canonicalBytes": 178360,
+    "nets": 10,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-led-resistor",
+    "kind": "bench",
+    "item": "robotics/led-resistor",
+    "stateHash": "8b2ac4321283e5d90fdc7a8e65d1af0dc2b2d74fded2f10d75a907975048d1e8",
+    "canonicalBytes": 130901,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-lm2596",
+    "kind": "bench",
+    "item": "robotics/lm2596",
+    "stateHash": "5a742907314f59520f746b5fd3ec40894857741cd53c85ed845f4ab16716b3ce",
+    "canonicalBytes": 172077,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-mpu6050",
+    "kind": "bench",
+    "item": "robotics/mpu6050",
+    "stateHash": "02b7139b1dcf4403687da5e803686b340b693ff5d4184941c519e4fd8630876f",
+    "canonicalBytes": 113878,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-pca9685",
+    "kind": "bench",
+    "item": "robotics/pca9685",
+    "stateHash": "c09649411b752de323cef7d9510ec1ab2148647252f3c11657314478b289d012",
+    "canonicalBytes": 158908,
+    "nets": 15,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-pi5-ros2",
+    "kind": "bench",
+    "item": "robotics/pi5-ros2",
+    "stateHash": "07c9ef0b78a7d404e134fd285d7517bd471bcf120a5cc26391184e63b42d8bac",
+    "canonicalBytes": 186391,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-qtr-8rc",
+    "kind": "bench",
+    "item": "robotics/qtr-8rc",
+    "stateHash": "ad79be518cf4d830c9d0a3bc94eac6cec293c8f43e793925da684b81a7a40fb7",
+    "canonicalBytes": 173983,
+    "nets": 24,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-tb6612fng",
+    "kind": "bench",
+    "item": "robotics/tb6612fng",
+    "stateHash": "8cf90e165726df6ec1dc2a64664b82f4b8f43dc0760985e70cc7e67892539d76",
+    "canonicalBytes": 152835,
+    "nets": 15,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-transistor-switch",
+    "kind": "bench",
+    "item": "robotics/transistor-switch",
+    "stateHash": "3d8157506e8a3cd62014e3393536280b3b566556e3045d40feffd82228e8db56",
+    "canonicalBytes": 221086,
+    "nets": 6,
+    "warnings": 0
+  },
+  {
+    "id": "prj_bench-uno-r3-build",
+    "kind": "bench",
+    "item": "robotics/uno-r3-build",
+    "stateHash": "c44f4bfc534ec96730fada5cb999680662e1afbc9a6ccf4693d30ca10bd3df2b",
+    "canonicalBytes": 245799,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-agrihex",
+    "kind": "craft",
+    "item": "drone/agrihex",
+    "stateHash": "5252f7a3b39d63d86a5b909b80e94a200ed4e81a0e0282aea4bd1dbdc7b45429",
+    "canonicalBytes": 269364,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-cinewhoop",
+    "kind": "craft",
+    "item": "drone/cinewhoop",
+    "stateHash": "7417d5d8040807d5a976985f51c13c62ec73dd3b90b234f04a21711d81d9759b",
+    "canonicalBytes": 284635,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-delivery",
+    "kind": "craft",
+    "item": "drone/delivery",
+    "stateHash": "8365b5fa388fd9ec9ce959852d548be8ced72b6cfec7fc0b676c9ff16eb2c984",
+    "canonicalBytes": 257444,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-gpscam",
+    "kind": "craft",
+    "item": "drone/gpscam",
+    "stateHash": "5e23cfc693489a2f65367ff47ab0972c009e2d246a2a9d15cc1d0d4f0b12d7ae",
+    "canonicalBytes": 233146,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-longrange",
+    "kind": "craft",
+    "item": "drone/longrange",
+    "stateHash": "809b8fed4abcd941d6f3d44056bcff61b0cacc71d87e765ea2758284313bef34",
+    "canonicalBytes": 271995,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-octo",
+    "kind": "craft",
+    "item": "drone/octo",
+    "stateHash": "b03d58aa17ef45cdd066ef1fd825d1bb597415ae4f24dbbe2f4e3f1f152d5285",
+    "canonicalBytes": 237312,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-quad5",
+    "kind": "craft",
+    "item": "drone/quad5",
+    "stateHash": "96429ae26580fbd09819e234512ef610168ceb18267ff612419a8e1306f4e07d",
+    "canonicalBytes": 226886,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-racer",
+    "kind": "craft",
+    "item": "drone/racer",
+    "stateHash": "8f7eabfadbad4c32e76abf48a6b3c748883f33ccd1dfc661facee70837733b9f",
+    "canonicalBytes": 216584,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-swarm",
+    "kind": "craft",
+    "item": "drone/swarm",
+    "stateHash": "07f2c5014ae8988e32c4543edc6eb35f79be9ffa79e3000aa8ac62fd2baf4a11",
+    "canonicalBytes": 204381,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-tricopter",
+    "kind": "craft",
+    "item": "drone/tricopter",
+    "stateHash": "6dcf6a882c2a9c160dad02e864ed1cc2399d263e747cda98ed383583ab41e81d",
+    "canonicalBytes": 197437,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-vtol",
+    "kind": "craft",
+    "item": "drone/vtol",
+    "stateHash": "f1622310614dda4147939c455c46efcdcc5384da1e00653c3a8f987c10a42291",
+    "canonicalBytes": 238307,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-whoop",
+    "kind": "craft",
+    "item": "drone/whoop",
+    "stateHash": "2617e8c9449c2c7ad75b00a8a1d7220bf5751a4623c6af1026b1f2464267f670",
+    "canonicalBytes": 226817,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_craft-wing",
+    "kind": "craft",
+    "item": "drone/wing",
+    "stateHash": "73d9f92f76dca8c7ae0e7f2789e3707b0dcc9e09e1cab39fc5c04805abe8862e",
+    "canonicalBytes": 249325,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_de10-lite-blink",
+    "kind": "lesson",
+    "item": "board/de10-lite",
+    "stateHash": "48c768255385deb34add3b16e6ef4cf672c3a9c0de8313f4066eac1c98a16217",
+    "canonicalBytes": 39933,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_de10-lite-counter",
+    "kind": "lesson",
+    "item": "board/de10-lite",
+    "stateHash": "20e9ae7808fbc999e918941202be7ce6503e492a57f6bc56df29b476a1a02c14",
+    "canonicalBytes": 44092,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_de10-lite-hex",
+    "kind": "lesson",
+    "item": "board/de10-lite",
+    "stateHash": "5ba60bae6670791ba31ff6418d31d106328d370665a8f9f18d53771943be2bd4",
+    "canonicalBytes": 44806,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_de10-lite-pwm",
+    "kind": "lesson",
+    "item": "board/de10-lite",
+    "stateHash": "41d5f275cb7a478fb2de39d905a105458240bc2dd83d128b8829f893c565e362",
+    "canonicalBytes": 69240,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_de10-lite-switches",
+    "kind": "lesson",
+    "item": "board/de10-lite",
+    "stateHash": "1de0555eb6d72ffe317095423b2b0550846231117e696af6d059e7cb842712ef",
+    "canonicalBytes": 40194,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_de10-lite-tour",
+    "kind": "tour",
+    "item": "board/de10-lite",
+    "stateHash": "b019043607ea7ad4de27fcedec86a7107b2a90b9be78747e9faf3952267f15b3",
+    "canonicalBytes": 51846,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-devkitc-blink",
+    "kind": "lesson",
+    "item": "board/esp32-devkitc",
+    "stateHash": "ed1ef1200b4e1b39e62affde8a794f4ac28cfeb26ac46ec47341bb96350ea930",
+    "canonicalBytes": 53532,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-devkitc-boot-button",
+    "kind": "lesson",
+    "item": "board/esp32-devkitc",
+    "stateHash": "9dcde572705823c8f8dd88eba392321e0ab646872aa93b1bd9d3f992d6202030",
+    "canonicalBytes": 53223,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-devkitc-fade",
+    "kind": "lesson",
+    "item": "board/esp32-devkitc",
+    "stateHash": "e21564e8a477afa346b1af988e77a9e06e1616c0a1feb41912c75d760870ac2c",
+    "canonicalBytes": 53587,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-devkitc-touch",
+    "kind": "lesson",
+    "item": "board/esp32-devkitc",
+    "stateHash": "805cfa23f1153b6f82bc1ae7fbc528c4df31c49844d332e7f1a2868f8e699e3d",
+    "canonicalBytes": 51390,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-devkitc-tour",
+    "kind": "tour",
+    "item": "board/esp32-devkitc",
+    "stateHash": "d8f1010630f9b7dcacb90f9567d7eb564ba563215e23ed48a28d8a96a9e2af02",
+    "canonicalBytes": 43584,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-devkitc-web-switch",
+    "kind": "lesson",
+    "item": "board/esp32-devkitc",
+    "stateHash": "b87b0d3114b62758140588dbe3ba59f60cb582821b30f18c3ba44bbbd363923b",
+    "canonicalBytes": 57036,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-s3-devkitc-1-blink",
+    "kind": "lesson",
+    "item": "board/esp32-s3-devkitc-1",
+    "stateHash": "6ad29c58022e928da2682604f3b34de276640ec0ed1ad7da96741d7b0738f98f",
+    "canonicalBytes": 57130,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-s3-devkitc-1-boot-button",
+    "kind": "lesson",
+    "item": "board/esp32-s3-devkitc-1",
+    "stateHash": "d9d9ed864af811c0e8d3bca39e28febd71f4caacbd2f71b48b46cbb90b36bf9f",
+    "canonicalBytes": 56996,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-s3-devkitc-1-dimmer",
+    "kind": "lesson",
+    "item": "board/esp32-s3-devkitc-1",
+    "stateHash": "54385d695bb3e2176d9b19334d3503092b14ee1e8189e6aa1042b698f0b33b0d",
+    "canonicalBytes": 61253,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-s3-devkitc-1-tour",
+    "kind": "tour",
+    "item": "board/esp32-s3-devkitc-1",
+    "stateHash": "a8155b303b340ad9d35c44929c330aa52b7f08410c841f6edc725b69604ea25d",
+    "canonicalBytes": 45506,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_esp32-s3-devkitc-1-web-server",
+    "kind": "lesson",
+    "item": "board/esp32-s3-devkitc-1",
+    "stateHash": "a6a1cee91c462a8be11b0f1a0468271f30172600683df4bffc869fae24e67e2e",
+    "canonicalBytes": 57972,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_microbit-v2-blink",
+    "kind": "lesson",
+    "item": "board/microbit-v2",
+    "stateHash": "12f5a04212271af1c4d8c387a977838cbbaac802d763783453ce8172e33b0a5a",
+    "canonicalBytes": 49462,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_microbit-v2-buttons",
+    "kind": "lesson",
+    "item": "board/microbit-v2",
+    "stateHash": "fbe4dfb5fb60ffa44d4502c3635b3b1ebb70d60064534c6a26bdb303f1826665",
+    "canonicalBytes": 52369,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_microbit-v2-dimmer",
+    "kind": "lesson",
+    "item": "board/microbit-v2",
+    "stateHash": "eba3cc29d53f463bdb99ed44bd6f46db73e1852e00a07037f21802d95cfc8e78",
+    "canonicalBytes": 56484,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_microbit-v2-tilt",
+    "kind": "lesson",
+    "item": "board/microbit-v2",
+    "stateHash": "5fd0d27332fbbd711ae18fae289df732a10b04a69ea3c3a00fc11cc66407c02b",
+    "canonicalBytes": 22484,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_microbit-v2-touch-tune",
+    "kind": "lesson",
+    "item": "board/microbit-v2",
+    "stateHash": "c18de59af8ef41ef1f9aea954fac27dc5e256fbda47420be7c0b116ff81dd324",
+    "canonicalBytes": 24814,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_microbit-v2-tour",
+    "kind": "tour",
+    "item": "board/microbit-v2",
+    "stateHash": "5d82a2f32d4a7ca7ada883258002337a9693073806fa5c47b1c7319b3b7cb469",
+    "canonicalBytes": 38681,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nano-blink",
+    "kind": "lesson",
+    "item": "board/nano",
+    "stateHash": "591b131eea9f977c2ae7102b0dbb6cab762f57e67a115d76d042e52a22c62b87",
+    "canonicalBytes": 48893,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nano-button-sensor",
+    "kind": "lesson",
+    "item": "board/nano",
+    "stateHash": "25ffbeddb60c03264b72e6a16cebd3141bd9dab807a69d497f1c5ec7b5dc5d7a",
+    "canonicalBytes": 57495,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nano-fade",
+    "kind": "lesson",
+    "item": "board/nano",
+    "stateHash": "2766cf8f7abb94984b5a4ff869dccf8960f697a3b78539b10826085be44cdcbf",
+    "canonicalBytes": 57359,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nano-i2c",
+    "kind": "lesson",
+    "item": "board/nano",
+    "stateHash": "9b8d77f8306c28a5691e43209a6eafed28c3791a4ed4821605a24b266d99d8f1",
+    "canonicalBytes": 56267,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nano-tour",
+    "kind": "tour",
+    "item": "board/nano",
+    "stateHash": "e7e9162371c32828c50776d45cce92c97b3870d316e5774d3e0affb8538c2f43",
+    "canonicalBytes": 46526,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nodemcu-blink",
+    "kind": "lesson",
+    "item": "board/nodemcu",
+    "stateHash": "b45440c6fa3dd478e7982058d02ac75d120b46912cd5d22c9c2ab198efa8dbe1",
+    "canonicalBytes": 55226,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nodemcu-button",
+    "kind": "lesson",
+    "item": "board/nodemcu",
+    "stateHash": "7b8c75759b28f7127af707cc3ac50a435cc873b1161bf7df32036909717a68aa",
+    "canonicalBytes": 61888,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nodemcu-dimmer",
+    "kind": "lesson",
+    "item": "board/nodemcu",
+    "stateHash": "4542765e35ce4620ad4376c940968949297379798f6a24a43a0d375ea5eca074",
+    "canonicalBytes": 65138,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nodemcu-tour",
+    "kind": "tour",
+    "item": "board/nodemcu",
+    "stateHash": "46b0495ee7f85fe047f9d340b2181a035536f150c0fc582ec27e135f9c97e90a",
+    "canonicalBytes": 50219,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nodemcu-webserver",
+    "kind": "lesson",
+    "item": "board/nodemcu",
+    "stateHash": "3541f620496a52bb93055530fb60c89c03681a1716f7106aa241da8833e1a410",
+    "canonicalBytes": 58970,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nucleo-f401re-blink",
+    "kind": "lesson",
+    "item": "board/nucleo-f401re",
+    "stateHash": "f3de444cf963d16f64d1e43fa24cfb5b4cac267ff08c16c4329a37e249f130d9",
+    "canonicalBytes": 60816,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nucleo-f401re-i2c-scan",
+    "kind": "lesson",
+    "item": "board/nucleo-f401re",
+    "stateHash": "52baae2b6bddabe61c6186577861e0e759a39a012d55dc46d699847e9c18d816",
+    "canonicalBytes": 65515,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nucleo-f401re-pwm-dimmer",
+    "kind": "lesson",
+    "item": "board/nucleo-f401re",
+    "stateHash": "be6010daf50bb71fd0616e25b08a6ca1594dde33c9be7db60a369d8279586285",
+    "canonicalBytes": 68777,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nucleo-f401re-sonar",
+    "kind": "lesson",
+    "item": "board/nucleo-f401re",
+    "stateHash": "e511fc3f6d98552d41c202648306f860de2c119612c748a390f962a29d7bf7a2",
+    "canonicalBytes": 65532,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nucleo-f401re-tour",
+    "kind": "tour",
+    "item": "board/nucleo-f401re",
+    "stateHash": "8c03025acd25e09f0a82991c2c4a3e916cd40f28c6f05d5ca3e52b2cf8b051fd",
+    "canonicalBytes": 58934,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_nucleo-f401re-user-button",
+    "kind": "lesson",
+    "item": "board/nucleo-f401re",
+    "stateHash": "9bd7c2fd0b8b18c96602182b2c0b941d0bd673c8bea2a47bfe80e79a2603e3d6",
+    "canonicalBytes": 67564,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pi4-pi5-blink",
+    "kind": "lesson",
+    "item": "board/pi4-pi5",
+    "stateHash": "ae7187944baa3901f2c6a00b7f3fc988e627bcd68618d4ecb22f0fa864fbea38",
+    "canonicalBytes": 54122,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pi4-pi5-button",
+    "kind": "lesson",
+    "item": "board/pi4-pi5",
+    "stateHash": "0d4e47e0e95631e9c6065f36872d0c9dab903aa311cd00079989c4bbf989ceae",
+    "canonicalBytes": 61157,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pi4-pi5-distance",
+    "kind": "lesson",
+    "item": "board/pi4-pi5",
+    "stateHash": "a633c194799c2321207868d547ee8f40cf811630121765d1e58b9515233d5d28",
+    "canonicalBytes": 64588,
+    "nets": 7,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pi4-pi5-fade",
+    "kind": "lesson",
+    "item": "board/pi4-pi5",
+    "stateHash": "7aa1e9970d2488bd12403f81a53861981d5ee827a3614868ae1f73a667518554",
+    "canonicalBytes": 55307,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pi4-pi5-ros2",
+    "kind": "lesson",
+    "item": "board/pi4-pi5",
+    "stateHash": "87eaa62efb6ebf8a88646365a5fb3f106d7173c045db117a72964525621de189",
+    "canonicalBytes": 64953,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pi4-pi5-tour",
+    "kind": "tour",
+    "item": "board/pi4-pi5",
+    "stateHash": "193f71968ff652abb62d5e1fe7cc6bfea8b90ba4223cf32721c2ef408967d4d4",
+    "canonicalBytes": 52749,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-blink",
+    "kind": "lesson",
+    "item": "board/pico",
+    "stateHash": "8436e784585e08ed9a90eb00c5157a6d3bb8c517a6c147c3916a9af7031122e4",
+    "canonicalBytes": 54775,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-blink-cpp",
+    "kind": "lesson",
+    "item": "board/pico",
+    "stateHash": "8701f9c99dae7e33bd1d341ca93c12c4fb9068953a17c5a5abd895dfc70fec15",
+    "canonicalBytes": 55402,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-button",
+    "kind": "lesson",
+    "item": "board/pico",
+    "stateHash": "a8f3a4e87d278d21a1bfcb24e2e0a2c6497f48cafff9332dd44c3477f06e37d4",
+    "canonicalBytes": 60189,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-fade",
+    "kind": "lesson",
+    "item": "board/pico",
+    "stateHash": "5a13b70dcc95050def31c0030fc8d288a2453a163b51388d271a893b7302940a",
+    "canonicalBytes": 60398,
+    "nets": 6,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-i2c-mpu6050",
+    "kind": "lesson",
+    "item": "board/pico",
+    "stateHash": "7008dd7069141a7473be64f9b490d582d44ebbee6e439af42ea888cf0f7ce4d5",
+    "canonicalBytes": 58591,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-tour",
+    "kind": "tour",
+    "item": "board/pico",
+    "stateHash": "68bcacfc75dec59f15a859f3ce4c8c406a172e0afa5db0bb96affd5f742164ba",
+    "canonicalBytes": 54848,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_pico-wifi",
+    "kind": "lesson",
+    "item": "board/pico",
+    "stateHash": "7a67c94c81458b975c80890ef7377b03d426d3205f71b3edd578284a5c67d909",
+    "canonicalBytes": 26251,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-a4988-quarter-turn",
+    "kind": "task",
+    "item": "robotics/a4988",
+    "stateHash": "af0d97ec505190c79156145dbba402321ca0396ecfbc49f9b6f34267597c0424",
+    "canonicalBytes": 14391,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-a4988-turn-and-back",
+    "kind": "task",
+    "item": "robotics/a4988",
+    "stateHash": "1ce48f959473f832f6dd81a4d7b14d651721ed6d160b75a3fd965770c4c0408c",
+    "canonicalBytes": 14396,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-esp32-s3-build-boot-counter",
+    "kind": "task",
+    "item": "robotics/esp32-s3-build",
+    "stateHash": "583d7125199a11f6632a8966b200b5e3a30b354f90a29061a5814105f117652c",
+    "canonicalBytes": 13876,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-esp32-s3-build-reaction",
+    "kind": "task",
+    "item": "robotics/esp32-s3-build",
+    "stateHash": "79e37b79033be4887449d3278d3e1c76368ba03ecddc4499c9fa848927953192",
+    "canonicalBytes": 15547,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-esp32-s3-build-rgb-pin",
+    "kind": "task",
+    "item": "robotics/esp32-s3-build",
+    "stateHash": "80bd311e92fa75e1e9d53228b248e4e157279ef7a3d49125147d8df14f58f454",
+    "canonicalBytes": 13129,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-esp32-s3-build-web-led",
+    "kind": "task",
+    "item": "robotics/esp32-s3-build",
+    "stateHash": "3933df0999327e331331f93e5ca21ea305bfae7a0277794d57c3123efb6d0dad",
+    "canonicalBytes": 16946,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-hc-sr04-brake",
+    "kind": "task",
+    "item": "robotics/hc-sr04",
+    "stateHash": "1a3567599fb973dcb3efed3e29150006bc98dbf7cb767e0462b5f9d597ea227f",
+    "canonicalBytes": 15637,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-hc-sr04-speed",
+    "kind": "task",
+    "item": "robotics/hc-sr04",
+    "stateHash": "305cfb300d12290757058addb42b928b8fd3a80779271e32d5cdbf0765c88a36",
+    "canonicalBytes": 17399,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-l298n-soft-start",
+    "kind": "task",
+    "item": "robotics/l298n",
+    "stateHash": "ba519567b17d1eb9b9a4d7ce825af0fd2e5dd11c08ff24868938b2c868efd353",
+    "canonicalBytes": 14659,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-l298n-square",
+    "kind": "task",
+    "item": "robotics/l298n",
+    "stateHash": "fa7b31afde7e225061c6bb508283947e0c4872592120b7aa3b20d3f3452a0023",
+    "canonicalBytes": 16596,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-led-resistor-ohms-law",
+    "kind": "task",
+    "item": "robotics/led-resistor",
+    "stateHash": "d2cc2d5cb9dc5f00cb85dbf6bd11a18449edf0ca3b2b5a8a3bbd07f30c27b4b0",
+    "canonicalBytes": 15034,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-led-resistor-pwm-current",
+    "kind": "task",
+    "item": "robotics/led-resistor",
+    "stateHash": "c55ceb344e000e313e627641c2203324f05a7a536be4ed7b1b6bb329a4f538cd",
+    "canonicalBytes": 16636,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-lm2596-cut-off",
+    "kind": "task",
+    "item": "robotics/lm2596",
+    "stateHash": "73c9f1e0679f7fea34d49f83d6dde51d7fedb9c92e98b982efe057f8f07c721b",
+    "canonicalBytes": 16119,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-lm2596-set-points",
+    "kind": "task",
+    "item": "robotics/lm2596",
+    "stateHash": "120006cfc8b80814cacb40b961fefc35ea69b1758382077c19c8c8b9fc34a06a",
+    "canonicalBytes": 14270,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-mpu6050-alarm",
+    "kind": "task",
+    "item": "robotics/mpu6050",
+    "stateHash": "644d8939360f8b1854a1193c3462fd96b90068215180746ba93be7a91e56c993",
+    "canonicalBytes": 17593,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-mpu6050-calibrate",
+    "kind": "task",
+    "item": "robotics/mpu6050",
+    "stateHash": "e0bb42095a2809cdcbaff2ab1bb03c6dc0a1c5bdd19963815d65b4673ca670b0",
+    "canonicalBytes": 14863,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-pca9685-knob",
+    "kind": "task",
+    "item": "robotics/pca9685",
+    "stateHash": "2336605c16e40ae01cea291b01f4e770ad0ce07d4907e8078b99b772fad7a8f0",
+    "canonicalBytes": 14138,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-pca9685-ticks",
+    "kind": "task",
+    "item": "robotics/pca9685",
+    "stateHash": "6d508a62b769e1ec5ca5bfc934501875bad8232d2e215e4f8bf031f8655800c3",
+    "canonicalBytes": 15316,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-pi5-ros2-cmd-vel-10hz",
+    "kind": "task",
+    "item": "robotics/pi5-ros2",
+    "stateHash": "5b35d2c745316ed9ff9217a24789f2744f9809647096cd455d8c0ffbc717b30e",
+    "canonicalBytes": 15453,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-pi5-ros2-diff-drive",
+    "kind": "task",
+    "item": "robotics/pi5-ros2",
+    "stateHash": "399b5f716bcc58171e5cecaca48b94d3008dda808726bb9daad68697c3748929",
+    "canonicalBytes": 16072,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-pi5-ros2-range-pipeline",
+    "kind": "task",
+    "item": "robotics/pi5-ros2",
+    "stateHash": "b9bcd300b3d4765c22f3b20c35ad5b3bafafbce2da97b062fe8eea926370e300",
+    "canonicalBytes": 20919,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-qtr-8rc-search",
+    "kind": "task",
+    "item": "robotics/qtr-8rc",
+    "stateHash": "1ec92921ac0fe6dbd2c388eb95bb9f0cb3884cf5234915a8bdeaf9c55ffe7a42",
+    "canonicalBytes": 20914,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-qtr-8rc-steer",
+    "kind": "task",
+    "item": "robotics/qtr-8rc",
+    "stateHash": "32403d8b363a709eeafe2a16c4555ccc593ab7ea3535d10a3003fd5a3f1ef704",
+    "canonicalBytes": 20078,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-tb6612fng-five-speeds",
+    "kind": "task",
+    "item": "robotics/tb6612fng",
+    "stateHash": "e55f8a7763e894f5be6b5d80fb0cd3624a1c956c1f99bc78565b742ad520d098",
+    "canonicalBytes": 15630,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-tb6612fng-one-turn",
+    "kind": "task",
+    "item": "robotics/tb6612fng",
+    "stateHash": "ff59a45a951b0d3eff0a02e21d76b723bf6bb1bc26809c919c5f6f92fe851c1d",
+    "canonicalBytes": 19784,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-transistor-switch-pulse",
+    "kind": "task",
+    "item": "robotics/transistor-switch",
+    "stateHash": "2849c774c83c91c01de8d3dc1c45331c1ba848f7764f92c7349e3c1f787698e5",
+    "canonicalBytes": 11877,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-transistor-switch-soft-start",
+    "kind": "task",
+    "item": "robotics/transistor-switch",
+    "stateHash": "68c39a19ff2bf1dec404764d9db73477c94caaf340752d21f7749926f2df4c6e",
+    "canonicalBytes": 12378,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-transistor-switch-speed-knob",
+    "kind": "task",
+    "item": "robotics/transistor-switch",
+    "stateHash": "da44ca04386a2ece6a34e9cb8bca03f59cb1703c546f93ef9669d070f9a97c0c",
+    "canonicalBytes": 44038,
+    "nets": 8,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-transistor-switch-toggle-button",
+    "kind": "task",
+    "item": "robotics/transistor-switch",
+    "stateHash": "cbd1a4cdb9b1298be0b900344a0c7d34340a661d7c4667d4d2d8396055b609d3",
+    "canonicalBytes": 45253,
+    "nets": 7,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-uno-r3-build-fade-pwm",
+    "kind": "task",
+    "item": "robotics/uno-r3-build",
+    "stateHash": "3115646c6904517b554142cfc00becaff3acbf7a998551ff0c9855cb51fef67a",
+    "canonicalBytes": 41536,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_task-uno-r3-build-reaction-timer",
+    "kind": "task",
+    "item": "robotics/uno-r3-build",
+    "stateHash": "34d30fdfcb8d2c98b0984c78e50cc0092fbf3a631b2faf64330de2408c53444c",
+    "canonicalBytes": 50641,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-blink",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "49306adbcd0a9f30e57ace9fa27a1fb6f2f7f9a3bdf4afdb9a383a85e2ceac19",
+    "canonicalBytes": 56509,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-board",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "143a27649e19703596924d4ff9e6874af7c852459aaf678b847c7f25c78377e0",
+    "canonicalBytes": 33106,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-button",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "684046b4eb12475e4979326c2f0eb0ad715337c255d0eacd3357847d0730e830",
+    "canonicalBytes": 62017,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-distance",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "d9ce3a45e0be7b9987fa64122e54e1a05524df6fa8bcc8ca431ee2c0ef3642af",
+    "canonicalBytes": 56131,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-force",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "972ec96dea9b25e9bc22d5041549eeab64bcddcd3a75b280056f50d06ff8b229",
+    "canonicalBytes": 68161,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-heat",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "07ebfc4df3b59f6d9873629273eede3b02749090147040fe4d37ae248e5a23ed",
+    "canonicalBytes": 62699,
+    "nets": 6,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-knob",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "1460ed1236816e09aaa0f15c80822524e60f0ff3896791a68c002bed4238a31e",
+    "canonicalBytes": 63021,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-light",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "0d58cc0c67d57607695ef0f9bbaadfd75d7de1942955f5576c913caddc6d2de4",
+    "canonicalBytes": 63527,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-motor",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "3cebeae2551e0312a5ba2899d58ae5ea11b8980d1e14e70b2f0ef1b8038efa85",
+    "canonicalBytes": 57913,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-parking",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "6ac6d598f0da38188fa39c8e5e1b95d6bc39923a052498f5d326267422d44948",
+    "canonicalBytes": 57862,
+    "nets": 7,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-piano",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "f6a4047d24980a213f0883c5b57e6fcb4db5e0c73e5b69fba67e4f503f131cc3",
+    "canonicalBytes": 63381,
+    "nets": 10,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-plant",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "adf5b4dcfdca6f19850bc7c3daed5251e2a1a18c9d83d539095005589f8c1836",
+    "canonicalBytes": 61482,
+    "nets": 6,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-rgb",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "3cdd70a14ef848552ea6b14d37a15bc0bf52abe4d6543a9dc119faaddc5ac00a",
+    "canonicalBytes": 56006,
+    "nets": 7,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-servo",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "94ad0b8960548168088ffc48180af9db1fb16372beeda3cf2c444fdf312f1ec2",
+    "canonicalBytes": 51683,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-sound",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "263e66c8e95d18fce68a7104c98675a3d5a5e868aa6788289f4f2fbd6d9b2398",
+    "canonicalBytes": 51685,
+    "nets": 2,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-stepper",
+    "kind": "lesson",
+    "item": "board/uno-r3",
+    "stateHash": "203c5625e0a3784afc986296793f727fe4d1200b3ae0b3d2120e6f42109530ed",
+    "canonicalBytes": 64037,
+    "nets": 7,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r3-tour",
+    "kind": "tour",
+    "item": "board/uno-r3",
+    "stateHash": "c522995c28a720e12ce971708502f4511d5bdab6c68a63a7a4e6bacebd799c4d",
+    "canonicalBytes": 77938,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-blink",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "f1fe38c5f1d4755a7fd6b7acc5d082e4c86c3224f3813e35d2c4d29bc2f27911",
+    "canonicalBytes": 56480,
+    "nets": 3,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-button",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "67262797426afb3f8965917060509ee605f3dc9ef2b565b5220a000591c4d297",
+    "canonicalBytes": 61096,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-dac-wave",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "2c18d7bed884dd65a242ddb5035fce8e01ad7f6165086cacc079a5c331a7426e",
+    "canonicalBytes": 52026,
+    "nets": 2,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-i2c-scan",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "09d3ec4d290e64aa090ecb20be2ada230f93df7dc09befdb5204b48a6e7d8e46",
+    "canonicalBytes": 60461,
+    "nets": 4,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-matrix",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "30c69f9c749bf537495f48b325813bc4dfab941ab87fb9e44a9837e934e4236e",
+    "canonicalBytes": 24285,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-pot-pwm",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "34addcc92803fdce36674208f3863985f95229f1df131cf74cddc7ee49078ea8",
+    "canonicalBytes": 62473,
+    "nets": 5,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-tour",
+    "kind": "tour",
+    "item": "board/uno-r4",
+    "stateHash": "5cc20705bbe8e28a5152d5e6339cbe79b0f2dade77572323334e515e80c7fb52",
+    "canonicalBytes": 51045,
+    "nets": 0,
+    "warnings": 0
+  },
+  {
+    "id": "prj_uno-r4-wifi",
+    "kind": "lesson",
+    "item": "board/uno-r4",
+    "stateHash": "c4b22f0e6cec2d7a05886327ae9d42ad257d7345d6a1cb704db2c1159e32f544",
+    "canonicalBytes": 27726,
+    "nets": 0,
+    "warnings": 0
+  }
+]

@@ -486,6 +486,10 @@ pickers and buttons are core buttons. A craft needs no code for any of this.
 (v3) `SL.drone.settle()` returns a promise that resolves once the figure stops animating (placements, tests and
 `craft.animating` all done), so a test can wait for a sweep without polling.
 
+`SL.drone.advanceUntil(done, maxSeconds, dt = 0.05)` is the test seam: it steps simulated time with the frame loop's own
+step until `done()` is true or `maxSeconds` pass, draws once and returns `done()`. A test that also loads the page with
+`frozenClock` (testkit) never depends on the CPU share. No production page calls it.
+
 ### 10.5 URL parameters (v2)
 
 The engine reads these on load, in this order, on top of the core's own (`yaw`, `pitch`, `xr`, `labels`,

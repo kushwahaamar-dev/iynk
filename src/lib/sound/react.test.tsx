@@ -2,11 +2,9 @@ import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { FigureEvent } from "@/components/figure/protocol";
 import { createBoardLabStore, initialState } from "@/lib/boardlab/store";
-import type { RoomClient } from "@/lib/realtime/room";
-import { attachStore } from "@/lib/realtime/store-sync";
 import { boardMoments } from "./moments";
 
-const calls = vi.hoisted(() => ({ played: [] as string[], tracked: [] as [string, unknown][], context: [] as unknown[] }));
+const calls = vi.hoisted(() => ({ played: [] as string[], tracked: [] as [string, unknown][] }));
 
 vi.mock("./index", () => ({
   playSound: (name: string) => calls.played.push(name),
@@ -16,7 +14,6 @@ vi.mock("./index", () => ({
 
 vi.mock("@/lib/telemetry", () => ({
   track: (kind: string, data: unknown) => calls.tracked.push([kind, data]),
-  setTelemetryContext: (next: unknown) => calls.context.push(next),
 }));
 
 import { useFigureSound, useLabMoments } from "./react";
@@ -24,7 +21,6 @@ import { useFigureSound, useLabMoments } from "./react";
 beforeEach(() => {
   calls.played = [];
   calls.tracked = [];
-  calls.context = [];
 });
 
 const state = (n: number, name: string): FigureEvent => ({ type: "state", state: { sfx: { n, name } }, changed: ["sfx"] });
@@ -57,9 +53,9 @@ function boardStore() {
 }
 
 describe("useLabMoments", () => {
-  test("a check run sounds and counts; the page's item is stamped on telemetry", () => {
+  test("a check run sounds and counts", () => {
     const store = boardStore();
-    const { unmount } = renderHook(() => useLabMoments(store, boardMoments, "uno-r3"));
+    const { unmount } = renderHook(() => useLabMoments(store, boardMoments));
     act(() => {
       store.dispatch({ type: "checks/start" });
       store.dispatch({ type: "checks/result", results: [{ ok: true }] });
@@ -73,7 +69,6 @@ describe("useLabMoments", () => {
     ]);
     expect(calls.played).toEqual(["pass"]);
     unmount();
-    expect(calls.context).toEqual([{ item: "uno-r3" }, { item: undefined }]);
   });
 
   test("a build step with a progress key is counted; a board assembly step (no key) is not", () => {
@@ -82,28 +77,9 @@ describe("useLabMoments", () => {
       { kind: "step" as const, key: "robotics:tb6612fng:step:wire-stby" },
       { kind: "step" as const, key: null },
     ];
-    renderHook(() => useLabMoments(store, steps, "tb6612fng"));
+    renderHook(() => useLabMoments(store, steps));
     act(() => store.dispatch({ type: "fault/trigger", id: "short-5v" }));
     expect(calls.tracked).toEqual([["step.done", { key: "robotics:tb6612fng:step:wire-stby" }]]);
     expect(calls.played).toEqual(["step", "step"]);
-  });
-
-  test("a room joiner taking the host's snapshot is not a new fault or step", () => {
-    const store = boardStore();
-    let target: { hydrate(snapshot: unknown): void } | null = null;
-    const room = {
-      bind: (next: typeof target) => (target = next),
-      beforeBatonPass: () => () => {},
-      getState: () => ({ you: { id: "me" }, batonHolder: "host" }),
-      holdsBaton: () => false,
-    } as unknown as RoomClient;
-    const detach = attachStore(store, "board", room, { scope: "/boards/uno-r3/blink" });
-    renderHook(() => useLabMoments(store, boardMoments, "uno-r3"));
-    const host = { ...store.getState(), fault: "short-5v", assembly: ["usb"] };
-    act(() => target!.hydrate({ scope: "/boards/uno-r3/blink", state: JSON.parse(JSON.stringify(host)) }));
-    expect(store.getState().fault).toBe("short-5v");
-    expect(calls.tracked).toEqual([]);
-    expect(calls.played).toEqual([]);
-    detach();
   });
 });

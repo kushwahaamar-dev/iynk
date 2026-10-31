@@ -1,0 +1,142 @@
+{
+  "list": {
+    "title": "Proveedores de IA",
+    "intro": "Añade el proveedor que debe usar el compañero. Tu clave se queda en este navegador.",
+    "empty": "Aún no hay proveedor. Añade uno para activar el compañero.",
+    "add": "Añadir un proveedor",
+    "edit": "Editar",
+    "remove": "Quitar",
+    "removeAsk": "¿Quitar {label}? Su clave también se borra.",
+    "removeYes": "Quitarlo",
+    "removeNo": "Conservarlo",
+    "limit": "Puedes tener hasta {count} proveedores.",
+    "key": "Clave que termina en {tail}",
+    "noKey": "Sin clave",
+    "local": "Funciona en este ordenador",
+    "via": {
+      "auto": "Directo y luego relé",
+      "direct": "Directo",
+      "relay": "Relé"
+    },
+    "tested": "Probado el {date}: {passed} de {total} comprobaciones superadas",
+    "untested": "Aún sin probar",
+    "notPersisted": "Este navegador no puede conservar los proveedores al cerrar la pestaña."
+  },
+  "legacy": {
+    "offer": "Usar tu clave guardada con",
+    "use": "Usar la clave guardada",
+    "failed": "No se pudo mover la clave guardada. Inténtalo de nuevo."
+  },
+  "form": {
+    "addTitle": "Añadir un proveedor",
+    "editTitle": "Editar {label}",
+    "preset": "Proveedor",
+    "custom": "Otra dirección",
+    "family": "Tipo",
+    "familyAnthropic": "Anthropic",
+    "familyOpenai": "Compatible con OpenAI",
+    "label": "Nombre",
+    "baseUrl": "Dirección",
+    "baseUrlHint": "La dirección web hasta la versión, por ejemplo https://api.openai.com/v1",
+    "key": "Clave",
+    "keyHint": "Se guarda en este navegador y no vuelve a mostrarse.",
+    "keyKeep": "Déjalo en blanco para conservar la clave guardada.",
+    "keySaved": "Clave guardada que termina en {tail}",
+    "keyLocal": "Este proveedor funciona en tu ordenador y no necesita clave.",
+    "keyBad": "La clave debe tener de 8 a 512 caracteres visibles.",
+    "via": "Ruta",
+    "viaAuto": "Automática",
+    "viaDirect": "Directa desde este navegador",
+    "viaRelay": "A través de tu servidor",
+    "models": "Modelos",
+    "modelsNone": "Añade al menos un modelo.",
+    "modelId": "Id del modelo",
+    "tier": "Nivel",
+    "tierNone": "Sin nivel",
+    "tierFast": "Rápido",
+    "tierStandard": "Estándar",
+    "tierStrong": "Potente",
+    "context": "Tokens de contexto",
+    "output": "Tokens de salida",
+    "priceIn": "Entrada en USD por millón de tokens",
+    "priceOut": "Salida en USD por millón de tokens",
+    "priceBoth": "Rellena los dos precios o ninguno.",
+    "priceStale": "Este precio es del {date}. Compruébalo con el proveedor.",
+    "modelAdd": "Añadir un modelo",
+    "modelRemove": "Quitar el modelo {n}",
+    "save": "Guardar",
+    "saved": "Guardado.",
+    "close": "Cerrar",
+    "test": "Guardar y probar",
+    "testing": "Probando"
+  },
+  "test": {
+    "title": "Resultados de la prueba",
+    "date": "Probado el {date}",
+    "pass": "Superada",
+    "fail": "Fallida",
+    "toolsOff": "Herramientas: desactivadas para este proveedor. El compañero puede responder, pero no puede leer tu proyecto con herramientas.",
+    "csp": "La política de este sitio no permite esa dirección. Añádela a IYNK_CONNECT_ORIGINS y reinicia el contenedor web.",
+    "noModel": "Añade un modelo antes de probar.",
+    "error": "No se pudo hacer la prueba. Inténtalo de nuevo.",
+    "check": {
+      "C1": "Llega al proveedor",
+      "C2": "Chat sencillo",
+      "C3": "Streaming con uso",
+      "C4": "Ciclo de herramienta",
+      "C5": "Herramientas en paralelo",
+      "C6": "Sin elegir herramienta",
+      "C7": "Texto JSON de respaldo",
+      "C8": "Traducción de errores",
+      "C9": "Informe de caché",
+      "C10": "Cancelación"
+    }
+  },
+  "caps": {
+    "title": "Límites de gasto",
+    "hint": "Deja un campo en blanco para usar el valor por defecto. Escribe {word} para quitar un límite. No se acepta 0.",
+    "word": "sin límite",
+    "dayUSD": "Por día (USD)",
+    "monthUSD": "Por mes (USD)",
+    "sessionUSD": "Por sesión (USD)",
+    "dayTokens": "Tokens por día",
+    "sessionTokens": "Tokens por sesión",
+    "default": "Por defecto {value}",
+    "zero": "No se acepta 0. Escribe {word} para quitar el límite.",
+    "number": "Escribe un número mayor que 0.",
+    "save": "Guardar límites",
+    "saved": "Límites guardados."
+  },
+  "usage": {
+    "title": "Usado en este navegador",
+    "today": "Hoy: {tokens} tokens, {cost}",
+    "month": "Este mes: {tokens} tokens, {cost}",
+    "unpriced": {
+      "one": "{count} llamada no tiene precio conocido.",
+      "other": "{count} llamadas no tienen precio conocido."
+    },
+    "search": "Búsquedas: {today} hoy, {month} este mes"
+  },
+  "prices": {
+    "asOf": "Tabla de precios del {date}.",
+    "stale": "Tabla de precios del {date}. Tiene más de 90 días, así que comprueba los precios con tu proveedor."
+  },
+  "retention": {
+    "title": "Conservar conversaciones",
+    "session": "Solo esta sesión",
+    "project": "Por proyecto, 90 días",
+    "forever": "Hasta que las borre"
+  },
+  "data": {
+    "delete": "Borrar datos de IA",
+    "ask": "¿Borrar todas las conversaciones, registros y contadores de uso? Tus claves se quedan.",
+    "yes": "Borrar",
+    "no": "Conservar",
+    "done": "Datos de IA borrados.",
+    "failed": "No se pudieron borrar los datos de IA. Inténtalo de nuevo."
+  },
+  "notes": {
+    "relay": "Si usas el servidor de un amigo como relé, tu clave pasa por su máquina en cada llamada.",
+    "cap": "Los límites de gasto cuentan solo en este navegador, así que fija también un límite con tu proveedor."
+  }
+}

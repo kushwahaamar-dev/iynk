@@ -1,0 +1,619 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.servo-sg90",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "TowerPro SG90 micro servo",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "A 9 g hobby servo with a 180 degree arm. Its supply window is 4.8 to 6 V; the current figures are assumptions, not datasheet values."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "servo-sg90"
+    ],
+    "tags": [
+      "servo",
+      "sg90",
+      "pwm",
+      "actuator",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components: fact sheet (Learn Arduino parts + common sensors/actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md section 14: TowerPro sheet values and seller current figures."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/servo-sg90.js",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: element stamps",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Line 111 stamps the servo element."
+    }
+  ],
+  "pins": [
+    {
+      "id": "GND",
+      "name": {
+        "en": "Ground (brown)"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "polarity": "negative",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "VPLUS",
+      "name": {
+        "en": "Supply (red)"
+      },
+      "designator": "V+",
+      "type": "power_in",
+      "class": "power",
+      "polarity": "positive",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    },
+    {
+      "id": "SIG",
+      "name": {
+        "en": "Signal (orange)"
+      },
+      "designator": "SIG",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 5.08,
+        "y": 0
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "micro servo, JR plug",
+    "body": {
+      "w": 22.2,
+      "h": 11.8,
+      "d": 31
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 14"
+    }
+  },
+  "ratings": {
+    "supply_voltage": {
+      "measure": "voltage",
+      "role": "operating",
+      "description": {
+        "en": "Operating supply window."
+      },
+      "scope": {
+        "pins": [
+          "GND",
+          "VPLUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 4.8,
+        "max": 6.0,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14; figures/parts/servo-sg90.js:53"
+        },
+        "rationale": {
+          "en": "The sheet states 4.8 V (about 5 V); the 6 V upper end comes from the figure, which calls anything above it out of rating. Neither end is a printed range."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "min_supply": {
+      "measure": "voltage",
+      "role": "threshold",
+      "description": {
+        "en": "Supply voltage under which the servo jitters."
+      },
+      "scope": {
+        "pins": [
+          "GND",
+          "VPLUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 4.0,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/servo-sg90.js:53"
+        },
+        "rationale": {
+          "en": "Below about 4 V the figure makes the servo jitter and resets the board. no source found; constant in figures/parts/servo-sg90.js:53"
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "idle_current": {
+      "measure": "current",
+      "role": "consumption",
+      "description": {
+        "en": "Current while holding."
+      },
+      "scope": {
+        "pins": [
+          "GND",
+          "VPLUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.008,
+        "confidence": "low",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14; figures/parts/servo-sg90.js:53"
+        },
+        "rationale": {
+          "en": "Assumed: the fact sheet says idle is about 5 to 10 mA, seller figures, not exact. The figure takes 8 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "moving_current": {
+      "measure": "current",
+      "role": "consumption",
+      "description": {
+        "en": "Current while the arm moves."
+      },
+      "scope": {
+        "pins": [
+          "GND",
+          "VPLUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.2,
+        "confidence": "low",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14; figures/parts/servo-sg90.js:53"
+        },
+        "rationale": {
+          "en": "Assumed: the fact sheet says 100 to 250 mA while moving, seller figures. The figure takes 200 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "stall_current": {
+      "measure": "current",
+      "role": "abs_max",
+      "description": {
+        "en": "Current when the arm pushes its stop."
+      },
+      "scope": {
+        "pins": [
+          "GND",
+          "VPLUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.7,
+        "confidence": "low",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14; figures/parts/servo-sg90.js:53"
+        },
+        "rationale": {
+          "en": "Assumed: the fact sheet says about 650 to 750 mA stalled at 5 V, unverified. The figure takes 700 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "pulse_period": {
+      "measure": "time",
+      "role": "timing",
+      "description": {
+        "en": "Time between pulses."
+      },
+      "scope": {
+        "pins": [
+          "SIG"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.02,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14"
+        },
+        "rationale": {
+          "en": "The sheet's pulse cycle of about 20 ms, quoted by the fact sheet (the sheet itself was not read)."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "pulse_min": {
+      "measure": "time",
+      "role": "timing",
+      "description": {
+        "en": "Pulse width for 0 degrees."
+      },
+      "scope": {
+        "pins": [
+          "SIG"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.0005,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14"
+        },
+        "rationale": {
+          "en": "500 microseconds for 0 degrees. The fact sheet says units vary by 10 degrees at the ends."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "pulse_max": {
+      "measure": "time",
+      "role": "timing",
+      "description": {
+        "en": "Pulse width for 180 degrees."
+      },
+      "scope": {
+        "pins": [
+          "SIG"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.0024,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14"
+        },
+        "rationale": {
+          "en": "2400 microseconds for 180 degrees. The fact sheet says units vary by 10 degrees at the ends."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "dead_band": {
+      "measure": "time",
+      "role": "timing",
+      "description": {
+        "en": "Pulse change the servo ignores."
+      },
+      "scope": {
+        "pins": [
+          "SIG"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 1e-05,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14"
+        },
+        "rationale": {
+          "en": "10 microseconds, as the fact sheet quotes the sheet."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "turn_speed": {
+      "measure": "rate",
+      "role": "characteristic",
+      "description": {
+        "en": "Arm speed at 4.8 V."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "deg_per_s",
+        "value": 600.0,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 14; figures/parts/servo-sg90.js:24"
+        },
+        "rationale": {
+          "en": "600 degrees a second, from 0.1 s per 60 degrees at 4.8 V as the fact sheet quotes the sheet."
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
+  "parameters": [
+    {
+      "id": "angle",
+      "name": {
+        "en": "Angle"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 90,
+      "min": 0,
+      "max": 180,
+      "unit": "deg"
+    },
+    {
+      "id": "demo",
+      "name": {
+        "en": "Show"
+      },
+      "kind": "environment",
+      "type": "enum",
+      "default": "hold 90°",
+      "values": [
+        "hold 90°",
+        "hold 0°",
+        "hold 180°",
+        "past the stop",
+        "low supply",
+        "burnt"
+      ]
+    }
+  ],
+  "mechanics": {
+    "servo": {
+      "stall_torque_nm": 0.1765,
+      "speed_s_per_60deg": 0.1,
+      "pulse_min_us": 500,
+      "pulse_max_us": 2400,
+      "angle_range_deg": 180,
+      "deadband_us": 10,
+      "source": {
+        "src": "factsheet",
+        "loc": "section 14"
+      }
+    }
+  },
+  "protocols": [
+    {
+      "id": "control",
+      "kind": "servo-pwm",
+      "role": "device",
+      "pins": {
+        "signal": "SIG"
+      },
+      "status": "not-modelled-yet"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A three-lead servo loading its supply. The signal pulse and arm angle are not read by the solver."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "GND",
+          "VPLUS",
+          "SIG"
+        ],
+        "summary": {
+          "en": "A load between V+ and GND that the solver sets to the idle current. The pulse on SIG is not read."
+        },
+        "model": {
+          "kind": "element",
+          "element": "servo",
+          "terminals": {
+            "gnd": "GND",
+            "vplus": "VPLUS",
+            "sig": "SIG"
+          },
+          "params": {
+            "vmin": {
+              "from_rating": "min_supply",
+              "pick": "value",
+              "unit": "V"
+            },
+            "vmax": {
+              "from_rating": "supply_voltage",
+              "pick": "max",
+              "unit": "V"
+            },
+            "period": {
+              "from_rating": "pulse_period",
+              "pick": "value",
+              "unit": "s"
+            },
+            "us_min": {
+              "from_rating": "pulse_min",
+              "pick": "value",
+              "unit": "s"
+            },
+            "us_max": {
+              "from_rating": "pulse_max",
+              "pick": "value",
+              "unit": "s"
+            },
+            "dead": {
+              "from_rating": "dead_band",
+              "pick": "value",
+              "unit": "s"
+            },
+            "speed": {
+              "from_rating": "turn_speed",
+              "pick": "value",
+              "unit": "deg_per_s"
+            },
+            "iidle": {
+              "from_rating": "idle_current",
+              "pick": "value",
+              "unit": "A"
+            },
+            "imove": {
+              "from_rating": "moving_current",
+              "pick": "value",
+              "unit": "A"
+            },
+            "istall": {
+              "from_rating": "stall_current",
+              "pick": "value",
+              "unit": "A"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A three-lead servo that loads its supply through V+ and GND with a small constant conductance."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The pulse on SIG: arm angle, dead band and the end stop are drawn by the figure only."
+      },
+      {
+        "en": "Moving and stall current: the element stamps a fixed load, so the 200 mA and 700 mA figures are shown but not drawn."
+      },
+      {
+        "en": "Gear wear and the potentiometer on the output shaft."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "supply voltage",
+        "min": 4.0,
+        "max": 6.0,
+        "unit": "V"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "currents_assumed",
+        "text": {
+          "en": "The idle, moving and stall currents are seller figures from the fact sheet, marked unverified there. They sit in the simulation slot, not as datasheet values."
+        }
+      },
+      {
+        "id": "signal_not_read",
+        "text": {
+          "en": "The solver servo element reads no signal; pulse width to angle is figure code only. The servo-pwm protocol is listed as not modelled yet."
+        },
+        "evidence": "figures/engine/bench-solve.js:111"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+        }
+      }
+    ],
+    "solver_requires": [
+      "servo"
+    ],
+    "tests": [
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/servo-sg90.conformance.json",
+        "note": "Layers resolve, terminals are pins, every rating has its slot."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "servo-sg90",
+        "path": "public/figures/parts/servo-sg90.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "GND",
+        "VPLUS",
+        "SIG"
+      ],
+      "span": [
+        2,
+        2
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "SG90 servo",
+      "body_colour": "#2f6fd0",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/servo-sg90.js and docs/facts/la-components.md section 14.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

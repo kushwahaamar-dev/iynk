@@ -1,0 +1,307 @@
+{
+  "builder": {
+    "title": "Robot",
+    "add": "Add to robot",
+    "driveBase": "Drive base",
+    "wheelPair": "Wheel pair",
+    "caster": "Caster",
+    "arm": "Arm link",
+    "bodies": "Bodies",
+    "joints": "Joints",
+    "sensors": "Sensors",
+    "mass": "Mass",
+    "size": "Size",
+    "axis": "Axis",
+    "limits": "Limits",
+    "unit": "Units",
+    "unitMetric": "Metric",
+    "unitImperial": "Imperial",
+    "problems": "Problems",
+    "noProblems": "No problems found in this robot.",
+    "empty": "This robot has no parts yet. Add a drive base to start.",
+    "undo": "Undo",
+    "redo": "Redo",
+    "added": "Added {part}.",
+    "target": "Part to edit",
+    "properties": "Properties",
+    "noTarget": "Nothing to edit yet.",
+    "unitLength": "Length unit",
+    "unitMass": "Mass unit",
+    "props": {
+      "mass": "Mass",
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "diameter": "Diameter",
+      "track": "Track width",
+      "damping": "Damping",
+      "friction": "Friction",
+      "offset": "Forward offset"
+    },
+    "errors": {
+      "no-chassis": "Add a chassis first.",
+      "no-descriptor": "This part is not in the parts library.",
+      "occupied": "That place on the robot is already taken.",
+      "rejected": "The change was refused. Nothing was added.",
+      "value": "Enter a number."
+    }
+  },
+  "parts": {
+    "motor": "Motor",
+    "gearbox": "Gearbox",
+    "driver": "Motor driver",
+    "battery": "Battery",
+    "wheel": "Wheel",
+    "servo": "Servo",
+    "stepper": "Stepper motor",
+    "encoder": "Encoder",
+    "lineSensor": "Line sensor",
+    "ranger": "Distance sensor",
+    "imu": "Motion sensor",
+    "chassis": "Chassis",
+    "massValue": "{mass} g",
+    "limitingPart": "Limiting part: {part}",
+    "openPart": "Open {part}"
+  },
+  "checks": {
+    "title": "Robot checks",
+    "status": {
+      "ok": "Passes",
+      "warn": "Close to the limit",
+      "fail": "Fails"
+    },
+    "value": "Value",
+    "limit": "Limit",
+    "line": "{title}: {status}, {value} against {limit}",
+    "formula": "Formula and assumptions",
+    "margin": "iynk's margin: {factor} times",
+    "none": "Run the checks to see results.",
+    "noPart": "No single part",
+    "coupling": "Motor and engine coupling",
+    "RB-C-01": {
+      "title": "Climb",
+      "asks": "Can the drive train move the robot on this slope?",
+      "note": "Wheel torque available against torque needed, with iynk's margin of 1.5."
+    },
+    "RB-C-02": {
+      "title": "Top speed",
+      "asks": "How fast can the robot go with this motor, gear and supply?",
+      "note": "Wheel radius times speed with no load over the gear ratio, at the supply minus the driver drop, then reduced by the load line."
+    },
+    "RB-C-03": {
+      "title": "Acceleration",
+      "asks": "How quickly can the robot speed up?",
+      "note": "Driven force minus rolling resistance, over the mass plus the spinning inertia of wheels and gearbox."
+    },
+    "RB-C-04": {
+      "title": "Stall current",
+      "asks": "If every motor stalls, can the driver and battery supply the current?",
+      "note": "Supply voltage over winding resistance for each motor, summed, against the driver, battery and wire ratings."
+    },
+    "RB-C-05": {
+      "title": "Logic supply dip",
+      "asks": "Does the logic supply stay high enough when the motors start?",
+      "note": "Peak motor current times the supply's source resistance against the lowest voltage the logic accepts. This one runs in the circuit solver."
+    },
+    "RB-C-06": {
+      "title": "Runtime",
+      "asks": "How long does the battery last in this duty profile?",
+      "note": "Usable battery energy over mean power, for the stated share of time at cruise, at stall and idle. The answer is a range."
+    },
+    "RB-C-07": {
+      "title": "Tipping",
+      "asks": "On what slope or braking does the robot tip over?",
+      "note": "Angle from the centre of mass to the wheel contacts, sideways and lengthways, against the slope and the acceleration over g."
+    },
+    "RB-C-08": {
+      "title": "Arm holding torque",
+      "asks": "Can each joint hold the arm and its load still?",
+      "note": "Torque of the masses beyond each joint about its axis, against the servo's stall or holding torque."
+    },
+    "RB-C-09": {
+      "title": "Encoder resolution",
+      "asks": "Is one encoder count small enough to control speed smoothly?",
+      "note": "Distance per count from the wheel size, counts per turn and gear ratio, then the speed step per loop period. Above 10 percent of the target speed, control is noisy."
+    },
+    "RB-C-10": {
+      "title": "Sensor placement",
+      "asks": "Are the sensors at a height and position where they can see?",
+      "note": "A line sensor's height and footprint against the line width. A distance sensor's minimum range against the nearest part of the robot in its beam."
+    }
+  },
+  "problems": {
+    "RB-E-TREE": "The joints must connect the bodies as a tree with exactly one root body. Check {joint}.",
+    "RB-E-MASS": "{body} has no mass. Give it a mass above 0.",
+    "RB-E-INERTIA": "The inertia of {body} is not possible: no axis may be larger than the sum of the other two.",
+    "RB-E-THIN": "{body} has a side of {size_mm} mm. Every collider side must be at least {min_mm} mm.",
+    "RB-E-AXIS": "The axis of {joint} is zero. Give it a direction.",
+    "RB-E-LIMITS": "The limits of {joint} are wrong: the lower limit {min} must be below the upper limit {max}. A turn of 360 degrees or more is a continuous joint.",
+    "RB-E-DRIVE": "{joint} is driven by {component}, which is not a motor, servo or stepper.",
+    "RB-E-WHEEL": "The wheel {joint} needs a wheel spec and a horizontal axis within 1 degree.",
+    "RB-E-SURFACE": "{body} refers to the surface {surface}, which does not exist.",
+    "RB-E-COUPLING": "The motor {component} would be unstable at this step size (step times speed of response is {factor}, above 1). Lower the step or add inertia.",
+    "RB-W-TUNNEL": "{body} may pass through thin walls: at {speed} m/s it moves {step_mm} mm per step, more than half of {thin_mm} mm.",
+    "RB-W-INERTIA-BOX": "{body} is a mesh, so its inertia is taken from its bounding box.",
+    "RB-W-ASPECT": "{body} is {ratio} times longer than it is thick, which makes contact unstable.",
+    "RB-W-MASSRATIO": "The masses on the two sides of {joint} differ by {ratio} times. The solver may be unstable.",
+    "RB-W-CG": "The centre of mass is {offset_mm} mm from the middle of the support area, more than half its width of {half_mm} mm. The robot is likely to tip.",
+    "RB-W-UNDRIVEN": "{joint} has no motor and will move freely. Attach a motor from the parts library.",
+    "RB-E-SENSOR": {
+      "unknown-component": "Sensor {sensor} uses {component}, which is not in the parts library.",
+      "not-a-sensor": "Sensor {sensor} uses {component}, which cannot make this kind of measurement."
+    },
+    "RB-E-LIMIT": {
+      "bodies": "This robot has {count} moving bodies, above the limit of {max}.",
+      "colliders": "This robot has {count} colliders, above the limit of {max}.",
+      "joints": "This robot has {count} joints, above the limit of {max}.",
+      "sensors": "This robot has {count} sensors, above the limit of {max}.",
+      "statics": "This robot has {count} fixed boxes, above the limit of {max}."
+    }
+  },
+  "run": {
+    "title": "Run results",
+    "hash": "Run hash: {hash}",
+    "distance": "Travelled {distance} m in {time} s.",
+    "speed": "Top speed {speed} m/s, mean speed {mean} m/s.",
+    "lap": "Lap {n}: {time} s.",
+    "lineLost": "Lost the line {count} times.",
+    "peakCurrent": "Peak motor current {current} A.",
+    "minSupply": "Lowest battery voltage {voltage} V.",
+    "resets": "The board reset {count} times.",
+    "tipped": "The robot tipped over at {time} s.",
+    "finished": "The run ended after {time} s.",
+    "physicsLoading": "Loading the physics engine ({kb} KB).",
+    "physicsFailed": "The physics engine did not start: {reason}"
+  },
+  "pid": {
+    "title": "PID",
+    "target": "Target",
+    "measured": "Measured",
+    "error": "Error",
+    "output": "Output",
+    "integral": "Integral term",
+    "riseTime": "Rise time",
+    "overshoot": "Overshoot",
+    "settlingTime": "Settling time",
+    "steadyError": "Steady error",
+    "table": "Values as a table",
+    "empty": "No PID lines have been printed yet. Run a sketch that prints them.",
+    "insert": "Insert PID code",
+    "noGains": "The panel shows the controller's behaviour. It never changes your gains."
+  },
+  "loop": {
+    "title": "Loop timing",
+    "mean": "Mean {ms} ms",
+    "p95": "95th percentile {ms} ms",
+    "max": "Longest {ms} ms",
+    "jitter": "Jitter {ms} ms",
+    "histogram": "Histogram of loop times",
+    "overrun": "{percent} percent of loops took longer than their period. The control code is too slow for this rate.",
+    "empty": "No loop timing yet. Run the robot first."
+  },
+  "home": {
+    "group": "Robot",
+    "blank": "Blank robot",
+    "blankHint": "Start from nothing and add parts yourself.",
+    "lineFollower": "Line follower",
+    "lineFollowerHint": "Two wheels and line sensors follow a track on the floor.",
+    "driveBase": "Drive base",
+    "driveBaseHint": "A base with two wheels with motors, a driver and a battery, ready to check.",
+    "speedControl": "Speed control",
+    "speedControlHint": "Hold a wheel at a target speed with an encoder and a PID loop."
+  },
+  "models": {
+    "title": "What it models",
+    "notYet": "Not modelled yet",
+    "tier": "Model level: {tier}",
+    "notChecked": "Not checked against a reference yet."
+  },
+  "safety": {
+    "title": "Lab safety",
+    "lipo": "Charge and store LiPo batteries in a safe place, never leave them charging unattended, and stop using one that is puffy or damaged.",
+    "pinch": "Wheels, gears and arms can pinch fingers. Keep hands clear when the robot is powered.",
+    "stall": "A stalled motor gets hot quickly. Cut the power if a motor hums and does not turn.",
+    "unattended": "Do not leave a powered robot unattended.",
+    "simulation": "The simulation can show a problem, but it cannot replace care with real hardware."
+  },
+  "cause": {
+    "motor-stall": {
+      "symptom": "The motor is stalled",
+      "hint1": "Look at the wheel with the power on. Is it held still while the motor is driven?",
+      "hint2": "Measure the motor current and speed. Is the current high while the speed is near zero?",
+      "hint3": "The load is more than the motor can turn at this voltage. Reduce the load, add gearing or raise the supply."
+    },
+    "motor-direction-reversed": {
+      "symptom": "The robot turns the wrong way",
+      "hint1": "Command forward and watch each wheel. Does one of them turn backwards?",
+      "hint2": "Check how each motor's two wires reach the driver. Are the left and right motors wired the same way round?",
+      "hint3": "One motor is wired backwards. Swap its two wires, or flip its direction in the code."
+    },
+    "encoder-channel-swapped": {
+      "symptom": "The encoder counts the wrong way",
+      "hint1": "Turn the wheel forward by hand or in the run and watch the count. Does it go down?",
+      "hint2": "Look at the two encoder channels, A and B, on a scope. Which one leads when the wheel goes forward?",
+      "hint3": "Channels A and B are swapped, so forward counts as backward. Swap the two wires or the two pins in the code."
+    },
+    "wheel-slip": {
+      "symptom": "The wheel spins but the robot does not move",
+      "hint1": "Watch the wheel and the floor under it. Does the wheel turn while the robot stays put?",
+      "hint2": "Compare the wheel speed with the robot's speed over the floor, and look at the weight on the wheel and the floor's grip.",
+      "hint3": "The wheel does not grip. Add weight over it, use a grippier tyre or a rougher surface, or accelerate more gently."
+    },
+    "driver-undersized": {
+      "symptom": "The motor driver cannot supply enough current",
+      "hint1": "Feel or watch the driver chip. Does it overheat or cut out when the motors start?",
+      "hint2": "Compare the motor's stall current with the driver's current rating.",
+      "hint3": "The driver is rated for less than the motors can draw. Use a stronger driver, a motor that draws less or a lighter load."
+    },
+    "battery-sag-reset": {
+      "symptom": "The board resets when the motors start",
+      "hint1": "Note when the resets happen. Do they come right as the motors switch on?",
+      "hint2": "Measure the battery or logic supply voltage while the motors start. Does it dip below what the board needs?",
+      "hint3": "The motors pull the battery voltage down far enough to reset the board. Use a stronger battery, add a capacitor, or power the board from a separate supply."
+    },
+    "sensor-too-high": {
+      "symptom": "The line sensor does not see the line",
+      "hint1": "Look at how far the sensor is above the floor. Is it much higher than the sensor's data sheet suggests?",
+      "hint2": "Read the sensor value over the line and over the bare floor. Are the two readings almost the same?",
+      "hint3": "The sensor is too high to tell line from floor. Lower it to the height its data sheet gives."
+    },
+    "sensor-saturated": {
+      "symptom": "The line sensor reads the same everywhere",
+      "hint1": "Move the robot over the line and over the floor. Does the sensor value stay at its highest or lowest reading?",
+      "hint2": "Check the light around the sensor and how close it is to the surface. Is it flooded with light or shaded completely?",
+      "hint3": "The sensor is saturated, so it cannot tell dark from light. Shield it from stray light, move it a little higher, or lower the emitter current."
+    },
+    "ranger-beam-blocked": {
+      "symptom": "The distance sensor always reads near",
+      "hint1": "Look at what is directly in front of the sensor. Is part of the robot inside its beam?",
+      "hint2": "Compare the distance it reads with the sensor's minimum range and with the distance to the nearest part of the robot.",
+      "hint3": "Part of the robot blocks the beam. Move the sensor so it has a clear view, or move the part."
+    },
+    "tip-over": {
+      "symptom": "The robot tips over",
+      "hint1": "Watch when it tips: when accelerating, braking, turning or on a slope?",
+      "hint2": "Measure how high the centre of mass is and how far apart the wheels are. Is the robot tall and narrow?",
+      "hint3": "The centre of mass is too high for the wheel spacing. Move heavy parts lower, widen the track, or accelerate and brake more gently."
+    },
+    "loop-too-slow": {
+      "symptom": "The speed swings up and down",
+      "hint1": "Plot the speed over time. Does it swing around the target in a steady rhythm?",
+      "hint2": "Open the loop timing panel. Does the control loop take longer than its period, or vary a lot from one pass to the next?",
+      "hint3": "The control loop runs too slowly to keep up. Shorten the work done in each pass, or lower the target rate or the gains."
+    }
+  },
+  "topdown": {
+    "title": "Top view",
+    "canvas": "Top view of the robot on its track",
+    "readout": "Pose of each body",
+    "groundTruth": "Ground truth",
+    "noFrame": "Not running. Bodies are shown at their start pose.",
+    "skipped": "Not drawn, no shape: {names}",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit to arena",
+    "empty": "This robot has no bodies to draw."
+  }
+}

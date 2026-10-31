@@ -1,8 +1,8 @@
 // The site navigation, in order. The header and the mobile menu both read this
-// array, so a new page (the hackathon layer's /together, /passport, /verify)
+// array, so a new page (like /together)
 // is one entry here plus a "nav.<id>" string in every locale's shell.json.
 
-export type NavId = "dashboard" | "boards" | "robotics" | "drones" | "together" | "passport" | "verify" | "about";
+export type NavId = "dashboard" | "boards" | "robotics" | "drones" | "together" | "about";
 
 export type NavEntry = {
   id: NavId;
@@ -10,7 +10,6 @@ export type NavEntry = {
   href: string;
   /** Show in the desktop bar too (the logo already links to the dashboard). */
   bar: boolean;
-  feature?: "solana";
 };
 
 export const NAV: readonly NavEntry[] = [
@@ -19,16 +18,12 @@ export const NAV: readonly NavEntry[] = [
   { id: "robotics", href: "/robotics", bar: true },
   { id: "drones", href: "/drones", bar: true },
   { id: "together", href: "/together", bar: true },
-  { id: "passport", href: "/passport", bar: false, feature: "solana" },
-  { id: "verify", href: "/verify", bar: false, feature: "solana" },
   { id: "about", href: "/about", bar: true },
 ];
 
-/** Bar is the desktop header. Sheet and footer list every entry the feature flags allow. */
-export function showNavEntry(entry: NavEntry, features: { solana: boolean }, where: "bar" | "sheet" | "footer"): boolean {
-  if (entry.feature && !features[entry.feature]) return false;
-  if (where === "bar") return entry.bar;
-  return true;
+/** Bar is the desktop header. Sheet and footer list every entry. */
+export function showNavEntry(entry: NavEntry, where: "bar" | "sheet" | "footer"): boolean {
+  return where === "bar" ? entry.bar : true;
 }
 
 /** Whether `pathname` is inside the entry (the dashboard only matches itself). */

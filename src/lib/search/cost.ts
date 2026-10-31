@@ -1,4 +1,4 @@
-import type { Offer } from "./types";
+import type { Offer } from "./types.ts";
 
 /**
  * What `units` of a part cost from one listing: whole listings, each holding

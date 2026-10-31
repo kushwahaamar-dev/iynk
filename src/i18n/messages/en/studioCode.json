@@ -1,0 +1,65 @@
+{
+  "title": "Code",
+  "files": "Code files",
+  "editor": "Code of {path}",
+  "noFiles": "This project has no code files",
+  "noFilesHint": "Parts that run code, such as a board, bring a firmware file with them.",
+  "errors": "Errors: {count}",
+  "position": "Line {line}, column {col}",
+  "plain": "Plain text",
+  "readOnly": "Read only",
+  "copy": "Copy code",
+  "copied": "Copied",
+  "run": "Run",
+  "escape": "Press Esc, then Tab, to leave the editor.",
+  "tooBig": "That edit would make the file larger than 256 KB, so it was not applied.",
+  "failed": "The edit could not be saved. The editor shows the saved text again.",
+  "baton": {
+    "heldBy": "Held by {name}",
+    "nobody": "Nobody has the keyboard",
+    "you": "You have the keyboard",
+    "ask": "Ask for the keyboard",
+    "giveBack": "Give it back",
+    "viewer": "You can view this room but not edit",
+    "ended": "This room has ended"
+  },
+  "marker": {
+    "error": "Error, line {line}, column {col}:",
+    "warning": "Warning, line {line}, column {col}:"
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} is not a library iynk can simulate."
+    },
+    "limit": {
+      "statements": "The code ran too many steps without finishing a pass. Look for a loop that never ends.",
+      "operations": "One expression needed too many operations. Check the numbers it works on.",
+      "memory": "The code used more memory than the simulator allows.",
+      "time": "The run took too long and was stopped."
+    },
+    "static": {
+      "short-circuit": "Power and ground are joined directly, with nothing between them. {count} pins meet on this connection.",
+      "output-contention": "Outputs that drive the same connection fight each other. {count} pins meet on it."
+    },
+    "run": {
+      "noModel": "{part} has no simulator model yet, so it does nothing during a run."
+    }
+  },
+  "problems": {
+    "title": "Problems",
+    "empty": "No problems found.",
+    "emptyHint": "Mistakes in the code and in the wiring show up here.",
+    "count": {
+      "one": "1 problem",
+      "other": "{count} problems"
+    },
+    "line": "Line {line}",
+    "severity": {
+      "error": "Error",
+      "warning": "Warning",
+      "note": "Note"
+    },
+    "hint": "Hint: {hint}",
+    "jump": "Go to the problem"
+  }
+}

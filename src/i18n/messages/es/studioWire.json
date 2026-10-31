@@ -1,0 +1,164 @@
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "Elige otro pin. Un cable necesita dos extremos.",
+      "no-such-pin": "{end} no es un pin de esta pieza. No se creó el cable.",
+      "mechanical-pin": "{end} es un punto de montaje, no un pin eléctrico. No se creó el cable.",
+      "not-on-view": "{part} todavía no está en la placa. Colócala primero y luego cablea.",
+      "hole-not-on-surface": "{hole} no es un agujero de esta protoboard.",
+      "same-strip": "{a} y {b} ya están conectados dentro de la protoboard.",
+      "duplicate-wire": "{a} y {b} ya tienen un cable entre ellos.",
+      "empty-target": "No hay ningún pin ahí. No se creó el cable.",
+      "quota": "Este proyecto ha llegado a un límite de tamaño ({limit}). Quita algo antes de añadir más.",
+      "permission": "Estás viendo este proyecto. Pide al propietario permiso de edición.",
+      "read-only": "Este proyecto está abierto en solo lectura, así que no se puede cambiar aquí."
+    },
+    "added": "Cable añadido de {from} a {to}.",
+    "cancelled": "Cable cancelado."
+  },
+  "announce": {
+    "wireMade": "Cable tendido entre {from} y {to}.",
+    "rejected": "El cambio no se hizo. {message}",
+    "moved": "{what} movido a {x} mm, {y} mm.",
+    "movedMany": {
+      "one": "{count} pieza movida.",
+      "other": "{count} piezas movidas."
+    },
+    "selected": "{what} seleccionado.",
+    "removedWire": "Cable quitado.",
+    "removedWireNet": "Cable quitado. La red {net} sigue conectando {a} y {b}.",
+    "removedPart": "{what} quitado.",
+    "removedMany": {
+      "one": "{count} elemento quitado.",
+      "other": "{count} elementos quitados."
+    },
+    "rotated": {
+      "one": "{count} pieza girada.",
+      "other": "{count} piezas giradas."
+    },
+    "rotateBlocked": "Las piezas insertadas en la protoboard siguen la cuadrícula y no se pueden girar.",
+    "readOnly": "Este proyecto es de solo lectura.",
+    "nothingToWire": "Selecciona primero una pieza y pulsa W para cablearla.",
+    "noFreePin": "{part} no tiene ningún pin libre para empezar un cable.",
+    "gridOn": "Cuadrícula activada.",
+    "gridOff": "Cuadrícula desactivada.",
+    "netHighlighted": "Red {net} resaltada.",
+    "netCleared": "Resaltado de red quitado.",
+    "noNet": "La selección no está en ninguna red."
+  },
+  "pin": {
+    "polarity": {
+      "anode": "ánodo",
+      "cathode": "cátodo",
+      "positive": "positivo",
+      "negative": "negativo"
+    },
+    "connected": "conectado a {others}",
+    "connectedMore": "conectado a {others} y {more} más",
+    "unconnected": "sin conectar"
+  },
+  "pinPicker": {
+    "fromTitle": "¿Cable desde qué pin?",
+    "toTitle": "¿Cable desde {from} hasta qué pin?",
+    "search": "Buscar pines",
+    "searchHint": "Escribe una pieza y un pin, como led1 ánodo o d13. Intro elige el pin resaltado.",
+    "nearby": "Cerca",
+    "all": "Todos los pines",
+    "none": "Ningún pin coincide con {query}.",
+    "results": {
+      "one": "{count} pin",
+      "other": "{count} pines"
+    },
+    "net": "red {name}",
+    "close": "Cerrar"
+  },
+  "outline": {
+    "title": "Esquema",
+    "empty": "Todavía no hay nada en esta vista",
+    "emptyHint": "Añade una pieza desde la paleta y aparecerá aquí.",
+    "group": {
+      "boards": "Placas",
+      "parts": "Piezas",
+      "wires": "Cables"
+    },
+    "wire": "Cable de {from} a {to}",
+    "junction": "unión"
+  },
+  "keys": {
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "edit": {
+      "copy": "Copiar",
+      "cut": "Cortar",
+      "paste": "Pegar",
+      "duplicate": "Duplicar",
+      "selectAll": "Seleccionar todo",
+      "delete": "Borrar la selección",
+      "deleteDrawing": "Borrar solo el dibujo y mantener la conexión",
+      "cancel": "Cancelar y luego quitar la selección",
+      "enter": "Soltar una pieza o abrir el inspector"
+    },
+    "place": {
+      "quickAdd": "Añadir una pieza",
+      "rotate": "Girar a la izquierda",
+      "rotateBack": "Girar a la derecha"
+    },
+    "wire": {
+      "fromSelection": "Tender un cable desde la pieza seleccionada"
+    },
+    "move": {
+      "left": "Mover a la izquierda o enfocar la pieza anterior (Mayús diez pasos, Alt fino)",
+      "right": "Mover a la derecha o enfocar la pieza siguiente (Mayús diez pasos, Alt fino)",
+      "up": "Mover hacia arriba o enfocar la pieza anterior (Mayús diez pasos, Alt fino)",
+      "down": "Mover hacia abajo o enfocar la pieza siguiente (Mayús diez pasos, Alt fino)"
+    },
+    "view": {
+      "breadboard": "Vista de protoboard",
+      "schematic": "Vista de esquema",
+      "board": "Vista de placa",
+      "fit": "Ajustar todo",
+      "fitSelection": "Ajustar la selección",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "pan": "Desplazar con el ratón mientras se mantiene",
+      "grid": "Mostrar u ocultar la cuadrícula",
+      "netHighlight": "Resaltar la red",
+      "outline": "Mostrar u ocultar el esquema"
+    },
+    "sim": {
+      "run": "Ejecutar",
+      "stop": "Detener",
+      "reset": "Reiniciar"
+    },
+    "problems": {
+      "next": "Problema siguiente",
+      "prev": "Problema anterior"
+    },
+    "region": {
+      "next": "Región siguiente",
+      "prev": "Región anterior"
+    },
+    "partner": {
+      "focus": "Abrir al compañero"
+    },
+    "guide": {
+      "stepPrev": "Paso anterior de la guía",
+      "stepNext": "Paso siguiente de la guía"
+    },
+    "help": {
+      "keys": "Mostrar los atajos de teclado"
+    },
+    "align": {
+      "left": "Alinear a la izquierda",
+      "right": "Alinear a la derecha",
+      "top": "Alinear arriba",
+      "bottom": "Alinear abajo",
+      "centerH": "Centrar horizontalmente",
+      "centerV": "Centrar verticalmente"
+    },
+    "group": {
+      "make": "Agrupar",
+      "remove": "Desagrupar"
+    }
+  }
+}

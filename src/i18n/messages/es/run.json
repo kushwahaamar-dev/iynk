@@ -1,0 +1,33 @@
+{
+  "runner": "Ejecuta: {name}",
+  "you": "Tú",
+  "inSync": "Sincronizado a los {t} s",
+  "catchingUp": "Poniéndose al día",
+  "watching": "Viendo la ejecución de {name}",
+  "private": "Ejecución privada",
+  "detach": "Ejecutar mi propia copia",
+  "rejoin": "Volver a la ejecución de la sala",
+  "moveRunner": "Pide a {host} que pase la ejecución a un dispositivo más rápido",
+  "pickRunner": "Quien ejecuta",
+  "halt": {
+    "edited": "La ejecución se detuvo porque se editó el circuito.",
+    "logFull": "La ejecución se detuvo porque su registro está lleno.",
+    "server": "La ejecución se detuvo porque el servidor se reinició.",
+    "runnerLost": "Quien ejecutaba se fue, así que la ejecución está en pausa.",
+    "error": "La ejecución se detuvo por un error."
+  },
+  "reason": {
+    "diverged": "tu copia y la de quien ejecuta dejaron de coincidir",
+    "engines": "tus motores difieren de los de quien ejecuta"
+  },
+  "badge": "Ejecuta",
+  "indicator": "Ejecución compartida",
+  "controlDenied": "No puedes controlar la ejecución compartida.",
+  "state": {
+    "idle": "Sin ejecutar",
+    "running": "En marcha",
+    "paused": "En pausa",
+    "halted": "Detenido",
+    "done": "Terminado"
+  }
+}

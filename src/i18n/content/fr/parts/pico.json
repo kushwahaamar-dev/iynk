@@ -1,0 +1,21 @@
+{
+  "description": "Une carte de la famille Raspberry Pi Pico avec une puce RP2040 ou RP2350, 26 broches GPIO sur deux rangées de bord et un connecteur de débogage, en variantes Pico, Pico W, Pico 2 et Pico 2 W.",
+  "summary": "La carte exécute ton programme dans l'interpréteur iynk, en MicroPython ou en Arduino C++. Les broches, le PWM, l'I2C, la série et le timing suivent le profil de carte pico. Ce n'est pas la puce RP2040.",
+  "layer": "Environnement d'exécution du firmware.",
+  "variant": "Variante",
+  "led": "LED de la carte sur GP25. Sur les cartes W, la LED dépend de la puce radio ; utilise Pin(\"LED\").",
+  "gp23": "Broche interne : règle le mode de l'alimentation de la carte. N'y touche pas.",
+  "gp24": "Broche interne : indique si l'alimentation USB est présente.",
+  "gp29": "Broche interne : lit la tension d'alimentation à travers un diviseur (VSYS divisé par 3).",
+  "models": {
+    "1": "Sous-ensembles de MicroPython et d'Arduino C++ exécutés par l'interpréteur avec le brochage de la Pico.",
+    "2": "E/S numériques sur GP0 à GP22 et GP26 à GP28, PWM et interruptions sur chaque GPIO.",
+    "3": "Lectures analogiques 12 bits sur GP26 à GP28, rendues de 0 à 65535 par read_u16(), maître I2C sur GP4 et GP5, sortie série et la LED de la carte sur GP25."
+  },
+  "not": {
+    "1": "Les machines à états PIO et le second cœur.",
+    "2": "La radio Wi-Fi et Bluetooth des cartes W.",
+    "3": "Les différences du RP2350 au-delà du brochage, et le comportement de la flash et de l'alimentation."
+  },
+  "gap": "undefined Aucune valeur électrique maximale n'est encore renseignée, il n'y a donc pas de contrôle de surcharge des broches pour cette carte."
+}

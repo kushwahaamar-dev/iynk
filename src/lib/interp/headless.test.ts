@@ -51,3 +51,18 @@ describe('PCA9685 channels in the trace', () => {
     expect(last(noFreq, 'PCA40.0')?.mode).toBe('pwm');
   });
 });
+
+describe('serial output cap', () => {
+  it('stops after 1 MB with one marker line', () => {
+    const source = `void setup() {
+  Serial.begin(2000000);
+  for (int i = 0; i < 20000; i++) Serial.println("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
+}
+void loop() {}`;
+    const trace = runHeadless({ board: 'uno-r3', language: 'arduino-cpp', source, world: { inputs: [], script: [] }, runMs: 20_000 });
+    expect(trace.error).toBeNull();
+    expect(trace.serial.at(-1)?.text).toBe('[output truncated at 1 MB]');
+    const total = trace.serial.reduce((n, l) => n + l.text.length + 2, 0);
+    expect(total).toBeLessThanOrEqual(1_048_576 + 30);
+  });
+});

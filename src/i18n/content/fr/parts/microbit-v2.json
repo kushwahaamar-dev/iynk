@@ -1,0 +1,18 @@
+{
+  "description": "Une carte BBC micro:bit V2 avec une puce nRF52833, une matrice de 5x5 LED, les boutons A et B et un connecteur de bord.",
+  "summary": "La carte exécute ton programme dans l'interpréteur iynk, en MicroPython. Les broches, le PWM, l'I2C, la série et le timing suivent le profil de carte microbit-v2. Ce n'est pas la puce nRF52833.",
+  "layer": "Environnement d'exécution du firmware.",
+  "display": "Partagée avec la matrice de LED.",
+  "button": "Broche de bouton : lit LOW quand le bouton est appuyé.",
+  "i2c": "I2C sur le connecteur de bord : P20 est SDA et P19 est SCL.",
+  "models": {
+    "1": "Sous-ensemble de MicroPython exécuté par l'interpréteur avec le brochage de la micro:bit.",
+    "2": "E/S numériques sur P0 à P16, P19 et P20, PWM sur chaque broche.",
+    "3": "Lectures analogiques 10 bits sur P0 à P4 et P10, maître I2C sur P20 et P19, sortie série, et les boutons A (P5) et B (P11), qui lisent LOW quand ils sont appuyés."
+  },
+  "not": {
+    "1": "La radio Bluetooth.",
+    "2": "Le microphone et le haut-parleur."
+  },
+  "gap": "undefined Aucune valeur électrique maximale n'est encore renseignée, il n'y a donc pas de contrôle de surcharge des broches pour cette carte."
+}

@@ -1,0 +1,33 @@
+{
+  "runner": "Runner: {name}",
+  "you": "You",
+  "inSync": "In sync at {t} s",
+  "catchingUp": "Catching up",
+  "watching": "Watching {name}'s run",
+  "private": "Private run",
+  "detach": "Run my own copy",
+  "rejoin": "Rejoin the room's run",
+  "moveRunner": "Ask {host} to move the runner to a faster device",
+  "pickRunner": "Runner",
+  "halt": {
+    "edited": "The run stopped because the circuit was edited.",
+    "logFull": "The run stopped because its log is full.",
+    "server": "The run stopped because the server restarted.",
+    "runnerLost": "The runner left, so the run is paused.",
+    "error": "The run stopped because of an error."
+  },
+  "reason": {
+    "diverged": "your copy and the runner's copy stopped matching",
+    "engines": "your engines differ from the runner's"
+  },
+  "badge": "Runner",
+  "indicator": "Shared run",
+  "controlDenied": "You cannot control the shared run.",
+  "state": {
+    "idle": "Not running",
+    "running": "Running",
+    "paused": "Paused",
+    "halted": "Stopped",
+    "done": "Finished"
+  }
+}

@@ -67,13 +67,13 @@ export function KeyboardHelp({ t, flight = false }: { t: DroneLabT; flight?: boo
         className="[@media(pointer:coarse)]:hidden"
       />
       <Dialog open={open} onClose={() => setOpen(false)} title={t("keys.title")} closeLabel={t("keys.close")}>
-        <div className="space-y-5">
+        <div className="space-y-6">
           {groups.map((group) => (
             <section key={group.title}>
-              <h3 className="ink-kicker">{group.title}</h3>
+              <h3 className="kicker">{group.title}</h3>
               <dl className="mt-2 divide-y divide-rule">
                 {group.rows.map((row) => (
-                  <div key={row.label} className="flex items-center justify-between gap-4 py-1.5">
+                  <div key={row.label} className="flex items-center justify-between gap-4 py-2">
                     <dt>
                       <Kbd>{row.keys}</Kbd>
                     </dt>

@@ -1,0 +1,699 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.qtr-8rc",
+  "version": "1.0.1",
+  "identity": {
+    "manufacturer": "Pololu",
+    "model": "QTR-8RC reflectance sensor array",
+    "mpn": "961",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "sensor",
+    "description": {
+      "i18n_key": "parts.qtr-8rc.description",
+      "en": "Eight infrared reflectance sensors in a row at 9.525 mm. Each output is an RC node that the host reads by timing how long it takes to fall."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "qtr-8rc"
+    ],
+    "tags": [
+      "line-follower",
+      "reflectance",
+      "infrared",
+      "robotics",
+      "sensor"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Pololu QTR-8RC Reflectance Sensor Array: fact sheet",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/qtr8rc.md. It cites Pololu's product page, drill file and STEP model; this descriptor cites the fact sheet, not those documents."
+    },
+    {
+      "id": "modulejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/qtr-8rc.js: board model, read() and elec block",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 20.955,
+        "y": 3.81
+      },
+      "connector": "J1"
+    },
+    {
+      "id": "VCC",
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 23.494999999999997,
+        "y": 3.81
+      },
+      "connector": "J1",
+      "note": {
+        "en": "3.3 to 5 V and at least 100 mA. No regulator, no fuse, no reverse-polarity diode."
+      }
+    },
+    {
+      "id": "LEDON",
+      "designator": "LEDON",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 26.034999999999997,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Emitters on"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "The gate of the LED switch, pulled up to VCC by 47 k. HIGH or floating turns the infrared LEDs on and LOW turns them off."
+      }
+    },
+    {
+      "id": "OUT1",
+      "designator": "OUT1",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 28.575,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 1 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT2",
+      "designator": "OUT2",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 31.115,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 2 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT3",
+      "designator": "OUT3",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 33.655,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 3 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT4",
+      "designator": "OUT4",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 36.195,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 4 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT5",
+      "designator": "OUT5",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 38.735,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 5 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT6",
+      "designator": "OUT6",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 41.275,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 6 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT7",
+      "designator": "OUT7",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 43.815,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 7 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    },
+    {
+      "id": "OUT8",
+      "designator": "OUT8",
+      "type": "digital_io",
+      "class": "digital",
+      "position": {
+        "x": 46.355,
+        "y": 3.81
+      },
+      "name": {
+        "en": "Sensor 8 output"
+      },
+      "connector": "J1",
+      "note": {
+        "en": "Drive it HIGH for 10 microseconds, release it and time the fall. White floor is fast, black is slow."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "GND",
+        "VCC",
+        "LEDON",
+        "OUT1",
+        "OUT2",
+        "OUT3",
+        "OUT4",
+        "OUT5",
+        "OUT6",
+        "OUT7",
+        "OUT8"
+      ],
+      "note": {
+        "en": "An 11 x 1 header in row A. The kit's header is soldered on the back, so the pins point away from the floor."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "module, 74.93 x 12.70 mm",
+    "body": {
+      "w": 74.93,
+      "h": 12.7,
+      "d": 4
+    },
+    "board": {
+      "w": 74.93,
+      "h": 12.7,
+      "thickness": 1.57,
+      "corner_radius": 0,
+      "mounting_holes": [
+        {
+          "x": 2.54,
+          "y": 2.54,
+          "diameter": 2.18
+        },
+        {
+          "x": 53.34,
+          "y": 2.54,
+          "diameter": 2.18
+        },
+        {
+          "x": 58.42,
+          "y": 2.54,
+          "diameter": 2.18
+        },
+        {
+          "x": 72.39,
+          "y": 2.54,
+          "diameter": 2.18
+        }
+      ]
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 2.1 to 2.4"
+    }
+  },
+  "ratings": {
+    "supply_range": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.3,
+        "max": 5,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3, supply"
+        },
+        "rationale": {
+          "en": "Pololu's range, from the fact sheet."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "supply_current_active": {
+      "measure": "current",
+      "role": "consumption",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.1,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3, current"
+        },
+        "rationale": {
+          "en": "Just under 100 mA with every LED on; the figure uses 100 mA."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "emitter_current_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.05,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3, emitter"
+        },
+        "rationale": {
+          "en": "50 mA per infrared LED string, which is why bridging the 3.3V BYPASS pads at 5 V is a fault."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "white_decay": {
+      "measure": "time",
+      "role": "timing",
+      "scope": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4",
+          "OUT5",
+          "OUT6",
+          "OUT7",
+          "OUT8"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.00012,
+        "confidence": "low",
+        "source": {
+          "src": "modulejs",
+          "loc": "figures/modules/qtr-8rc.js: WHITE_US"
+        },
+        "rationale": {
+          "en": "Constant in figures/modules/qtr-8rc.js, no source found for the figure's own value. The fact sheet gives 120 microseconds at 3.2 mm from an application note for the QTR-1RC."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "black_timeout": {
+      "measure": "time",
+      "role": "timing",
+      "scope": {
+        "pins": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4",
+          "OUT5",
+          "OUT6",
+          "OUT7",
+          "OUT8"
+        ]
+      },
+      "simulation": {
+        "unit": "s",
+        "value": 0.0025,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 3, RC decay timing"
+        },
+        "rationale": {
+          "en": "The library gives up at 2500 microseconds, which is where black reads."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "mechanics": {
+    "sensor": {
+      "query": "surface-sample",
+      "channels": 8,
+      "range_max_mm": 9.5,
+      "period_s": 0.001,
+      "source": {
+        "src": "factsheet",
+        "loc": "range_max_mm: maximum recommended height; period_s: about 1 ms to read all eight (section 3, RC decay timing)"
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "Each sensor is an infrared LED and a phototransistor side by side. The LEDs run as four series pairs behind a MOSFET switched by LEDON. The host drives an output HIGH, releases it and times the fall: about 120 microseconds over white and the 2500 microsecond library timeout over black."
+    },
+    "layers": [
+      {
+        "id": "rc_outputs",
+        "domain": "analog",
+        "reads": [
+          "VCC",
+          "LEDON",
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4",
+          "OUT5",
+          "OUT6",
+          "OUT7",
+          "OUT8"
+        ],
+        "summary": {
+          "en": "Eight RC nodes whose fall time follows the reflected light."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The solver has no element for a phototransistor whose current follows the light that comes back, so the fall time is a function in the figure page (read() in figures/modules/qtr-8rc.js)."
+          }
+        },
+        "drives": [
+          "OUT1",
+          "OUT2",
+          "OUT3",
+          "OUT4",
+          "OUT5",
+          "OUT6",
+          "OUT7",
+          "OUT8"
+        ]
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing in the Studio yet. The figure page computes each sensor's fall time from the line position, the supply and the faults in force."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The phototransistor, the infrared LEDs and the RC nodes as circuit elements."
+      },
+      {
+        "en": "Height above the floor, surface colour and the light that comes back: the figure takes them from a mode."
+      },
+      {
+        "en": "The 2-sensor piece that snaps off, and the 3.3V BYPASS pads as a build option."
+      },
+      {
+        "en": "Damage from reversed or too high a supply."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_timing_element",
+        "text": {
+          "en": "The solver has no element that turns a light level into a pin fall time, so no layer can run."
+        },
+        "evidence": "figures/modules/qtr-8rc.js:35-60"
+      },
+      {
+        "id": "white_constant_unsourced",
+        "text": {
+          "en": "The white decay and the 1.6 power in the light response are fitted in the figure, with no source."
+        },
+        "evidence": "figures/modules/qtr-8rc.js:24-31"
+      },
+      {
+        "id": "sensor_height_defaults",
+        "text": {
+          "en": "The best height is 3 mm and the maximum recommended height is 9.5 mm. The descriptor has no field for the best height, so the robot engine takes it from the sensor binding params (h_opt_mm, h_range_mm)."
+        },
+        "evidence": "docs/facts/qtr8rc.md section 3"
+      }
+    ],
+    "solver_requires": [
+      "sensor"
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "module",
+        "id": "qtr-8rc",
+        "path": "public/figures/modules/qtr-8rc.html",
+        "sha256": "690fb95089cb565508beb97892628f465d2eae4e34e25212365113e6eccd31be",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "GND",
+        "VCC",
+        "LEDON",
+        "OUT1",
+        "OUT2",
+        "OUT3",
+        "OUT4",
+        "OUT5",
+        "OUT6",
+        "OUT7",
+        "OUT8"
+      ],
+      "span": [
+        11,
+        1
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VCC": "top",
+        "GND": "bottom",
+        "LEDON": "left",
+        "OUT1": "right",
+        "OUT2": "right",
+        "OUT3": "right",
+        "OUT4": "right",
+        "OUT5": "right",
+        "OUT6": "right",
+        "OUT7": "right",
+        "OUT8": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "QTR-8RC",
+      "body_colour": "#cc1f1f",
+      "show_pin_labels": true
+    }
+  },
+  "injectable_faults": [
+    {
+      "id": "bypass_at_5v",
+      "kind": "wrong_supply_voltage",
+      "legacy_id": "bypass-5v",
+      "cause_id": "x-qtr-8rc.bypass-at-5v",
+      "symptom_ids": [
+        "part-hot",
+        "x-sensors-read-dark"
+      ],
+      "description": {
+        "en": "Bridge the 3.3V BYPASS pads on a 5 V supply, which drives the LED strings past their 50 mA rating and burns sensors 5 and 6."
+      },
+      "target": {
+        "pins": [
+          "VCC"
+        ]
+      }
+    },
+    {
+      "id": "no_r9",
+      "kind": "missing_part",
+      "legacy_id": "missing:R9",
+      "cause_id": "x-qtr-8rc.led-string-open",
+      "symptom_ids": [
+        "x-sensors-read-dark"
+      ],
+      "description": {
+        "en": "Leave out R9, so the LED string of sensors 3 and 4 is open and both read dark."
+      },
+      "target": {
+        "pins": [
+          "OUT3",
+          "OUT4"
+        ]
+      }
+    },
+    {
+      "id": "cold_out1",
+      "kind": "cold_joint",
+      "legacy_id": "cold:J1.4",
+      "cause_id": "open-connection",
+      "symptom_ids": [
+        "reading-erratic"
+      ],
+      "description": {
+        "en": "A cracked joint on the OUT1 header pin, so sensor 1 drops out."
+      },
+      "target": {
+        "pins": [
+          "OUT1"
+        ]
+      }
+    },
+    {
+      "id": "ambient_ir",
+      "kind": "other",
+      "legacy_id": "ambient-ir",
+      "cause_id": "sensor-saturated",
+      "symptom_ids": [
+        "x-sensors-read-light"
+      ],
+      "description": {
+        "en": "Sunlight on the floor adds infrared, so every sensor reads lighter than it should."
+      }
+    },
+    {
+      "id": "no_led_switch",
+      "kind": "missing_part",
+      "legacy_id": "missing:Q1",
+      "cause_id": "x-qtr-8rc.no-led-switch",
+      "symptom_ids": [
+        "x-sensors-read-dark"
+      ],
+      "description": {
+        "en": "Leave out the LED switch, so the infrared LEDs never light."
+      },
+      "target": {
+        "pins": [
+          "LEDON"
+        ]
+      }
+    }
+  ],
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Board geometry from Pololu's published drill file and STEP model as recorded in docs/facts/qtr8rc.md."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/qtr-8rc.js and docs/facts/qtr8rc.md.",
+        "behaviour_change": false
+      },
+      {
+        "version": "1.0.1",
+        "date": "2026-10-31",
+        "note": "Added the mechanics sensor block for the robot engine.",
+        "behaviour_change": false
+      }
+    ],
+    "modified": "2026-10-31"
+  },
+  "x_legacy_model": [
+    {
+      "ref": "module:qtr-8rc-rc-read@1",
+      "path": "figures/modules/qtr-8rc.js",
+      "lines": "35-60, read() and 146-168, model()"
+    }
+  ]
+}

@@ -3,10 +3,11 @@
 import { useEffect } from "react";
 import type { DroneContent } from "@/content/schema";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/icons";
 import { progressKey } from "@/lib/progress/keys";
 import { recordQuiz } from "@/lib/progress/progress";
 import { useQuiz } from "@/lib/progress/hooks";
-import { quizScore, type DroneLabAction, type DroneLabState } from "@/lib/dronelab/store";
+import { quizScore, type DroneLabAction, type DroneLabState } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 type Props = {
@@ -46,7 +47,7 @@ function QuizBlock({ quizId, content, state, t, ct, dispatch }: Props & { quizId
           {step ? `${t("quiz.title")} · ${ct(step.title)}` : t("quiz.title")}
         </h3>
         {saved ? (
-          <span className="font-ui text-xs font-bold text-muted">
+          <span className="text-xs font-semibold tabular-nums text-muted">
             {t("quiz.best", { score: saved.score, total: saved.total })}
           </span>
         ) : null}
@@ -72,9 +73,10 @@ function QuizBlock({ quizId, content, state, t, ct, dispatch }: Props & { quizId
                         variant="secondary"
                         aria-pressed={picked}
                         disabled={solved && !right}
-                        className={`h-auto justify-start py-2 !text-start ${right ? "!bg-mint !text-on-color" : ""} ${wrong ? "line-through opacity-60" : ""}`}
+                        className={`h-auto justify-start py-2 !text-start ${right ? "!bg-good-bg !text-good" : ""} ${wrong ? "line-through opacity-60" : ""}`}
                         onClick={() => dispatch({ type: "quiz/answer", quiz: quiz.id, question: question.id, option: oi })}
                       >
+                        {right ? <Icon name="check" size={16} className="shrink-0" /> : null}
                         {ct(option)}
                       </Button>
                     );
@@ -96,7 +98,7 @@ function QuizBlock({ quizId, content, state, t, ct, dispatch }: Props & { quizId
       </ol>
       {finished ? (
         <div className="flex flex-wrap items-center gap-3" role="status">
-          <span className="font-ui text-sm font-bold">{t("quiz.score", { score, total })}</span>
+          <span className="text-sm font-bold tabular-nums">{t("quiz.score", { score, total })}</span>
           <Button size="sm" variant="ghost" onClick={() => dispatch({ type: "quiz/reset", quiz: quiz.id })}>
             {t("quiz.reset")}
           </Button>

@@ -1,0 +1,150 @@
+{
+  "tier": {
+    "T0": "Illustration. Keine Berechnung.",
+    "T1": "Lernmodell",
+    "T2": "Berechnetes Modell",
+    "T3": "Führt die kompilierte Firmware aus",
+    "none": "Noch nicht abgebildet",
+    "T3.note": "Peripheriegeräte, die nicht im Bereich aufgeführt sind, werden nicht abgebildet."
+  },
+  "layer": {
+    "execution": "Ausführung",
+    "circuit": "Schaltung",
+    "protocols": "Protokolle",
+    "mechanics": "Mechanik"
+  },
+  "summary": "Gesamt: {tier}",
+  "panel": {
+    "title": "Was es abbildet",
+    "modelled": "Abgebildet",
+    "mocked": "Nur nachgestellt",
+    "unmodelled": "Noch nicht abgebildet",
+    "stale": "Die Referenz ist älter als dieses Modell",
+    "staleTag": "veraltet"
+  },
+  "validation": {
+    "none": "Nicht mit einer Referenz verglichen.",
+    "oracle": "Innerhalb von {pct} Prozent von {oracle} bei {n} Schaltungen ({date})",
+    "bench": "Auf Hardware gemessen: {n} Schaltungen, Fehlertabelle"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, berechnet aus {model}",
+    "approx": "ungefähr, {why}",
+    "notModelled": "noch nicht abgebildet",
+    "noNumber": "keine Zahl, nur eine Illustration",
+    "outsideRange": "außerhalb des Bereichs, für den dieses Modell geprüft wurde",
+    "knownGap": "dieses Modell hat hier eine bekannte Lücke: {why}",
+    "noResult": "kein Ergebnis"
+  },
+  "notice": {
+    "part": "{part} ist noch nicht abgebildet. Der Rest der Schaltung läuft weiter.",
+    "model": "{model} ist noch nicht abgebildet"
+  },
+  "states": {
+    "led": "{name} ist durchgebrannt: {n} mA liegen weit über den {imax} mA.",
+    "diode": "{name} ist durchgebrannt: {n} mA sind mehr, als es verträgt.",
+    "npn": "{name} hat sich überhitzt und ist ausgefallen.",
+    "tmp36": "{name} hat sich überhitzt und ist ausgefallen.",
+    "pot": "{name} ist durchgebrannt: {w} W sind zu viel für die Widerstandsbahn.",
+    "pin": "Pin {pin} liefert {n} mA, mehr als die {max} mA, die dieses Board erlaubt.",
+    "brownout": "Die Versorgung fiel auf {v} V, unter die {min} V, die dieser Chip braucht, daher wird er zurückgesetzt.",
+    "brownoutUnknown": "Die Brownout-Schwelle dieses Boards ist nicht bekannt, daher wird kein Reset simuliert.",
+    "floating": "{pin} ist mit nichts verbunden, daher ist der Messwert Rauschen.",
+    "noconv": "Die Schaltung hat sich nicht eingeschwungen. Letzter Zustand: {net} bei {v} V."
+  },
+  "chip": {
+    "aria": "{layer}: {tier}. Details öffnen"
+  },
+  "inspect": {
+    "title": "Synthetisierten Entwurf prüfen",
+    "intro": "Lade die Yosys-Netzliste deines Entwurfs, um Gatter und Leitungen zu sehen. Das läuft in deinem Browser; nichts wird hochgeladen.",
+    "size": "Download {wire} (entpackt {raw})",
+    "memory": "Spitzenspeicher etwa {peak}",
+    "refuse": "Dieses Gerät meldet 4 GB Speicher oder weniger, daher wird die Yosys-Engine hier nicht geladen.",
+    "unknown": "Dieser Browser meldet den Gerätespeicher nicht, die Engine passt vielleicht nicht. Lade sie nur, wenn du das in Kauf nimmst.",
+    "load": "Yosys laden",
+    "cancel": "Abbrechen",
+    "loading": "Yosys wird geladen",
+    "failed": "Yosys konnte nicht geladen werden",
+    "result": "Geprüft: {cells} Zellen, {wires} Leitungen",
+    "lint": {
+      "implicitWire": "Ein Signal wird ohne Deklaration verwendet. Yosys hat daraus eine 1-Bit-Leitung gemacht."
+    }
+  },
+  "firmware": {
+    "mode": "Modus",
+    "interpreter": "Interpreter",
+    "firmware": "Firmware",
+    "tier": "Führt deine Firmware aus",
+    "desktopNote": "Der Firmware-Modus braucht die Desktop-App. Auf diesem Gerät läuft weiter der Interpreter.",
+    "onlyAvr": "Der Firmware-Modus läuft nur mit AVR-Boards (Uno, Nano).",
+    "importHex": "Hex-Datei importieren",
+    "importElf": "ELF-Datei importieren",
+    "noImage": "Kein Firmware-Abbild geladen",
+    "imageLoaded": "{bytes} Byte Firmware geladen",
+    "notModelled": "noch nicht modelliert"
+  },
+  "import": {
+    "error": {
+      "hex-too-large": "Diese Hex-Datei ist zu groß.",
+      "hex-bad-record": "Eine Zeile der Hex-Datei ist kein gültiger Datensatz.",
+      "hex-bad-checksum": "Eine Zeile der Hex-Datei hat eine falsche Prüfsumme.",
+      "hex-out-of-flash": "Die Hex-Datei schreibt außerhalb des Flash-Speichers dieses Boards.",
+      "hex-overlap": "Die Hex-Datei schreibt zweimal an dieselbe Adresse.",
+      "hex-no-eof": "Der Hex-Datei fehlt der Dateiende-Datensatz.",
+      "elf-too-large": "Diese ELF-Datei ist zu groß.",
+      "elf-unsupported": "Diese ELF-Datei ist keine 32-Bit-AVR-Programmdatei.",
+      "elf-too-many-sections": "Diese ELF-Datei hat zu viele Abschnitte.",
+      "elf-bad-section": "Ein Abschnitt dieser ELF-Datei ist fehlerhaft.",
+      "dwarf-too-large": "Die DWARF-Debugdaten sind zu groß, Quellzeilen sind daher nicht verfügbar.",
+      "dwarf-bad-line-program": "Die DWARF-Zeilentabelle ist fehlerhaft, Quellzeilen sind daher nicht verfügbar.",
+      "import-timeout": "Der Import dauerte zu lange und wurde abgebrochen.",
+      "store-failed": "Die Datei konnte auf diesem Gerät nicht gespeichert werden."
+    }
+  },
+  "debug": {
+    "toggle": "Debugger",
+    "step": "Einzelschritt",
+    "over": "Überspringen",
+    "out": "Herausspringen",
+    "continue": "Fortsetzen",
+    "pausedAt": "Angehalten bei {file}:{line}",
+    "running": "Läuft",
+    "variables": "Variablen",
+    "watch": "Überwachen",
+    "addWatch": "Überwachung hinzufügen",
+    "noSymbols": "Keine Debug-Symbole in diesem Abbild. Mit -g neu bauen.",
+    "inlineOnly": "Der Debugger arbeitet nur mit globalen Variablen.",
+    "gutter": "In den Rand klicken, um einen Haltepunkt zu setzen",
+    "paused": "Angehalten",
+    "breakpoint": "Haltepunkt in Zeile {line}",
+    "breakpointUnbound": "In Zeile {line} steht kein Code, deshalb hält dieser Haltepunkt den Lauf nicht an"
+  },
+  "compile": {
+    "build": "Bauen",
+    "building": "Wird gebaut",
+    "ok": "In {ms} ms gebaut",
+    "failed": "Build fehlgeschlagen",
+    "off": "Das Kompilieren ist vom Betreiber abgeschaltet",
+    "tooLarge": "Der Sketch ist zu groß zum Kompilieren",
+    "timeout": "Der Build dauerte zu lange und wurde abgebrochen",
+    "size": "Flash {flash}, RAM {ram}",
+    "cached": "Aus dem Cache",
+    "tool": "Toolchain",
+    "importInstead": "Stattdessen eine Hex-Datei importieren",
+    "offHint": "Bitte die Person, die den Server betreibt, IYNK_COMPILE_ENABLE=1 zu setzen.",
+    "noServer": "Zum Kompilieren brauchst du deinen eigenen iynk-Server.",
+    "notReachable": "Das Kompilieren ist eingeschaltet, aber der Compiler ist nicht erreichbar",
+    "rateLimited": "Zu viele Builds. Versuche es in {seconds} s erneut",
+    "stale": "Der Sketch hat sich seit diesem Build geändert",
+    "flash": "Flash {flash} von {max} Byte",
+    "debugBuild": "Zum Debuggen bauen",
+    "cancel": "Abbrechen",
+    "needsSignIn": "Melde dich an deinem Server an, um zu bauen",
+    "severity": {
+      "error": "Fehler",
+      "warning": "Warnung",
+      "note": "Hinweis"
+    }
+  }
+}

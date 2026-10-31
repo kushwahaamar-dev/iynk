@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { FigureStill } from "@/components/figure";
-import { typeClass } from "@/components/marketing";
+import { enter, eyebrow, typeClass } from "@/components/editorial/Editorial";
 import { cx } from "@/components/ui/cx";
+import { Icon } from "@/components/ui/icons";
 
 /*
   The one layout behind the three lab indexes (/boards, /robotics, /drones): an editorial head with the count as a
@@ -10,16 +11,11 @@ import { cx } from "@/components/ui/cx";
   title, specs, tags, progress) as a subgrid, so the rows line up across a whole row of cards.
 */
 
-// Enter motion: an 8px rise and a fade, once. The global reduced-motion rule cuts the transition to nothing.
-const enter = "transition-[opacity,translate] duration-400 ease-out starting:translate-y-2 starting:opacity-0 motion-reduce:transition-none";
-
-export const eyebrow = "font-ui text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted sm:text-xs";
+export { eyebrow };
 
 export function CataloguePage({ children }: { children: ReactNode }) {
   return (
-    <div
-      className="mx-auto w-full max-w-[1440px] px-[clamp(16px,4vw,56px)] pb-[clamp(72px,10vw,160px)] pt-[clamp(40px,6vw,96px)] [--cat-pad:clamp(16px,1.6vw,24px)]"
-    >
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-16 pt-10 sm:px-6 md:pb-24 md:pt-16 lg:px-10 xl:px-12 [--cat-pad:--spacing(4)] lg:[--cat-pad:--spacing(6)]">
       {children}
     </div>
   );
@@ -65,10 +61,10 @@ export function CatalogueHead({
         >
           {title}
         </h1>
-        <p className="mt-6 max-w-[62ch] text-base leading-[1.55] text-muted sm:mt-8 sm:text-[17px]">{lede}</p>
+        <p className="mt-6 max-w-prose text-lg text-pretty text-muted sm:mt-8">{lede}</p>
       </div>
       <p className={cx("flex items-end gap-3 lg:col-span-3 lg:flex-col lg:items-end lg:gap-2 lg:text-end", enter)}>
-        <span className="tabular font-body text-[clamp(64px,9vw,152px)] font-light leading-[0.78] tracking-[-0.05em]">
+        <span className="tabular text-7xl font-semibold leading-none tracking-tight lg:text-8xl">
           {new Intl.NumberFormat(numberLocale).format(count)}
         </span>
         <span className={eyebrow}>{countWords(countText, count)}</span>
@@ -83,10 +79,10 @@ export function CatalogueHead({
  */
 export function CatalogueGroup({ id, kicker, title, aside, children }: { id: string; kicker: string | null; title: string; aside?: ReactNode; children: ReactNode }) {
   return (
-    <section aria-labelledby={id} className="grid grid-cols-1 lg:grid-cols-12 [&+&]:mt-[clamp(48px,6vw,96px)]">
+    <section aria-labelledby={id} className="grid grid-cols-1 lg:grid-cols-12 [&+&]:mt-12 md:[&+&]:mt-24">
       <div className="border-t border-rule pb-6 pt-(--cat-pad) lg:col-span-3 lg:pe-8">
         <div className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
-          <h2 id={id} className="font-body text-[clamp(24px,2.2vw,32px)] font-medium leading-[1.05] tracking-[-0.02em]">
+          <h2 id={id} className="text-2xl font-semibold tracking-tight text-balance lg:text-3xl">
             {kicker ? <span className={cx(eyebrow, "mb-3 block")}>{kicker}</span> : null}
             {title}
           </h2>
@@ -98,16 +94,32 @@ export function CatalogueGroup({ id, kicker, title, aside, children }: { id: str
   );
 }
 
-/** The hairline grid. The wrapper reaches a card's padding into the gutter so card text lines up with the head. */
-export function CatalogueGrid({ wide = true, labelledBy, testId, children }: { wide?: boolean; labelledBy?: string; testId?: string; children: ReactNode }) {
+/** The hairline grid. Its top rule starts at the page gutter, like the head above it. */
+export function CatalogueGrid({
+  wide = true,
+  count,
+  labelledBy,
+  testId,
+  children,
+}: {
+  wide?: boolean;
+  /** How many cards the grid holds. A grid with fewer cards than columns uses only as many columns as it has cards. */
+  count?: number;
+  labelledBy?: string;
+  testId?: string;
+  children: ReactNode;
+}) {
+  const alone = count === 1;
   return (
-    <div className="-mx-(--cat-pad) overflow-hidden">
+    <div className="overflow-hidden">
       <ul
         aria-labelledby={labelledBy}
         data-testid={testId}
         className={cx(
-          "-me-px grid grid-cols-1 border-t border-rule sm:grid-cols-2",
-          wide ? "lg:grid-cols-3 xl:grid-cols-4" : "xl:grid-cols-3",
+          "-me-px grid grid-cols-1 border-t border-rule",
+          alone ? "[&_.cat-figure]:lg:aspect-[3/1]" : "sm:grid-cols-2",
+          !alone && wide && "lg:grid-cols-3 xl:grid-cols-4",
+          !alone && !wide && count !== 2 && "xl:grid-cols-3",
         )}
       >
         {children}
@@ -147,8 +159,8 @@ export function CatalogueCard({ data, item, fig, meta, heading: Heading, titleId
         aria-labelledby={titleId}
         className={cx(
           "group relative row-span-6 grid grid-rows-subgrid gap-y-0 p-(--cat-pad)",
-          "transition-[opacity,translate,background-color] duration-400 ease-out starting:translate-y-2 starting:opacity-0 motion-reduce:transition-none",
-          "has-[a:hover]:bg-surface has-[a:hover]:duration-150",
+          enter,
+          "motion-fade has-[a:hover]:bg-surface",
           "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:-outline-offset-2 has-[a:focus-visible]:outline-(--focus)",
         )}
       >
@@ -157,12 +169,12 @@ export function CatalogueCard({ data, item, fig, meta, heading: Heading, titleId
           {meta ? <span className="truncate text-end">{meta}</span> : null}
         </div>
 
-        <div className="relative my-4 aspect-[2/1] min-h-0 sm:my-5 sm:aspect-[5/4]">
+        <div className="cat-figure relative my-4 aspect-[2/1] min-h-0 sm:my-6 sm:aspect-[5/4]">
           <FigureStill item={item} className="absolute inset-0 aspect-auto! h-full w-full" />
         </div>
 
         <div className={slot}>
-          <Heading id={titleId} className="flex items-start justify-between gap-3 font-body text-[19px] font-medium leading-[1.2] tracking-[-0.015em]">
+          <Heading id={titleId} className="flex items-start justify-between gap-3 text-xl font-semibold tracking-tight text-balance">
             {href ? (
               <Link
                 href={href}
@@ -181,7 +193,7 @@ export function CatalogueCard({ data, item, fig, meta, heading: Heading, titleId
 
         <div className={cx(slot, "pt-4")}>{specs}</div>
         <div className={cx(slot, "pt-3")}>{tags}</div>
-        <div className={cx(slot, "relative z-10 mt-5 self-end border-t border-rule pt-3")}>{progress}</div>
+        <div className={cx(slot, "relative mt-4 self-end border-t border-rule pt-3")}>{progress}</div>
       </article>
     </li>
   );
@@ -189,13 +201,11 @@ export function CatalogueCard({ data, item, fig, meta, heading: Heading, titleId
 
 function Arrow() {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 16 16"
-      className="mt-[0.2em] size-4 shrink-0 text-muted transition-[translate,color] duration-200 ease-out group-has-[a:hover]:translate-x-0.5 group-has-[a:hover]:-translate-y-0.5 group-has-[a:hover]:text-ink"
-    >
-      <path d="M4.5 11.5l7-7M6 4.5h5.5V10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <Icon
+      name="arrow-right"
+      size={16}
+      className="mt-1 shrink-0 text-muted motion-move group-has-[a:hover]:translate-x-1 group-has-[a:hover]:text-ink"
+    />
   );
 }
 
@@ -203,7 +213,7 @@ function Arrow() {
 export function SpecLine({ items, label }: { items: string[]; label?: string }) {
   return (
     <div className="overflow-hidden">
-      <ul aria-label={label} className="tabular -ms-4 flex flex-wrap font-ui text-xs leading-5 text-ink">
+      <ul aria-label={label} className="tabular -ms-4 flex flex-wrap font-ui text-xs text-ink">
         {items.map((spec, i) => (
           <li key={i} className="whitespace-nowrap before:inline-block before:w-4 before:text-center before:text-muted before:content-['·']">
             {spec}

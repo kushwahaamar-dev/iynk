@@ -1,0 +1,1 @@
+{ "boards": ["pico", "microbit-v2", "nucleo-f401re", "pi4-pi5"] }

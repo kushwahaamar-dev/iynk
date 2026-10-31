@@ -4,7 +4,16 @@ import type { LabStore } from "@/components/dock/types";
 import type { DesignPick, DroneContent, DroneDesign } from "@/content/schema";
 import common from "@/i18n/messages/en/common.json";
 import { I18nProvider } from "@/i18n/client";
+import { removeAllKeys, setKey } from "@/lib/keys/store";
+import { bindSearchServer } from "@/lib/search/client";
 import type { Offer, PartOffers } from "@/lib/search/types";
+
+const features = vi.hoisted(() => ({ search: true }));
+
+vi.mock("@/lib/features", () => ({
+  useFeatures: () => ({ status: "ready", features: { ai: false, search: features.search, hw: false } }),
+  reloadFeatures: () => undefined,
+}));
 
 const design: DroneDesign = {
   model: {
@@ -45,12 +54,11 @@ const offer = (title: string, price: number, extra: Partial<Offer> = {}): Offer 
   ...extra,
 });
 
-/** The fake server: /api/status says search is on; offers answer per key from `prices`. */
+/** The fake server the search client calls with its token; offers answer per key from `prices`. */
 function server(prices: Record<string, PartOffers["offers"]>) {
   return vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
     const path = String(input);
-    if (path === "/api/status") return Response.json({ features: { search: true } });
-    if (path === "/api/search/offers") {
+    if (path === "/search/offers") {
       const body = JSON.parse(String(init?.body)) as { parts: { key: string }[] };
       return Response.json({
         parts: body.parts.map((p) => (prices[p.key] ? { key: p.key, offers: prices[p.key], best: 0 } : { key: p.key, offers: [] })),
@@ -81,23 +89,31 @@ const renderPanel = (props: Parameters<typeof RealBuildPanel>[0]) =>
     </I18nProvider>,
   );
 
-beforeEach(() => vi.stubGlobal("fetch", server({})));
-afterEach(() => vi.unstubAllGlobals());
+beforeEach(() => {
+  features.search = true;
+  localStorage.clear();
+  setKey("search", "iynk-canary-SEARCH-0001-do-not-use");
+  bindSearchServer({ fetchAuthed: server({}) });
+});
+afterEach(() => {
+  removeAllKeys();
+  localStorage.clear();
+  vi.unstubAllGlobals();
+  bindSearchServer(null);
+});
 
 describe("RealBuildPanel", () => {
   it("prices a robotics bench and adds up the cheapest total", async () => {
-    vi.stubGlobal(
-      "fetch",
-      server({
+    bindSearchServer({ fetchAuthed: server({
         "board:nano": [offer("Arduino Nano", 24.9, { inStock: true })],
         "part:l298n": [offer("L298N motor driver 2pcs", 7, { pack: 2 }), offer("L298N driver", 9)],
         "part:tt-motor": [offer("TT gear motor", 3)],
-      }),
-    );
+      }) });
     const { store } = storeOf(null);
     renderPanel({ lab: "robotics", itemId: "l298n", store, figure: null });
 
     expect(await screen.findByRole("region", { name: "Build it for real" })).toBeTruthy();
+    fireEvent.click(await screen.findByRole("button", { name: "Check prices" }));
     await screen.findAllByText("Arduino Nano");
     await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
     // Nano 24.90 + L298N 7.00 + TT motor 3.00; the other parts have no listing and no price.
@@ -115,21 +131,19 @@ describe("RealBuildPanel", () => {
   });
 
   it("runs the optimiser on a drone and applies the pick to the lab", async () => {
-    vi.stubGlobal(
-      "fetch",
-      server({
+    bindSearchServer({ fetchAuthed: server({
         "fixed:FRAME": [offer("5 inch frame", 40)],
         "batt:6s1100": [offer("6S 1100mAh LiPo", 40)],
         "batt:4s1500": [offer("4S 1500mAh LiPo", 25)],
         "motor:2306-1750": [offer("2306 1750KV 4pcs", 90, { pack: 4 })],
         "motor:2306-2450": [offer("2306 2450KV 4pcs", 60, { pack: 4 })],
         "prop:5x4.3x3": [offer("5x4.3x3 props 4pcs", 5, { pack: 4 })],
-      }),
-    );
+      }) });
     const { store, dispatch } = storeOf(design.default);
     renderPanel({ lab: "drone", itemId: "quad5", store, figure: null });
 
     expect(await screen.findByRole("heading", { name: "Budget optimiser" })).toBeTruthy();
+    fireEvent.click(await screen.findByRole("button", { name: "Check prices" }));
     await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
     // 40 + 40 + 90 + one set of 4 props at 5.
     expect(screen.getAllByText("$175.00").length).toBeGreaterThan(0);
@@ -149,12 +163,12 @@ describe("RealBuildPanel", () => {
   });
 
   it("with search off, lists a bench's parts without prices and sums a drone at catalogue prices", async () => {
-    // Fresh modules: the feature flags are a module singleton that earlier tests filled with search on.
+    features.search = false;
     vi.resetModules();
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: string | URL | Request) =>
-        String(input) === "/api/status" ? Response.json({ features: { search: false } }) : new Response("not found", { status: 404 }),
+        String(input) === "/config.json" ? Response.json({ server: null, protocol: 1 }) : new Response("not found", { status: 404 }),
       ),
     );
     const { RealBuildPanel: Panel } = await import("./RealBuildPanel");
@@ -167,7 +181,8 @@ describe("RealBuildPanel", () => {
       );
 
     const bench = show({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
-    expect(await screen.findByText("Live prices aren't set up on this deployment.")).toBeTruthy();
+    expect((await screen.findByTestId("not-set-up")).getAttribute("data-reason")).toBe("server_off");
+    expect(screen.queryByRole("button", { name: "Check prices" })).toBeNull();
     expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
     expect(screen.queryByText("$0.00")).toBeNull();
     expect(screen.queryByText("No listing found")).toBeNull();
@@ -179,6 +194,39 @@ describe("RealBuildPanel", () => {
     expect(screen.queryByText("Cheapest total")).toBeNull();
     expect(screen.queryByText("Catalogue price")).toBeNull();
     expect(screen.queryByText(/from US stores/)).toBeNull();
+  });
+
+  it("asks for no prices until Check prices is pressed, then again on each later press", async () => {
+    const fetchMock = server({ "board:nano": [offer("Arduino Nano", 24.9)] });
+    bindSearchServer({ fetchAuthed: fetchMock });
+    const offerCalls = () => fetchMock.mock.calls.filter(([path]) => String(path) === "/search/offers").length;
+    renderPanel({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
+
+    const check = await screen.findByRole("button", { name: "Check prices" });
+    await screen.findAllByText("Arduino Nano");
+    expect(offerCalls()).toBe(0);
+    expect(screen.queryByText("$0.00")).toBeNull();
+
+    fireEvent.click(check);
+    await waitFor(() => expect(offerCalls()).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
+    const afterFirst = offerCalls();
+
+    fireEvent.click(screen.getByRole("button", { name: "Check prices again" }));
+    await waitFor(() => expect(offerCalls()).toBeGreaterThan(afterFirst));
+  });
+
+  it("with no search key shows the needs-key box and makes no search request", async () => {
+    removeAllKeys();
+    const fetchMock = server({});
+    bindSearchServer({ fetchAuthed: fetchMock });
+    renderPanel({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
+
+    const box = await screen.findByTestId("not-set-up");
+    expect(box.getAttribute("data-reason")).toBe("needs_key");
+    expect(screen.queryByRole("button", { name: "Check prices" })).toBeNull();
+    expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
+    expect(fetchMock.mock.calls.some(([path]) => String(path).startsWith("/search"))).toBe(false);
   });
 
   it("says when an item's parts list isn't published", async () => {

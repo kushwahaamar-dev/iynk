@@ -4,10 +4,11 @@ import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Chip } from "@/components/ui/Chip";
+import { TextArea } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/icons";
 import type { PracticeTask, RoboticsContent } from "@/content/schema";
 import { allPass } from "@/lib/robotics/runner";
-import type { BenchAction, TaskSession } from "@/lib/robotics/store";
+import type { BenchAction, TaskSession } from "@/lib/robotics/session";
 import { Fold } from "./Fold";
 import type { BenchT, TextOf } from "./messages";
 
@@ -32,7 +33,7 @@ export function TasksPanel({ bench, tasks, savedDone, t, tx, dispatch, headingId
         </h2>
         <span className="tabular font-ui text-sm font-semibold text-muted">{t("tasks.count", { done, total: bench.tasks.length })}</span>
       </div>
-      <p className="max-w-[68ch] text-sm text-muted">{t("tasks.intro")}</p>
+      <p className="max-w-prose text-sm text-muted">{t("tasks.intro")}</p>
       <div className="flex flex-col gap-4 lg:gap-6">
         {bench.tasks.map((task) => (
           <TaskCard key={task.id} task={task} session={tasks[task.id]} done={savedDone(task.id)} t={t} tx={tx} dispatch={dispatch} />
@@ -62,29 +63,29 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
   const code = session?.code ?? "";
 
   return (
-    <article aria-labelledby={`${id}-title`} data-task={task.id} className="ink-card p-4 sm:p-5">
+    <article aria-labelledby={`${id}-title`} data-task={task.id} className="rounded-2xl border border-rule bg-surface p-4 sm:p-6">
       <div className="flex flex-wrap items-center gap-2">
-        <h3 id={`${id}-title`} className="min-w-0 flex-1 text-lg leading-snug">
+        <h3 id={`${id}-title`} className="min-w-0 flex-1 text-lg">
           {title}
         </h3>
         <Chip tone="cobalt">{t(`tasks.language.${task.language}`)}</Chip>
         {done ? (
           <Chip tone="mint">
-            <Icon name="check" size={14} aria-hidden="true" />
+            <Icon name="check" size={16} aria-hidden="true" />
             {t("tasks.done")}
           </Chip>
         ) : null}
       </div>
       {/* On a wide screen the brief and its checks sit beside the editor, so a run's results show next to the code. */}
-      <div className="mt-3 grid grid-cols-1 gap-x-8 gap-y-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="mt-3 grid grid-cols-1 gap-x-8 gap-y-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div className="min-w-0">
-          <p className="max-w-[68ch] text-sm leading-relaxed">{tx(task.brief)}</p>
-          <h4 className="ink-kicker mt-5">{t("tasks.checks")}</h4>
+          <p className="max-w-prose text-sm">{tx(task.brief)}</p>
+          <h4 className="kicker mt-4">{t("tasks.checks")}</h4>
           <ul className="mt-2 flex flex-col divide-y divide-rule">
             {task.checks.map((check, index) => {
               const outcome = result?.status === "ok" ? result.checks[index] : undefined;
               return (
-                <li key={index} className="flex items-start gap-3 py-1.5 text-sm">
+                <li key={index} className="flex items-start gap-3 py-2 text-sm">
                   <span
                     className={
                       outcome === undefined
@@ -106,7 +107,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
           </ul>
           {task.hints.length > 0 ? (
             <Fold summary={t("tasks.hints")} className="mt-3 text-sm">
-              <ol className="mt-2 flex list-decimal flex-col gap-1 ps-5">
+              <ol className="mt-2 flex list-decimal flex-col gap-2 ps-4">
                 {task.hints.map((hint) => (
                   <li key={hint}>{tx(hint)}</li>
                 ))}
@@ -115,11 +116,9 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
           ) : null}
         </div>
         <div className="min-w-0">
-          <label htmlFor={`${id}-code`} className="ink-label block">
-            {t("tasks.editor", { title })}
-          </label>
-          <textarea
+          <TextArea
             id={`${id}-code`}
+            label={t("tasks.editor", { title })}
             value={code}
             onChange={(event) => {
               setBefore(null);
@@ -135,7 +134,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
             autoCapitalize="off"
             autoCorrect="off"
             rows={Math.min(24, Math.max(8, code.split("\n").length + 1))}
-            className="mt-1 w-full resize-y rounded-ink-sm border-2 border-line bg-surface p-3 font-ui text-sm leading-relaxed text-ink"
+            className="tabular font-ui text-sm"
             data-task-editor
           />
           <div className="mt-3 flex flex-wrap gap-2">
@@ -196,7 +195,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
           {result?.status === "ok" || result?.status === "error" ? (
             <Fold summary={t("tasks.serialOut")} className="mt-3 text-sm">
               {result.serial.length > 0 ? (
-                <pre className="mt-2 max-h-48 overflow-auto rounded-ink-sm border-[1.5px] border-line bg-console p-3 font-ui text-xs text-console-accent">
+                <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-rule bg-console p-3 font-ui text-xs text-console-accent">
                   {result.serial.join("\n")}
                 </pre>
               ) : (

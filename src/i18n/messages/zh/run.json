@@ -1,0 +1,33 @@
+{
+  "runner": "运行者：{name}",
+  "you": "你",
+  "inSync": "已同步至 {t} 秒",
+  "catchingUp": "正在追赶",
+  "watching": "正在观看 {name} 的运行",
+  "private": "私有运行",
+  "detach": "运行我自己的副本",
+  "rejoin": "重新加入房间的运行",
+  "moveRunner": "请 {host} 把运行转移到更快的设备上",
+  "pickRunner": "运行者",
+  "halt": {
+    "edited": "因为电路被修改，运行已停止。",
+    "logFull": "因为日志已满，运行已停止。",
+    "server": "因为服务器重启，运行已停止。",
+    "runnerLost": "运行者已离开，所以运行已暂停。",
+    "error": "因为出错，运行已停止。"
+  },
+  "reason": {
+    "diverged": "你的副本与运行者的副本不再一致",
+    "engines": "你的引擎与运行者的引擎不同"
+  },
+  "badge": "运行者",
+  "indicator": "共享运行",
+  "controlDenied": "你不能控制共享运行。",
+  "state": {
+    "idle": "未运行",
+    "running": "运行中",
+    "paused": "已暂停",
+    "halted": "已停止",
+    "done": "已完成"
+  }
+}

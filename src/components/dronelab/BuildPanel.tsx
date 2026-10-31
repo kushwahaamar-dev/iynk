@@ -8,10 +8,10 @@ import { Callout } from "@/components/ui/Callout";
 import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { stepStatus, type StepStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
-const STATUS_TONE: Record<StepStatus, ChipTone> = { done: "mint", flipped: "tomato", next: "mustard", todo: "plain" };
+const STATUS_TONE: Record<StepStatus, ChipTone> = { done: "good", flipped: "bad", next: "info", todo: "neutral" };
 
 /** The three mistakes the drone engine knows on every craft that has these parts (docs/FIGURES-DRONE.md §6). */
 const MISTAKE_PARTS = ["XT60", "FC", "PROPS"] as const;
@@ -42,12 +42,12 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
   const mistakes = MISTAKE_PARTS.filter((id) => partOf(id));
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <h2 className="sr-only">{t("build.title")}</h2>
       <p className="text-muted">{t("build.lede")}</p>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-ui text-sm font-bold" aria-live="polite" data-testid="build-count">
+        <span className="tabular text-sm font-bold" aria-live="polite" data-testid="build-count">
           {t("build.count", { fitted: bench.fitted, total: bench.total || content.build.length })}
         </span>
       </div>
@@ -83,15 +83,15 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
           return (
             <li
               key={step.id}
-              className="py-2"
+              className={status === "next" || status === "flipped" ? "-mx-3 rounded-lg bg-hover px-3 py-2" : "py-2"}
               data-step={step.id}
               data-status={status}
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="tabular font-ui text-xs font-semibold text-muted">{i + 1}.</span>
+                <span className="tabular text-xs font-semibold text-muted">{i + 1}.</span>
                 <span className="font-semibold">{ct(step.title)}</span>
                 <Chip tone={STATUS_TONE[status]}>{statusText[status]}</Chip>
-                <span className="ms-auto flex gap-1.5">
+                <span className="ms-auto flex gap-2">
                   {fitted ? (
                     <IconButton
                       icon="close"
@@ -108,7 +108,7 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
                   )}
                 </span>
               </div>
-              {status === "next" || status === "flipped" ? <p className="mt-1.5 text-sm">{ct(step.body)}</p> : null}
+              {status === "next" || status === "flipped" ? <p className="mt-2 text-sm">{ct(step.body)}</p> : null}
             </li>
           );
         })}
@@ -121,7 +121,7 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
 
       {mistakes.length > 0 ? (
         <section aria-labelledby={`${base}-mistakes`} className="space-y-2">
-          <h3 id={`${base}-mistakes`} className="ink-kicker">
+          <h3 id={`${base}-mistakes`} className="kicker">
             {t("build.mistakesTitle")}
           </h3>
           <p className="text-sm text-muted">{t("build.mistakesLede")}</p>
@@ -141,14 +141,14 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
         </section>
       ) : null}
 
-      <section aria-labelledby={`${base}-selected`} className="rounded-ink border-2 border-line bg-sunken px-3 py-3">
-        <h3 id={`${base}-selected`} className="ink-kicker">
+      <section aria-labelledby={`${base}-selected`} className="rounded-xl bg-sunken p-3">
+        <h3 id={`${base}-selected`} className="kicker">
           {t("build.selected")}
         </h3>
         <div aria-live="polite" data-testid="selected-part">
           {selected ? (
             <>
-              <p className="mt-1 font-ui text-xs font-bold uppercase tracking-wider text-muted">
+              <p className="mt-1 text-xs font-semibold text-muted">
                 {bench.placed[selected.id] !== undefined
                   ? t("build.fitted", { short: selected.short })
                   : t("build.inBox", { short: selected.short })}
@@ -163,10 +163,10 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
       </section>
 
       <section aria-labelledby={`${base}-parts`}>
-        <h3 id={`${base}-parts`} className="ink-kicker">
+        <h3 id={`${base}-parts`} className="kicker">
           {t("build.partsList")}
         </h3>
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap gap-2">
           {content.parts.map((part) => {
             const on = bench.placed[part.id] !== undefined;
             return (

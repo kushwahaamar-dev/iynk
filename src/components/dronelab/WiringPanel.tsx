@@ -2,7 +2,8 @@
 
 import type { DroneContent, DroneWire } from "@/content/schema";
 import { Button } from "@/components/ui/Button";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import { Icon } from "@/components/ui/icons";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import type { ContentT, DroneLabT } from "./text";
 
 // Same colours as the figure's wiring sheet (docs/FIGURES-DRONE.md §9).
@@ -30,15 +31,16 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
   const short = (id: string) => content.parts.find((p) => p.id === id)?.short ?? id;
   // an end of a wire: a text button that selects the part on the figure (both ends light up)
   const end = (id: string) => (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="sm"
       aria-pressed={sel === id}
       aria-label={t("wiring.selectEnd", { short: short(id) })}
       onClick={() => dispatch({ type: "select", id })}
-      className="-my-2 inline-flex min-h-11 items-center whitespace-nowrap rounded-ink-sm px-1.5 font-ui text-sm font-semibold underline decoration-rule decoration-2 underline-offset-4 hover:bg-sunken hover:decoration-ink aria-pressed:bg-ink aria-pressed:text-paper aria-pressed:no-underline"
+      className="whitespace-nowrap px-2 py-1 font-ui tabular underline decoration-rule underline-offset-4 aria-pressed:no-underline"
     >
       {short(id)}
-    </button>
+    </Button>
   );
 
   return (
@@ -46,7 +48,7 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
       <h2 className="sr-only">{t("wiring.title")}</h2>
       <p className="text-sm text-muted">{t("wiring.lede")}</p>
       <Button
-        variant={sheet === "wiring" ? "ink" : "primary"}
+        variant={sheet === "wiring" ? "solid" : "primary"}
         aria-pressed={sheet === "wiring"}
         disabled={!ready}
         onClick={() => dispatch({ type: "sheet", sheet: sheet === "wiring" ? null : "wiring" })}
@@ -59,18 +61,12 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
         {(Object.keys(KIND_COLOR) as DroneWire["kind"][])
           .filter((kind) => content.wiring.some((w) => w.kind === kind))
           .map((kind) => (
-            <li key={kind} className="flex items-center gap-1.5 text-xs text-muted">
-              <svg width="26" height="6" aria-hidden="true">
-                <line
-                  x1="1"
-                  y1="3"
-                  x2="25"
-                  y2="3"
-                  stroke={KIND_COLOR[kind]}
-                  strokeWidth="3"
-                  strokeDasharray={DASHED.has(kind) ? "6 4" : undefined}
-                />
-              </svg>
+            <li key={kind} className="flex items-center gap-2 text-xs text-muted">
+              <span
+                aria-hidden="true"
+                className="w-6 shrink-0"
+                style={{ borderTop: `3px ${DASHED.has(kind) ? "dashed" : "solid"} ${KIND_COLOR[kind]}` }}
+              />
               {t(`wiring.kinds.${kind}`)}
             </li>
           ))}
@@ -82,17 +78,15 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
             <div className="flex flex-wrap items-center gap-x-1 gap-y-1">
               <span
                 aria-hidden="true"
-                className="me-1.5 inline-block h-1 w-5 shrink-0 rounded"
+                className="me-2 inline-block h-1 w-6 shrink-0 rounded-sm"
                 style={{ background: KIND_COLOR[wire.kind] }}
                 title={t(`wiring.kinds.${wire.kind}`)}
               />
               <span className="sr-only">{t(`wiring.kinds.${wire.kind}`)}:</span>
               {end(wire.from)}
-              <span aria-hidden="true" className="text-muted">
-                →
-              </span>
+              <Icon name="arrow-right" size={16} className="shrink-0 text-muted" />
               {end(wire.to)}
-              <span className="ms-auto ps-2 font-ui text-xs font-semibold text-muted">{wire.label}</span>
+              <span className="ms-auto ps-2 font-ui tabular text-xs font-semibold text-muted">{wire.label}</span>
             </div>
             <p className="mt-1 text-sm text-muted">{ct(wire.note)}</p>
           </li>

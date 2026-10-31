@@ -1,0 +1,88 @@
+{
+  "id": "runtime:verilog-2state@1",
+  "version": "1.0.0",
+  "kind": "runtime",
+  "title": "Verilog two-state cycle simulator",
+  "tier": "T1",
+  "layers": [
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "cycle",
+      "text": "Cycle-based two-state simulation, one clock edge per step, then the combinational logic settles"
+    },
+    {
+      "id": "lang",
+      "text": "Modules, parameters, always and initial blocks, if/case/for, 32-bit vectors"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "four-state",
+      "text": "X and Z values"
+    },
+    {
+      "id": "delays",
+      "text": "Delays and timing"
+    },
+    {
+      "id": "function",
+      "text": "function, generate, memories and inout"
+    },
+    {
+      "id": "wide",
+      "text": "Signals wider than 32 bits"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "verilog-tests",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/verilog/verilog.test.ts",
+      "result": {
+        "n": 15,
+        "passed": 15,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    },
+    {
+      "id": "rs12-counter",
+      "kind": "differential",
+      "oracle": {
+        "name": "DigitalJS",
+        "version": "0.14.2"
+      },
+      "dataset": "RS-12 basys3 counter, 12,000 cycles",
+      "result": {
+        "n": 12000,
+        "passed": 12000,
+        "metric": "cycles with equal output",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "src/lib/interp@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-12-yosys-wasm/REPORT.md"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "The blink design matched only after two manual patches on the DigitalJS side"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

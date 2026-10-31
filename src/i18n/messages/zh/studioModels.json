@@ -1,0 +1,43 @@
+{
+  "title": "模拟了什么",
+  "chip": "模型等级",
+  "tiers": {
+    "T0": {
+      "name": "示意图",
+      "meaning": "只是画出来，不做任何计算。"
+    },
+    "T1": {
+      "name": "教学模型",
+      "meaning": "用简单模型展示元件的行为，并不精确。"
+    },
+    "T2": {
+      "name": "计算模型",
+      "meaning": "数值来自元件数据手册中的数字。"
+    },
+    "T3": {
+      "name": "运行你的固件",
+      "meaning": "真实的芯片程序逐条指令运行。"
+    },
+    "none": {
+      "name": "无等级",
+      "meaning": "这个元件没有设置模型等级。"
+    }
+  },
+  "status": {
+    "modelled": "已模拟",
+    "partly-modelled": "部分模拟",
+    "not-modelled-yet": "尚未模拟"
+  },
+  "engine": {
+    "label": "引擎",
+    "value": "Arduino C++ 子集解释器，数字引脚模型"
+  },
+  "boardNotes": "开发板说明",
+  "notModelledHelp": "尚未模拟是指元件已画出并连线，但不会为它计算任何结果。",
+  "models": "模拟了什么",
+  "notModelled": "没有模拟什么",
+  "showAll": "显示全部",
+  "showLess": "收起",
+  "unknownPart": "未知元件",
+  "empty": "这个项目里还没有元件。"
+}

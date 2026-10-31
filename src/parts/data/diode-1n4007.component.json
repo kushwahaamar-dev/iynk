@@ -1,0 +1,521 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.diode-1n4007",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "1N4007 rectifier diode",
+    "generic": true,
+    "refdes_prefix": "D",
+    "kind": "discrete",
+    "category": "semiconductor",
+    "description": {
+      "en": "A 1 A rectifier diode in a DO-41 package with a band at the cathode end. Used as a flyback diode and for reverse-polarity protection."
+    },
+    "legacy_ids": [
+      "diode-1n4007"
+    ],
+    "tags": [
+      "diode",
+      "rectifier",
+      "1n4007",
+      "breadboard"
+    ],
+    "mpn": "1N4007"
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet (Learn Arduino parts and common sensors and actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It quotes maker sheets and reseller guides; the sheet marks the values it could not check as unverified. Section 18 quotes the Interlink FSR 400 series sheet and an Adafruit resistance table. Section 9 quotes the Analog Devices TMP36 sheet and Adafruit's guide."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/diode-1n4007.js: header comment and elec()",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Constants in the figure code. Where the header names a maker sheet, that sheet was not read for this descriptor."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: the elements the bench solver stamps",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "A",
+      "name": {
+        "en": "Anode"
+      },
+      "designator": "A",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "anode",
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "connector": "legs"
+    },
+    {
+      "id": "K",
+      "name": {
+        "en": "Cathode"
+      },
+      "designator": "K",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "cathode",
+      "position": {
+        "x": 17.78,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The end with the silver band."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "A",
+        "K"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "DO-41 axial",
+    "body": {
+      "w": 4.8,
+      "h": 2.6,
+      "d": 2.6
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 12"
+    }
+  },
+  "ratings": {
+    "forward_current_average": {
+      "measure": "current",
+      "role": "abs_max",
+      "description": {
+        "en": "Average forward current."
+      },
+      "manufacturer": {
+        "unit": "A",
+        "value": 1,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 12"
+        }
+      },
+      "used_by_model": "manufacturer",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    },
+    "surge_current": {
+      "measure": "current",
+      "role": "abs_max",
+      "description": {
+        "en": "Peak surge current for one 8.3 ms half sine."
+      },
+      "manufacturer": {
+        "unit": "A",
+        "value": 30,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 12"
+        }
+      },
+      "used_by_model": "manufacturer",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    },
+    "reverse_voltage": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Repetitive peak reverse voltage of the 1N4007."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 1000,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 12"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    },
+    "forward_voltage_max": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Highest forward voltage at 1 A."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 1.0,
+        "conditions": "1 A",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 12"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    },
+    "forward_voltage_figure": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Forward voltage the figure states for its curve."
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.8,
+        "rationale": {
+          "en": "Constant vf 0.8 in the figure's elec() and a typical 0.81 V at 0.2 A. The solver does not read it; it uses forward_voltage_solver."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/diode-1n4007.js:31"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    },
+    "forward_voltage_solver": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Forward voltage the solver really uses."
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.7,
+        "rationale": {
+          "en": "The solver stamps a fixed 0.7 V for every diode, whatever the figure says."
+        },
+        "confidence": "low",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:104"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    },
+    "dynamic_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Slope of the on-state line the solver uses."
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 0.2,
+        "rationale": {
+          "en": "The solver stamps a fixed 0.2 ohm for every diode."
+        },
+        "confidence": "low",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:104"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "A diode that conducts above a fixed 0.7 V with 0.2 ohm of slope and blocks in reverse."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "A",
+          "K"
+        ],
+        "summary": {
+          "en": "Piecewise-linear diode: off below the forward voltage, a line of slope 1/rd above it."
+        },
+        "model": {
+          "kind": "element",
+          "element": "diode",
+          "terminals": {
+            "anode": "A",
+            "cathode": "K"
+          },
+          "params": {
+            "vf": {
+              "from_rating": "forward_voltage_solver",
+              "pick": "value"
+            },
+            "rd": {
+              "from_rating": "dynamic_resistance",
+              "pick": "value"
+            },
+            "imax": {
+              "from_rating": "forward_current_average",
+              "pick": "value"
+            },
+            "isurge": {
+              "from_rating": "surge_current",
+              "pick": "value"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "overcurrent",
+      "name": {
+        "en": "Burned out by too much current"
+      },
+      "cause_id": "x-diode-overcurrent",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "when": [
+        {
+          "measure": "pin_current",
+          "target": "A",
+          "op": ">",
+          "threshold": {
+            "rating": "forward_current_average",
+            "pick": "value"
+          }
+        }
+      ],
+      "effect": {
+        "state": "open_circuit",
+        "latched": true,
+        "recovers_when": "the part is replaced"
+      },
+      "derivation": {
+        "en": "The solver opens the diode when the average current passes 1 A or a peak passes 30 A. The surge limit is a second condition that this entry does not repeat."
+      },
+      "basis": "manufacturer",
+      "source": {
+        "src": "factsheet",
+        "loc": "section 12"
+      },
+      "implemented_as": "threshold"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "reversed",
+      "kind": "reversed_part",
+      "target": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "cause_id": "swapped-pins",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "Fit the diode the other way round, so it blocks where it should conduct."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Conduction above a fixed 0.7 V with a 0.2 ohm slope."
+      },
+      {
+        "en": "Blocking in reverse."
+      },
+      {
+        "en": "Burn-out above 1 A average or 30 A peak."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The exponential forward curve: the figure's fit gives 0.56 V at 1 mA and 0.91 V at 1 A, the solver gives 0.7 V throughout."
+      },
+      {
+        "en": "Reverse breakdown and the 1000 V rating."
+      },
+      {
+        "en": "Reverse recovery, leakage and temperature."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "forward current",
+        "min": 0.01,
+        "max": 1,
+        "unit": "A"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "solver_fixed_vf",
+        "text": {
+          "en": "The solver uses a fixed 0.7 V and 0.2 ohm for every diode. The figure states 0.8 V, n 1.808, rs 34 milliohm and a SPICE fit, none of which the solver reads."
+        },
+        "evidence": "figures/engine/bench-solve.js:104 and figures/parts/diode-1n4007.js:31"
+      },
+      {
+        "id": "type_selector",
+        "text": {
+          "en": "The figure's type selector (1N4001 to 1N4007) is not carried. This part is the 1N4007; the other types have no descriptor."
+        },
+        "evidence": "figures/parts/diode-1n4007.js:29"
+      },
+      {
+        "id": "second_condition",
+        "text": {
+          "en": "The burn-out rule has a 30 A peak condition besides the 1 A average. Only the average is written as a failure mode."
+        },
+        "evidence": "figures/engine/bench-solve.js:328"
+      }
+    ],
+    "solver_requires": [
+      "diode"
+    ],
+    "tests": [
+      {
+        "id": "diode_series_1k",
+        "kind": "golden-trace",
+        "file": "src/parts/data/tests/diode-1n4007.golden.json",
+        "tolerance": {
+          "rel": 0.01
+        },
+        "note": "Diode in series with 1 kilohm from 5 V."
+      },
+      {
+        "id": "diode_layers",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/diode-1n4007.conformance.json"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "diode-1n4007",
+        "path": "public/figures/parts/diode-1n4007.html",
+        "sha256": "9d0005846835a824ba32441fa008cd213a15b4734f4d92b57ca075f96b473de4",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "A",
+        "K"
+      ],
+      "span": [
+        3,
+        8
+      ]
+    },
+    "schematic": {
+      "symbol": "diode"
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "1N4007",
+      "body_colour": "#34312e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      },
+      {
+        "text": "Ratings after the 1N400x sheet as quoted in docs/facts/la-components.md section 12."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/diode-1n4007.js, figures/engine/bench-solve.js and the fact sheet.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,1735 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.pca9685-module",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Adafruit Industries (board design)",
+    "model": "16-Channel 12-bit PWM/Servo Driver, product 815, rev C",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "motor-driver",
+    "description": {
+      "en": "A board with an NXP PCA9685: two I2C wires set sixteen PWM channels, so one controller can drive sixteen servos from a separate servo supply."
+    },
+    "chip": {
+      "manufacturer": "NXP",
+      "model": "PCA9685PW",
+      "package": "TSSOP-28"
+    },
+    "primary_source": "facts",
+    "legacy_ids": [
+      "pca9685"
+    ],
+    "tags": [
+      "pca9685",
+      "servo-driver",
+      "pwm",
+      "i2c",
+      "robotics"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Fact sheet docs/facts/pca9685.md",
+      "publisher": "iynk",
+      "reliability": "secondary",
+      "note": "It cites the NXP PCA9685 datasheet (rev 4), Adafruit's product page and guide, and Adafruit's Eagle file for rev C, all read by the fact-sheet author, not by this descriptor. Positions come from the Eagle file."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/pca9685.js: constants and model code",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "devicets",
+      "kind": "library",
+      "title": "src/lib/interp/devices.ts: the Pca9685 register model",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "VPLUS",
+      "name": {
+        "en": "Servo power (side header)"
+      },
+      "designator": "V+",
+      "type": "power_io",
+      "class": "power",
+      "position": {
+        "x": 1.905,
+        "y": 6.477
+      },
+      "note": {
+        "en": "After the reverse-polarity MOSFET, so it has no protection. Chained boards share servo power through it."
+      },
+      "connector": "JP3"
+    },
+    {
+      "id": "VCC",
+      "name": {
+        "en": "Logic supply"
+      },
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 1.905,
+        "y": 9.017
+      },
+      "note": {
+        "en": "Powers the chip, the LED and the pull-ups only. It is not connected to V+."
+      },
+      "connector": "JP3"
+    },
+    {
+      "id": "SDA",
+      "designator": "SDA",
+      "type": "open_drain",
+      "class": "bus",
+      "position": {
+        "x": 1.905,
+        "y": 11.557
+      },
+      "note": {
+        "en": "10 kohm pull-up to VCC on the board."
+      },
+      "connector": "JP3"
+    },
+    {
+      "id": "SCL",
+      "designator": "SCL",
+      "type": "digital_in",
+      "class": "bus",
+      "position": {
+        "x": 1.905,
+        "y": 14.097
+      },
+      "note": {
+        "en": "10 kohm pull-up to VCC on the board."
+      },
+      "connector": "JP3"
+    },
+    {
+      "id": "OE",
+      "designator": "OE",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.905,
+        "y": 16.637
+      },
+      "note": {
+        "en": "Active low. High turns all sixteen outputs off."
+      },
+      "connector": "JP3",
+      "pull": {
+        "kind": "on-board",
+        "to": "down",
+        "rating": "oe_pulldown"
+      }
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 1.905,
+        "y": 19.177
+      },
+      "note": {
+        "en": "Common with the servo ground."
+      },
+      "connector": "JP3"
+    },
+    {
+      "id": "PWM0",
+      "name": {
+        "en": "Channel 0 signal"
+      },
+      "designator": "PWM0",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 6.985,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "PWM1",
+      "name": {
+        "en": "Channel 1 signal"
+      },
+      "designator": "PWM1",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 9.525,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "PWM2",
+      "name": {
+        "en": "Channel 2 signal"
+      },
+      "designator": "PWM2",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 12.065,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "PWM3",
+      "name": {
+        "en": "Channel 3 signal"
+      },
+      "designator": "PWM3",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 14.605,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "PWM4",
+      "name": {
+        "en": "Channel 4 signal"
+      },
+      "designator": "PWM4",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 19.685,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "PWM5",
+      "name": {
+        "en": "Channel 5 signal"
+      },
+      "designator": "PWM5",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 22.225,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "PWM6",
+      "name": {
+        "en": "Channel 6 signal"
+      },
+      "designator": "PWM6",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 24.765,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "PWM7",
+      "name": {
+        "en": "Channel 7 signal"
+      },
+      "designator": "PWM7",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 27.305,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "PWM8",
+      "name": {
+        "en": "Channel 8 signal"
+      },
+      "designator": "PWM8",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 34.925,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "PWM9",
+      "name": {
+        "en": "Channel 9 signal"
+      },
+      "designator": "PWM9",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 37.465,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "PWM10",
+      "name": {
+        "en": "Channel 10 signal"
+      },
+      "designator": "PWM10",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 40.005,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "PWM11",
+      "name": {
+        "en": "Channel 11 signal"
+      },
+      "designator": "PWM11",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 42.545,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "PWM12",
+      "name": {
+        "en": "Channel 12 signal"
+      },
+      "designator": "PWM12",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 47.625,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "PWM13",
+      "name": {
+        "en": "Channel 13 signal"
+      },
+      "designator": "PWM13",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 50.165,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "PWM14",
+      "name": {
+        "en": "Channel 14 signal"
+      },
+      "designator": "PWM14",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 52.705,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "PWM15",
+      "name": {
+        "en": "Channel 15 signal"
+      },
+      "designator": "PWM15",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 55.245,
+        "y": 6.477
+      },
+      "note": {
+        "en": "A 220 ohm resistor sits in every output."
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SV0",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 6.985,
+        "y": 3.937
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SG0",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 6.985,
+        "y": 1.397
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SV1",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 9.525,
+        "y": 3.937
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SG1",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 9.525,
+        "y": 1.397
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SV2",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 12.065,
+        "y": 3.937
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SG2",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 12.065,
+        "y": 1.397
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SV3",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 14.605,
+        "y": 3.937
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SG3",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 14.605,
+        "y": 1.397
+      },
+      "connector": "SH0"
+    },
+    {
+      "id": "SV4",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 19.685,
+        "y": 3.937
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SG4",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 19.685,
+        "y": 1.397
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SV5",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 22.225,
+        "y": 3.937
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SG5",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 22.225,
+        "y": 1.397
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SV6",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 24.765,
+        "y": 3.937
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SG6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 24.765,
+        "y": 1.397
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SV7",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 27.305,
+        "y": 3.937
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SG7",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 27.305,
+        "y": 1.397
+      },
+      "connector": "SH1"
+    },
+    {
+      "id": "SV8",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 34.925,
+        "y": 3.937
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SG8",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 34.925,
+        "y": 1.397
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SV9",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 37.465,
+        "y": 3.937
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SG9",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 37.465,
+        "y": 1.397
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SV10",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 40.005,
+        "y": 3.937
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SG10",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 40.005,
+        "y": 1.397
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SV11",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 42.545,
+        "y": 3.937
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SG11",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 42.545,
+        "y": 1.397
+      },
+      "connector": "SH2"
+    },
+    {
+      "id": "SV12",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 47.625,
+        "y": 3.937
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SG12",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 47.625,
+        "y": 1.397
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SV13",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 50.165,
+        "y": 3.937
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SG13",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 50.165,
+        "y": 1.397
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SV14",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 52.705,
+        "y": 3.937
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SG14",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 52.705,
+        "y": 1.397
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SV15",
+      "designator": "V+",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 55.245,
+        "y": 3.937
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "SG15",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 55.245,
+        "y": 1.397
+      },
+      "connector": "SH3"
+    },
+    {
+      "id": "VIN",
+      "name": {
+        "en": "Servo power terminal"
+      },
+      "designator": "V+",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 29.315,
+        "y": 21.59
+      },
+      "note": {
+        "en": "Goes through the reverse-polarity MOSFET to the servo rail."
+      },
+      "connector": "J1"
+    },
+    {
+      "id": "TGND",
+      "name": {
+        "en": "Servo ground terminal"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 32.815,
+        "y": 21.59
+      },
+      "connector": "J1"
+    }
+  ],
+  "groups": [
+    {
+      "id": "servo_rail",
+      "kind": "internal-short",
+      "pins": [
+        "VPLUS",
+        "SV0",
+        "SV1",
+        "SV2",
+        "SV3",
+        "SV4",
+        "SV5",
+        "SV6",
+        "SV7",
+        "SV8",
+        "SV9",
+        "SV10",
+        "SV11",
+        "SV12",
+        "SV13",
+        "SV14",
+        "SV15"
+      ],
+      "note": {
+        "en": "The servo power rail, after the reverse-polarity MOSFET."
+      }
+    },
+    {
+      "id": "ground",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "TGND",
+        "SG0",
+        "SG1",
+        "SG2",
+        "SG3",
+        "SG4",
+        "SG5",
+        "SG6",
+        "SG7",
+        "SG8",
+        "SG9",
+        "SG10",
+        "SG11",
+        "SG12",
+        "SG13",
+        "SG14",
+        "SG15"
+      ]
+    }
+  ],
+  "connectors": [
+    {
+      "id": "JP3",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "VPLUS",
+        "VCC",
+        "SDA",
+        "SCL",
+        "OE",
+        "GND"
+      ],
+      "note": {
+        "en": "I2C and power header, bottom to top. The same pads on the right edge are unfitted, for chaining."
+      }
+    },
+    {
+      "id": "SH0",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "PWM0",
+        "SV0",
+        "SG0",
+        "PWM1",
+        "SV1",
+        "SG1",
+        "PWM2",
+        "SV2",
+        "SG2",
+        "PWM3",
+        "SV3",
+        "SG3"
+      ],
+      "note": {
+        "en": "Servo header, channels 0 to 3. Each column is signal, V+, GND."
+      }
+    },
+    {
+      "id": "SH1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "PWM4",
+        "SV4",
+        "SG4",
+        "PWM5",
+        "SV5",
+        "SG5",
+        "PWM6",
+        "SV6",
+        "SG6",
+        "PWM7",
+        "SV7",
+        "SG7"
+      ],
+      "note": {
+        "en": "Servo header, channels 4 to 7. Each column is signal, V+, GND."
+      }
+    },
+    {
+      "id": "SH2",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "PWM8",
+        "SV8",
+        "SG8",
+        "PWM9",
+        "SV9",
+        "SG9",
+        "PWM10",
+        "SV10",
+        "SG10",
+        "PWM11",
+        "SV11",
+        "SG11"
+      ],
+      "note": {
+        "en": "Servo header, channels 8 to 11. Each column is signal, V+, GND."
+      }
+    },
+    {
+      "id": "SH3",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "PWM12",
+        "SV12",
+        "SG12",
+        "PWM13",
+        "SV13",
+        "SG13",
+        "PWM14",
+        "SV14",
+        "SG14",
+        "PWM15",
+        "SV15",
+        "SG15"
+      ],
+      "note": {
+        "en": "Servo header, channels 12 to 15. Each column is signal, V+, GND."
+      }
+    },
+    {
+      "id": "J1",
+      "kind": "screw-terminal",
+      "pitch": 3.5,
+      "pins": [
+        "VIN",
+        "TGND"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "module",
+    "body": {
+      "w": 62.23,
+      "h": 25.4,
+      "d": 14
+    },
+    "board": {
+      "w": 62.23,
+      "h": 25.4,
+      "thickness": 1.6,
+      "corner_radius": 3.175,
+      "mounting_holes": [
+        {
+          "x": 3.175,
+          "y": 3.175,
+          "diameter": 2.5
+        },
+        {
+          "x": 3.175,
+          "y": 22.225,
+          "diameter": 2.5
+        },
+        {
+          "x": 59.055,
+          "y": 3.175,
+          "diameter": 2.5
+        },
+        {
+          "x": 59.055,
+          "y": 22.225,
+          "diameter": 2.5
+        }
+      ]
+    },
+    "height_total": 14,
+    "accuracy": 0.3,
+    "source": {
+      "src": "facts",
+      "loc": "section 2.1 to 2.3, Eagle file rev C"
+    }
+  },
+  "ratings": {
+    "vcc_operating": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 2.3,
+        "max": 5.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, Supply VDD"
+        },
+        "conditions": "The board's silkscreen says 3 to 5 V."
+      },
+      "used_by_model": "none"
+    },
+    "vcc_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 6,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, Supply VDD"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vplus_silk_max": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VPLUS",
+          "VIN"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 6,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, V+"
+        },
+        "conditions": "The silkscreen limit \"V+: 6V Max\", which protects the servos; Q1 itself takes 30 V."
+      },
+      "used_by_model": "none"
+    },
+    "io_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "SDA",
+          "SCL",
+          "OE"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 5.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, I/O voltage"
+        },
+        "conditions": "All inputs and outputs are 5.5 V tolerant even at 3.3 V supply."
+      },
+      "used_by_model": "none"
+    },
+    "output_current_abs_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "PWM0",
+          "PWM1",
+          "PWM2",
+          "PWM3",
+          "PWM4",
+          "PWM5",
+          "PWM6",
+          "PWM7",
+          "PWM8",
+          "PWM9",
+          "PWM10",
+          "PWM11",
+          "PWM12",
+          "PWM13",
+          "PWM14",
+          "PWM15"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 0.025,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, Any PWM output"
+        },
+        "conditions": "Per pin; the 220 ohm resistor keeps a shorted output under it."
+      },
+      "used_by_model": "none"
+    },
+    "package_current_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "part": true
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 0.4,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, All outputs together"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "output_series_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "PWM0",
+          "PWM1",
+          "PWM2",
+          "PWM3",
+          "PWM4",
+          "PWM5",
+          "PWM6",
+          "PWM7",
+          "PWM8",
+          "PWM9",
+          "PWM10",
+          "PWM11",
+          "PWM12",
+          "PWM13",
+          "PWM14",
+          "PWM15"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "value": 220,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, Any PWM output"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "i2c_pullup": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "SDA",
+          "SCL"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 10000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, Logic level"
+        },
+        "conditions": "To VCC, on the board."
+      },
+      "used_by_model": "none"
+    },
+    "oe_pulldown": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "OE"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 10000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.5, OE"
+        },
+        "conditions": "R7, so the outputs are enabled by default."
+      },
+      "used_by_model": "none"
+    },
+    "supply_current": {
+      "measure": "current",
+      "role": "consumption",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "typ": 0.006,
+        "max": 0.01,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, Supply VDD"
+        },
+        "conditions": "No load, 1 MHz SCL."
+      },
+      "used_by_model": "none"
+    },
+    "oscillator": {
+      "measure": "frequency",
+      "role": "characteristic",
+      "scope": {
+        "layer": "pwm"
+      },
+      "manufacturer": {
+        "unit": "Hz",
+        "typ": 25000000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, Clock"
+        },
+        "conditions": "Typical only; the datasheet gives no minimum or maximum. Adafruit measures about 23 to 27 MHz."
+      },
+      "used_by_model": "none"
+    },
+    "pwm_frequency": {
+      "measure": "frequency",
+      "role": "operating",
+      "scope": {
+        "layer": "pwm"
+      },
+      "manufacturer": {
+        "unit": "Hz",
+        "min": 24,
+        "max": 1526,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, PWM frequency"
+        },
+        "conditions": "PRE_SCALE 0xFF to 0x03. The power-up value is 0x1E, 200 Hz."
+      },
+      "used_by_model": "none"
+    },
+    "protection_fet_on_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "VIN"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "max": 0.055,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, Power tree"
+        },
+        "conditions": "AOD417 at VGS of -4.5 V."
+      },
+      "used_by_model": "none"
+    }
+  },
+  "protocols": [
+    {
+      "id": "host_i2c",
+      "kind": "i2c",
+      "role": "slave",
+      "pins": {
+        "scl": "SCL",
+        "sda": "SDA"
+      },
+      "params": {
+        "address": 64,
+        "onboard_pullup_ohms": 10000
+      },
+      "status": "modelled"
+    },
+    {
+      "id": "servo_outputs",
+      "kind": "servo-pwm",
+      "role": "controller",
+      "pins": {
+        "ch0": "PWM0",
+        "ch1": "PWM1",
+        "ch2": "PWM2",
+        "ch3": "PWM3",
+        "ch4": "PWM4",
+        "ch5": "PWM5",
+        "ch6": "PWM6",
+        "ch7": "PWM7",
+        "ch8": "PWM8",
+        "ch9": "PWM9",
+        "ch10": "PWM10",
+        "ch11": "PWM11",
+        "ch12": "PWM12",
+        "ch13": "PWM13",
+        "ch14": "PWM14",
+        "ch15": "PWM15"
+      },
+      "status": "not-modelled-yet"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "logic_supply",
+        "pins": [
+          "VCC"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vcc_operating",
+        "current": "supply_current"
+      },
+      {
+        "id": "servo_supply",
+        "pins": [
+          "VIN"
+        ],
+        "ground": [
+          "TGND"
+        ],
+        "voltage": "vplus_silk_max"
+      }
+    ],
+    "protection": [
+      {
+        "kind": "reverse-polarity",
+        "present": true,
+        "note": {
+          "en": "On the V+ terminal only: a P-MOSFET with its gate to ground. The side header V+ pin bypasses it."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, Power tree"
+        }
+      },
+      {
+        "kind": "overcurrent",
+        "present": false,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, There is no regulator, no polyfuse"
+        }
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "address",
+      "name": {
+        "en": "I2C address"
+      },
+      "kind": "build-option",
+      "type": "number",
+      "default": 64,
+      "min": 64,
+      "max": 127,
+      "unit": "1",
+      "affects": [
+        "host_i2c"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "An I2C slave at 0x40 plus the bridged jumpers. It powers up asleep with every output low; the host sets a frequency and then an on and off count for each channel, and the chip keeps making the pulses."
+    },
+    "layers": [
+      {
+        "id": "pwm",
+        "domain": "protocol",
+        "reads": [
+          "SCL",
+          "SDA",
+          "OE",
+          "address"
+        ],
+        "drives": [
+          "PWM0",
+          "PWM1",
+          "PWM2",
+          "PWM3",
+          "PWM4",
+          "PWM5",
+          "PWM6",
+          "PWM7",
+          "PWM8",
+          "PWM9",
+          "PWM10",
+          "PWM11",
+          "PWM12",
+          "PWM13",
+          "PWM14",
+          "PWM15"
+        ],
+        "summary": {
+          "en": "Register-level model of the PCA9685: MODE1, PRE_SCALE and sixteen on and off counters."
+        },
+        "model": {
+          "kind": "builtin",
+          "ref": "device:pca9685@1",
+          "params": {},
+          "implementation": {
+            "path": "src/lib/interp/devices.ts",
+            "note": "class Pca9685, bound by the netlist builder as a hook."
+          }
+        }
+      }
+    ]
+  },
+  "injectable_faults": [
+    {
+      "id": "address_a0",
+      "kind": "wrong_value",
+      "target": {
+        "parameter": "address"
+      },
+      "value": {
+        "unit": "1",
+        "value": 65
+      },
+      "legacy_id": "addr-a0",
+      "cause_id": "x-i2c-address-changed",
+      "symptom_ids": [
+        "x-i2c-scan-wrong-address"
+      ],
+      "description": {
+        "en": "Bridge the A0 jumper, so the board answers at 0x41 instead of 0x40."
+      }
+    },
+    {
+      "id": "cold_sda",
+      "kind": "cold_joint",
+      "target": {
+        "pins": [
+          "SDA"
+        ]
+      },
+      "legacy_id": "cold:JP3.3",
+      "cause_id": "x-connection-cold-joint",
+      "symptom_ids": [
+        "x-i2c-intermittent"
+      ],
+      "description": {
+        "en": "A cracked joint on the SDA pin of the I2C header."
+      }
+    },
+    {
+      "id": "no_bulk_cap",
+      "kind": "missing_part",
+      "target": {
+        "pins": [
+          "VPLUS"
+        ]
+      },
+      "legacy_id": "missing:C2",
+      "cause_id": "x-pca9685-bulk-cap-missing",
+      "symptom_ids": [
+        "x-servos-jitter"
+      ],
+      "description": {
+        "en": "Leave out the capacitor on the servo supply that the kit does not include."
+      }
+    },
+    {
+      "id": "short_vcc_gnd",
+      "kind": "short_pins",
+      "target": {
+        "pins": [
+          "VCC",
+          "GND"
+        ]
+      },
+      "legacy_id": "short:VCC:GND",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "mcu-resets",
+        "part-dead"
+      ],
+      "description": {
+        "en": "Short the logic supply to ground."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "An I2C slave at 0x40 with the register map the libraries use: MODE1 with its sleep and auto-increment bits, PRE_SCALE and sixteen on and off counts."
+      },
+      {
+        "en": "PRE_SCALE is ignored unless MODE1 SLEEP is set, and the chip powers up asleep at 200 Hz with every output off."
+      },
+      {
+        "en": "The duty and pulse width of each channel, worked out from the counts and the 25 MHz oscillator, with the full-on and full-off bits."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The oscillator error: the clock is a fixed 25 MHz, where a board runs between 23 and 27 MHz."
+      },
+      {
+        "en": "The All Call address 0x70 and the software reset call."
+      },
+      {
+        "en": "The OE pin, MODE2 and the output drive mode, and the voltage on the outputs."
+      },
+      {
+        "en": "The servo supply, the reverse-polarity MOSFET, the power LED and the jumpers on the address pins."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "ideal_oscillator",
+        "text": {
+          "en": "The model's oscillator is 25 MHz with no error, so a program that calibrates it sees no effect."
+        },
+        "evidence": "src/lib/interp/devices.ts:104-176"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "There is no numeric test of the pulse width or the frequency; only the conformance checks run."
+        },
+        "evidence": "src/parts/data/tests/pca9685-module.conformance.json"
+      }
+    ],
+    "solver_requires": [],
+    "tests": [
+      {
+        "id": "conformance",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/pca9685-module.conformance.json",
+        "state": "present",
+        "note": "device:pca9685@1 resolves to a registered hook and every rating a layer reads has its slot."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Adafruit PWM Servo Driver Library",
+            "install": "Adafruit PWM Servo Driver Library",
+            "iynk_support": "partial",
+            "note": {
+              "en": "Modelled: begin, setPWMFreq, setPWM, setPin and writeMicroseconds. setOscillatorFrequency is accepted and does nothing."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "compatibility": {
+    "works_with": [
+      "core.uno-r3"
+    ],
+    "rules": [
+      {
+        "id": "logic_supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VCC",
+          "rating": "vcc_operating"
+        },
+        "message": {
+          "en": "The logic supply is outside 2.3 V to 5.5 V."
+        }
+      },
+      {
+        "id": "servo_supply_window",
+        "kind": "voltage_window",
+        "severity": "warning",
+        "params": {
+          "pin": "VIN",
+          "rating": "vplus_silk_max"
+        },
+        "message": {
+          "en": "Above 6 V the servos are overstressed. The board itself takes more."
+        }
+      },
+      {
+        "id": "common_ground",
+        "kind": "needs_common_ground",
+        "severity": "warning",
+        "params": {
+          "pin": "GND"
+        },
+        "message": {
+          "en": "Join the controller ground to GND, which is shared with the servo ground."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "module",
+        "id": "pca9685",
+        "path": "public/figures/modules/pca9685.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "VPLUS",
+        "VCC",
+        "SDA",
+        "SCL",
+        "OE",
+        "GND",
+        "PWM0",
+        "PWM1",
+        "PWM2",
+        "PWM3",
+        "PWM4",
+        "PWM5",
+        "PWM6",
+        "PWM7",
+        "PWM8",
+        "PWM9",
+        "PWM10",
+        "PWM11",
+        "PWM12",
+        "PWM13",
+        "PWM14",
+        "PWM15"
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VCC": "left",
+        "SDA": "left",
+        "SCL": "left",
+        "OE": "left",
+        "GND": "left",
+        "VPLUS": "left",
+        "VIN": "top",
+        "TGND": "top",
+        "PWM0": "right",
+        "PWM1": "right",
+        "PWM2": "right",
+        "PWM3": "right",
+        "PWM4": "right",
+        "PWM5": "right",
+        "PWM6": "right",
+        "PWM7": "right",
+        "PWM8": "right",
+        "PWM9": "right",
+        "PWM10": "right",
+        "PWM11": "right",
+        "PWM12": "right",
+        "PWM13": "right",
+        "PWM14": "right",
+        "PWM15": "right"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "PCA9685",
+      "body_colour": "#1f4fa8",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Board geometry and electrical figures: Adafruit product 815 documents and the NXP PCA9685 datasheet, cited through docs/facts/pca9685.md."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/pca9685.js and docs/facts/pca9685.md.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

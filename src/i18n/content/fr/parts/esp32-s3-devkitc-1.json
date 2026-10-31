@@ -1,0 +1,18 @@
+{
+  "description": "Une carte de développement ESP32-S3 avec module ESP32-S3-WROOM-1, deux ports USB-C et une LED RVB, en variantes v1.1 et v1.0.",
+  "summary": "La carte exécute votre sketch dans l'interpréteur iynk. Les broches, le PWM, l'I2C, la liaison série et le timing suivent le profil de carte esp32-s3-devkitc-1. Ce n'est pas la puce ESP32-S3.",
+  "layer": "Environnement d'exécution du firmware.",
+  "variant": "Variante",
+  "models": {
+    "1": "Sous-ensemble d'Arduino C++ exécuté par l'interpréteur avec le brochage de l'ESP32-S3-DevKitC-1.",
+    "2": "E/S numériques sur GPIO0 à GPIO21 et GPIO35 à GPIO48, PWM et interruptions sur toute broche capable de sortie.",
+    "3": "Lectures analogiques 12 bits sur GPIO1 à GPIO20, maître I2C sur GPIO8 et GPIO9, sortie série, rgbLedWrite sur la LED RVB (GPIO38 en v1.1, GPIO48 en v1.0) et bouton BOOT sur GPIO0."
+  },
+  "not": {
+    "1": "Les deux cœurs Xtensa LX7 et les tâches FreeRTOS.",
+    "2": "Le Wi-Fi, le Bluetooth et le comportement de la flash. Le simulateur de requêtes des leçons de serveur web n'est pas une radio.",
+    "3": "Les pièges des broches de démarrage et le port USB natif.",
+    "4": "Les limites du régulateur 3,3 V."
+  },
+  "gap": "La LED RVB est une WS2812 sur GPIO38 en v1.1 et sur GPIO48 en v1.0 ; choisissez la variante qui correspond à votre carte. Les broches ADC2 (GPIO11 à GPIO20) ne se lisent pas quand le Wi-Fi est actif. Aucune valeur électrique maximale n'est encore indiquée, donc cette carte n'a pas de contrôle de surcharge des broches."
+}

@@ -436,5 +436,7 @@
       "reverse": "{part}: उल्टा लगा है, बुझा हुआ",
       "open": "{part}: जुड़ा नहीं"
     }
-  }
+  },
+  "openInStudio": "Studio में खोलें",
+  "lessonView": "पाठ दृश्य: पूरा एडिटर Studio में है"
 }

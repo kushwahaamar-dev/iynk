@@ -186,18 +186,13 @@ describe('vtol flight', () => {
   });
 });
 
-describe('vtol craft tests in the figure', { timeout: 300000 }, () => {
+describe('vtol craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => vtol.tests.find((t) => t.id === id)!;
-  const until = async (ok: () => boolean, ms = 60000) => {
-    const end = Date.now() + ms;
-    while (!ok() && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
-    return ok();
-  };
   const pose = (i: number) => fig!.SD.craft().motorPose(fig!.st(), i) as { tilt: number } | null;
 
   it('swings the rotors only with the servos and the flight controller on, the props off and a pack in', async () => {
@@ -219,10 +214,10 @@ describe('vtol craft tests in the figure', { timeout: 300000 }, () => {
     await fig.press('tilt');
     expect(fig.status(test('tilt'))).toBe('failed');
     // MANUAL swings both front rotors forward; the rear motor never tilts
-    expect(await until(() => (pose(0)?.tilt ?? 0) > 80)).toBe(true);
+    expect(fig!.until(() => (pose(0)?.tilt ?? 0) > 80)).toBe(true);
     expect(pose(1)!.tilt).toBeGreaterThan(80);
     expect(pose(2)).toBeNull();
-    expect(await until(() => fig!.status(test('tilt')) === 'passed')).toBe(true);
+    expect(fig!.until(() => fig!.status(test('tilt')) === 'passed')).toBe(true);
     expect(fig.page.notes()).toEqual([]);
   });
 
@@ -235,14 +230,14 @@ describe('vtol craft tests in the figure', { timeout: 300000 }, () => {
     await fig.press('tilt');
     expect(fig.st().vt.rev).toBe(true);
     // MANUAL tilts the rotors back instead
-    expect(await until(() => (pose(0)?.tilt ?? 0) < -20)).toBe(true);
+    expect(fig!.until(() => (pose(0)?.tilt ?? 0) < -20)).toBe(true);
     await new Promise((r) => setTimeout(r, 3000));
     expect(fig.status(test('tilt'))).toBe('failed');
     await fig.run('unplug');
     await fig.add('TILT', 0);
     await fig.run('plugIn');
     await fig.press('tilt');
-    expect(await until(() => fig!.status(test('tilt')) === 'passed')).toBe(true);
+    expect(fig!.until(() => fig!.status(test('tilt')) === 'passed')).toBe(true);
   });
 
   it('checks the airspeed sensor only with a pack in', async () => {

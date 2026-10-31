@@ -1,0 +1,17 @@
+{
+  "description": "Una placa de desarrollo ESP8266 con módulo ESP-12E, chip USB-serie CP2102 y regulador de 3,3 V, con dos LED que se encienden con nivel bajo.",
+  "summary": "La placa ejecuta tu sketch en el intérprete de iynk. Los pines, el PWM, el I2C, el serie y los tiempos siguen el perfil de placa nodemcu. No es el chip ESP8266.",
+  "layer": "Entorno de ejecución del firmware.",
+  "led": "LED de la placa, se enciende con nivel bajo.",
+  "models": {
+    "1": "Subconjunto de Arduino C++ ejecutado por el intérprete con el mapa de pines de la NodeMCU, donde D4 es GPIO2.",
+    "2": "E/S digital en D0 a D8, TX, RX, SD2 y SD3, PWM en todos los GPIO, interrupciones en todos los GPIO salvo GPIO16 (D0).",
+    "3": "Lectura analógica de 10 bits en A0 a través del divisor de la placa, maestro I2C en D2 y D1, salida serie y los dos LED de GPIO2 y GPIO16, que se encienden con nivel bajo."
+  },
+  "not": {
+    "1": "El núcleo Xtensa L106, la pila Wi-Fi y el comportamiento de la flash. El simulador de peticiones de las lecciones de servidor web no es una radio.",
+    "2": "Los pines de modo de arranque GPIO0, GPIO2 y GPIO15.",
+    "3": "El puente CP2102 y los límites del regulador de 3,3 V."
+  },
+  "gap": "Los LED de la placa se encienden con nivel bajo: digitalWrite(LED_BUILTIN, LOW) los enciende. Los números D no son números GPIO: D4 es GPIO2. A0 lee de 0 a 3,3 V a través de un divisor y GPIO16 no tiene interrupción. Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

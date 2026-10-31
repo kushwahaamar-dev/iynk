@@ -1,0 +1,1699 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iynk:schema:component:1",
+  "title": "iynk component definition, schema 1 (minor 1.1)",
+  "description": "One file per component version. Specified in docs/MASTER_PLAN/04_ARCHITECTURE/COMPONENT_SCHEMA.md. JSON Schema cannot check cross-references (pin ids, rating keys, source ids); the registry loader does that, see section 6 of the spec.",
+  "type": "object",
+  "required": ["schema", "id", "version", "identity", "sources", "pins", "ratings", "behaviour", "simulation", "visual", "provenance"],
+  "additionalProperties": false,
+  "patternProperties": {"^x_": {}},
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "iynk.component/1"},
+    "id": {"$ref": "#/$defs/componentId"},
+    "version": {"$ref": "#/$defs/semver"},
+    "identity": {"$ref": "#/$defs/identity"},
+    "sources": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/source"}},
+    "pins": {"type": "array", "minItems": 1, "maxItems": 1024, "items": {"$ref": "#/$defs/pin"}},
+    "groups": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/group"}},
+    "connectors": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/connector"}},
+    "dimensions": {"$ref": "#/$defs/dimensions"},
+    "ratings": {
+      "type": "object",
+      "maxProperties": 256,
+      "propertyNames": {"$ref": "#/$defs/key"},
+      "additionalProperties": {"$ref": "#/$defs/rating"}
+    },
+    "protocols": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/protocol"}},
+    "power": {"$ref": "#/$defs/power"},
+    "parameters": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/parameter"}},
+    "physical_inputs": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/physicalChannel"}},
+    "physical_outputs": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/physicalChannel"}},
+    "behaviour": {
+      "type": "object",
+      "required": ["layers"],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {"$ref": "#/$defs/text"},
+        "layers": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/layer"}}
+      }
+    },
+    "failure_modes": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/failureMode"}},
+    "injectable_faults": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/injectableFault"}},
+    "simulation": {"$ref": "#/$defs/simulation"},
+    "software": {"$ref": "#/$defs/software"},
+    "compatibility": {"$ref": "#/$defs/compatibility"},
+    "visual": {"$ref": "#/$defs/visual"},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "mechanics": {"$ref": "#/$defs/mechanics"},
+    "internal_nets": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/localId"},
+      "description": "Named internal rails that layers read or drive and that are not pins, for example a regulator output."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"identity": {"type": "object", "properties": {"generic": {"const": false}}, "required": ["generic"]}},
+        "required": ["identity"]
+      },
+      "then": {
+        "properties": {
+          "sources": {
+            "type": "array",
+            "contains": {
+              "type": "object",
+              "properties": {"kind": {"enum": ["datasheet", "schematic", "product-page", "reseller-guide"]}},
+              "required": ["kind"]
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "Only core parts may ship executable figure pages (HTML with script). Local and imported parts bring SVG or PNG art, which the loader sanitises, or use the generic fallback.",
+      "if": {
+        "properties": {
+          "provenance": {"type": "object", "properties": {"origin": {"enum": ["local-user", "imported-pack"]}}, "required": ["origin"]}
+        },
+        "required": ["provenance"]
+      },
+      "then": {
+        "properties": {
+          "visual": {
+            "type": "object",
+            "not": {"required": ["breadboard"]},
+            "properties": {
+              "assets": {
+                "type": "array",
+                "items": {"type": "object", "properties": {"media_type": {"enum": ["image/svg+xml", "image/png"]}}}
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "key": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,47}$"},
+    "localId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$"},
+    "componentId": {"type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.[a-z][a-z0-9]*(-[a-z0-9]+)*$", "maxLength": 80},
+    "semver": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "relPath": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9_./-]{1,200}$"},
+    "colour": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"},
+    "spdx": {
+      "type": "string",
+      "pattern": "^([A-Za-z0-9.+-]+|LicenseRef-[A-Za-z0-9.-]+)( (AND|OR|WITH) ([A-Za-z0-9.+-]+|LicenseRef-[A-Za-z0-9.-]+))*$"
+    },
+    "text": {
+      "description": "Display text. Shipped parts give i18n_key plus the English fallback; custom parts give inline translations only.",
+      "type": "object",
+      "required": ["en"],
+      "properties": {"i18n_key": {"type": "string", "pattern": "^[a-z0-9_.-]{1,100}$"}},
+      "patternProperties": {"^[a-z]{2,3}(-[A-Za-z0-9]+)*$": {"type": "string", "maxLength": 2000}},
+      "additionalProperties": false
+    },
+    "unit": {
+      "description": "Files store base units only. No prefixed units (write 0.02 A, never 20 mA). The UI picks the prefix.",
+      "enum": [
+        "V",
+        "A",
+        "ohm",
+        "F",
+        "H",
+        "W",
+        "Hz",
+        "s",
+        "degC",
+        "C_per_W",
+        "mm",
+        "g",
+        "N_m",
+        "rad_per_s",
+        "deg",
+        "deg_per_s",
+        "g0",
+        "lux",
+        "ratio",
+        "percent",
+        "1",
+        "bit",
+        "byte",
+        "ppm"
+      ]
+    },
+    "quantity": {
+      "description": "A number with a unit: either one value, or a min/typ/max triple with at least one member.",
+      "$ref": "#/$defs/quantityBase",
+      "unevaluatedProperties": false,
+      "type": "object"
+    },
+    "sourceRef": {
+      "type": "object",
+      "required": ["src"],
+      "additionalProperties": false,
+      "properties": {
+        "src": {"$ref": "#/$defs/localId"},
+        "loc": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Page, table, figure or line, for example 'p.5 table 7' or 'figures/parts/led.js:13'."
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "kind", "title", "reliability"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/localId"},
+        "kind": {
+          "enum": [
+            "datasheet",
+            "application-note",
+            "schematic",
+            "product-page",
+            "reseller-guide",
+            "library",
+            "photo",
+            "measurement",
+            "fact-sheet",
+            "lesson",
+            "standard",
+            "own-estimate"
+          ]
+        },
+        "title": {"type": "string", "maxLength": 300},
+        "publisher": {"type": "string", "maxLength": 200},
+        "url": {"type": "string", "pattern": "^https?://", "maxLength": 1000},
+        "revision": {"type": "string", "maxLength": 100},
+        "retrieved": {"$ref": "#/$defs/date"},
+        "license": {"type": "string", "maxLength": 200},
+        "reliability": {
+          "enum": ["primary", "secondary", "unverified"],
+          "description": "primary: the maker's own document read in full. secondary: a mirror, a reseller or a third party. unverified: from memory or a snippet."
+        },
+        "note": {"type": "string", "maxLength": 1000}
+      }
+    },
+    "identity": {
+      "type": "object",
+      "required": ["manufacturer", "model", "kind", "category", "generic"],
+      "additionalProperties": false,
+      "properties": {
+        "manufacturer": {"type": "string", "maxLength": 200, "description": "The maker, or 'generic' when no single maker exists."},
+        "model": {"type": "string", "maxLength": 200},
+        "mpn": {"type": "string", "maxLength": 100},
+        "refdes_prefix": {"type": "string", "pattern": "^[A-Z]{1,4}$", "description": "Reference designator prefix for this part: R, C, D, U, Q, J, SW, BT, M (motor). The editor numbers parts R1, R2... Absent: the editor derives a prefix from category (Studio O-S3 table)."},
+        "generic": {
+          "type": "boolean",
+          "description": "True when there is no maker datasheet for this exact part (a 5 mm LED, a red L298N board). A non-generic part must cite a datasheet-class source."
+        },
+        "kind": {
+          "enum": [
+            "ic",
+            "module",
+            "discrete",
+            "board",
+            "electromechanical",
+            "sensor",
+            "actuator",
+            "connector",
+            "mechanical",
+            "instrument",
+            "virtual"
+          ]
+        },
+        "category": {
+          "enum": [
+            "microcontroller",
+            "dev-board",
+            "passive",
+            "semiconductor",
+            "sensor",
+            "actuator",
+            "motor-driver",
+            "power",
+            "display",
+            "communication",
+            "mechanical",
+            "robotics",
+            "drone",
+            "fpga",
+            "instrument",
+            "virtual"
+          ]
+        },
+        "description": {"$ref": "#/$defs/text"},
+        "chip": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["manufacturer", "model"],
+          "properties": {"manufacturer": {"type": "string"}, "model": {"type": "string"}, "package": {"type": "string"}}
+        },
+        "primary_source": {"$ref": "#/$defs/localId"},
+        "lifecycle": {"enum": ["active", "nrnd", "obsolete", "unknown"]},
+        "legacy_ids": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 80},
+          "description": "Ids used by the existing figure and interpreter code, so old projects and lessons keep resolving."
+        },
+        "tags": {"type": "array", "maxItems": 32, "items": {"type": "string", "maxLength": 40}}
+      }
+    },
+    "pin": {
+      "type": "object",
+      "required": ["id", "type", "class"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/localId"},
+        "name": {"$ref": "#/$defs/text"},
+        "designator": {"type": "string", "maxLength": 20, "description": "The number or label on the real part: '1', 'H1.1', '+12V'."},
+        "type": {
+          "enum": [
+            "power_in",
+            "power_out",
+            "power_io",
+            "ground",
+            "digital_in",
+            "digital_out",
+            "digital_io",
+            "open_drain",
+            "analog_in",
+            "analog_out",
+            "passive",
+            "mechanical",
+            "nc"
+          ]
+        },
+        "class": {
+          "enum": ["power", "ground", "digital", "analog", "passive", "bus", "mechanical", "nc"],
+          "description": "The coarse role the project document and the netlist use."
+        },
+        "polarity": {"enum": ["anode", "cathode", "positive", "negative"]},
+        "position": {
+          "type": "object",
+          "required": ["x", "y"],
+          "additionalProperties": false,
+          "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "z": {"type": "number"}},
+          "description": "Millimetres in the part frame (origin bottom-left, +x right, +y up, +z up from the board), resolution 0.01 mm."
+        },
+        "connector": {"$ref": "#/$defs/localId"},
+        "logic_family": {"enum": ["ttl", "cmos-5v", "lvcmos-3v3", "lvcmos-1v8", "open-drain", "analog", "none"]},
+        "pull": {
+          "type": "object",
+          "required": ["kind", "to", "rating"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"enum": ["internal", "on-board"]},
+            "to": {"enum": ["up", "down"]},
+            "rating": {
+              "$ref": "#/$defs/key",
+              "description": "Rating key holding the resistance. The loader stamps it as a resistor to the rail or to ground."
+            },
+            "rail": {"$ref": "#/$defs/localId"},
+            "unless_parameter": {"$ref": "#/$defs/key", "description": "A boolean build-option parameter; the pull exists only while it is true."}
+          }
+        },
+        "note": {"$ref": "#/$defs/text"}
+      }
+    },
+    "group": {
+      "type": "object",
+      "required": ["id", "kind", "pins"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/localId"},
+        "kind": {"enum": ["internal-short", "strip", "plane"]},
+        "pins": {"type": "array", "minItems": 2, "maxItems": 256, "items": {"$ref": "#/$defs/localId"}, "uniqueItems": true},
+        "note": {"$ref": "#/$defs/text"}
+      }
+    },
+    "connector": {
+      "type": "object",
+      "required": ["id", "kind", "pins"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/localId"},
+        "kind": {
+          "enum": ["header", "screw-terminal", "jst", "usb", "barrel", "breadboard-leg", "solder-pad", "wire-lead", "jumper", "other"]
+        },
+        "gender": {"enum": ["male", "female", "none"]},
+        "pitch": {"type": "number", "exclusiveMinimum": 0, "description": "mm"},
+        "pins": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/localId"},
+          "description": "Pin ids in the order along the connector."
+        },
+        "note": {"$ref": "#/$defs/text"}
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package": {"type": "string", "maxLength": 80},
+        "body": {
+          "type": "object",
+          "required": ["w", "h", "d"],
+          "additionalProperties": false,
+          "properties": {
+            "w": {"type": "number", "exclusiveMinimum": 0},
+            "h": {"type": "number", "exclusiveMinimum": 0},
+            "d": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "description": "mm: width along x, depth along y, height above the board or breadboard along z."
+        },
+        "board": {
+          "type": "object",
+          "required": ["w", "h", "thickness"],
+          "additionalProperties": false,
+          "properties": {
+            "w": {"type": "number", "exclusiveMinimum": 0},
+            "h": {"type": "number", "exclusiveMinimum": 0},
+            "thickness": {"type": "number", "exclusiveMinimum": 0},
+            "corner_radius": {"type": "number", "minimum": 0},
+            "mounting_holes": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "object",
+                "required": ["x", "y", "diameter"],
+                "additionalProperties": false,
+                "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "diameter": {"type": "number", "exclusiveMinimum": 0}}
+              }
+            }
+          }
+        },
+        "height_total": {"type": "number", "exclusiveMinimum": 0},
+        "mass": {"$ref": "#/$defs/quantity"},
+        "accuracy": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Stated accuracy of the positions in mm; 0.3 for values measured from a photo."
+        },
+        "source": {"$ref": "#/$defs/sourceRef"}
+      }
+    },
+    "stated": {
+      "description": "Manufacturer slot: a number a maker printed. A source is required.",
+      "allOf": [{"$ref": "#/$defs/quantityBase"}, {"required": ["source"]}],
+      "unevaluatedProperties": false,
+      "properties": {
+        "unit": true,
+        "value": true,
+        "min": true,
+        "typ": true,
+        "max": true,
+        "source": {"$ref": "#/$defs/sourceRef"},
+        "conditions": {"type": "string", "maxLength": 300}
+      },
+      "type": "object"
+    },
+    "assumed": {
+      "description": "Simulation slot: a number iynk chose. A rationale and a confidence are required, so nobody mistakes it for a datasheet figure.",
+      "allOf": [{"$ref": "#/$defs/quantityBase"}, {"required": ["rationale", "confidence"]}],
+      "unevaluatedProperties": false,
+      "properties": {
+        "unit": true,
+        "value": true,
+        "min": true,
+        "typ": true,
+        "max": true,
+        "rationale": {"$ref": "#/$defs/text"},
+        "confidence": {"enum": ["low", "medium", "high"]},
+        "derived_from": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*\\.(manufacturer|simulation|measured)$"},
+          "description": "Rating slots this was computed or fitted from."
+        },
+        "source": {"$ref": "#/$defs/sourceRef"}
+      },
+      "type": "object"
+    },
+    "measured": {
+      "description": "Bench slot: a number measured on real hardware by a person. Method, sample size and date are required. The UI says 'bench-measured', never 'validated'.",
+      "allOf": [{"$ref": "#/$defs/quantityBase"}, {"required": ["source", "method", "samples", "date"]}],
+      "unevaluatedProperties": false,
+      "properties": {
+        "unit": true,
+        "value": true,
+        "min": true,
+        "typ": true,
+        "max": true,
+        "source": {"$ref": "#/$defs/sourceRef"},
+        "method": {"type": "string", "maxLength": 500},
+        "samples": {"type": "integer", "minimum": 1},
+        "date": {"$ref": "#/$defs/date"},
+        "conditions": {"type": "string", "maxLength": 300}
+      },
+      "type": "object"
+    },
+    "rating": {
+      "description": "One named limit or characteristic with three separate slots. used_by_model names the slot the simulation reads, so a changed assumption is a visible edit.",
+      "type": "object",
+      "required": ["measure", "role", "used_by_model"],
+      "additionalProperties": false,
+      "properties": {
+        "measure": {
+          "enum": [
+            "voltage",
+            "current",
+            "power",
+            "temperature",
+            "frequency",
+            "resistance",
+            "capacitance",
+            "time",
+            "thermal_resistance",
+            "torque",
+            "rate",
+            "acceleration",
+            "ratio",
+            "other"
+          ]
+        },
+        "role": {
+          "enum": ["abs_max", "abs_min", "operating", "recommended", "threshold", "characteristic", "consumption", "thermal", "timing"]
+        },
+        "description": {"$ref": "#/$defs/text"},
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "part": {"type": "boolean"},
+            "pins": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/localId"}},
+            "layer": {"$ref": "#/$defs/localId"}
+          },
+          "minProperties": 1
+        },
+        "manufacturer": {"$ref": "#/$defs/stated"},
+        "simulation": {"$ref": "#/$defs/assumed"},
+        "measured": {"$ref": "#/$defs/measured"},
+        "used_by_model": {
+          "enum": ["manufacturer", "simulation", "measured", "none"],
+          "description": "'none' means the value is shown to the person but no model reads it."
+        },
+        "primary": {
+          "type": "boolean",
+          "description": "True when the model output depends strongly on this number. The fidelity registry T2 rule requires every primary parameter to have a datasheet, fit or measurement source."
+        }
+      },
+      "anyOf": [{"required": ["manufacturer"]}, {"required": ["simulation"]}, {"required": ["measured"]}],
+      "allOf": [
+        {
+          "if": {"properties": {"used_by_model": {"const": "manufacturer"}}, "required": ["used_by_model"]},
+          "then": {"required": ["manufacturer"]}
+        },
+        {
+          "if": {"properties": {"used_by_model": {"const": "simulation"}}, "required": ["used_by_model"]},
+          "then": {"required": ["simulation"]}
+        },
+        {
+          "if": {"properties": {"used_by_model": {"const": "measured"}}, "required": ["used_by_model"]},
+          "then": {"required": ["measured"]}
+        }
+      ]
+    },
+    "protocol": {
+      "type": "object",
+      "required": ["id", "kind", "role", "pins", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/localId"},
+        "kind": {
+          "enum": [
+            "i2c",
+            "spi",
+            "uart",
+            "onewire",
+            "pwm",
+            "servo-pwm",
+            "step-dir",
+            "gpio",
+            "analog",
+            "usb",
+            "can",
+            "i2s",
+            "swd",
+            "jtag",
+            "custom"
+          ]
+        },
+        "role": {"enum": ["slave", "master", "device", "controller", "peripheral"]},
+        "pins": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {"$ref": "#/$defs/key"},
+          "additionalProperties": {"$ref": "#/$defs/localId"},
+          "description": "Signal name to pin id, for example {sda: 'SDA', scl: 'SCL'}."
+        },
+        "params": {"type": "object", "description": "Kind-specific values: for i2c, address and alt_address."},
+        "speed_max": {"$ref": "#/$defs/localId", "description": "Rating key whose value is the highest clock or baud rate."},
+        "status": {
+          "enum": ["modelled", "not-modelled-yet"],
+          "description": "Whether iynk's runtimes implement this protocol for this part. Anything else must not run silently (R-FID-3)."
+        }
+      }
+    },
+    "power": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "pins", "ground", "voltage"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"$ref": "#/$defs/localId"},
+              "pins": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/localId"}},
+              "ground": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/localId"}},
+              "voltage": {"$ref": "#/$defs/key", "description": "Rating key for the operating or recommended range."},
+              "current": {"$ref": "#/$defs/key", "description": "Rating key for the consumption or limit."},
+              "condition": {"type": "string", "maxLength": 300, "description": "When this input is used, for example 'jumper JP5 fitted'."}
+            }
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "pin", "nominal"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"$ref": "#/$defs/localId"},
+              "pin": {"$ref": "#/$defs/localId"},
+              "nominal": {"$ref": "#/$defs/quantity"},
+              "source": {"enum": ["linear-regulator", "switching-regulator", "pass-through", "battery", "charge-pump"]},
+              "dropout": {"$ref": "#/$defs/key"},
+              "current_max": {"$ref": "#/$defs/key"},
+              "condition": {"type": "string", "maxLength": 300}
+            }
+          }
+        },
+        "consumption": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "mode", "rating"],
+            "additionalProperties": false,
+            "properties": {"id": {"$ref": "#/$defs/localId"}, "mode": {"$ref": "#/$defs/text"}, "rating": {"$ref": "#/$defs/key"}}
+          }
+        },
+        "protection": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "present"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "reverse-polarity",
+                  "overcurrent",
+                  "overtemperature",
+                  "overvoltage",
+                  "short-circuit",
+                  "undervoltage-lockout",
+                  "esd",
+                  "flyback"
+                ]
+              },
+              "present": {"type": "boolean"},
+              "note": {"$ref": "#/$defs/text"},
+              "source": {"$ref": "#/$defs/sourceRef"}
+            }
+          }
+        }
+      }
+    },
+    "parameter": {
+      "description": "A value the person sets on a placed instance: a colour, a jumper, a resistor value, an I2C address variant.",
+      "type": "object",
+      "required": ["id", "kind", "type", "default"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/key"},
+        "name": {"$ref": "#/$defs/text"},
+        "kind": {
+          "enum": ["variant", "build-option", "setting", "environment"],
+          "description": "variant: which product. build-option: a jumper or solder bridge. setting: a dial. environment: an outside condition."
+        },
+        "type": {"enum": ["enum", "number", "boolean"]},
+        "default": {"type": ["string", "number", "boolean"]},
+        "values": {"type": "array", "minItems": 1, "items": {"type": ["string", "number"]}, "uniqueItems": true},
+        "min": {"type": "number"},
+        "max": {"type": "number"},
+        "unit": {"$ref": "#/$defs/unit"},
+        "affects": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 80},
+          "description": "Pin ids, layer ids or rating keys that change with this parameter."
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"type": {"const": "enum"}}, "required": ["type"]}, "then": {"required": ["values"]}},
+        {"if": {"properties": {"type": {"const": "number"}}, "required": ["type"]}, "then": {"required": ["min", "max", "unit"]}}
+      ]
+    },
+    "physicalChannel": {
+      "description": "A non-electrical quantity that enters or leaves the part: acceleration into an IMU, light onto an LED's output, torque out of a motor.",
+      "type": "object",
+      "required": ["id", "unit", "range"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/key"},
+        "name": {"$ref": "#/$defs/text"},
+        "unit": {"$ref": "#/$defs/unit"},
+        "axes": {"type": "integer", "enum": [1, 3]},
+        "range": {
+          "type": "object",
+          "required": ["min", "max"],
+          "additionalProperties": false,
+          "properties": {"min": {"type": "number"}, "max": {"type": "number"}}
+        },
+        "world_channel": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.]{0,63}$",
+          "description": "The name of the channel in the world or environment model that drives or reads it."
+        }
+      }
+    },
+    "elementKind": {
+      "description": "Built-in solver elements. The first group exists today (figures/engine/bench-solve.js:88-113). The second group is planned and needs the SIM phase; a part that names one loads as 'not modelled yet' on a solver that lacks it.",
+      "enum": [
+        "wire",
+        "res",
+        "pot",
+        "button",
+        "led",
+        "diode",
+        "npn",
+        "motor",
+        "servo",
+        "stepper",
+        "sensor",
+        "buzzer",
+        "capacitor",
+        "inductor",
+        "voltage_source",
+        "current_source",
+        "switch",
+        "pnp",
+        "mosfet_n",
+        "mosfet_p",
+        "zener",
+        "opamp",
+        "regulator_linear"
+      ]
+    },
+    "paramValue": {
+      "description": "A model parameter. from_rating or by_parameter point at ratings; the model then reads the slot that rating names in used_by_model. A literal value must carry a rationale.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": ["number", "string", "boolean"]},
+        "unit": {"$ref": "#/$defs/unit"},
+        "from_rating": {"$ref": "#/$defs/key"},
+        "pick": {"enum": ["min", "typ", "max", "value"], "description": "Which member of a min/typ/max triple."},
+        "rationale": {"$ref": "#/$defs/text"},
+        "source": {"$ref": "#/$defs/sourceRef"},
+        "by_parameter": {
+          "type": "object",
+          "required": ["parameter", "map"],
+          "additionalProperties": false,
+          "description": "Pick the rating by the value of an instance parameter, for example the LED colour.",
+          "properties": {
+            "parameter": {"$ref": "#/$defs/key"},
+            "map": {"type": "object", "minProperties": 1, "additionalProperties": {"$ref": "#/$defs/key"}}
+          }
+        }
+      },
+      "oneOf": [
+        {"required": ["from_rating"], "not": {"anyOf": [{"required": ["value"]}, {"required": ["by_parameter"]}]}},
+        {"required": ["by_parameter"], "not": {"anyOf": [{"required": ["value"]}, {"required": ["from_rating"]}]}},
+        {"required": ["value", "rationale"], "not": {"anyOf": [{"required": ["from_rating"]}, {"required": ["by_parameter"]}]}}
+      ]
+    },
+    "paramMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/key"},
+      "additionalProperties": {"$ref": "#/$defs/paramValue"},
+      "maxProperties": 64
+    },
+    "model": {
+      "oneOf": [
+        {
+          "title": "element",
+          "type": "object",
+          "required": ["kind", "element", "terminals"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "element"},
+            "element": {"$ref": "#/$defs/elementKind"},
+            "terminals": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {"$ref": "#/$defs/key"},
+              "additionalProperties": {"$ref": "#/$defs/localId"},
+              "description": "Solver terminal name to pin id."
+            },
+            "params": {"$ref": "#/$defs/paramMap"}
+          }
+        },
+        {
+          "title": "subcircuit",
+          "type": "object",
+          "required": ["kind", "instances", "nets"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "subcircuit"},
+            "instances": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 128,
+              "items": {
+                "type": "object",
+                "required": ["id"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {"$ref": "#/$defs/localId"},
+                  "element": {"$ref": "#/$defs/elementKind"},
+                  "component": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9-]*\\.[a-z][a-z0-9-]*@(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+                    "description": "Another component, pinned to an exact version."
+                  },
+                  "params": {"$ref": "#/$defs/paramMap"}
+                },
+                "oneOf": [{"required": ["element"]}, {"required": ["component"]}]
+              }
+            },
+            "nets": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["id", "nodes"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {"$ref": "#/$defs/localId"},
+                  "nodes": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {"type": "string", "pattern": "^(pin:[A-Za-z][A-Za-z0-9_]*|[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z0-9_]+)$"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "builtin",
+          "type": "object",
+          "required": ["kind", "ref", "params"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "builtin"},
+            "ref": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*:[a-z0-9][a-z0-9/_-]*@[1-9][0-9]*$",
+              "description": "A behaviour iynk ships in code, for example device:mpu6050@1. The major number is the behaviour contract."
+            },
+            "params": {"$ref": "#/$defs/paramMap"},
+            "implementation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {"path": {"$ref": "#/$defs/relPath"}, "note": {"type": "string", "maxLength": 500}},
+              "description": "Where the code is today, for the migration table. Informational."
+            }
+          }
+        },
+        {
+          "title": "logic",
+          "type": "object",
+          "required": ["kind", "inputs", "outputs", "table"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "logic"},
+            "inputs": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/$defs/localId"}},
+            "outputs": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/$defs/localId"}},
+            "table": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 256,
+              "items": {
+                "type": "object",
+                "required": ["when", "then"],
+                "additionalProperties": false,
+                "properties": {
+                  "when": {"type": "object", "propertyNames": {"$ref": "#/$defs/localId"}, "additionalProperties": {"enum": [0, 1, "x"]}},
+                  "then": {"type": "object", "propertyNames": {"$ref": "#/$defs/localId"}, "additionalProperties": {"enum": [0, 1, "z"]}}
+                }
+              }
+            },
+            "delay": {"$ref": "#/$defs/quantity"},
+            "output_drive": {"$ref": "#/$defs/key", "description": "Rating key for the output voltage and current the table drives with."}
+          }
+        },
+        {
+          "title": "extension",
+          "type": "object",
+          "required": ["kind", "abi", "entry", "sha256", "permissions", "limits"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "extension"},
+            "abi": {"const": "iynk.model/1"},
+            "entry": {"$ref": "#/$defs/relPath"},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "language": {"enum": ["js", "wasm"]},
+            "permissions": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 32,
+              "items": {
+                "type": "string",
+                "pattern": "^(pin\\.read|pin\\.drive|pin\\.watch|time\\.schedule|bus\\.(i2c|spi|uart)\\.(slave|master)|rng|log|state\\.snapshot|(param\\.read|world\\.read|world\\.write):[a-z][a-z0-9_]*)$"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "required": ["memory_bytes", "ops_per_step", "step_wall_ms"],
+              "additionalProperties": false,
+              "properties": {
+                "memory_bytes": {"type": "integer", "minimum": 65536, "maximum": 67108864},
+                "ops_per_step": {"type": "integer", "minimum": 1000, "maximum": 100000000},
+                "step_wall_ms": {"type": "integer", "minimum": 1, "maximum": 1000},
+                "events_pending": {"type": "integer", "minimum": 1, "maximum": 4096},
+                "state_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576}
+              }
+            },
+            "uses_rng": {"type": "boolean"},
+            "bundle_size_bytes": {"type": "integer", "maximum": 524288},
+            "dependencies": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "object",
+                "required": ["name", "version", "sha256", "license"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {"type": "string"},
+                  "version": {"$ref": "#/$defs/semver"},
+                  "sha256": {"$ref": "#/$defs/sha256"},
+                  "license": {"$ref": "#/$defs/spdx"}
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "none",
+          "type": "object",
+          "required": ["kind", "reason"],
+          "additionalProperties": false,
+          "properties": {"kind": {"const": "none"}, "reason": {"$ref": "#/$defs/text"}}
+        }
+      ]
+    },
+    "layer": {
+      "type": "object",
+      "required": ["id", "domain", "model"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/localId"},
+        "domain": {"enum": ["analog", "digital", "protocol", "power", "mechanical", "thermal", "optical", "environment"]},
+        "summary": {"$ref": "#/$defs/text"},
+        "reads": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 40},
+          "description": "Pin ids, physical input ids, parameter ids."
+        },
+        "drives": {"type": "array", "items": {"type": "string", "maxLength": 40}},
+        "model": {"$ref": "#/$defs/model"}
+      }
+    },
+    "condition": {
+      "type": "object",
+      "required": ["measure", "target", "op", "threshold"],
+      "additionalProperties": false,
+      "properties": {
+        "measure": {
+          "enum": [
+            "pin_voltage",
+            "pin_voltage_reverse",
+            "pin_current",
+            "pin_current_peak",
+            "part_power",
+            "junction_temperature",
+            "case_temperature",
+            "stall_duration",
+            "supply_time_out_of_range"
+          ]
+        },
+        "target": {"type": "string", "maxLength": 40, "description": "A pin id, a layer id, or 'part'."},
+        "op": {"enum": [">", ">=", "<", "<="]},
+        "threshold": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rating": {"$ref": "#/$defs/key"},
+            "pick": {"enum": ["min", "typ", "max", "value"]},
+            "factor": {"type": "number", "exclusiveMinimum": 0},
+            "literal": {"$ref": "#/$defs/quantity"}
+          },
+          "oneOf": [{"required": ["rating"]}, {"required": ["literal"]}]
+        },
+        "for": {"$ref": "#/$defs/quantity", "description": "How long the condition must hold, a duration in s."}
+      }
+    },
+    "failureMode": {
+      "type": "object",
+      "required": ["id", "cause_id", "symptom_ids", "when", "effect", "derivation", "basis", "implemented_as"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/key"},
+        "name": {"$ref": "#/$defs/text"},
+        "cause_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$",
+          "description": "The id of the cause in the shared diagnosis record (D-010)."
+        },
+        "symptom_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$"}},
+        "when": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {"$ref": "#/$defs/condition"},
+          "description": "All conditions must hold."
+        },
+        "effect": {
+          "type": "object",
+          "required": ["state", "latched"],
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "enum": [
+                "burnt",
+                "open_circuit",
+                "short_circuit",
+                "degraded",
+                "latched_off",
+                "thermal_cutout",
+                "derated",
+                "reset",
+                "reads_zero"
+              ]
+            },
+            "latched": {"type": "boolean", "description": "True until the part is replaced or the person resets it."},
+            "recovers_when": {"type": "string", "maxLength": 200},
+            "detail": {"$ref": "#/$defs/text"}
+          }
+        },
+        "derivation": {"$ref": "#/$defs/text", "description": "How the threshold was obtained: formula, source, and what was judged."},
+        "basis": {"enum": ["manufacturer", "simulation-assumption", "measured"]},
+        "source": {"$ref": "#/$defs/sourceRef"},
+        "implemented_as": {
+          "enum": ["threshold", "scripted", "not-implemented"],
+          "description": "threshold: the model evaluates 'when'. scripted: the behaviour exists but is driven by a timer or a flag, not the quantities in 'when'. not-implemented: documented only."
+        },
+        "hints": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["level", "text"],
+            "additionalProperties": false,
+            "properties": {"level": {"enum": [1, 2, 3]}, "text": {"$ref": "#/$defs/text"}}
+          }
+        }
+      }
+    },
+    "injectableFault": {
+      "type": "object",
+      "required": ["id", "kind", "cause_id", "symptom_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/key"},
+        "kind": {
+          "enum": [
+            "open_pin",
+            "short_pins",
+            "missing_part",
+            "reversed_supply",
+            "wrong_supply_voltage",
+            "cold_joint",
+            "stuck_level",
+            "wrong_value",
+            "reversed_part",
+            "floating_pin",
+            "option_removed",
+            "overload",
+            "other"
+          ]
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pins": {"type": "array", "items": {"$ref": "#/$defs/localId"}},
+            "parameter": {"$ref": "#/$defs/key"},
+            "rail": {"$ref": "#/$defs/localId"}
+          }
+        },
+        "value": {"$ref": "#/$defs/quantity"},
+        "description": {"$ref": "#/$defs/text"},
+        "cause_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$"},
+        "symptom_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$"}},
+        "legacy_id": {"type": "string", "maxLength": 80, "description": "The fault string the figure code uses today, for example 'cold:J2'."},
+        "hints": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["level", "text"],
+            "additionalProperties": false,
+            "properties": {"level": {"enum": [1, 2, 3]}, "text": {"$ref": "#/$defs/text"}}
+          }
+        }
+      }
+    },
+    "simulation": {
+      "type": "object",
+      "required": ["tier", "status", "what_it_models", "not_modelled"],
+      "additionalProperties": false,
+      "properties": {
+        "tier": {
+          "enum": ["T0", "T1", "T2", "T3", "none"],
+          "description": "Asserted tier, numbered as SIMULATION_ARCHITECTURE section 4.1: T0 illustration, T1 teaching model, T2 calculated model, T3 runs firmware. The registry CI rules (section 16.3 there) fail a tier the evidence does not support."
+        },
+        "status": {"enum": ["modelled", "partly-modelled", "not-modelled-yet"]},
+        "what_it_models": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "not_modelled": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "validity": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["measure", "min", "max", "unit"],
+            "additionalProperties": false,
+            "properties": {
+              "measure": {"type": "string", "maxLength": 60},
+              "min": {"type": "number"},
+              "max": {"type": "number"},
+              "unit": {"$ref": "#/$defs/unit"},
+              "note": {"$ref": "#/$defs/text"}
+            }
+          }
+        },
+        "known_gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "text"],
+            "additionalProperties": false,
+            "properties": {"id": {"$ref": "#/$defs/key"}, "text": {"$ref": "#/$defs/text"}, "evidence": {"type": "string", "maxLength": 300}}
+          }
+        },
+        "solver_requires": {"type": "array", "items": {"$ref": "#/$defs/elementKind"}, "uniqueItems": true},
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "file"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"$ref": "#/$defs/key"},
+              "kind": {"enum": ["datasheet-point", "ngspice-comparison", "bench-measurement", "golden-trace", "property", "conformance"]},
+              "file": {"$ref": "#/$defs/relPath"},
+              "source": {"$ref": "#/$defs/sourceRef"},
+              "tolerance": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {"abs": {"type": "number", "minimum": 0}, "rel": {"type": "number", "minimum": 0}}
+              },
+              "note": {"type": "string", "maxLength": 300},
+              "state": {
+                "enum": ["present", "to-write"],
+                "description": "to-write: the descriptor names a test the conversion still has to add. The PARTS gate fails any part with a to-write test."
+              }
+            }
+          }
+        },
+        "mocked": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/text"},
+          "description": "Behaviour that is faked on purpose and labelled so, for example a fixed Wi-Fi scan list. Separate from not_modelled."
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"enum": ["modelled", "partly-modelled"]}}, "required": ["status"]},
+          "then": {
+            "required": ["tests"],
+            "properties": {
+              "tests": {"type": "array", "minItems": 1},
+              "what_it_models": {"type": "array", "minItems": 1},
+              "tier": {"enum": ["T0", "T1", "T2", "T3"]}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"status": {"const": "not-modelled-yet"}}, "required": ["status"]},
+          "then": {"properties": {"tier": {"const": "none"}}}
+        },
+        {
+          "if": {"properties": {"tier": {"const": "T3"}}, "required": ["tier"]},
+          "then": {
+            "required": ["tests"],
+            "properties": {
+              "tests": {
+                "contains": {
+                  "type": "object",
+                  "properties": {"kind": {"enum": ["bench-measurement", "ngspice-comparison", "golden-trace"]}},
+                  "required": ["kind"]
+                },
+                "type": "array"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "software": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["language"],
+            "additionalProperties": false,
+            "properties": {
+              "language": {"enum": ["arduino-cpp", "c", "cpp", "micropython", "python", "verilog", "vhdl", "none"]},
+              "libraries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "iynk_support"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {"type": "string", "maxLength": 100},
+                    "version": {"type": "string", "maxLength": 40},
+                    "install": {"type": "string", "maxLength": 200, "description": "The name in the language's library manager."},
+                    "url": {"type": "string", "pattern": "^https?://"},
+                    "license": {"type": "string", "maxLength": 100},
+                    "source": {"$ref": "#/$defs/sourceRef"},
+                    "iynk_support": {
+                      "enum": ["supported", "partial", "unsupported"],
+                      "description": "What iynk's own runtimes do with this library today. 'unsupported' must produce a named diagnostic, never silence."
+                    },
+                    "note": {"$ref": "#/$defs/text"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "works_with": {
+          "type": "array",
+          "items": {"type": "string", "maxLength": 80},
+          "description": "Board or part ids it is known to be used with."
+        },
+        "rules": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "severity", "params", "message"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"$ref": "#/$defs/key"},
+              "kind": {
+                "enum": [
+                  "logic_level_mismatch",
+                  "voltage_window",
+                  "needs_pullup",
+                  "bus_address_unique",
+                  "current_budget",
+                  "jumper_state",
+                  "needs_common_ground",
+                  "custom_warning"
+                ]
+              },
+              "severity": {"enum": ["error", "warning", "info"]},
+              "params": {"type": "object"},
+              "message": {"$ref": "#/$defs/text"}
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"kind": {"const": "logic_level_mismatch"}}, "required": ["kind"]},
+                "then": {"properties": {"params": {"required": ["pin", "limit_rating"], "type": "object"}}}
+              },
+              {
+                "if": {"properties": {"kind": {"const": "voltage_window"}}, "required": ["kind"]},
+                "then": {"properties": {"params": {"required": ["pin", "rating"], "type": "object"}}}
+              },
+              {
+                "if": {"properties": {"kind": {"const": "needs_pullup"}}, "required": ["kind"]},
+                "then": {"properties": {"params": {"required": ["pin", "min_ohms", "max_ohms"], "type": "object"}}}
+              },
+              {
+                "if": {"properties": {"kind": {"const": "jumper_state"}}, "required": ["kind"]},
+                "then": {"properties": {"params": {"required": ["parameter", "value"], "type": "object"}}}
+              },
+              {
+                "if": {"properties": {"kind": {"const": "bus_address_unique"}}, "required": ["kind"]},
+                "then": {"properties": {"params": {"required": ["protocol"], "type": "object"}}}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "visual": {
+      "type": "object",
+      "required": ["fallback"],
+      "additionalProperties": false,
+      "properties": {
+        "breadboard": {
+          "type": "object",
+          "required": ["figure"],
+          "additionalProperties": false,
+          "properties": {
+            "figure": {
+              "type": "object",
+              "required": ["kind", "id", "path"],
+              "additionalProperties": false,
+              "properties": {
+                "kind": {"enum": ["part", "module", "board"]},
+                "id": {"type": "string", "maxLength": 80},
+                "path": {"$ref": "#/$defs/relPath"},
+                "sha256": {"$ref": "#/$defs/sha256"},
+                "engine": {"enum": ["colorfigures-bench"]}
+              }
+            },
+            "legs": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/localId"},
+              "description": "Pin ids in the figure's leg order (B.part legs)."
+            },
+            "span": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {"type": "integer", "minimum": 0},
+              "description": "Breadboard columns, as B.part span."
+            }
+          }
+        },
+        "schematic": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["symbol"],
+          "properties": {
+            "symbol": {
+              "enum": [
+                "generated",
+                "resistor",
+                "led",
+                "diode",
+                "capacitor",
+                "inductor",
+                "switch",
+                "transistor-npn",
+                "motor",
+                "ic-box",
+                "module-box"
+              ]
+            },
+            "pin_sides": {
+              "type": "object",
+              "propertyNames": {"$ref": "#/$defs/localId"},
+              "additionalProperties": {"enum": ["left", "right", "top", "bottom"]}
+            }
+          }
+        },
+        "fallback": {
+          "type": "object",
+          "required": ["renderer", "label"],
+          "additionalProperties": false,
+          "description": "Drawn from pins, dimensions and this block alone, so a part without art still places, wires and runs. CI fails a descriptor without it.",
+          "properties": {
+            "renderer": {"enum": ["generic-two-lead", "generic-dip", "generic-header-module", "generic-terminal-module", "generic-box"]},
+            "label": {"type": "string", "maxLength": 24},
+            "body_colour": {"$ref": "#/$defs/colour"},
+            "show_pin_labels": {"type": "boolean"}
+          }
+        },
+        "assets": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "required": ["path", "media_type", "sha256", "license"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {"$ref": "#/$defs/relPath"},
+              "media_type": {"enum": ["image/svg+xml", "image/png", "text/html"]},
+              "sha256": {"$ref": "#/$defs/sha256"},
+              "license": {"$ref": "#/$defs/spdx"},
+              "attribution": {"type": "string", "maxLength": 300}
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["license", "origin", "created", "review"],
+      "additionalProperties": false,
+      "properties": {
+        "license": {"$ref": "#/$defs/spdx", "description": "Required (R-138). Use LicenseRef-iynk-pending while D-017 is open."},
+        "license_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {"descriptor": {"$ref": "#/$defs/spdx"}, "art": {"$ref": "#/$defs/spdx"}, "model": {"$ref": "#/$defs/spdx"}}
+        },
+        "attribution": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text"],
+            "additionalProperties": false,
+            "properties": {"text": {"type": "string", "maxLength": 400}, "url": {"type": "string", "pattern": "^https?://"}}
+          }
+        },
+        "authors": {"type": "array", "items": {"type": "string", "maxLength": 100}},
+        "origin": {"enum": ["core", "local-user", "imported-pack"]},
+        "created": {"$ref": "#/$defs/date"},
+        "modified": {"$ref": "#/$defs/date"},
+        "third_party_content": {
+          "type": "boolean",
+          "description": "True if text, numbers or art were copied from a third-party site and still need the D-017 check."
+        },
+        "review": {
+          "type": "object",
+          "required": ["status"],
+          "additionalProperties": false,
+          "properties": {
+            "status": {"enum": ["unreviewed", "ci-checked", "human-reviewed"]},
+            "by": {"type": "string"},
+            "date": {"$ref": "#/$defs/date"}
+          }
+        },
+        "changelog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["version", "date", "note", "behaviour_change"],
+            "additionalProperties": false,
+            "properties": {
+              "version": {"$ref": "#/$defs/semver"},
+              "date": {"$ref": "#/$defs/date"},
+              "note": {"type": "string", "maxLength": 400},
+              "behaviour_change": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "mechanics": {
+      "description": "Physical data the robot and drone engines read (minor 1.1, optional). Names and units follow ROBOTICS_ARCHITECTURE 6.1 and DRONE_ARCHITECTURE 6.1: the unit is in the field name and is a base unit (kg m^2, N m, rad, s, A, V, ohm, H), except kv_rpm_per_v and mm/g/mAh/deg, which are the hobby units named in the field. Every sub-block may carry `source`, a sourceRef to a sources[] entry; the three-slot rating rule applies to published numbers (COMPONENT_SCHEMA 4.6).",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "motor": {
+          "description": "Brushed DC (kv and ke are alternatives, give one) or brushless (kv_rpm_per_v; ke = 60 / (2 pi kv) is derived).",
+          "type": "object",
+          "required": ["r_ohm"],
+          "additionalProperties": false,
+          "properties": {
+            "r_ohm": {"type": "number", "exclusiveMinimum": 0},
+            "l_henry": {"type": "number", "minimum": 0, "description": "0 or absent selects the algebraic armature (ROBOTICS 6.1)."},
+            "kv_rpm_per_v": {"type": "number", "exclusiveMinimum": 0},
+            "ke_vs_per_rad": {"type": "number", "exclusiveMinimum": 0, "description": "Back-EMF constant; kt equals it in SI and is stored once."},
+            "j_kgm2": {"type": "number", "minimum": 0},
+            "b_nms_per_rad": {"type": "number", "minimum": 0},
+            "i_noload_a": {"type": "number", "minimum": 0},
+            "v_nominal": {"type": "number", "exclusiveMinimum": 0},
+            "v_max": {"type": "number", "exclusiveMinimum": 0},
+            "i_stall_a": {"type": "number", "exclusiveMinimum": 0},
+            "i_max_a": {"type": "number", "exclusiveMinimum": 0},
+            "i_burst_a": {"type": "number", "exclusiveMinimum": 0},
+            "torque_stall_nm": {"type": "number", "exclusiveMinimum": 0},
+            "stator_mm": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number", "exclusiveMinimum": 0}},
+            "gear": {
+              "type": "object",
+              "required": ["ratio", "efficiency"],
+              "additionalProperties": false,
+              "properties": {
+                "ratio": {"type": "number", "exclusiveMinimum": 0},
+                "efficiency": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+                "backlash_deg": {"type": "number", "minimum": 0},
+                "j_out_kgm2": {"type": "number", "minimum": 0}
+              }
+            },
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          },
+          "anyOf": [{"required": ["kv_rpm_per_v"]}, {"required": ["ke_vs_per_rad"]}]
+        },
+        "servo": {
+          "type": "object",
+          "required": ["stall_torque_nm", "speed_s_per_60deg"],
+          "additionalProperties": false,
+          "properties": {
+            "stall_torque_nm": {"type": "number", "exclusiveMinimum": 0},
+            "speed_s_per_60deg": {"type": "number", "exclusiveMinimum": 0},
+            "speed_rad_per_s": {"type": "number", "exclusiveMinimum": 0, "description": "Derived (pi/3 / speed_s_per_60deg); give it only to override."},
+            "pulse_min_us": {"type": "number", "exclusiveMinimum": 0},
+            "pulse_max_us": {"type": "number", "exclusiveMinimum": 0},
+            "angle_range_deg": {"type": "number", "exclusiveMinimum": 0, "maximum": 3600},
+            "deadband_us": {"type": "number", "minimum": 0},
+            "i_stall_a": {"type": "number", "exclusiveMinimum": 0},
+            "i_idle_a": {"type": "number", "minimum": 0},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "stepper": {
+          "type": "object",
+          "required": ["steps_per_rev", "holding_torque_nm", "r_ohm", "i_rated_a"],
+          "additionalProperties": false,
+          "properties": {
+            "steps_per_rev": {"type": "integer", "minimum": 1, "maximum": 10000},
+            "holding_torque_nm": {"type": "number", "exclusiveMinimum": 0},
+            "r_ohm": {"type": "number", "exclusiveMinimum": 0},
+            "l_henry": {"type": "number", "minimum": 0},
+            "i_rated_a": {"type": "number", "exclusiveMinimum": 0},
+            "j_kgm2": {"type": "number", "minimum": 0},
+            "pullout": {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "type": "object",
+                "required": ["rpm", "torque_nm"],
+                "additionalProperties": false,
+                "properties": {"rpm": {"type": "number", "minimum": 0}, "torque_nm": {"type": "number", "minimum": 0}}
+              }
+            },
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "driver": {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"enum": ["h-bridge", "half-bridge", "step-dir", "pwm-servo"]},
+            "decay": {"enum": ["slow", "fast", "coast"]},
+            "vdrop_v": {"type": "number", "minimum": 0},
+            "i_max_a": {"type": "number", "exclusiveMinimum": 0},
+            "pwm_max_hz": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "encoder": {
+          "type": "object",
+          "required": ["counts_per_rev"],
+          "additionalProperties": false,
+          "properties": {
+            "counts_per_rev": {"type": "integer", "minimum": 1, "maximum": 100000},
+            "channels": {"enum": ["a", "ab"]},
+            "index": {"type": "boolean"},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "wheel": {
+          "type": "object",
+          "required": ["diameter_mm"],
+          "additionalProperties": false,
+          "properties": {
+            "diameter_mm": {"type": "number", "exclusiveMinimum": 0},
+            "width_mm": {"type": "number", "exclusiveMinimum": 0},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "mu": {"type": "number", "minimum": 0, "description": "Friction coefficient against a reference surface."},
+            "crr": {"type": "number", "minimum": 0, "description": "Rolling resistance coefficient."},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "prop": {
+          "description": "Propeller. T = ct0 rho n^2 D^4 and P = cp0 rho n^3 D^5 with n in rev/s (DRONE_ARCHITECTURE 6.1).",
+          "type": "object",
+          "required": ["diameter_mm", "pitch_mm", "ct0", "cp0"],
+          "additionalProperties": false,
+          "properties": {
+            "diameter_mm": {"type": "number", "exclusiveMinimum": 0},
+            "pitch_mm": {"type": "number", "exclusiveMinimum": 0},
+            "blades": {"type": "integer", "minimum": 1, "maximum": 8},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "j_kgm2": {"type": "number", "minimum": 0},
+            "ct0": {"type": "number", "exclusiveMinimum": 0},
+            "cp0": {"type": "number", "exclusiveMinimum": 0},
+            "ct_vs_j": {"$ref": "#/$defs/advanceTableCt"},
+            "cp_vs_j": {"$ref": "#/$defs/advanceTableCp"},
+            "rpm_max": {"type": "number", "exclusiveMinimum": 0},
+            "reverse_thrust_factor": {"type": "number", "minimum": 0, "maximum": 1},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "esc": {
+          "type": "object",
+          "required": ["i_cont_a", "protocol"],
+          "additionalProperties": false,
+          "properties": {
+            "i_cont_a": {"type": "number", "exclusiveMinimum": 0},
+            "i_burst_a": {"type": "number", "exclusiveMinimum": 0},
+            "channels": {"type": "integer", "minimum": 1, "maximum": 8},
+            "protocol": {"enum": ["pwm", "oneshot", "dshot150", "dshot300", "dshot600"]},
+            "brake": {"type": "boolean"},
+            "efficiency": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+            "v_max": {"type": "number", "exclusiveMinimum": 0},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "battery": {
+          "type": "object",
+          "required": ["cells", "capacity_mah", "r_cell_ohm"],
+          "additionalProperties": false,
+          "properties": {
+            "cells": {"type": "integer", "minimum": 1, "maximum": 24, "description": "Series count."},
+            "parallel": {"type": "integer", "minimum": 1, "maximum": 16},
+            "capacity_mah": {"type": "number", "exclusiveMinimum": 0},
+            "c_continuous": {"type": "number", "exclusiveMinimum": 0},
+            "c_burst": {"type": "number", "exclusiveMinimum": 0},
+            "r_cell_ohm": {"type": "number", "exclusiveMinimum": 0},
+            "chemistry": {"enum": ["lipo", "lihv", "liion", "nimh", "lifepo4", "alkaline"]},
+            "ocv_table": {"type": "array", "minItems": 2, "maxItems": 64, "items": {"type": "number"}, "description": "Open-circuit volts per cell, from full to empty, evenly spaced in state of charge."},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "frame": {
+          "type": "object",
+          "required": ["mass_g"],
+          "additionalProperties": false,
+          "properties": {
+            "wheelbase_mm": {"type": "number", "exclusiveMinimum": 0},
+            "arm_count": {"type": "integer", "minimum": 1, "maximum": 12},
+            "prop_max_in": {"type": "number", "exclusiveMinimum": 0},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "cd_area_m2": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number", "minimum": 0}},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "fc": {
+          "type": "object",
+          "required": ["gyro", "loop_hz_max"],
+          "additionalProperties": false,
+          "properties": {
+            "gyro": {"type": "string", "maxLength": 60},
+            "accel": {"type": "string", "maxLength": 60},
+            "baro": {"type": "string", "maxLength": 60},
+            "mag": {"type": "string", "maxLength": 60},
+            "loop_hz_max": {"type": "number", "exclusiveMinimum": 0},
+            "mass_g": {"type": "number", "exclusiveMinimum": 0},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "sensor": {
+          "description": "Range and beam data for sensors that query the physics world (ROBOTICS_ARCHITECTURE 8). Units in the field names.",
+          "type": "object",
+          "required": ["query"],
+          "additionalProperties": false,
+          "properties": {
+            "query": {"enum": ["ray-fan", "surface-sample", "contact", "joint", "body-rates"]},
+            "beam_deg": {"type": "number", "exclusiveMinimum": 0, "maximum": 360},
+            "rays": {"type": "integer", "minimum": 1, "maximum": 720},
+            "range_min_mm": {"type": "number", "minimum": 0},
+            "range_max_mm": {"type": "number", "exclusiveMinimum": 0},
+            "noise_sigma_mm": {"type": "number", "minimum": 0},
+            "noise_sigma_ratio": {"type": "number", "minimum": 0},
+            "period_s": {"type": "number", "exclusiveMinimum": 0},
+            "latency_s": {"type": "number", "minimum": 0},
+            "echo_max_angle_deg": {"type": "number", "exclusiveMinimum": 0, "maximum": 90},
+            "footprint_mm": {"type": "number", "exclusiveMinimum": 0},
+            "channels": {"type": "integer", "minimum": 1, "maximum": 64},
+            "source": {"$ref": "#/$defs/sourceRef"}
+          }
+        },
+        "mass_g": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "advanceTableCt": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": ["j", "ct"],
+        "additionalProperties": false,
+        "properties": {"j": {"type": "number", "minimum": 0}, "ct": {"type": "number"}}
+      }
+    },
+    "advanceTableCp": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": ["j", "cp"],
+        "additionalProperties": false,
+        "properties": {"j": {"type": "number", "minimum": 0}, "cp": {"type": "number"}}
+      }
+    },
+    "quantityBase": {
+      "type": "object",
+      "required": ["unit"],
+      "properties": {
+        "unit": {"$ref": "#/$defs/unit"},
+        "value": {"type": "number"},
+        "min": {"type": "number"},
+        "typ": {"type": "number"},
+        "max": {"type": "number"}
+      },
+      "oneOf": [
+        {"required": ["value"], "not": {"anyOf": [{"required": ["min"]}, {"required": ["typ"]}, {"required": ["max"]}]}},
+        {"not": {"required": ["value"]}, "anyOf": [{"required": ["min"]}, {"required": ["typ"]}, {"required": ["max"]}]}
+      ]
+    }
+  }
+}

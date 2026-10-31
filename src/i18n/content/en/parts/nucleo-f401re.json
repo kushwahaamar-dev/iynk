@@ -1,0 +1,18 @@
+{
+  "description": "An STM32 Nucleo-64 board with an STM32F401RE chip, an ST-LINK debugger, Arduino headers and ST Morpho headers, a green LED and a blue user button.",
+  "summary": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the nucleo-f401re board profile. It is not the STM32F401RE chip.",
+  "layer": "Firmware runtime.",
+  "led": "LD2, the green LED on D13 (PA5): HIGH turns it on.",
+  "button": "B1 USER, the blue button on PC13: reads LOW when pressed.",
+  "models": {
+    "1": "Arduino-C++ subset run by the interpreter with the Nucleo pin map.",
+    "2": "Digital I/O on D0 to D15 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on every pin.",
+    "3": "10-bit analog reads, or 12-bit after analogReadResolution(12), I2C master on D14 and D15, serial output, LD2 on D13 and the B1 USER button on PC13."
+  },
+  "not": {
+    "1": "The ST-LINK debugger and the USB virtual serial port.",
+    "2": "The clock tree and every peripheral other than digital I/O, ADC, PWM, I2C and serial.",
+    "3": "The Morpho pins that have no Arduino name: they are listed but the interpreter does not drive them."
+  },
+  "gap": "undefined No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

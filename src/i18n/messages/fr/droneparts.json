@@ -1,0 +1,154 @@
+{
+  "title": "Ajoutez votre propre pièce",
+  "intro": "Saisissez les valeurs d'une fiche technique ou de vos propres mesures. La pièce est enregistrée uniquement sur cet appareil.",
+  "kind": {
+    "label": "Type de pièce",
+    "motor": "Moteur et hélice",
+    "pack": "Batterie",
+    "esc": "ESC"
+  },
+  "motor": {
+    "heading": "Moteur",
+    "name": "Nom",
+    "kv": "kv (tr/min par volt)",
+    "r": "Résistance (ohm)",
+    "i0": "Courant à vide (A)",
+    "vMax": "Tension maximale (V)",
+    "iMax": "Courant maximal (A)",
+    "mass": "Masse (g)"
+  },
+  "prop": {
+    "heading": "Hélice",
+    "toggle": "Ajuster une hélice à ce moteur",
+    "toggleHint": "Une hélice demande des lignes de la fiche technique. Ses valeurs de poussée et de puissance y sont ajustées.",
+    "name": "Nom",
+    "diameter": "Diamètre (pouces)",
+    "pitch": "Pas (pouces)",
+    "blades": "Pales",
+    "mass": "Masse (g)"
+  },
+  "rows": {
+    "label": "Lignes de la fiche technique",
+    "hint": "Une ligne par rangée : tension de la batterie (V), gaz (0 à 1), poussée (g), courant (A). Séparez par tabulations, points-virgules ou virgules. Jusqu'à {max} lignes.",
+    "placeholder": "11.1, 0.5, 420, 6.5",
+    "parsed": "Lignes lues",
+    "count": {
+      "one": "{count} ligne lue",
+      "other": "{count} lignes lues"
+    },
+    "volts": "Batterie V",
+    "throttle": "Gaz",
+    "thrust": "Poussée g",
+    "current": "Courant A",
+    "error": {
+      "tooMany": "{count} lignes collées. La limite est {max}.",
+      "columns": "La ligne {line} demande quatre colonnes.",
+      "notNumber": "La ligne {line} contient une valeur qui n'est pas un nombre."
+    }
+  },
+  "fit": {
+    "heading": "Valeurs ajustées",
+    "ct0": "Coefficient de poussée ct0",
+    "cp0": "Coefficient de puissance cp0",
+    "thrust": "Résidu de poussée",
+    "current": "Résidu de courant",
+    "band": "Bande ±{percent} %. C'est un résidu d'ajustement, pas une tolérance.",
+    "needed": "Collez au moins quatre lignes de la fiche technique de ce moteur et de cette hélice pour voir l'ajustement.",
+    "unsettled": "L'ajustement ne s'est pas stabilisé. Vérifiez les lignes."
+  },
+  "esc": {
+    "heading": "ESC",
+    "name": "Nom",
+    "current": "Courant continu (A)",
+    "burst": "Courant de pointe (A)",
+    "channels": "Canaux moteur",
+    "protocol": "Protocole de signal",
+    "efficiency": "Rendement (0 à 1)",
+    "vMax": "Tension maximale (V)",
+    "mass": "Masse (g)"
+  },
+  "pack": {
+    "heading": "Batterie",
+    "name": "Nom",
+    "cells": "Cellules en série",
+    "parallel": "Cellules en parallèle",
+    "capacity": "Capacité (mAh)",
+    "c": "Débit continu (C)",
+    "r": "Résistance de cellule (mOhm)",
+    "rHint": "Laissez vide pour la déduire de la capacité.",
+    "chemistry": "Chimie",
+    "mass": "Masse (g)"
+  },
+  "source": {
+    "heading": "Source",
+    "title": "Titre de la source",
+    "titleHint": "La fiche technique, le test ou la page d'où viennent les valeurs. Chaque pièce en demande une.",
+    "url": "Lien (facultatif)",
+    "kind": "Type de source",
+    "kinds": {
+      "manufacturer-datasheet": "Fiche technique du fabricant",
+      "own-measurement": "Ma propre mesure",
+      "community": "Message de la communauté"
+    },
+    "note": "Note (facultatif)"
+  },
+  "license": {
+    "label": "Licence",
+    "hint": "Laissé vide, la pièce reçoit une licence pour les pièces que vous fournissez."
+  },
+  "version": "Version",
+  "issues": {
+    "heading": "À corriger",
+    "number": "Saisissez un nombre.",
+    "name": "Le nom doit contenir des lettres ou des chiffres.",
+    "duplicate": "Une autre pièce ici porte le même nom.",
+    "source": "Indiquez d'où viennent les valeurs.",
+    "blocked": {
+      "one": "{count} point à corriger avant d'enregistrer.",
+      "other": "{count} points à corriger avant d'enregistrer."
+    }
+  },
+  "save": {
+    "action": "Enregistrer la pièce",
+    "saving": "Enregistrement",
+    "saved": "{names} enregistré. Il est maintenant dans le sélecteur de pièces.",
+    "conflict": "Une pièce avec cet identifiant et cette version est déjà enregistrée avec d'autres valeurs. Changez la version pour enregistrer celle-ci.",
+    "failed": "La pièce n'a pas pu être enregistrée sur cet appareil.",
+    "loading": "Ouverture de la bibliothèque de pièces"
+  },
+  "compare": {
+    "title": "Comparer les montages",
+    "pinnedLabel": "Épinglé : {label}",
+    "memoryNote": "Les montages épinglés restent dans cet onglet seulement. Ils ne sont pas enregistrés dans le projet et un rechargement les efface.",
+    "empty": "Épinglez d'abord un montage. Changez ensuite une pièce et revenez voir chaque chiffre côte à côte.",
+    "figure": "Valeur",
+    "pinnedHead": "Épinglé",
+    "currentHead": "Actuel",
+    "difference": "Écart",
+    "percent": "Variation",
+    "blocked": "bloqué",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} pour 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} min"
+    },
+    "checksTitle": "Contrôles modifiés",
+    "checksNone": "Aucun contrôle n'a changé de résultat.",
+    "checkChange": "{pinned} vers {current}",
+    "assumptionsTitle": "Hypothèses",
+    "assumptionsSame": "Les deux montages utilisent les mêmes hypothèses.",
+    "assumptionsDiffer": "Les hypothèses diffèrent.",
+    "onlyPinned": "Seulement dans le montage épinglé",
+    "onlyCurrent": "Seulement dans le montage actuel",
+    "row": {
+      "auw": "Poids",
+      "tw": "Poussée sur poids",
+      "hoverThrottle": "Gaz en vol stationnaire",
+      "hoverAmps": "Courant en vol stationnaire",
+      "maxAmps": "Courant plein gaz",
+      "enduranceTyp": "Durée de vol, typique"
+    }
+  }
+}

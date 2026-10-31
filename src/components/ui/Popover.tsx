@@ -47,7 +47,7 @@ export function Popover({ label, trigger, align = "end", children, className }: 
     let top = rect.bottom + GAP;
     if (top + height > window.innerHeight - EDGE && rect.top - GAP - height >= EDGE) top = rect.top - GAP - height;
     panel.style.left = `${Math.round(left)}px`;
-    panel.style.top = `${Math.round(Math.max(EDGE, top))}px`;
+    panel.style.top = `${Math.round(Math.max(EDGE, Math.min(top, window.innerHeight - EDGE - height)))}px`;
   }, [align]);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export function Popover({ label, trigger, align = "end", children, className }: 
         role="dialog"
         aria-label={label}
         className={cx(
-          "ink-card fixed inset-auto m-0 w-[min(20rem,calc(100vw-2rem))] border-line p-3 text-ink shadow-ink-lg open:animate-ink-fade",
+          "fixed inset-auto m-0 max-h-[calc(100dvh-1rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl bg-raised p-4 text-ink shadow-lg open:animate-fade-in",
           className,
         )}
       >

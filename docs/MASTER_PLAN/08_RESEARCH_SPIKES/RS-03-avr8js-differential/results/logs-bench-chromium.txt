@@ -1,0 +1,24 @@
+chromium 156.0.8078.4
+┌─────────┬────────────┬──────────┬─────────┬──────────┬────────────┬────────┬────────┐
+│ (index) │ browser    │ throttle │ sketch  │ where    │ simPerWall │ wallMs │ load1m │
+├─────────┼────────────┼──────────┼─────────┼──────────┼────────────┼────────┼────────┤
+│ 0       │ 'chromium' │ 1        │ 'blink' │ 'worker' │ 7.47       │ 1338   │ '3.42' │
+│ 1       │ 'chromium' │ 1        │ 'blink' │ 'main'   │ 7.11       │ 1406   │ '3.42' │
+│ 2       │ 'chromium' │ 1        │ 'motor' │ 'worker' │ 7.51       │ 1331   │ '3.42' │
+│ 3       │ 'chromium' │ 1        │ 'motor' │ 'main'   │ 6.83       │ 1463   │ '3.30' │
+│ 4       │ 'chromium' │ 1        │ 'knob'  │ 'worker' │ 7.3        │ 1371   │ '3.30' │
+│ 5       │ 'chromium' │ 1        │ 'knob'  │ 'main'   │ 6.43       │ 1555   │ '3.30' │
+│ 6       │ 'chromium' │ 4        │ 'blink' │ 'worker' │ 7.44       │ 1345   │ '3.20' │
+│ 7       │ 'chromium' │ 4        │ 'blink' │ 'main'   │ 1.78       │ 5620   │ '3.20' │
+│ 8       │ 'chromium' │ 4        │ 'motor' │ 'worker' │ 7.25       │ 1379   │ '3.42' │
+│ 9       │ 'chromium' │ 4        │ 'motor' │ 'main'   │ 1.65       │ 6070   │ '3.42' │
+│ 10      │ 'chromium' │ 4        │ 'knob'  │ 'worker' │ 7.21       │ 1387   │ '3.39' │
+│ 11      │ 'chromium' │ 4        │ 'knob'  │ 'main'   │ 1.63       │ 6123   │ '3.60' │
+│ 12      │ 'chromium' │ 6        │ 'blink' │ 'worker' │ 7.49       │ 1335   │ '3.71' │
+│ 13      │ 'chromium' │ 6        │ 'blink' │ 'main'   │ 1.19       │ 8427   │ '3.71' │
+│ 14      │ 'chromium' │ 6        │ 'motor' │ 'worker' │ 7.31       │ 1368   │ '3.61' │
+│ 15      │ 'chromium' │ 6        │ 'motor' │ 'main'   │ 1.1        │ 9072   │ '3.61' │
+│ 16      │ 'chromium' │ 6        │ 'knob'  │ 'worker' │ 7.31       │ 1368   │ '3.97' │
+│ 17      │ 'chromium' │ 6        │ 'knob'  │ 'main'   │ 1.08       │ 9245   │ '3.97' │
+└─────────┴────────────┴──────────┴─────────┴──────────┴────────────┴────────┴────────┘
+JSON [{"browser":"chromium","throttle":1,"sketch":"blink","where":"worker","simPerWall":7.47,"wallMs":1338,"load1m":"3.42"},{"browser":"chromium","throttle":1,"sketch":"blink","where":"main","simPerWall":7.11,"wallMs":1406,"load1m":"3.42"},{"browser":"chromium","throttle":1,"sketch":"motor","where":"worker","simPerWall":7.51,"wallMs":1331,"load1m":"3.42"},{"browser":"chromium","throttle":1,"sketch":"motor","where":"main","simPerWall":6.83,"wallMs":1463,"load1m":"3.30"},{"browser":"chromium","throttle":1,"sketch":"knob","where":"worker","simPerWall":7.3,"wallMs":1371,"load1m":"3.30"},{"browser":"chromium","throttle":1,"sketch":"knob","where":"main","simPerWall":6.43,"wallMs":1555,"load1m":"3.30"},{"browser":"chromium","throttle":4,"sketch":"blink","where":"worker","simPerWall":7.44,"wallMs":1345,"load1m":"3.20"},{"browser":"chromium","throttle":4,"sketch":"blink","where":"main","simPerWall":1.78,"wallMs":5620,"load1m":"3.20"},{"browser":"chromium","throttle":4,"sketch":"motor","where":"worker","simPerWall":7.25,"wallMs":1379,"load1m":"3.42"},{"browser":"chromium","throttle":4,"sketch":"motor","where":"main","simPerWall":1.65,"wallMs":6070,"load1m":"3.42"},{"browser":"chromium","throttle":4,"sketch":"knob","where":"worker","simPerWall":7.21,"wallMs":1387,"load1m":"3.39"},{"browser":"chromium","throttle":4,"sketch":"knob","where":"main","simPerWall":1.63,"wallMs":6123,"load1m":"3.60"},{"browser":"chromium","throttle":6,"sketch":"blink","where":"worker","simPerWall":7.49,"wallMs":1335,"load1m":"3.71"},{"browser":"chromium","throttle":6,"sketch":"blink","where":"main","simPerWall":1.19,"wallMs":8427,"load1m":"3.71"},{"browser":"chromium","throttle":6,"sketch":"motor","where":"worker","simPerWall":7.31,"wallMs":1368,"load1m":"3.61"},{"browser":"chromium","throttle":6,"sketch":"motor","where":"main","simPerWall":1.1,"wallMs":9072,"load1m":"3.61"},{"browser":"chromium","throttle":6,"sketch":"knob","where":"worker","simPerWall":7.31,"wallMs":1368,"load1m":"3.97"},{"browser":"chromium","throttle":6,"sketch":"knob","where":"main","simPerWall":1.08,"wallMs":9245,"load1m":"3.97"}]

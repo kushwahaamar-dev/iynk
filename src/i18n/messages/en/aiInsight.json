@@ -1,0 +1,62 @@
+{
+  "what": {
+    "title": "What the partner sees",
+    "description": "This is the text sent with your next message, after redaction and size limits.",
+    "destinationCloud": "This will send the content shown to {host} using your key.",
+    "destinationLocal": "This stays on this device.",
+    "sources": "Sources",
+    "tokens": "About {count} tokens",
+    "hash": "Pack hash",
+    "total": "About {count} tokens, {profile} pack",
+    "text": "Text sent",
+    "close": "Close",
+    "profile": {
+      "compact": "compact",
+      "standard": "standard",
+      "extended": "extended"
+    },
+    "source": {
+      "S1": "Project",
+      "S2": "Components",
+      "S3": "Wiring",
+      "S4": "Code",
+      "S5": "Simulation state",
+      "S6": "Errors",
+      "S7": "Selection",
+      "S8": "Learning objectives",
+      "S9": "Conversation",
+      "S10": "Datasheets",
+      "S11": "Tool documentation"
+    }
+  },
+  "activity": {
+    "title": "AI activity",
+    "empty": "No AI calls yet",
+    "today": "Today",
+    "month": "This month",
+    "calls": {
+      "one": "{count} call",
+      "other": "{count} calls"
+    },
+    "of": "{used} of {limit}",
+    "models": "Models",
+    "priceUnknown": "Price unknown, token cap applies",
+    "cacheShare": "{percent}% from cache",
+    "stale": "Prices are from {date} and may be out of date.",
+    "callsPerMessage": "Calls per message",
+    "firstToken": "First token",
+    "p95": "95th percentile {value}",
+    "toolErrors": "Tool errors",
+    "none": "None",
+    "policy": "Policy hits",
+    "forbiddenOps": "Forbidden operations",
+    "modeBlocked": "Blocked by mode",
+    "injectionFlags": "Injection flags",
+    "secretsRedacted": "Secrets redacted",
+    "capped": "Capped calls",
+    "delete": "Delete AI data",
+    "deleteConfirm": "Delete the AI log, usage totals and saved threads on this device? Your projects are not touched.",
+    "deleteYes": "Delete",
+    "cancel": "Cancel"
+  }
+}

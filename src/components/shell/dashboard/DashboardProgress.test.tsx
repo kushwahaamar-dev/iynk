@@ -3,6 +3,7 @@ import type { ReactElement, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { I18nProvider } from "@/i18n/client";
 import common from "@/i18n/messages/en/common.json";
+import home from "@/i18n/messages/en/home.json";
 import shell from "@/i18n/messages/en/shell.json";
 import { HeroActions, LabProgress } from "./DashboardProgress";
 import type { DashItem } from "./data";
@@ -67,16 +68,16 @@ describe("dashboard progress", () => {
       messages={messages}
       progressMessages={{ progress: shell.ui.progress, progressLabel: shell.ui.progressLabel }}
       labNames={labNames}
-      start={{ href: startHref, label: shell.dashboard.start }}
-      browse={{ href: "/en/boards", label: shell.dashboard.browse }}
+      start={{ href: startHref, label: home.hero.cta }}
+      browse={{ href: "/en/boards", label: home.hero.browse }}
       overallLabel={shell.dashboard.overall}
     />
   );
 
   it("offers the first lesson and the boards when nothing is saved", () => {
     renderEn(hero());
-    expect(screen.getByRole("link", { name: shell.dashboard.start }).getAttribute("href")).toBe("/en/boards/uno-r3/board");
-    expect(screen.getByRole("link", { name: shell.dashboard.browse }).getAttribute("href")).toBe("/en/boards");
+    expect(screen.getByRole("link", { name: home.hero.cta }).getAttribute("href")).toBe("/en/boards/uno-r3/board");
+    expect(screen.getByRole("link", { name: home.hero.browse }).getAttribute("href")).toBe("/en/boards");
     expect(screen.queryByText(/Carry on/)).toBeNull();
   });
 

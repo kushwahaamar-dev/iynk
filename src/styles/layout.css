@@ -1,0 +1,179 @@
+/* Winning over the :root declarations in tokens.css, which still hold the old header height, hand cut radii and
+   fluid gutters. The workspace override in tokens.css (:root:has) is more specific and still takes the gutters back. */
+html:root {
+  --header-h: 64px;
+  --shell-pad: 16px;
+  --frame-pad: 16px;
+  --dock-w: 26rem;
+}
+@media (width >= 40rem) {
+  html:root { --shell-pad: 24px; --frame-pad: 24px; }
+}
+@media (width >= 64rem) {
+  html:root { --shell-pad: 40px; --frame-pad: 40px; }
+}
+@media (width >= 80rem) {
+  html:root { --shell-pad: 48px; --frame-pad: 48px; }
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  [hidden] { display: none !important; }
+
+  /* No browser blue on native controls. */
+  input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--ink); }
+
+  iframe { color-scheme: light; }
+}
+
+@layer components {
+  /* A paper plate: figures, schematics and inked art sit on it. It keeps light
+     paper and dark ink in both themes; in dark mode the paper is dimmed. */
+  .plate {
+    background-color: var(--plate-bg);
+    color: var(--ink);
+    border: 1px solid var(--plate-frame);
+    border-radius: var(--radius-xl, 0.75rem);
+  }
+
+  /* Whatever sits on a pastel status fill (bg-good-bg, bg-bad-bg). The fills keep their colour in both themes, and
+     neither dark-mode ink nor muted text reaches 4.5:1 on them, so text there is the dark on-colour. */
+  .on-fill {
+    color: var(--on-color);
+    --muted: var(--on-color);
+  }
+  .input-field {
+    min-height: 44px;
+    font: inherit;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    background-color: var(--sunken);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 8px 12px;
+  }
+  select.input-field {
+    appearance: none;
+    padding-inline-end: 40px;
+    cursor: pointer;
+  }
+
+  .site-footer { margin-top: var(--footer-gap); }
+
+  /* Header and footer frame. */
+  .shell-frame {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--shell-max);
+    padding-inline: var(--shell-pad);
+  }
+
+  /* Reading frame: landing, about, catalogues, the small pages. */
+  .frame {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--frame-max);
+    padding-inline: var(--frame-pad);
+  }
+
+  /* Workspace frame (WorkspaceFrame): bar over a stage and a rail. Under lg the
+     stage sticks under the header while the rail scrolls past it. */
+  .ws {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.5rem var(--frame-pad) 1rem;
+  }
+  .ws-stage {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .ws-rail {
+    min-width: 0;
+    min-height: 0;
+  }
+  .ws-below {
+    padding: 2rem var(--frame-pad) 3rem;
+  }
+  @media (width < 64rem) {
+    [data-phone-stage="sticky"] > .ws > .ws-stage {
+      position: sticky;
+      top: var(--header-h);
+      z-index: var(--z-sticky);
+      height: var(--stage-h);
+      padding-block: 0.25rem;
+      background-color: var(--paper);
+    }
+    [data-phone-stage="full"] > .ws > .ws-stage {
+      height: calc(100svh - var(--header-h) - 3.5rem);
+    }
+    .ws-sticky-tabs {
+      position: sticky;
+      top: calc(var(--header-h) + var(--stage-h));
+      z-index: var(--z-sticky);
+      background: var(--surface);
+    }
+  }
+  @media (width >= 64rem) {
+    .ws {
+      height: calc(100dvh - var(--header-h));
+      grid-template-columns: minmax(0, 1fr) var(--rail-w);
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 1rem;
+    }
+    .ws-bar { grid-column: 1 / -1; }
+    .ws-rail > * { height: 100%; }
+  }
+
+  /* Long-form lesson and about text. */
+  .prose {
+    max-width: 65ch;
+    line-height: 1.65;
+  }
+  .prose > * + * { margin-top: 0.9em; }
+  .prose h2 { margin-top: 1.6em; }
+  .prose h3 { margin-top: 1.3em; }
+  .prose ul { list-style: disc; padding-inline-start: 1.4em; }
+  .prose ol { list-style: decimal; padding-inline-start: 1.4em; }
+  .prose li + li { margin-top: 0.3em; }
+  .prose li::marker { color: var(--muted); }
+  .prose :not(pre) > code {
+    font-size: 0.9em;
+    padding: 0.05em 0.35em;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--sunken);
+  }
+  .prose blockquote {
+    border-inline-start: 3px solid var(--rule);
+    padding-inline-start: 1em;
+    color: var(--muted);
+  }
+}
+
+@layer utilities {
+  .touch-target { min-width: 44px; min-height: 44px; }
+}
+
+@media print {
+  body { background-image: none; }
+}
+
+/* Where the screen has room, the open lab dock pushes the page over instead of covering the rail, so in a room you can
+   work the steps or the code and still see the keyboard and the chat. Narrower desks keep the overlay. The figure gives
+   up its room first, down to about 34rem, and then the rail, down to 22rem (its width on a 1024 px screen), so a lesson's
+   code stays readable beside the dock on a wide screen (64rem: the dock, the figure's 34rem, the gap and padding). */
+@media (width >= 80rem) {
+  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) > :is(main, footer) { padding-inline-end: var(--dock-w); }
+  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) .ws { grid-template-columns: minmax(0, 1fr) min(var(--rail-w), max(22rem, 100vw - 64rem)); }
+}

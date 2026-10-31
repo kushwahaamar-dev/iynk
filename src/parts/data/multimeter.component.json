@@ -1,0 +1,198 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.multimeter",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "Pocket digital multimeter",
+    "generic": true,
+    "kind": "instrument",
+    "category": "instrument",
+    "description": {
+      "i18n_key": "parts.multimeter.description",
+      "en": "A pocket digital multimeter with a 3 1/2 digit display, a range dial and two test probes. Touch the probes to the points to measure."
+    },
+    "legacy_ids": [
+      "multimeter"
+    ],
+    "tags": [
+      "multimeter",
+      "instrument",
+      "meter",
+      "probe",
+      "voltage"
+    ]
+  },
+  "sources": [
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/multimeter.js: header comment and drawing",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "The readings come from the bench that uses the meter; the figure only draws them."
+    }
+  ],
+  "pins": [
+    {
+      "id": "COM",
+      "name": {
+        "en": "Common probe"
+      },
+      "designator": "COM",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "negative",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "note": {
+        "en": "The black probe tip."
+      }
+    },
+    {
+      "id": "V",
+      "name": {
+        "en": "Voltage probe"
+      },
+      "designator": "V",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "positive",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      },
+      "note": {
+        "en": "The red probe tip."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "pocket meter",
+    "body": {
+      "w": 54,
+      "h": 30,
+      "d": 9
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/parts/multimeter.js:23"
+    }
+  },
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "en": "An instrument. It is not part of the circuit solve; Studio shows its reading."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "COM",
+          "V"
+        ],
+        "summary": {
+          "en": "No electrical model: the probes do not load the circuit."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The meter is an instrument. Studio's Multimeter instrument reads the circuit; this part only places the probes."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing yet: the part places two probe tips and a drawing of the meter."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The reading, the range dial and the loading of the circuit by the meter."
+      },
+      {
+        "en": "The current ranges and the 10 A jack."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "reading_by_bench",
+        "text": {
+          "en": "The displayed reading is computed by the bench that uses the meter, not by this descriptor."
+        },
+        "evidence": "figures/parts/multimeter.js:5-9"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "multimeter",
+        "path": "public/figures/parts/multimeter.html",
+        "sha256": "0e02bd93f1832d1015d73853ad4460bae98c92a1fb1f30be9a6f8b571ec0711d",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "COM",
+        "V"
+      ],
+      "span": [
+        2,
+        30
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Multimeter",
+      "body_colour": "#f6d24a",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "license_scope": {
+      "art": "LicenseRef-iynk-pending",
+      "descriptor": "LicenseRef-iynk-pending"
+    },
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/parts/multimeter.js.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

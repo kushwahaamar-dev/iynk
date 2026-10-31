@@ -6,7 +6,6 @@ import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
 import { createTranslator } from "@/i18n/translate";
 import { challengeDay, challengeLink, dailyChallenge, type ChallengeCraft, type DailyChallenge } from "@/lib/flight/challenge";
-import { useIdentity } from "@/lib/realtime";
 import type { FlightStrings } from "./FlightRange";
 
 /** One craft in the challenge pool, with its words in the page's language (the server page builds it). */
@@ -33,7 +32,7 @@ type Props = {
 const noSubscribe = () => () => {};
 
 /** Labels for a challenge: the craft, course and pack in the page's language. */
-export function challengeWords(pool: ChallengeEntry[], c: DailyChallenge) {
+function challengeWords(pool: ChallengeEntry[], c: DailyChallenge) {
   const entry = pool.find((p) => p.id === c.craft);
   return { craft: entry?.title ?? c.craft, course: entry?.courseTitles[c.course] ?? c.course, pack: entry?.battLabels[c.batt] ?? c.batt };
 }
@@ -46,13 +45,12 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
   const today = useSyncExternalStore(noSubscribe, challengeDay, () => null);
   const date = active?.date ?? link?.date ?? today;
   const c = useMemo(() => (date ? dailyChallenge(date, pool) : null), [date, pool]);
-  const identity = useIdentity();
   const [shared, setShared] = useState<"copied" | "failed" | null>(null);
   if (!c) return null;
 
   const words = challengeWords(pool, c);
   const here = c.craft === craftId;
-  const beat = best !== null ? { time: best, by: identity?.name } : undefined;
+  const beat = best !== null ? { time: best } : undefined;
   const href = challengeLink(lang, c, beat);
   const share = async () => {
     const url = new URL(href, window.location.origin).toString();
@@ -78,8 +76,8 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
   // the day's challenge is on another craft: one line that goes there, not a card that sends you away
   if (!active && !here) {
     return (
-      <section aria-labelledby="daily-challenge-title" className="space-y-1.5" {...data}>
-        <h2 id="daily-challenge-title" className="ink-kicker">
+      <section aria-labelledby="daily-challenge-title" className="space-y-2" {...data}>
+        <h2 id="daily-challenge-title" className="kicker">
           {dict.challenge.title}
         </h2>
         <p className="text-sm">{t("challenge.what", words)}</p>
@@ -93,7 +91,7 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
   return (
     <section aria-labelledby="daily-challenge-title" className="space-y-2" {...data}>
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="daily-challenge-title" className="font-head text-lg">
+        <h2 id="daily-challenge-title" className="text-lg font-semibold">
           {dict.challenge.title}
         </h2>
         <Chip tone={c.wind ? "cobalt" : "mint"}>{c.wind ? dict.challenge.windOn : dict.challenge.windOff}</Chip>

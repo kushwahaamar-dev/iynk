@@ -1,0 +1,65 @@
+{
+  "title": "Código",
+  "files": "Archivos de código",
+  "editor": "Código de {path}",
+  "noFiles": "Este proyecto no tiene archivos de código",
+  "noFilesHint": "Las piezas que ejecutan código, como una placa, traen su archivo de firmware.",
+  "errors": "Errores: {count}",
+  "position": "Línea {line}, columna {col}",
+  "plain": "Texto sin formato",
+  "readOnly": "Solo lectura",
+  "copy": "Copiar código",
+  "copied": "Copiado",
+  "run": "Ejecutar",
+  "escape": "Pulsa Esc y después Tab para salir del editor.",
+  "tooBig": "Ese cambio haría el archivo mayor de 256 KB, así que no se aplicó.",
+  "failed": "No se pudo guardar el cambio. El editor vuelve a mostrar el texto guardado.",
+  "baton": {
+    "heldBy": "Teclado en manos de {name}",
+    "nobody": "Nadie tiene el teclado",
+    "you": "Tienes el teclado",
+    "ask": "Pedir el teclado",
+    "giveBack": "Devolverlo",
+    "viewer": "Puedes ver esta sala pero no editarla",
+    "ended": "Esta sala ha terminado"
+  },
+  "marker": {
+    "error": "Error, línea {line}, columna {col}:",
+    "warning": "Aviso, línea {line}, columna {col}:"
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} no es una biblioteca que iynk pueda simular."
+    },
+    "limit": {
+      "statements": "El código dio demasiados pasos sin terminar una vuelta. Busca un bucle que nunca acaba.",
+      "operations": "Una expresión necesitó demasiadas operaciones. Revisa los números con los que trabaja.",
+      "memory": "El código usó más memoria de la que permite el simulador.",
+      "time": "La ejecución tardó demasiado y se detuvo."
+    },
+    "static": {
+      "short-circuit": "La alimentación y la masa están unidas directamente, sin nada entre ellas. En esta conexión coinciden {count} pines.",
+      "output-contention": "Las salidas que mandan sobre la misma conexión se pelean entre sí. En ella coinciden {count} pines."
+    },
+    "run": {
+      "noModel": "{part} aún no tiene modelo en el simulador, así que no hace nada durante una ejecución."
+    }
+  },
+  "problems": {
+    "title": "Problemas",
+    "empty": "No se encontraron problemas.",
+    "emptyHint": "Aquí aparecen los errores del código y del cableado.",
+    "count": {
+      "one": "1 problema",
+      "other": "{count} problemas"
+    },
+    "line": "Línea {line}",
+    "severity": {
+      "error": "Error",
+      "warning": "Aviso",
+      "note": "Nota"
+    },
+    "hint": "Pista: {hint}",
+    "jump": "Ir al problema"
+  }
+}

@@ -1,4 +1,5 @@
-import { expect, test, type BrowserContext, type Page } from "@playwright/test";
+import type { BrowserContext, Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
 import robotics from "../src/i18n/messages/en/robotics.json";
 import together from "../src/i18n/messages/en/together.json";
@@ -55,7 +56,8 @@ const failure = (page: Page, id: string) => main(page).locator(`[data-failure="$
 const breakItTab = (page: Page) => main(page).getByRole("tab", { name: new RegExp(`^${boardlab.failures.title}`) }).click();
 const view = (page: Page, name: string) => main(page).getByRole("radio", { name, exact: true });
 
-test("two tabs in one room share the build, and only the keyboard holder changes it", async ({ context }) => {
+// v1 rooms removed in B13, replaced by T-B13-39.
+test.fixme("two tabs in one room share the build, and only the keyboard holder changes it", async ({ context }) => {
   test.setTimeout(120_000);
   await seedIdentity(context);
 
@@ -104,7 +106,8 @@ test("two tabs in one room share the build, and only the keyboard holder changes
   expect(errorsB).toEqual([]);
 });
 
-test("a bench's steps reach the joiner's figure, then each new step reaches both", async ({ context }) => {
+// v1 rooms removed in B13, replaced by T-B13-39.
+test.fixme("a bench's steps reach the joiner's figure, then each new step reaches both", async ({ context }) => {
   test.setTimeout(120_000);
   await seedIdentity(context);
   const step = (page: Page, id: string) => main(page).locator(`[data-step="${id}"]`);

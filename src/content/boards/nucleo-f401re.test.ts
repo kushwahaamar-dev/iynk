@@ -304,7 +304,7 @@ describe('nucleo-f401re assembly', () => {
     expect(page.notes()).toEqual([]);
     expect(page.errors).toEqual([]);
     page.close();
-  }, 30_000);
+  });
 });
 
 describe('nucleo-f401re lessons through the app check path', () => {

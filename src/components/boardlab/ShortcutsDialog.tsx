@@ -12,7 +12,7 @@ export function ShortcutsDialog({ open, onClose }: { open: boolean; onClose: () 
       <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2" data-testid="shortcuts">
         {SHORTCUTS.map((s) => (
           <div key={s.id} className="contents">
-            <dt className="flex gap-1">
+            <dt className="flex gap-2">
               {s.keys.map((k) => (k === "…" ? <span key={k}>…</span> : <Kbd key={k}>{k}</Kbd>))}
             </dt>
             <dd>{t(`keys.${s.id}`)}</dd>

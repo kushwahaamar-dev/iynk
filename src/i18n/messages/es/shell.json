@@ -9,11 +9,11 @@
     "robotics": "Laboratorio de robótica",
     "drones": "Laboratorio de drones",
     "together": "Juntos",
-    "passport": "Pasaporte",
-    "verify": "Verificar",
     "about": "Acerca de",
     "menu": "Menú",
-    "closeMenu": "Cerrar el menú"
+    "closeMenu": "Cerrar el menú",
+    "search": "Buscar",
+    "searchHint": "Buscar páginas y acciones"
   },
   "language": {
     "label": "Idioma"
@@ -28,47 +28,19 @@
     "label": "Ajustes"
   },
   "footer": {
-    "privacy": "Sin cuentas. Tu progreso se queda en este navegador. Los laboratorios envían recuentos de uso anónimos, que puedes desactivar en Ajustes.",
-    "figures": "Figuras dibujadas con Colorfigures, de April Zhu (licencia MIT).",
-    "pages": "Páginas del sitio"
+    "privacy": "Sin cuentas, sin anuncios, sin analítica. Tu progreso y tus ajustes se quedan en este navegador.",
+    "figures": "Dibujado con Colorfigures",
+    "pages": "Páginas del sitio",
+    "privacyLink": "Privacidad",
+    "licenceLink": "Estado de la licencia",
+    "sourceLink": "Código fuente",
+    "licence": "Licencia: aún sin elegir. Figuras: MIT, de April Zhu."
   },
   "ui": {
-    "close": "Cerrar",
-    "copy": "Copiar",
-    "copied": "Copiado",
-    "copyCode": "Copiar el código",
-    "done": "Hecho",
-    "current": "Paso actual",
-    "stepOf": "Paso {n} de {total}",
     "progress": "{done}/{total}",
     "progressLabel": "{label}: {done} de {total} completados"
   },
   "dashboard": {
-    "metaTitle": "Panel",
-    "metaDescription": "Monta, cablea, programa, rompe y vuela: {boards} placas, {benches} bancos de robótica y {drones} drones, dibujados a tinta y totalmente interactivos.",
-    "kicker": "Explora · Comprende · Construye",
-    "title": "Aprende hardware *construyéndolo*",
-    "lede": "{boards} placas, {benches} bancos de robótica y {drones} drones, cada uno una figura 3D entintada a mano que puedes girar, cablear, programar y romper a propósito.",
-    "start": "Empieza con el Arduino Uno R3",
-    "browse": "Ver las placas",
-    "heroFigure": "Arduino Uno R3 con Blink en una protoboard, en vivo: arrástralo para girarlo",
-    "labsTitle": "Los tres laboratorios",
-    "open": "Abrir el {lab}",
-    "board": {
-      "text": "Del Arduino Uno R3 a dos placas FPGA: lecciones, un editor de código en vivo, vistas de esquema y de protoboard, un monitor serie y fallos que se producen de verdad.",
-      "unit": "placas",
-      "progress": "Lecciones y montajes"
-    },
-    "robotics": {
-      "text": "Drivers de motores, sensores y etapas de alimentación, montados pieza a pieza en el banco, con tareas prácticas, cuestionarios tras cada paso, estado en vivo y consumo de corriente.",
-      "unit": "bancos",
-      "progress": "Pasos, tareas y cuestionarios"
-    },
-    "drones": {
-      "text": "De un Tiny Whoop a un octocóptero: montaje pieza a pieza, cálculo en vivo de peso y empuje, pruebas de seguridad, ajustes reales de Betaflight y ArduPilot, y un campo de vuelo.",
-      "unit": "drones",
-      "progress": "Montajes, pruebas y circuitos"
-    },
     "continue": {
       "title": "Sigue donde lo dejaste",
       "empty": "Aún no has terminado nada. El Uno R3 es el mejor punto de partida: dieciséis lecciones cortas, desde las partes de la placa hasta un sensor de aparcamiento.",
@@ -88,42 +60,14 @@
       }
     },
     "overall": "Progreso total",
-    "features": {
-      "title": "En cada laboratorio",
-      "see": {
-        "title": "Mira por dentro",
-        "text": "Arrastra para girar cualquier figura por completo, activa la vista transparente y observa cómo funcionan las piezas de dentro, con etiquetas que se iluminan."
-      },
-      "code": {
-        "title": "Ejecuta código real",
-        "text": "Edita Arduino C++, MicroPython o Verilog y pulsa Ejecutar: el simulador mueve la figura, los pines y el monitor serie."
-      },
-      "break": {
-        "title": "Rómpelo a propósito",
-        "text": "Invierte la polaridad, provoca una caída de tensión, quita una pieza o haz una soldadura fría, y mira qué falla de verdad."
-      },
-      "fly": {
-        "title": "Arma y vuela",
-        "text": "Monta un dron, comprueba sus números, pasa el smoke stopper y las pruebas de motores, y luego vuela entre puertas en modo angle o acro."
-      }
+    "board": {
+      "progress": "Lecciones y montajes"
     },
-    "together": {
-      "rooms": {
-        "title": "Salas compartidas",
-        "text": "Abre una sala en cualquier placa, robot o dron y envía el enlace. Hasta ocho personas comparten un banco, una al teclado."
-      },
-      "partner": {
-        "title": "Un compañero de laboratorio",
-        "text": "Muse Spark te encuentra un compañero cuyas habilidades encajan con las tuyas y planea una noche de montaje que os guste a todos."
-      },
-      "languages": {
-        "title": "Seis idiomas",
-        "text": "Cada página, lección y etiqueta de figura, en tu idioma. Elige uno abajo."
-      }
+    "robotics": {
+      "progress": "Pasos, tareas y cuestionarios"
     },
-    "closing": {
-      "title": "El banco está *listo*.",
-      "text": "Gratis, sin cuenta y sin nada que instalar."
+    "drones": {
+      "progress": "Montajes, pruebas y circuitos"
     }
   },
   "about": {
@@ -132,13 +76,18 @@
     "title": "Acerca de iynk",
     "lede": "iynk es un laboratorio de hardware que se abre en el navegador. Cada placa, módulo y dron es una figura 3D entintada a mano que puedes girar, abrir y manejar, conectada a lecciones, a código que se ejecuta de verdad y a fallos que puedes provocar a propósito.",
     "howTitle": "Cómo funciona",
+    "howHeads": {
+      "figures": "Figuras que manejas",
+      "code": "Código que se ejecuta",
+      "privacy": "Se queda en tu navegador"
+    },
     "how": {
       "figures": "Cada figura es una página autónoma dibujada con el motor Colorfigures: cuerpos 3D reales en franjas planas de luz, medio tono y sombra, con contornos a tinta. La página habla con la figura a través de un pequeño puente de mensajes, así que pulsar un botón en la lección mueve la pieza en la figura, y al revés.",
       "code": "Los programas se ejecutan en un simulador dentro de tu navegador, con un reloj virtual: un subconjunto de Arduino C++ con el ancho de enteros correcto para cada chip, un subconjunto de MicroPython y un subconjunto de Verilog para las dos placas FPGA.",
-      "privacy": "El progreso y los ajustes se guardan en el almacenamiento local de este navegador. No hay cuentas. Cuando este despliegue tiene una base de datos, los laboratorios envían recuentos de uso anónimos (una lección superada, un paso montado, un fallo probado, un tiempo de vuelta) para los contadores en directo y las clasificaciones, con un identificador aleatorio de este navegador y nunca tu nombre ni tu código. Desactiva «Compartir recuentos de uso anónimos» en Ajustes (el engranaje de la cabecera) para detenerlos."
+      "privacy": "El progreso y los ajustes se guardan en el almacenamiento local de este navegador. No hay cuentas. iynk guarda un registro local de lo que pasa en los laboratorios. Se queda en este navegador, y puedes leerlo, copiarlo o borrarlo en Claves y uso. No se nos envía nada."
     },
     "originalsTitle": "Los tres originales",
-    "originalsLede": "iynk nació como una reconstrucción de tres webs didácticas y aspira a hacer todo lo que hacen, y más. Reutiliza sus datos, fórmulas, tiempos y lecciones, escribe todo su propio código y corrige los errores que encontró en ellas.",
+    "originalsLede": "iynk se inspiró en tres webs didácticas. Es un proyecto aparte, con su propio código.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",
@@ -160,5 +109,45 @@
     "builtWithTitle": "Hecho con",
     "builtWith": "Next.js, React y Tailwind CSS (todos con licencia MIT), más el motor Colorfigures para cada figura.",
     "colorfigures": "Página de la skill Colorfigures"
+  },
+  "command": {
+    "title": "Menú de comandos",
+    "placeholder": "Buscar páginas y acciones",
+    "empty": "Nada coincide. Prueba con el nombre de un laboratorio o un ajuste.",
+    "groups": {
+      "pages": "Páginas",
+      "actions": "Acciones",
+      "theme": "Tema",
+      "language": "Idioma"
+    },
+    "open": "Buscar",
+    "sound": {
+      "on": "Activar el sonido",
+      "off": "Desactivar el sonido"
+    },
+    "motion": {
+      "on": "Reducir el movimiento",
+      "off": "Permitir el movimiento"
+    },
+    "keys": "Claves y uso",
+    "hint": "{key} abre este menú"
+  },
+  "privacy": {
+    "metaTitle": "Privacidad",
+    "metaDescription": "Qué guarda iynk en tu navegador, qué envía y qué nunca hace.",
+    "title": "Privacidad",
+    "lede": "iynk no tiene cuentas, anuncios ni analítica. Esta es una nota breve sobre lo que la app guarda y envía. No es asesoramiento legal.",
+    "stays": {
+      "title": "Lo que se queda en tu navegador",
+      "text": "Tu progreso y tus ajustes se guardan en el almacenamiento local de este navegador, bajo iynk:v1. El idioma que eliges se recuerda en una cookie llamada iynk-lang. Si añades una clave de IA o de búsqueda, se guarda bajo iynk:keys:v1. Un registro local de lo que pasa en los laboratorios se guarda bajo iynk:log:v1. Puedes leerlo, copiarlo o borrarlo en Claves y uso."
+    },
+    "leaves": {
+      "title": "Lo que sale de tu navegador",
+      "text": "Nada, salvo que uses una sala o añadas una clave. Una sala envía tu nombre, tu cursor y tus mensajes de chat, incluido el texto de un mensaje de voz, al relé de la sala. Una clave que añadas se envía a tu propio servidor de iynk con cada llamada de IA o de búsqueda, y una grabación de voz se envía allí para transcribirla. El servidor no guarda la clave."
+    },
+    "never": {
+      "title": "Lo que no hacemos",
+      "text": "No hay cuentas, anuncios ni analítica. Los recuentos de uso son un registro local en tu navegador. Puedes leerlo y borrarlo cuando quieras."
+    }
   }
 }

@@ -1,0 +1,14 @@
+[
+  {
+    "file": "docs/FIGURES.md",
+    "phrase": "Vercel",
+    "reason": "A build note: the committed figure HTML exists because the hosting build does not run Python. It is not a claim about the product.",
+    "reviewedBy": "agent-proposed, Amar to confirm"
+  },
+  {
+    "file": "docs/FIGURES-BENCH.md",
+    "phrase": "validated",
+    "reason": "Describes the figure bridge checking the keys of a patch (\"each validated\"). It says nothing about simulation accuracy.",
+    "reviewedBy": "agent-proposed, Amar to confirm"
+  }
+]

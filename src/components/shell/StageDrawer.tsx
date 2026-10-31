@@ -25,20 +25,20 @@ type StageDrawerProps = {
 export function StageDrawer({ title, summary, open, onOpenChange, height = 200, children, className }: StageDrawerProps) {
   const id = useId();
   return (
-    <div className={cx("flex shrink-0 flex-col overflow-hidden rounded-ink-sm border-[1.5px] border-(--card-line) bg-surface", className)}>
+    <div className={cx("flex shrink-0 flex-col overflow-hidden rounded-xl border border-rule bg-surface", className)}>
       <button
         type="button"
         aria-expanded={open}
         aria-controls={id}
         aria-label={title}
         onClick={() => onOpenChange(!open)}
-        className="flex min-h-10 w-full items-center gap-3 bg-sunken px-3 text-start focus-visible:outline-offset-[-4px] focus-visible:shadow-none [@media(pointer:coarse)]:min-h-11"
+        className="flex min-h-10 w-full items-center gap-3 bg-sunken px-3 text-start text-sm font-semibold focus-visible:outline-offset-[-4px] [@media(pointer:coarse)]:min-h-11"
       >
-        <span className="ink-kicker shrink-0">{title}</span>
-        <span className="min-w-0 flex-1 truncate font-ui text-xs text-muted">{summary}</span>
-        <Icon name="chevron-down" size={18} className={cx("shrink-0 transition-transform duration-150", open && "rotate-180")} />
+        <span className="shrink-0">{title}</span>
+        <span className="min-w-0 flex-1 truncate font-ui text-xs tabular-nums text-muted">{summary}</span>
+        <Icon name="chevron-down" size={20} className={cx("shrink-0 motion-move", open && "rotate-180")} />
       </button>
-      <div id={id} hidden={!open} className="overflow-y-auto border-t-[1.5px] border-rule" style={{ height }}>
+      <div id={id} hidden={!open} className="overflow-y-auto border-t border-rule" style={{ height }}>
         {children}
       </div>
     </div>

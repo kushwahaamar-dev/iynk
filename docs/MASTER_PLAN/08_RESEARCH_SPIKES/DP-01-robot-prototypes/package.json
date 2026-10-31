@@ -1,0 +1,7 @@
+{
+  "name": "dp-01-robot-prototypes",
+  "private": true,
+  "type": "module",
+  "description": "Author-run prototypes behind ROBOTICS_ARCHITECTURE.md and DRONE_ARCHITECTURE.md. Not a build input.",
+  "dependencies": { "@dimforge/rapier3d-deterministic-compat": "0.21.0" }
+}

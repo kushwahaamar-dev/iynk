@@ -1,45 +1,66 @@
+import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getT } from "@/i18n/server";
-import { FooterNav } from "./FooterNav";
+import { Icon } from "@/components/ui/icons";
+import { FooterLanguages } from "./FooterLanguages";
 import { Logo } from "./Logo";
-import { NAV, type NavId } from "./nav";
+import { NAV } from "./nav";
+
+const REPO_URL = "https://github.com/kushwahaamar-dev/iynk";
+const COLORFIGURES_URL = "https://april-zhu.com/colorfigures";
+
+const link = "inline-flex min-h-9 items-center gap-1 text-sm text-muted no-underline motion-fade hover:text-ink [@media(pointer:coarse)]:min-h-11";
+const row = "flex flex-wrap gap-x-6 gap-y-2";
 
 export async function SiteFooter({ lang }: { lang: Locale }) {
   const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
-  const labels = Object.fromEntries(NAV.map((entry) => [entry.id, t(`nav.${entry.id}`)])) as Record<NavId, string>;
+  const pages = NAV.filter((entry) => entry.id !== "dashboard");
   return (
     <footer className="site-footer border-t border-rule">
-      <div className="shell-frame">
-        <div className="grid grid-cols-1 gap-x-6 gap-y-14 pt-[clamp(56px,7vw,112px)] lg:grid-cols-12">
-          <div className="min-w-0 lg:col-span-5">
-            <p className="max-w-[24ch] text-[clamp(22px,2.1vw,30px)] font-medium leading-[1.18] tracking-[-0.022em] text-balance text-ink">
-              {common("site.description")}
-            </p>
-            <p className="mt-6 max-w-[50ch] text-sm leading-relaxed text-muted">{t("footer.privacy")}</p>
-          </div>
-          <nav aria-labelledby={`footer-pages-${lang}`} className="min-w-0 lg:col-span-6 lg:col-start-7">
-            <h2 id={`footer-pages-${lang}`} className="sr-only">
-              {t("footer.pages")}
-            </h2>
-            <FooterNav
-              lang={lang}
-              labels={labels}
-              headings={{ labs: t("nav.label"), site: common("site.name"), language: t("language.label") }}
-            />
-          </nav>
+      <div className="shell-frame flex flex-col gap-8 py-12 md:py-16">
+        <div className="flex flex-col gap-4">
+          <Logo height={24} className="w-auto self-start text-ink" />
+          <p className="max-w-prose text-sm text-muted">{common("site.description")}</p>
         </div>
-        <div className="mt-[clamp(64px,9vw,144px)] grid grid-cols-1 items-end gap-x-6 gap-y-8 pb-[clamp(24px,3vw,40px)] lg:grid-cols-12">
-          <Logo height={188} className="h-auto w-[clamp(168px,30vw,400px)] text-ink lg:col-span-5" />
-          <div className="flex min-w-0 flex-col gap-2 border-t border-rule pt-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 lg:col-span-6 lg:col-start-7">
-            <p className="shell-meta shrink-0">{common("site.tagline")}</p>
-            <a
-              href="https://april-zhu.com/colorfigures"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center text-xs leading-snug text-muted underline-offset-4 hover:text-ink sm:text-end"
-            >
-              {t("footer.figures")}
+        <nav aria-label={t("footer.pages")}>
+          <ul className={row}>
+            {pages.map((entry) => (
+              <li key={entry.id}>
+                <Link href={`/${lang}${entry.href}`} className={link}>
+                  {t(`nav.${entry.id}`)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <ul className={row}>
+          <li>
+            <Link href={`/${lang}/privacy`} className={link}>
+              {t("footer.privacyLink")}
+            </Link>
+          </li>
+          <li>
+            <Link href={`/${lang}/about#about-licence-${lang}`} className={link}>
+              {t("footer.licenceLink")}
+            </Link>
+          </li>
+          <li>
+            <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className={link}>
+              {t("footer.sourceLink")}
+              <Icon name="external" size={16} />
             </a>
-          </div>
+          </li>
+          <li>
+            <a href={COLORFIGURES_URL} target="_blank" rel="noopener noreferrer" className={link}>
+              {t("footer.figures")}
+              <Icon name="external" size={16} />
+            </a>
+          </li>
+        </ul>
+        <FooterLanguages lang={lang} label={t("language.label")} />
+        <div className="flex max-w-prose flex-col gap-2 text-sm text-muted">
+          <p>{t("footer.privacy")}</p>
+          <p>{t("footer.licence")}</p>
         </div>
       </div>
     </footer>

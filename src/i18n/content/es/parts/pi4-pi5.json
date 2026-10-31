@@ -1,0 +1,18 @@
+{
+  "description": "Un ordenador de placa única Raspberry Pi 4 Model B o Raspberry Pi 5 con cabecera GPIO de 40 pines, modelado como una API de Python.",
+  "summary": "La placa ejecuta tu programa en el intérprete de iynk, en Python con gpiozero. Es un modelo de API de Python, no Raspberry Pi OS. Los pines, PWM, I2C y tiempos siguen el perfil de placa pi4-pi5.",
+  "layer": "Entorno de ejecución del firmware.",
+  "variant": "Variante",
+  "ideeprom": "Reservado para la EEPROM de identificación de los HAT. Déjalo en paz.",
+  "models": {
+    "1": "Subconjunto de Python que el intérprete ejecuta con los números de pin BCM de la Raspberry Pi (GPIO17 es el pin físico 11).",
+    "2": "E/S digital, PWM y callbacks de flanco en GPIO0 a GPIO27 mediante gpiozero, y RPi.GPIO en la Pi 4.",
+    "3": "Maestro I2C en GPIO2 y GPIO3 y salida serie. La Pi 4 y la Pi 5 solo se diferencian en la velocidad de reloj."
+  },
+  "not": {
+    "1": "Linux, el escritorio y Raspberry Pi OS: es un modelo de API de Python, no un sistema operativo.",
+    "2": "Las pilas de cámara, pantalla, red, USB y PCI Express.",
+    "3": "Entradas analógicas: la placa no tiene ninguna, hace falta un chip ADC como el MCP3008."
+  },
+  "gap": "Todavía no hay valores eléctricos máximos indicados, así que no existe una comprobación de sobrecarga de pines para esta placa."
+}

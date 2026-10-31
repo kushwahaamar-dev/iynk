@@ -1,0 +1,18 @@
+{
+  "description": "Una placa de desarrollo ESP32-S3 con módulo ESP32-S3-WROOM-1, dos puertos USB-C y un LED RGB, en variantes v1.1 y v1.0.",
+  "summary": "La placa ejecuta tu sketch en el intérprete de iynk. Los pines, el PWM, el I2C, el serie y los tiempos siguen el perfil de placa esp32-s3-devkitc-1. No es el chip ESP32-S3.",
+  "layer": "Entorno de ejecución del firmware.",
+  "variant": "Variante",
+  "models": {
+    "1": "Subconjunto de Arduino C++ ejecutado por el intérprete con el mapa de pines de la ESP32-S3-DevKitC-1.",
+    "2": "E/S digital en GPIO0 a GPIO21 y GPIO35 a GPIO48, PWM e interrupciones en todos los pines con salida.",
+    "3": "Lecturas analógicas de 12 bits en GPIO1 a GPIO20, maestro I2C en GPIO8 y GPIO9, salida serie, rgbLedWrite en el LED RGB (GPIO38 en v1.1, GPIO48 en v1.0) y el botón BOOT en GPIO0."
+  },
+  "not": {
+    "1": "Los dos núcleos Xtensa LX7 y las tareas de FreeRTOS.",
+    "2": "El Wi-Fi, el Bluetooth y el comportamiento de la flash. El simulador de peticiones de las lecciones de servidor web no es una radio.",
+    "3": "Las trampas de los pines de arranque y el puerto USB nativo.",
+    "4": "Los límites del regulador de 3,3 V."
+  },
+  "gap": "El LED RGB es un WS2812 en GPIO38 en la v1.1 y en GPIO48 en la v1.0; elige la variante que coincida con tu placa. Los pines ADC2 (GPIO11 a GPIO20) no se pueden leer con el Wi-Fi activo. Aún no hay valores eléctricos máximos, así que esta placa no tiene comprobación de sobrecarga de pines."
+}

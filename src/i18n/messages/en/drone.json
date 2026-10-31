@@ -1,0 +1,115 @@
+{
+  "notice": {
+    "title": "Before you build or fly",
+    "sourceLabel": {
+      "external": "External source",
+      "hypothesis": "Hypothesis",
+      "iynk": "iynk statement"
+    },
+    "SN-1": "Charge LiPo packs only with a balance charger, never unattended, in a fireproof bag or box. Retire a swollen or damaged pack. Store near 3.8 V per cell.",
+    "SN-2": "Take propellers off for every bench test. Wear eye protection when flying. Never try to catch a flying drone.",
+    "SN-3": "A battery pack can deliver very high current into a short circuit. Power a new build the first time through a current-limited supply or a smoke stopper.",
+    "SN-4": "This craft is stable because the simulation says so. A real craft with the same numbers may not be.",
+    "SN-5": "Test in this order: props off, then a tether or very low hover over soft ground, then open space away from people.",
+    "SN-6": "Registration, Remote ID, height limits, line-of-sight and age rules depend on where you fly. Check your national authority. This simulator does not make anyone legal to fly.",
+    "SN-7": "Autonomous modes here are teaching models. They do not detect obstacles, people or other aircraft.",
+    "SN-8": "This simulation is a teaching tool, not an official sign-off on a design. It does not predict that a real aircraft will fly, or fly safely.",
+    "ack": "I have read this",
+    "acked": "Acknowledged on {date}"
+  },
+  "numbers": {
+    "title": "Numbers",
+    "auw": "Weight",
+    "thrust": "Thrust per motor",
+    "tw": "Thrust to weight",
+    "hoverThrottle": "Hover throttle",
+    "hoverAmps": "Current at hover",
+    "maxAmps": "Current at full throttle",
+    "endurance": "Flight time",
+    "na": "not available",
+    "notYet": "Not computed yet.",
+    "missing": "Needs {paths}.",
+    "range": "{low} to {high} min",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} to 1",
+      "pct": "{value} %",
+      "a": "{value} A"
+    }
+  },
+  "band": {
+    "fit": "Within the range of your datasheet rows: about 9 in 10 of your own rows fall inside this band. It says nothing about how well the rows match a real part.",
+    "none": "No datasheet rows were given, so there is nothing to check this against.",
+    "outside": "This build lies outside the range of your datasheet rows, so the band does not apply here.",
+    "short": {
+      "fit": "Band about {value} %",
+      "none": "No data to check against",
+      "outside": "Outside your rows"
+    }
+  },
+  "check": {
+    "title": "Checks",
+    "none": "No checks yet. Fill in the missing parts first.",
+    "reading": "{value} {unit}",
+    "value": "Value",
+    "limit": "Limit",
+    "part": "Part",
+    "formula": "Formula",
+    "assumptions": "Assumptions",
+    "state": {
+      "fail": "Failed",
+      "warn": "Warning",
+      "info": "Note",
+      "ok": "Passed"
+    },
+    "DB-C-01": {
+      "name": "Thrust to weight"
+    },
+    "DB-C-02": {
+      "name": "Hover throttle"
+    },
+    "DB-C-03": {
+      "name": "ESC current"
+    },
+    "DB-C-04": {
+      "name": "Battery current"
+    },
+    "DB-C-05": {
+      "name": "Voltage ratings"
+    },
+    "DB-C-06": {
+      "name": "Prop clearance"
+    },
+    "DB-C-07": {
+      "name": "Prop size for the frame"
+    },
+    "DB-C-08": {
+      "name": "Centre of mass"
+    },
+    "DB-C-09": {
+      "name": "Flight time"
+    },
+    "DB-C-10": {
+      "name": "Cell voltage under load"
+    },
+    "DB-C-11": {
+      "name": "Yaw balance"
+    },
+    "DB-C-12": {
+      "name": "Control loop rate"
+    },
+    "DB-C-13": {
+      "name": "Weight class"
+    },
+    "DB-C-14": {
+      "name": "Maker ratings"
+    }
+  },
+  "error": {
+    "DB-E-INERTIA": "The inertia of this build is not valid. Check the part masses and positions.",
+    "DB-E-MIXER": "The motor mixer cannot control all axes. Check the motor positions and spins.",
+    "DB-E-MIXER-YAW": "The motors cannot control yaw. Check that the spins alternate.",
+    "DB-E-FIELD": "A value is missing: {path}.",
+    "DB-E-CHEMISTRY": "The battery chemistry is not one the model knows ({path})."
+  }
+}

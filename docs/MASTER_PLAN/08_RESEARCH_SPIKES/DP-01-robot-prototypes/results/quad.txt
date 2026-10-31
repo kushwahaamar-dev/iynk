@@ -1,0 +1,9 @@
+hover u 0.3645 hover thrust frac of max (u^2) 0.1328 T:W 7.53
+rise 10-90 ms 85.0 overshoot % 26.4
+final w RK4@1kHz 1.7493,0.0000,0.0000 ref@10kHz 1.7493,0.0000,0.0000
+|dw| RK4 1kHz vs ref 1.50e-12  Euler 1kHz vs ref 2.43e-6
+roll angle deg RK4 90.02 ref 90.02
+bit-identical rerun true
+us per step (incl PID, logging) 1.99
+hover throttle sqrt(AUW/(n*Tmax)) 0.3645
+node $f.mjs  0.26s user 0.02s system 152% cpu 0.186 total

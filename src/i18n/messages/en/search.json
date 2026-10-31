@@ -1,7 +1,8 @@
 {
   "real": {
     "title": "Build it for real",
-    "lede": "Live prices for every part of this build from Google Shopping, Amazon and eBay.",
+    "lede": "Catalogue prices for every part, and shop prices when you add a search key and press Check prices.",
+    "check": "Check prices",
     "loading": "Finding prices…",
     "refresh": "Check prices again",
     "checked": "Prices checked at {time}",
@@ -9,7 +10,7 @@
     "alternatives": "Alternatives the optimiser can swap in",
     "total": "Cheapest total",
     "totalCatalogue": "Catalogue total",
-    "allLive": "Every part priced live",
+    "allLive": "Every part priced from a shop",
     "estimated": {
       "one": "{count} part priced from the catalogue",
       "other": "{count} parts priced from the catalogue"
@@ -29,13 +30,15 @@
     "offersHide": "Hide offers",
     "offersLabel": "Offers for {part}",
     "partial": {
-      "quota": "This site's search budget is used up, so some prices come from the catalogue.",
+      "quota": "Your search limit for this month is used up. Cached results still work.",
       "upstream": "Some stores didn't answer, so some prices come from the catalogue."
     },
     "failed": "Prices couldn't be loaded.",
     "rateLimited": "Too many price checks in a row. Wait a minute, then try again.",
+    "quotaExhausted": "Your monthly search limit is used up and resets on the 1st. Cached results still work.",
+    "noKey": "Add a search key in settings to check prices.",
+    "needsKey": "Price check",
     "retry": "Try again",
-    "notSetUp": "Live prices aren't set up on this deployment.",
     "notSetUpDrone": "The optimiser below works with the catalogue's prices instead.",
     "statusError": "The server couldn't be reached.",
     "noContent": "This item's parts list isn't published yet.",
@@ -49,7 +52,7 @@
     "heading": "Budget optimiser",
     "lede": "Set a budget and your limits. The drone calculator checks every battery, motor and prop combination at today's prices.",
     "budget": "Budget",
-    "minTW": "Min thrust-to-weight",
+    "minTW": "Min thrust to weight",
     "minFlight": "Min flight time",
     "minutes": "{value} min",
     "best": "Best build within {amount}",
@@ -62,8 +65,8 @@
     "swap": "{slot}: {from} → {to}",
     "apply": "Use this build in the lab",
     "applied": "The lab now uses this build.",
-    "upgrade": "For {amount} more: thrust-to-weight {tw} and {minutes} min of flight.",
-    "upgradeCurrent": "Your current build gives thrust-to-weight {tw} and {minutes} min of flight for {amount} more.",
+    "upgrade": "For {amount} more: thrust to weight {tw} and {minutes} min of flight.",
+    "upgradeCurrent": "Your current build gives thrust to weight {tw} and {minutes} min of flight for {amount} more.",
     "noneBudget": "Nothing meets your limits within {amount}. The cheapest build that does costs {cheapest}.",
     "noneConstraints": "No combination of these parts meets your limits. Lower a minimum to see a build.",
     "tw": "T:W",
@@ -90,6 +93,8 @@
     "place": "City or address",
     "placeHint": "Austin, TX",
     "search": "Search",
+    "findEvents": "Find events",
+    "needsKey": "Nearby search",
     "locate": "Use my location",
     "locating": "Finding you…",
     "privacy": "Your location is used for this search only and is never stored.",
@@ -116,12 +121,13 @@
     "title": "Video help",
     "lede": "Tutorials for this item from YouTube.",
     "query": "Search videos",
-    "search": "Search",
     "loading": "Finding videos…",
     "empty": "No videos found. Try other words.",
     "failed": "Videos couldn't be loaded.",
+    "needsKey": "Video help",
     "watch": "Watch “{title}” by {channel} on YouTube",
-    "duration": "Length {duration}"
+    "duration": "Length {duration}",
+    "find": "Find videos"
   },
   "sources": {
     "heading": "Sources",

@@ -1,10 +1,9 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo } from "react";
 import type { Messages } from "@/i18n/namespaces";
 import { useLocale } from "@/i18n/client";
 import { createTranslator, type Translate } from "@/i18n/translate";
-import type { BenchState, BenchStore } from "@/lib/robotics/store";
 import type { BenchTexts } from "@/lib/robotics/text";
 
 type RoboticsMessages = Messages["robotics"];
@@ -31,8 +30,4 @@ export function textLookup(texts: BenchTexts): TextOf {
     if (!params) return text;
     return text.replace(/\{(\w+)\}/g, (whole, name: string) => (params[name] === undefined ? whole : String(params[name])));
   };
-}
-
-export function useBenchState(store: BenchStore): BenchState {
-  return useSyncExternalStore(store.subscribe, store.getState, store.getState);
 }

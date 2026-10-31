@@ -1,0 +1,1261 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.nucleo-f401re",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "STMicroelectronics",
+    "model": "NUCLEO-F401RE",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "nucleo-f401re"
+    ],
+    "mpn": "NUCLEO-F401RE",
+    "description": {
+      "i18n_key": "parts.nucleo-f401re.description",
+      "en": "An STM32 Nucleo-64 board with an STM32F401RE chip, an ST-LINK debugger, Arduino headers and ST Morpho headers, a green LED and a blue user button."
+    },
+    "chip": {
+      "manufacturer": "STMicroelectronics",
+      "model": "STM32F401RE"
+    },
+    "primary_source": "manual",
+    "tags": [
+      "stm32",
+      "cortex-m4",
+      "nucleo",
+      "dev-board",
+      "arduino"
+    ]
+  },
+  "sources": [
+    {
+      "id": "manual",
+      "kind": "datasheet",
+      "title": "ST UM1724: STM32 Nucleo-64 boards (MB1136) user manual",
+      "publisher": "STMicroelectronics",
+      "url": "https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/nucleo-f401re.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "mcu",
+      "kind": "datasheet",
+      "title": "ST DS10086: STM32F401xD/xE datasheet",
+      "publisher": "STMicroelectronics",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f401re.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/nucleo-f401re.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "core",
+      "kind": "library",
+      "title": "STM32duino Arduino_Core_STM32 (NUCLEO_F401RE variant)",
+      "publisher": "STM32duino",
+      "url": "https://github.com/stm32duino/Arduino_Core_STM32",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/nucleo-f401re.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile nucleo-f401re) and src/content/boards/nucleo-f401re.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "CN10",
+      "kind": "header",
+      "pins": [
+        "PC9",
+        "PC8",
+        "D15",
+        "PC6",
+        "D14",
+        "PC5",
+        "AVDD",
+        "U5V",
+        "GND",
+        "NC",
+        "D13",
+        "PA12",
+        "D12",
+        "PA11",
+        "D11",
+        "PB12",
+        "D10",
+        "CN10_18",
+        "D9",
+        "CN10_20",
+        "D8",
+        "PB2",
+        "D7",
+        "PB1",
+        "D6",
+        "PB15",
+        "D5",
+        "PB14",
+        "D4",
+        "PB13",
+        "D3",
+        "CN10_32",
+        "D2",
+        "PC4",
+        "CN10_35",
+        "CN10_36",
+        "CN10_37",
+        "CN10_38"
+      ]
+    },
+    {
+      "id": "CN4",
+      "kind": "header",
+      "pins": [
+        "VDD_TARGET",
+        "SWCLK_EXT",
+        "CN4_3",
+        "SWDIO_EXT",
+        "NRST_EXT",
+        "SWO"
+      ]
+    },
+    {
+      "id": "CN5",
+      "kind": "header",
+      "pins": [
+        "CN5_1",
+        "CN5_2",
+        "CN5_3",
+        "CN5_4",
+        "CN5_5",
+        "CN5_6",
+        "CN5_7",
+        "CN5_8",
+        "CN5_9",
+        "CN5_10"
+      ]
+    },
+    {
+      "id": "CN6",
+      "kind": "header",
+      "pins": [
+        "CN6_1",
+        "P3V3",
+        "NRST",
+        "CN6_4",
+        "P5V",
+        "CN6_6",
+        "CN6_7",
+        "VIN"
+      ]
+    },
+    {
+      "id": "CN7",
+      "kind": "header",
+      "pins": [
+        "PC10",
+        "PC11",
+        "PC12",
+        "PD2",
+        "VDD",
+        "E5V",
+        "BOOT0",
+        "CN7_8",
+        "CN7_9",
+        "CN7_10",
+        "CN7_11",
+        "CN7_12",
+        "PA13",
+        "CN7_14",
+        "PA14",
+        "CN7_16",
+        "PA15",
+        "CN7_18",
+        "CN7_19",
+        "CN7_20",
+        "PB7",
+        "CN7_22",
+        "PC13",
+        "CN7_24",
+        "CN7_25",
+        "CN7_26",
+        "CN7_27",
+        "A0",
+        "PH0",
+        "A1",
+        "PH1",
+        "A2",
+        "VBAT",
+        "A3",
+        "PC2",
+        "A4",
+        "PC3",
+        "A5"
+      ]
+    },
+    {
+      "id": "CN8",
+      "kind": "header",
+      "pins": [
+        "CN8_1",
+        "CN8_2",
+        "CN8_3",
+        "CN8_4",
+        "CN8_5",
+        "CN8_6"
+      ]
+    },
+    {
+      "id": "CN9",
+      "kind": "header",
+      "pins": [
+        "CN9_1",
+        "CN9_2",
+        "CN9_3",
+        "CN9_4",
+        "CN9_5",
+        "CN9_6",
+        "CN9_7",
+        "CN9_8"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "PC9",
+      "designator": "PC9",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC8",
+      "designator": "PC8",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D15",
+      "designator": "PB8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC6",
+      "designator": "PC6",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D14",
+      "designator": "PB9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC5",
+      "designator": "PC5",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "AVDD",
+      "designator": "AVDD",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN10"
+    },
+    {
+      "id": "U5V",
+      "designator": "U5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN10"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN10"
+    },
+    {
+      "id": "NC",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN10"
+    },
+    {
+      "id": "D13",
+      "designator": "PA5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.nucleo-f401re.led",
+        "en": "LD2, the green LED on D13 (PA5): HIGH turns it on."
+      }
+    },
+    {
+      "id": "PA12",
+      "designator": "PA12",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D12",
+      "designator": "PA6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PA11",
+      "designator": "PA11",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D11",
+      "designator": "PA7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PB12",
+      "designator": "PB12",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D10",
+      "designator": "PB6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN10_18",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN10"
+    },
+    {
+      "id": "D9",
+      "designator": "PC7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN10_20",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN10"
+    },
+    {
+      "id": "D8",
+      "designator": "PA9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PB2",
+      "designator": "PB2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D7",
+      "designator": "PA8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PB1",
+      "designator": "PB1",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D6",
+      "designator": "PB10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PB15",
+      "designator": "PB15",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D5",
+      "designator": "PB4",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PB14",
+      "designator": "PB14",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D4",
+      "designator": "PB5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PB13",
+      "designator": "PB13",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "D3",
+      "designator": "PB3",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN10_32",
+      "designator": "AGND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN10"
+    },
+    {
+      "id": "D2",
+      "designator": "PA10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC4",
+      "designator": "PC4",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN10",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN10_35",
+      "designator": "PA2",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN10"
+    },
+    {
+      "id": "CN10_36",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN10"
+    },
+    {
+      "id": "CN10_37",
+      "designator": "PA3",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN10"
+    },
+    {
+      "id": "CN10_38",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN10"
+    },
+    {
+      "id": "VDD_TARGET",
+      "designator": "VDD_TARGET",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN4",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SWCLK_EXT",
+      "designator": "SWCLK",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN4",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN4_3",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN4"
+    },
+    {
+      "id": "SWDIO_EXT",
+      "designator": "SWDIO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN4",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "NRST_EXT",
+      "designator": "NRST",
+      "type": "digital_in",
+      "class": "bus",
+      "connector": "CN4",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SWO",
+      "designator": "SWO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN4",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_1",
+      "designator": "D8",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_2",
+      "designator": "D9",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_3",
+      "designator": "D10",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_4",
+      "designator": "D11",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_5",
+      "designator": "D12",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_6",
+      "designator": "D13",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.nucleo-f401re.led",
+        "en": "LD2, the green LED on D13 (PA5): HIGH turns it on."
+      }
+    },
+    {
+      "id": "CN5_7",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN5"
+    },
+    {
+      "id": "CN5_8",
+      "designator": "AVDD",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN5"
+    },
+    {
+      "id": "CN5_9",
+      "designator": "D14",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN5_10",
+      "designator": "D15",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN5",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN6_1",
+      "designator": "NC",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN6"
+    },
+    {
+      "id": "P3V3",
+      "designator": "IOREF",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN6"
+    },
+    {
+      "id": "NRST",
+      "designator": "NRST",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "CN6",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN6_4",
+      "designator": "3V3",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN6"
+    },
+    {
+      "id": "P5V",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN6"
+    },
+    {
+      "id": "CN6_6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN6"
+    },
+    {
+      "id": "CN6_7",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN6"
+    },
+    {
+      "id": "VIN",
+      "designator": "VIN",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN6"
+    },
+    {
+      "id": "PC10",
+      "designator": "PC10",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC11",
+      "designator": "PC11",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC12",
+      "designator": "PC12",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PD2",
+      "designator": "PD2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "VDD",
+      "designator": "VDD",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "E5V",
+      "designator": "E5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "BOOT0",
+      "designator": "BOOT0",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN7_8",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_9",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_10",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_11",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_12",
+      "designator": "IOREF",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "PA13",
+      "designator": "PA13",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN7_14",
+      "designator": "RESET",
+      "type": "digital_in",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PA14",
+      "designator": "PA14",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN7_16",
+      "designator": "+3.3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "PA15",
+      "designator": "PA15",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN7_18",
+      "designator": "+5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_19",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_20",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN7"
+    },
+    {
+      "id": "PB7",
+      "designator": "PB7",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN7_22",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "CN7"
+    },
+    {
+      "id": "PC13",
+      "designator": "PC13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.nucleo-f401re.button",
+        "en": "B1 USER, the blue button on PC13: reads LOW when pressed."
+      }
+    },
+    {
+      "id": "CN7_24",
+      "designator": "VIN",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_25",
+      "designator": "PC14",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_26",
+      "designator": "-",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN7"
+    },
+    {
+      "id": "CN7_27",
+      "designator": "PC15",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN7"
+    },
+    {
+      "id": "A0",
+      "designator": "PA0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PH0",
+      "designator": "PH0",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "A1",
+      "designator": "PA1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PH1",
+      "designator": "PH1",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "A2",
+      "designator": "PA4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "VBAT",
+      "designator": "VBAT",
+      "type": "power_io",
+      "class": "power",
+      "connector": "CN7"
+    },
+    {
+      "id": "A3",
+      "designator": "PB0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC2",
+      "designator": "PC2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "A4",
+      "designator": "PC1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "PC3",
+      "designator": "PC3",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "A5",
+      "designator": "PC0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN7",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN8_1",
+      "designator": "A0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN8_2",
+      "designator": "A1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN8_3",
+      "designator": "A2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN8_4",
+      "designator": "A3",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN8_5",
+      "designator": "A4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN8_6",
+      "designator": "A5",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "CN8",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN9_1",
+      "designator": "D0",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN9"
+    },
+    {
+      "id": "CN9_2",
+      "designator": "D1",
+      "type": "nc",
+      "class": "nc",
+      "connector": "CN9"
+    },
+    {
+      "id": "CN9_3",
+      "designator": "D2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN9",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN9_4",
+      "designator": "D3",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN9",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN9_5",
+      "designator": "D4",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN9",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN9_6",
+      "designator": "D5",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN9",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN9_7",
+      "designator": "D6",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN9",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "CN9_8",
+      "designator": "D7",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "CN9",
+      "logic_family": "lvcmos-3v3"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "CN10_20",
+        "CN10_32",
+        "CN4_3",
+        "CN5_7",
+        "CN6_6",
+        "CN6_7",
+        "CN7_8",
+        "CN7_19",
+        "CN7_20",
+        "CN7_22"
+      ]
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.nucleo-f401re.summary",
+      "en": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the nucleo-f401re board profile. It is not the STM32F401RE chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.nucleo-f401re.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile nucleo-f401re in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T0",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.nucleo-f401re.models.1",
+        "en": "Arduino-C++ subset run by the interpreter with the Nucleo pin map."
+      },
+      {
+        "i18n_key": "parts.nucleo-f401re.models.2",
+        "en": "Digital I/O on D0 to D15 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on every pin."
+      },
+      {
+        "i18n_key": "parts.nucleo-f401re.models.3",
+        "en": "10-bit analog reads, or 12-bit after analogReadResolution(12), I2C master on D14 and D15, serial output, LD2 on D13 and the B1 USER button on PC13."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.nucleo-f401re.not.1",
+        "en": "The ST-LINK debugger and the USB virtual serial port."
+      },
+      {
+        "i18n_key": "parts.nucleo-f401re.not.2",
+        "en": "The clock tree and every peripheral other than digital I/O, ADC, PWM, I2C and serial."
+      },
+      {
+        "i18n_key": "parts.nucleo-f401re.not.3",
+        "en": "The Morpho pins that have no Arduino name: they are listed but the interpreter does not drive them."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.nucleo-f401re.gap",
+          "en": "undefined No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a program on the nucleo-f401re profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "nucleo-f401re",
+        "path": "public/figures/boards/nucleo-f401re.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Nucleo-F401RE",
+      "body_colour": "#2a5d9f",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the 114 rows of src/content/boards/nucleo-f401re.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

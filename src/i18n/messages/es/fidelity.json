@@ -1,0 +1,150 @@
+{
+  "tier": {
+    "T0": "Ilustración. No es un cálculo.",
+    "T1": "Modelo didáctico",
+    "T2": "Modelo calculado",
+    "T3": "Ejecuta tu firmware compilado",
+    "none": "Aún sin modelar",
+    "T3.note": "Los periféricos que no aparecen en el panel no se modelan."
+  },
+  "layer": {
+    "execution": "Ejecución",
+    "circuit": "Circuito",
+    "protocols": "Protocolos",
+    "mechanics": "Mecánica"
+  },
+  "summary": "En conjunto: {tier}",
+  "panel": {
+    "title": "Qué modela",
+    "modelled": "Modelado",
+    "mocked": "Simulado de forma simple",
+    "unmodelled": "Aún sin modelar",
+    "stale": "La referencia es más antigua que este modelo",
+    "staleTag": "desactualizado"
+  },
+  "validation": {
+    "none": "No se ha comparado con una referencia.",
+    "oracle": "A menos de un {pct} por ciento de {oracle} en {n} circuitos ({date})",
+    "bench": "Medido en hardware: {n} circuitos, tabla de errores"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, calculado con {model}",
+    "approx": "aproximado, {why}",
+    "notModelled": "aún sin modelar",
+    "noNumber": "sin cifra, solo una ilustración",
+    "outsideRange": "fuera del rango en el que se comprobó este modelo",
+    "knownGap": "este modelo tiene aquí una limitación conocida: {why}",
+    "noResult": "sin resultado"
+  },
+  "notice": {
+    "part": "{part} aún no está modelado. El resto del circuito sigue funcionando.",
+    "model": "{model} aún no está modelado"
+  },
+  "states": {
+    "led": "{name} se quemó: {n} mA está muy por encima de sus {imax} mA.",
+    "diode": "{name} se quemó: {n} mA es más de lo que soporta.",
+    "npn": "{name} se sobrecalentó y falló.",
+    "tmp36": "{name} se sobrecalentó y falló.",
+    "pot": "{name} se quemó: {w} W es demasiado para su pista.",
+    "pin": "El pin {pin} entrega {n} mA, por encima de los {max} mA que admite esta placa.",
+    "brownout": "La alimentación cayó a {v} V, por debajo de los {min} V que necesita este chip, así que se reinicia.",
+    "brownoutUnknown": "Se desconoce el nivel de brown-out de esta placa, así que no se simula ningún reinicio.",
+    "floating": "{pin} no está conectado a nada, así que su lectura es ruido.",
+    "noconv": "El circuito no se estabilizó. Último estado: {net} a {v} V."
+  },
+  "chip": {
+    "aria": "{layer}: {tier}. Abrir detalles"
+  },
+  "inspect": {
+    "title": "Inspeccionar el diseño sintetizado",
+    "intro": "Carga la netlist de Yosys de tu diseño para ver sus puertas y cables. Se ejecuta en tu navegador; no se sube nada.",
+    "size": "Descarga de {wire} (descomprimido {raw})",
+    "memory": "Memoria máxima de unos {peak}",
+    "refuse": "Este dispositivo indica 4 GB de memoria o menos, así que el motor Yosys no se carga aquí.",
+    "unknown": "Este navegador no indica la memoria del dispositivo, así que el motor podría no caber. Cárgalo solo si lo aceptas.",
+    "load": "Cargar Yosys",
+    "cancel": "Cancelar",
+    "loading": "Cargando Yosys",
+    "failed": "No se pudo cargar Yosys",
+    "result": "Inspeccionado: {cells} celdas, {wires} cables",
+    "lint": {
+      "implicitWire": "Se usa una señal sin declararla. Yosys la convirtió en un cable de 1 bit."
+    }
+  },
+  "firmware": {
+    "mode": "Modo",
+    "interpreter": "Intérprete",
+    "firmware": "Firmware",
+    "tier": "Ejecuta tu firmware",
+    "desktopNote": "El modo firmware necesita la app de escritorio. En este dispositivo sigue funcionando el intérprete.",
+    "onlyAvr": "El modo firmware solo funciona con placas AVR (Uno, Nano).",
+    "importHex": "Importar un archivo .hex",
+    "importElf": "Importar un archivo .elf",
+    "noImage": "Ninguna imagen de firmware cargada",
+    "imageLoaded": "Se cargaron {bytes} bytes de firmware",
+    "notModelled": "aún sin modelar"
+  },
+  "import": {
+    "error": {
+      "hex-too-large": "Este archivo hex es demasiado grande.",
+      "hex-bad-record": "Una línea del archivo hex no es un registro válido.",
+      "hex-bad-checksum": "Una línea del archivo hex tiene una suma de comprobación incorrecta.",
+      "hex-out-of-flash": "El archivo hex escribe fuera de la flash de esta placa.",
+      "hex-overlap": "El archivo hex escribe dos veces en la misma dirección.",
+      "hex-no-eof": "Al archivo hex le falta el registro de fin de archivo.",
+      "elf-too-large": "Este archivo ELF es demasiado grande.",
+      "elf-unsupported": "Este archivo ELF no es un ejecutable AVR de 32 bits.",
+      "elf-too-many-sections": "Este archivo ELF tiene demasiadas secciones.",
+      "elf-bad-section": "Una sección de este archivo ELF está mal formada.",
+      "dwarf-too-large": "Los datos de depuración DWARF son demasiado grandes, así que no hay líneas de código fuente.",
+      "dwarf-bad-line-program": "La tabla de líneas DWARF está mal formada, así que no hay líneas de código fuente.",
+      "import-timeout": "La importación tardó demasiado y se detuvo.",
+      "store-failed": "No se pudo guardar el archivo en este dispositivo."
+    }
+  },
+  "debug": {
+    "toggle": "Depurador",
+    "step": "Entrar",
+    "over": "Paso a paso",
+    "out": "Salir",
+    "continue": "Continuar",
+    "pausedAt": "Pausado en {file}:{line}",
+    "running": "En ejecución",
+    "variables": "Variables",
+    "watch": "Observar",
+    "addWatch": "Añadir observación",
+    "noSymbols": "Esta imagen no tiene símbolos de depuración. Recompila con -g.",
+    "inlineOnly": "El depurador solo funciona con variables globales.",
+    "gutter": "Haz clic en el margen para poner un punto de interrupción",
+    "paused": "En pausa",
+    "breakpoint": "Punto de interrupción en la línea {line}",
+    "breakpointUnbound": "No hay código en la línea {line}, así que este punto de interrupción no detendrá la ejecución"
+  },
+  "compile": {
+    "build": "Compilar",
+    "building": "Compilando",
+    "ok": "Compilado en {ms} ms",
+    "failed": "La compilación falló",
+    "off": "La compilación está desactivada por el operador",
+    "tooLarge": "El sketch es demasiado grande para compilar",
+    "timeout": "La compilación tardó demasiado y se detuvo",
+    "size": "Flash {flash}, RAM {ram}",
+    "cached": "Desde la caché",
+    "tool": "Toolchain",
+    "importInstead": "Importa un archivo .hex en su lugar",
+    "offHint": "Pide a quien administra el servidor que active IYNK_COMPILE_ENABLE=1.",
+    "noServer": "Compilar necesita tu propio servidor iynk.",
+    "notReachable": "La compilación está activada, pero no se puede llegar al compilador",
+    "rateLimited": "Demasiadas compilaciones. Inténtalo de nuevo en {seconds} s",
+    "stale": "El sketch cambió desde esta compilación",
+    "flash": "Flash {flash} de {max} bytes",
+    "debugBuild": "Compilar para depurar",
+    "cancel": "Cancelar",
+    "needsSignIn": "Inicia sesión en tu servidor para compilar",
+    "severity": {
+      "error": "Error",
+      "warning": "Aviso",
+      "note": "Nota"
+    }
+  }
+}

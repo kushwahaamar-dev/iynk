@@ -31,9 +31,10 @@ export function swapItem(html, item, src) {
 }
 
 /** Runs a page; resolves once the engine has mounted. `path` is the page's URL path, `query` its ?query.
- *  With `host: true` the page runs embedded: its parent is a stand-in host that records what the bridge posts
+ *  With `frozenClock: true` the page's clock stands still (performance.now, requestAnimationFrame), so only a test that
+ *  steps the engine moves time. With `host: true` the page runs embedded: its parent is a stand-in host that records what the bridge posts
  *  (`sent`), and `post(msg)` delivers a host-to-figure message the way the bridge accepts one (source, origin). */
-export async function loadFigure(html, { path = '/figures/robotics/fixture.html', query = '', host = false } = {}) {
+export async function loadFigure(html, { path = '/figures/robotics/fixture.html', query = '', host = false, frozenClock = false } = {}) {
   const errors = [];
   const vc = new VirtualConsole();
   vc.on('jsdomError', (e) => { if (!/getContext|not implemented/i.test(e.message)) errors.push(e.message); });
@@ -46,6 +47,7 @@ export async function loadFigure(html, { path = '/figures/robotics/fixture.html'
       w.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
       w.HTMLCanvasElement.prototype.getContext = () => null;
       w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+      if (frozenClock) { w.performance.now = () => 0; w.requestAnimationFrame = () => 0; }
       if (host) w.parent = parent;
     },
   });

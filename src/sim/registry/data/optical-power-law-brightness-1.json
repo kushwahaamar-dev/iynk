@@ -1,0 +1,63 @@
+{
+  "id": "optical:power-law-brightness@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "LED brightness as a power law of current",
+  "tier": "T1",
+  "layers": [
+    "L9"
+  ],
+  "implements": [
+    {
+      "id": "brightness",
+      "text": "Relative light output from the solved current, for the drawing only"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "units",
+      "text": "Light output in a physical unit"
+    },
+    {
+      "id": "colour",
+      "text": "Colour shift with current and temperature"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "exponent",
+      "value": "from the LED rating brightness_exponent",
+      "type": "assumption",
+      "ref": "src/parts/data/led-5mm.component.json"
+    }
+  ],
+  "validation": [
+    {
+      "id": "part-state-tests",
+      "kind": "self-consistency",
+      "dataset": "src/studio/engine/part-state.test.ts",
+      "result": {
+        "n": 8,
+        "passed": 8,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "The exponent is an assumed figure; the exponent, not the drawing, is what the model claims"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

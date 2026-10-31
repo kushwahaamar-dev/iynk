@@ -32,7 +32,7 @@ export function Dialog({ open, onClose, title, description, closeLabel, children
   return createPortal(
     <div
       ref={layerRef}
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[rgb(20_17_12/0.55)] p-3 animate-ink-fade sm:items-center sm:p-6"
+      className="fixed inset-0 z-overlay flex items-end justify-center bg-(--scrim) p-3 animate-fade-in sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -45,11 +45,11 @@ export function Dialog({ open, onClose, title, description, closeLabel, children
         aria-describedby={description ? `${id}-d` : undefined}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={cx("ink-card flex max-h-[90dvh] w-full flex-col border-line shadow-ink-lg outline-none animate-ink-rise", widths[size])}
+        className={cx("flex max-h-[90dvh] w-full flex-col rounded-2xl bg-raised text-ink shadow-lg outline-none animate-rise-in", widths[size])}
       >
-        <div className="flex items-start gap-3 border-b-[1.5px] border-rule p-4 sm:px-5">
-          <div className="min-w-0 flex-1 pt-1.5">
-            <h2 id={`${id}-t`} className="text-xl">
+        <div className="flex items-start gap-3 p-4 pb-0 sm:p-6 sm:pb-0">
+          <div className="min-w-0 flex-1 pt-2">
+            <h2 id={`${id}-t`} className="text-lg font-semibold">
               {title}
             </h2>
             {description ? (
@@ -58,10 +58,10 @@ export function Dialog({ open, onClose, title, description, closeLabel, children
               </p>
             ) : null}
           </div>
-          <IconButton icon="close" label={closeLabel} onClick={onClose} />
+          <IconButton icon="close" variant="plain" size="sm" label={closeLabel} onClick={onClose} />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">{children}</div>
-        {footer ? <div className="flex flex-wrap justify-end gap-2 border-t-[1.5px] border-rule p-4 sm:px-5">{footer}</div> : null}
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">{children}</div>
+        {footer ? <div className="flex flex-wrap justify-end gap-2 p-4 pt-0 sm:p-6 sm:pt-0">{footer}</div> : null}
       </div>
     </div>,
     document.body,

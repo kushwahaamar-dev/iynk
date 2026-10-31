@@ -1,0 +1,324 @@
+{
+  "role": "board",
+  "pins": [
+    {
+      "id": "D0",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D0"
+    },
+    {
+      "id": "D1",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D1"
+    },
+    {
+      "id": "D2",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D2"
+    },
+    {
+      "id": "D3",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "~D3"
+    },
+    {
+      "id": "D4",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D4"
+    },
+    {
+      "id": "D5",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "~D5"
+    },
+    {
+      "id": "D6",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "~D6"
+    },
+    {
+      "id": "D7",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D7"
+    },
+    {
+      "id": "D8",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D8"
+    },
+    {
+      "id": "D9",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "~D9"
+    },
+    {
+      "id": "D10",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "~D10"
+    },
+    {
+      "id": "D11",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "~D11"
+    },
+    {
+      "id": "D12",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D12"
+    },
+    {
+      "id": "D13",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "D13"
+    },
+    {
+      "id": "GND",
+      "type": "ground",
+      "class": "ground",
+      "designator": "GND"
+    },
+    {
+      "id": "AREF",
+      "type": "analog_in",
+      "class": "analog",
+      "designator": "AREF"
+    },
+    {
+      "id": "SDA",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "SDA"
+    },
+    {
+      "id": "SCL",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "SCL"
+    },
+    {
+      "id": "NC",
+      "type": "nc",
+      "class": "nc",
+      "designator": "NC"
+    },
+    {
+      "id": "IOREF",
+      "type": "passive",
+      "class": "passive",
+      "designator": "IOREF"
+    },
+    {
+      "id": "RESET",
+      "type": "digital_io",
+      "class": "digital",
+      "designator": "RESET"
+    },
+    {
+      "id": "P3V3",
+      "type": "power_io",
+      "class": "power",
+      "designator": "3V3"
+    },
+    {
+      "id": "P5V",
+      "type": "power_io",
+      "class": "power",
+      "designator": "5V"
+    },
+    {
+      "id": "POWER_6",
+      "type": "ground",
+      "class": "ground",
+      "designator": "GND"
+    },
+    {
+      "id": "POWER_7",
+      "type": "ground",
+      "class": "ground",
+      "designator": "GND"
+    },
+    {
+      "id": "VIN",
+      "type": "power_io",
+      "class": "power",
+      "designator": "VIN"
+    },
+    {
+      "id": "A0",
+      "type": "digital_io",
+      "class": "analog",
+      "designator": "A0"
+    },
+    {
+      "id": "A1",
+      "type": "digital_io",
+      "class": "analog",
+      "designator": "A1"
+    },
+    {
+      "id": "A2",
+      "type": "digital_io",
+      "class": "analog",
+      "designator": "A2"
+    },
+    {
+      "id": "A3",
+      "type": "digital_io",
+      "class": "analog",
+      "designator": "A3"
+    },
+    {
+      "id": "A4",
+      "type": "digital_io",
+      "class": "analog",
+      "designator": "A4"
+    },
+    {
+      "id": "A5",
+      "type": "digital_io",
+      "class": "analog",
+      "designator": "A5"
+    },
+    {
+      "id": "ICSP_1",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "MISO"
+    },
+    {
+      "id": "ICSP_2",
+      "type": "power_io",
+      "class": "power",
+      "designator": "5V"
+    },
+    {
+      "id": "ICSP_3",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "SCK"
+    },
+    {
+      "id": "ICSP_4",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "MOSI"
+    },
+    {
+      "id": "ICSP_5",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "RESET"
+    },
+    {
+      "id": "ICSP_6",
+      "type": "ground",
+      "class": "ground",
+      "designator": "GND"
+    },
+    {
+      "id": "MISO2",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "MISO2"
+    },
+    {
+      "id": "ICSP1_2",
+      "type": "power_io",
+      "class": "power",
+      "designator": "5V"
+    },
+    {
+      "id": "SCK2",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "SCK2"
+    },
+    {
+      "id": "MOSI2",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "MOSI2"
+    },
+    {
+      "id": "RESET2",
+      "type": "digital_io",
+      "class": "bus",
+      "designator": "RESET2"
+    },
+    {
+      "id": "ICSP1_6",
+      "type": "ground",
+      "class": "ground",
+      "designator": "GND"
+    }
+  ],
+  "params": [],
+  "groups": [
+    {
+      "id": "g_D11",
+      "kind": "internal-short",
+      "pins": [
+        "D11",
+        "ICSP_4"
+      ]
+    },
+    {
+      "id": "g_D12",
+      "kind": "internal-short",
+      "pins": [
+        "D12",
+        "ICSP_1"
+      ]
+    },
+    {
+      "id": "g_D13",
+      "kind": "internal-short",
+      "pins": [
+        "D13",
+        "ICSP_3"
+      ]
+    },
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "POWER_6",
+        "POWER_7",
+        "ICSP_6",
+        "ICSP1_6"
+      ]
+    },
+    {
+      "id": "g_RESET",
+      "kind": "internal-short",
+      "pins": [
+        "RESET",
+        "ICSP_5"
+      ]
+    },
+    {
+      "id": "g_P5V",
+      "kind": "internal-short",
+      "pins": [
+        "P5V",
+        "ICSP_2",
+        "ICSP1_2"
+      ]
+    }
+  ]
+}

@@ -138,22 +138,13 @@ describe('delivery flight', () => {
   });
 });
 
-describe('delivery craft tests in the figure', { timeout: 300000 }, () => {
+describe('delivery craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => delivery.tests.find((t) => t.id === id)!;
-  /**
-   * The checks run on the figure's clock: animation frames, which jsdom spaces out and the engine caps per frame, so
-   * a 5 s GPS lock takes several times longer on a busy machine. Wait for the result.
-   */
-  const until = async (id: string, want: 'passed' | 'failed', ms = 120000) => {
-    const end = Date.now() + ms;
-    while (fig!.status(test(id)) !== want && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
-    return fig!.status(test(id));
-  };
   const extra = () => fig!.state().extra as Record<string, unknown>;
 
   it('calibrates the compass only with the props off, and re-seating the GPS mast clears it', async () => {
@@ -166,7 +157,7 @@ describe('delivery craft tests in the figure', { timeout: 300000 }, () => {
     expect(fig.status(test('compass'))).toBe('failed');
     await fig.remove('PROPS');
     await fig.press('compass');
-    expect(await until('compass', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('compass')) === 'passed')).toBe(true);
     expect(extra().compassOrient).toBe(0);
     expect(fig.page.notes()).toEqual([]);
   });
@@ -177,7 +168,7 @@ describe('delivery craft tests in the figure', { timeout: 300000 }, () => {
     await fig.add('GPS', 1);
     expect(fig.status(test('compass'))).toBe('failed');
     await fig.press('compass');
-    expect(await until('compass', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('compass')) === 'passed')).toBe(true);
     expect(extra().compassOrient).toBe(4);
     expect(fig.st().msg).toMatch(/COMPASS_ORIENT 4/);
   });
@@ -185,9 +176,9 @@ describe('delivery craft tests in the figure', { timeout: 300000 }, () => {
   it('runs the failsafe, winch and GPS checks on a fresh build only with the pack in, the failsafe only with the props off', async () => {
     fig = await openFigure('delivery');
     fig.SD.actions.strip(fig.st());
-    await fig.settle(180000);
+    await fig.settle();
     fig.SD.actions.build(fig.st());
-    await fig.settle(180000);
+    await fig.settle();
     for (const id of ['compass', 'gps', 'winch', 'failsafe']) expect(fig.status(test(id)), id).toBe('failed');
 
     await fig.press('failsafe');
@@ -200,11 +191,11 @@ describe('delivery craft tests in the figure', { timeout: 300000 }, () => {
 
     await fig.run('plugIn');
     await fig.press('failsafe');
-    expect(await until('failsafe', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('failsafe')) === 'passed')).toBe(true);
     await fig.press('winch');
-    expect(await until('winch', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('winch')) === 'passed')).toBe(true);
     await fig.press('gps');
-    expect(await until('gps', 'passed')).toBe('passed');
+    expect(fig!.until(() => fig!.status(test('gps')) === 'passed')).toBe(true);
 
     await fig.run('unplug');
     await fig.remove('CARGO');

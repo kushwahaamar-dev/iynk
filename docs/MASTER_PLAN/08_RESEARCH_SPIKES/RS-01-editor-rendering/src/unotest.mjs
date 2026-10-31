@@ -1,0 +1,21 @@
+import * as esbuild from 'esbuild'; import fs from 'fs'; import { chromium } from 'playwright';
+const c = { bundle: true, minify: true, format: 'iife', jsx: 'automatic', loader: { '.js': 'jsx' }, define: { 'process.env.NODE_ENV': '"production"' }, outdir: 'unoout', logLevel: 'error' };
+await esbuild.build({ ...c, entryPoints: ['src/uno/vanilla.js'], entryNames: 'vanilla' });
+await esbuild.build({ ...c, entryPoints: ['src/uno/xy.jsx'], entryNames: 'xy' });
+const page = n => `<!doctype html><meta charset=utf-8><style>html,body,#app{margin:0;width:100%;height:100%}</style><div id=app></div>${n === 'xy' ? '<link rel=stylesheet href=xy.css>' : ''}<script src=${n}.js></script>`;
+fs.writeFileSync('unoout/vanilla.html', page('vanilla')); fs.writeFileSync('unoout/xy.html', page('xy'));
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1000, height: 700 } });
+const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => m.type() === 'error' && errs.push(m.text()));
+await p.goto('file://' + process.cwd() + '/unoout/vanilla.html'); await p.waitForTimeout(300);
+const v0 = await p.evaluate(() => ({ polylines: document.querySelectorAll('polyline[points]:not([points=""])').length, circles: document.querySelectorAll('circle').length, first: document.querySelector('polyline').getAttribute('points') }));
+await p.mouse.move(540 + 40, 40 + 100 ); // inside LED? LED node at 420+40,60+40 ->(460,100)
+await p.mouse.move(500, 100); await p.mouse.down(); await p.mouse.move(540, 160, { steps: 5 }); await p.mouse.up();
+const v1 = await p.evaluate(() => ({ first: document.querySelector('polyline').getAttribute('points'), led: editor.byId.led.x + ',' + editor.byId.led.y, k0: editor.view.k }));
+await p.mouse.move(300, 300); await p.mouse.wheel(0, -300); await p.waitForTimeout(100);
+v1.k1 = await p.evaluate(() => editor.view.k);
+await p.screenshot({ path: 'unoout/vanilla.png' });
+console.log('vanilla', JSON.stringify({ v0, v1, errs }));
+await p.goto('file://' + process.cwd() + '/unoout/xy.html'); await p.waitForTimeout(800);
+console.log('xyflow', JSON.stringify(await p.evaluate(() => ({ nodes: document.querySelectorAll('.react-flow__node').length, edges: document.querySelectorAll('.react-flow__edge').length, handles: document.querySelectorAll('.react-flow__handle').length }))), errs);
+await p.screenshot({ path: 'unoout/xy.png' });
+await b.close();

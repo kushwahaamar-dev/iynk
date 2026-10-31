@@ -2,16 +2,15 @@
 
 import { useId } from "react";
 import type { DesignPick, DroneContent } from "@/content/schema";
-import { Callout } from "@/components/ui/Callout";
-import { Chip, type ChipTone } from "@/components/ui/Chip";
+import { Callout, type CalloutTone } from "@/components/ui/Callout";
+import { Select } from "@/components/ui/Field";
 import { htmlLang, type Locale } from "@/i18n/config";
 import { checkLevel, tileDigits, verdicts, type DesignCheck } from "@/lib/drone/calc";
 import { evaluateDesign } from "@/lib/drone/design";
-import type { DesignKey } from "@/lib/dronelab/store";
+import type { DesignKey } from "@/lib/dronelab/workshop";
 import { formatNumber, type ContentT, type DroneLabT } from "./text";
 
-const LEVEL_TONE: Record<string, ChipTone> = { danger: "tomato", warn: "mustard", info: "cobalt" };
-const LEVEL_BORDER: Record<string, string> = { danger: "border-tomato", warn: "border-mustard", info: "border-cobalt" };
+const LEVEL_TONE: Record<string, CalloutTone> = { danger: "danger", warn: "warn", info: "note" };
 
 type Props = {
   lang: Locale;
@@ -74,49 +73,44 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <h2 className="sr-only">{t("design.title")}</h2>
       <p className="text-sm text-muted">{t("design.lede")}</p>
       {/* one pick per row, so "6S 1100 mAh LiPo" is never cut */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {selects.map((s) => (
-          <div key={s.key} className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3">
-            <label htmlFor={`${base}-${s.key}`} className="font-body text-sm font-semibold">
-              {s.label}
-            </label>
-            <select
-              id={`${base}-${s.key}`}
-              value={pick[s.key]}
-              onChange={(e) => onPick(s.key, e.target.value)}
-              className="ink-field min-h-11 w-full"
-              data-testid={`design-${s.key}`}
-            >
-              {Object.entries(s.options).map(([key, option]) => (
-                <option key={key} value={key}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            key={s.key}
+            label={s.label}
+            value={pick[s.key]}
+            onChange={(e) => onPick(s.key, e.target.value)}
+            data-testid={`design-${s.key}`}
+          >
+            {Object.entries(s.options).map(([key, option]) => (
+              <option key={key} value={key}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
         ))}
       </div>
 
       <section aria-labelledby={`${base}-results`}>
-        <h3 id={`${base}-results`} className="ink-kicker">
+        <h3 id={`${base}-results`} className="kicker">
           {t("design.results")}
         </h3>
-        <dl className="mt-2 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3" aria-live="polite" data-testid="design-tiles">
+        <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3" aria-live="polite" data-testid="design-tiles">
           {tiles.map((tile) => (
-            <div key={tile.id} className="min-w-0" data-tile={tile.id}>
-              <dt className="ink-label hyphens-auto">{tile.label}</dt>
-              <dd className="tabular whitespace-nowrap font-ui text-lg font-bold leading-tight">{tile.value}</dd>
+            <div key={tile.id} className="min-w-0 rounded-xl border border-rule bg-surface px-3 py-2" data-tile={tile.id}>
+              <dt className="field-label hyphens-auto">{tile.label}</dt>
+              <dd className="tabular whitespace-nowrap text-lg font-semibold leading-tight">{tile.value}</dd>
             </div>
           ))}
         </dl>
       </section>
 
       <section aria-labelledby={`${base}-checks`} className="space-y-2">
-        <h3 id={`${base}-checks`} className="ink-kicker">
+        <h3 id={`${base}-checks`} className="kicker">
           {t("design.checksTitle")}
         </h3>
         {verdictLines.map((key) => {
@@ -135,9 +129,10 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
             {checks.map((check) => {
               const level = checkLevel[check.code];
               return (
-                <li key={check.code} className={`flex items-start gap-2 border-s-4 py-1 ps-3 text-sm ${LEVEL_BORDER[level]}`}>
-                  <Chip tone={LEVEL_TONE[level]}>{t(`design.levels.${level}`)}</Chip>
-                  <span>{checkText(check, t, n)}</span>
+                <li key={check.code}>
+                  <Callout tone={LEVEL_TONE[level]} title={t(`design.levels.${level}`)}>
+                    {checkText(check, t, n)}
+                  </Callout>
                 </li>
               );
             })}
@@ -146,44 +141,44 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
       </section>
 
       <section aria-labelledby={`${base}-cost`}>
-        <h3 id={`${base}-cost`} className="ink-kicker">
+        <h3 id={`${base}-cost`} className="kicker">
           {t("design.cost.title")}
         </h3>
         <table className="mt-2 w-full border-collapse text-sm">
           <thead>
             <tr className="border-b-[1.5px] border-rule text-start text-xs text-muted">
-              <th scope="col" className="py-1.5 text-start">
+              <th scope="col" className="py-2 text-start">
                 {t("design.cost.category")}
               </th>
-              <th scope="col" className="py-1.5 text-end">
+              <th scope="col" className="py-2 text-end">
                 {t("design.cost.parts")}
               </th>
-              <th scope="col" className="py-1.5 text-end">
+              <th scope="col" className="py-2 text-end">
                 {t("design.cost.price")}
               </th>
             </tr>
           </thead>
           <tbody>
             <tr className="border-b border-rule">
-              <th scope="row" className="py-1.5 text-start font-normal">
+              <th scope="row" className="py-2 text-start font-normal">
                 {t("design.cost.electrical")}
               </th>
-              <td className="tabular py-1.5 text-end font-ui">{n(electrical, 0)}</td>
-              <td className="tabular py-1.5 text-end font-ui">{money(r.cost.electrical)}</td>
+              <td className="tabular py-2 text-end">{n(electrical, 0)}</td>
+              <td className="tabular py-2 text-end">{money(r.cost.electrical)}</td>
             </tr>
             <tr className="border-b border-rule">
-              <th scope="row" className="py-1.5 text-start font-normal">
+              <th scope="row" className="py-2 text-start font-normal">
                 {t("design.cost.mechanical")}
               </th>
-              <td className="tabular py-1.5 text-end font-ui">{n(mechanical, 0)}</td>
-              <td className="tabular py-1.5 text-end font-ui">{money(r.cost.mechanical)}</td>
+              <td className="tabular py-2 text-end">{n(mechanical, 0)}</td>
+              <td className="tabular py-2 text-end">{money(r.cost.mechanical)}</td>
             </tr>
             <tr>
-              <th scope="row" className="py-1.5 text-start">
+              <th scope="row" className="py-2 text-start">
                 {t("design.cost.total")}
               </th>
-              <td className="tabular py-1.5 text-end font-ui">{n(electrical + mechanical, 0)}</td>
-              <td className="tabular py-1.5 text-end font-ui font-bold">{money(r.cost.total)}</td>
+              <td className="tabular py-2 text-end">{n(electrical + mechanical, 0)}</td>
+              <td className="tabular py-2 text-end font-semibold">{money(r.cost.total)}</td>
             </tr>
           </tbody>
         </table>

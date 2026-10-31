@@ -1,0 +1,18 @@
+{
+  "description": "An ESP32-S3 development board with an ESP32-S3-WROOM-1 module, two USB-C ports and an RGB LED, in a v1.1 and a v1.0 variant.",
+  "summary": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the esp32-s3-devkitc-1 board profile. It is not the ESP32-S3 chip.",
+  "layer": "Firmware runtime.",
+  "variant": "Variant",
+  "models": {
+    "1": "Arduino-C++ subset run by the interpreter with the ESP32-S3-DevKitC-1 pin map.",
+    "2": "Digital I/O on GPIO0 to GPIO21 and GPIO35 to GPIO48, PWM and interrupts on every output-capable pin.",
+    "3": "12-bit analog reads on GPIO1 to GPIO20, I2C master on GPIO8 and GPIO9, serial output, rgbLedWrite on the RGB LED (GPIO38 on v1.1, GPIO48 on v1.0) and the BOOT button on GPIO0."
+  },
+  "not": {
+    "1": "The two Xtensa LX7 cores and FreeRTOS tasks.",
+    "2": "Wi-Fi, Bluetooth and flash behaviour. The request stub for web-server lessons is not a radio.",
+    "3": "The strapping-pin traps and the native USB port.",
+    "4": "The 3.3 V regulator limits."
+  },
+  "gap": "The RGB LED is a WS2812 that sits on GPIO38 on v1.1 and on GPIO48 on v1.0; pick the variant that matches your board. ADC2 pins (GPIO11 to GPIO20) cannot be read while Wi-Fi is on. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

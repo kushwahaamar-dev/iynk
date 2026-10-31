@@ -1,0 +1,107 @@
+/* Hindi needs a Devanagari face first (next/font's Latin fallbacks would win
+   otherwise); Chinese appends platform CJK faces after the Latin one. The wordmark
+   is drawn (Logo.tsx), so it keeps its shape in every language. */
+html:lang(hi) {
+  --font-sans: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
+}
+:is(h1, h2, h3, h4):lang(hi) {
+  font-family: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
+}
+html:lang(zh-Hans) {
+  --font-cjk: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC";
+}
+html:lang(zh-Hans) body {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+:is(h1, h2, h3, h4):lang(zh-Hans) {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+/* Devanagari ink sits high in its line box: the floating bar's labels get 2 px moved from below to above. */
+.nav-link:lang(hi) {
+  padding-top: calc(0.5rem + 2px);
+  padding-bottom: calc(0.5rem - 2px);
+}
+/* Letter-spaced mono reads badly in Devanagari and Han: those labels take the body face. */
+.font-ui:not(code, pre, kbd, .tabular):is(:lang(hi), :lang(zh-Hans)) {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.font-ui:not(code, pre, kbd, .tabular):lang(zh-Hans) {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--paper);
+    background-image: var(--grain);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  h1 { @apply text-4xl md:text-5xl tracking-tight; }
+  h2 { @apply text-2xl md:text-3xl; }
+  h3 { @apply text-lg; }
+  h4 { @apply text-base; }
+  p { text-wrap: pretty; }
+
+  a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+  a:hover { text-decoration-thickness: 2.5px; }
+
+  code, kbd, samp, pre { font-family: var(--font-ui); }
+
+  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--ink); }
+}
+
+@layer components {
+  .kicker, .kicker {
+    @apply text-xs font-semibold text-muted;
+  }
+
+  /* A field or meter label: may hold a unit ("500 mA"), so never uppercase. */
+  .field-label, .field-label {
+    @apply text-xs font-semibold text-muted;
+  }
+
+  /* Syntax colours shared by CodeBlock and the code editor. */
+  .tok-kw { color: var(--code-kw); font-weight: 600; }
+  .tok-str { color: var(--code-str); }
+  .tok-fn { color: var(--code-fn); }
+  .tok-con { color: var(--code-con); }
+  .tok-pp { color: var(--code-pp); }
+  .tok-cm { color: var(--code-cm); }
+  .tok-num { color: var(--code-num); }
+  .tok-ty { color: var(--code-kw); }
+}
+
+@layer utilities {
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  /* Matras and Han strokes clip at the scale's tight line heights. */
+  .lang-air:is(:lang(hi), :lang(zh-Hans)),
+  :is(h1, h2, h3, h4):is(:lang(hi), :lang(zh-Hans)) {
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+}

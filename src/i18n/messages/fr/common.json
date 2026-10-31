@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Explorer · Comprendre · Construire",
-    "description": "Un labo d’électronique pratique dans le navigateur : assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
+    "tagline": "Explorer, comprendre, construire",
+    "description": "Un labo d’électronique dans votre navigateur. Assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
   },
   "a11y": {
     "skipToContent": "Aller au contenu principal"
@@ -12,6 +12,7 @@
     "title": "Cette page n’est pas sur l’établi",
     "body": "L’adresse est peut-être mal saisie, ou la page a été déplacée. Choisissez un labo pour continuer.",
     "home": "Retour au tableau de bord",
+    "search": "Rechercher sur le site",
     "boards": "Labo des cartes",
     "robotics": "Labo de robotique",
     "drones": "Labo des drones"
@@ -41,7 +42,6 @@
         "partner": "Partenaire",
         "together": "Ensemble",
         "real": "Construire pour de vrai",
-        "passport": "Passeport",
         "hardware": "Matériel"
       }
     },
@@ -53,10 +53,111 @@
     "motion": {
       "label": "Réduire les animations"
     },
+    "terms": {
+      "label": "Termes en anglais",
+      "toggle": "Afficher les termes anglais"
+    },
     "usage": {
       "label": "Statistiques d’usage anonymes",
-      "body": "iynk compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",
-      "toggle": "Partager les statistiques d’usage anonymes"
+      "body": "iynk écrit ce qui se passe dans les labos dans un journal de ce navigateur. Rien n’est envoyé ailleurs. Les erreurs sont toujours consignées, et vous pouvez lire, copier ou effacer le journal dans Clés et utilisation.",
+      "toggle": "Garder un journal local de ce qui se passe dans les labos (reste dans ce navigateur)"
+    },
+    "log": {
+      "title": "Journal local",
+      "notice": "Reste dans ce navigateur. Rien n’est envoyé.",
+      "empty": "Rien n’est encore consigné.",
+      "clear": "Effacer",
+      "copy": "Copier pour un rapport de bug",
+      "copied": "Copié",
+      "manual": "La copie a été bloquée. Sélectionnez ce texte et copiez-le vous-même."
+    },
+    "keys": {
+      "open": "Clés et utilisation",
+      "title": "Clés et utilisation",
+      "close": "Fermer clés et utilisation",
+      "notice": "Conservée uniquement dans ce navigateur. Elle est envoyée à votre propre serveur iynk à chaque appel et n'y est pas stockée.",
+      "ai": {
+        "label": "Clé IA",
+        "labelOptional": "Nom de cette clé (facultatif)"
+      },
+      "search": {
+        "label": "Clé de recherche"
+      },
+      "server": {
+        "label": "Jeton du serveur",
+        "hint": "Nécessaire seulement si votre serveur iynk en demande un."
+      },
+      "save": "Enregistrer",
+      "remove": "Supprimer",
+      "saved": "Enregistrée : …{tail}",
+      "errors": {
+        "empty": "Collez une clé complète (au moins 8 caractères).",
+        "tooLong": "Elle dépasse 512 caractères.",
+        "badChars": "Une clé ne contient que des lettres, des chiffres et des symboles, sans espace.",
+        "notPersisted": "Non conservée après la fermeture de cet onglet (ce navigateur bloque le stockage)"
+      }
+    },
+    "meter": {
+      "tokensToday": "Jetons aujourd'hui",
+      "searchesMonth": "Recherches ce mois-ci",
+      "ofCap": "{used} sur {cap}",
+      "aiLine": "Ce mois-ci : {month} jetons.",
+      "searchLine": "Aujourd'hui : {today}.",
+      "unavailable": "Indisponible",
+      "noKey": "Collez une clé ci-dessus pour voir l'usage.",
+      "off": "C'est désactivé sur ce serveur.",
+      "aiOff": "L'IA est désactivée sur ce serveur.",
+      "searchOff": "La recherche est désactivée sur ce serveur.",
+      "failed": "Impossible de lire l'usage",
+      "retry": "Réessayer"
+    },
+    "notSetUp": {
+      "serverOff": "{what} est désactivé sur ce serveur.",
+      "needsKey": "{what} demande votre propre clé.",
+      "openKeys": "Ouvrir clés et utilisation",
+      "fix": {
+        "ai": "Collez une clé d'IA dans Clés et utilisation.",
+        "search": "Collez une clé de recherche dans Clés et utilisation.",
+        "server": "Demandez à la personne qui gère ce serveur de l'activer."
+      }
+    },
+    "state": {
+      "loading": "Chargement",
+      "empty": "Rien ici pour l'instant",
+      "error": "Un problème est survenu. Réessayez.",
+      "retry": "Réessayer"
+    },
+    "error": {
+      "title": "Un problème est survenu",
+      "text": "Cette page a rencontré un problème. Réessayez ou revenez au début.",
+      "reference": "Référence : {digest}",
+      "home": "Retour au début"
+    },
+    "server": {
+      "title": "Serveur",
+      "address": "Adresse du serveur",
+      "status": {
+        "off": "Cela nécessite un serveur. Aucun n'est configuré.",
+        "unreachable": "Impossible de joindre ce serveur.",
+        "unreachableHint": "Si cette adresse est sur une autre origine, figure-t-elle dans IYNK_CONNECT_ORIGINS ?",
+        "ready": "Connecté.",
+        "needsEnrol": "Ce serveur demande un code d'inscription à la personne qui l'administre.",
+        "closed": "Ce serveur n'accepte pas de nouvelles personnes pour le moment.",
+        "checking": "Vérification de ce serveur.",
+        "insecure": "Les navigateurs n'autorisent la connexion qu'en https. Utilisez une adresse https ou localhost.",
+        "upgrade": "Ce serveur demande une version plus récente d'iynk. Mettez l'application à jour."
+      },
+      "enrolled": "Vous êtes connecté sur ce serveur.",
+      "signOut": "Se déconnecter",
+      "leave": {
+        "title": "Quitter ce serveur",
+        "body": "Cela vous retire du serveur et supprime votre liste de contacts sur celui-ci. Vos projets restent dans ce navigateur.",
+        "confirm": "Quitter le serveur",
+        "grace": "Vous avez {hours} heures pour changer d'avis.",
+        "cancel": "Garder mon compte"
+      },
+      "guide": "Les contacts demandent un serveur. Le guide d'auto-hébergement explique comment en installer un.",
+      "addressInvalid": "Saisissez une adresse comme https://iynk.example, sans chemin."
     }
   }
 }

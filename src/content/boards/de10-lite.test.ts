@@ -252,7 +252,7 @@ describe('de10-lite lessons through the app check path', () => {
           expect(l.checks.filter((_, i) => !results[i].ok).map((c) => text(c.label)), `${l.id} ${p.id}=${v}`).toEqual([]);
         }
       }
-    }, 120_000);
+    });
   }
 
   it('catches a key read as active high: LEDR9 = KEY[0] lights while the key is up', () => {

@@ -1,0 +1,6 @@
+no bug (control): NOT DETECTED (passes)
+server skips wire cascade on part delete: detected -> c0 has dangling wires; c1 has dangling wires; c2 has dangling wires; c3 has dangling wires; c4 has dangling wires; server has dangling wires
+server has no dedup of resent ops: NOT DETECTED (passes)
+client skips one remote op in 500: detected -> client c3 could not apply seq 2644: duplicate_id
+server has no dedup (snapshot path: retention 25, long offline): NOT DETECTED (passes)
+control with same snapshot-heavy settings: NOT DETECTED (passes)

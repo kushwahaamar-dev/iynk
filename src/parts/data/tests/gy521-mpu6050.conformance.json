@@ -1,0 +1,9 @@
+{
+  "id": "binds_and_who_am_i",
+  "kind": "conformance",
+  "shape": "none",
+  "description": "The imu layer binds to the registered register-map device, which answers a WHO_AM_I read with 0x68.",
+  "checks": ["layers-resolve", "terminals-are-pins", "builtin-binds"],
+  "bind": { "i2c": { "address": 104, "write": [117], "read": 1, "expect": [104] } },
+  "derivation": "WHO_AM_I is register 0x75 and reads 0x68 (RM-MPU-6000A, WHO_AM_I); src/sim/devices/data/mpu6050.device.json holds the same reset value, 104."
+}

@@ -2,14 +2,14 @@
 
 import { useEffect, useId, useMemo, useState, useSyncExternalStore } from "react";
 import type { LabDockProps, LabStore } from "@/components/dock/types";
-import { Button, Callout, Chip, Icon, Stat, cx } from "@/components/ui";
+import { Button, Callout, Chip, EmptyState, Icon, Stat, TextInput, cx } from "@/components/ui";
 import { isBoardId, isDroneId, isRoboticsId } from "@/content/ids";
 import { loadDrone } from "@/content/index.generated";
 import type { DesignPick, DroneDesign } from "@/content/schema";
 import { useLocale } from "@/i18n/client";
 import { SHORT_FLIGHT_MIN } from "@/lib/drone/calc";
 import { isDesignPick } from "@/lib/drone/design";
-import type { DroneLabAction } from "@/lib/dronelab/store";
+import type { DroneLabAction } from "@/lib/dronelab/workshop";
 import { boardBom, droneBom, offerParts, roboticsBom, type BomLine, type Slot } from "@/lib/search/bom";
 import { fetchOffers, type FailCode } from "@/lib/search/client";
 import { lineCost, listingsNeeded, sumMoney } from "@/lib/search/cost";
@@ -17,7 +17,7 @@ import { useSearchT, type SearchT } from "@/lib/search/messages";
 import { costRange, optimize, priceLines, type Candidate, type OptimizeResult } from "@/lib/search/optimize";
 import type { Offer, OffersGap, PartOffers } from "@/lib/search/types";
 import { SourcesList } from "./SourcesList";
-import { PanelSkeleton, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
+import { PanelSkeleton, SearchFailure, SearchNotSetUp, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
 
 /* ---------- the parts list ---------- */
 
@@ -26,7 +26,7 @@ type Bom =
   | { status: "missing" }
   | { status: "ready"; lines: BomLine[]; drone: { design: DroneDesign; pick: DesignPick } | null };
 
-/** The pick in a Drone Lab store (src/lib/dronelab/store.ts keeps it as state.pick). */
+/** The pick in a Drone Lab store (src/lib/dronelab/workshop.ts keeps it as state.pick). */
 function storePick(store: LabStore, design: DroneDesign | null): DesignPick | null {
   const pick = (store.getState() as { pick?: Partial<DesignPick> } | null)?.pick;
   return design && pick && isDesignPick(design, pick) ? pick : null;
@@ -91,14 +91,15 @@ type Prices = {
 const BATCH = 5;
 const PARALLEL = 2;
 
-/** Prices the lines in small batches, so the list fills in as stores answer; again on "check again". */
+/** Prices the lines in small batches, so the list fills in as stores answer. Nothing is asked until `start`, and again on each later `start`. */
 function useOffers(lines: BomLine[] | null, enabled: boolean, itemKey: string) {
-  const [round, setRound] = useState(0);
+  const [requested, setRequested] = useState<{ itemKey: string; round: number } | null>(null);
   const [prices, setPrices] = useState<Prices | null>(null);
-  const key = `${itemKey}#${round}`;
+  const started = requested?.itemKey === itemKey;
+  const key = `${itemKey}#${requested?.round}`;
 
   useEffect(() => {
-    if (!enabled || !lines) return;
+    if (!enabled || !started || !lines) return;
     const parts = offerParts(lines);
     const batches: (typeof parts)[] = [];
     for (let i = 0; i < parts.length; i += BATCH) batches.push(parts.slice(i, i + BATCH));
@@ -122,13 +123,14 @@ function useOffers(lines: BomLine[] | null, enabled: boolean, itemKey: string) {
     };
     void Promise.all(Array.from({ length: Math.min(PARALLEL, batches.length) }, worker));
     return () => controller.abort();
-  }, [enabled, lines, key]);
+  }, [enabled, started, lines, key]);
 
   const current = prices?.key === key ? prices : null;
   return {
     prices: current,
-    loading: enabled && Boolean(lines) && (!current || current.done < current.total),
-    refresh: () => setRound((r) => r + 1),
+    started,
+    loading: enabled && started && Boolean(lines) && (!current || current.done < current.total),
+    start: () => setRequested((r) => ({ itemKey, round: r?.itemKey === itemKey ? r.round + 1 : 0 })),
   };
 }
 
@@ -143,7 +145,7 @@ function lineName(line: BomLine, t: SearchT): string {
 function OfferRow({ offer, line, t, f }: { offer: Offer; line: BomLine; t: SearchT; f: Format }) {
   const store = t(`store.${offer.source}`);
   return (
-    <li className="flex items-start justify-between gap-2 border-t border-rule py-1.5 first:border-t-0">
+    <li className="flex items-start justify-between gap-2 border-t border-rule py-2 first:border-t-0">
       <div className="min-w-0">
         <a href={offer.url} {...external} className="line-clamp-2 text-sm underline underline-offset-2">
           {offer.title}
@@ -167,17 +169,17 @@ function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine;
   const name = lineName(line, t);
   const others = found?.offers ?? [];
   const needed = best ? listingsNeeded(best, line.qty, line.pack) : 0;
-  const qty = line.qty > 1 ? <span className="tabular ms-1.5 font-ui text-sm font-normal text-muted">{t("real.qty", { count: line.qty })}</span> : null;
+  const qty = line.qty > 1 ? <span className="tabular ms-2 font-ui text-sm font-normal text-muted">{t("real.qty", { count: line.qty })}</span> : null;
   if (!priced) {
     return (
-      <li className="py-2.5 text-sm font-semibold">
+      <li className="py-3 text-sm font-semibold">
         {name}
         {qty}
       </li>
     );
   }
   return (
-    <li className="py-2.5">
+    <li className="py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="text-sm font-semibold">
@@ -188,11 +190,11 @@ function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine;
             <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
               <a href={best.url} {...external} className="inline-flex items-center gap-1 underline underline-offset-2">
                 {t("real.view", { store: best.seller ?? t(`store.${best.source}`) })}
-                <Icon name="external" size={14} aria-hidden="true" />
+                <Icon name="external" size={16} aria-hidden="true" />
               </a>
               {best.inStock === true ? (
-                <Chip tone="mint">
-                  <Icon name="check" size={12} aria-hidden="true" />
+                <Chip tone="good">
+                  <Icon name="check" size={16} aria-hidden="true" />
                   {t("real.inStock")}
                 </Chip>
               ) : null}
@@ -208,17 +210,11 @@ function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine;
       </div>
       {others.length > 0 ? (
         <div className="mt-1">
-          <button
-            type="button"
-            aria-expanded={open}
-            aria-controls={id}
-            onClick={() => setOpen((o) => !o)}
-            className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-muted hover:text-ink [@media(pointer:coarse)]:min-h-11"
-          >
-            <Icon name="chevron-down" size={14} aria-hidden="true" className={cx("transition-transform motion-reduce:transition-none", open && "rotate-180")} />
+          <Button variant="ghost" size="sm" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)} className="-ms-3 text-muted">
+            <Icon name="chevron-down" size={16} aria-hidden="true" className={cx("motion-move", open && "rotate-180")} />
             {open ? t("real.offersHide") : t("real.offersShow", { count: others.length })}
-          </button>
-          <ul id={id} hidden={!open} aria-label={t("real.offersLabel", { part: name })} className="mt-1 rounded-ink-sm bg-sunken px-3">
+          </Button>
+          <ul id={id} hidden={!open} aria-label={t("real.offersLabel", { part: name })} className="mt-1 rounded-lg bg-sunken px-3">
             {others.map((offer) => (
               <OfferRow key={offer.url} offer={offer} line={line} t={t} f={f} />
             ))}
@@ -240,25 +236,21 @@ const samePick = (a: DesignPick, b: DesignPick) => a.batt === b.batt && a.motor 
 
 function NumberField({ id, label, value, onChange, step, max }: { id: string; label: string; value: number; onChange: (v: number) => void; step: number; max: number }) {
   return (
-    <div className="min-w-0">
-      <label htmlFor={id} className="ink-kicker block">
-        {label}
-      </label>
-      <input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        min={0}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => {
-          const v = Number(e.target.value);
-          if (Number.isFinite(v) && v >= 0 && v <= max) onChange(v);
-        }}
-        className="ink-field tabular mt-1 w-full pe-3"
-      />
-    </div>
+    <TextInput
+      id={id}
+      label={label}
+      type="number"
+      inputMode="decimal"
+      min={0}
+      max={max}
+      step={step}
+      value={value}
+      onChange={(e) => {
+        const v = Number(e.target.value);
+        if (Number.isFinite(v) && v >= 0 && v <= max) onChange(v);
+      }}
+      className="tabular"
+    />
   );
 }
 
@@ -316,9 +308,9 @@ function Optimiser({
   const best = result.best;
   const now = result.current;
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card space-y-4 p-4">
+    <section aria-labelledby={`${id}-title`} className="space-y-4 rounded-2xl border border-rule bg-surface p-4">
       <div>
-        <h3 id={`${id}-title`} className="font-head text-lg leading-tight">
+        <h3 id={`${id}-title`} className="text-lg font-semibold text-balance">
           {t("opt.heading")}
         </h3>
         <p className="mt-1 text-sm text-muted">{t("opt.lede")}</p>
@@ -326,7 +318,7 @@ function Optimiser({
 
       <div>
         <div className="flex items-baseline justify-between gap-2">
-          <label htmlFor={`${id}-budget`} className="ink-kicker">
+          <label htmlFor={`${id}-budget`} className="field-label">
             {t("opt.budget")}
           </label>
           <output htmlFor={`${id}-budget`} className="tabular font-ui text-base font-bold">
@@ -367,7 +359,7 @@ function Optimiser({
               <ul className="space-y-1 text-sm">
                 {result.swaps.map((swap) => (
                   <li key={swap.slot} className="flex gap-2">
-                    <Icon name="chevron-right" size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-tomato" />
+                    <Icon name="chevron-right" size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-accent-ink" />
                     <span>
                       {t("opt.swap", {
                         slot: t(`opt.slot.${swap.slot}`),
@@ -425,7 +417,7 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
   const id = useId();
   const { bom, request } = useBom({ lab, itemId, store });
   const lines = bom.status === "ready" ? bom.lines : null;
-  const { prices, loading, refresh } = useOffers(request, availability === "ready", `${lab}:${itemId}`);
+  const { prices, started, loading, start } = useOffers(request, availability === "ready", `${lab}:${itemId}`);
   const offers = useMemo(() => prices?.offers ?? new Map<string, PartOffers>(), [prices]);
 
   if (!t) return <PanelSkeleton />;
@@ -440,9 +432,10 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
   const live = costs.filter((c) => c?.live).length;
   const estimated = costs.filter((c) => c && !c.live).length;
   const unpriced = costs.filter((c) => c === null).length;
-  // Nothing priced (search off on a board or bench): a checklist, not a column of dashes and a $0.00 total.
-  const priced = live + estimated > 0 || availability === "ready";
-  const catalogueOnly = live === 0 && availability !== "ready";
+  // Nothing priced (no check yet on a board or bench): a checklist, not a column of dashes and a $0.00 total.
+  const checking = availability === "ready" && started;
+  const priced = live + estimated > 0 || checking;
+  const catalogueOnly = live === 0 && !checking;
   const sources = build
     .map((line) => ({ line, best: bestOf(offers.get(line.key)) }))
     .filter((x): x is { line: BomLine; best: Offer } => x.best !== undefined)
@@ -451,16 +444,17 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
 
   return (
     <section aria-label={t("real.title")} className="space-y-4">
-      {availability === "off" ? (
-        <Callout variant="quiet" title={t("real.notSetUp")}>
-          {lab === "drone" ? t("real.notSetUpDrone") : null}
-        </Callout>
+      {availability === "off" || availability === "needs_key" ? (
+        <div className="space-y-2">
+          <SearchNotSetUp availability={availability} what={t("real.needsKey")} />
+          {lab === "drone" ? <p className="text-sm text-muted">{t("real.notSetUpDrone")}</p> : null}
+        </div>
       ) : (
         <div className="flex flex-wrap items-start justify-between gap-2">
           <p className="min-w-0 flex-1 text-sm text-muted">{t("real.lede")}</p>
           {availability === "ready" && lines ? (
-            <Button size="sm" variant="ghost" onClick={refresh} disabled={loading} className="shrink-0">
-              {t("real.refresh")}
+            <Button size="sm" variant={started ? "ghost" : "primary"} onClick={start} disabled={loading} className="shrink-0">
+              {t(started ? "real.refresh" : "real.check")}
             </Button>
           ) : null}
         </div>
@@ -468,22 +462,22 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
 
       {availability === "error" ? <StatusError t={t} /> : null}
       {prices?.failure ? (
-        <Callout tone="warn" title={prices.failure === "rate_limited" ? t("real.rateLimited") : t("real.failed")}>
-          <Button size="sm" onClick={refresh}>
+        <SearchFailure code={prices.failure} t={t} what={t("real.needsKey")} generic={t("real.failed")}>
+          <Button size="sm" onClick={start}>
             {t("real.retry")}
           </Button>
-        </Callout>
+        </SearchFailure>
       ) : null}
       {prices?.partial ? <Callout tone="note">{t(`real.partial.${prices.partial}`)}</Callout> : null}
 
       {bom.status === "loading" || availability === "loading" ? <PanelSkeleton /> : null}
-      {bom.status === "missing" ? <Callout tone="note">{t("real.noContent")}</Callout> : null}
+      {bom.status === "missing" ? <EmptyState icon="empty" title={t("real.noContent")} bordered /> : null}
 
       {lines && availability !== "loading" ? (
         <>
           <div aria-live="polite" aria-busy={loading}>
             <div className="flex items-baseline justify-between gap-2">
-              <h3 className="ink-kicker">{t("real.parts")}</h3>
+              <h3 className="kicker">{t("real.parts")}</h3>
               {loading ? <span className="text-xs text-muted">{t("real.loading")}</span> : null}
               {!loading && prices?.fetchedAt ? <span className="text-xs text-muted">{t("real.checked", { time: f.time(prices.fetchedAt) })}</span> : null}
             </div>
@@ -491,13 +485,13 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
           </div>
 
           {priced ? (
-            <div className="border-t-2 border-line pt-3">
+            <div className="border-t border-rule pt-3">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-sm font-semibold">{catalogueOnly ? t("real.totalCatalogue") : t("real.total")}</span>
-                <span className="tabular font-ui text-2xl font-extrabold">{f.money(total)}</span>
+                <span className="tabular font-ui text-2xl font-bold">{f.money(total)}</span>
               </div>
               <div className="mt-1 space-y-0.5 text-end text-xs text-muted">
-                {estimated === 0 && unpriced === 0 && availability === "ready" && !loading ? <p>{t("real.allLive")}</p> : null}
+                {estimated === 0 && unpriced === 0 && checking && !loading ? <p>{t("real.allLive")}</p> : null}
                 {estimated > 0 && !catalogueOnly ? <p>{t("real.estimated", { count: estimated })}</p> : null}
                 {unpriced > 0 ? <p>{t("real.unpriced", { count: unpriced })}</p> : null}
               </div>
@@ -509,9 +503,9 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
           ) : null}
 
           {alternatives.length > 0 ? (
-            <details className="group border-t-[1.5px] border-rule pt-2">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-sm font-semibold [&::-webkit-details-marker]:hidden">
-                <Icon name="chevron-right" size={16} aria-hidden="true" className="shrink-0 transition-transform group-open:rotate-90 motion-reduce:transition-none" />
+            <details className="group border-t border-rule pt-2">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                <Icon name="chevron-right" size={16} aria-hidden="true" className="motion-move shrink-0 group-open:rotate-90" />
                 {t("real.alternatives")}
               </summary>
               <ul className="divide-y divide-rule">{alternatives.map(item)}</ul>

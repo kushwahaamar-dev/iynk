@@ -1,0 +1,9 @@
+{
+  "id": "yosys",
+  "version": "0.71.188-dev.1267",
+  "source": { "npm": "@yowasp/yosys" },
+  "files": [],
+  "requires": { "wasm": ["exnref"], "desktopOnly": true },
+  "license": { "spdx": "ISC", "reviewed": false },
+  "budget": { "wireBytes": 12500000, "rawBytes": 79700000 }
+}

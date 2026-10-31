@@ -1,11 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
+import { waitForAnimations } from "./support/settled";
 import { LANG_COOKIE, LOCALES, htmlLang } from "../src/i18n/config";
 import common from "../src/i18n/messages/en/common.json";
 import commonFr from "../src/i18n/messages/fr/common.json";
 import commonZh from "../src/i18n/messages/zh/common.json";
 import shell from "../src/i18n/messages/en/shell.json";
 import together from "../src/i18n/messages/en/together.json";
+
+const CANARY_KEY = "iynk-canary-KEY-0001-do-not-use";
 
 // Uncaught errors and React hydration problems; other console noise (a figure
 // still being built, say) belongs to the tests of the page that owns it.
@@ -34,7 +38,9 @@ async function openSettings(page: Page, label = shell.settings.label) {
 }
 
 // The theme options whose words don't fit their pill, or that the row hides by scrolling.
-function cutThemeOptions(page: Page) {
+async function cutThemeOptions(page: Page) {
+  // The settings load the first time the popover or the drawer opens.
+  await expect(page.locator('[role="dialog"] [role="radiogroup"]:visible')).toBeVisible();
   return page.evaluate(() => {
     const group = [...document.querySelectorAll('[role="dialog"] [role="radiogroup"]')].find((g) => (g as HTMLElement).offsetParent !== null);
     if (!group) return ["no theme control"];
@@ -49,6 +55,8 @@ function cutThemeOptions(page: Page) {
 }
 
 async function expectNoAxeViolations(page: Page) {
+  // Axe reads the blended colour of a block that is still fading in, so let the entrance animations finish first.
+  await waitForAnimations(page);
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const summary = results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`);
   expect(summary).toEqual([]);
@@ -75,6 +83,13 @@ test("the skip link is the first stop and lands on the main content", async ({ p
   await expect(skip).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.locator("main#main-en")).toBeFocused();
+});
+
+test("a page that calls out fails the test", async ({ page }) => {
+  test.fail();
+  // A blank page has no CSP; on the app's own pages connect-src would stop the request before it left.
+  await page.goto("about:blank");
+  await page.evaluate(() => fetch("https://example.com").catch(() => null));
 });
 
 test.describe("the / redirect", () => {
@@ -162,7 +177,7 @@ test("an unknown URL is a real 404 inside the localized layout", async ({ page }
   await expect(page.getByRole("heading", { level: 1, name: commonZh.notFound.title })).toBeVisible();
   await expect(page).toHaveTitle(new RegExp(commonZh.notFound.metaTitle));
   await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
-  await expect(page.locator("header:visible")).toHaveCount(1);
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator("footer:visible")).toHaveCount(1);
 });
 
@@ -189,6 +204,21 @@ test.describe("on a phone", () => {
     });
   }
 
+  test("the Keys and usage button in the menu drawer opens the dialog over it and Escape closes the dialog", async ({ page }) => {
+    await page.goto("/en");
+    await visibleHeader(page).locator('button[aria-haspopup="dialog"]:visible').first().tap();
+    const drawer = page.getByRole("dialog").first();
+    await drawer.getByRole("button", { name: common.client.keys.open }).tap();
+    const dialog = page.getByRole("dialog", { name: common.client.keys.title });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator(":focus")).toHaveCount(1);
+    await expectNoAxeViolations(page);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole("button", { name: common.client.keys.open })).toBeFocused();
+  });
+
   for (const path of ["/en", "/hi", "/de/no-such-page"]) {
     test(`${path} fits the screen without sideways scrolling`, async ({ page }) => {
       await page.goto(path);
@@ -213,6 +243,58 @@ test("Settings opens from the header, closes with Escape and hands focus back", 
   await expect(visibleHeader(page).getByRole("button", { name: shell.settings.label })).toBeFocused();
 });
 
+test("the Keys and usage dialog opens from Settings, passes axe, closes with Escape and hands focus back", async ({ page }) => {
+  await page.goto("/en");
+  const settings = visibleHeader(page).getByRole("button", { name: shell.settings.label });
+  const panel = await openSettings(page);
+  await panel.getByRole("button", { name: common.client.keys.open }).click();
+  const dialog = page.getByRole("dialog", { name: common.client.keys.title });
+  await expect(dialog).toBeVisible();
+  await expect(panel).toBeHidden();
+  await expect(dialog.locator(":focus")).toHaveCount(1);
+  await expectNoAxeViolations(page);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(settings).toBeFocused();
+});
+
+test("a pasted key shows only its tail and goes when removed", async ({ page }) => {
+  await page.goto("/en");
+  const keys = common.client.keys;
+  await (await openSettings(page)).getByRole("button", { name: keys.open }).click();
+  const dialog = page.getByRole("dialog", { name: keys.title });
+  await dialog.getByLabel(keys.ai.label, { exact: true }).fill(CANARY_KEY);
+  await dialog.getByRole("button", { name: `${keys.save}: ${keys.ai.label}` }).click();
+  await expect(dialog.getByText("…-use")).toBeVisible();
+  await expect(dialog.getByRole("button", { name: `${keys.remove}: ${keys.ai.label}` })).toBeFocused();
+  expect(await dialog.innerText()).not.toContain(CANARY_KEY);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("iynk:keys:v1") ?? "{}").ai?.key)).toBe(CANARY_KEY);
+  await dialog.getByRole("button", { name: `${keys.remove}: ${keys.ai.label}` }).click();
+  await expect(dialog.getByLabel(keys.ai.label, { exact: true })).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem("iynk:keys:v1"))).toBeNull();
+});
+
+test("the Keys and usage dialog shows what the server counted for a saved key", async ({ page }) => {
+  const keys = common.client.keys;
+  let requests = 0;
+  await page.route("**/api/usage?kind=*", async (route) => {
+    requests += 1;
+    await route.fulfill({
+      json: { kind: "ai", today: { tokens: 12400, requests: 3 }, monthTotal: { tokens: 80000, requests: 9 }, cap: 200000 },
+    });
+  });
+  await page.goto("/en");
+  await (await openSettings(page)).getByRole("button", { name: keys.open }).click();
+  const dialog = page.getByRole("dialog", { name: keys.title });
+  await expect(dialog.getByText(common.client.meter.noKey).first()).toBeVisible();
+  expect(requests).toBe(0);
+  await dialog.getByLabel(keys.ai.label, { exact: true }).fill(CANARY_KEY);
+  await dialog.getByRole("button", { name: `${keys.save}: ${keys.ai.label}` }).click();
+  await expect(dialog.getByText("12,400 of 200,000")).toBeVisible();
+  await expect(dialog.getByText("This month: 80,000 tokens.")).toBeVisible();
+  await expectNoAxeViolations(page);
+});
+
 test("the dashboard and the 404 page pass axe", async ({ page }) => {
   await page.goto("/en");
   await expectNoAxeViolations(page);
@@ -228,9 +310,53 @@ test("About opens with its title, not a kicker that repeats it", async ({ page }
 });
 
 test("without the AI service, the Together lede doesn't promise translated chat", async ({ page }) => {
-  // The test server has no AI key, so the lobby says the AI tools aren't set up.
+  // The test server has no AI key, so the lobby lede leaves out the translated-chat promise.
   await page.goto("/en/together");
-  await expect(page.getByText(together.lobby.aiOff)).toBeVisible();
   await expect(page.getByText(together.lobby.ledePlain)).toBeVisible();
   await expect(page.getByText(together.lobby.lede)).toHaveCount(0);
+});
+
+test.describe("the floating nav bar", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("floats 8 px off the top, is centred and is narrower than the page", async ({ page }) => {
+    await page.goto("/en");
+    const box = await visibleHeader(page).getByRole("link", { name: shell.brand.home }).evaluate((link) => {
+      const rect = (link.parentElement as HTMLElement).getBoundingClientRect();
+      return { top: rect.top, width: rect.width, centre: rect.left + rect.width / 2, viewport: document.documentElement.clientWidth };
+    });
+    expect(box.top).toBe(8);
+    expect(box.width).toBeLessThan(1200);
+    expect(Math.abs(box.centre - box.viewport / 2)).toBeLessThanOrEqual(1);
+    await expect(page.locator("body > header:visible")).toHaveCount(1);
+  });
+});
+
+test.describe("the nav bar in German at 1024 px", () => {
+  test.use({ viewport: { width: 1024, height: 768 } });
+
+  test("keeps the links on one row", async ({ page }) => {
+    await page.goto("/de");
+    const tops = await visibleHeader(page)
+      .getByRole("navigation")
+      .getByRole("link")
+      .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().top)));
+    expect(tops.length).toBeGreaterThan(1);
+    expect(new Set(tops).size).toBe(1);
+  });
+});
+
+test("the footer opens the privacy page, which passes axe", async ({ page }) => {
+  await page.goto("/en");
+  await page.locator("footer:visible").getByRole("link", { name: shell.footer.privacyLink }).click();
+  await expect(page).toHaveURL(/\/en\/privacy$/);
+  await expect(page.getByRole("heading", { level: 1, name: shell.privacy.title })).toBeVisible();
+  await expectNoAxeViolations(page);
+});
+
+test("the Hindi privacy page renders in Devanagari", async ({ page }) => {
+  await page.goto("/hi/privacy");
+  await expect(page.locator("html")).toHaveAttribute("lang", "hi");
+  const heading = page.getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText(/[ऀ-ॿ]/);
 });

@@ -66,7 +66,7 @@ describe('every lesson through runHeadless + evaluateChecks', async () => {
         expect(ref.trace.error, ref.trace.serial.slice(0, 6).map((l) => l.text).join('\n')).toBeNull();
         expect(failed, ref.trace.serial.slice(0, 6).map((l) => l.text).join('\n')).toEqual([]);
         expect(starter.results.every((r) => r.ok), 'the empty program must fail at least one check').toBe(false);
-      }, 60_000);
+      });
     }
   }
   for (const [id, load] of benches) {
@@ -81,7 +81,7 @@ describe('every lesson through runHeadless + evaluateChecks', async () => {
         expect(ref.trace.error, ref.trace.serial.slice(0, 6).map((l) => l.text).join('\n')).toBeNull();
         expect(failed, ref.trace.serial.slice(0, 6).map((l) => l.text).join('\n')).toEqual([]);
         expect(starter.results.every((r) => r.ok), 'the starter must fail at least one check').toBe(false);
-      }, 60_000);
+      });
     }
   }
 });

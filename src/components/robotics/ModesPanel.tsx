@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import type { CodeLang } from "@/components/ui/highlight";
 import type { Language, RoboticsContent } from "@/content/schema";
-import type { BenchAction } from "@/lib/robotics/store";
+import type { BenchAction } from "@/lib/robotics/session";
 import { renderCode, type BenchTexts } from "@/lib/robotics/text";
 import type { BenchT, TextOf } from "./messages";
 

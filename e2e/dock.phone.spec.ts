@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import shell from "../src/i18n/messages/en/shell.json";
 import { dockCopy, expectTabs, LAB_PAGES, openDock, watchErrors } from "./dock-shared";
 
@@ -17,11 +17,33 @@ for (const lab of LAB_PAGES) {
   });
 }
 
-test("the phone menu lists Together and hides Passport and Verify", async ({ page }) => {
+test("the phone menu lists Together", async ({ page }) => {
   await page.goto("/en/boards/nano");
   await page.getByRole("button", { name: shell.nav.menu }).click();
   const menu = page.getByRole("dialog", { name: shell.nav.menu });
   await expect(menu.getByRole("link", { name: shell.nav.together })).toBeVisible();
-  await expect(menu.getByRole("link", { name: shell.nav.passport })).toHaveCount(0);
-  await expect(menu.getByRole("link", { name: shell.nav.verify })).toHaveCount(0);
+});
+
+test("the phone menu panel covers the screen and its links arrive one after another", async ({ page }) => {
+  await page.goto("/en/boards/nano");
+  await page.getByRole("button", { name: shell.nav.menu }).click();
+  const panel = page.getByRole("dialog", { name: shell.nav.menu });
+  await expect(panel).toBeVisible();
+  const box = await panel.evaluate((el) => ({ height: el.getBoundingClientRect().height, inner: window.innerHeight }));
+  expect(box.height).toBe(box.inner);
+  const delay = await panel.locator("nav li a").last().evaluate((el) => getComputedStyle(el.closest("li")!).animationDelay);
+  expect(parseFloat(delay) * (delay.endsWith("ms") ? 1 : 1000)).toBeLessThanOrEqual(360);
+});
+
+test.describe("with reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("the phone menu links fade in place", async ({ page }) => {
+    await page.goto("/en/boards/nano");
+    await page.getByRole("button", { name: shell.nav.menu }).click();
+    const first = page.getByRole("dialog", { name: shell.nav.menu }).locator("nav li").first();
+    await expect(first).toBeVisible();
+    // The rise keeps running as a fade, so the computed transform is the identity matrix, not "none".
+    await expect.poll(() => first.evaluate((el) => getComputedStyle(el).transform)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+  });
 });

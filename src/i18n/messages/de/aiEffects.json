@@ -1,0 +1,14 @@
+{
+  "tool": {
+    "search_datasheet": "Im Web nach einem Datenblatt suchen",
+    "find_parts": "Preise für Bauteile nachschlagen"
+  },
+  "argsLabel": "Genau das wird gesendet",
+  "cost": {
+    "one": "Bis zu {count} Suche mit deinem Schlüssel",
+    "other": "Bis zu {count} Suchen mit deinem Schlüssel"
+  },
+  "allow": "Einmal erlauben",
+  "deny": "Ablehnen",
+  "hint": "Es wird nichts gesendet, bis du es erlaubst. Esc lehnt ab."
+}

@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "探索 · 理解 · 动手做",
-    "description": "在浏览器里动手的硬件实验室：搭建、接线、编程、故障排查，还能让开发板、机器人和无人机动起来、飞起来。"
+    "tagline": "探索、理解、动手做",
+    "description": "浏览器里的硬件实验室。搭建、接线、编程、故障排查，还能让开发板、机器人和无人机动起来、飞起来。"
   },
   "a11y": {
     "skipToContent": "跳到主要内容"
@@ -12,6 +12,7 @@
     "title": "工作台上没有这个页面",
     "body": "网址可能输错了，或者页面已经移动。选择一个实验室继续吧。",
     "home": "返回总览",
+    "search": "搜索本站",
     "boards": "开发板实验室",
     "robotics": "机器人实验室",
     "drones": "无人机实验室"
@@ -41,7 +42,6 @@
         "partner": "搭档",
         "together": "一起",
         "real": "动手做真的",
-        "passport": "护照",
         "hardware": "硬件"
       }
     },
@@ -53,10 +53,111 @@
     "motion": {
       "label": "减少动态效果"
     },
+    "terms": {
+      "label": "英文术语",
+      "toggle": "显示英文术语"
+    },
     "usage": {
       "label": "匿名使用计数",
-      "body": "iynk 会统计实验室里发生的事（通过一节课、完成一个步骤、试一次故障），用于实时计数和排行榜。每条记录只带这个浏览器的随机编号，绝不包含你的名字或代码。",
-      "toggle": "分享匿名使用计数"
+      "body": "iynk 把实验室里发生的事写进这个浏览器里的日志。不会向任何地方发送。错误总是会被记录，你可以在“密钥与用量”里查看、复制或清除日志。",
+      "toggle": "在本地记录实验室里发生的事（只保存在这个浏览器里）"
+    },
+    "log": {
+      "title": "本地日志",
+      "notice": "只保存在这个浏览器里，不会发送。",
+      "empty": "还没有记录。",
+      "clear": "清除",
+      "copy": "复制，用于错误报告",
+      "copied": "已复制",
+      "manual": "复制被浏览器拦住了。请选中这段文字，自己复制。"
+    },
+    "keys": {
+      "open": "密钥与用量",
+      "title": "密钥与用量",
+      "close": "关闭密钥与用量",
+      "notice": "仅保存在此浏览器中。每次调用时会发送到你自己的 iynk 服务器，服务器不会保存它。",
+      "ai": {
+        "label": "AI 密钥",
+        "labelOptional": "此密钥的名称（可选）"
+      },
+      "search": {
+        "label": "搜索密钥"
+      },
+      "server": {
+        "label": "服务器令牌",
+        "hint": "仅当你的 iynk 服务器要求时才需要。"
+      },
+      "save": "保存",
+      "remove": "移除",
+      "saved": "已保存：…{tail}",
+      "errors": {
+        "empty": "请粘贴完整的密钥（至少 8 个字符）。",
+        "tooLong": "超过了 512 个字符。",
+        "badChars": "密钥只能包含字母、数字和符号，不能有空格。",
+        "notPersisted": "关闭此标签页后不会保留（此浏览器阻止了存储）"
+      }
+    },
+    "meter": {
+      "tokensToday": "今日令牌",
+      "searchesMonth": "本月搜索",
+      "ofCap": "{used} / {cap}",
+      "aiLine": "本月：{month} 个令牌。",
+      "searchLine": "今日：{today}。",
+      "unavailable": "不可用",
+      "noKey": "在上方粘贴密钥即可查看用量。",
+      "off": "此服务器已关闭该功能。",
+      "aiOff": "此服务器已关闭 AI。",
+      "searchOff": "此服务器已关闭搜索。",
+      "failed": "无法读取用量",
+      "retry": "重试"
+    },
+    "notSetUp": {
+      "serverOff": "此服务器上已关闭{what}。",
+      "needsKey": "{what}需要你自己的密钥。",
+      "openKeys": "打开密钥与用量",
+      "fix": {
+        "ai": "在密钥与用量中粘贴 AI 密钥。",
+        "search": "在密钥与用量中粘贴搜索密钥。",
+        "server": "请让运行此服务器的人把它打开。"
+      }
+    },
+    "state": {
+      "loading": "加载中",
+      "empty": "这里还没有内容",
+      "error": "出了点问题。请重试。",
+      "retry": "重试"
+    },
+    "error": {
+      "title": "出了点问题",
+      "text": "这个页面出现了问题。请重试，或返回首页。",
+      "reference": "参考编号：{digest}",
+      "home": "返回首页"
+    },
+    "server": {
+      "title": "服务器",
+      "address": "服务器地址",
+      "status": {
+        "off": "这需要一台服务器，目前还没有设置。",
+        "unreachable": "无法连接到这台服务器。",
+        "unreachableHint": "如果这个地址属于另一个来源，它是否已列入 IYNK_CONNECT_ORIGINS？",
+        "ready": "已连接。",
+        "needsEnrol": "这台服务器需要运行它的人提供注册码。",
+        "closed": "这台服务器目前不接受新成员。",
+        "checking": "正在检查这台服务器。",
+        "insecure": "浏览器只允许通过 https 登录。请使用 https 地址或 localhost。",
+        "upgrade": "这台服务器需要更新版本的 iynk。请更新应用。"
+      },
+      "enrolled": "你已登录这台服务器。",
+      "signOut": "退出登录",
+      "leave": {
+        "title": "离开这台服务器",
+        "body": "这会把你从服务器中移除，并删除你在那里的好友列表。你的项目仍保留在此浏览器中。",
+        "confirm": "离开服务器",
+        "grace": "你有 {hours} 小时可以改变主意。",
+        "cancel": "保留我的账号"
+      },
+      "guide": "好友功能需要一台服务器。自托管指南介绍了如何搭建。",
+      "addressInvalid": "请输入类似 https://iynk.example 的地址，不带路径。"
     }
   }
 }

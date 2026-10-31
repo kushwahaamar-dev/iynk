@@ -150,89 +150,79 @@
   },
   "lobby": {
     "metaTitle": "Gemeinsam bauen",
-    "metaDescription": "Öffne einen Live-Bauraum für jedes Board, jeden Roboter und jede Drohne, finde einen Bau-Buddy und plane mit Muse Spark einen Bauabend.",
+    "metaDescription": "Öffne einen Live-Bauraum für jedes Board, jeden Roboter und jede Drohne und baut gemeinsam.",
     "eyebrow": "iynk Gemeinsam",
     "title": "Niemand muss allein bauen",
     "lede": "Öffne einen Raum für ein Board, einen Roboter oder eine Drohne und schick den Link. Alle sehen dieselbe Werkbank, es tippt immer eine Person, und der Chat zeigt jede Nachricht in deiner Sprache.",
-    "ledePlain": "Öffne einen Raum für ein Board, einen Roboter oder eine Drohne und schick den Link. Alle sehen dieselbe Werkbank, und es tippt immer eine Person.",
-    "notSetUp": "Auf dieser Installation nicht eingerichtet",
-    "aiOff": "Bau-Buddys und der Bauabend-Planer brauchen den KI-Dienst, und der ist auf dieser Installation nicht eingerichtet.",
-    "retry": "Nochmal versuchen",
-    "create": {
-      "title": "Raum öffnen",
-      "hint": "Du bekommst einen Einladungslink und einen QR-Code zum Teilen.",
-      "lab": "Labor",
-      "item": "Was gebaut wird",
-      "go": "Raum öffnen",
-      "empty": "Aus diesem Labor ist noch nichts fertig."
+    "ledePlain": "Öffne einen Raum für ein Board, einen Roboter oder eine Drohne und schick den Link. Alle sehen dieselbe Werkbank, und es tippt immer eine Person."
+  },
+  "buddies": {
+    "title": "Freunde",
+    "needsServer": {
+      "title": "Freunde brauchen einen Server",
+      "body": "Freunde leben auf einem iynk Server, den du oder ein Freund betreibt. Ohne Server hat diese Seite nichts zu zeigen, und der Rest von iynk funktioniert wie gewohnt.",
+      "guide": "So startest du einen Server"
     },
-    "join": {
-      "title": "Raum beitreten",
-      "hint": "Gib den 6-stelligen Code aus der Einladung ein oder füge den Link ein.",
-      "go": "Beitreten",
-      "looking": "Raum {code} wird gesucht …",
-      "empty": "Gerade ist niemand in Raum {code}. Räume schließen 30 Minuten, nachdem die letzte Person gegangen ist.",
-      "full": "Raum {code} ist voll.",
-      "timeout": "Raum {code} war nicht erreichbar. Prüf den Code und deine Verbindung.",
-      "unknown": "Raum {code} ist offen, hat aber nicht gesagt, was dort gebaut wird. Frag nach dem Einladungslink.",
-      "unavailable": "Dieser Browser kann keine Räume öffnen.",
-      "found": "Gefunden. Der Raum wird geöffnet …"
+    "insecure": {
+      "title": "Diese Seite braucht eine sichere Verbindung",
+      "body": "Dein Browser erstellt Geräteschlüssel nur auf https Seiten oder auf localhost. Öffne iynk über https und versuche es erneut."
     },
-    "buddies": {
-      "title": "Bau-Buddys",
-      "lede": "Sag, was du gebaut hast und was du als Nächstes machen willst. Muse Spark schlägt Leute vor, deren Können zu deinem passt, und sagt, warum.",
-      "privacy": "Dein Profil enthält keine Kontaktdaten und wird nach 24 Stunden gelöscht. Ihr verbindet euch über eine Raumeinladung.",
+    "empty": {
+      "title": "Noch keine Freunde",
+      "add": "Mit einem Freund koppeln",
+      "enter": "Code eingeben"
+    },
+    "list": {
+      "online": "Online",
+      "offline": "Offline",
+      "asOf": "Zuletzt gesehen {time}",
+      "inRoom": "Im Raum {code}",
+      "rename": "Umbenennen",
+      "remove": "Freund entfernen",
+      "block": "Blockieren",
+      "removeConfirm": "{name} aus deinen Freunden entfernen? Ihr könnt später erneut koppeln.",
+      "blockConfirm": "{name} blockieren? Die Person wird entfernt und kann sich nicht erneut mit dir koppeln.",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "enrol": {
+      "title": "Diesem Server beitreten",
+      "code": "Anmeldecode",
       "name": "Dein Name",
-      "interests": "Interessen",
-      "interestsHint": "Trenne sie mit Kommas, z. B. Drohnen, LEDs, Linienfolger",
-      "builtNote": {
-        "one": "Dein Profil führt auch die {count} Lektion oder den Test auf, den du in iynk abgeschlossen hast.",
-        "other": "Dein Profil führt auch die {count} Lektionen und Tests auf, die du in iynk abgeschlossen hast."
-      },
-      "wants": "Was du als Nächstes bauen willst",
-      "submit": "Meine Buddys finden",
-      "finding": "Buddys werden gesucht …",
-      "matches": "Deine Treffer",
-      "none": "Noch keine guten Treffer. Im Laufe des Tages kommen mehr Leute dazu, schau also bald wieder vorbei.",
-      "alone": "Bisher stehst nur du auf der Liste. Lade jemanden ein oder schau später wieder vorbei.",
-      "score": "{score} % Übereinstimmung",
-      "shared": "Ihr mögt beide {interest}",
-      "project": "Gemeinsam bauen: {item}",
-      "invite": "In einen Raum einladen",
-      "inviteTitle": "{item} mit {name} bauen",
-      "inviteHint": "Zeig {name} diesen QR-Code oder schick den Link. Der Raum öffnet sich mit {item}.",
-      "notSetUp": "Die Buddy-Suche braucht die Datenbank und den KI-Dienst, und diese Installation hat nicht beides.",
-      "failed": "Gerade ließen sich keine Buddys finden.",
-      "missing": "Gib deinen Namen ein und was du als Nächstes bauen willst."
+      "submit": "Beitreten",
+      "closed": "Dieser Server nimmt gerade keine neuen Leute auf.",
+      "wrongCode": "Der Code hat nicht funktioniert. Prüfe ihn oder frag die Person, die den Server betreibt, nach einem neuen.",
+      "help": "Die Person, die den Server betreibt, gibt dir einen Code. Er gilt nur einmal."
     },
-    "plan": {
-      "title": "Bauabend-Planer",
-      "lede": "Alle sagen, was sie gern bauen würden. Muse Spark wählt ein Projekt, das allen Spaß macht, und gibt jeder Person eine Rolle und eine erste Aufgabe.",
-      "people": "Wer baut mit",
-      "person": "Person {n}",
-      "name": "Name",
-      "lang": "Sprache",
-      "level": "Erfahrung",
-      "levels": {
-        "new": "Neu dabei",
-        "some": "Etwas",
-        "lots": "Viel"
-      },
-      "wants": "Was die Person bauen oder lernen möchte",
-      "add": "Person hinzufügen",
-      "remove": "{name} entfernen",
-      "submit": "Unseren Bauabend planen",
-      "planning": "Wird geplant …",
-      "roles": "Rollen",
-      "firstTask": "Erste Aufgabe",
-      "steps": "Der Plan",
-      "parts": "Bauteile",
-      "start": "Diesen Bau starten",
-      "again": "Neu planen",
-      "notSetUp": "Der Planer braucht den KI-Dienst, und der ist auf dieser Installation nicht eingerichtet.",
-      "failed": "Gerade ließ sich kein Plan erstellen.",
-      "missing": "Gib allen einen Namen und sag, was sie gern bauen würden.",
-      "unknownItem": "Der Plan hat etwas gewählt, das iynk noch nicht hat. Plane neu."
+    "pair": {
+      "title": "Mit einem Freund koppeln",
+      "code": "Kopplungscode",
+      "link": "Kopplungslink",
+      "qr": "QR Code für den Kopplungslink",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert",
+      "expires": "Läuft {time} ab",
+      "cancel": "Kopplung abbrechen",
+      "enterCode": "Kopplungscode eingeben",
+      "enterLabel": "Code oder Link von deinem Freund",
+      "peekFrom": "{name} möchte sich mit dir koppeln.",
+      "accept": "Annehmen",
+      "wrong": "Der Code hat nicht funktioniert. Prüfe ihn und versuche es erneut.",
+      "tooMany": "Zu viele Versuche. Warte eine Minute und versuche es erneut.",
+      "already": "Ihr seid schon befreundet.",
+      "full": "Einer von euch hat die Freundesgrenze erreicht.",
+      "show": "Code anzeigen",
+      "joined": "{name} ist beigetreten.",
+      "fingerprint": "Schlüssel {fingerprint}"
+    },
+    "joined": "Du bist dem Server als {name} beigetreten.",
+    "unknown": {
+      "title": "Diesen Server kennt dieser Browser nicht",
+      "body": "Dieser Browser hat keinen Schlüssel für diesen Server. Tritt ihm zuerst mit einem Anmeldecode bei."
+    },
+    "unreachable": "Der Server ist nicht erreichbar. Prüfe, ob er läuft, und versuche es erneut.",
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen. Versuche es erneut."
     }
   }
 }

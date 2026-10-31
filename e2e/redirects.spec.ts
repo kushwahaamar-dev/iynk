@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import { LANG_COOKIE } from "../src/i18n/config";
 
 // A section link without a language (said in the pitch, shared in a chat) finds one the way "/" does.
@@ -38,5 +38,17 @@ test.describe("a path without a language, from an unsupported language", () => {
   test("falls back to English", async ({ page }) => {
     await page.goto("/together");
     await expect(page).toHaveURL("/en/together");
+  });
+});
+
+test.describe("a removed page", () => {
+  const gone = [["pass", "port"].join(""), ["ver", "ify"].join("")];
+
+  test("answers 404 under a language", async ({ request }) => {
+    for (const name of gone) expect((await request.get(`/en/${name}`)).status(), name).toBe(404);
+  });
+
+  test("answers 404 without a language", async ({ request }) => {
+    expect((await request.get(`/${gone[0]}`, { maxRedirects: 0 })).status()).toBe(404);
   });
 });

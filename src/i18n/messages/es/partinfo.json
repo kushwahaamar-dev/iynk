@@ -1,0 +1,204 @@
+{
+  "title": "Detalles de la pieza",
+  "back": "Volver al estudio",
+  "edit": "Editar esta pieza",
+  "notFound": {
+    "title": "No existe esa pieza",
+    "body": "La biblioteca no tiene ninguna pieza con este id y esta versión.",
+    "link": "Volver a la paleta"
+  },
+  "tier": {
+    "T0": "Ilustración",
+    "T1": "Modelo didáctico",
+    "T2": "Modelo calculado",
+    "T3": "Ejecuta firmware",
+    "none": "Sin modelo"
+  },
+  "status": {
+    "modelled": "Modelada",
+    "partly-modelled": "Modelada en parte",
+    "not-modelled-yet": "Aún sin modelar"
+  },
+  "trust": {
+    "core": "Viene con iynk",
+    "local": "Tu propia pieza",
+    "imported": "Paquete importado"
+  },
+  "thirdParty": "Contiene contenido de terceros",
+  "models": "Qué modela",
+  "notModelled": "Qué no modela",
+  "ratings": {
+    "heading": "Valores nominales",
+    "empty": "No se declara ningún valor nominal.",
+    "rating": "Valor",
+    "readBy": "Lo lee el modelo",
+    "readByNone": "Solo se muestra, ningún modelo lo lee",
+    "notGiven": "No indicado",
+    "confidence": "Confianza: {level}",
+    "measure": {
+      "voltage": "Tensión",
+      "current": "Corriente",
+      "power": "Potencia",
+      "temperature": "Temperatura",
+      "frequency": "Frecuencia",
+      "resistance": "Resistencia",
+      "capacitance": "Capacitancia",
+      "time": "Tiempo",
+      "thermal_resistance": "Resistencia térmica",
+      "torque": "Par motor",
+      "rate": "Velocidad",
+      "acceleration": "Aceleración",
+      "ratio": "Relación",
+      "misc": "Otro"
+    },
+    "role": {
+      "abs_max": "Máximo absoluto",
+      "abs_min": "Mínimo absoluto",
+      "operating": "Funcionamiento",
+      "recommended": "Recomendado",
+      "threshold": "Umbral",
+      "characteristic": "Característica",
+      "consumption": "Consumo",
+      "thermal": "Térmico",
+      "timing": "Temporización"
+    }
+  },
+  "slot": {
+    "manufacturer": "Indicado por el fabricante",
+    "simulation": "Suposición de iynk",
+    "measured": "Medido en banco"
+  },
+  "confidence": {
+    "low": "baja",
+    "medium": "media",
+    "high": "alta"
+  },
+  "unsourced": "Supuesto, sin fuente",
+  "unsourcedSummary": {
+    "heading": "Números sin fuente",
+    "count": "Números supuestos sin fuente: {count}",
+    "none": "Todos los números de esta pieza apuntan a una fuente."
+  },
+  "sources": {
+    "heading": "Fuentes",
+    "empty": "No hay fuentes.",
+    "open": "Abrir fuente",
+    "retrieved": "Consultada el {date}",
+    "reliability": {
+      "primary": "Primaria",
+      "secondary": "Secundaria",
+      "unverified": "Sin comprobar"
+    },
+    "kind": {
+      "datasheet": "Hoja de datos",
+      "application-note": "Nota de aplicación",
+      "schematic": "Esquema",
+      "product-page": "Página del producto",
+      "reseller-guide": "Guía del vendedor",
+      "library": "Biblioteca",
+      "photo": "Foto",
+      "measurement": "Medición",
+      "fact-sheet": "Ficha informativa",
+      "lesson": "Lección",
+      "standard": "Norma",
+      "own-estimate": "Estimación propia"
+    }
+  },
+  "validity": "Rango de validez",
+  "gaps": {
+    "heading": "Lagunas conocidas",
+    "evidence": "Evidencia: {text}"
+  },
+  "layers": {
+    "heading": "Capas",
+    "equation": "Ecuación",
+    "notModelledYet": "Aún sin modelar",
+    "kind": {
+      "element": "Elemento del solver",
+      "subcircuit": "Subcircuito",
+      "logic": "Lógica",
+      "builtin": "Comportamiento integrado",
+      "extension": "Código",
+      "none": "Ninguna"
+    },
+    "reason": {
+      "declared": "Declarado por la pieza",
+      "solver-lacks-element": "Al solver le falta este elemento",
+      "unknown-builtin": "Esta versión no incluye este comportamiento",
+      "extension-disabled": "Las piezas con código están desactivadas",
+      "subcircuit-invalid": "El subcircuito no se resuelve"
+    }
+  },
+  "labels": {
+    "heading": "Etiquetas de calidad",
+    "schemaValid": "Cumple el esquema de piezas",
+    "hasTests": "Declara pruebas",
+    "testsRun": "Pruebas ejecutadas",
+    "hasReferenceTest": "Tiene una prueba de referencia",
+    "code": "Ejecuta código",
+    "permissions": "Permisos del código",
+    "thirdPartyContent": "Contenido de terceros",
+    "yes": "Sí",
+    "no": "No",
+    "none": "Ninguno",
+    "run": {
+      "not-run": "Sin ejecutar",
+      "pass": "Superadas",
+      "fail": "Falladas"
+    }
+  },
+  "tests": {
+    "heading": "Pruebas que declara la pieza",
+    "empty": "No se declara ninguna prueba.",
+    "present": "Presente",
+    "to-write": "Por escribir"
+  },
+  "license": "Licencia",
+  "versions": {
+    "heading": "Otras versiones",
+    "only": "Es la única versión."
+  },
+  "usage": {
+    "heading": "Usada en este proyecto",
+    "empty": "Ninguna pieza colocada la usa.",
+    "instance": "{label} en la versión {version}"
+  },
+  "upgrade": {
+    "button": "Actualizar a {version}",
+    "title": "Actualizar a {version}",
+    "close": "Cerrar",
+    "summary": "{from} a {to}, cambio {bump}. Piezas colocadas que cambian: {count}.",
+    "bump": {
+      "major": "mayor",
+      "minor": "menor",
+      "patch": "de parche"
+    },
+    "changes": "Cambios en el descriptor",
+    "noChanges": "Ningún campo del descriptor es distinto.",
+    "change": {
+      "added": "Añadido",
+      "removed": "Quitado",
+      "changed": "Cambiado"
+    },
+    "readByModel": "Lo lee el modelo",
+    "pinsRemoved": "Pines quitados: {list}",
+    "pinsAdded": "Pines añadidos: {list}",
+    "dropped": "Parámetros descartados, se pierden sus valores: {list}",
+    "blocked": {
+      "pins-removed-in-use": "Bloqueado. Estos cables terminan en un pin que la nueva versión quita: {list}.",
+      "not-newer": "Bloqueado. {to} no es más nueva que {from}."
+    },
+    "golden": {
+      "heading": "Magnitudes de la traza de referencia",
+      "empty": "No hay pruebas de traza de referencia que comparar.",
+      "fixture": "Prueba",
+      "quantity": "Magnitud",
+      "before": "En {version}",
+      "after": "En {version}",
+      "missing": "Ninguna",
+      "error": "Error"
+    },
+    "apply": "Aplicar la actualización",
+    "cancel": "Quedarse en {from}"
+  }
+}

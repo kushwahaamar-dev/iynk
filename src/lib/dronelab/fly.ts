@@ -1,5 +1,4 @@
 import type { DesignPick, DroneContent } from "@/content/schema";
-import type { LabStore } from "@/components/dock/types";
 import { calc } from "@/lib/drone/calc";
 import { designInput, isDesignPick } from "@/lib/drone/design";
 import type { DailyChallenge } from "@/lib/flight/challenge";
@@ -7,7 +6,7 @@ import type { BreakId } from "@/lib/flight/crash";
 import { fromCalc } from "@/lib/flight/from-calc";
 import type { CalcOutputs, CraftFaults } from "@/lib/flight/types";
 import { armingRules, canArm, type ArmRule } from "./bench";
-import type { BenchSummary } from "./store";
+import type { BenchSummary } from "./workshop";
 
 // The fly page's own store (D14b): which build flies (the learner's bench build or the factory build), which
 // course, what the learner broke on purpose (Break it) and whether today's challenge is on. The flight itself lives
@@ -32,9 +31,7 @@ export type FlyAction =
   | { type: "course"; id: string }
   | { type: "break"; id: BreakId; on: boolean }
   | { type: "break/reset" }
-  | { type: "challenge"; challenge: DailyChallenge | null }
-  // a room hands every lab store the host's snapshot; each pilot keeps their own build, breaks and challenge
-  | { type: "sync/hydrate"; state: unknown };
+  | { type: "challenge"; challenge: DailyChallenge | null };
 
 export function initialFly(content: DroneContent): FlyState {
   return { id: content.id, bench: null, source: "factory", course: content.courses[0]?.id ?? null, breaks: {}, challenge: null };
@@ -107,24 +104,6 @@ export function reduceFly(content: DroneContent, s: FlyState, action: FlyAction)
 /** Whether anything is broken on purpose (a challenge lap with a break doesn't go on the day's board). */
 export function anyBreak(s: FlyState): boolean {
   return Object.values(s.breaks).some(Boolean);
-}
-
-export function createFlyStore(content: DroneContent): LabStore<FlyState, FlyAction> {
-  let state = initialFly(content);
-  const listeners = new Set<() => void>();
-  return {
-    getState: () => state,
-    subscribe(listener) {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    dispatch(action) {
-      const next = reduceFly(content, state, action);
-      if (next === state) return;
-      state = next;
-      for (const l of listeners) l();
-    },
-  };
 }
 
 /** The design that flies: the bench's pick for a bench flight, the craft's default otherwise. */

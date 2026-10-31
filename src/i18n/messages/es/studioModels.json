@@ -1,0 +1,43 @@
+{
+  "title": "Qué modela",
+  "chip": "Nivel del modelo",
+  "tiers": {
+    "T0": {
+      "name": "Ilustración",
+      "meaning": "Solo dibujada. No se calcula nada para ella."
+    },
+    "T1": {
+      "name": "Modelo didáctico",
+      "meaning": "Un modelo simple que muestra cómo se comporta la pieza. No es exacto."
+    },
+    "T2": {
+      "name": "Modelo calculado",
+      "meaning": "Los valores salen de los números de la hoja de datos de la pieza."
+    },
+    "T3": {
+      "name": "Ejecuta tu firmware",
+      "meaning": "El programa real del chip se ejecuta, instrucción por instrucción."
+    },
+    "none": {
+      "name": "Sin nivel",
+      "meaning": "Esta pieza no tiene un nivel de modelo."
+    }
+  },
+  "status": {
+    "modelled": "Modelada",
+    "partly-modelled": "Modelada en parte",
+    "not-modelled-yet": "Aún sin modelar"
+  },
+  "engine": {
+    "label": "Motor",
+    "value": "Intérprete de un subconjunto de C++ de Arduino, modelo digital de pines"
+  },
+  "boardNotes": "Notas de la placa",
+  "notModelledHelp": "Aún sin modelar significa que la pieza está dibujada y conectada, pero no se calcula nada para ella.",
+  "models": "Qué modela",
+  "notModelled": "Qué no modela",
+  "showAll": "Mostrar todo",
+  "showLess": "Mostrar menos",
+  "unknownPart": "pieza desconocida",
+  "empty": "Este proyecto aún no tiene piezas."
+}

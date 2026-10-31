@@ -9,7 +9,7 @@
   },
   "lab": {
     "unsupportedTitle": "Hier gibt es nichts zu spiegeln",
-    "unsupported": "Der Zwilling spiegelt Board-Lab-Lektionen für Arduino Uno R3, Nano und Uno R4. Öffne eine dieser Lektionen, um eine echte Platine zu steuern."
+    "unsupported": "Der Zwilling spiegelt Lektionen des Board-Labors für Arduino Uno R3, Nano und Uno R4. Öffne eine dieser Lektionen, um eine echte Platine zu steuern."
   },
   "setup": {
     "title": "Vor dem Verbinden",

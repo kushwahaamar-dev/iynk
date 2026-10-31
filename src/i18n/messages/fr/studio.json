@@ -1,0 +1,806 @@
+{
+  "meta": {
+    "title": "Projets",
+    "description": "Vos projets iynk, conservés dans ce navigateur. Créez, renommez, dupliquez, enregistrez dans un fichier et restaurez."
+  },
+  "title": "Projets",
+  "lede": "Tout ce qui est ici reste dans ce navigateur. Rien n’est envoyé nulle part.",
+  "newProject": "Nouveau projet",
+  "newName": "Blink",
+  "openFromFile": "Ouvrir depuis un fichier",
+  "storage": {
+    "label": "Espace utilisé",
+    "value": "{used} sur {quota}",
+    "unknown": "Ce navigateur n’indique pas l’espace restant."
+  },
+  "list": {
+    "title": "Vos projets",
+    "loading": "Chargement des projets",
+    "failed": "Les projets n’ont pas pu être lus. Rechargez la page pour réessayer.",
+    "emptyTitle": "Aucun projet pour l’instant",
+    "emptyBody": "Commencez par un projet Blink pour l’Uno. Il est enregistré dans ce navigateur au fur et à mesure.",
+    "columns": {
+      "name": "Nom",
+      "board": "Carte",
+      "size": "Taille",
+      "file": "Copie en fichier",
+      "actions": "Actions"
+    },
+    "savedToFile": "Enregistré dans un fichier",
+    "notSavedToFile": "Non enregistré"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3",
+    "pin": "Broche",
+    "role": "Rôle",
+    "net": "Réseau",
+    "connectedTo": "Connecté à",
+    "state": "État actuel",
+    "noneConnected": "Rien de connecté",
+    "wireThis": "Relier cette broche à...",
+    "ports": "Ports",
+    "notRunning": "À l'arrêt",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin} : {level}",
+    "missing": "Cette carte n'est pas dans le projet.",
+    "roles": {
+      "power": "Alimentation",
+      "ground": "Masse",
+      "digital": "Numérique",
+      "analog": "Analogique",
+      "bus": "Bus",
+      "misc": "Autre"
+    },
+    "dir": {
+      "in": "Entrée",
+      "out": "Sortie"
+    },
+    "bits": "{count} bits",
+    "activeLow": "actif au niveau bas"
+  },
+  "row": {
+    "open": "Ouvrir {name}",
+    "saveToFile": "Enregistrer {name} dans un fichier",
+    "rename": "Renommer {name}",
+    "duplicate": "Dupliquer {name}",
+    "delete": "Supprimer {name}",
+    "openText": "Ouvrir",
+    "saveToFileText": "Enregistrer dans un fichier",
+    "renameText": "Renommer",
+    "duplicateText": "Dupliquer",
+    "deleteText": "Supprimer",
+    "couldNotOpen": "Ce projet n’a pas pu être ouvert. Enregistrer dans un fichier garde une copie de ce qui est stocké.",
+    "failed": "Cela n’a pas fonctionné. Réessayez."
+  },
+  "rename": {
+    "label": "Nouveau nom pour {name}",
+    "save": "Enregistrer le nom",
+    "cancel": "Annuler",
+    "invalid": "Utilisez de 1 à 120 caractères."
+  },
+  "selected": {
+    "title": "Projet ouvert",
+    "name": "Nom",
+    "board": "Carte",
+    "revision": "Révision",
+    "hash": "Empreinte",
+    "noEditor": "L’éditeur arrive à une étape ultérieure. Cette page liste et conserve vos projets.",
+    "close": "Fermer les détails"
+  },
+  "trash": {
+    "title": "Corbeille",
+    "lede": "Les projets supprimés restent ici 30 jours.",
+    "empty": "La corbeille est vide.",
+    "restore": "Restaurer {name}",
+    "restoreText": "Restaurer",
+    "emptyTrash": "Vider la corbeille"
+  },
+  "banner": {
+    "degradedTitle": "Les projets ne seront pas conservés",
+    "degraded": "Ce navigateur ne laisse pas iynk stocker de données, donc les projets durent seulement jusqu’à la fermeture de l’onglet. Enregistrer dans un fichier garde une copie.",
+    "recoveredTitle": "Une sauvegarde endommagée a été remplacée",
+    "recovered": "La dernière sauvegarde de {name} était endommagée, donc la copie précédente a été ouverte.",
+    "lostTitle": "Un projet n’a pas pu être lu",
+    "lost": "Les deux copies enregistrées de {name} sont endommagées. Rien n’a été supprimé.",
+    "quotaTitle": "Plus d’espace",
+    "quota": "Le navigateur n’a plus de place pour ce projet. Enregistrez-le dans un fichier, puis supprimez ce dont vous n’avez plus besoin.",
+    "otherTabTitle": "Modifié dans un autre onglet",
+    "otherTab": "Un projet a été enregistré dans un autre onglet. La liste est à jour.",
+    "fileTitle": "Pas enregistré dans un fichier",
+    "file": "Certains projets n’ont pas de copie dans un fichier depuis plus de 10 minutes. Enregistrer dans un fichier garde une copie que vous maîtrisez.",
+    "newerTitle": "Ce fichier vient d’un iynk plus récent",
+    "newer": "{name} a été enregistré par une version plus récente et ne peut pas être ouvert ici. Le téléchargement rend le fichier tel quel.",
+    "newerDownload": "Télécharger {name}",
+    "importTitle": "Ce fichier n’a pas pu être ouvert",
+    "importTooLarge": "{name} dépasse la taille maximale.",
+    "importDamaged": "{name} n’est pas un projet iynk valide.",
+    "dismiss": "Fermer"
+  },
+  "status": {
+    "created": "{name} créé",
+    "renamed": "Renommé en {name}",
+    "duplicated": "Dupliqué sous le nom {name}",
+    "trashed": "{name} déplacé dans la corbeille",
+    "restored": "{name} restauré",
+    "savedToFile": "{name} enregistré dans un fichier",
+    "imported": "{name} ouvert depuis un fichier",
+    "importedForked": "{name} ouvert depuis un fichier comme nouveau projet"
+  },
+  "diag": {
+    "title": "Diagnostic",
+    "lede": "Vérifications du simulateur et du worker du projet, exécutées dans ce navigateur. Chaque résultat se met à jour sur place.",
+    "noWorker": "Ce navigateur ne peut pas démarrer de workers, ces vérifications sont donc désactivées.",
+    "running": "En cours",
+    "failed": "Échec. {message}",
+    "frameGap": "Plus long écart entre images sur les 5 dernières secondes",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "Simulateur",
+      "project": "Worker du projet",
+      "data": "Données du navigateur"
+    },
+    "run": {
+      "sample": "Lancer l'exemple",
+      "ten": "Lancer dix fois",
+      "stall": "Bloquer le worker",
+      "killSim": "Arrêter le worker du simulateur",
+      "killProject": "Arrêter le worker du projet",
+      "lessons": "Vérifier 5 leçons",
+      "exportAll": "Exporter toutes les données",
+      "wipe": "Effacer toutes les données"
+    },
+    "probe": {
+      "list-repeat": "Test de répétition de liste",
+      "bytearray-loop": "Test de boucle bytearray",
+      "c-array": "Test de tableau C",
+      "string-double": "Test de doublement de chaîne",
+      "endless-loop": "Test de boucle infinie"
+    },
+    "save": {
+      "label": "Choisir un projet à mesurer",
+      "hint": "Mesure 30 enregistrements du fichier choisi."
+    },
+    "wipe": {
+      "label": "Saisissez {phrase} pour effacer tout ce qu'iynk stocke dans ce navigateur"
+    },
+    "result": {
+      "sample": "{edges} changements de la LED, allumée {onMs} ms. Empreinte de la trace {hash}. {serial}.",
+      "noSerial": "Aucune sortie série",
+      "serial": "Série : {text}",
+      "limit": "Limite atteinte : {message}.",
+      "noLimit": "Aucune limite atteinte.",
+      "equal": "{equal} sur {of} identiques",
+      "equalFirstDiff": "{equal} sur {of} identiques. Première différence : {diff}",
+      "probeLimit": "Arrêté à une limite en {ms} ms. {message}.",
+      "probeRunLength": "Arrêté à la fin de l'exécution en {ms} ms.",
+      "probeKilled": "Worker arrêté et redémarré en {ms} ms. {message}.",
+      "answers": "Le worker répond toujours.",
+      "silent": "Le worker ne répond pas.",
+      "stall": "Worker arrêté après {killed} ms et de nouveau disponible après {restarted} ms. Plus long écart entre images {gap} ms.",
+      "kill": "Rétabli en {ms} ms. Empreinte avant {before}, après {after}. {same}.",
+      "sameHash": "Les empreintes sont identiques",
+      "otherHash": "Les empreintes diffèrent",
+      "saveSpeed": "p50 {p50} ms, p95 {p95} ms sur {samples} enregistrements.",
+      "exported": "{size} octets exportés.",
+      "wiped": "{stores} stockages et {keys} clés du navigateur effacés.",
+      "wipeErrors": "Une partie du stockage n'a pas pu être effacée : {errors}"
+    }
+  },
+  "canvas": {
+    "label": "Plan du circuit",
+    "hint": "Les flèches déplacent la vue. Plus et moins zooment. Zéro affiche tout.",
+    "status": {
+      "label": "État du plan",
+      "cursor": "Curseur",
+      "cursorValue": "{x}, {y} mm",
+      "zoom": "Zoom",
+      "zoomValue": "{value} px par mm",
+      "grid": "Grille {step} mm",
+      "gridOff": "Grille désactivée",
+      "selected": {
+        "one": "1 sélectionné",
+        "other": "{count} sélectionnés"
+      },
+      "scene": "{items} dessinés, {culled} hors écran",
+      "detail": "Détail faible {low}, moyen {mid}, complet {high}"
+    }
+  },
+  "shell": {
+    "workspace": "Espace de travail"
+  },
+  "route": {
+    "loading": "Chargement du Studio",
+    "noscript": "Le Studio a besoin de JavaScript. Activez-le et rechargez la page."
+  },
+  "topBar": {
+    "label": "Barre du projet",
+    "name": "Nom du projet",
+    "save": {
+      "saved": "Enregistré",
+      "saving": "Enregistrement",
+      "unsaved": "Modifications non enregistrées",
+      "failed": "Échec de l'enregistrement automatique",
+      "readOnly": "Lecture seule"
+    },
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "run": "Lancer",
+    "stop": "Arrêter",
+    "reset": "Réinitialiser"
+  },
+  "layout": {
+    "regions": {
+      "top": "Barre supérieure",
+      "left": "Composants et fichiers",
+      "canvas": "Zone de dessin",
+      "right": "Inspecteur et vérifications",
+      "dock": "Code et série"
+    },
+    "tabs": {
+      "palette": "Palette",
+      "files": "Fichiers",
+      "outline": "Plan",
+      "inspector": "Inspecteur",
+      "problems": "Problèmes",
+      "models": "Modèles",
+      "partner": "Partenaire",
+      "code": "Code",
+      "serial": "Série",
+      "faults": "Pannes"
+    },
+    "separator": "Redimensionner le panneau du bas",
+    "narrow": "La disposition pour téléphone viendra plus tard ; voir et lancer fonctionnent",
+    "open": "Ouvrir {name}",
+    "close": "Fermer le panneau",
+    "boundary": {
+      "failed": "{name} ne fonctionne plus. Ton projet n'a pas changé.",
+      "reload": "Recharger {name}"
+    }
+  },
+  "workspace": {
+    "loading": "Ouverture du projet",
+    "back": "Retour aux projets",
+    "missingTitle": "Ce projet n'est pas ici",
+    "missing": "Il a peut-être été supprimé, ou créé dans un autre navigateur. Les projets restent dans le navigateur qui les a créés.",
+    "lostTitle": "Ce projet n'a pas pu être lu",
+    "lost": "Les deux copies enregistrées sont abîmées. Rien n'a été supprimé.",
+    "errorTitle": "Ce projet n'a pas pu être ouvert",
+    "error": "Une erreur est survenue à la lecture. Vos autres projets ne sont pas touchés.",
+    "readOnlyTitle": "Lecture seule",
+    "readOnly": "Ce projet est ouvert en consultation. Vous pouvez le parcourir et le lancer, mais les modifications ne sont pas enregistrées.",
+    "hashMismatchTitle": "Copie enregistrée vérifiée",
+    "hashMismatch": "La copie enregistrée ne correspondait pas à cette page, elle a donc été réécrite depuis ici.",
+    "files": {
+      "title": "Fichiers du projet",
+      "empty": "Ce projet n'a pas encore de fichiers.",
+      "open": "Ouvrir {path} dans le panneau de code"
+    },
+    "keys": {
+      "title": "Raccourcis clavier",
+      "hint": "Les raccourcis à une seule touche se désactivent dans les réglages d'affichage.",
+      "close": "Fermer"
+    }
+  },
+  "rooms": {
+    "banner": {
+      "live": "En direct",
+      "connecting": "Connexion à la salle",
+      "syncing": "Récupération du banc auprès de l'hôte",
+      "reconnecting": "Connexion perdue. Reconnexion",
+      "offlineKept": "La salle est hors ligne, vos modifications sont conservées",
+      "queueFull": "{count} modifications sont en attente. La modification de la salle est en pause ; votre copie locale est à l'abri.",
+      "ended": "La salle est terminée",
+      "kicked": "L'hôte vous a retiré de la salle",
+      "closed": "La salle est fermée",
+      "readOnlyShare": "Vous regardez un lien partagé. Vous pouvez le lire, pas le modifier.",
+      "readOnlyRole": "Votre rôle dans cette salle permet de lire, pas de modifier le banc",
+      "unsupported": "Ce navigateur ne peut pas ouvrir de salles",
+      "serverRestarted": "Le serveur a redémarré. Retour dans la salle",
+      "behind": "Rattrapage de la salle",
+      "pending": {
+        "one": "{count} modification en attente",
+        "other": "{count} modifications en attente"
+      }
+    },
+    "members": {
+      "title": "Personnes présentes",
+      "count": {
+        "one": "{count} personne ici",
+        "other": "{count} personnes ici"
+      },
+      "you": "Vous",
+      "leave": "Quitter la salle",
+      "host": "Hôte",
+      "holder": "A le clavier",
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "spectator": "Spectateur",
+      "role": {
+        "owner": "Propriétaire",
+        "editor": "Éditeur",
+        "commenter": "Commentateur",
+        "viewer": "Lecteur"
+      },
+      "appVersion": "Version de l'appli",
+      "cursorOf": "Pointeur de {name}"
+    },
+    "baton": {
+      "youHold": "Vous avez le clavier",
+      "heldBy": "{name} a le clavier",
+      "free": "Le clavier est libre",
+      "request": "Demander le clavier",
+      "grant": "Donner le clavier",
+      "take": "Prendre le clavier",
+      "release": "Rendre le clavier",
+      "asked": "Vous avez demandé le clavier",
+      "denied": "L'hôte a dit pas maintenant",
+      "freeIn": "{name} est parti. Le clavier sera libre dans {seconds} s.",
+      "giveTo": "Le donner à",
+      "takeBack": "Le reprendre",
+      "pickPerson": "Choisir une personne"
+    },
+    "host": {
+      "kick": "Retirer",
+      "kickConfirm": "Retirer {name} de la salle ?",
+      "mute": "Couper le son",
+      "unmute": "Rétablir le son",
+      "lock": "Verrouiller la salle",
+      "unlock": "Déverrouiller la salle",
+      "close": "Fermer la salle",
+      "closeConfirm": "Fermer la salle pour tout le monde ?",
+      "pass": "Confier la salle à {name}",
+      "claim": "Devenir l'hôte",
+      "settings": "Réglages de la salle",
+      "runControl": "Qui lance le code",
+      "spectatorCursors": "Afficher les pointeurs des spectateurs",
+      "title": "Commandes de l'hôte",
+      "keyboardPassing": "Passage du clavier",
+      "memberActions": "Actions pour {name}",
+      "runEditors": "Les éditeurs",
+      "runHost": "L'hôte seulement"
+    },
+    "invite": {
+      "open": "Inviter",
+      "titleFor": "Inviter {name}",
+      "hint": "Envoyez un lien ou choisissez un ami. La salle accueille 8 personnes.",
+      "roleEditor": "Peut modifier",
+      "roleViewer": "Peut regarder",
+      "uses": "Utilisations : {count}",
+      "expires": "Expire {when}",
+      "revoke": "Révoquer l'invitation",
+      "sent": "Invitation envoyée",
+      "join": "Rejoindre",
+      "decline": "Refuser",
+      "expired": "Cette invitation ne fonctionne pas",
+      "workTogether": "Travailler ensemble",
+      "pickBuddy": "Choisir un ami",
+      "noBuddies": "Vous n'avez pas encore d'amis",
+      "needsServer": "Il faut un serveur, et cette installation n'en a pas",
+      "menu": "Salle",
+      "copyLink": "Copier un lien d'invitation",
+      "away": "absent",
+      "invitations": {
+        "one": "{count} invitation",
+        "other": "{count} invitations"
+      },
+      "invitedBy": "{name} vous invite à {title}",
+      "roleLabel": "Ce que la personne peut faire",
+      "live": "Invitations actives",
+      "quota": "Vous avez atteint la limite de salles. Fermez-en une pour en ouvrir une autre."
+    },
+    "chat": {
+      "title": "Discussion",
+      "placeholder": "Écrire un message",
+      "send": "Envoyer",
+      "rateLimited": "Vous écrivez trop vite. Patientez un instant.",
+      "muted": "L'hôte vous a mis en sourdine",
+      "system": "Salle",
+      "new": "{count} nouveaux",
+      "counter": "{count}/{max}",
+      "label": "Message",
+      "empty": "Aucun message pour l'instant",
+      "someone": "Quelqu'un"
+    },
+    "rebase": {
+      "title": "Pendant votre absence",
+      "dropped": "{who} a supprimé {what} pendant que vous étiez hors ligne, donc votre modification de {what} a été abandonnée",
+      "droppedGeneric": "Quelqu'un a supprimé une pièce pendant que vous étiez hors ligne, donc votre modification de cette pièce a été abandonnée",
+      "keepCopy": "Garder une copie de ma version",
+      "copyKept": "Une copie de votre version est dans vos projets",
+      "none": "Aucune de vos modifications n'a été abandonnée"
+    },
+    "fork": {
+      "closedTitle": "Cette salle est fermée",
+      "closedKept": "La salle est fermée. Ce projet reste dans ta bibliothèque.",
+      "keepCopy": "Garder une copie",
+      "kept": "Copie enregistrée",
+      "ffNote": "Votre copie repart du dernier état de la salle",
+      "separateCopy": "Ceci est une copie séparée"
+    },
+    "share": {
+      "title": "Partager ce projet",
+      "audienceLink": "Toute personne ayant le lien",
+      "audienceBuddies": "Mes amis seulement",
+      "expiry30": "Expire dans 30 jours",
+      "expiryNone": "N'expire jamais",
+      "expiryDays": "Expire dans {count} jours",
+      "linkWarning": "Toute personne ayant le lien peut voir ce projet. Ne le partagez qu'avec des personnes de confiance.",
+      "create": "Créer un lien",
+      "copy": "Copier le lien",
+      "revoke": "Arrêter le partage",
+      "needsServer": "Le partage demande un serveur, et ce déploiement n'en a pas",
+      "makeCopy": "Faire ma propre copie",
+      "copyDone": "Copie faite",
+      "withdrawn": "Le propriétaire a arrêté ce partage",
+      "gone": "Ce lien ne fonctionne plus",
+      "tooLarge": "Ce projet est trop gros pour être partagé",
+      "secretWarning": "Ce projet semble contenir une clé ou un mot de passe. Retirez-le avant de partager.",
+      "liveLimit": "Vous avez déjà {count} liens actifs. Arrêtez-en un pour en créer un autre.",
+      "opened": "Ouvert {count} fois",
+      "close": "Fermer",
+      "expiryLabel": "Durée du lien",
+      "allowFork": "Laisser les gens faire leur propre copie",
+      "labelField": "Nom de ce lien",
+      "secretAck": "J'ai vérifié et je veux partager quand même",
+      "secretField": "Trouvé dans {field}",
+      "confirmRevoke": "Arrêter de partager ce lien maintenant ?",
+      "keep": "Le garder",
+      "yourShares": "Vos liens",
+      "noShares": "Vous n'avez encore rien partagé",
+      "revokedRow": "Retiré",
+      "expiresOn": "Expire {when}",
+      "expiryError": "Le serveur n'autorise pas cette durée. Choisissez-en une plus courte.",
+      "networkError": "Impossible de joindre le serveur. Réessayez.",
+      "hashMismatch": "La copie du serveur ne correspond pas à ce projet. Ne partagez pas ce lien.",
+      "done": "Votre lien est prêt",
+      "audienceLabel": "Qui peut l'ouvrir",
+      "linkQr": "Code QR du lien de partage",
+      "copied": "Copié",
+      "copyFailed": "Copie impossible. Sélectionnez le lien et copiez-le à la main.",
+      "loadError": "Impossible de charger vos liens."
+    },
+    "unsupported": {
+      "engine": "Ce navigateur ne peut pas se connecter aux salles. Essayez une version récente de Chrome, Firefox, Safari ou Edge.",
+      "privateWindow": "Les salles demandent une fenêtre normale, pas une fenêtre privée"
+    }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "Platine d'essai",
+      "schematic": "Schéma",
+      "board": "Carte"
+    },
+    "tablist": "Vues",
+    "auto": "auto",
+    "arrange": "Organiser",
+    "schematicReadOnlyWire": "Câblez dans la vue de la platine d'essai. Le schéma montre les mêmes connexions.",
+    "sceneError": "Cette vue n'a pas pu être dessinée. Les autres vues fonctionnent toujours.",
+    "cmd": {
+      "breadboard": "Vue platine d'essai",
+      "schematic": "Vue schéma",
+      "board": "Vue carte"
+    }
+  },
+  "history": {
+    "title": "Historique",
+    "nameThis": "Nommer cette version",
+    "named": "Nommées",
+    "auto": "Automatiques",
+    "compare": "Comparer",
+    "restore": "Restaurer cette version",
+    "restoreHelp": "La restauration ajoute des modifications par-dessus votre travail. Vous pouvez l'annuler.",
+    "empty": "Aucune version pour l'instant.",
+    "limit": "La liste garde les {max} versions les plus récentes.",
+    "mismatch": "Cette version a échoué à sa vérification et n'a pas été ouverte.",
+    "diff": {
+      "added": "Ajouté : {items}",
+      "removed": "Supprimé : {items}",
+      "changed": "Modifié : {items}",
+      "nets": "Connexions différentes : {count}",
+      "files": "Fichiers différents : {count}"
+    },
+    "storeFailed": "La version n'a pas pu être enregistrée : {reason}",
+    "nameLabel": "Nom de la version (1 à 80 caractères)",
+    "labelRequired": "Saisissez un nom.",
+    "labelTooLong": "Utilisez au plus {max} caractères.",
+    "runLabel": "Exécution",
+    "fileLabel": "Fichier enregistré"
+  },
+  "checks": {
+    "title": "Vérifications",
+    "add": "Ajouter une vérification",
+    "run": "Lancer les vérifications",
+    "pass": "Réussie",
+    "fail": "Échouée",
+    "notRun": "Non lancée",
+    "kind": {
+      "runs": "S'exécute sans erreur",
+      "serial": "La sortie série contient",
+      "pin-level": "Niveau de la broche à un instant",
+      "pin-toggles": "La broche bascule",
+      "pwm": "Rapport cyclique PWM à un instant",
+      "tone": "Fréquence de la tonalité à un instant",
+      "servo": "Angle du servo à un instant",
+      "responds": "La broche répond à une entrée",
+      "code": "Le code contient"
+    },
+    "hiddenNote": "Masqué ne cache la valeur qu'à l'écran. Toute personne ayant le fichier peut la lire.",
+    "badPin": "Cette carte n'a pas de broche nommée {pin}.",
+    "needsRun": "Lancez l'exécution pour voir les résultats.",
+    "noSource": "Ce projet n'a pas de firmware pour la carte.",
+    "unsupportedLanguage": "Pour le langage de cette carte, seules les vérifications d'exécution, de série et de code fonctionnent.",
+    "limit": "L'exécution s'est arrêtée à la limite de 20 secondes.",
+    "empty": "Aucune vérification pour l'instant. Ajoutez-en une pour voir si ce projet fait ce que vous attendez.",
+    "running": "En cours",
+    "edit": "Modifier {name}",
+    "delete": "Supprimer {name}",
+    "editText": "Modifier",
+    "deleteText": "Supprimer",
+    "save": "Enregistrer la vérification",
+    "kindLabel": "Type de vérification",
+    "hidden": "Masquer les valeurs",
+    "hiddenValue": "Masquée",
+    "rangeOrder": "Le premier nombre ne doit pas dépasser le second.",
+    "badRegex": "Ce motif n'est pas valide.",
+    "regexLong": "Utilisez au plus {max} caractères.",
+    "afterRun": "Cet instant est après la fin de l'exécution, à {runMs} ms.",
+    "mustHint": "Un texte par ligne.",
+    "field": {
+      "pin": "Broche",
+      "level": "Niveau",
+      "atMs": "À (ms)",
+      "minMs": "Tourne au moins (ms)",
+      "match": "Texte",
+      "regex": "Chercher comme motif",
+      "minCount": "Au moins ce nombre de lignes",
+      "periodMs": "Période (ms)",
+      "from": "De",
+      "to": "À",
+      "minCycles": "Cycles",
+      "duty": "Rapport cyclique (0 à 1)",
+      "hz": "Fréquence (Hz)",
+      "deg": "Angle (degrés)",
+      "input": "Entrée",
+      "afterAt": "L'entrée change à (ms)",
+      "afterValue": "Valeur de l'entrée",
+      "withinMs": "En moins de (ms)",
+      "v": "Valeur de la broche",
+      "must": "Doit contenir",
+      "mustNot": "Ne doit pas contenir",
+      "label": "Nom"
+    }
+  },
+  "ino": {
+    "import": "Importer un croquis",
+    "export": "Exporter en .ino",
+    "wiringCsv": "Tableau de câblage (CSV)",
+    "lossTitle": "Ce qui change",
+    "lossNone": "Rien n'est perdu.",
+    "lossBoard": "Carte choisie : {board}. Changez-la si ce n'est pas la bonne.",
+    "unsupported": "Ligne {line} : {message}",
+    "banner": "Exporté depuis une simulation. Il se peut qu'il ne compile pas tel quel.",
+    "tooBig": "Ce fichier dépasse {max} caractères.",
+    "notText": "Ce fichier n'est pas du texte.",
+    "confirm": "Créer le projet",
+    "firstOnly": "Seul le premier problème est affiché. Corrigez-le et importez à nouveau.",
+    "noEntry": "Aucun fichier .ino n'a été trouvé.",
+    "empty": "Ce fichier est vide.",
+    "badPath": "Le nom de fichier {name} n'est pas autorisé.",
+    "tooMany": "Au plus {max} fichiers.",
+    "cancel": "Annuler",
+    "exportBlocked": "Ce projet n'a pas de croquis Arduino à exporter."
+  },
+  "align": {
+    "left": "Aligner à gauche",
+    "right": "Aligner à droite",
+    "top": "Aligner en haut",
+    "bottom": "Aligner en bas",
+    "centerH": "Centrer horizontalement",
+    "centerV": "Centrer verticalement",
+    "distributeH": "Répartir horizontalement",
+    "distributeV": "Répartir verticalement",
+    "needThree": "Choisissez au moins trois pièces à répartir.",
+    "group": "Grouper",
+    "ungroup": "Dissocier",
+    "groupNeedTwo": "Choisissez au moins deux éléments à grouper.",
+    "groupNesting": "Un groupe ne peut pas contenir un autre groupe."
+  },
+  "projectMenu": {
+    "label": "Projet",
+    "history": "Historique...",
+    "saveFile": "Enregistrer dans un fichier",
+    "historyTab": "Historique"
+  },
+  "rail": {
+    "history": "Historique",
+    "checks": "Vérifications"
+  },
+  "dialog": {
+    "cancel": "Annuler"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "Canevas",
+      "code": "Code",
+      "run": "Exécuter",
+      "project": "Projet"
+    },
+    "tabs": "Sections du studio",
+    "sheetClose": "Fermer"
+  },
+  "a11y": {
+    "viewAnnounce": "Vue {view}",
+    "groupMade": "{count} éléments groupés.",
+    "restored": "Version {label} restaurée.",
+    "pinLevel": "{pin} est à {level} ({mode})"
+  },
+  "lesson": {
+    "guide": {
+      "title": "Guide",
+      "stepOf": "Étape {n} sur {total}",
+      "step": {
+        "state": {
+          "notStarted": "Pas commencée",
+          "current": "Étape en cours",
+          "done": "Terminée",
+          "blocked": "En attente d'une étape précédente"
+        }
+      },
+      "markDone": "Marquer l'étape comme terminée",
+      "reset": "Réinitialiser la leçon",
+      "resetConfirm": "Rétablir la version de départ ? Vos modifications dans cette leçon sont remplacées. Votre progression est conservée.",
+      "hints": "Indices",
+      "hintReveal": "Afficher l'indice {n}",
+      "quiz": {
+        "title": "Petit test",
+        "answer": "Réponse",
+        "correct": "Exact",
+        "wrong": "Pas tout à fait",
+        "why": "Pourquoi",
+        "next": "Question suivante"
+      },
+      "provenance": {
+        "unchecked": "{n} textes pas encore relus",
+        "exportNote": "{n} textes de ce projet n'ont pas été relus. Vous pouvez quand même l'exporter.",
+        "shareNote": "{n} textes de ce projet n'ont pas été relus. Vérifiez-les avant de le partager au-delà de vos camarades."
+      },
+      "tier": "Simulé au niveau {tier}"
+    },
+    "completion": {
+      "open": {
+        "edit": "Modifiez quelque chose dans le projet pour terminer.",
+        "quiz": "Répondez à une question pour terminer.",
+        "checks": "Lancez les vérifications et faites-les réussir.",
+        "fault": "Une panne est active. Réparez-la pour terminer.",
+        "steps": "Terminez les étapes.",
+        "goal": "Atteignez le test final."
+      },
+      "done": "Terminée en simulation au niveau {tier}.",
+      "legacy": "Terminée avant la règle de modification."
+    },
+    "checks": {
+      "title": "Vérifications",
+      "run": "Lancer les vérifications",
+      "again": "Vérifier à nouveau",
+      "pending": "Pas encore lancées",
+      "running": "En cours",
+      "allPass": "Toutes les vérifications passent",
+      "summary": "{passed} vérifications réussies sur {total}",
+      "faultOn": "Les vérifications passent, mais une panne est active",
+      "limit": "L'exécution a atteint sa limite de temps",
+      "textCheck": "Vérification du texte",
+      "hiddenNote": "{n} vérifications masquées sont aussi lancées",
+      "tier": "Résultat au niveau {tier}",
+      "empty": "Cette leçon n'a pas de vérifications."
+    },
+    "nav": {
+      "board": "Carte",
+      "prev": "Leçon précédente",
+      "next": "Leçon suivante",
+      "count": "{done} sur {total} terminées",
+      "list": "Leçons de cette carte",
+      "level": {
+        "intro": "Initiation",
+        "io": "Entrées et sorties",
+        "input": "Entrées",
+        "analog": "Analogique",
+        "protocol": "Protocoles",
+        "wireless": "Sans fil",
+        "project": "Projet"
+      }
+    },
+    "gallery": {
+      "title": "Leçons et cartes",
+      "byLevel": "Par niveau",
+      "byBoard": "Par carte",
+      "start": "Ouvrir",
+      "startRun": "Ouvrir et lancer",
+      "runLength": "Les vérifications durent {s} s de temps simulé",
+      "rung": {
+        "lesson": "Leçon",
+        "tour": "Visite de la carte",
+        "label": "Type"
+      },
+      "progress": {
+        "done": "Terminée",
+        "legacy": "Terminée (ancien relevé)",
+        "none": "Pas commencée"
+      },
+      "empty": "Aucun modèle ne correspond.",
+      "all": "Tous",
+      "level": "Niveau",
+      "labs": {
+        "bench": "Établis de robotique",
+        "craft": "Drones",
+        "task": "Exercices pratiques",
+        "steps": {
+          "one": "{count} étape",
+          "other": "{count} étapes"
+        }
+      }
+    },
+    "assembly": {
+      "title": "Étapes de montage",
+      "showMe": "Montrez-moi",
+      "refused": "Faites d'abord les étapes précédentes.",
+      "manual": "Marquer comme terminé",
+      "needsLens": "Cette étape se vérifie dans la vue de la figure.",
+      "break": "Casser"
+    },
+    "wire": {
+      "title": "Câbler",
+      "lede": "Ce que cette carte peut piloter et comment le câbler.",
+      "supply": "Alimentation {volts} V",
+      "caution": "Soyez prudent",
+      "none": "Rien à câbler dans cette leçon.",
+      "partPin": "Broche du composant",
+      "boardPin": "Broche de la carte",
+      "colors": {
+        "red": "rouge",
+        "black": "noir",
+        "orange": "orange",
+        "yellow": "jaune",
+        "green": "vert",
+        "blue": "bleu",
+        "white": "blanc",
+        "purple": "violet",
+        "brown": "marron",
+        "grey": "gris"
+      }
+    },
+    "inputs": {
+      "title": "Entrées",
+      "press": "Appuyer",
+      "release": "Relâcher",
+      "hold": "Maintenir",
+      "slider": "{label} : {value}",
+      "empty": "Cette leçon n'a pas d'entrées."
+    },
+    "status": {
+      "title": "État de la carte",
+      "current": "Courant d'alimentation : {ma} mA",
+      "brownout": "Chute de tension : la carte se réinitialise",
+      "ok": "L'alimentation est correcte",
+      "unknown": "Non disponible à ce niveau"
+    },
+    "lens": {
+      "open": "Afficher la figure",
+      "close": "Masquer la figure",
+      "readOnly": "Vue en lecture seule de la figure d'origine",
+      "unavailable": "Pas de figure pour cette leçon"
+    },
+    "faults": {
+      "title": "Casser",
+      "own": "Pannes de ce circuit",
+      "more": "Autres pannes de cette carte",
+      "trigger": "Casser",
+      "repair": "Réparer",
+      "active": "Panne active",
+      "notModelled": "Pas encore modélisé dans Studio : {title}"
+    }
+  },
+  "lab": {
+    "roomLinkNote": "C'était un lien de salle. Les salles ont besoin d'un serveur et vivent désormais dans Studio, alors le labo s'ouvre seul."
+  }
+}

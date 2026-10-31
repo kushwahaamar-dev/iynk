@@ -1,0 +1,18 @@
+{
+  "description": "A BBC micro:bit V2 board with an nRF52833 chip, a 5x5 LED matrix, buttons A and B and an edge connector.",
+  "summary": "The board runs the user's program in the iynk interpreter, in MicroPython. Pins, PWM, I2C, serial and timing follow the microbit-v2 board profile. It is not the nRF52833 chip.",
+  "layer": "Firmware runtime.",
+  "display": "Shared with the LED matrix.",
+  "button": "Button pin: reads LOW when the button is pressed.",
+  "i2c": "I2C on the edge connector: P20 is SDA and P19 is SCL.",
+  "models": {
+    "1": "MicroPython subset run by the interpreter with the micro:bit pin map.",
+    "2": "Digital I/O on P0 to P16, P19 and P20, PWM on every pin.",
+    "3": "10-bit analog reads on P0 to P4 and P10, I2C master on P20 and P19, serial output, and buttons A (P5) and B (P11), which read LOW when pressed."
+  },
+  "not": {
+    "1": "The Bluetooth radio.",
+    "2": "The microphone and the speaker."
+  },
+  "gap": "undefined No electrical ratings are listed yet, so no pin-overload check exists for this board."
+}

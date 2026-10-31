@@ -1,0 +1,74 @@
+{
+  "settings": {
+    "open": "View settings",
+    "art": {
+      "label": "Art",
+      "illustrated": "Illustrated",
+      "simple": "Simple"
+    },
+    "grid": {
+      "label": "Grid",
+      "hint": "Show the grid on the canvas"
+    },
+    "snap": {
+      "label": "Snap in mm",
+      "hint": "From {min} to {max} mm. Values outside are brought into range."
+    },
+    "shortcuts": {
+      "label": "One key shortcuts",
+      "hint": "Letter keys switch tools while the canvas has focus."
+    }
+  },
+  "starters": {
+    "title": "Start from an example",
+    "lede": "Each example opens as your own copy in the editor. The original stays as it is.",
+    "listLabel": "Examples",
+    "first": {
+      "title": "Start with Blink",
+      "body": "An Uno, an LED and a sketch that blinks it. It opens ready to run.",
+      "action": "Start with Blink"
+    },
+    "opening": "Opening {name}",
+    "failed": "{name} could not be opened. Try again.",
+    "blink": {
+      "title": "Blink",
+      "description": "An LED and a resistor on pin 13."
+    },
+    "button": {
+      "title": "Push button",
+      "description": "Hold a button to light an LED."
+    },
+    "knob": {
+      "title": "Potentiometer",
+      "description": "Turn a knob to set the brightness of an LED."
+    },
+    "rgb": {
+      "title": "PWM colour mix",
+      "description": "Mix any colour on an RGB LED with three PWM pins."
+    },
+    "sound": {
+      "title": "Buzzer tune",
+      "description": "A piezo buzzer plays a list of notes."
+    },
+    "plant": {
+      "title": "I2C display",
+      "description": "A soil reading shown on an OLED screen."
+    },
+    "serial-echo": {
+      "title": "Serial echo",
+      "description": "Send text over the serial monitor and read it back."
+    },
+    "board": {
+      "title": "Meet the Uno",
+      "description": "The board on its own, with no wiring."
+    },
+    "light": {
+      "title": "Light sensor",
+      "description": "A night light that comes on when the room gets dark."
+    },
+    "distance": {
+      "title": "Distance sensor",
+      "description": "An ultrasonic sensor that measures in centimetres."
+    }
+  }
+}

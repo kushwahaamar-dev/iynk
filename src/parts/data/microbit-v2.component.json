@@ -1,0 +1,473 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.microbit-v2",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Micro:bit Educational Foundation",
+    "model": "BBC micro:bit V2",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "microbit-v2"
+    ],
+    "description": {
+      "i18n_key": "parts.microbit-v2.description",
+      "en": "A BBC micro:bit V2 board with an nRF52833 chip, a 5x5 LED matrix, buttons A and B and an edge connector."
+    },
+    "chip": {
+      "manufacturer": "Nordic Semiconductor",
+      "model": "nRF52833"
+    },
+    "primary_source": "hardware",
+    "tags": [
+      "nrf52",
+      "micro:bit",
+      "education",
+      "dev-board",
+      "micropython",
+      "beginner"
+    ]
+  },
+  "sources": [
+    {
+      "id": "hardware",
+      "kind": "schematic",
+      "title": "micro:bit V2 hardware files (V2.21 schematic and bill of materials)",
+      "publisher": "Micro:bit Educational Foundation",
+      "url": "https://github.com/microbit-foundation/microbit-v2-hardware",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/microbit-v2.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "edge",
+      "kind": "product-page",
+      "title": "micro:bit developer docs: edge connector and pinout",
+      "publisher": "Micro:bit Educational Foundation",
+      "url": "https://tech.microbit.org/hardware/edge-connector/",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/microbit-v2.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "micropython",
+      "kind": "library",
+      "title": "MicroPython for micro:bit V2 documentation",
+      "publisher": "Micro:bit Educational Foundation",
+      "url": "https://microbit-micropython.readthedocs.io/en/v2-docs/",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/microbit-v2.ts; this descriptor did not read the page in full."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile microbit-v2) and src/content/boards/microbit-v2.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "edge",
+      "kind": "header",
+      "pins": [
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8",
+        "P9",
+        "P10",
+        "P11",
+        "P12",
+        "P13",
+        "P14",
+        "P15",
+        "P16",
+        "P3V",
+        "edge_20",
+        "P19",
+        "P20",
+        "GND",
+        "edge_25"
+      ]
+    },
+    {
+      "id": "ring",
+      "kind": "header",
+      "pins": [
+        "P0",
+        "P1",
+        "P2",
+        "ring_3V",
+        "ring_GND"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "P3",
+      "designator": "P3",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.display",
+        "en": "Shared with the LED matrix."
+      }
+    },
+    {
+      "id": "P4",
+      "designator": "P4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.display",
+        "en": "Shared with the LED matrix."
+      }
+    },
+    {
+      "id": "P5",
+      "designator": "P5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.button",
+        "en": "Button pin: reads LOW when the button is pressed."
+      }
+    },
+    {
+      "id": "P6",
+      "designator": "P6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.display",
+        "en": "Shared with the LED matrix."
+      }
+    },
+    {
+      "id": "P7",
+      "designator": "P7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.display",
+        "en": "Shared with the LED matrix."
+      }
+    },
+    {
+      "id": "P8",
+      "designator": "P8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P9",
+      "designator": "P9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.display",
+        "en": "Shared with the LED matrix."
+      }
+    },
+    {
+      "id": "P10",
+      "designator": "P10",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.display",
+        "en": "Shared with the LED matrix."
+      }
+    },
+    {
+      "id": "P11",
+      "designator": "P11",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.button",
+        "en": "Button pin: reads LOW when the button is pressed."
+      }
+    },
+    {
+      "id": "P12",
+      "designator": "P12",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P13",
+      "designator": "P13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P14",
+      "designator": "P14",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P15",
+      "designator": "P15",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P16",
+      "designator": "P16",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P3V",
+      "designator": "3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "edge_20",
+      "designator": "3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "edge"
+    },
+    {
+      "id": "P19",
+      "designator": "P19",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.i2c",
+        "en": "I2C on the edge connector: P20 is SDA and P19 is SCL."
+      }
+    },
+    {
+      "id": "P20",
+      "designator": "P20",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "edge",
+      "logic_family": "lvcmos-3v3",
+      "note": {
+        "i18n_key": "parts.microbit-v2.i2c",
+        "en": "I2C on the edge connector: P20 is SDA and P19 is SCL."
+      }
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "edge_25",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "edge"
+    },
+    {
+      "id": "P0",
+      "designator": "P0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "ring",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P1",
+      "designator": "P1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "ring",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "P2",
+      "designator": "P2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "ring",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "ring_3V",
+      "designator": "3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "ring"
+    },
+    {
+      "id": "ring_GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "ring"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "edge_25",
+        "ring_GND"
+      ]
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.microbit-v2.summary",
+      "en": "The board runs the user's program in the iynk interpreter, in MicroPython. Pins, PWM, I2C, serial and timing follow the microbit-v2 board profile. It is not the nRF52833 chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.microbit-v2.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile microbit-v2 in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T0",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.microbit-v2.models.1",
+        "en": "MicroPython subset run by the interpreter with the micro:bit pin map."
+      },
+      {
+        "i18n_key": "parts.microbit-v2.models.2",
+        "en": "Digital I/O on P0 to P16, P19 and P20, PWM on every pin."
+      },
+      {
+        "i18n_key": "parts.microbit-v2.models.3",
+        "en": "10-bit analog reads on P0 to P4 and P10, I2C master on P20 and P19, serial output, and buttons A (P5) and B (P11), which read LOW when pressed."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.microbit-v2.not.1",
+        "en": "The Bluetooth radio."
+      },
+      {
+        "i18n_key": "parts.microbit-v2.not.2",
+        "en": "The microphone and the speaker."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.microbit-v2.gap",
+          "en": "undefined No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a program on the microbit-v2 profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "micropython"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "microbit-v2",
+        "path": "public/figures/boards/microbit-v2.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "micro:bit V2",
+      "body_colour": "#1b1b1b",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the 25 rows of src/content/boards/microbit-v2.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

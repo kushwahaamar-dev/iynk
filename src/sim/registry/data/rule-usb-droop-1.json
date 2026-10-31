@@ -1,0 +1,84 @@
+{
+  "id": "rule:usb-droop@1",
+  "version": "1.0.0",
+  "kind": "rule",
+  "title": "USB limit as Thevenin droop (live path)",
+  "tier": "T1",
+  "layers": [
+    "L3"
+  ],
+  "implements": [
+    {
+      "id": "droop",
+      "text": "A V element with a droop limit raises its series resistance until the current equals the limit (bisection, at most 30 iterations); USB is 0.5 A"
+    },
+    {
+      "id": "verdict",
+      "text": "The brown-out verdict is unchanged from rule:usb-sag@1 (C20)"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "polyfuse",
+      "text": "Polyfuse trip and recovery behaviour"
+    },
+    {
+      "id": "cable",
+      "text": "Cable and connector resistance"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "ilim",
+      "value": 0.5,
+      "unit": "A",
+      "type": "assumption",
+      "ref": "figures/engine/bench-bb.js:116",
+      "note": "descriptor ilim of the USB source"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-c20",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 C20 brown-out verdict",
+      "flavour": "matched and realistic: both far above 500 mA (2091 and 1792 mA)",
+      "result": {
+        "n": 1,
+        "passed": 1,
+        "metric": "worst relative error",
+        "worst": 0,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [
+    {
+      "quantity": "current_A",
+      "min": 0,
+      "max": 0.5,
+      "unit": "A",
+      "evidence": "the verdict is checked only far above the limit (C20)"
+    }
+  ],
+  "knownFailureCases": [
+    "The record covers the verdict; the sagged voltage is not compared with a reference"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active",
+  "supersedes": "rule:usb-sag@1"
+}

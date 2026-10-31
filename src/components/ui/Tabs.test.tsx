@@ -73,4 +73,26 @@ describe("Tabs", () => {
     rerender(<Tabs label="Board info" tabs={tabs} value="overview" />);
     expect(screen.getByRole("tab", { name: "Overview" }).getAttribute("aria-selected")).toBe("true");
   });
+
+  it("marks the selected tab and draws its underline from a pseudo element", () => {
+    render(<Tabs label="Board info" tabs={tabs} defaultValue="pinout" />);
+    const selected = screen.getByRole("tab", { name: "Pinout" });
+    expect(selected.getAttribute("aria-selected")).toBe("true");
+    expect(selected.className).toContain("after:bg-ink");
+    expect(selected.className).toContain("aria-selected:after:scale-x-100");
+  });
+
+  it("fills every phone row: rows of three take two columns a tab, a pair three, a lone tab six", () => {
+    const spans = (count: number) => {
+      const many = Array.from({ length: count }, (_, i) => ({ id: `t${i}`, label: `Tab ${i}`, content: null }));
+      const { unmount } = render(<Tabs label="Info" tabs={many} phoneGrid />);
+      const result = screen.getAllByRole("tab").map((tab) => tab.className.match(/max-sm:col-span-(\d)/)?.[1]);
+      unmount();
+      return result;
+    };
+    expect(spans(3)).toEqual(["2", "2", "2"]);
+    expect(spans(4)).toEqual(["3", "3", "3", "3"]);
+    expect(spans(5)).toEqual(["2", "2", "2", "3", "3"]);
+    expect(spans(7)).toEqual(["2", "2", "2", "2", "2", "2", "6"]);
+  });
 });

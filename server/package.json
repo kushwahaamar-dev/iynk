@@ -1,0 +1,30 @@
+{
+  "name": "iynk-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "iynk collaboration server: identity, buddies and rooms for a self-hosted install.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "iynk-server": "./bin/iynk-server.ts"
+  },
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "node tools/build.mjs && node --test --test-concurrency=1 \"test/**/*.test.ts\"",
+    "server:build": "node tools/build.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "ws": "8.22.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/ws": "8.18.1",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3"
+  }
+}

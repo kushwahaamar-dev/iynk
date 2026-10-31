@@ -1,0 +1,17 @@
+{
+  "description": "ESP8266 开发板，带 ESP-12E 模块、CP2102 USB 串口芯片和 3.3 V 稳压器，有两颗低电平点亮的 LED。",
+  "summary": "开发板在 iynk 解释器中运行你的程序。引脚、PWM、I2C、串口和时序遵循 nodemcu 开发板配置。它不是 ESP8266 芯片本身。",
+  "layer": "固件运行时。",
+  "led": "板载 LED，低电平点亮。",
+  "models": {
+    "1": "由解释器按 NodeMCU 引脚图运行的 Arduino C++ 子集，其中 D4 即 GPIO2。",
+    "2": "D0 到 D8、TX、RX、SD2 和 SD3 上的数字 I/O，每个 GPIO 上的 PWM，以及除 GPIO16（D0）外每个 GPIO 上的中断。",
+    "3": "经板载分压器的 A0 上的 10 位模拟读取、D2 和 D1 上的 I2C 主机、串口输出，以及 GPIO2 和 GPIO16 上两颗低电平点亮的 LED。"
+  },
+  "not": {
+    "1": "Xtensa L106 内核、Wi-Fi 协议栈和闪存行为。网页服务器课程用的请求桩不是无线电。",
+    "2": "启动模式引脚 GPIO0、GPIO2 和 GPIO15。",
+    "3": "CP2102 桥接芯片和 3.3 V 稳压器的限制。"
+  },
+  "gap": "板载 LED 低电平点亮：digitalWrite(LED_BUILTIN, LOW) 会点亮它们。D 编号不是 GPIO 编号：D4 即 GPIO2。A0 经分压器读取 0 到 3.3 V，GPIO16 没有中断。目前还没有列出电气额定值，所以这块板没有引脚过载检查。"
+}

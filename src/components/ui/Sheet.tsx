@@ -20,9 +20,9 @@ type SheetProps = {
 };
 
 const placement = {
-  bottom: "inset-x-0 bottom-0 max-h-[85dvh] rounded-b-none border-b-0 animate-ink-rise",
-  start: "inset-y-0 start-0 w-[min(22rem,88vw)] rounded-s-none border-s-0 animate-ink-from-start",
-  end: "inset-y-0 end-0 w-[min(22rem,88vw)] rounded-e-none border-e-0 animate-ink-from-end",
+  bottom: "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-2xl animate-slide-in-bottom",
+  start: "inset-y-0 start-0 w-[min(24rem,88vw)] rounded-e-2xl animate-slide-in-start",
+  end: "inset-y-0 end-0 w-[min(24rem,88vw)] rounded-s-2xl animate-slide-in-end",
 };
 
 /** A drawer for phones: a modal panel along one edge of the screen. */
@@ -38,7 +38,7 @@ export function Sheet({ open, onClose, title, closeLabel, side = "bottom", heigh
   return createPortal(
     <div
       ref={layerRef}
-      className="fixed inset-0 z-50 bg-[rgb(20_17_12/0.55)] animate-ink-fade"
+      className="fixed inset-0 z-overlay bg-(--scrim) animate-fade-in"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -51,20 +51,22 @@ export function Sheet({ open, onClose, title, closeLabel, side = "bottom", heigh
         tabIndex={-1}
         onKeyDown={onKeyDown}
         className={cx(
-          "ink-card fixed flex flex-col overflow-hidden border-line shadow-ink-lg outline-none",
+          "fixed flex flex-col overflow-hidden bg-raised text-ink shadow-lg outline-none",
           placement[side],
           side === "bottom" && height === "full" && "h-[85dvh]",
           className,
         )}
       >
         {side === "bottom" ? <span aria-hidden="true" className="mx-auto mt-2 h-1 w-9 shrink-0 rounded-full bg-rule" /> : null}
-        <div className="flex items-center gap-3 border-b-[1.5px] border-rule py-1.5 ps-4 pe-2">
-          <h2 id={`${id}-t`} className="min-w-0 flex-1 font-body text-base font-semibold">
+        <div className="flex items-center gap-3 py-2 ps-4 pe-2">
+          <h2 id={`${id}-t`} className="min-w-0 flex-1 text-lg font-semibold">
             {title}
           </h2>
-          <IconButton icon="close" label={closeLabel} onClick={onClose} />
+          <IconButton icon="close" variant="plain" size="sm" label={closeLabel} onClick={onClose} />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto p-4" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+          {children}
+        </div>
       </div>
     </div>,
     document.body,

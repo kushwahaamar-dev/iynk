@@ -1,0 +1,4040 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [],
+    "owners": [
+      "usr_iynk"
+    ],
+    "visibility": "private"
+  },
+  "actors": [
+    {
+      "id": "usr_iynk",
+      "name": "iynk"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      "firmware": {
+        "entry": "src_sketch",
+        "language": "arduino-cpp",
+        "libraries": [],
+        "sources": [
+          "src_sketch"
+        ]
+      },
+      "id": "brd_main",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.breadboard-half",
+        "version": "1.0.0"
+      },
+      "id": "cmp_bb",
+      "refdes": "BB1"
+    },
+    {
+      "definition": {
+        "ref": "core.buzzer-piezo",
+        "version": "1.0.0"
+      },
+      "id": "cmp_buz1",
+      "refdes": "BUZ1"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "S1u",
+              "kind": "strip",
+              "pins": [
+                "a1",
+                "b1",
+                "c1",
+                "d1",
+                "e1"
+              ]
+            },
+            {
+              "id": "S1l",
+              "kind": "strip",
+              "pins": [
+                "f1",
+                "g1",
+                "h1",
+                "i1",
+                "j1"
+              ]
+            },
+            {
+              "id": "S2u",
+              "kind": "strip",
+              "pins": [
+                "a2",
+                "b2",
+                "c2",
+                "d2",
+                "e2"
+              ]
+            },
+            {
+              "id": "S2l",
+              "kind": "strip",
+              "pins": [
+                "f2",
+                "g2",
+                "h2",
+                "i2",
+                "j2"
+              ]
+            },
+            {
+              "id": "S3u",
+              "kind": "strip",
+              "pins": [
+                "a3",
+                "b3",
+                "c3",
+                "d3",
+                "e3"
+              ]
+            },
+            {
+              "id": "S3l",
+              "kind": "strip",
+              "pins": [
+                "f3",
+                "g3",
+                "h3",
+                "i3",
+                "j3"
+              ]
+            },
+            {
+              "id": "S4u",
+              "kind": "strip",
+              "pins": [
+                "a4",
+                "b4",
+                "c4",
+                "d4",
+                "e4"
+              ]
+            },
+            {
+              "id": "S4l",
+              "kind": "strip",
+              "pins": [
+                "f4",
+                "g4",
+                "h4",
+                "i4",
+                "j4"
+              ]
+            },
+            {
+              "id": "S5u",
+              "kind": "strip",
+              "pins": [
+                "a5",
+                "b5",
+                "c5",
+                "d5",
+                "e5"
+              ]
+            },
+            {
+              "id": "S5l",
+              "kind": "strip",
+              "pins": [
+                "f5",
+                "g5",
+                "h5",
+                "i5",
+                "j5"
+              ]
+            },
+            {
+              "id": "S6u",
+              "kind": "strip",
+              "pins": [
+                "a6",
+                "b6",
+                "c6",
+                "d6",
+                "e6"
+              ]
+            },
+            {
+              "id": "S6l",
+              "kind": "strip",
+              "pins": [
+                "f6",
+                "g6",
+                "h6",
+                "i6",
+                "j6"
+              ]
+            },
+            {
+              "id": "S7u",
+              "kind": "strip",
+              "pins": [
+                "a7",
+                "b7",
+                "c7",
+                "d7",
+                "e7"
+              ]
+            },
+            {
+              "id": "S7l",
+              "kind": "strip",
+              "pins": [
+                "f7",
+                "g7",
+                "h7",
+                "i7",
+                "j7"
+              ]
+            },
+            {
+              "id": "S8u",
+              "kind": "strip",
+              "pins": [
+                "a8",
+                "b8",
+                "c8",
+                "d8",
+                "e8"
+              ]
+            },
+            {
+              "id": "S8l",
+              "kind": "strip",
+              "pins": [
+                "f8",
+                "g8",
+                "h8",
+                "i8",
+                "j8"
+              ]
+            },
+            {
+              "id": "S9u",
+              "kind": "strip",
+              "pins": [
+                "a9",
+                "b9",
+                "c9",
+                "d9",
+                "e9"
+              ]
+            },
+            {
+              "id": "S9l",
+              "kind": "strip",
+              "pins": [
+                "f9",
+                "g9",
+                "h9",
+                "i9",
+                "j9"
+              ]
+            },
+            {
+              "id": "S10u",
+              "kind": "strip",
+              "pins": [
+                "a10",
+                "b10",
+                "c10",
+                "d10",
+                "e10"
+              ]
+            },
+            {
+              "id": "S10l",
+              "kind": "strip",
+              "pins": [
+                "f10",
+                "g10",
+                "h10",
+                "i10",
+                "j10"
+              ]
+            },
+            {
+              "id": "S11u",
+              "kind": "strip",
+              "pins": [
+                "a11",
+                "b11",
+                "c11",
+                "d11",
+                "e11"
+              ]
+            },
+            {
+              "id": "S11l",
+              "kind": "strip",
+              "pins": [
+                "f11",
+                "g11",
+                "h11",
+                "i11",
+                "j11"
+              ]
+            },
+            {
+              "id": "S12u",
+              "kind": "strip",
+              "pins": [
+                "a12",
+                "b12",
+                "c12",
+                "d12",
+                "e12"
+              ]
+            },
+            {
+              "id": "S12l",
+              "kind": "strip",
+              "pins": [
+                "f12",
+                "g12",
+                "h12",
+                "i12",
+                "j12"
+              ]
+            },
+            {
+              "id": "S13u",
+              "kind": "strip",
+              "pins": [
+                "a13",
+                "b13",
+                "c13",
+                "d13",
+                "e13"
+              ]
+            },
+            {
+              "id": "S13l",
+              "kind": "strip",
+              "pins": [
+                "f13",
+                "g13",
+                "h13",
+                "i13",
+                "j13"
+              ]
+            },
+            {
+              "id": "S14u",
+              "kind": "strip",
+              "pins": [
+                "a14",
+                "b14",
+                "c14",
+                "d14",
+                "e14"
+              ]
+            },
+            {
+              "id": "S14l",
+              "kind": "strip",
+              "pins": [
+                "f14",
+                "g14",
+                "h14",
+                "i14",
+                "j14"
+              ]
+            },
+            {
+              "id": "S15u",
+              "kind": "strip",
+              "pins": [
+                "a15",
+                "b15",
+                "c15",
+                "d15",
+                "e15"
+              ]
+            },
+            {
+              "id": "S15l",
+              "kind": "strip",
+              "pins": [
+                "f15",
+                "g15",
+                "h15",
+                "i15",
+                "j15"
+              ]
+            },
+            {
+              "id": "S16u",
+              "kind": "strip",
+              "pins": [
+                "a16",
+                "b16",
+                "c16",
+                "d16",
+                "e16"
+              ]
+            },
+            {
+              "id": "S16l",
+              "kind": "strip",
+              "pins": [
+                "f16",
+                "g16",
+                "h16",
+                "i16",
+                "j16"
+              ]
+            },
+            {
+              "id": "S17u",
+              "kind": "strip",
+              "pins": [
+                "a17",
+                "b17",
+                "c17",
+                "d17",
+                "e17"
+              ]
+            },
+            {
+              "id": "S17l",
+              "kind": "strip",
+              "pins": [
+                "f17",
+                "g17",
+                "h17",
+                "i17",
+                "j17"
+              ]
+            },
+            {
+              "id": "S18u",
+              "kind": "strip",
+              "pins": [
+                "a18",
+                "b18",
+                "c18",
+                "d18",
+                "e18"
+              ]
+            },
+            {
+              "id": "S18l",
+              "kind": "strip",
+              "pins": [
+                "f18",
+                "g18",
+                "h18",
+                "i18",
+                "j18"
+              ]
+            },
+            {
+              "id": "S19u",
+              "kind": "strip",
+              "pins": [
+                "a19",
+                "b19",
+                "c19",
+                "d19",
+                "e19"
+              ]
+            },
+            {
+              "id": "S19l",
+              "kind": "strip",
+              "pins": [
+                "f19",
+                "g19",
+                "h19",
+                "i19",
+                "j19"
+              ]
+            },
+            {
+              "id": "S20u",
+              "kind": "strip",
+              "pins": [
+                "a20",
+                "b20",
+                "c20",
+                "d20",
+                "e20"
+              ]
+            },
+            {
+              "id": "S20l",
+              "kind": "strip",
+              "pins": [
+                "f20",
+                "g20",
+                "h20",
+                "i20",
+                "j20"
+              ]
+            },
+            {
+              "id": "S21u",
+              "kind": "strip",
+              "pins": [
+                "a21",
+                "b21",
+                "c21",
+                "d21",
+                "e21"
+              ]
+            },
+            {
+              "id": "S21l",
+              "kind": "strip",
+              "pins": [
+                "f21",
+                "g21",
+                "h21",
+                "i21",
+                "j21"
+              ]
+            },
+            {
+              "id": "S22u",
+              "kind": "strip",
+              "pins": [
+                "a22",
+                "b22",
+                "c22",
+                "d22",
+                "e22"
+              ]
+            },
+            {
+              "id": "S22l",
+              "kind": "strip",
+              "pins": [
+                "f22",
+                "g22",
+                "h22",
+                "i22",
+                "j22"
+              ]
+            },
+            {
+              "id": "S23u",
+              "kind": "strip",
+              "pins": [
+                "a23",
+                "b23",
+                "c23",
+                "d23",
+                "e23"
+              ]
+            },
+            {
+              "id": "S23l",
+              "kind": "strip",
+              "pins": [
+                "f23",
+                "g23",
+                "h23",
+                "i23",
+                "j23"
+              ]
+            },
+            {
+              "id": "S24u",
+              "kind": "strip",
+              "pins": [
+                "a24",
+                "b24",
+                "c24",
+                "d24",
+                "e24"
+              ]
+            },
+            {
+              "id": "S24l",
+              "kind": "strip",
+              "pins": [
+                "f24",
+                "g24",
+                "h24",
+                "i24",
+                "j24"
+              ]
+            },
+            {
+              "id": "S25u",
+              "kind": "strip",
+              "pins": [
+                "a25",
+                "b25",
+                "c25",
+                "d25",
+                "e25"
+              ]
+            },
+            {
+              "id": "S25l",
+              "kind": "strip",
+              "pins": [
+                "f25",
+                "g25",
+                "h25",
+                "i25",
+                "j25"
+              ]
+            },
+            {
+              "id": "S26u",
+              "kind": "strip",
+              "pins": [
+                "a26",
+                "b26",
+                "c26",
+                "d26",
+                "e26"
+              ]
+            },
+            {
+              "id": "S26l",
+              "kind": "strip",
+              "pins": [
+                "f26",
+                "g26",
+                "h26",
+                "i26",
+                "j26"
+              ]
+            },
+            {
+              "id": "S27u",
+              "kind": "strip",
+              "pins": [
+                "a27",
+                "b27",
+                "c27",
+                "d27",
+                "e27"
+              ]
+            },
+            {
+              "id": "S27l",
+              "kind": "strip",
+              "pins": [
+                "f27",
+                "g27",
+                "h27",
+                "i27",
+                "j27"
+              ]
+            },
+            {
+              "id": "S28u",
+              "kind": "strip",
+              "pins": [
+                "a28",
+                "b28",
+                "c28",
+                "d28",
+                "e28"
+              ]
+            },
+            {
+              "id": "S28l",
+              "kind": "strip",
+              "pins": [
+                "f28",
+                "g28",
+                "h28",
+                "i28",
+                "j28"
+              ]
+            },
+            {
+              "id": "S29u",
+              "kind": "strip",
+              "pins": [
+                "a29",
+                "b29",
+                "c29",
+                "d29",
+                "e29"
+              ]
+            },
+            {
+              "id": "S29l",
+              "kind": "strip",
+              "pins": [
+                "f29",
+                "g29",
+                "h29",
+                "i29",
+                "j29"
+              ]
+            },
+            {
+              "id": "S30u",
+              "kind": "strip",
+              "pins": [
+                "a30",
+                "b30",
+                "c30",
+                "d30",
+                "e30"
+              ]
+            },
+            {
+              "id": "S30l",
+              "kind": "strip",
+              "pins": [
+                "f30",
+                "g30",
+                "h30",
+                "i30",
+                "j30"
+              ]
+            },
+            {
+              "id": "RAIL_TP",
+              "kind": "strip",
+              "pins": [
+                "RAIL_TP2",
+                "RAIL_TP3",
+                "RAIL_TP4",
+                "RAIL_TP5",
+                "RAIL_TP6",
+                "RAIL_TP8",
+                "RAIL_TP9",
+                "RAIL_TP10",
+                "RAIL_TP11",
+                "RAIL_TP12",
+                "RAIL_TP14",
+                "RAIL_TP15",
+                "RAIL_TP16",
+                "RAIL_TP17",
+                "RAIL_TP18",
+                "RAIL_TP20",
+                "RAIL_TP21",
+                "RAIL_TP22",
+                "RAIL_TP23",
+                "RAIL_TP24",
+                "RAIL_TP26",
+                "RAIL_TP27",
+                "RAIL_TP28",
+                "RAIL_TP29",
+                "RAIL_TP30"
+              ]
+            },
+            {
+              "id": "RAIL_TN",
+              "kind": "strip",
+              "pins": [
+                "RAIL_TN2",
+                "RAIL_TN3",
+                "RAIL_TN4",
+                "RAIL_TN5",
+                "RAIL_TN6",
+                "RAIL_TN8",
+                "RAIL_TN9",
+                "RAIL_TN10",
+                "RAIL_TN11",
+                "RAIL_TN12",
+                "RAIL_TN14",
+                "RAIL_TN15",
+                "RAIL_TN16",
+                "RAIL_TN17",
+                "RAIL_TN18",
+                "RAIL_TN20",
+                "RAIL_TN21",
+                "RAIL_TN22",
+                "RAIL_TN23",
+                "RAIL_TN24",
+                "RAIL_TN26",
+                "RAIL_TN27",
+                "RAIL_TN28",
+                "RAIL_TN29",
+                "RAIL_TN30"
+              ]
+            },
+            {
+              "id": "RAIL_BP",
+              "kind": "strip",
+              "pins": [
+                "RAIL_BP2",
+                "RAIL_BP3",
+                "RAIL_BP4",
+                "RAIL_BP5",
+                "RAIL_BP6",
+                "RAIL_BP8",
+                "RAIL_BP9",
+                "RAIL_BP10",
+                "RAIL_BP11",
+                "RAIL_BP12",
+                "RAIL_BP14",
+                "RAIL_BP15",
+                "RAIL_BP16",
+                "RAIL_BP17",
+                "RAIL_BP18",
+                "RAIL_BP20",
+                "RAIL_BP21",
+                "RAIL_BP22",
+                "RAIL_BP23",
+                "RAIL_BP24",
+                "RAIL_BP26",
+                "RAIL_BP27",
+                "RAIL_BP28",
+                "RAIL_BP29",
+                "RAIL_BP30"
+              ]
+            },
+            {
+              "id": "RAIL_BN",
+              "kind": "strip",
+              "pins": [
+                "RAIL_BN2",
+                "RAIL_BN3",
+                "RAIL_BN4",
+                "RAIL_BN5",
+                "RAIL_BN6",
+                "RAIL_BN8",
+                "RAIL_BN9",
+                "RAIL_BN10",
+                "RAIL_BN11",
+                "RAIL_BN12",
+                "RAIL_BN14",
+                "RAIL_BN15",
+                "RAIL_BN16",
+                "RAIL_BN17",
+                "RAIL_BN18",
+                "RAIL_BN20",
+                "RAIL_BN21",
+                "RAIL_BN22",
+                "RAIL_BN23",
+                "RAIL_BN24",
+                "RAIL_BN26",
+                "RAIL_BN27",
+                "RAIL_BN28",
+                "RAIL_BN29",
+                "RAIL_BN30"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "class": "passive",
+              "id": "a1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j1",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j7",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j13",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j19",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j25",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "a30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "b30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "c30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "d30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "e30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "f30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "g30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "h30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "i30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "j30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TP30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_TN30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BP30",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN2",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN3",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN4",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN5",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN6",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN8",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN9",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN10",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN11",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN12",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN14",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN15",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN16",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN17",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN18",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN20",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN21",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN22",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN23",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN24",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN26",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN27",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN28",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN29",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "id": "RAIL_BN30",
+              "type": "passive"
+            }
+          ],
+          "role": "surface"
+        },
+        "origin": "builtin",
+        "ref": "core.breadboard-half",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": "passive",
+              "id": "kind",
+              "type": "enum",
+              "values": [
+                "passive",
+                "active"
+              ]
+            }
+          ],
+          "pins": [
+            {
+              "class": "passive",
+              "designator": "+",
+              "id": "PLUS",
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "designator": "-",
+              "id": "MINUS",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.buzzer-piezo",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_D11",
+              "kind": "internal-short",
+              "pins": [
+                "D11",
+                "ICSP_4"
+              ]
+            },
+            {
+              "id": "g_D12",
+              "kind": "internal-short",
+              "pins": [
+                "D12",
+                "ICSP_1"
+              ]
+            },
+            {
+              "id": "g_D13",
+              "kind": "internal-short",
+              "pins": [
+                "D13",
+                "ICSP_3"
+              ]
+            },
+            {
+              "id": "g_GND",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "POWER_6",
+                "POWER_7",
+                "ICSP_6",
+                "ICSP1_6"
+              ]
+            },
+            {
+              "id": "g_RESET",
+              "kind": "internal-short",
+              "pins": [
+                "RESET",
+                "ICSP_5"
+              ]
+            },
+            {
+              "id": "g_P5V",
+              "kind": "internal-short",
+              "pins": [
+                "P5V",
+                "ICSP_2",
+                "ICSP1_2"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "class": "digital",
+              "designator": "D0",
+              "header": "IOL",
+              "id": "D0",
+              "net": "D0",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D1",
+              "header": "IOL",
+              "id": "D1",
+              "net": "D1",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D2",
+              "header": "IOL",
+              "id": "D2",
+              "net": "D2",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "~D3",
+              "header": "IOL",
+              "id": "D3",
+              "net": "D3",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D4",
+              "header": "IOL",
+              "id": "D4",
+              "net": "D4",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "~D5",
+              "header": "IOL",
+              "id": "D5",
+              "net": "D5",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "~D6",
+              "header": "IOL",
+              "id": "D6",
+              "net": "D6",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D7",
+              "header": "IOL",
+              "id": "D7",
+              "net": "D7",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D8",
+              "header": "IOH",
+              "id": "D8",
+              "net": "D8",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "~D9",
+              "header": "IOH",
+              "id": "D9",
+              "net": "D9",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "~D10",
+              "header": "IOH",
+              "id": "D10",
+              "net": "D10",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "~D11",
+              "header": "IOH",
+              "id": "D11",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D12",
+              "header": "IOH",
+              "id": "D12",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "D13",
+              "header": "IOH",
+              "id": "D13",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "header": "IOH",
+              "id": "GND",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "class": "analog",
+              "designator": "AREF",
+              "header": "IOH",
+              "id": "AREF",
+              "net": "AREF",
+              "type": "analog_in"
+            },
+            {
+              "class": "digital",
+              "designator": "SDA",
+              "header": "IOH",
+              "id": "SDA",
+              "net": "SDA",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "SCL",
+              "header": "IOH",
+              "id": "SCL",
+              "net": "SCL",
+              "type": "digital_io"
+            },
+            {
+              "class": "nc",
+              "designator": "NC",
+              "header": "POWER",
+              "id": "NC",
+              "net": "NC",
+              "type": "nc"
+            },
+            {
+              "class": "power",
+              "designator": "IOREF",
+              "header": "POWER",
+              "id": "IOREF",
+              "net": "IOREF",
+              "type": "power_io"
+            },
+            {
+              "class": "digital",
+              "designator": "RESET",
+              "header": "POWER",
+              "id": "RESET",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "class": "power",
+              "designator": "3V3",
+              "header": "POWER",
+              "id": "P3V3",
+              "net": "3V3",
+              "type": "power_io"
+            },
+            {
+              "class": "power",
+              "designator": "5V",
+              "header": "POWER",
+              "id": "P5V",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_7",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "class": "power",
+              "designator": "VIN",
+              "header": "POWER",
+              "id": "VIN",
+              "net": "VIN",
+              "type": "power_io"
+            },
+            {
+              "class": "digital",
+              "designator": "A0",
+              "header": "AD",
+              "id": "A0",
+              "net": "A0",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "A1",
+              "header": "AD",
+              "id": "A1",
+              "net": "A1",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "A2",
+              "header": "AD",
+              "id": "A2",
+              "net": "A2",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "A3",
+              "header": "AD",
+              "id": "A3",
+              "net": "A3",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "A4",
+              "header": "AD",
+              "id": "A4",
+              "net": "A4",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "A5",
+              "header": "AD",
+              "id": "A5",
+              "net": "A5",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "MISO",
+              "header": "ICSP",
+              "id": "ICSP_1",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "class": "power",
+              "designator": "5V",
+              "header": "ICSP",
+              "id": "ICSP_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "class": "digital",
+              "designator": "SCK",
+              "header": "ICSP",
+              "id": "ICSP_3",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "MOSI",
+              "header": "ICSP",
+              "id": "ICSP_4",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "RESET",
+              "header": "ICSP",
+              "id": "ICSP_5",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "header": "ICSP",
+              "id": "ICSP_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "class": "digital",
+              "designator": "MISO2",
+              "header": "ICSP1",
+              "id": "MISO2",
+              "net": "MISO2",
+              "type": "digital_io"
+            },
+            {
+              "class": "power",
+              "designator": "5V",
+              "header": "ICSP1",
+              "id": "ICSP1_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "class": "digital",
+              "designator": "SCK2",
+              "header": "ICSP1",
+              "id": "SCK2",
+              "net": "SCK2",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "MOSI2",
+              "header": "ICSP1",
+              "id": "MOSI2",
+              "net": "MOSI2",
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "RESET2",
+              "header": "ICSP1",
+              "id": "RESET2",
+              "net": "RESET2",
+              "type": "digital_io"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "header": "ICSP1",
+              "id": "ICSP1_6",
+              "net": "GND",
+              "type": "ground"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": []
+  },
+  "format": "iynk.project",
+  "guide": {
+    "callouts": [
+      {
+        "target": "BUZ1",
+        "text": {
+          "de": "Ein passiver Piezo: Er klingt nur, wenn man ihn mit einer Frequenz ansteuert.",
+          "en": "A passive piezo: it only sounds when driven with a frequency.",
+          "es": "Un piezo pasivo: solo suena cuando se le aplica una frecuencia.",
+          "fr": "Un piézo passif : il ne sonne que si on le pilote avec une fréquence.",
+          "hi": "पैसिव पीज़ो: यह तभी बजता है जब इसे किसी फ़्रीक्वेंसी से चलाया जाए।",
+          "zh": "无源压电蜂鸣器：只有用某个频率驱动时才会发声。"
+        }
+      },
+      {
+        "target": "IOH",
+        "text": {
+          "de": "Der GND neben D13.",
+          "en": "The GND beside D13.",
+          "es": "El GND que está junto a D13.",
+          "fr": "Le GND à côté de D13.",
+          "hi": "D13 के बगल वाला GND।",
+          "zh": "D13 旁边的 GND。"
+        }
+      },
+      {
+        "target": "ZU4",
+        "text": {
+          "de": "Timer 2 im 328P erzeugt den Ton.",
+          "en": "Timer 2 inside the 328P makes the tone.",
+          "es": "El temporizador 2, dentro del 328P, genera el tono.",
+          "fr": "Le timer 2 du 328P produit la note.",
+          "hi": "328P के अंदर का टाइमर 2 सुर बनाता है।",
+          "zh": "328P 里的定时器 2 产生音调。"
+        }
+      }
+    ],
+    "features": [
+      {
+        "icon": "play",
+        "text": {
+          "de": "Wähl eine Melodie und hör sie dir an",
+          "en": "Pick a tune and hear it",
+          "es": "Elige una melodía y escúchala",
+          "fr": "Choisissez un air et écoutez-le",
+          "hi": "कोई धुन चुनें और सुनें",
+          "zh": "选一首曲子听听"
+        }
+      },
+      {
+        "icon": "info",
+        "text": {
+          "de": "Warum sich jeder Ton in einer Oktave verdoppelt",
+          "en": "Why every note in an octave doubles",
+          "es": "Por qué cada nota se duplica en una octava",
+          "fr": "Pourquoi chaque note double à l'octave",
+          "hi": "सप्तक में हर सुर दोगुना क्यों होता है",
+          "zh": "为什么每升高一个八度频率就翻倍"
+        }
+      },
+      {
+        "icon": "tip",
+        "text": {
+          "de": "Schreib deine eigene Melodie",
+          "en": "Write your own melody",
+          "es": "Escribe tu propia melodía",
+          "fr": "Écrivez votre propre mélodie",
+          "hi": "अपनी खुद की धुन लिखें",
+          "zh": "写你自己的旋律"
+        }
+      }
+    ],
+    "hints": [
+      {
+        "de": "Solange tone() spielt, funktioniert analogWrite() an D3 und D11 nicht: Sie teilen sich Timer 2.",
+        "en": "While tone() is playing, analogWrite() on D3 and D11 stops working: they share timer 2.",
+        "es": "Mientras suena tone(), analogWrite() en D3 y D11 deja de funcionar: comparten el temporizador 2.",
+        "fr": "Pendant que tone() joue, analogWrite() sur D3 et D11 ne fonctionne plus : ils partagent le timer 2.",
+        "hi": "जब tone() बज रहा हो, D3 और D11 पर analogWrite() काम नहीं करता: वे टाइमर 2 साझा करते हैं।",
+        "zh": "tone() 播放时，D3 和 D11 上的 analogWrite() 不起作用：它们共用定时器 2。"
+      },
+      {
+        "de": "Ohne die zusätzlichen 50 ms würden zwei gleiche Töne hintereinander zu einem langen Ton verschmelzen.",
+        "en": "Without the extra 50 ms, two equal notes in a row would merge into one long note.",
+        "es": "Sin los 50 ms de más, dos notas iguales seguidas se fundirían en una sola nota larga.",
+        "fr": "Sans les 50 ms en plus, deux notes identiques à la suite se fondraient en une seule note longue.",
+        "hi": "अतिरिक्त 50 ms के बिना, लगातार दो एक जैसे सुर मिलकर एक लंबा सुर बन जाते।",
+        "zh": "没有额外的 50 ms，连续两个相同的音会合成一个长音。"
+      }
+    ],
+    "kind": "lesson",
+    "lede": {
+      "de": "tone() erzeugt an jedem Pin eine Rechteckwelle mit beliebiger Frequenz. Setz einen Piezo-Summer an D8, gib ihm eine Liste von Tönen, und er spielt eine Melodie.",
+      "en": "tone() makes a square wave at any frequency on any pin. Put a piezo buzzer on D8, give it a list of notes, and it plays a tune.",
+      "es": "tone() genera una onda cuadrada de cualquier frecuencia en cualquier pin. Pon un zumbador piezoeléctrico en D8, dale una lista de notas y tocará una melodía.",
+      "fr": "tone() produit un signal carré à n'importe quelle fréquence sur n'importe quelle broche. Mettez un buzzer piézo sur D8, donnez-lui une liste de notes, et il joue un air.",
+      "hi": "tone() किसी भी पिन पर किसी भी फ़्रीक्वेंसी की स्क्वेयर वेव बनाता है। D8 पर एक पीज़ो बज़र लगाएँ, उसे सुरों की एक सूची दें, और वह धुन बजाने लगता है।",
+      "zh": "tone() 可以在任意引脚上产生任意频率的方波。在 D8 上接一个压电蜂鸣器，给它一串音符，它就能演奏一首曲子。"
+    },
+    "legacyFigure": {
+      "circuit": "sound",
+      "page": "/figures/boards/uno-r3.html",
+      "sheets": [
+        "board",
+        "breadboard",
+        "schematic",
+        "power"
+      ]
+    },
+    "level": "io",
+    "order": 8,
+    "pins": [
+      {
+        "color": "orange",
+        "pin": "D8",
+        "role": {
+          "de": "tone() treibt ihn mit einer Rechteckwelle.",
+          "en": "tone() drives it with a square wave.",
+          "es": "tone() lo excita con una onda cuadrada.",
+          "fr": "tone() le pilote avec un signal carré.",
+          "hi": "tone() इसे स्क्वेयर वेव से चलाता है।",
+          "zh": "tone() 用方波驱动它。"
+        },
+        "to": {
+          "de": "Das +-Bein des Summers",
+          "en": "The buzzer's + leg",
+          "es": "La pata + del zumbador",
+          "fr": "La patte + du buzzer",
+          "hi": "बज़र की + टाँग",
+          "zh": "蜂鸣器的 + 脚"
+        }
+      },
+      {
+        "color": "black",
+        "pin": "GND",
+        "role": {
+          "de": "Masse.",
+          "en": "Ground.",
+          "es": "Tierra.",
+          "fr": "Masse.",
+          "hi": "ग्राउंड।",
+          "zh": "地。"
+        },
+        "to": {
+          "de": "Das −-Bein des Summers",
+          "en": "The buzzer's − leg",
+          "es": "La pata − del zumbador",
+          "fr": "La patte − du buzzer",
+          "hi": "बज़र की − टाँग",
+          "zh": "蜂鸣器的 − 脚"
+        }
+      }
+    ],
+    "quizzes": [
+      {
+        "id": "sound-quiz",
+        "questions": [
+          {
+            "answer": 2,
+            "id": "q1",
+            "options": [
+              {
+                "de": "131 Hz",
+                "en": "131 Hz",
+                "es": "131 Hz",
+                "fr": "131 Hz",
+                "hi": "131 Hz",
+                "zh": "131 Hz"
+              },
+              {
+                "de": "393 Hz",
+                "en": "393 Hz",
+                "es": "393 Hz",
+                "fr": "393 Hz",
+                "hi": "393 Hz",
+                "zh": "393 Hz"
+              },
+              {
+                "de": "524 Hz",
+                "en": "524 Hz",
+                "es": "524 Hz",
+                "fr": "524 Hz",
+                "hi": "524 Hz",
+                "zh": "524 Hz"
+              }
+            ],
+            "q": {
+              "de": "Das mittlere C hat 262 Hz. Wie hoch ist das C eine Oktave darüber?",
+              "en": "Middle C is 262 Hz. What is the C an octave higher?",
+              "es": "El do central son 262 Hz. ¿Cuánto es el do una octava más arriba?",
+              "fr": "Le do central est à 262 Hz. Quelle est la fréquence du do une octave plus haut ?",
+              "hi": "मिडिल C 262 Hz है। एक सप्तक ऊपर वाला C कितना है?",
+              "zh": "中央 C 是 262 Hz。高一个八度的 C 是多少？"
+            },
+            "why": {
+              "de": "Jede Oktave verdoppelt die Frequenz: 262 × 2 = 524 Hz. Die Melodie nutzt 523, den exakten Wert.",
+              "en": "Each octave doubles the frequency: 262 × 2 = 524 Hz. The tune uses 523, the exact value.",
+              "es": "Cada octava duplica la frecuencia: 262 × 2 = 524 Hz. La melodía usa 523, el valor exacto.",
+              "fr": "Chaque octave double la fréquence : 262 × 2 = 524 Hz. L'air utilise 523, la valeur exacte.",
+              "hi": "हर सप्तक फ़्रीक्वेंसी को दोगुना करता है: 262 × 2 = 524 Hz। धुन में 523 इस्तेमाल हुआ है, जो सटीक मान है।",
+              "zh": "每升高一个八度频率翻倍：262 × 2 = 524 Hz。曲子里用的是精确值 523。"
+            }
+          },
+          {
+            "answer": 1,
+            "id": "q2",
+            "options": [
+              {
+                "de": "Die Länge der Melodie in ms",
+                "en": "The tune's length in ms",
+                "es": "La duración de la melodía en ms",
+                "fr": "La durée de l'air en ms",
+                "hi": "धुन की लंबाई ms में",
+                "zh": "曲子的长度（ms）"
+              },
+              {
+                "de": "Die Anzahl der Töne in der Liste",
+                "en": "The number of notes in the list",
+                "es": "El número de notas de la lista",
+                "fr": "Le nombre de notes de la liste",
+                "hi": "सूची में सुरों की संख्या",
+                "zh": "列表里音符的个数"
+              },
+              {
+                "de": "Den höchsten Ton",
+                "en": "The highest note",
+                "es": "La nota más alta",
+                "fr": "La note la plus aiguë",
+                "hi": "सबसे ऊँचा सुर",
+                "zh": "最高的音"
+              }
+            ],
+            "q": {
+              "de": "Was ergibt sizeof(melody) / sizeof(int)?",
+              "en": "What does sizeof(melody) / sizeof(int) give?",
+              "es": "¿Qué da sizeof(melody) / sizeof(int)?",
+              "fr": "Que donne sizeof(melody) / sizeof(int) ?",
+              "hi": "sizeof(melody) / sizeof(int) क्या देता है?",
+              "zh": "sizeof(melody) / sizeof(int) 得到的是什么？"
+            },
+            "why": {
+              "de": "sizeof(melody) ist die Größe des Arrays in Bytes; geteilt durch die Größe eines int ergibt das, wie viele es sind.",
+              "en": "sizeof(melody) is the array's size in bytes; dividing by the size of one int gives how many there are.",
+              "es": "sizeof(melody) es el tamaño del array en bytes; al dividirlo entre el tamaño de un int sale cuántos hay.",
+              "fr": "sizeof(melody) est la taille du tableau en octets ; en la divisant par la taille d'un int, on obtient le nombre d'éléments.",
+              "hi": "sizeof(melody) ऐरे का आकार बाइट में है; इसे एक int के आकार से भाग देने पर पता चलता है कि उसमें कितने हैं।",
+              "zh": "sizeof(melody) 是数组的字节数；除以一个 int 的大小，就得到里面有多少个元素。"
+            }
+          }
+        ]
+      }
+    ],
+    "serialSample": {
+      "baud": 9600,
+      "lines": []
+    },
+    "specs": [
+      {
+        "label": {
+          "de": "Mittleres C",
+          "en": "Middle C",
+          "es": "Do central",
+          "fr": "Do central",
+          "hi": "मिडिल C",
+          "zh": "中央 C"
+        },
+        "value": {
+          "de": "262 Hz",
+          "en": "262 Hz",
+          "es": "262 Hz",
+          "fr": "262 Hz",
+          "hi": "262 Hz",
+          "zh": "262 Hz"
+        }
+      },
+      {
+        "label": {
+          "de": "A über dem mittleren C",
+          "en": "A above middle C",
+          "es": "El la por encima del do central",
+          "fr": "La au-dessus du do central",
+          "hi": "मिडिल C के ऊपर वाला A",
+          "zh": "中央 C 之上的 A"
+        },
+        "value": {
+          "de": "440 Hz",
+          "en": "440 Hz",
+          "es": "440 Hz",
+          "fr": "440 Hz",
+          "hi": "440 Hz",
+          "zh": "440 Hz"
+        }
+      },
+      {
+        "label": {
+          "de": "Eine Oktave höher",
+          "en": "One octave up",
+          "es": "Una octava más arriba",
+          "fr": "Une octave plus haut",
+          "hi": "एक सप्तक ऊपर",
+          "zh": "高一个八度"
+        },
+        "value": {
+          "de": "Die doppelte Frequenz",
+          "en": "Double the frequency",
+          "es": "El doble de frecuencia",
+          "fr": "Fréquence doublée",
+          "hi": "फ़्रीक्वेंसी दोगुनी",
+          "zh": "频率翻倍"
+        }
+      },
+      {
+        "label": {
+          "de": "Bereich von tone()",
+          "en": "tone() range",
+          "es": "Rango de tone()",
+          "fr": "Plage de tone()",
+          "hi": "tone() की रेंज",
+          "zh": "tone() 范围"
+        },
+        "value": {
+          "de": "Ab 31 Hz",
+          "en": "31 Hz up",
+          "es": "De 31 Hz hacia arriba",
+          "fr": "À partir de 31 Hz",
+          "hi": "31 Hz से ऊपर",
+          "zh": "31 Hz 起"
+        }
+      },
+      {
+        "label": {
+          "de": "Timer",
+          "en": "Timer",
+          "es": "Temporizador",
+          "fr": "Timer",
+          "hi": "टाइमर",
+          "zh": "定时器"
+        },
+        "value": {
+          "de": "tone() nutzt Timer 2, der auch die PWM an D3 und D11 erzeugt",
+          "en": "tone() uses timer 2, which also runs PWM on D3 and D11",
+          "es": "tone() usa el temporizador 2, que también genera el PWM de D3 y D11",
+          "fr": "tone() utilise le timer 2, qui gère aussi le PWM de D3 et D11",
+          "hi": "tone() टाइमर 2 इस्तेमाल करता है, जो D3 और D11 पर PWM भी चलाता है",
+          "zh": "tone() 使用定时器 2，它也负责 D3 和 D11 上的 PWM"
+        }
+      }
+    ],
+    "starter": {
+      "source": "src_sketch",
+      "splices": {
+        "tune": {
+          "ode": "  330, 330, 349, 392, 392,\n  349, 330, 294, 262, 262,\n  294, 330, 330, 294, 294",
+          "scale": "  262, 294, 330, 349,\n  392, 440, 494, 523",
+          "twinkle": "  262, 262, 392, 392, 440, 440, 392,\n  349, 349, 330, 330, 294, 294, 262"
+        }
+      },
+      "template": "const int BUZZER = 8;\nint melody[] = {\n{{p:tune}}\n};\nconst int N = sizeof(melody) / sizeof(int);  // how many notes are in the list\n\nvoid setup() {}\n\nvoid loop() {\n  for (int i = 0; i < N; i++) {\n    tone(BUZZER, melody[i], {{p:note}});\n    delay({{p:note}} + 50);  // a short gap so repeated notes sound separate\n  }\n  delay(1000);\n}\n"
+    },
+    "steps": [
+      {
+        "de": "Verbinde das +-Bein des Summers mit D8 und sein −-Bein mit GND.",
+        "en": "Wire the buzzer's + leg to D8 and its − leg to GND.",
+        "es": "Conecta la pata + del zumbador a D8 y la pata − a GND.",
+        "fr": "Reliez la patte + du buzzer à D8 et sa patte − à GND.",
+        "hi": "बज़र की + टाँग को D8 से और − टाँग को GND से जोड़ें।",
+        "zh": "把蜂鸣器的 + 脚接 D8，− 脚接 GND。"
+      },
+      {
+        "de": "Drück auf „Ausführen“: „Funkel, funkel, kleiner Stern“ spielt, dann eine Sekunde Pause, dann wieder von vorn.",
+        "en": "Press Run: Twinkle, Twinkle plays, then a one-second pause, then again.",
+        "es": "Pulsa Ejecutar: suena Estrellita, ¿dónde estás?, luego una pausa de un segundo y vuelta a empezar.",
+        "fr": "Appuyez sur Exécuter : « Ah ! vous dirai-je, maman » se joue, puis une pause d'une seconde, puis ça recommence.",
+        "hi": "‘चलाएँ’ दबाएँ: ट्विंकल, ट्विंकल बजती है, फिर एक सेकंड का विराम, फिर दोबारा।",
+        "zh": "按“运行”：先播放《小星星》，停一秒，然后再来一遍。"
+      },
+      {
+        "de": "Stell „Melodie“ auf „Ode an die Freude“ und ändere „Tonlänge“, um sie schneller zu machen.",
+        "en": "Switch Tune to Ode to Joy, and change Note length to speed it up.",
+        "es": "Cambia Melodía a Himno de la alegría, y cambia Duración de la nota para que vaya más rápido.",
+        "fr": "Passez « Air » sur « Hymne à la joie », et modifiez « Durée des notes » pour accélérer.",
+        "hi": "‘धुन’ को ‘ओड टू जॉय’ पर बदलें, और ‘सुर की लंबाई’ बदलकर इसे तेज़ करें।",
+        "zh": "把“曲子”换成《欢乐颂》，再改“音符时长”让它变快。"
+      },
+      {
+        "de": "Ändere die Zahlen in melody[]: 523 ist das C eine Oktave über 262.",
+        "en": "Edit the numbers in melody[]: 523 is the C an octave above 262.",
+        "es": "Edita los números de melody[]: 523 es el do una octava por encima de 262.",
+        "fr": "Modifiez les nombres de melody[] : 523 est le do une octave au-dessus de 262.",
+        "hi": "melody[] की संख्याएँ बदलें: 523, 262 से एक सप्तक ऊपर वाला C है।",
+        "zh": "修改 melody[] 里的数字：523 是比 262 高一个八度的 C。"
+      }
+    ],
+    "title": {
+      "de": "Eine Melodie spielen",
+      "en": "Play a tune",
+      "es": "Toca una melodía",
+      "fr": "Jouer un air",
+      "hi": "धुन बजाएँ",
+      "zh": "演奏一首曲子"
+    }
+  },
+  "history": {
+    "baseChain": "be374302599a33c5cdb012d11d54f99c9ec039459ad46ad6320d01b8f132ba1b",
+    "baseRevision": 0,
+    "checkpoints": [],
+    "ops": []
+  },
+  "id": "prj_uno-r3-sound",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "meta": {
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "description": "tone() makes a square wave at any frequency on any pin. Put a piezo buzzer on D8, give it a list of notes, and it plays a tune.",
+    "kind": "lesson",
+    "locale": "en",
+    "tags": [
+      "uno-r3",
+      "lesson",
+      "io"
+    ],
+    "title": "Play a tune",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nets": [
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_main",
+          "p": "D8"
+        },
+        {
+          "c": "cmp_buz1",
+          "p": "PLUS"
+        }
+      ],
+      "id": "net_d8",
+      "name": "D8"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_main",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_buz1",
+          "p": "MINUS"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "par_note",
+      "kind": "number",
+      "label": {
+        "de": "Tonlänge",
+        "en": "Note length",
+        "es": "Duración de la nota",
+        "fr": "Durée des notes",
+        "hi": "सुर की लंबाई",
+        "zh": "音符时长"
+      },
+      "max": 500,
+      "min": 80,
+      "name": "note",
+      "step": 10,
+      "value": 220
+    },
+    {
+      "id": "par_tune",
+      "kind": "choice",
+      "label": {
+        "de": "Melodie",
+        "en": "Tune",
+        "es": "Melodía",
+        "fr": "Air",
+        "hi": "धुन",
+        "zh": "曲子"
+      },
+      "name": "tune",
+      "options": [
+        {
+          "label": {
+            "de": "C-Dur-Tonleiter",
+            "en": "C major scale",
+            "es": "Escala de do mayor",
+            "fr": "Gamme de do majeur",
+            "hi": "C मेजर स्केल",
+            "zh": "C 大调音阶"
+          },
+          "value": "scale"
+        },
+        {
+          "label": {
+            "de": "Funkel, funkel, kleiner Stern",
+            "en": "Twinkle, Twinkle",
+            "es": "Estrellita, ¿dónde estás?",
+            "fr": "Ah ! vous dirai-je, maman",
+            "hi": "ट्विंकल, ट्विंकल",
+            "zh": "小星星"
+          },
+          "value": "twinkle"
+        },
+        {
+          "label": {
+            "de": "Ode an die Freude",
+            "en": "Ode to Joy",
+            "es": "Himno de la alegría",
+            "fr": "Hymne à la joie",
+            "hi": "ओड टू जॉय",
+            "zh": "欢乐颂"
+          },
+          "value": "ode"
+        }
+      ],
+      "value": "twinkle"
+    },
+    {
+      "id": "par_volume",
+      "kind": "number",
+      "label": {
+        "de": "Lautstärke",
+        "en": "Volume",
+        "es": "Volumen",
+        "fr": "Volume",
+        "hi": "आवाज़",
+        "zh": "音量"
+      },
+      "max": 100,
+      "min": 0,
+      "name": "volume",
+      "step": 5,
+      "unit": "percent",
+      "value": 40
+    }
+  ],
+  "provenance": {
+    "contributors": [],
+    "createdBy": "usr_iynk",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0"
+    },
+    "origin": {
+      "at": "2026-01-01T00:00:00.000Z",
+      "catalogue": {
+        "child": "sound",
+        "id": "uno-r3",
+        "lab": "board"
+      },
+      "kind": "migration",
+      "tool": "iynk-catalogue-convert/0.1"
+    },
+    "thirdParty": [
+      {
+        "id": "tp1",
+        "kind": "text",
+        "review": "unchecked",
+        "source": {
+          "title": "Third-party lesson sites named in D-017"
+        },
+        "what": "Lesson order, wording and timings may follow a third-party lesson site (F-197 review pending)"
+      }
+    ]
+  },
+  "revision": 0,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 5000,
+    "faults": [],
+    "runtimes": [
+      {
+        "board": "brd_main",
+        "engine": "iynk-interp",
+        "id": "rtm_main"
+      }
+    ],
+    "seed": 625341585,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [],
+      "script": []
+    }
+  },
+  "sources": [
+    {
+      "board": "brd_main",
+      "content": "const int BUZZER = 8;\nint melody[] = {\n  262, 262, 392, 392, 440, 440, 392,\n  349, 349, 330, 330, 294, 294, 262\n};\nconst int N = sizeof(melody) / sizeof(int);  // how many notes are in the list\n\nvoid setup() {}\n\nvoid loop() {\n  for (int i = 0; i < N; i++) {\n    tone(BUZZER, melody[i], 220);\n    delay(220 + 50);  // a short gap so repeated notes sound separate\n  }\n  delay(1000);\n}\n",
+      "id": "src_sketch",
+      "language": "arduino-cpp",
+      "path": "sketch.ino",
+      "role": "firmware"
+    }
+  ],
+  "tests": [
+    {
+      "checks": [
+        {
+          "atMs": 100,
+          "hz": [
+            261,
+            263
+          ],
+          "id": "c1",
+          "kind": "tone",
+          "label": {
+            "de": "Der erste Ton ist das mittlere C, 262 Hz",
+            "en": "The first note is middle C, 262 Hz",
+            "es": "La primera nota es el do central, 262 Hz",
+            "fr": "La première note est le do central, 262 Hz",
+            "hi": "पहला सुर मिडिल C है, 262 Hz",
+            "zh": "第一个音是中央 C，262 Hz"
+          },
+          "pin": "D8",
+          "visibility": "visible"
+        },
+        {
+          "atMs": 640,
+          "hz": [
+            391,
+            393
+          ],
+          "id": "c2",
+          "kind": "tone",
+          "label": {
+            "de": "Der dritte Ton ist ein G, 392 Hz",
+            "en": "The third note is G, 392 Hz",
+            "es": "La tercera nota es un sol, 392 Hz",
+            "fr": "La troisième note est un sol, 392 Hz",
+            "hi": "तीसरा सुर G है, 392 Hz",
+            "zh": "第三个音是 G，392 Hz"
+          },
+          "pin": "D8",
+          "visibility": "visible"
+        },
+        {
+          "id": "c3",
+          "kind": "code",
+          "label": {
+            "de": "Der Code spielt Töne mit tone()",
+            "en": "The code plays notes with tone()",
+            "es": "El código toca las notas con tone()",
+            "fr": "Le code joue les notes avec tone()",
+            "hi": "कोड tone() से सुर बजाता है",
+            "zh": "代码用 tone() 演奏音符"
+          },
+          "must": [
+            "tone(BUZZER"
+          ],
+          "mustNot": [],
+          "visibility": "visible"
+        }
+      ],
+      "id": "main",
+      "name": {
+        "de": "Eine Melodie spielen",
+        "en": "Play a tune",
+        "es": "Toca una melodía",
+        "fr": "Jouer un air",
+        "hi": "धुन बजाएँ",
+        "zh": "演奏一首曲子"
+      },
+      "runMs": 5000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_bb",
+      "kind": "breadboard",
+      "name": "Breadboard",
+      "placements": [
+        {
+          "c": "brd_main",
+          "x_mm": -90,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bb",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_buz1",
+          "legs": {
+            "MINUS": "e14",
+            "PLUS": "e11"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        }
+      ],
+      "surface": "cmp_bb",
+      "wires": [
+        {
+          "color": "orange",
+          "from": {
+            "c": "brd_main",
+            "kind": "pin",
+            "p": "D8"
+          },
+          "id": "wir_1",
+          "net": "net_d8",
+          "to": {
+            "hole": "a11",
+            "kind": "hole",
+            "surface": "cmp_bb"
+          }
+        },
+        {
+          "color": "black",
+          "from": {
+            "c": "brd_main",
+            "kind": "pin",
+            "p": "GND"
+          },
+          "id": "wir_2",
+          "net": "net_gnd",
+          "to": {
+            "hole": "a14",
+            "kind": "hole",
+            "surface": "cmp_bb"
+          }
+        }
+      ]
+    }
+  ]
+}

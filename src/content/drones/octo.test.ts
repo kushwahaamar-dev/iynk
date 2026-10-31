@@ -180,7 +180,7 @@ describe('octo flight', () => {
   });
 });
 
-describe('octo craft tests in the figure', { timeout: 300000 }, () => {
+describe('octo craft tests in the figure', () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();

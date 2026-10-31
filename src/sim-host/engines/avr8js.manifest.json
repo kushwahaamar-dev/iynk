@@ -1,0 +1,9 @@
+{
+  "id": "avr8js",
+  "version": "0.21.1",
+  "source": { "npm": "avr8js", "entry": "dist/esm/index.js" },
+  "files": [],
+  "requires": {},
+  "license": { "spdx": "MIT", "reviewed": false },
+  "budget": { "wireBytes": 12305, "rawBytes": 55205 }
+}

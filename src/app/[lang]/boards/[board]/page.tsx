@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BoardWorkspace } from "@/components/boardlab/BoardWorkspace";
-import { LabRoom } from "@/components/dock/LabRoom";
+import { OpenInStudio } from "@/components/boardlab/OpenInStudio";
 import { UntranslatedNotice } from "@/components/shell";
+import { PageSkeleton } from "@/components/ui";
 import { BOARD_IDS } from "@/content/ids";
 import { AVAILABLE } from "@/content/index.generated";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
-import { getMessages } from "@/i18n/server";
+import { getMessages, getT } from "@/i18n/server";
 import { boardLabMessages, boardModel, lessonLinks, loadBoardPage, withoutLessons } from "../_lib/load";
 
 type Props = PageProps<"/[lang]/boards/[board]">;
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function BoardPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="workspace" />}>
       <Board params={params} />
     </Suspense>
   );
@@ -42,13 +43,14 @@ async function Board({ params }: Pick<Props, "params">) {
   if (!isLocale(lang)) notFound();
   const page = await loadBoardPage(lang, id);
   if (!page) notFound();
-  const [messages, common] = await Promise.all([boardLabMessages(lang), getMessages(lang, "common")]);
+  const [messages, common, t] = await Promise.all([boardLabMessages(lang), getMessages(lang, "common"), getT(lang, "boardlab")]);
   // Only the lesson titles of the prose go to the client; the bodies stay for the lesson pages.
   const lessonsText = Object.fromEntries(
     Object.entries((page.text.lessons ?? {}) as Record<string, { title?: string }>).map(([k, v]) => [k, { title: v?.title }]),
   );
   return (
-    <LabRoom lab="board" itemId={id}>
+    <>
+      <OpenInStudio lang={lang} board={id} label={t("openInStudio")} note={t("lessonView")} />
       <BoardWorkspace
         lang={lang}
         messages={messages}
@@ -56,6 +58,6 @@ async function Board({ params }: Pick<Props, "params">) {
         data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
         notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
       />
-    </LabRoom>
+    </>
   );
 }

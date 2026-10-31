@@ -1,0 +1,18 @@
+{
+  "description": "Ein ESP32-S3-Entwicklungsboard mit ESP32-S3-WROOM-1-Modul, zwei USB-C-Anschlüssen und RGB-LED, in den Varianten v1.1 und v1.0.",
+  "summary": "Das Board führt den Sketch im iynk-Interpreter aus. Pins, PWM, I2C, Seriell und Timing folgen dem Board-Profil esp32-s3-devkitc-1. Es ist nicht der ESP32-S3-Chip.",
+  "layer": "Firmware-Laufzeit.",
+  "variant": "Variante",
+  "models": {
+    "1": "Arduino-C++-Teilmenge, vom Interpreter mit der ESP32-S3-DevKitC-1-Pinbelegung ausgeführt.",
+    "2": "Digital-I/O an GPIO0 bis GPIO21 und GPIO35 bis GPIO48, PWM und Interrupts an jedem ausgabefähigen Pin.",
+    "3": "12-Bit-Analogmessung an GPIO1 bis GPIO20, I2C-Master an GPIO8 und GPIO9, serielle Ausgabe, rgbLedWrite auf der RGB-LED (GPIO38 bei v1.1, GPIO48 bei v1.0) und die BOOT-Taste an GPIO0."
+  },
+  "not": {
+    "1": "Die zwei Xtensa-LX7-Kerne und FreeRTOS-Tasks.",
+    "2": "Wi-Fi, Bluetooth und das Flash-Verhalten. Der Request-Stub für Webserver-Lektionen ist kein Funkmodul.",
+    "3": "Die Strapping-Pin-Fallen und der native USB-Anschluss.",
+    "4": "Die Grenzen des 3,3-V-Reglers."
+  },
+  "gap": "Die RGB-LED ist eine WS2812 an GPIO38 bei v1.1 und an GPIO48 bei v1.0; wähle die Variante, die zu deinem Board passt. ADC2-Pins (GPIO11 bis GPIO20) lassen sich bei aktivem Wi-Fi nicht lesen. Elektrische Grenzwerte sind noch nicht hinterlegt, daher gibt es für dieses Board keine Überlastprüfung der Pins."
+}

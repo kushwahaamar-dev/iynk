@@ -1,0 +1,813 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.uno-r4",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Arduino",
+    "model": "Arduino UNO R4",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "uno-r4"
+    ],
+    "mpn": "ABX00080",
+    "description": {
+      "i18n_key": "parts.uno-r4.description",
+      "en": "A 5 V development board with a Renesas RA4M1 Cortex-M4 at 48 MHz, in a Minima and a WiFi variant, with the UNO header layout, a 14-bit ADC and a DAC on A0."
+    },
+    "chip": {
+      "manufacturer": "Renesas",
+      "model": "R7FA4M1AB3CFM#AA0",
+      "package": "LQFP-64"
+    },
+    "primary_source": "minima",
+    "tags": [
+      "arduino",
+      "arm",
+      "renesas",
+      "dev-board",
+      "beginner"
+    ]
+  },
+  "sources": [
+    {
+      "id": "minima",
+      "kind": "datasheet",
+      "title": "Arduino UNO R4 Minima datasheet, SKU ABX00080",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/datasheets/ABX00080-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/uno-r4.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "wifi",
+      "kind": "datasheet",
+      "title": "Arduino UNO R4 WiFi datasheet, SKU ABX00087",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/uno-r4.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "pinout",
+      "kind": "product-page",
+      "title": "UNO R4 Minima full pinout",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/pinouts/ABX00080-full-pinout.pdf",
+      "reliability": "secondary",
+      "note": "Pin functions, cited through src/content/boards/uno-r4.ts. The pin table is the Minima one."
+    },
+    {
+      "id": "core",
+      "kind": "library",
+      "title": "Arduino Renesas core (variants, LED matrix, WiFiS3, analog)",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://github.com/arduino/ArduinoCore-renesas",
+      "reliability": "secondary"
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile uno-r4) and src/content/boards/uno-r4.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "ICSP",
+      "kind": "header",
+      "pins": [
+        "ICSP_1",
+        "ICSP_2",
+        "ICSP_3",
+        "ICSP_4",
+        "ICSP_5",
+        "ICSP_6"
+      ]
+    },
+    {
+      "id": "JANALOG",
+      "kind": "header",
+      "pins": [
+        "MD",
+        "IOREF",
+        "RESET",
+        "P3V3",
+        "P5V",
+        "GND",
+        "JANALOG_7",
+        "VIN",
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5"
+      ]
+    },
+    {
+      "id": "JDIGITAL",
+      "kind": "header",
+      "pins": [
+        "D0",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "JDIGITAL_15",
+        "AREF",
+        "SDA",
+        "SCL"
+      ]
+    },
+    {
+      "id": "JOFF",
+      "kind": "header",
+      "pins": [
+        "OFF",
+        "JOFF_2",
+        "VRTC"
+      ]
+    },
+    {
+      "id": "QWIIC",
+      "kind": "header",
+      "pins": [
+        "QWIIC_1",
+        "P3V3_I2C",
+        "QWIIC_SDA",
+        "QWIIC_SCL"
+      ]
+    },
+    {
+      "id": "SWD",
+      "kind": "header",
+      "pins": [
+        "SWD_1",
+        "SWDIO",
+        "SWD_3",
+        "SWCLK",
+        "SWD_5",
+        "NC",
+        "RXD1",
+        "TXD1",
+        "SWD_9",
+        "SWD_10"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "ICSP_1",
+      "designator": "CIPO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_2",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "ICSP"
+    },
+    {
+      "id": "ICSP_3",
+      "designator": "SCK",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_4",
+      "designator": "COPI",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_5",
+      "designator": "RESET",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "ICSP"
+    },
+    {
+      "id": "MD",
+      "designator": "BOOT",
+      "type": "passive",
+      "class": "passive",
+      "connector": "JANALOG",
+      "note": {
+        "en": "Boot mode strap"
+      }
+    },
+    {
+      "id": "IOREF",
+      "designator": "IOREF",
+      "type": "power_io",
+      "class": "power",
+      "connector": "JANALOG"
+    },
+    {
+      "id": "RESET",
+      "designator": "RESET",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "P3V3",
+      "designator": "3.3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "JANALOG"
+    },
+    {
+      "id": "P5V",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "JANALOG"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "JANALOG"
+    },
+    {
+      "id": "JANALOG_7",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "JANALOG"
+    },
+    {
+      "id": "VIN",
+      "designator": "VIN",
+      "type": "power_io",
+      "class": "power",
+      "connector": "JANALOG"
+    },
+    {
+      "id": "A0",
+      "designator": "A0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A1",
+      "designator": "A1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A2",
+      "designator": "A2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A3",
+      "designator": "A3",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A4",
+      "designator": "A4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A5",
+      "designator": "A5",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "JANALOG",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D0",
+      "designator": "RX◂0",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D1",
+      "designator": "TX▸1",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D2",
+      "designator": "2",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D3",
+      "designator": "~3",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D4",
+      "designator": "4",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D5",
+      "designator": "~5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D6",
+      "designator": "~6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D7",
+      "designator": "7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D8",
+      "designator": "8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D9",
+      "designator": "~9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D10",
+      "designator": "~10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D11",
+      "designator": "~11",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D12",
+      "designator": "12",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D13",
+      "designator": "13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "JDIGITAL_15",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "JDIGITAL"
+    },
+    {
+      "id": "AREF",
+      "designator": "AREF",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "JDIGITAL"
+    },
+    {
+      "id": "SDA",
+      "designator": "SDA",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "SCL",
+      "designator": "SCL",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "JDIGITAL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "OFF",
+      "designator": "OFF",
+      "type": "power_io",
+      "class": "power",
+      "connector": "JOFF"
+    },
+    {
+      "id": "JOFF_2",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "JOFF"
+    },
+    {
+      "id": "VRTC",
+      "designator": "VRTC",
+      "type": "power_io",
+      "class": "power",
+      "connector": "JOFF"
+    },
+    {
+      "id": "QWIIC_1",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "QWIIC"
+    },
+    {
+      "id": "P3V3_I2C",
+      "designator": "3.3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "QWIIC"
+    },
+    {
+      "id": "QWIIC_SDA",
+      "designator": "SDA",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "QWIIC",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "QWIIC_SCL",
+      "designator": "SCL",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "QWIIC",
+      "logic_family": "lvcmos-3v3"
+    },
+    {
+      "id": "SWD_1",
+      "designator": "+5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "SWD"
+    },
+    {
+      "id": "SWDIO",
+      "designator": "SWDIO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "SWD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "SWD_3",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "SWD"
+    },
+    {
+      "id": "SWCLK",
+      "designator": "SWCLK",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "SWD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "SWD_5",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "SWD"
+    },
+    {
+      "id": "NC",
+      "designator": "NC",
+      "type": "nc",
+      "class": "nc",
+      "connector": "SWD"
+    },
+    {
+      "id": "RXD1",
+      "designator": "RX",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "SWD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "TXD1",
+      "designator": "TX",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "SWD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "SWD_9",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "SWD"
+    },
+    {
+      "id": "SWD_10",
+      "designator": "RESET",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "SWD",
+      "logic_family": "cmos-5v"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_5V",
+      "kind": "internal-short",
+      "pins": [
+        "ICSP_2",
+        "P5V",
+        "SWD_1"
+      ]
+    },
+    {
+      "id": "g_D11",
+      "kind": "internal-short",
+      "pins": [
+        "ICSP_4",
+        "D11"
+      ]
+    },
+    {
+      "id": "g_D12",
+      "kind": "internal-short",
+      "pins": [
+        "ICSP_1",
+        "D12"
+      ]
+    },
+    {
+      "id": "g_D13",
+      "kind": "internal-short",
+      "pins": [
+        "ICSP_3",
+        "D13"
+      ]
+    },
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "ICSP_6",
+        "GND",
+        "JANALOG_7",
+        "JDIGITAL_15",
+        "JOFF_2",
+        "QWIIC_1",
+        "SWD_3",
+        "SWD_5",
+        "SWD_9"
+      ]
+    },
+    {
+      "id": "g_RESET",
+      "kind": "internal-short",
+      "pins": [
+        "ICSP_5",
+        "RESET",
+        "SWD_10"
+      ]
+    }
+  ],
+  "ratings": {},
+  "parameters": [
+    {
+      "id": "variant",
+      "name": {
+        "i18n_key": "parts.uno-r4.variant",
+        "en": "Variant"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "minima",
+      "values": [
+        "minima",
+        "wifi"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.uno-r4.summary",
+      "en": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the uno-r4 board profile. It is not the Renesas RA4M1 chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.uno-r4.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile uno-r4 in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T0",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.uno-r4.models.1",
+        "en": "Arduino-C++ subset run by the interpreter with the UNO R4 pin map, 32-bit int and 64-bit double."
+      },
+      {
+        "i18n_key": "parts.uno-r4.models.2",
+        "en": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3."
+      },
+      {
+        "i18n_key": "parts.uno-r4.models.3",
+        "en": "Analog reads up to 14 bits with analogReadResolution, I2C master on SDA and SCL, serial output, and the L LED on D13."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.uno-r4.not.1",
+        "en": "Renesas peripherals other than digital I/O, I2C and serial."
+      },
+      {
+        "i18n_key": "parts.uno-r4.not.2",
+        "en": "The 12x8 LED matrix library and the ESP32-S3 radio of the WiFi variant."
+      },
+      {
+        "i18n_key": "parts.uno-r4.not.3",
+        "en": "The DAC on A0 as an analog output value."
+      },
+      {
+        "i18n_key": "parts.uno-r4.not.4",
+        "en": "The 8 mA pin source limit is not enforced."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "wifi_variant",
+        "text": {
+          "i18n_key": "parts.uno-r4.gap",
+          "en": "The WiFi variant is modelled as the Minima: the LED matrix and the radio do nothing. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a sketch on the uno-r4 profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          },
+          {
+            "name": "Arduino_LED_Matrix",
+            "install": "built in",
+            "iynk_support": "unsupported"
+          },
+          {
+            "name": "WiFiS3",
+            "install": "built in",
+            "iynk_support": "unsupported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "uno-r4",
+        "path": "public/figures/boards/uno-r4.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Arduino UNO R4",
+      "body_colour": "#00878f",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the rows of src/content/boards/uno-r4.ts named by rule C-PIN, without the ESP32-S3 pads of the WiFi variant (header ESP).",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

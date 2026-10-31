@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif, Noto_Sans_Devanagari } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SiteFooter, SiteHeader } from "@/components/shell";
 import { SkipLink } from "@/components/ui/SkipLink";
@@ -7,17 +7,16 @@ import { I18nProvider } from "@/i18n/client";
 import { LOCALES, htmlLang, isLocale } from "@/i18n/config";
 import { siteUrl } from "@/i18n/seo";
 import { getMessages, getT } from "@/i18n/server";
+import { PAPER_DARK, PAPER_LIGHT } from "@/lib/theme-colors";
 import { SettingsBootScript, SettingsSync } from "@/lib/settings/theme";
 import "../globals.css";
 
 // `subsets` only picks the preloaded files. Devanagari is fetched only by
-// pages with Hindi text; Chinese uses platform fonts (globals.css). Geist sets
-// everything; Instrument Serif is the rare italic accent word in a headline.
-const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
-const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });
-const devanagari = Noto_Sans_Devanagari({ subsets: ["devanagari"], variable: "--font-devanagari", preload: false });
-const fontVariables = [sans, mono, display, devanagari].map((font) => font.variable).join(" ");
+// pages with Hindi text; Chinese uses platform fonts (styles/type.css).
+const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+const devanagari = Noto_Sans_Devanagari({ subsets: ["devanagari"], variable: "--font-devanagari", preload: false, display: "swap" });
+const fontVariables = [sans, mono, devanagari].map((font) => font.variable).join(" ");
 
 // Every route under this layout is fully static, and an unknown slug is a
 // real 404 from the first request.
@@ -26,6 +25,14 @@ export const ensureStatic = "navigation";
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
 }
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: PAPER_LIGHT },
+    { media: "(prefers-color-scheme: dark)", color: PAPER_DARK },
+  ],
+  colorScheme: "light dark",
+};
 
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;

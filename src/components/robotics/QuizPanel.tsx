@@ -8,7 +8,7 @@ import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import type { Quiz, RoboticsContent } from "@/content/schema";
 import type { QuizResult } from "@/lib/progress/storage";
-import type { BenchAction, QuizSession } from "@/lib/robotics/store";
+import type { BenchAction, QuizSession } from "@/lib/robotics/session";
 import type { BenchT, TextOf } from "./messages";
 
 type Props = {
@@ -34,7 +34,7 @@ export function QuizPanel({ bench, session, unlocked, best, t, tx, dispatch, hea
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col">
-      <h2 id={headingId} className="font-head text-lg">
+      <h2 id={headingId} className="text-lg">
         {t("quiz.heading")}
       </h2>
       <ul className="mt-2 flex flex-col divide-y divide-rule">
@@ -44,10 +44,10 @@ export function QuizPanel({ bench, session, unlocked, best, t, tx, dispatch, hea
           const step = quiz.afterStep ? bench.steps.find((s) => s.id === quiz.afterStep) : undefined;
           const title = quizTitle(quiz, bench, t, tx);
           return (
-            <li key={quiz.id} data-quiz={quiz.id} className={cx("-mx-4 flex min-h-14 items-center gap-3 px-4 py-2.5", !isOpen && "text-muted")}>
-              {isOpen ? null : <Icon name="lock" size={18} className="shrink-0" />}
+            <li key={quiz.id} data-quiz={quiz.id} className={cx("-mx-4 flex min-h-14 items-center gap-3 px-4 py-3", !isOpen && "text-muted")}>
+              {isOpen ? null : <Icon name="lock" size={20} className="shrink-0" />}
               <div className="min-w-0 flex-1">
-                <h3 className="font-body text-sm font-semibold leading-snug">{title}</h3>
+                <h3 className="text-sm font-semibold">{title}</h3>
                 <p className="text-xs text-muted">
                   {!isOpen
                     ? step
@@ -113,7 +113,7 @@ function QuizDialog({ quiz, bench, session, best, t, tx, dispatch }: DialogProps
           </>
         }
       >
-        <p className="tabular font-ui text-3xl font-extrabold" data-quiz-score>
+        <p className="tabular text-3xl font-bold tracking-tight" data-quiz-score>
           {t("quiz.score", { score: session.result.score, total: session.result.total })}
         </p>
         {best ? <p className="mt-2 text-sm text-muted">{t("quiz.best", { score: best.score, total: best.total })}</p> : null}
@@ -157,8 +157,8 @@ function QuizDialog({ quiz, bench, session, best, t, tx, dispatch }: DialogProps
               <label
                 key={option}
                 className={cx(
-                  "flex min-h-11 cursor-pointer items-center gap-3 rounded-ink-sm border-2 px-3 py-2",
-                  isAnswer ? "on-fill border-line bg-good-bg" : isWrong ? "on-fill border-line bg-bad-bg" : isChosen ? "border-line bg-sunken" : "border-rule",
+                  "flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2",
+                  isAnswer ? "on-fill border-rule bg-good-bg" : isWrong ? "on-fill border-rule bg-bad-bg" : isChosen ? "border-ink bg-sunken" : "border-rule",
                   session.checked && "cursor-default",
                 )}
               >

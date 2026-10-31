@@ -1,0 +1,6 @@
+L/R ms 0.480 tau_m ms 104.17 mech step ms 4.167 L/R < 2 steps? true
+duty 0.25 fine rad/s 188.11 coarse-exact 114.67 err % -39.04 lagged-euler 115.05 err % -38.84
+duty 0.5 fine rad/s 316.65 coarse-exact 229.34 err % -27.57 lagged-euler 230.09 err % -27.34
+duty 1 fine rad/s 458.90 coarse-exact 458.68 err % -0.05 lagged-euler 460.19 err % 0.28
+hs*c (lagged Euler stable if <2): 0.04
+node $f.mjs  0.02s user 0.01s system 104% cpu 0.027 total

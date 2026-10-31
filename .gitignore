@@ -39,8 +39,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -65,3 +63,23 @@ __pycache__/
 /docs/SPEC.md
 /scripts/workflows/
 /scripts/handoff-status.sh
+/.iynk-data/
+
+# Output of npm run corpus
+/.corpus/
+
+# Tool installs inside the master plan docs (schema checks, spikes)
+docs/MASTER_PLAN/**/node_modules/
+
+# Local screenshot baselines and shots of the visual spec
+/e2e/visual.spec.ts-snapshots/
+/test-results/ui-shots/
+
+# Frame-time results of e2e/studio-perf.spec.ts
+.perf/
+
+# the server's bundled catalogue tools
+/server/dist/
+
+# Engine files built from node_modules by scripts/build-engines.mjs
+public/engines/

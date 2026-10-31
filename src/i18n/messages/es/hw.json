@@ -9,12 +9,12 @@
   },
   "lab": {
     "unsupportedTitle": "Aquí no hay nada que reflejar",
-    "unsupported": "El gemelo refleja lecciones de Board Lab para Arduino Uno R3, Nano y Uno R4. Abre una de esas lecciones para controlar una placa real."
+    "unsupported": "El gemelo refleja lecciones del laboratorio de placas para Arduino Uno R3, Nano y Uno R4. Abre una de esas lecciones para controlar una placa real."
   },
   "setup": {
     "title": "Antes de conectar",
     "flash": "Sube StandardFirmata: en el IDE de Arduino elige Archivo › Ejemplos › Firmata › StandardFirmata y pulsa Subir.",
-    "monitor": "Cierra el Monitor Serie del IDE. Solo un programa puede ocupar el puerto.",
+    "monitor": "Cierra el monitor serie del IDE. Solo un programa puede ocupar el puerto.",
     "wiring": "Montaje de la demo: un LED con una resistencia de 220 Ω en el pin 13 (o mira el LED L) y un potenciómetro en A0 (patas de los extremos a 5V y GND, la central a A0)."
   },
   "connect": "Conectar una placa",
@@ -77,7 +77,7 @@
   },
   "errors": {
     "title": "No se pudo conectar",
-    "busy": "El puerto está ocupado. Cierra el Monitor Serie del IDE de Arduino, u otra pestaña que use la placa, y vuelve a conectar.",
+    "busy": "El puerto está ocupado. Cierra el monitor serie del IDE de Arduino, u otra pestaña que use la placa, y vuelve a conectar.",
     "no-firmata": "La placa no respondió en Firmata. Sube StandardFirmata (Archivo › Ejemplos › Firmata › StandardFirmata) y vuelve a conectar.",
     "disconnected": "Se desconectó la placa. Vuelve a enchufarla y conecta de nuevo.",
     "failed": "No se pudo abrir el puerto serie. Desenchufa la placa, vuelve a enchufarla e inténtalo otra vez.",

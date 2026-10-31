@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import flight from "../src/i18n/messages/en/flight.json";
 
 // The fly page of every craft (src/lib/flight/registry.ts flies them all from their content): the range opens on the

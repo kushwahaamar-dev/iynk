@@ -1,0 +1,86 @@
+{
+  "columns": {
+    "qty": "Menge",
+    "ref": "Teil",
+    "name": "Name",
+    "mpn": "Herstellerteilenummer",
+    "mass_g": "Masse (g)",
+    "source": "Quelle der Werte",
+    "price": "Preis",
+    "currency": "Währung",
+    "asOf": "Preisdatum",
+    "estimate": "Preisart"
+  },
+  "opt": {
+    "title": "Besseren Aufbau finden",
+    "intro": "Lege fest, was du brauchst, und iynk durchsucht die Teilebibliothek nach Motor, Propeller und Akku mit dem größten Spielraum darüber. Rahmen, Flugcontroller und ESCs bleiben unverändert.",
+    "budget": "Budget ({currency})",
+    "budgetHint": "Leer lassen für keine Grenze",
+    "minTW": "Mindestverhältnis Schub zu Gewicht",
+    "minFlight": "Mindestflugzeit (Minuten)",
+    "invalid": "Gib eine Zahl ab null ein.",
+    "find": "Suchen",
+    "cancel": "Abbrechen",
+    "progress": "Suche läuft",
+    "considered": "{done} von {total} Kombinationen",
+    "starting": "Teile werden geladen…",
+    "empty": {
+      "title": "Noch nichts gesucht",
+      "body": "Drücke Suchen, um jeden Motor, Propeller und Akku der Bibliothek zu vergleichen."
+    },
+    "refused": {
+      "title": "Die Bibliothek ist zu groß für die Suche",
+      "body": "Sie ergibt {count} Kombinationen, die Grenze liegt bei {max}. Entferne Teile aus der Bibliothek und versuche es erneut."
+    },
+    "met": {
+      "title": "Alle Vorgaben sind erfüllt",
+      "body": "Dieser Aufbau lässt den größten Spielraum über deinen Mindestwerten."
+    },
+    "unmet": {
+      "title": "Kein Aufbau erfüllt alle Vorgaben",
+      "cheapest": "Unten steht der günstigste Aufbau, der am nächsten herankommt. Nicht erfüllt: {fails}."
+    },
+    "reason": {
+      "budget": "Es gibt Aufbauten, die Schub und Flugzeit erreichen, aber keiner passt ins Budget.",
+      "constraints": "Kein Aufbau der Bibliothek erreicht das Mindestverhältnis von Schub zu Gewicht und die Mindestflugzeit.",
+      "unpriced": "Es gibt Aufbauten, die die Mindestwerte erreichen, aber ihre Teile haben keinen Preis, daher lässt sich das Budget nicht prüfen."
+    },
+    "fail": {
+      "budget": "Budget",
+      "tw": "Schub zu Gewicht",
+      "flight": "Flugzeit",
+      "check": "eine Aufbauprüfung schlägt fehl"
+    },
+    "table": {
+      "caption": "Aktueller Aufbau im Vergleich zum Ergebnis",
+      "current": "Aktuell",
+      "best": "Bester",
+      "cheapest": "Günstigster",
+      "change": "Änderung"
+    },
+    "row": {
+      "cost": "Kosten",
+      "tw": "Schub zu Gewicht",
+      "flightLow": "Flugzeit, niedrig",
+      "flightTyp": "Flugzeit, typisch"
+    },
+    "minutes": "{value} min",
+    "money": "{amount} {currency}",
+    "unpricedValue": "ohne Preis",
+    "swaps": "Tausch",
+    "slot": {
+      "motor": "Motor",
+      "prop": "Propeller",
+      "pack": "Akku"
+    },
+    "to": "wird zu",
+    "apply": "Tausch anwenden",
+    "applyLabel": "Optimierer-Tausch anwenden",
+    "noSwaps": "Der aktuelle Aufbau ist bereits der beste.",
+    "unpriced": "Teile ohne Preis",
+    "priceNote": "Preise sind Schätzungen vom {date}, nicht live.",
+    "priceNoDate": "Es liegen keine Preise vor. Kosten erscheinen als ohne Preis.",
+    "pruned": "{count} von {total} Kombinationen wurden übersprungen",
+    "prunedWhy": "{part}: es fehlt {path}"
+  }
+}

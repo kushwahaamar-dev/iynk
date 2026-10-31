@@ -1,0 +1,806 @@
+{
+  "meta": {
+    "title": "项目",
+    "description": "你的 iynk 项目，保存在这个浏览器里。可以新建、重命名、复制、存到文件和恢复。"
+  },
+  "title": "项目",
+  "lede": "这里的一切都存在这个浏览器里，不会发送到任何地方。",
+  "newProject": "新建项目",
+  "newName": "Blink",
+  "openFromFile": "从文件打开",
+  "storage": {
+    "label": "已用空间",
+    "value": "已用 {used}，共 {quota}",
+    "unknown": "这个浏览器没有说明还剩多少空间。"
+  },
+  "list": {
+    "title": "你的项目",
+    "loading": "正在加载项目",
+    "failed": "无法读取项目。请刷新页面后重试。",
+    "emptyTitle": "还没有项目",
+    "emptyBody": "从 Uno 的 Blink 项目开始。你操作时它会自动保存在这个浏览器里。",
+    "columns": {
+      "name": "名称",
+      "board": "开发板",
+      "size": "大小",
+      "file": "文件副本",
+      "actions": "操作"
+    },
+    "savedToFile": "已存到文件",
+    "notSavedToFile": "未保存"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3",
+    "pin": "引脚",
+    "role": "功能",
+    "net": "网络",
+    "connectedTo": "连接到",
+    "state": "当前状态",
+    "noneConnected": "没有连接",
+    "wireThis": "将此引脚连接到...",
+    "ports": "端口",
+    "notRunning": "未运行",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin}：{level}",
+    "missing": "项目中没有这块开发板。",
+    "roles": {
+      "power": "电源",
+      "ground": "地",
+      "digital": "数字",
+      "analog": "模拟",
+      "bus": "总线",
+      "misc": "其他"
+    },
+    "dir": {
+      "in": "输入",
+      "out": "输出"
+    },
+    "bits": "{count} 位",
+    "activeLow": "低电平有效"
+  },
+  "row": {
+    "open": "打开 {name}",
+    "saveToFile": "将 {name} 存到文件",
+    "rename": "重命名 {name}",
+    "duplicate": "复制 {name}",
+    "delete": "删除 {name}",
+    "openText": "打开",
+    "saveToFileText": "存到文件",
+    "renameText": "重命名",
+    "duplicateText": "复制",
+    "deleteText": "删除",
+    "couldNotOpen": "无法打开这个项目。存到文件可以保留已存内容的一份副本。",
+    "failed": "没有成功，请重试。"
+  },
+  "rename": {
+    "label": "{name} 的新名称",
+    "save": "保存名称",
+    "cancel": "取消",
+    "invalid": "请使用 1 到 120 个字符。"
+  },
+  "selected": {
+    "title": "已打开的项目",
+    "name": "名称",
+    "board": "开发板",
+    "revision": "修订",
+    "hash": "哈希",
+    "noEditor": "编辑器会在后面的步骤加入。这个页面负责列出和保管你的项目。",
+    "close": "关闭详情"
+  },
+  "trash": {
+    "title": "回收站",
+    "lede": "删除的项目在这里保留 30 天。",
+    "empty": "回收站是空的。",
+    "restore": "恢复 {name}",
+    "restoreText": "恢复",
+    "emptyTrash": "清空回收站"
+  },
+  "banner": {
+    "degradedTitle": "项目不会被保留",
+    "degraded": "这个浏览器不允许 iynk 存储数据，项目只会保留到你关闭标签页为止。存到文件可以留下一份副本。",
+    "recoveredTitle": "已替换损坏的存档",
+    "recovered": "{name} 的最近一次存档已损坏，所以打开了上一份副本。",
+    "lostTitle": "有一个项目无法读取",
+    "lost": "{name} 的两份存档都已损坏。没有删除任何内容。",
+    "quotaTitle": "空间已满",
+    "quota": "浏览器里没有空间容纳这个项目了。请先存到文件，再删除不需要的内容。",
+    "otherTabTitle": "在另一个标签页中有改动",
+    "otherTab": "另一个标签页保存了一个项目。列表已是最新。",
+    "fileTitle": "未存到文件",
+    "file": "有些项目已超过 10 分钟没有文件副本。存到文件可以留下一份由你掌控的副本。",
+    "newerTitle": "这个文件来自更新版本的 iynk",
+    "newer": "{name} 由更新的版本保存，所以无法在这里打开。下载会原样返还这个文件。",
+    "newerDownload": "下载 {name}",
+    "importTitle": "无法打开该文件",
+    "importTooLarge": "{name} 超出了大小限制。",
+    "importDamaged": "{name} 不是有效的 iynk 项目。",
+    "dismiss": "关闭"
+  },
+  "status": {
+    "created": "已创建 {name}",
+    "renamed": "已重命名为 {name}",
+    "duplicated": "已复制为 {name}",
+    "trashed": "{name} 已移到回收站",
+    "restored": "已恢复 {name}",
+    "savedToFile": "已将 {name} 存到文件",
+    "imported": "已从文件打开 {name}",
+    "importedForked": "已从文件将 {name} 作为新项目打开"
+  },
+  "diag": {
+    "title": "诊断",
+    "lede": "对模拟器和项目 worker 的检查，在此浏览器中运行。每个结果都在原处更新。",
+    "noWorker": "此浏览器无法启动 worker，因此这些检查已关闭。",
+    "running": "运行中",
+    "failed": "失败。{message}",
+    "frameGap": "最近 5 秒内最长的帧间隔",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "模拟器",
+      "project": "项目 worker",
+      "data": "浏览器数据"
+    },
+    "run": {
+      "sample": "运行示例",
+      "ten": "运行十次",
+      "stall": "卡住 worker",
+      "killSim": "终止模拟 worker",
+      "killProject": "终止项目 worker",
+      "lessons": "检查 5 节课",
+      "exportAll": "导出全部数据",
+      "wipe": "清除全部数据"
+    },
+    "probe": {
+      "list-repeat": "列表重复检测",
+      "bytearray-loop": "bytearray 循环检测",
+      "c-array": "C 数组检测",
+      "string-double": "字符串加倍检测",
+      "endless-loop": "死循环检测"
+    },
+    "save": {
+      "label": "选择要计时的项目",
+      "hint": "对所选文件计时 30 次保存。"
+    },
+    "wipe": {
+      "label": "输入 {phrase} 以清除 iynk 在此浏览器中存储的一切"
+    },
+    "result": {
+      "sample": "LED 变化 {edges} 次，亮了 {onMs} ms。轨迹哈希 {hash}。{serial}。",
+      "noSerial": "没有串口输出",
+      "serial": "串口：{text}",
+      "limit": "触及限制：{message}。",
+      "noLimit": "未触及限制。",
+      "equal": "{of} 次中 {equal} 次相同",
+      "equalFirstDiff": "{of} 次中 {equal} 次相同。第一处差异：{diff}",
+      "probeLimit": "{ms} ms 后因限制结束。{message}。",
+      "probeRunLength": "{ms} ms 后在运行时长处结束。",
+      "probeKilled": "worker 在 {ms} ms 内被终止并重启。{message}。",
+      "answers": "worker 仍能响应。",
+      "silent": "worker 没有响应。",
+      "stall": "worker 在 {killed} ms 后被终止，{restarted} ms 后恢复响应。最长帧间隔 {gap} ms。",
+      "kill": "{ms} ms 内恢复。之前的哈希 {before}，之后 {after}。{same}。",
+      "sameHash": "哈希相同",
+      "otherHash": "哈希不同",
+      "saveSpeed": "{samples} 次保存：p50 {p50} ms，p95 {p95} ms。",
+      "exported": "已导出 {size} 字节。",
+      "wiped": "已清除 {stores} 个存储和 {keys} 个浏览器键。",
+      "wipeErrors": "部分存储无法清除：{errors}"
+    }
+  },
+  "canvas": {
+    "label": "电路画布",
+    "hint": "方向键平移视图。加号和减号缩放。数字 0 显示全部内容。",
+    "status": {
+      "label": "画布状态",
+      "cursor": "光标",
+      "cursorValue": "{x}, {y} 毫米",
+      "zoom": "缩放",
+      "zoomValue": "每毫米 {value} 像素",
+      "grid": "网格 {step} 毫米",
+      "gridOff": "网格已关闭",
+      "selected": {
+        "one": "已选 1 项",
+        "other": "已选 {count} 项"
+      },
+      "scene": "已绘制 {items} 项，屏幕外 {culled} 项",
+      "detail": "细节 低 {low}，中 {mid}，完整 {high}"
+    }
+  },
+  "shell": {
+    "workspace": "工作区"
+  },
+  "route": {
+    "loading": "正在加载 Studio",
+    "noscript": "Studio 需要 JavaScript。请开启后重新加载页面。"
+  },
+  "topBar": {
+    "label": "项目栏",
+    "name": "项目名称",
+    "save": {
+      "saved": "已保存",
+      "saving": "正在保存",
+      "unsaved": "有未保存的更改",
+      "failed": "自动保存失败",
+      "readOnly": "只读"
+    },
+    "undo": "撤销",
+    "redo": "重做",
+    "run": "运行",
+    "stop": "停止",
+    "reset": "重置"
+  },
+  "layout": {
+    "regions": {
+      "top": "顶部栏",
+      "left": "元件和文件",
+      "canvas": "画布区域",
+      "right": "检查器和检查项",
+      "dock": "代码和串口"
+    },
+    "tabs": {
+      "palette": "元件库",
+      "files": "文件",
+      "outline": "大纲",
+      "inspector": "检查器",
+      "problems": "问题",
+      "models": "模型",
+      "partner": "搭档",
+      "code": "代码",
+      "serial": "串口",
+      "faults": "故障"
+    },
+    "separator": "调整底部面板大小",
+    "narrow": "手机布局稍后推出；查看和运行可用",
+    "open": "打开{name}",
+    "close": "关闭面板",
+    "boundary": {
+      "failed": "{name}已停止工作。你的项目没有变化。",
+      "reload": "重新加载{name}"
+    }
+  },
+  "workspace": {
+    "loading": "正在打开项目",
+    "back": "返回项目列表",
+    "missingTitle": "这里没有这个项目",
+    "missing": "它可能已被删除，或是在另一个浏览器里创建的。项目只保存在创建它的浏览器中。",
+    "lostTitle": "无法读取这个项目",
+    "lost": "两份已保存的副本都已损坏。没有删除任何内容。",
+    "errorTitle": "无法打开这个项目",
+    "error": "读取时出了问题。你的其他项目不受影响。",
+    "readOnlyTitle": "只读",
+    "readOnly": "这个项目以查看方式打开。你可以浏览并运行它，但更改不会保存。",
+    "hashMismatchTitle": "已核对保存的副本",
+    "hashMismatch": "保存的副本与当前页面不一致，所以已从这里重新写入。",
+    "files": {
+      "title": "项目文件",
+      "empty": "这个项目还没有文件。",
+      "open": "在代码面板中打开 {path}"
+    },
+    "keys": {
+      "title": "键盘快捷键",
+      "hint": "单键快捷键可以在视图设置中关闭。",
+      "close": "关闭"
+    }
+  },
+  "rooms": {
+    "banner": {
+      "live": "在线",
+      "connecting": "正在加入房间",
+      "syncing": "正在从主持人处获取工作台",
+      "reconnecting": "连接已断开。正在重新连接",
+      "offlineKept": "房间已离线，你的修改已保留",
+      "queueFull": "有 {count} 项修改在等待。房间编辑已暂停；你的本地副本是安全的。",
+      "ended": "房间已结束",
+      "kicked": "主持人已把你移出房间",
+      "closed": "房间已关闭",
+      "readOnlyShare": "你正在查看一个分享链接。可以阅读，但不能修改。",
+      "readOnlyRole": "你在这个房间的角色只能阅读，不能修改工作台",
+      "unsupported": "此浏览器无法打开房间",
+      "serverRestarted": "服务器已重启。正在重新加入房间",
+      "behind": "正在与房间同步",
+      "pending": {
+        "one": "{count} 项更改等待中",
+        "other": "{count} 项更改等待中"
+      }
+    },
+    "members": {
+      "title": "在场的人",
+      "count": {
+        "one": "这里有 {count} 个人",
+        "other": "这里有 {count} 个人"
+      },
+      "you": "你",
+      "leave": "离开房间",
+      "host": "主持人",
+      "holder": "正在使用键盘",
+      "online": "在线",
+      "offline": "离线",
+      "spectator": "旁观中",
+      "role": {
+        "owner": "所有者",
+        "editor": "编辑者",
+        "commenter": "评论者",
+        "viewer": "查看者"
+      },
+      "appVersion": "应用版本",
+      "cursorOf": "{name} 的指针"
+    },
+    "baton": {
+      "youHold": "键盘在你手上",
+      "heldBy": "键盘在 {name} 手上",
+      "free": "键盘空闲",
+      "request": "申请键盘",
+      "grant": "交出键盘",
+      "take": "接过键盘",
+      "release": "归还键盘",
+      "asked": "你已申请键盘",
+      "denied": "主持人说现在不行",
+      "freeIn": "{name} 已离开。键盘将在 {seconds} 秒后空闲。",
+      "giveTo": "交给",
+      "takeBack": "收回",
+      "pickPerson": "选择一个人"
+    },
+    "host": {
+      "kick": "移出",
+      "kickConfirm": "把 {name} 移出房间？",
+      "mute": "禁言",
+      "unmute": "取消禁言",
+      "lock": "锁定房间",
+      "unlock": "解锁房间",
+      "close": "关闭房间",
+      "closeConfirm": "为所有人关闭房间？",
+      "pass": "把房间交给 {name}",
+      "claim": "接任主持人",
+      "settings": "房间设置",
+      "runControl": "谁来运行代码",
+      "spectatorCursors": "显示旁观者的指针",
+      "title": "主持人控制",
+      "keyboardPassing": "键盘轮流",
+      "memberActions": "对 {name} 的操作",
+      "runEditors": "编辑者",
+      "runHost": "仅主持人"
+    },
+    "invite": {
+      "open": "邀请",
+      "titleFor": "邀请 {name}",
+      "hint": "发送链接或选一位好友。房间最多容纳 8 人。",
+      "roleEditor": "可以编辑",
+      "roleViewer": "只能旁观",
+      "uses": "使用次数：{count}",
+      "expires": "{when}到期",
+      "revoke": "撤销邀请",
+      "sent": "邀请已发送",
+      "join": "加入",
+      "decline": "拒绝",
+      "expired": "此邀请无法使用",
+      "workTogether": "一起搭建",
+      "pickBuddy": "选一位好友",
+      "noBuddies": "你还没有好友",
+      "needsServer": "需要服务器，而此部署没有",
+      "menu": "房间",
+      "copyLink": "复制邀请链接",
+      "away": "离开",
+      "invitations": {
+        "one": "{count} 个邀请",
+        "other": "{count} 个邀请"
+      },
+      "invitedBy": "{name} 邀请你加入 {title}",
+      "roleLabel": "对方可以做什么",
+      "live": "有效的邀请",
+      "quota": "已达到房间数量上限。关闭一个房间后才能再开一个。"
+    },
+    "chat": {
+      "title": "聊天",
+      "placeholder": "写一条消息",
+      "send": "发送",
+      "rateLimited": "你发得太快了。请稍等。",
+      "muted": "主持人已将你禁言",
+      "system": "房间",
+      "new": "{count} 条新消息",
+      "counter": "{count}/{max}",
+      "label": "消息",
+      "empty": "还没有消息",
+      "someone": "某人"
+    },
+    "rebase": {
+      "title": "你离线期间",
+      "dropped": "你离线期间 {who} 删除了 {what}，所以你对 {what} 的修改被丢弃了",
+      "droppedGeneric": "你离线期间有人删除了一个部件，所以你对它的修改被丢弃了",
+      "keepCopy": "保留我这个版本的副本",
+      "copyKept": "你这个版本的副本已保存在你的项目中",
+      "none": "你的修改都没有被丢弃"
+    },
+    "fork": {
+      "closedTitle": "这个房间已关闭",
+      "closedKept": "房间已关闭。这个项目仍保留在你的库中。",
+      "keepCopy": "保留副本",
+      "kept": "副本已保存",
+      "ffNote": "你的副本从房间最后的状态继续",
+      "separateCopy": "这是一个独立的副本"
+    },
+    "share": {
+      "title": "分享这个项目",
+      "audienceLink": "任何有链接的人",
+      "audienceBuddies": "仅限我的好友",
+      "expiry30": "30 天后到期",
+      "expiryNone": "永不到期",
+      "expiryDays": "{count} 天后到期",
+      "linkWarning": "任何有链接的人都能看到这个项目。只分享给你信任的人。",
+      "create": "生成链接",
+      "copy": "复制链接",
+      "revoke": "停止分享",
+      "needsServer": "分享需要服务器，而此部署没有服务器",
+      "makeCopy": "生成我自己的副本",
+      "copyDone": "副本已生成",
+      "withdrawn": "所有者已停止分享",
+      "gone": "此链接已失效",
+      "tooLarge": "这个项目太大，无法分享",
+      "secretWarning": "这个项目似乎包含密钥或密码。分享前请先删除。",
+      "liveLimit": "你已有 {count} 个有效链接。先停用一个再生成新的。",
+      "opened": "已被打开 {count} 次",
+      "close": "关闭",
+      "expiryLabel": "链接有效期",
+      "allowFork": "允许他人保存自己的副本",
+      "labelField": "此链接的名称",
+      "secretAck": "我已检查,仍要分享",
+      "secretField": "在 {field} 中发现",
+      "confirmRevoke": "现在停止分享此链接吗?",
+      "keep": "保留",
+      "yourShares": "你的链接",
+      "noShares": "你还没有分享过任何内容",
+      "revokedRow": "已撤回",
+      "expiresOn": "{when} 到期",
+      "expiryError": "服务器不允许这个有效期。请选更短的。",
+      "networkError": "无法连接服务器。请再试一次。",
+      "hashMismatch": "服务器上的副本与此项目不一致。请不要分享此链接。",
+      "done": "你的链接已就绪",
+      "audienceLabel": "谁可以打开",
+      "linkQr": "分享链接的二维码",
+      "copied": "已复制",
+      "copyFailed": "无法复制。请选中链接后手动复制。",
+      "loadError": "无法加载你的链接。"
+    },
+    "unsupported": {
+      "engine": "此浏览器无法登录房间。请试用最新版的 Chrome、Firefox、Safari 或 Edge。",
+      "privateWindow": "房间需要普通窗口，不能用隐私窗口"
+    }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "面包板",
+      "schematic": "原理图",
+      "board": "开发板"
+    },
+    "tablist": "视图",
+    "auto": "自动",
+    "arrange": "整理",
+    "schematicReadOnlyWire": "请在面包板视图中接线。原理图显示的是同样的连接。",
+    "sceneError": "无法绘制此视图。其他视图仍可使用。",
+    "cmd": {
+      "breadboard": "面包板视图",
+      "schematic": "原理图视图",
+      "board": "开发板视图"
+    }
+  },
+  "history": {
+    "title": "历史",
+    "nameThis": "为此版本命名",
+    "named": "已命名",
+    "auto": "自动",
+    "compare": "比较",
+    "restore": "恢复此版本",
+    "restoreHelp": "恢复会在你现有的工作之上添加更改。你可以撤销。",
+    "empty": "还没有版本。",
+    "limit": "列表保留最新的 {max} 个版本。",
+    "mismatch": "此版本未通过校验，没有打开。",
+    "diff": {
+      "added": "新增：{items}",
+      "removed": "移除：{items}",
+      "changed": "更改：{items}",
+      "nets": "不同的连接：{count}",
+      "files": "不同的文件：{count}"
+    },
+    "storeFailed": "无法保存此版本：{reason}",
+    "nameLabel": "版本名称（1 到 80 个字符）",
+    "labelRequired": "请输入名称。",
+    "labelTooLong": "最多使用 {max} 个字符。",
+    "runLabel": "运行",
+    "fileLabel": "已保存的文件"
+  },
+  "checks": {
+    "title": "检查",
+    "add": "添加检查",
+    "run": "运行检查",
+    "pass": "通过",
+    "fail": "未通过",
+    "notRun": "未运行",
+    "kind": {
+      "runs": "运行无错误",
+      "serial": "串口输出包含",
+      "pin-level": "某一时刻的引脚电平",
+      "pin-toggles": "引脚翻转",
+      "pwm": "某一时刻的 PWM 占空比",
+      "tone": "某一时刻的音调频率",
+      "servo": "某一时刻的舵机角度",
+      "responds": "引脚对输入作出响应",
+      "code": "代码包含"
+    },
+    "hiddenNote": "隐藏只是在屏幕上不显示该值。拿到文件的人都能读到它。",
+    "badPin": "此开发板没有名为 {pin} 的引脚。",
+    "needsRun": "运行后可查看结果。",
+    "noSource": "此项目没有适用于该开发板的固件。",
+    "unsupportedLanguage": "对于此开发板的语言，只有运行、串口和代码检查可用。",
+    "limit": "运行在 20 秒的限制处停止。",
+    "empty": "还没有检查。添加一条，看看这个项目是否符合预期。",
+    "running": "运行中",
+    "edit": "编辑 {name}",
+    "delete": "删除 {name}",
+    "editText": "编辑",
+    "deleteText": "删除",
+    "save": "保存检查",
+    "kindLabel": "检查类型",
+    "hidden": "隐藏数值",
+    "hiddenValue": "已隐藏",
+    "rangeOrder": "第一个数不能大于第二个数。",
+    "badRegex": "这个模式无效。",
+    "regexLong": "最多 {max} 个字符。",
+    "afterRun": "这个时间晚于运行结束的 {runMs} ms。",
+    "mustHint": "每行一段文本。",
+    "field": {
+      "pin": "引脚",
+      "level": "电平",
+      "atMs": "时间 (ms)",
+      "minMs": "至少运行 (ms)",
+      "match": "文本",
+      "regex": "按模式匹配",
+      "minCount": "至少这么多行",
+      "periodMs": "周期 (ms)",
+      "from": "从",
+      "to": "到",
+      "minCycles": "周期数",
+      "duty": "占空比 (0 到 1)",
+      "hz": "频率 (Hz)",
+      "deg": "角度 (度)",
+      "input": "输入",
+      "afterAt": "输入变化的时间 (ms)",
+      "afterValue": "输入值",
+      "withinMs": "在多久内 (ms)",
+      "v": "引脚值",
+      "must": "必须包含",
+      "mustNot": "不得包含",
+      "label": "名称"
+    }
+  },
+  "ino": {
+    "import": "导入程序",
+    "export": "导出为 .ino",
+    "wiringCsv": "接线表 (CSV)",
+    "lossTitle": "会有哪些变化",
+    "lossNone": "不会丢失任何内容。",
+    "lossBoard": "已选开发板：{board}。如果不对，请更换。",
+    "unsupported": "第 {line} 行：{message}",
+    "banner": "从模拟中导出。直接编译可能不会成功。",
+    "tooBig": "此文件超过 {max} 个字符。",
+    "notText": "此文件不是文本。",
+    "confirm": "创建项目",
+    "firstOnly": "仅显示第一个问题。修复后请重新导入。",
+    "noEntry": "没有找到 .ino 文件。",
+    "empty": "此文件为空。",
+    "badPath": "不允许使用文件名 {name}。",
+    "tooMany": "最多 {max} 个文件。",
+    "cancel": "取消",
+    "exportBlocked": "此项目没有可导出的 Arduino 程序。"
+  },
+  "align": {
+    "left": "左对齐",
+    "right": "右对齐",
+    "top": "顶部对齐",
+    "bottom": "底部对齐",
+    "centerH": "水平居中",
+    "centerV": "垂直居中",
+    "distributeH": "水平分布",
+    "distributeV": "垂直分布",
+    "needThree": "请选择三个或更多零件进行分布。",
+    "group": "编组",
+    "ungroup": "取消编组",
+    "groupNeedTwo": "请选择两个或更多对象进行编组。",
+    "groupNesting": "一个编组不能包含另一个编组。"
+  },
+  "projectMenu": {
+    "label": "项目",
+    "history": "历史...",
+    "saveFile": "保存到文件",
+    "historyTab": "历史"
+  },
+  "rail": {
+    "history": "历史",
+    "checks": "检查"
+  },
+  "dialog": {
+    "cancel": "取消"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "画布",
+      "code": "代码",
+      "run": "运行",
+      "project": "项目"
+    },
+    "tabs": "工作室分区",
+    "sheetClose": "关闭"
+  },
+  "a11y": {
+    "viewAnnounce": "{view}视图",
+    "groupMade": "已将 {count} 个对象编组。",
+    "restored": "已恢复版本 {label}。",
+    "pinLevel": "{pin} 为 {level}（{mode}）"
+  },
+  "lesson": {
+    "guide": {
+      "title": "指南",
+      "stepOf": "第 {n} 步，共 {total} 步",
+      "step": {
+        "state": {
+          "notStarted": "未开始",
+          "current": "当前步骤",
+          "done": "已完成",
+          "blocked": "等待前面的步骤"
+        }
+      },
+      "markDone": "标记此步骤已完成",
+      "reset": "重置课程",
+      "resetConfirm": "恢复到起始版本？你在本课中的修改会被替换，学习进度会保留。",
+      "hints": "提示",
+      "hintReveal": "显示提示 {n}",
+      "quiz": {
+        "title": "快速检查",
+        "answer": "答案",
+        "correct": "答对了",
+        "wrong": "不太对",
+        "why": "原因",
+        "next": "下一题"
+      },
+      "provenance": {
+        "unchecked": "{n} 段文字尚未审阅",
+        "exportNote": "此项目中有 {n} 段文字尚未审阅。你仍然可以导出。",
+        "shareNote": "此项目中有 {n} 段文字尚未审阅。分享给好友以外的人之前请先检查。"
+      },
+      "tier": "以 {tier} 级别模拟"
+    },
+    "completion": {
+      "open": {
+        "edit": "修改项目中的某处即可完成。",
+        "quiz": "回答一道题即可完成。",
+        "checks": "运行检查并让它们全部通过。",
+        "fault": "当前有故障。修复它即可完成。",
+        "steps": "完成所有步骤。",
+        "goal": "通过目标测试。"
+      },
+      "done": "已在 {tier} 级别的模拟中完成。",
+      "legacy": "在编辑规则之前已完成。"
+    },
+    "checks": {
+      "title": "检查",
+      "run": "运行检查",
+      "again": "再检查一次",
+      "pending": "尚未运行",
+      "running": "运行中",
+      "allPass": "所有检查都通过了",
+      "summary": "{passed}/{total} 项检查通过",
+      "faultOn": "检查通过，但仍有故障",
+      "limit": "运行达到了时间上限",
+      "textCheck": "文本检查",
+      "hiddenNote": "另外还会运行 {n} 项隐藏检查",
+      "tier": "{tier} 级别的结果",
+      "empty": "本课没有检查项。"
+    },
+    "nav": {
+      "board": "开发板",
+      "prev": "上一课",
+      "next": "下一课",
+      "count": "已完成 {done}/{total}",
+      "list": "这块板的课程",
+      "level": {
+        "intro": "入门",
+        "io": "输入与输出",
+        "input": "输入",
+        "analog": "模拟",
+        "protocol": "协议",
+        "wireless": "无线",
+        "project": "项目"
+      }
+    },
+    "gallery": {
+      "title": "课程与开发板",
+      "byLevel": "按难度",
+      "byBoard": "按开发板",
+      "start": "打开",
+      "startRun": "打开并运行",
+      "runLength": "检查会运行 {s} 秒的模拟时间",
+      "rung": {
+        "lesson": "课程",
+        "tour": "开发板导览",
+        "label": "类型"
+      },
+      "progress": {
+        "done": "已完成",
+        "legacy": "已完成（旧记录）",
+        "none": "未开始"
+      },
+      "empty": "没有匹配的模板。",
+      "all": "全部",
+      "level": "级别",
+      "labs": {
+        "bench": "机器人工作台",
+        "craft": "无人机",
+        "task": "练习任务",
+        "steps": {
+          "one": "{count} 个步骤",
+          "other": "{count} 个步骤"
+        }
+      }
+    },
+    "assembly": {
+      "title": "搭建步骤",
+      "showMe": "演示给我看",
+      "refused": "请先完成前面的步骤。",
+      "manual": "标记为已完成",
+      "needsLens": "此步骤在图示视图中检查。",
+      "break": "弄坏"
+    },
+    "wire": {
+      "title": "接线",
+      "lede": "这块板能驱动什么，以及怎样接线。",
+      "supply": "{volts} V 供电",
+      "caution": "请小心",
+      "none": "本课没有需要接线的内容。",
+      "partPin": "零件引脚",
+      "boardPin": "开发板引脚",
+      "colors": {
+        "red": "红色",
+        "black": "黑色",
+        "orange": "橙色",
+        "yellow": "黄色",
+        "green": "绿色",
+        "blue": "蓝色",
+        "white": "白色",
+        "purple": "紫色",
+        "brown": "棕色",
+        "grey": "灰色"
+      }
+    },
+    "inputs": {
+      "title": "输入",
+      "press": "按下",
+      "release": "松开",
+      "hold": "按住",
+      "slider": "{label}：{value}",
+      "empty": "本课没有输入。"
+    },
+    "status": {
+      "title": "开发板状态",
+      "current": "供电电流 {ma} mA",
+      "brownout": "电压不足：开发板会复位",
+      "ok": "供电正常",
+      "unknown": "此级别不可用"
+    },
+    "lens": {
+      "open": "显示图示",
+      "close": "隐藏图示",
+      "readOnly": "原始图示的只读视图",
+      "unavailable": "本课没有图示"
+    },
+    "faults": {
+      "title": "弄坏它",
+      "own": "此电路的故障",
+      "more": "这块板的其他故障",
+      "trigger": "弄坏",
+      "repair": "修复",
+      "active": "故障已开启",
+      "notModelled": "Studio 中尚未建模：{title}"
+    }
+  },
+  "lab": {
+    "roomLinkNote": "这是一个房间链接。房间需要服务器，现在位于 Studio 中，所以实验室会单独打开。"
+  }
+}

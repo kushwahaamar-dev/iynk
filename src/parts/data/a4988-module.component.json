@@ -1,0 +1,1106 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.a4988-module",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Pololu (carrier board)",
+    "model": "A4988 Stepper Motor Driver Carrier, item 1182, PCB md09b",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "motor-driver",
+    "description": {
+      "en": "A small carrier for the Allegro A4988 microstepping driver: step and direction inputs, a trimpot that sets the coil current limit, motors on VMOT and logic on VDD."
+    },
+    "chip": {
+      "manufacturer": "Allegro MicroSystems",
+      "model": "A4988",
+      "package": "QFN-28 5 x 5 mm"
+    },
+    "primary_source": "facts",
+    "legacy_ids": [
+      "a4988"
+    ],
+    "tags": [
+      "motor-driver",
+      "stepper",
+      "microstepping",
+      "step-dir",
+      "robotics",
+      "a4988"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Fact sheet docs/facts/a4988.md",
+      "publisher": "iynk",
+      "reliability": "secondary",
+      "note": "It cites the Allegro A4988 datasheet (4988-DS rev 8), the Pololu product page 1182 and Pololu's dimension drawing and STEP model, all read by the fact-sheet author, not by this descriptor. Positions come from the dimension drawing."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/modules/a4988.js: constants and model code",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "DIR",
+      "designator": "DIR",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 1.27
+      },
+      "note": {
+        "en": "No pull. Must be driven."
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "STEP",
+      "designator": "STEP",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 3.81
+      },
+      "note": {
+        "en": "A rising edge advances one microstep. No pull. Must be driven."
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "SLP",
+      "designator": "SLP",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 6.35
+      },
+      "note": {
+        "en": "Active low. 1 ms wake delay before the first STEP."
+      },
+      "connector": "H1",
+      "pull": {
+        "kind": "on-board",
+        "to": "up",
+        "rating": "slp_pullup"
+      }
+    },
+    {
+      "id": "RST",
+      "designator": "RST",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 8.89
+      },
+      "note": {
+        "en": "Active low. Floating on the board: tie it to SLP or drive it high, or the driver never runs."
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "MS3",
+      "designator": "MS3",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 11.43
+      },
+      "connector": "H1",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "ms3_pulldown"
+      }
+    },
+    {
+      "id": "MS2",
+      "designator": "MS2",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 13.97
+      },
+      "connector": "H1",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "ms2_pulldown"
+      }
+    },
+    {
+      "id": "MS1",
+      "designator": "MS1",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 16.51
+      },
+      "connector": "H1",
+      "pull": {
+        "kind": "internal",
+        "to": "down",
+        "rating": "ms1_pulldown"
+      }
+    },
+    {
+      "id": "EN",
+      "designator": "EN",
+      "type": "digital_in",
+      "class": "digital",
+      "position": {
+        "x": 1.27,
+        "y": 19.05
+      },
+      "note": {
+        "en": "Active low. High turns every output off."
+      },
+      "connector": "H1",
+      "pull": {
+        "kind": "on-board",
+        "to": "down",
+        "rating": "en_pulldown"
+      }
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "Logic ground"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 13.97,
+        "y": 1.27
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "VDD",
+      "name": {
+        "en": "Logic supply"
+      },
+      "designator": "VDD",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 13.97,
+        "y": 3.81
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "OUT1B",
+      "name": {
+        "en": "Coil 1, end B"
+      },
+      "designator": "1B",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 13.97,
+        "y": 6.35
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "OUT1A",
+      "name": {
+        "en": "Coil 1, end A"
+      },
+      "designator": "1A",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 13.97,
+        "y": 8.89
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "OUT2A",
+      "name": {
+        "en": "Coil 2, end A"
+      },
+      "designator": "2A",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 13.97,
+        "y": 11.43
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "OUT2B",
+      "name": {
+        "en": "Coil 2, end B"
+      },
+      "designator": "2B",
+      "type": "power_out",
+      "class": "power",
+      "position": {
+        "x": 13.97,
+        "y": 13.97
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "GND2",
+      "name": {
+        "en": "Motor ground"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 13.97,
+        "y": 16.51
+      },
+      "connector": "H2"
+    },
+    {
+      "id": "VMOT",
+      "name": {
+        "en": "Motor supply"
+      },
+      "designator": "VMOT",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 13.97,
+        "y": 19.05
+      },
+      "note": {
+        "en": "Needs a 47 uF or larger electrolytic close to the board. No reverse protection."
+      },
+      "connector": "H2"
+    }
+  ],
+  "groups": [
+    {
+      "id": "ground",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "GND2"
+      ],
+      "note": {
+        "en": "Both GND pins are common on the board."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "H1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "DIR",
+        "STEP",
+        "SLP",
+        "RST",
+        "MS3",
+        "MS2",
+        "MS1",
+        "EN"
+      ],
+      "note": {
+        "en": "Control header, bottom to top."
+      }
+    },
+    {
+      "id": "H2",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "GND",
+        "VDD",
+        "OUT1B",
+        "OUT1A",
+        "OUT2A",
+        "OUT2B",
+        "GND2",
+        "VMOT"
+      ],
+      "note": {
+        "en": "Power and motor header, bottom to top."
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "module",
+    "body": {
+      "w": 15.24,
+      "h": 20.32,
+      "d": 10.2
+    },
+    "board": {
+      "w": 15.24,
+      "h": 20.32,
+      "thickness": 1.57,
+      "corner_radius": 0
+    },
+    "height_total": 10.2,
+    "accuracy": 0.3,
+    "source": {
+      "src": "facts",
+      "loc": "section 2.1 to 2.3, Pololu drawing md09b"
+    }
+  },
+  "ratings": {
+    "vmot_operating": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VMOT"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 8,
+        "max": 35,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, VMOT"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vmot_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VMOT"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 35,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, VMOT"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vdd_operating": {
+      "measure": "voltage",
+      "role": "operating",
+      "scope": {
+        "pins": [
+          "VDD"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 3,
+        "max": 5.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, VDD"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vdd_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "VDD"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "max": 5.5,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, VDD"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vdd_uvlo": {
+      "measure": "voltage",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "VDD"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 2.7,
+        "typ": 2.8,
+        "max": 2.9,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.2, VDD"
+        },
+        "conditions": "Rising; 90 mV of hysteresis."
+      },
+      "used_by_model": "none"
+    },
+    "logic_high_fraction": {
+      "measure": "ratio",
+      "role": "threshold",
+      "scope": {
+        "pins": [
+          "DIR",
+          "STEP",
+          "SLP",
+          "RST",
+          "MS1",
+          "MS2",
+          "MS3",
+          "EN"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ratio",
+        "min": 0.7,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, logic levels"
+        },
+        "conditions": "VIH is 0.7 x VDD at least; VIL is 0.3 x VDD at most."
+      },
+      "used_by_model": "none"
+    },
+    "ms1_pulldown": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "MS1"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 100000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, internal pull-downs"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "ms2_pulldown": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "MS2"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 50000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, internal pull-downs"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "ms3_pulldown": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "MS3"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 100000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, internal pull-downs"
+        }
+      },
+      "used_by_model": "none"
+    },
+    "slp_pullup": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "SLP"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 100000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, board pulls"
+        },
+        "conditions": "R3, from the Pololu schematic image."
+      },
+      "used_by_model": "none"
+    },
+    "en_pulldown": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "EN"
+        ]
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 100000,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, board pulls"
+        },
+        "conditions": "R6, from the Pololu schematic image."
+      },
+      "used_by_model": "none"
+    },
+    "coil_current_abs_max": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "OUT1A",
+          "OUT1B",
+          "OUT2A",
+          "OUT2B"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 2,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, output current"
+        },
+        "conditions": "Per coil."
+      },
+      "used_by_model": "none"
+    },
+    "coil_current_no_sink": {
+      "measure": "current",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "OUT1A",
+          "OUT1B",
+          "OUT2A",
+          "OUT2B"
+        ]
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 1,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.3, continuous per coil"
+        },
+        "conditions": "Without a heat sink or forced air; 2 A with enough extra cooling."
+      },
+      "used_by_model": "none"
+    },
+    "fet_on_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "driver"
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "typ": 0.32,
+        "max": 0.43,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.1, Rds(on)"
+        },
+        "conditions": "Per FET at 1.5 A. One coil path is two FETs."
+      },
+      "used_by_model": "none"
+    },
+    "sense_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "driver"
+      },
+      "manufacturer": {
+        "unit": "ohm",
+        "value": 0.068,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.4, R_CS"
+        },
+        "conditions": "White R068 resistors since 2017; 0.050 ohm on earlier green ones."
+      },
+      "used_by_model": "none"
+    },
+    "thermal_shutdown": {
+      "measure": "temperature",
+      "role": "thermal",
+      "scope": {
+        "part": true
+      },
+      "manufacturer": {
+        "unit": "degC",
+        "typ": 165,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.6, thermal shutdown"
+        },
+        "conditions": "Hysteresis is 15 degC."
+      },
+      "used_by_model": "none"
+    },
+    "coil_path_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "layer": "driver"
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 0.64,
+        "confidence": "medium",
+        "derived_from": [
+          "fet_on_resistance.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/a4988.js:25"
+        },
+        "rationale": {
+          "en": "Two FETs at 0.32 ohm each, the typical figure, at 25 degC. The figure uses it for the bench."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vref_default": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "driver"
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.3,
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/a4988.js:23"
+        },
+        "rationale": {
+          "en": "Constant in figures/modules/a4988.js:23, no source found. Where the bench's trimpot starts; a real one arrives wherever it was left."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "vref_one_amp": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "layer": "driver"
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.544,
+        "confidence": "medium",
+        "derived_from": [
+          "sense_resistance.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/modules/a4988.js:24"
+        },
+        "rationale": {
+          "en": "VREF = 8 x I_MAX x 0.068 ohm, so 0.544 V sets 1.0 A, the figure Pololu gives for a bare carrier. Constant in figures/modules/a4988.js:24."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "protocols": [
+    {
+      "id": "step_dir",
+      "kind": "step-dir",
+      "role": "peripheral",
+      "pins": {
+        "step": "STEP",
+        "dir": "DIR"
+      },
+      "status": "not-modelled-yet"
+    },
+    {
+      "id": "driver_control",
+      "kind": "gpio",
+      "role": "peripheral",
+      "pins": {
+        "en": "EN",
+        "slp": "SLP",
+        "rst": "RST",
+        "ms1": "MS1",
+        "ms2": "MS2",
+        "ms3": "MS3"
+      },
+      "status": "not-modelled-yet"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "motor_supply",
+        "pins": [
+          "VMOT"
+        ],
+        "ground": [
+          "GND2"
+        ],
+        "voltage": "vmot_operating"
+      },
+      {
+        "id": "logic_supply",
+        "pins": [
+          "VDD"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "vdd_operating"
+      }
+    ],
+    "protection": [
+      {
+        "kind": "reverse-polarity",
+        "present": false,
+        "note": {
+          "en": "None on VMOT or VDD."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.6, last line"
+        }
+      },
+      {
+        "kind": "overcurrent",
+        "present": true,
+        "note": {
+          "en": "A short to ground latches the outputs off until SLP is pulsed high or VDD is removed."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.6"
+        }
+      },
+      {
+        "kind": "overtemperature",
+        "present": true,
+        "source": {
+          "src": "facts",
+          "loc": "section 3.6, thermal shutdown"
+        }
+      },
+      {
+        "kind": "undervoltage-lockout",
+        "present": true,
+        "note": {
+          "en": "On VDD."
+        },
+        "source": {
+          "src": "facts",
+          "loc": "section 3.6, UVLO"
+        }
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "rst_slp_link",
+      "name": {
+        "en": "RST to SLP jumper cap"
+      },
+      "kind": "build-option",
+      "type": "boolean",
+      "default": true,
+      "affects": [
+        "RST",
+        "SLP"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "Each rising edge on STEP advances one microstep in the direction DIR sets; the trimpot sets the coil current limit as VREF / (8 x 0.068 ohm). The Studio does not run this yet."
+    },
+    "layers": [
+      {
+        "id": "driver",
+        "domain": "analog",
+        "reads": [
+          "STEP",
+          "DIR",
+          "EN",
+          "SLP",
+          "RST",
+          "MS1",
+          "MS2",
+          "MS3",
+          "VMOT",
+          "VDD",
+          "rst_slp_link"
+        ],
+        "drives": [
+          "OUT1A",
+          "OUT1B",
+          "OUT2A",
+          "OUT2B"
+        ],
+        "summary": {
+          "en": "Step translator, current limit and two H-bridges driving two coils."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The translator and the current limit live in the figure page, and the Studio has no stepper driver model yet."
+          }
+        }
+      }
+    ]
+  },
+  "injectable_faults": [
+    {
+      "id": "no_rst_slp_link",
+      "kind": "option_removed",
+      "target": {
+        "parameter": "rst_slp_link"
+      },
+      "legacy_id": "missing:LINK",
+      "cause_id": "floating-input",
+      "symptom_ids": [
+        "x-stepper-does-not-move"
+      ],
+      "description": {
+        "en": "Take off the jumper cap that ties RST to SLP, so RST floats and the driver never runs."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [
+      {
+        "en": "Nothing runs in the Studio yet. The page lists the limits of the board and how VREF sets the current limit, for reading."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The step translator, the microstep tables and the current DAC."
+      },
+      {
+        "en": "The current limit set by VREF, and the 70.71 percent of it that full step puts in each coil."
+      },
+      {
+        "en": "The chopper, decay modes and the motor current waveform."
+      },
+      {
+        "en": "Thermal shutdown at 165 degC, undervoltage lockout, and damage from a reversed or too high supply."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "driver_in_figure",
+        "text": {
+          "en": "The VREF to current-limit rule, the coil path resistance and the shutdown temperature are constants in the figure page, not in the Studio solver."
+        },
+        "evidence": "figures/modules/a4988.js:22-28"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No test checks the current limit against the datasheet."
+        },
+        "evidence": "src/content/robotics/a4988.test.ts"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": []
+      },
+      {
+        "language": "micropython",
+        "libraries": []
+      }
+    ]
+  },
+  "compatibility": {
+    "works_with": [
+      "core.uno-r3"
+    ],
+    "rules": [
+      {
+        "id": "motor_supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VMOT",
+          "rating": "vmot_operating"
+        },
+        "message": {
+          "en": "The motor supply is outside 8 V to 35 V."
+        }
+      },
+      {
+        "id": "logic_supply_window",
+        "kind": "voltage_window",
+        "severity": "error",
+        "params": {
+          "pin": "VDD",
+          "rating": "vdd_operating"
+        },
+        "message": {
+          "en": "The logic supply is outside 3 V to 5.5 V."
+        }
+      },
+      {
+        "id": "reset_tied",
+        "kind": "jumper_state",
+        "severity": "warning",
+        "params": {
+          "parameter": "rst_slp_link",
+          "value": false
+        },
+        "message": {
+          "en": "RST floats on this board. Tie it to SLP or drive it high, or the driver never runs."
+        }
+      },
+      {
+        "id": "common_ground",
+        "kind": "needs_common_ground",
+        "severity": "warning",
+        "params": {
+          "pin": "GND"
+        },
+        "message": {
+          "en": "Join the controller ground to GND, or the inputs have no reference."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "module",
+        "id": "a4988",
+        "path": "public/figures/modules/a4988.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "DIR",
+        "STEP",
+        "SLP",
+        "RST",
+        "MS3",
+        "MS2",
+        "MS1",
+        "EN",
+        "GND",
+        "VDD",
+        "OUT1B",
+        "OUT1A",
+        "OUT2A",
+        "OUT2B",
+        "VMOT"
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "VMOT": "top",
+        "VDD": "top",
+        "GND": "bottom",
+        "GND2": "bottom",
+        "OUT1A": "right",
+        "OUT1B": "right",
+        "OUT2A": "right",
+        "OUT2B": "right",
+        "DIR": "left",
+        "STEP": "left",
+        "SLP": "left",
+        "RST": "left",
+        "MS1": "left",
+        "MS2": "left",
+        "MS3": "left",
+        "EN": "left"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "A4988",
+      "body_colour": "#2e8b3a",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Board geometry and electrical figures: Pololu item 1182 documents and the Allegro A4988 datasheet, cited through docs/facts/a4988.md."
+      },
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, converted from figures/modules/a4988.js and docs/facts/a4988.md.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_legacy_model": [
+    {
+      "ref": "module:a4988-driver@1",
+      "path": "figures/modules/a4988.js",
+      "lines": "22-28"
+    }
+  ]
+}

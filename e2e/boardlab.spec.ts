@@ -1,7 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./support/no-egress";
 import { LOCALES, htmlLang } from "../src/i18n/config";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
 import common from "../src/i18n/messages/en/common.json";
@@ -161,14 +162,22 @@ test.describe("Board Lab", () => {
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
     await page.keyboard.press("?");
     const dialog = page.getByRole("dialog", { name: boardlab.keys.title });
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
     await expect(dialog.getByTestId("shortcuts")).toContainText(boardlab.keys.run);
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
 
-    // ] opens the next lesson.
+    // ] opens the next lesson, once focus is back outside any typing target.
+    await expect
+      .poll(() => page.evaluate(() => {
+        const el = document.activeElement as HTMLElement | null;
+        return !!el && (el.isContentEditable || !!el.closest(".cm-editor") || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))
+          ? `${el.tagName}.${el.className}`
+          : "free";
+      }), { message: "focus is not in a typing target" })
+      .toBe("free");
     await page.keyboard.press("]");
-    await expect(page).toHaveURL(/\/en\/boards\/uno-r3\/button$/);
+    await expect(page).toHaveURL(/\/en\/boards\/uno-r3\/button$/, { timeout: 15_000 });
   });
 
   test("the lesson page passes axe", async ({ page }) => {

@@ -9,11 +9,11 @@
     "robotics": "机器人实验室",
     "drones": "无人机实验室",
     "together": "一起",
-    "passport": "护照",
-    "verify": "验证",
     "about": "关于",
     "menu": "菜单",
-    "closeMenu": "关闭菜单"
+    "closeMenu": "关闭菜单",
+    "search": "搜索",
+    "searchHint": "搜索页面和操作"
   },
   "language": {
     "label": "语言"
@@ -28,47 +28,19 @@
     "label": "设置"
   },
   "footer": {
-    "privacy": "无需账号。你的进度只保存在这个浏览器里。实验室会发送匿名使用计数，你可以在设置中关闭。",
-    "figures": "插图由 April Zhu 的 Colorfigures 绘制（MIT 许可证）。",
-    "pages": "网站页面"
+    "privacy": "没有账号，没有广告，没有分析。你的进度和设置只保存在这个浏览器里。",
+    "figures": "用 Colorfigures 绘制",
+    "pages": "网站页面",
+    "privacyLink": "隐私",
+    "licenceLink": "许可证状态",
+    "sourceLink": "源代码",
+    "licence": "许可证：尚未选定。图形：MIT，作者 April Zhu。"
   },
   "ui": {
-    "close": "关闭",
-    "copy": "复制",
-    "copied": "已复制",
-    "copyCode": "复制代码",
-    "done": "已完成",
-    "current": "当前步骤",
-    "stepOf": "第 {n} 步，共 {total} 步",
     "progress": "{done}/{total}",
     "progressLabel": "{label}：已完成 {done}/{total}"
   },
   "dashboard": {
-    "metaTitle": "总览",
-    "metaDescription": "组装、接线、编程、故意弄坏、试飞：{boards} 块开发板、{benches} 个机器人实验台和 {drones} 架无人机，全部手绘墨线，完全可交互。",
-    "kicker": "探索 · 理解 · 动手做",
-    "title": "动手*搭建*，学会硬件",
-    "lede": "{boards} 块开发板、{benches} 个机器人实验台和 {drones} 架无人机，每一个都是手绘墨线的 3D 模型，可以转动、接线、编程，还能故意弄坏。",
-    "start": "从 Arduino Uno R3 开始",
-    "browse": "浏览开发板",
-    "heroFigure": "在面包板上运行 Blink 的 Arduino Uno R3（实时）：拖动即可旋转",
-    "labsTitle": "三个实验室",
-    "open": "打开{lab}",
-    "board": {
-      "text": "从 Arduino Uno R3 到两块 FPGA 开发板：课程、实时代码编辑器、原理图和面包板视图、串口监视器，以及真的会发生的故障。",
-      "unit": "块开发板",
-      "progress": "课程与组装"
-    },
-    "robotics": {
-      "text": "电机驱动、传感器和电源模块，在实验台上一件一件装起来，配有练习任务、每一步之后的小测验、实时状态和电流读数。",
-      "unit": "个实验台",
-      "progress": "步骤、任务与测验"
-    },
-    "drones": {
-      "text": "从 Tiny Whoop 到八旋翼：逐个零件组装、实时计算重量和推力、安全测试、真实的 Betaflight 和 ArduPilot 设置，还有一个飞行场。",
-      "unit": "架无人机",
-      "progress": "组装、测试与航线"
-    },
     "continue": {
       "title": "从上次停下的地方继续",
       "empty": "还没有完成任何内容。Uno R3 是最好的起点：十六节短课，从开发板的各个部件一直讲到倒车雷达。",
@@ -88,42 +60,14 @@
       }
     },
     "overall": "总进度",
-    "features": {
-      "title": "每个实验室都能",
-      "see": {
-        "title": "看穿内部",
-        "text": "拖动即可把任何模型转上一整圈，打开透视，看里面的零件如何工作，标签会随之亮起。"
-      },
-      "code": {
-        "title": "运行真正的代码",
-        "text": "编辑 Arduino C++、MicroPython 或 Verilog，然后点击运行：模拟器会驱动模型、引脚和串口监视器。"
-      },
-      "break": {
-        "title": "故意弄坏它",
-        "text": "接反极性、让电源掉电、少装一个零件或焊出虚焊，看看到底会出什么问题。"
-      },
-      "fly": {
-        "title": "解锁并起飞",
-        "text": "组装一架无人机，核对它的数据，做冒烟保护和电机测试，然后用自稳或手动模式穿越飞行门。"
-      }
+    "board": {
+      "progress": "课程与组装"
     },
-    "together": {
-      "rooms": {
-        "title": "共享房间",
-        "text": "在任意开发板、机器人或无人机上开一个房间，把链接发出去。最多八个人共用一个实验台，一次一人操作键盘。"
-      },
-      "partner": {
-        "title": "实验伙伴",
-        "text": "Muse Spark 为你找到技能互补的组装伙伴，再安排一场大家都喜欢的组装之夜。"
-      },
-      "languages": {
-        "title": "六种语言",
-        "text": "每个页面、每节课、每个模型标注，都有你的语言。在下面选一种。"
-      }
+    "robotics": {
+      "progress": "步骤、任务与测验"
     },
-    "closing": {
-      "title": "实验台*已就绪*。",
-      "text": "免费，无需账号，无需安装。"
+    "drones": {
+      "progress": "组装、测试与航线"
     }
   },
   "about": {
@@ -132,13 +76,18 @@
     "title": "关于 iynk",
     "lede": "iynk 是一个在浏览器里打开的硬件实验室。每块开发板、每个模块、每架无人机都是一个手绘墨线的 3D 模型，你可以转动、拆开和操作它，它们连着课程、真正能运行的代码，以及你可以故意触发的故障。",
     "howTitle": "工作原理",
+    "howHeads": {
+      "figures": "可以操作的模型",
+      "code": "真正运行的代码",
+      "privacy": "数据留在浏览器里"
+    },
     "how": {
       "figures": "每个模型都是一个独立页面，由 Colorfigures 引擎绘制：真实的 3D 形体，用亮、中、暗三档平涂上色，再加墨线轮廓。页面通过一个小小的消息桥与模型通信，所以在课程里按下一个按钮，模型里的零件就会动起来，反过来也一样。",
       "code": "程序在你浏览器里的模拟器中运行，使用虚拟时钟：一个 Arduino C++ 子集（每种芯片的整数位宽都正确）、一个 MicroPython 子集，以及供两块 FPGA 开发板使用的 Verilog 子集。",
-      "privacy": "进度和设置保存在这个浏览器的本地存储中。没有账号。当这个部署配有数据库时，实验室会发送匿名使用计数（通过一节课、完成一个步骤、试一次故障、一圈的时间），用于实时计数和排行榜；每条记录只带这个浏览器的随机编号，绝不包含你的名字或代码。在设置（页眉里的齿轮）中关闭“分享匿名使用计数”即可停止发送。"
+      "privacy": "进度和设置保存在这个浏览器的本地存储中。没有账号。iynk 会在本地记录实验室里发生的事。记录只留在这个浏览器里，你可以在“密钥与用量”中查看、复制或清除。不会有任何内容发送给我们。"
     },
     "originalsTitle": "三个原版网站",
-    "originalsLede": "iynk 起初是对三个教学网站的重建，目标是做到它们能做的一切，并且更多。它沿用了它们的事实、公式、时序和课程，所有代码都由自己编写，并修正了在其中发现的错误。",
+    "originalsLede": "iynk 受三个教学网站启发。它是一个独立项目，代码均为自己编写。",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",
@@ -160,5 +109,45 @@
     "builtWithTitle": "技术栈",
     "builtWith": "Next.js、React 和 Tailwind CSS（均为 MIT 许可证），每个模型都使用 Colorfigures 引擎。",
     "colorfigures": "Colorfigures 技能页面"
+  },
+  "command": {
+    "title": "命令菜单",
+    "placeholder": "搜索页面和操作",
+    "empty": "没有匹配项。试试实验室名称或某项设置。",
+    "groups": {
+      "pages": "页面",
+      "actions": "操作",
+      "theme": "主题",
+      "language": "语言"
+    },
+    "open": "搜索",
+    "sound": {
+      "on": "开启声音",
+      "off": "关闭声音"
+    },
+    "motion": {
+      "on": "减少动效",
+      "off": "允许动效"
+    },
+    "keys": "密钥与用量",
+    "hint": "{key} 打开此菜单"
+  },
+  "privacy": {
+    "metaTitle": "隐私",
+    "metaDescription": "iynk 在你的浏览器里保存什么、发送什么，以及绝不会做什么。",
+    "title": "隐私",
+    "lede": "iynk 没有账号、广告和分析。这是一份简短的说明，讲这个应用保存和发送什么。它不是法律意见。",
+    "stays": {
+      "title": "留在你浏览器里的内容",
+      "text": "你的进度和设置保存在这个浏览器的本地存储中，键名为 iynk:v1。你选择的语言记在名为 iynk-lang 的 cookie 里。如果你添加了 AI 或搜索密钥，它保存在 iynk:keys:v1 下。实验室里发生的事记录在本地日志 iynk:log:v1 中。你可以在“密钥与用量”中查看、复制或清除它。"
+    },
+    "leaves": {
+      "title": "离开你浏览器的内容",
+      "text": "没有，除非你使用房间或添加密钥。房间会把你的名字、光标和聊天消息（包括语音消息转成的文字）发送到房间中继。你添加的密钥会在每次 AI 或搜索调用时发送到你自己的 iynk 服务器，语音录音也会发到那里转写。服务器不会保存密钥。"
+    },
+    "never": {
+      "title": "我们不会做的事",
+      "text": "没有账号，没有广告，没有分析。使用计数只是你浏览器里的一份本地日志，你可以随时查看和清除。"
+    }
   }
 }

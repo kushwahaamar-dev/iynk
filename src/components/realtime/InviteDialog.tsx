@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { Button, Dialog } from "@/components/ui";
+import { Button, Dialog, IconButton, InlineStatus, Skeleton, TextInput } from "@/components/ui";
 import type { TogetherT } from "./messages";
 
 type Qr = { size: number; path: string } | "error" | null;
@@ -36,13 +36,13 @@ export function QrCode({ text, label, t }: { text: string; label: string; t: Tog
   const value = qr.text === text ? qr.value : null;
   if (value === "error") return <p className="text-sm text-bad">{t("bar.qrError")}</p>;
   return (
-    <div className="ink-plate mx-auto w-full max-w-60 rounded-ink border-2 border-line p-3">
+    <div className="plate mx-auto w-full max-w-60 p-3">
       {value ? (
         <svg role="img" aria-label={label} viewBox={`-2 -2 ${value.size + 4} ${value.size + 4}`} className="block aspect-square w-full text-ink-fixed" shapeRendering="crispEdges">
           <path d={value.path} fill="currentColor" />
         </svg>
       ) : (
-        <div className="aspect-square w-full animate-pulse rounded-ink-sm bg-mono-200" aria-hidden="true" />
+        <Skeleton className="aspect-square w-full" />
       )}
     </div>
   );
@@ -56,6 +56,7 @@ export function InviteDialog({
   title,
   hint,
   code,
+  note,
   action,
   t,
 }: {
@@ -67,6 +68,8 @@ export function InviteDialog({
   title: string;
   hint: string;
   code: string;
+  /** What the link allows, shown under it: "Editor, 1 use, until Oct 28, 14:00". */
+  note?: string;
   t: TogetherT;
 }) {
   const id = useId();
@@ -104,30 +107,40 @@ export function InviteDialog({
     >
       <div className="flex flex-col gap-3">
         <QrCode text={link} label={t("bar.qr", { code })} t={t} />
-        <label htmlFor={`${id}-link`} className="sr-only">
-          {t("bar.invite")}
-        </label>
-        <input
-          id={`${id}-link`}
-          readOnly
-          value={link}
-          onFocus={(event) => event.currentTarget.select()}
-          className="min-h-11 w-full rounded-ink-sm border-2 border-line bg-sunken px-3 font-ui text-xs text-ink"
-        />
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <TextInput
+              id={`${id}-link`}
+              label={t("bar.invite")}
+              hideLabel
+              readOnly
+              value={link}
+              onFocus={(event) => event.currentTarget.select()}
+              className="text-xs"
+            />
+          </div>
+          <IconButton label={t("bar.copy")} icon={copy === "done" ? "check" : "copy"} variant="solid" onClick={copyLink} />
+        </div>
+        {note ? <p className="text-sm text-muted">{note}</p> : null}
         <div className="flex flex-wrap gap-2">
           {action ? (
             <Button variant="primary" onClick={action.run}>
               {action.label}
             </Button>
           ) : null}
-          <Button variant={action ? "secondary" : "primary"} onClick={copyLink}>
-            {t("bar.copy")}
-          </Button>
-          {canShare ? <Button onClick={share}>{t("bar.share")}</Button> : null}
+          {canShare ? <Button variant={action ? "secondary" : "primary"} onClick={share}>{t("bar.share")}</Button> : null}
         </div>
-        <p role="status" className="min-h-5 text-sm text-muted">
-          {copy === "done" ? t("bar.copied") : copy === "failed" ? t("bar.copyFailed") : ""}
-        </p>
+        <div className="min-h-6">
+          {copy === "done" ? (
+            <InlineStatus tone="good" live>
+              {t("bar.copied")}
+            </InlineStatus>
+          ) : copy === "failed" ? (
+            <InlineStatus tone="bad" live>
+              {t("bar.copyFailed")}
+            </InlineStatus>
+          ) : null}
+        </div>
       </div>
     </Dialog>
   );

@@ -1,0 +1,154 @@
+{
+  "title": "添加你自己的零件",
+  "intro": "输入数据手册或你自己测量得到的数值。零件只保存在这台设备上。",
+  "kind": {
+    "label": "零件类型",
+    "motor": "电机和螺旋桨",
+    "pack": "电池",
+    "esc": "电调"
+  },
+  "motor": {
+    "heading": "电机",
+    "name": "名称",
+    "kv": "kv(每伏转速)",
+    "r": "电阻(欧姆)",
+    "i0": "空载电流(A)",
+    "vMax": "最高电压(V)",
+    "iMax": "最大电流(A)",
+    "mass": "质量(g)"
+  },
+  "prop": {
+    "heading": "螺旋桨",
+    "toggle": "为这台电机拟合螺旋桨",
+    "toggleHint": "螺旋桨需要数据手册的行。它的推力和功率数值会按这些行拟合。",
+    "name": "名称",
+    "diameter": "直径(英寸)",
+    "pitch": "螺距(英寸)",
+    "blades": "桨叶数",
+    "mass": "质量(g)"
+  },
+  "rows": {
+    "label": "数据手册的行",
+    "hint": "每行一组:电池电压(V)、油门(0 到 1)、推力(g)、电流(A)。用制表符、分号或逗号分隔。最多 {max} 行。",
+    "placeholder": "11.1, 0.5, 420, 6.5",
+    "parsed": "已读取的行",
+    "count": {
+      "one": "已读取 {count} 行",
+      "other": "已读取 {count} 行"
+    },
+    "volts": "电池 V",
+    "throttle": "油门",
+    "thrust": "推力 g",
+    "current": "电流 A",
+    "error": {
+      "tooMany": "粘贴了 {count} 行。上限是 {max} 行。",
+      "columns": "第 {line} 行需要四列。",
+      "notNumber": "第 {line} 行有一个值不是数字。"
+    }
+  },
+  "fit": {
+    "heading": "拟合结果",
+    "ct0": "推力系数 ct0",
+    "cp0": "功率系数 cp0",
+    "thrust": "推力残差",
+    "current": "电流残差",
+    "band": "范围 ±{percent} %。这是拟合残差,不是公差。",
+    "needed": "粘贴至少四行与这台电机和螺旋桨对应的数据手册行,即可看到拟合结果。",
+    "unsettled": "拟合没有收敛。请检查这些行。"
+  },
+  "esc": {
+    "heading": "电调",
+    "name": "名称",
+    "current": "持续电流(A)",
+    "burst": "峰值电流(A)",
+    "channels": "电机通道数",
+    "protocol": "信号协议",
+    "efficiency": "效率(0 到 1)",
+    "vMax": "最高电压(V)",
+    "mass": "质量(g)"
+  },
+  "pack": {
+    "heading": "电池",
+    "name": "名称",
+    "cells": "串联电芯数",
+    "parallel": "并联电芯数",
+    "capacity": "容量(mAh)",
+    "c": "持续放电倍率(C)",
+    "r": "单芯内阻(mOhm)",
+    "rHint": "留空则按容量估算。",
+    "chemistry": "电芯类型",
+    "mass": "质量(g)"
+  },
+  "source": {
+    "heading": "来源",
+    "title": "来源标题",
+    "titleHint": "数值来自的数据手册、测试或页面。每个零件都需要一个来源。",
+    "url": "链接(可选)",
+    "kind": "来源类型",
+    "kinds": {
+      "manufacturer-datasheet": "厂商数据手册",
+      "own-measurement": "我自己的测量",
+      "community": "社区帖子"
+    },
+    "note": "备注(可选)"
+  },
+  "license": {
+    "label": "许可证",
+    "hint": "留空时,零件会使用适用于用户自带零件的许可证。"
+  },
+  "version": "版本",
+  "issues": {
+    "heading": "待修正",
+    "number": "请输入数字。",
+    "name": "名称需要包含字母或数字。",
+    "duplicate": "这里另一个零件用了相同的名称。",
+    "source": "请填写数值的来源。",
+    "blocked": {
+      "one": "保存前需要修正 {count} 项。",
+      "other": "保存前需要修正 {count} 项。"
+    }
+  },
+  "save": {
+    "action": "保存零件",
+    "saving": "正在保存",
+    "saved": "已保存 {names}。它现在出现在零件选择器里。",
+    "conflict": "已有相同 ID 和版本的零件保存了不同的数值。请更改版本号后再保存。",
+    "failed": "无法在这台设备上保存零件。",
+    "loading": "正在打开零件库"
+  },
+  "compare": {
+    "title": "比较机型配置",
+    "pinnedLabel": "已固定：{label}",
+    "memoryNote": "固定的配置只保存在此标签页中，不会存入项目，重新加载后会清除。",
+    "empty": "请先固定一个配置。然后更换某个部件，再回来并排查看每个数值。",
+    "figure": "数值",
+    "pinnedHead": "已固定",
+    "currentHead": "当前",
+    "difference": "差值",
+    "percent": "变化",
+    "blocked": "无法计算",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} 比 1",
+      "pct": "{value} %",
+      "a": "{value} A",
+      "min": "{value} 分钟"
+    },
+    "checksTitle": "结果有变化的检查",
+    "checksNone": "没有检查的结果发生变化。",
+    "checkChange": "{pinned} 变为 {current}",
+    "assumptionsTitle": "假设",
+    "assumptionsSame": "两个配置使用相同的假设。",
+    "assumptionsDiffer": "两个配置的假设不同。",
+    "onlyPinned": "仅在已固定的配置中",
+    "onlyCurrent": "仅在当前配置中",
+    "row": {
+      "auw": "重量",
+      "tw": "推重比",
+      "hoverThrottle": "悬停油门",
+      "hoverAmps": "悬停电流",
+      "maxAmps": "满油门电流",
+      "enduranceTyp": "飞行时间，典型值"
+    }
+  }
+}

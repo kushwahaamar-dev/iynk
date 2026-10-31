@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHead, eyebrow, page } from "@/components/editorial/Editorial";
+import { BuddiesPage } from "@/components/buddies/BuddiesPage";
 import { FigureStill } from "@/components/figure";
 import { TogetherStrings } from "@/components/realtime/messages";
+import { PageSkeleton } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { createTranslator } from "@/i18n/translate";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
-import { Lobby, LobbyLede } from "./Lobby";
-import { getLobbyItems, getTogetherMessages } from "./strings";
+import { LobbyLede } from "./Lobby";
+import { getTogetherMessages } from "./strings";
 
 type Props = { params: Promise<{ lang: string }> };
 
@@ -22,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function TogetherPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className={cx(page, "min-h-[70vh]")} aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="list" />}>
       <TogetherLobby params={params} />
     </Suspense>
   );
@@ -31,11 +33,11 @@ export default function TogetherPage({ params }: Props) {
 async function TogetherLobby({ params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [messages, items] = await Promise.all([getTogetherMessages(lang), getLobbyItems(lang)]);
+  const messages = await getTogetherMessages(lang);
   const t = createTranslator(lang, messages, `${lang}/together`);
 
   return (
-    <div className={cx(page, "pb-[clamp(72px,10vw,160px)]")}>
+    <div className={cx(page, "pb-16 md:pb-24")}>
       <TogetherStrings locale={lang} messages={messages}>
         <PageHead
           label={t("lobby.eyebrow")}
@@ -43,7 +45,7 @@ async function TogetherLobby({ params }: Props) {
           lede={<LobbyLede />}
           aside={
             // One bench of each lab: a room opens on any of them.
-            <ul className="grid grid-cols-3 gap-3 sm:gap-5">
+            <ul className="grid grid-cols-3 gap-3 sm:gap-4">
               {STILLS.map(({ lab, item }) => (
                 <li key={lab} className="min-w-0">
                   <FigureStill item={item} className="aspect-square sm:aspect-square" />
@@ -53,7 +55,7 @@ async function TogetherLobby({ params }: Props) {
             </ul>
           }
         />
-        <Lobby items={items} />
+        <BuddiesPage />
       </TogetherStrings>
     </div>
   );

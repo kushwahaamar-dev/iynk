@@ -1,0 +1,1692 @@
+[
+  {
+    "id": "diagnose-b-21-uno-supply-touch",
+    "base": "prj_uno-r3-servo",
+    "fault": {
+      "id": "flt_uno-supply-touch",
+      "cause_id": "supply-shorted-to-ground",
+      "symptom_ids": [
+        "supply-collapses",
+        "part-hot"
+      ],
+      "kind": "short",
+      "target": {
+        "nets": [
+          "net_5v",
+          "net_gnd"
+        ]
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "supply-collapses",
+        "text": "Plug in the USB cable and the board lights for a blink, then goes dark. A lot of heat builds up near the power chip within seconds and the servo does nothing."
+      },
+      "answer": {
+        "cause_id": "supply-shorted-to-ground",
+        "fault": "flt_uno-supply-touch"
+      },
+      "options": [
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        },
+        {
+          "cause_id": "supply-shorted-to-ground",
+          "label": "A supply wire touching the ground wire"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "An LED fitted the wrong way round"
+        }
+      ],
+      "explanation": "The 5 V rail has a direct path to ground. With nothing in the way, the supply pushes as much current as it can through that path, so the power chip heats up and the voltage collapses for everything else on the board.",
+      "transfer": {
+        "template": "distance",
+        "question": "A distance sensor build shows the board lighting for a blink and then going dark, with warmth near the power chip. Which reading, taken with the power off, points at the problem?",
+        "options": [
+          "Close to 0 ohms between the 5 V rail and ground",
+          "About 10 kilo-ohms between the trigger pin and ground",
+          "About 5 volts across the sensor"
+        ],
+        "answer": 0
+      },
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Switch everything off and touch nothing yet. Does the heat show up the moment power arrives, or only after the code starts?"
+        },
+        {
+          "text": "Measure the board's 5 V rail against ground with the power off, in resistance mode. A healthy circuit reads kilohms or more.",
+          "focus": {
+            "nets": [
+              "net_5v",
+              "net_gnd"
+            ]
+          }
+        },
+        {
+          "text": "A near zero reading means something joins the two rails. Follow each wire from the 5 V pin until you find the one that also reaches the other rail.",
+          "focus": {
+            "nets": [
+              "net_5v",
+              "net_gnd"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "short-5v",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "diagnose-b-22-esp32-flicker",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_esp32-flicker",
+      "cause_id": "x-intermittent-connection",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "cold-solder",
+      "target": {
+        "component": "cmp_r1"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "The LED blinks as the program says, but every few seconds it stays dark for a while. Pressing gently on the board brings it back. The serial log shows nothing odd."
+      },
+      "answer": {
+        "cause_id": "x-intermittent-connection",
+        "fault": "flt_esp32-flicker"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "x-intermittent-connection",
+          "label": "A joint that touches sometimes and lets go at others"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "A joint that was never properly melted into the pad touches when the board is still and lets go when it moves. The program keeps running, and the current path opens and closes without any warning.",
+      "transfer": {
+        "template": "serial-echo",
+        "question": "A serial echo build prints garbled text only when you touch the wires. Pressing on one joint fixes it. What is the best next step?",
+        "options": [
+          "Reseat that joint and test it with a meter",
+          "Lower the baud rate",
+          "Add a delay to the code"
+        ],
+        "answer": 0
+      },
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Watch the fault for a minute. Does it track the code or does it happen at random moments?"
+        },
+        {
+          "text": "Tap or flex the board lightly while the LED is dark. If the LED reacts to the touch, the code is off the hook.",
+          "focus": {
+            "components": [
+              "cmp_r1"
+            ]
+          }
+        },
+        {
+          "text": "Look at each joint on the LED path under good light. A dull, grainy or cracked joint is the one that touches and lets go.",
+          "focus": {
+            "components": [
+              "cmp_r1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "cold-gpio23",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "diagnose-b-23-nano-twitch",
+    "base": "prj_nano-fade",
+    "fault": {
+      "id": "flt_nano-twitch",
+      "cause_id": "x-intermittent-connection",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "cold-solder",
+      "target": {
+        "component": "cmp_r1"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "Turning the knob should fade the LED smoothly. Instead it jumps and sometimes goes dark halfway through, and wiggling the wires changes what it does."
+      },
+      "answer": {
+        "cause_id": "x-intermittent-connection",
+        "fault": "flt_nano-twitch"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "x-intermittent-connection",
+          "label": "A joint that touches sometimes and lets go at others"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "A poor joint adds a gap that opens and closes with every small movement. The knob and the code are fine, and the output reaches the LED only some of the time.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Hold the knob still. If the LED still twitches, the knob is not the cause."
+        },
+        {
+          "text": "Move one wire at a time while the LED is on. Note which one makes the LED react.",
+          "focus": {
+            "components": [
+              "cmp_r1"
+            ]
+          }
+        },
+        {
+          "text": "Check the joints on that part of the path: a dull or cracked one is the loose link.",
+          "focus": {
+            "components": [
+              "cmp_r1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "cold-d9",
+      "board": "nano"
+    }
+  },
+  {
+    "id": "diagnose-b-24-nodemcu-dropout",
+    "base": "prj_nodemcu-blink",
+    "fault": {
+      "id": "flt_nodemcu-dropout",
+      "cause_id": "x-intermittent-connection",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "cold-solder",
+      "target": {
+        "component": "cmp_r101"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "The LED blinks on and off at the right pace for a while, then misses beats. The serial log shows the program still counting correctly."
+      },
+      "answer": {
+        "cause_id": "x-intermittent-connection",
+        "fault": "flt_nodemcu-dropout"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "x-intermittent-connection",
+          "label": "A joint that touches sometimes and lets go at others"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "The program is doing its job, which is why the serial log looks right. A joint on the way to the LED connects and disconnects, so some beats never reach it.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Compare what the serial log says with what the LED does. Do they agree?"
+        },
+        {
+          "text": "If the log is right and the LED is wrong, the problem sits after the pin, on the path to the LED.",
+          "focus": {
+            "components": [
+              "cmp_r101"
+            ]
+          }
+        },
+        {
+          "text": "Press along that path one joint at a time. The one that brings the LED back when pressed is the weak link.",
+          "focus": {
+            "components": [
+              "cmp_r101"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "cold-d1",
+      "board": "nodemcu"
+    }
+  },
+  {
+    "id": "diagnose-b-25-microbit-clip",
+    "base": "prj_microbit-v2-blink",
+    "fault": {
+      "id": "flt_microbit-clip",
+      "cause_id": "x-intermittent-connection",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "cold-solder",
+      "target": {
+        "component": "cmp_led1"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "The LED lights only when the circuit is held in a certain position. Put it down flat and the LED goes dark, and the display shows the program still running."
+      },
+      "answer": {
+        "cause_id": "x-intermittent-connection",
+        "fault": "flt_microbit-clip"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "x-intermittent-connection",
+          "label": "A joint that touches sometimes and lets go at others"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "A crocodile clip that grips badly makes a contact that depends on how the clip sits. The program and the board are healthy; the current path is simply not complete in every position.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Does the LED depend on how the circuit is held? That points at a contact, not at the program."
+        },
+        {
+          "text": "Hold the circuit in the position where the LED works and change one thing at a time until it goes dark.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        },
+        {
+          "text": "Whatever you touched when it went dark is the contact that does not hold.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "loose-clip",
+      "board": "microbit-v2"
+    }
+  },
+  {
+    "id": "diagnose-b-26-uno-motor-reset",
+    "base": "prj_uno-r3-motor",
+    "fault": {
+      "id": "flt_uno-motor-reset",
+      "cause_id": "brownout",
+      "symptom_ids": [
+        "mcu-resets",
+        "supply-collapses"
+      ],
+      "kind": "brownout",
+      "target": {
+        "net": "net_5v"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "mcu-resets",
+        "text": "The motor starts, spins for a moment and the board resets, again and again. With the motor unplugged the board runs fine."
+      },
+      "answer": {
+        "cause_id": "brownout",
+        "fault": "flt_uno-motor-reset"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part that never gets a supply"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part with no path back to ground"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sagging under load"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "A supply or part connected the wrong way round"
+        }
+      ],
+      "explanation": "A motor pulls a large current when it starts. The USB supply cannot deliver it, its voltage drops below what the chip needs and the chip restarts, which stops the motor, which lets the voltage recover. The cycle then repeats.",
+      "transfer": {
+        "template": "plant",
+        "question": "A plant monitor board with a small pump resets each time the pump starts, though the sensor code is fine. What is the likely cause?",
+        "options": [
+          "The sensor reading is too high",
+          "The pump pulls so much current that the supply voltage sags",
+          "The serial port is open"
+        ],
+        "answer": 1
+      },
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Run the board with the motor disconnected. Does the resetting stop?"
+        },
+        {
+          "text": "Watch the 5 V rail while the motor starts. A dip right when the motor kicks in tells you the supply is the weak point.",
+          "focus": {
+            "nets": [
+              "net_5v"
+            ]
+          }
+        },
+        {
+          "text": "Look for where the motor takes its power. It should not share a thin supply with the chip.",
+          "focus": {
+            "nets": [
+              "net_5v"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "brownout",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "diagnose-b-27-esp32-wifi-reset",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_esp32-wifi-reset",
+      "cause_id": "brownout",
+      "symptom_ids": [
+        "mcu-resets",
+        "supply-collapses"
+      ],
+      "kind": "brownout",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "mcu-resets",
+        "text": "As soon as the program connects to Wi-Fi the board resets, and the serial log repeats a message about low voltage before it restarts."
+      },
+      "answer": {
+        "cause_id": "brownout",
+        "fault": "flt_esp32-wifi-reset"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part that never gets a supply"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part with no path back to ground"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sagging under load"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "A supply or part connected the wrong way round"
+        }
+      ],
+      "explanation": "Radio bursts need a short, large gulp of current. A weak USB port or a thin cable cannot give it, the voltage dips and the chip restarts itself to protect its memory.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Read the serial log closely. What does the message just before the restart say?"
+        },
+        {
+          "text": "Try the same board on another USB port or cable. A different outcome points at the supply.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Check that nothing else is taking current from the same port at that moment.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "brownout-wifi",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "diagnose-b-28-nodemcu-low-feed",
+    "base": "prj_nodemcu-blink",
+    "fault": {
+      "id": "flt_nodemcu-low-feed",
+      "cause_id": "brownout",
+      "symptom_ids": [
+        "mcu-resets",
+        "supply-collapses"
+      ],
+      "kind": "brownout",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "mcu-resets",
+        "text": "Powered from a battery pack the board starts, then resets when the Wi-Fi turns on. On the USB cable it behaves."
+      },
+      "answer": {
+        "cause_id": "brownout",
+        "fault": "flt_nodemcu-low-feed"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part that never gets a supply"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part with no path back to ground"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sagging under load"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "A supply or part connected the wrong way round"
+        }
+      ],
+      "explanation": "The pack gives too little voltage once the battery is loaded. The board's own regulator needs some headroom, and when the radio draws current the input falls below it.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Compare the two power sources. Which one resets and which one does not?"
+        },
+        {
+          "text": "Measure the pack's voltage with the board running. The reading will be lower than the label says.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "Add up what the pack must provide at the peak, not only at idle.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "vin-too-low",
+      "board": "nodemcu"
+    }
+  },
+  {
+    "id": "diagnose-b-29-microbit-flat",
+    "base": "prj_microbit-v2-blink",
+    "fault": {
+      "id": "flt_microbit-flat",
+      "cause_id": "brownout",
+      "symptom_ids": [
+        "mcu-resets",
+        "supply-collapses"
+      ],
+      "kind": "brownout",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "mcu-resets",
+        "text": "The display flickers and the board resets whenever the LED comes on. A fresh pair of batteries makes the whole thing stable."
+      },
+      "answer": {
+        "cause_id": "brownout",
+        "fault": "flt_microbit-flat"
+      },
+      "options": [
+        {
+          "cause_id": "part-not-powered",
+          "label": "A part that never gets a supply"
+        },
+        {
+          "cause_id": "missing-ground",
+          "label": "A part with no path back to ground"
+        },
+        {
+          "cause_id": "brownout",
+          "label": "The supply sagging under load"
+        },
+        {
+          "cause_id": "reverse-polarity",
+          "label": "A supply or part connected the wrong way round"
+        }
+      ],
+      "explanation": "Old batteries have a high internal resistance. At rest they still read near their rating, but when anything draws current the voltage sags below what the chip needs.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Does it behave on a fresh pair of batteries?"
+        },
+        {
+          "text": "Measure the battery voltage while the LED is lit and again with it off.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A large drop between the two readings means the battery cannot carry the load.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "power",
+    "source": {
+      "catalogueId": "flat-battery",
+      "board": "microbit-v2"
+    }
+  },
+  {
+    "id": "diagnose-b-30-uno-led-dark",
+    "base": "prj_uno-r3-blink",
+    "fault": {
+      "id": "flt_uno-led-dark",
+      "cause_id": "led-reversed",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "reversed-part",
+      "target": {
+        "component": "cmp_led1"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "Everything is wired and the program is uploaded, the board's own light blinks, but the LED stays dark. Nothing gets warm."
+      },
+      "answer": {
+        "cause_id": "led-reversed",
+        "fault": "flt_uno-led-dark"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "An LED fitted the wrong way round"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "An LED passes current in one direction only. Fitted the other way round it blocks the current, so it never lights, and it is not damaged by it.",
+      "transfer": {
+        "template": "knob",
+        "question": "A knob dims an LED, but the LED stays dark at every knob position. The code checks out. What is the quickest thing to test?",
+        "options": [
+          "Turn the knob the other way",
+          "Check whether the LED's longer leg is on the supply side",
+          "Raise the PWM frequency"
+        ],
+        "answer": 1
+      },
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Check the board's own light blinks. If it does, the program runs and the problem is on the circuit side."
+        },
+        {
+          "text": "Look at the two legs. One is longer, and the flat edge on the body marks the other.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        },
+        {
+          "text": "Turn it half a turn and see whether it matches the marks.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "led-backwards",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "diagnose-b-31-nucleo-led-dark",
+    "base": "prj_nucleo-f401re-blink",
+    "fault": {
+      "id": "flt_nucleo-led-dark",
+      "cause_id": "led-reversed",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "reversed-part",
+      "target": {
+        "component": "cmp_led1"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "The sketch is uploaded and the board's own light blinks. The external LED does not light and no part of the circuit is warm."
+      },
+      "answer": {
+        "cause_id": "led-reversed",
+        "fault": "flt_nucleo-led-dark"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "An LED fitted the wrong way round"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "Current only flows through an LED from its anode to its cathode. With the legs swapped the LED is a closed door, and nothing is harmed.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Does the board's own light blink? If so, the code is running."
+        },
+        {
+          "text": "Compare the legs of the LED against the marks on its body.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        },
+        {
+          "text": "Reverse it and watch what happens.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "reversed-d4",
+      "board": "nucleo-f401re"
+    }
+  },
+  {
+    "id": "diagnose-b-32-pico-led-dark",
+    "base": "prj_pico-blink",
+    "fault": {
+      "id": "flt_pico-led-dark",
+      "cause_id": "led-reversed",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "kind": "reversed-part",
+      "target": {
+        "component": "cmp_led1"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-dark",
+        "text": "The program runs, the board's light blinks, and the LED on the breadboard stays off. No part gets warm."
+      },
+      "answer": {
+        "cause_id": "led-reversed",
+        "fault": "flt_pico-led-dark"
+      },
+      "options": [
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        },
+        {
+          "cause_id": "led-reversed",
+          "label": "An LED fitted the wrong way round"
+        },
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        }
+      ],
+      "explanation": "A reversed LED blocks the current. It is a common slip, since the two legs look nearly the same on a breadboard.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Does the board's own light blink? Then the program is not the problem."
+        },
+        {
+          "text": "Check which leg of the LED goes toward the ground side of the circuit.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        },
+        {
+          "text": "Swap the legs and test again.",
+          "focus": {
+            "components": [
+              "cmp_led1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "diode-backwards",
+      "board": "pico"
+    }
+  },
+  {
+    "id": "diagnose-b-33-esp32-silent-start",
+    "base": "prj_esp32-devkitc-blink",
+    "fault": {
+      "id": "flt_esp32-silent-start",
+      "cause_id": "x-boot-strap-level",
+      "symptom_ids": [
+        "code-no-effect"
+      ],
+      "kind": "boot-strap",
+      "target": {
+        "component": "cmp_r1"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "code-no-effect",
+        "text": "After a power cycle the serial log prints a boot error and the program never starts, but pressing reset a second time sometimes works."
+      },
+      "answer": {
+        "cause_id": "x-boot-strap-level",
+        "fault": "flt_esp32-silent-start"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "button-no-pulldown",
+          "label": "A button with no resistor to hold it at a known level"
+        },
+        {
+          "cause_id": "x-boot-strap-level",
+          "label": "A start-up pin held at the wrong level while the chip boots"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        }
+      ],
+      "explanation": "A few pins are read once, at the instant the chip starts, to decide how it boots. If something pulls one of them to the wrong level at that moment, the chip picks the wrong mode, even though the pin does what you want afterwards.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Read the first line of the serial log. It usually says how the chip started."
+        },
+        {
+          "text": "List which pins the circuit connects to, and note which of them the chip reads at start-up.",
+          "focus": {
+            "components": [
+              "cmp_r1"
+            ]
+          }
+        },
+        {
+          "text": "Disconnect that wire, power the board, and connect it again after the start.",
+          "focus": {
+            "components": [
+              "cmp_r1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "strap-gpio12",
+      "board": "esp32-devkitc"
+    }
+  },
+  {
+    "id": "diagnose-b-34-nodemcu-no-boot",
+    "base": "prj_nodemcu-blink",
+    "fault": {
+      "id": "flt_nodemcu-no-boot",
+      "cause_id": "x-boot-strap-level",
+      "symptom_ids": [
+        "code-no-effect"
+      ],
+      "kind": "boot-strap",
+      "target": {
+        "component": "cmp_r101"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "code-no-effect",
+        "text": "The board shows nothing at all on the serial log after power-up, though the same program ran yesterday on a bare board."
+      },
+      "answer": {
+        "cause_id": "x-boot-strap-level",
+        "fault": "flt_nodemcu-no-boot"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "button-no-pulldown",
+          "label": "A button with no resistor to hold it at a known level"
+        },
+        {
+          "cause_id": "x-boot-strap-level",
+          "label": "A start-up pin held at the wrong level while the chip boots"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        }
+      ],
+      "explanation": "One of the pins is read at start-up and has to sit at a set level. The extra part on the breadboard changes that level just when the chip looks, so it never boots into the program.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Does the board start with the circuit unplugged? The comparison narrows it down."
+        },
+        {
+          "text": "Add the wires back one at a time, powering up each time.",
+          "focus": {
+            "components": [
+              "cmp_r101"
+            ]
+          }
+        },
+        {
+          "text": "The wire that stops the start is on a pin the chip reads at boot.",
+          "focus": {
+            "components": [
+              "cmp_r101"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "strap-gpio15",
+      "board": "nodemcu"
+    }
+  },
+  {
+    "id": "diagnose-b-35-pico-flash-mode",
+    "base": "prj_pico-button",
+    "fault": {
+      "id": "flt_pico-flash-mode",
+      "cause_id": "x-boot-strap-level",
+      "symptom_ids": [
+        "code-no-effect"
+      ],
+      "kind": "boot-strap",
+      "target": {
+        "component": "cmp_btn1"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "code-no-effect",
+        "text": "After plugging in, nothing runs, and the computer shows the board as a USB drive instead of a running device."
+      },
+      "answer": {
+        "cause_id": "x-boot-strap-level",
+        "fault": "flt_pico-flash-mode"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "button-no-pulldown",
+          "label": "A button with no resistor to hold it at a known level"
+        },
+        {
+          "cause_id": "x-boot-strap-level",
+          "label": "A start-up pin held at the wrong level while the chip boots"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        }
+      ],
+      "explanation": "The button on the breadboard is held down, or wired so it looks held down, while the board starts. That tells the chip to wait for new firmware instead of running the program.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Is anything holding a button down as the board powers up?"
+        },
+        {
+          "text": "Plug in with the button circuit disconnected and see which mode the board enters.",
+          "focus": {
+            "components": [
+              "cmp_btn1"
+            ]
+          }
+        },
+        {
+          "text": "The button that changes the boot mode is wired to a pin that the chip reads at start.",
+          "focus": {
+            "components": [
+              "cmp_btn1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "bootsel-held",
+      "board": "pico"
+    }
+  },
+  {
+    "id": "diagnose-b-36-pi-echo-heat",
+    "base": "prj_pi4-pi5-distance",
+    "fault": {
+      "id": "flt_pi-echo-heat",
+      "cause_id": "x-logic-level-mismatch",
+      "symptom_ids": [
+        "pin-level-wrong"
+      ],
+      "kind": "level-mismatch",
+      "target": {
+        "net": "net_gpio24"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "pin-level-wrong",
+        "text": "The distance reading is right for a while, then the readings stop and the Pi does odd things. The sensor module and its wiring look right."
+      },
+      "answer": {
+        "cause_id": "x-logic-level-mismatch",
+        "fault": "flt_pi-echo-heat"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        },
+        {
+          "cause_id": "x-logic-level-mismatch",
+          "label": "A signal at a higher voltage than the input pin accepts"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        }
+      ],
+      "explanation": "The sensor answers at 5 V, but the Pi pin only tolerates 3.3 V. Applied directly, the pin is stressed and may fail, long before anything looks wrong.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Find the voltage the sensor's output swings to, in its data sheet."
+        },
+        {
+          "text": "Compare that with the highest voltage the Pi's pins accept.",
+          "focus": {
+            "nets": [
+              "net_gpio24"
+            ]
+          }
+        },
+        {
+          "text": "Anything between the two must bring the level down before the Pi.",
+          "focus": {
+            "nets": [
+              "net_gpio24"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "five-volt-echo",
+      "board": "pi4-pi5"
+    }
+  },
+  {
+    "id": "diagnose-b-37-pi-echo-divider",
+    "base": "prj_pi4-pi5-distance",
+    "fault": {
+      "id": "flt_pi-echo-divider",
+      "cause_id": "x-logic-level-mismatch",
+      "symptom_ids": [
+        "pin-level-wrong"
+      ],
+      "kind": "level-mismatch",
+      "target": {
+        "component": "cmp_r3"
+      },
+      "enabled": true,
+      "note": "Model only: nothing in the simulator detects this yet, so the item explains the cause and cannot be marked fixed by the app."
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "pin-level-wrong",
+        "text": "The reading is stuck at the same value whatever is in front of the sensor, and after a few minutes the Pi's pin feels warm."
+      },
+      "answer": {
+        "cause_id": "x-logic-level-mismatch",
+        "fault": "flt_pi-echo-divider"
+      },
+      "options": [
+        {
+          "cause_id": "floating-input",
+          "label": "An input pin left connected to nothing"
+        },
+        {
+          "cause_id": "output-contention",
+          "label": "Two outputs driving the same wire against each other"
+        },
+        {
+          "cause_id": "x-logic-level-mismatch",
+          "label": "A signal at a higher voltage than the input pin accepts"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        },
+        {
+          "cause_id": "swapped-pins",
+          "label": "Two pins wired the wrong way round"
+        }
+      ],
+      "explanation": "Two resistors split the 5 V echo down to a safe level. With one leg of the pair missing, the split no longer divides, and the full voltage reaches the Pi pin.",
+      "review": {
+        "status": "model-only",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Look at the path between the sensor's output and the Pi pin."
+        },
+        {
+          "text": "Measure the voltage on that pin while the sensor answers. It should be well under 5 V.",
+          "focus": {
+            "components": [
+              "cmp_r2",
+              "cmp_r3"
+            ]
+          }
+        },
+        {
+          "text": "A value near 5 V means the pair of resistors is not working as a pair.",
+          "focus": {
+            "components": [
+              "cmp_r2",
+              "cmp_r3"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "wiring",
+    "source": {
+      "catalogueId": "five-volt-echo",
+      "board": "pi4-pi5"
+    }
+  },
+  {
+    "id": "diagnose-b-38-uno-led-flash",
+    "base": "prj_uno-r3-blink",
+    "fault": {
+      "id": "flt_uno-led-flash",
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led-burnt",
+        "pin-overloaded"
+      ],
+      "kind": "overcurrent",
+      "target": {
+        "component": "cmp_res1"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-burnt",
+        "text": "The LED is startlingly bright for a second, then goes dark for good, and the pin it hangs on feels warm."
+      },
+      "answer": {
+        "cause_id": "led-no-series-resistor",
+        "fault": "flt_uno-led-flash"
+      },
+      "options": [
+        {
+          "cause_id": "pin-overcurrent",
+          "label": "A pin asked to deliver more current than it can"
+        },
+        {
+          "cause_id": "led-no-series-resistor",
+          "label": "An LED with nothing limiting its current"
+        },
+        {
+          "cause_id": "wrong-value",
+          "label": "A part with the wrong value"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        }
+      ],
+      "explanation": "An LED has almost no resistance of its own once it conducts. Without a part to hold the current down, the pin pushes as much as it can and the LED burns out.",
+      "transfer": {
+        "template": "button",
+        "question": "A button lights an LED wired straight to a pin with no resistor. The LED flashes once, then never lights again. What went wrong?",
+        "options": [
+          "The code pressed the pin too fast",
+          "The LED drew far more current than it could take and failed",
+          "The button bounced"
+        ],
+        "answer": 1
+      },
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Is there any part between the pin and the LED?"
+        },
+        {
+          "text": "Compare the current the pin gives with what the LED can take.",
+          "focus": {
+            "components": [
+              "cmp_res1",
+              "cmp_led1"
+            ]
+          }
+        },
+        {
+          "text": "Something has to set that current. Look for where it should be.",
+          "focus": {
+            "components": [
+              "cmp_res1",
+              "cmp_led1"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "value",
+    "source": {
+      "catalogueId": "led-no-resistor",
+      "board": "uno-r3"
+    }
+  },
+  {
+    "id": "diagnose-b-39-nodemcu-led-flash",
+    "base": "prj_nodemcu-blink",
+    "fault": {
+      "id": "flt_nodemcu-led-flash",
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led-burnt",
+        "pin-overloaded"
+      ],
+      "kind": "overcurrent",
+      "target": {
+        "component": "cmp_r101"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "led-burnt",
+        "text": "The LED lights far too brightly and the chip next to the pin gets hot. After a minute the LED is dark."
+      },
+      "answer": {
+        "cause_id": "led-no-series-resistor",
+        "fault": "flt_nodemcu-led-flash"
+      },
+      "options": [
+        {
+          "cause_id": "pin-overcurrent",
+          "label": "A pin asked to deliver more current than it can"
+        },
+        {
+          "cause_id": "led-no-series-resistor",
+          "label": "An LED with nothing limiting its current"
+        },
+        {
+          "cause_id": "wrong-value",
+          "label": "A part with the wrong value"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        }
+      ],
+      "explanation": "The part that should limit current has a value so small that it does nothing, so the LED takes whatever the pin can supply, and heat builds up in both.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Measure what the part in the LED path reads in ohms."
+        },
+        {
+          "text": "Compare it with the value the circuit asks for.",
+          "focus": {
+            "components": [
+              "cmp_r101",
+              "cmp_led101"
+            ]
+          }
+        },
+        {
+          "text": "The correct value is a few hundred ohms; what is there is far less.",
+          "focus": {
+            "components": [
+              "cmp_r101",
+              "cmp_led101"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "value",
+    "source": {
+      "catalogueId": "led-no-resistor",
+      "board": "nodemcu"
+    }
+  },
+  {
+    "id": "diagnose-b-40-microbit-3v-load",
+    "base": "prj_microbit-v2-blink",
+    "fault": {
+      "id": "flt_microbit-3v-load",
+      "cause_id": "pin-overcurrent",
+      "symptom_ids": [
+        "pin-overloaded",
+        "part-hot"
+      ],
+      "kind": "overcurrent",
+      "target": {
+        "component": "brd_main"
+      },
+      "enabled": true
+    },
+    "spec": {
+      "kind": "injected",
+      "symptom": {
+        "id": "pin-overloaded",
+        "text": "With the load attached, the board gets warm around the edge connector and the display dims. Nothing else in the circuit is hot."
+      },
+      "answer": {
+        "cause_id": "pin-overcurrent",
+        "fault": "flt_microbit-3v-load"
+      },
+      "options": [
+        {
+          "cause_id": "led-no-series-resistor",
+          "label": "An LED with nothing limiting its current"
+        },
+        {
+          "cause_id": "pin-overcurrent",
+          "label": "A pin asked to deliver more current than it can"
+        },
+        {
+          "cause_id": "wrong-value",
+          "label": "A part with the wrong value"
+        },
+        {
+          "cause_id": "open-connection",
+          "label": "A wire or leg that does not actually touch"
+        }
+      ],
+      "explanation": "A pin on the edge connector can only provide a small current. The load asks for far more, so the output sags and the board heats up trying to supply it.",
+      "review": {
+        "status": "draft",
+        "source": "own-reasoning"
+      }
+    },
+    "ladder": {
+      "levels": [
+        {
+          "text": "Find what the load needs, from its label or data sheet."
+        },
+        {
+          "text": "Compare with what one pin on this board can give.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        },
+        {
+          "text": "A load that needs more must take its power elsewhere and use the pin only as a signal.",
+          "focus": {
+            "components": [
+              "brd_main"
+            ]
+          }
+        }
+      ]
+    },
+    "family": "value",
+    "source": {
+      "catalogueId": "overload-3v",
+      "board": "microbit-v2"
+    }
+  }
+]

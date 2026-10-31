@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHead, Section, eyebrow, page } from "@/components/editorial/Editorial";
 import { FigureStill } from "@/components/figure";
+import { PageSkeleton } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import { isLocale } from "@/i18n/config";
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function AboutPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className={cx(page, "min-h-[70vh]")} aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="article" />}>
       <About params={params} />
     </Suspense>
   );
@@ -45,7 +46,7 @@ async function About({ params }: Pick<Props, "params">) {
   const t = await getT(lang, "shell");
 
   return (
-    <div className={cx(page, "pb-[clamp(72px,10vw,160px)]")}>
+    <div className={cx(page, "pb-16 md:pb-24")}>
       <PageHead
         title={t("about.title")}
         lede={<p>{t("about.lede")}</p>}
@@ -57,9 +58,10 @@ async function About({ params }: Pick<Props, "params">) {
           {HOW.map((key, i) => (
             <li key={key} className="border-b border-rule py-6 md:border-s md:border-b-0 md:ps-6 md:first:border-s-0 md:first:ps-0">
               <p className={cx(eyebrow, "tabular")} aria-hidden="true">
-                {String.fromCharCode(97 + i)}
+                {String(i + 1).padStart(2, "0")}
               </p>
-              <p className="mt-4 max-w-[48ch] leading-[1.6]">{t(`about.how.${key}`)}</p>
+              <h3 className="mt-4 text-xl font-semibold tracking-tight text-balance">{t(`about.howHeads.${key}`)}</h3>
+              <p className="mt-2 max-w-prose leading-relaxed">{t(`about.how.${key}`)}</p>
             </li>
           ))}
         </ol>
@@ -70,14 +72,14 @@ async function About({ params }: Pick<Props, "params">) {
           {ORIGINALS.map((site, i) => {
             const name = t(`about.originals.${site.id}.name`);
             return (
-              <li key={site.id} className="grid grid-cols-1 gap-x-6 gap-y-3 border-b border-rule py-7 sm:grid-cols-[3rem_minmax(0,1fr)]">
+              <li key={site.id} className="grid grid-cols-1 gap-x-6 gap-y-3 border-b border-rule py-8 sm:grid-cols-[3rem_minmax(0,1fr)]">
                 <p className={cx(eyebrow, "tabular sm:pt-2")} aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
                 </p>
                 <article>
-                  <h3 className="text-[clamp(22px,2.2vw,30px)] font-medium tracking-[-0.02em]">{name}</h3>
+                  <h3 className="text-2xl font-medium tracking-tight">{name}</h3>
                   <p className="mt-2 max-w-[60ch] text-muted">{t(`about.originals.${site.id}.text`)}</p>
-                  <a href={site.url} rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center gap-1.5 font-body text-sm font-semibold">
+                  <a href={site.url} rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-semibold">
                     {t("about.visit", { name })}
                     <Icon name="external" size={16} />
                   </a>
@@ -89,11 +91,11 @@ async function About({ params }: Pick<Props, "params">) {
       </Section>
 
       <Section id={`about-built-${lang}`} index="03" title={t("about.builtWithTitle")}>
-        <p className="max-w-[62ch] text-[17px] leading-[1.6]">{t("about.builtWith")}</p>
+        <p className="max-w-prose text-base leading-relaxed">{t("about.builtWith")}</p>
       </Section>
 
       <Section id={`about-licence-${lang}`} index="04" title={t("about.licenceTitle")}>
-        <p className="max-w-[62ch] text-[17px] leading-[1.6]">{t("about.licenceText")}</p>
+        <p className="max-w-prose text-base leading-relaxed">{t("about.licenceText")}</p>
         <p className="mt-3 text-sm text-muted">
           <a href="https://april-zhu.com/colorfigures" rel="noopener noreferrer">
             {t("about.colorfigures")}
@@ -101,11 +103,11 @@ async function About({ params }: Pick<Props, "params">) {
         </p>
         {/* The full text is there for anyone who wants it, without taking over the page. */}
         <details className="group mt-8 border-y border-rule">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 font-ui text-xs font-medium tracking-[0.08em] uppercase [&::-webkit-details-marker]:hidden">
-            <Icon name="chevron-right" size={16} className="transition-transform duration-150 group-open:rotate-90" />
+          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+            <Icon name="chevron-right" size={16} className="motion-move group-open:rotate-90" />
             {t("about.licenceTitle")} · MIT
           </summary>
-          <div className="pb-5">
+          <div className="pb-4">
             <pre lang="en" tabIndex={0} aria-label={t("about.licenceTitle")} className="overflow-x-auto whitespace-pre-wrap font-ui text-xs leading-relaxed text-muted">
               {LICENCE}
             </pre>

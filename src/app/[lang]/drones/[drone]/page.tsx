@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { LabRoom } from "@/components/dock/LabRoom";
-import { UntranslatedNotice } from "@/components/shell";
+import { PageSkeleton } from "@/components/ui";
 import { loadCraft } from "@/components/dronelab/data";
-import { DroneWorkspace } from "@/components/dronelab/DroneWorkspace";
+import { LabHost } from "@/components/studio/lab/LabHost";
+import { ServicesProvider } from "@/components/studio/wiring/services";
 import { DRONE_IDS } from "@/content/ids";
 import { isLocale } from "@/i18n/config";
+import { STUDIO_NAMESPACES, type StudioMessages } from "@/i18n/namespaces";
 import { alternatesFor } from "@/i18n/seo";
 import { getMessages, getT } from "@/i18n/server";
 
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function DronePage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
+    <Suspense fallback={<PageSkeleton kind="workspace" />}>
       <Drone params={params} />
     </Suspense>
   );
@@ -43,17 +44,13 @@ export default function DronePage({ params }: Props) {
 async function Drone({ params }: Pick<Props, "params">) {
   const { lang, drone } = await params;
   if (!isLocale(lang)) notFound();
-  const [craft, messages] = await Promise.all([loadCraft(lang, drone), getMessages(lang, "dronelab")]);
+  const craft = await loadCraft(lang, drone);
   if (!craft) notFound();
+  const files = await Promise.all(STUDIO_NAMESPACES.map((ns) => getMessages(lang, ns)));
+  const messages = Object.fromEntries(STUDIO_NAMESPACES.map((ns, i) => [ns, files[i]])) as StudioMessages;
   return (
-    <LabRoom lab="drone" itemId={drone}>
-      <DroneWorkspace
-        lang={lang}
-        content={craft.content}
-        text={craft.text}
-        messages={messages}
-        notice={<UntranslatedNotice lang={lang} textLang={craft.textLang} variant="chip" />}
-      />
-    </LabRoom>
+    <ServicesProvider>
+      <LabHost templateId={`prj_drone-${drone}`} lang={lang} messages={messages} />
+    </ServicesProvider>
   );
 }

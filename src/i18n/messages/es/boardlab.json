@@ -436,5 +436,7 @@
       "reverse": "{part}: al revés, apagado",
       "open": "{part}: sin conectar"
     }
-  }
+  },
+  "openInStudio": "Abrir en Studio",
+  "lessonView": "Vista de lección: el editor completo está en Studio"
 }

@@ -1,7 +1,8 @@
 {
   "real": {
     "title": "Wirklich bauen",
-    "lede": "Live-Preise für jedes Teil dieses Aufbaus von Google Shopping, Amazon und eBay.",
+    "lede": "Katalogpreise für jedes Teil und Shop-Preise, wenn du einen Suchschlüssel hinzufügst und auf Preise prüfen drückst.",
+    "check": "Preise prüfen",
     "loading": "Preise werden gesucht …",
     "refresh": "Preise erneut prüfen",
     "checked": "Preise geprüft um {time}",
@@ -9,7 +10,7 @@
     "alternatives": "Alternativen, die der Optimierer einsetzen kann",
     "total": "Günstigste Summe",
     "totalCatalogue": "Summe zu Katalogpreisen",
-    "allLive": "Alle Teile mit Live-Preis",
+    "allLive": "Alle Teile mit Shop-Preis",
     "estimated": {
       "one": "{count} Teil mit Katalogpreis",
       "other": "{count} Teile mit Katalogpreis"
@@ -29,13 +30,15 @@
     "offersHide": "Angebote ausblenden",
     "offersLabel": "Angebote für {part}",
     "partial": {
-      "quota": "Das Suchbudget dieser Seite ist aufgebraucht, daher stammen einige Preise aus dem Katalog.",
+      "quota": "Dein Suchlimit für diesen Monat ist aufgebraucht. Zwischengespeicherte Ergebnisse funktionieren weiterhin.",
       "upstream": "Einige Shops haben nicht geantwortet, daher stammen einige Preise aus dem Katalog."
     },
     "failed": "Die Preise konnten nicht geladen werden.",
     "rateLimited": "Zu viele Preisabfragen hintereinander. Warte eine Minute und versuche es dann erneut.",
+    "quotaExhausted": "Dein monatliches Suchlimit ist aufgebraucht und wird am 1. zurückgesetzt. Zwischengespeicherte Ergebnisse funktionieren weiterhin.",
+    "noKey": "Füge in den Einstellungen einen Suchschlüssel hinzu, um Preise zu prüfen.",
+    "needsKey": "Die Preisabfrage",
     "retry": "Erneut versuchen",
-    "notSetUp": "Live-Preise sind auf dieser Installation nicht eingerichtet.",
     "notSetUpDrone": "Der Optimierer unten rechnet stattdessen mit den Katalogpreisen.",
     "statusError": "Der Server ist nicht erreichbar.",
     "noContent": "Die Teileliste dieses Elements ist noch nicht veröffentlicht.",
@@ -46,10 +49,10 @@
     }
   },
   "opt": {
-    "heading": "Budget-Optimierer",
+    "heading": "Budgetoptimierer",
     "lede": "Lege ein Budget und deine Grenzen fest. Der Drohnenrechner prüft jede Kombination aus Akku, Motor und Propeller zu heutigen Preisen.",
     "budget": "Budget",
-    "minTW": "Mindest-Schub-Gewicht",
+    "minTW": "Mindestwert Schub zu Gewicht",
     "minFlight": "Mindestflugzeit",
     "minutes": "{value} min",
     "best": "Bester Aufbau bis {amount}",
@@ -62,8 +65,8 @@
     "swap": "{slot}: {from} → {to}",
     "apply": "Diesen Aufbau im Labor verwenden",
     "applied": "Das Labor verwendet jetzt diesen Aufbau.",
-    "upgrade": "Für {amount} mehr: Schub-Gewicht {tw} und {minutes} min Flugzeit.",
-    "upgradeCurrent": "Dein aktueller Aufbau schafft Schub-Gewicht {tw} und {minutes} min Flugzeit für {amount} mehr.",
+    "upgrade": "Für {amount} mehr: Schub zu Gewicht {tw} und {minutes} min Flugzeit.",
+    "upgradeCurrent": "Dein aktueller Aufbau schafft Schub zu Gewicht {tw} und {minutes} min Flugzeit für {amount} mehr.",
     "noneBudget": "Bis {amount} erfüllt nichts deine Grenzen. Der günstigste passende Aufbau kostet {cheapest}.",
     "noneConstraints": "Keine Kombination dieser Teile erfüllt deine Grenzen. Senke ein Minimum, um einen Aufbau zu sehen.",
     "tw": "S:G",
@@ -90,6 +93,8 @@
     "place": "Stadt oder Adresse",
     "placeHint": "Austin, TX",
     "search": "Suchen",
+    "findEvents": "Veranstaltungen finden",
+    "needsKey": "Suche in der Nähe",
     "locate": "Meinen Standort verwenden",
     "locating": "Standort wird gesucht …",
     "privacy": "Dein Standort wird nur für diese Suche verwendet und nie gespeichert.",
@@ -116,12 +121,13 @@
     "title": "Videohilfe",
     "lede": "Tutorials zu diesem Element von YouTube.",
     "query": "Videos suchen",
-    "search": "Suchen",
     "loading": "Videos werden gesucht …",
     "empty": "Keine Videos gefunden. Versuche andere Wörter.",
     "failed": "Die Videos konnten nicht geladen werden.",
+    "needsKey": "Videohilfe",
     "watch": "„{title}“ von {channel} auf YouTube ansehen",
-    "duration": "Länge {duration}"
+    "duration": "Länge {duration}",
+    "find": "Videos finden"
   },
   "sources": {
     "heading": "Quellen",

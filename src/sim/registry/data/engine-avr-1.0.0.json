@@ -1,0 +1,87 @@
+{
+  "id": "engine:avr@1.0.0",
+  "version": "1.0.0",
+  "kind": "engine",
+  "title": "ATmega328P core (avr8js) running a compiled hex",
+  "tier": "T1",
+  "layers": [
+    "L5"
+  ],
+  "implements": [
+    {
+      "id": "core",
+      "text": "The ATmega328P instruction set, timers 0 to 2, USART, ADC, TWI and SPI from avr8js 0.21.1 on the Uno and Nano"
+    },
+    {
+      "id": "pins",
+      "text": "Ports B, C and D mapped to nets: levels, pin modes and PWM duty from the timers"
+    },
+    {
+      "id": "adc",
+      "text": "ADC reads of the voltage on a net"
+    },
+    {
+      "id": "buses",
+      "text": "TWI and SPI transfers go to the I2C and SPI bus models and charge their time in CPU cycles"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "boards",
+      "text": "Any chip other than the ATmega328P: no ESP32, RP2040 or ARM core"
+    },
+    {
+      "id": "analog-pins",
+      "text": "Pin electrical behaviour beyond a level and a drive strength: no pin capacitance, leakage or injection current"
+    },
+    {
+      "id": "fuses",
+      "text": "Fuse bits, bootloader and flash wear"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "avr8js-engine-tests",
+      "kind": "self-consistency",
+      "dataset": "src/sim/mcu/avr8js.test.ts",
+      "result": {
+        "n": 12,
+        "passed": 12,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8 avr8js 0.21.1",
+      "status": "pass"
+    },
+    {
+      "id": "avr8js-bus-tests",
+      "kind": "self-consistency",
+      "dataset": "src/sim/mcu/avr8js-bus.test.ts",
+      "result": {
+        "n": 8,
+        "passed": 8,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8 avr8js 0.21.1",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test runs the same sketch on this engine and on real hardware, so cycle counts are as good as avr8js and nothing more"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

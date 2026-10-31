@@ -1,0 +1,197 @@
+{
+  "$schema": "../../component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.supply-bench-dc",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "iynk",
+    "model": "Bench DC supply (virtual)",
+    "generic": true,
+    "refdes_prefix": "PS",
+    "kind": "virtual",
+    "category": "virtual",
+    "description": {
+      "i18n_key": "parts.supply-bench-dc.description",
+      "en": "A virtual adjustable DC supply with a current limit. It has no real part behind it."
+    },
+    "tags": [
+      "supply",
+      "power",
+      "virtual",
+      "bench"
+    ]
+  },
+  "sources": [
+    {
+      "id": "self",
+      "kind": "own-estimate",
+      "title": "iynk descriptor written for the env-monitor-esp32 example",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Written on 2026-10-27 so the example project's dependency snapshots come from real descriptors. Numbers not tied to another source are iynk choices."
+    }
+  ],
+  "pins": [
+    {
+      "id": "POS",
+      "designator": "+",
+      "type": "power_out",
+      "class": "power",
+      "polarity": "positive",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "connector": "terminals"
+    },
+    {
+      "id": "NEG",
+      "designator": "-",
+      "type": "ground",
+      "class": "ground",
+      "polarity": "negative",
+      "position": {
+        "x": 10,
+        "y": 0
+      },
+      "connector": "terminals"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "terminals",
+      "kind": "screw-terminal",
+      "gender": "none",
+      "pitch": 10,
+      "pins": [
+        "POS",
+        "NEG"
+      ]
+    }
+  ],
+  "ratings": {},
+  "parameters": [
+    {
+      "id": "volts",
+      "name": {
+        "en": "Output voltage"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 5,
+      "min": 0,
+      "max": 30,
+      "unit": "V",
+      "affects": [
+        "source"
+      ]
+    },
+    {
+      "id": "limit_a",
+      "name": {
+        "en": "Current limit"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 1,
+      "min": 0,
+      "max": 10,
+      "unit": "A",
+      "affects": [
+        "source"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "Planned: a voltage source that folds back at the current limit. The solver has no voltage_source element yet."
+    },
+    "layers": [
+      {
+        "id": "source",
+        "domain": "analog",
+        "reads": [
+          "volts",
+          "limit_a"
+        ],
+        "drives": [
+          "POS"
+        ],
+        "summary": {
+          "en": "Target element is voltage_source with a current limit."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The solver lacks the voltage_source element (COMPONENT_ECOSYSTEM row 37). Until it ships the part is placeable and wireable and the project's environment.supply_V sets the rail."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [],
+    "not_modelled": [
+      {
+        "en": "The whole part: output voltage, current limit and fold-back."
+      },
+      {
+        "en": "Output impedance and noise."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_voltage_source",
+        "text": {
+          "en": "Needs the planned voltage_source element."
+        },
+        "evidence": "COMPONENT_ECOSYSTEM.md row 37; schema elementKind lists voltage_source in the planned group"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "schematic": {
+      "symbol": "generated"
+    },
+    "fallback": {
+      "renderer": "generic-terminal-module",
+      "label": "Bench supply",
+      "body_colour": "#3a4a5a",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-27",
+    "third_party_content": false,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-27",
+        "note": "First descriptor for the env-monitor example. Marked not modelled yet, as COMPONENT_ECOSYSTEM row 37 says.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

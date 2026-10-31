@@ -1,0 +1,18 @@
+{
+  "description": "Raspberry Pi 4 Model B 或 Raspberry Pi 5 单板计算机，带 40 针 GPIO 排针，以 Python API 的方式建模。",
+  "summary": "开发板在 iynk 解释器中用 Python 和 gpiozero 运行你的程序。这是一个 Python API 模型，不是 Raspberry Pi OS。引脚、PWM、I2C 和时序遵循 pi4-pi5 开发板配置。",
+  "layer": "固件运行时。",
+  "variant": "型号",
+  "ideeprom": "保留给 HAT 识别用的 EEPROM，请勿使用。",
+  "models": {
+    "1": "解释器按 Raspberry Pi 的 BCM 引脚编号运行的 Python 子集（GPIO17 是物理引脚 11）。",
+    "2": "通过 gpiozero 在 GPIO0 到 GPIO27 上进行数字输入输出、PWM 和边沿回调，Pi 4 上还支持 RPi.GPIO。",
+    "3": "GPIO2 和 GPIO3 上的 I2C 主机以及串口输出。Pi 4 和 Pi 5 只有时钟频率不同。"
+  },
+  "not": {
+    "1": "Linux、桌面和 Raspberry Pi OS：这是 Python API 模型，不是操作系统。",
+    "2": "摄像头、显示、网络、USB 和 PCI Express 相关软件栈。",
+    "3": "模拟输入：开发板没有模拟输入，需要 MCP3008 这样的 ADC 芯片。"
+  },
+  "gap": "目前尚未列出电气额定值，因此这块开发板没有引脚过载检查。"
+}

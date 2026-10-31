@@ -1,83 +1,19 @@
 {
   "panel": {
     "title": "实验搭档",
-    "byline": "Muse Spark · 先给提示，先找朋友",
     "intro": "可以问我接线、代码或故障的问题。我会先给提示再给答案；如果你房间里有人做过这一课，我会先去问他。",
     "inputLabel": "向你的实验搭档提问",
     "placeholder": "问问实验台上的情况…",
-    "send": "发送",
-    "stop": "停止",
-    "newChat": "新对话",
     "thinking": "思考中…",
     "you": "你",
     "partner": "搭档",
     "stopped": "已停止。",
-    "retry": "重试",
-    "sources": "来源",
-    "suggestions": "可以这样问",
-    "accepted": "你接受了{kind}修改。",
-    "rejected": "你拒绝了{kind}修改。",
-    "kinds": {
-      "code": "代码",
-      "wire": "接线",
-      "part": "元件"
-    },
     "code": "代码",
-    "chat": "对话",
     "transcript": "与实验搭档的对话"
   },
-  "hint": {
-    "label": "卡住了？",
-    "hint": "给我一个提示",
-    "another": "再给一个提示",
-    "show": "直接告诉我",
-    "askHint": "给我一个提示，先别告诉我答案。",
-    "askAnother": "请再给我一个提示。",
-    "askShow": "告诉我怎么修。"
-  },
-  "suggest": {
-    "fault": "为什么会这样：{fault}？",
-    "error": "这个编译错误是什么意思？",
-    "failed": "为什么“{test}”没有通过？",
-    "start": "我应该先试什么？",
-    "code": "这段代码是做什么的？",
-    "wiring": "我的接线对吗？",
-    "drone": "这架无人机能飞得好吗？",
-    "safety": "我需要注意什么？"
-  },
   "tools": {
-    "highlight": "看看 {part}",
-    "highlightOff": "3D 模型还没有加载，所以这个元件没有高亮。",
-    "showAgain": "再指给我看",
-    "change": {
-      "code": "建议的代码修改",
-      "wire": "建议的接线修改",
-      "part": "建议的元件修改"
-    },
-    "accept": "接受",
-    "reject": "拒绝",
-    "accepted": "已接受",
-    "rejected": "已拒绝",
-    "manual": "这个实验台无法替你应用修改。请复制后自己动手修改。",
     "copy": "复制",
-    "copied": "已复制",
-    "unchanged": {
-      "one": "{count} 行未改动",
-      "other": "{count} 行未改动"
-    },
-    "diffLabel": "修改：以 + 开头的行是新增的，以 − 开头的行是删除的。",
-    "askPeer": "已请 {name} 讲解",
-    "askPeerNoRoom": "做过这个的朋友可以给你讲讲。邀请一个人和你一起搭建吧。",
-    "invite": "邀请朋友",
-    "opened": "已打开{tab}",
-    "tabs": {
-      "partner": "搭档",
-      "together": "一起",
-      "real": "动手做真的",
-      "passport": "护照",
-      "hardware": "硬件"
-    },
-    "question": "“{question}”"
+    "copied": "已复制"
   },
   "errors": {
     "not_configured": "此部署尚未设置实验搭档。",
@@ -85,52 +21,190 @@
     "bad_input": "无法发送。请试试更短的问题。",
     "upstream": "这次搭档没有回应。请再试一次。",
     "offline": "你已离线。实验室仍可使用；搭档需要联网。",
+    "no_key": "请在设置中添加你的 AI 密钥，以使用实验伙伴。",
     "aborted": "已停止。"
   },
   "status": {
     "loading": "正在唤醒你的实验搭档…",
-    "unavailable": "此部署尚未设置实验搭档",
-    "unavailableBody": "实验室的其他功能无需它也能正常使用。搭档需要服务器上配置 Meta 模型 API 密钥或 Gemini API 密钥。",
+    "what": "AI 搭档",
     "unreachable": "无法连接服务器来检查搭档状态。",
     "check": "重新检查"
   },
-  "voice": {
-    "hold": "按住说话（或按 M）",
-    "stopRecording": "停止并发送（或按 M）",
-    "recording": "正在听… 松开即发送。",
-    "transcribing": "正在把语音转成文字…",
-    "denied": "麦克风权限被阻止。请在浏览器中允许后再说话。",
-    "unsupported": "此浏览器不支持语音输入。",
-    "unavailable": "此部署尚未设置语音功能。",
-    "empty": "我没听清。请靠近麦克风再试一次。",
-    "failed": "无法把你的语音转成文字。请重试或直接输入。"
-  },
-  "story": {
-    "title": "搭建故事",
-    "intro": "把这次搭建写成一个带封面的小故事：谁做了什么、哪里出了问题、谁帮了忙。",
-    "make": "写下我们的搭建故事",
-    "remake": "重新写",
-    "writing": "正在写你的故事…",
-    "drawing": "正在绘制封面…",
-    "empty": "还没有可讲的内容。先接线、运行代码或问问搭档，再回来吧。",
-    "moments": {
-      "one": "目前有 {count} 个瞬间",
-      "other": "目前有 {count} 个瞬间"
+  "partner": {
+    "state": {
+      "notSetUp": "搭档还没有设置。请在设置里选择一个提供商。",
+      "needsKey": "这个提供商需要密钥。请在设置里添加。",
+      "capped": "今天的花费上限已到。请在设置里调高。",
+      "offline": "你已离线。实验室仍可使用；搭档需要网络连接。",
+      "busy": "搭档正在回答…"
     },
-    "coverAlt": "“{title}”的封面插图",
-    "builtBy": "搭建者",
-    "helped": "{helper} 帮助了 {learner}",
-    "highlights": "精彩瞬间",
-    "download": "下载 PNG",
-    "share": "分享",
-    "copyLink": "复制链接",
-    "copied": "链接已复制",
-    "facebook": "分享到 Facebook",
-    "shareText": "{title}：来自 iynk 的搭建故事",
-    "unavailable": "此部署尚未设置搭建故事。",
-    "failed": "故事没能写出来。请再试一次。",
-    "noCover": "这次封面没能画出来，所以故事没有封面。",
-    "footer": "在 iynk 一起完成",
-    "me": "我"
+    "mode": {
+      "label": "搭档如何帮忙",
+      "direct": {
+        "name": "直接",
+        "hint": "简短、直接的回答。"
+      },
+      "debugging": {
+        "name": "排错",
+        "hint": "一步一步查找故障的原因。"
+      },
+      "beginner": {
+        "name": "入门",
+        "hint": "用词简单，步骤很小，结尾带一个问题。"
+      }
+    },
+    "send": "发送",
+    "stop": "停止",
+    "counter": "{count} / {max}",
+    "keyRemoved": "你的消息里一个看起来像密钥的值已被移除。",
+    "error": {
+      "not_configured": "请在设置里设置一个 AI 提供商。",
+      "no_key": "这个提供商需要密钥。",
+      "auth": "提供商没有接受这个密钥。",
+      "bad_model": "你的密钥无法使用这个模型。",
+      "context_too_long": "这个项目对该模型来说太大了。请选中一个元件，或选择更大的模型。",
+      "quota": "你的提供商账户已没有余额。",
+      "capped": "今天的上限已到。请在设置里调高。",
+      "network": "无法连接到提供商。如果是浏览器的限制，请开启中继。",
+      "relay_denied": "你的服务器不允许这样做。",
+      "upstream_busy": "提供商正忙。请再试一次。",
+      "upstream_timeout": "提供商响应太慢。请再试一次。",
+      "upstream_failed": "提供商出错了。请再试一次。",
+      "filtered": "提供商拒绝回答。请换个说法再问。"
+    },
+    "hint": {
+      "relay": "请求会经过你自己的服务器，而不是直接从这个浏览器发出。",
+      "selectPart": "选中一个元件，让搭档看到更小、更清晰的范围。"
+    },
+    "tool": {
+      "args": "参数",
+      "result": "结果",
+      "showAll": "显示全部 {count} 行",
+      "showLess": "显示更少行",
+      "ok": "完成",
+      "failed": "失败",
+      "noArgs": "没有参数",
+      "noResult": "没有结果"
+    },
+    "unverified": "未核实的引用"
+  },
+  "proposal": {
+    "title": {
+      "fix": "建议的修复",
+      "scaffold": "建议的起始电路",
+      "explore": "可以试试看"
+    },
+    "base": "基于修订 {rev} 生成",
+    "changedSince": "项目在修订 {rev} 发生了变化",
+    "step": "第 {n} 步：{label}",
+    "risk": {
+      "0": "仅布局",
+      "1": "添加或编辑",
+      "2": "删除或替换"
+    },
+    "confirmStep": "我明白这会删除 {components} 个元件和 {wires} 根连线，并断开 {pins} 个引脚",
+    "accept": "全部接受",
+    "acceptSome": "接受所选步骤",
+    "acceptAnyway": "仍然接受",
+    "reject": "拒绝",
+    "undo": "撤销此建议",
+    "accepted": "已接受",
+    "rejected": "已拒绝",
+    "stale": "此建议已过期。它所修改的部分项目在其生成之后被编辑过。",
+    "redo": "请搭档在当前项目上重新生成",
+    "refreshed": "预览已变化。请检查后再次点击接受。",
+    "failing": "此更改后检查未通过",
+    "checks": {
+      "rules": "规则检查",
+      "compile": "编译",
+      "tests": "测试",
+      "run": "短时运行"
+    },
+    "skipped": "未运行：{reason}",
+    "netLine": "{net}：{change}",
+    "fileLine": "{path}：+{added} −{removed}",
+    "taint": "读取以下内容后生成：{sources}",
+    "tainted": "这一轮读取了项目之外的文本。要显示这条建议吗？",
+    "show": "显示建议",
+    "explainOnly": "我没能做出有效的更改。我会这样尝试：",
+    "forbidden": "搭档不能提出这种更改。",
+    "list": "建议",
+    "empty": "还没有建议。",
+    "ready": "建议已就绪：{title}",
+    "model": "{model}，{mode}模式",
+    "tier": "新元件的精度：{tier}",
+    "announce": {
+      "open": "有一条建议等待审阅。",
+      "accepted": "建议已接受。撤销一次即可还原。",
+      "rejected": "建议已拒绝。",
+      "stale": "建议已过期。"
+    },
+    "diff": {
+      "steps": "步骤",
+      "checks": "检查",
+      "pass": "通过",
+      "fail": "未通过",
+      "parts": "元件",
+      "nets": "网络",
+      "wires": "导线",
+      "files": "文件",
+      "tests": "测试",
+      "faults": "故障",
+      "params": "参数",
+      "cascade": "同时影响",
+      "added": "新增",
+      "removed": "删除",
+      "changed": "修改",
+      "unchanged": "{count} 行未改动",
+      "wireCounts": "新增 {added} 条，删除 {removed} 条",
+      "paramChange": "{id}：{from} 改为 {to}",
+      "cascadeCounts": "{components} 个元件、{wires} 条导线、{pins} 个引脚、{sources} 个文件",
+      "bigFile": "此文件改动过大，无法逐行比较，将显示为先删除再新增。",
+      "noChange": "没有改动"
+    }
+  },
+  "mode": {
+    "label": "模式",
+    "socratic": "苏格拉底式",
+    "beginner": "入门",
+    "direct": "直接",
+    "debugging": "调试",
+    "advanced": "进阶",
+    "hint": {
+      "socratic": "提问和提示，你开口之前不给答案",
+      "beginner": "解释术语，一次一个概念",
+      "direct": "先给答案或更改",
+      "debugging": "从证据出发，再给最小的修复",
+      "advanced": "取舍、余量和假设"
+    },
+    "switched": "从下一条消息起，模式为{mode}"
+  },
+  "ladder": {
+    "label": "提示",
+    "another": "再来一个提示",
+    "show": "给我看",
+    "fixIt": "修复它",
+    "apply": "应用",
+    "level": "第 {level} 级提示，共 3 级",
+    "holdMe": "在“给我看”之前先让我确认",
+    "confirmShow": "现在显示原因和修复吗？",
+    "codeWithheld": "代码已隐藏。请求“给我看”即可查看。"
+  },
+  "scaffold": {
+    "prompt": "描述你想要的电路",
+    "tier": "新元件按 {tier} 建模",
+    "checks": "在你看到之前已通过规则检查"
+  },
+  "draft": {
+    "title": "给伙伴的消息草稿",
+    "buddy": "收件人",
+    "copy": "复制",
+    "copied": "已复制",
+    "addLink": "添加分享链接",
+    "noLink": "分享链接需要你的服务器。",
+    "use": "使用此草稿",
+    "dismiss": "放弃",
+    "sentByYou": "点击发送之前不会发出任何内容。",
+    "noBuddies": "你还没有伙伴。复制文本，用你自己的方式发送。"
   }
 }

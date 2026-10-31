@@ -1,10 +1,12 @@
-import { InterpError } from '../errors';
+import { InterpError, notModelled } from '../errors';
 import { Lcd1602, Mpu6050, Pca9685, Ssd1306 } from '../devices';
 import type { Gen } from '../exec';
 import type { BoardProfile } from '../profiles';
-import { hasPwm } from '../profiles';
+import { hasPwm, isKnownPin } from '../profiles';
 import type { ArduinoRt, Ref } from './interp';
+import { Bme280Class, SensorClass } from './lib-bme280';
 import { T, type CValue, type Ty, type TypeEnv } from './types';
+import { costUs } from '@/sim/mcu/cost-table';
 
 type Ret = string | ((ts: Ty[], env: TypeEnv) => Ty);
 
@@ -37,6 +39,8 @@ export interface LibClass {
   boards?: (p: BoardProfile) => boolean;
   create: (rt: ArduinoRt, a: CValue[], ts: Ty[]) => CValue;
   methods: Record<string, LibMethod>;
+  /** Real methods of the library that the model lacks, so a call says so instead of reading as a typo. */
+  unmodelledMethods?: readonly string[];
   statics?: Record<string, number>;
   props?: Record<string, { ret: string; get: (rt: ArduinoRt, self: CValue) => CValue }>;
 }
@@ -187,8 +191,7 @@ export function cFormat(fmt: string, args: CValue[], types: Ty[]): string {
 function pinArg(rt: ArduinoRt, v: number, what = 'pin'): number {
   const n = Math.trunc(v);
   const p = rt.world.profile;
-  const known = p.digitalPins.includes(n) || p.analogPins.includes(n) || p.leds.some((l) => l.pin === n) || p.buttons.some((b) => b.pin === n);
-  if (!known) throw new InterpError('runtime', `${what} ${n} does not exist on ${p.name}`, null, p.notes.find((x) => /pin|GPIO|D\d/.test(x)));
+  if (!isKnownPin(p, n)) throw new InterpError('runtime', `${what} ${n} does not exist on ${p.name}`, null, p.notes.find((x) => /pin|GPIO|D\d/.test(x)));
   return n;
 }
 
@@ -212,7 +215,22 @@ function* sleepMs(rt: ArduinoRt, ms: number): Gen<void> {
 }
 
 function serialObj() {
-  return { baud: 0, timeout: 1000 };
+  return { baud: 0, timeout: 1000, txFreeAt: 0 };
+}
+
+const AVR_TX_BUFFER = 64;
+
+/** Send text out of a serial port; on an AVR board the 64-byte buffer fills and the sketch waits for bytes to leave. */
+function serialSend(rt: ArduinoRt, self: Record<string, number>, s: string): void {
+  rt.world.print(s);
+  if (!self.baud || !isAvr(rt.world.profile)) return;
+  const byteUs = 1e7 / self.baud;
+  for (let i = 0; i < s.length; i++) {
+    const now = rt.world.now;
+    const queued = Math.max(0, Math.ceil((self.txFreeAt - now) / byteUs));
+    if (queued >= AVR_TX_BUFFER) rt.advance(self.txFreeAt - (AVR_TX_BUFFER - 1) * byteUs);
+    self.txFreeAt = Math.max(self.txFreeAt, rt.world.now) + byteUs;
+  }
 }
 
 // Builtin functions ----------------------------------------------------------------
@@ -230,9 +248,16 @@ export const BUILTINS: Record<string, Builtin> = {
         throw new InterpError('runtime', `INPUT_PULLDOWN does not exist on ${rt.world.profile.name}`, null, 'use INPUT with an external 10 kΩ resistor to GND, or INPUT_PULLUP');
       }
       rt.world.setMode(n, m);
+      rt.chargeUs(costUs('pinMode', rt.world.profile.id));
     },
   },
-  digitalWrite: { ret: 'void', min: 2, max: 2, fn: (rt, [pin, v]) => rt.world.digitalWrite(pinArg(rt, pin), v) },
+  digitalWrite: {
+    ret: 'void', min: 2, max: 2,
+    fn: (rt, [pin, v]) => {
+      rt.world.digitalWrite(pinArg(rt, pin), v);
+      rt.chargeUs(costUs('digitalWrite', rt.world.profile.id));
+    },
+  },
   digitalRead: {
     ret: 'int', min: 1, max: 1, pure: true,
     fn: (rt, [pin]) => {
@@ -241,6 +266,7 @@ export const BUILTINS: Record<string, Builtin> = {
         rt.warn(`${rt.world.pinName(n)} is analog only: digitalRead() always returns 0 there; use analogRead()`);
         return 0;
       }
+      rt.chargeUs(costUs('digitalRead', rt.world.profile.id));
       return rt.world.level(n);
     },
   },
@@ -260,6 +286,7 @@ export const BUILTINS: Record<string, Builtin> = {
           return 0;
         }
       }
+      rt.chargeUs(costUs('analogRead', p.id));
       return rt.world.analogRead(n);
     },
   },
@@ -286,6 +313,7 @@ export const BUILTINS: Record<string, Builtin> = {
       }
       const max = rt.objects.has('__pwmRange') ? (rt.objects.get('__pwmRange') as number) : (1 << rt.world.pwmBits) - 1;
       rt.world.analogWrite(n, Math.trunc(v), max, isAvr(p) && (n === 5 || n === 6) ? 980 : isAvr(p) ? 490 : isEsp(p) ? 1000 : 500);
+      rt.chargeUs(costUs('analogWrite', p.id));
     },
   },
   analogReadResolution: {
@@ -634,6 +662,7 @@ export function CONSTANTS(p: BoardProfile): Record<string, { v: number; t: strin
     CHANGE: { v: 1, t: 'int' }, FALLING: { v: 2, t: 'int' }, RISING: { v: 3, t: 'int' },
     DEC: { v: 10, t: 'int' }, HEX: { v: 16, t: 'int' }, OCT: { v: 8, t: 'int' }, BIN: { v: 2, t: 'int' },
     LSBFIRST: { v: 0, t: 'int' }, MSBFIRST: { v: 1, t: 'int' },
+    SPI_MODE0: { v: 0, t: 'int' }, SPI_MODE1: { v: 1, t: 'int' }, SPI_MODE2: { v: 2, t: 'int' }, SPI_MODE3: { v: 3, t: 'int' },
     PI: { v: Math.PI, t: 'float' }, HALF_PI: { v: Math.PI / 2, t: 'float' }, TWO_PI: { v: Math.PI * 2, t: 'float' },
     DEG_TO_RAD: { v: Math.PI / 180, t: 'float' }, RAD_TO_DEG: { v: 180 / Math.PI, t: 'float' }, EULER: { v: Math.E, t: 'float' },
     NULL: { v: 0, t: 'int' }, NOT_AN_INTERRUPT: { v: -1, t: 'int' },
@@ -647,6 +676,7 @@ export function CONSTANTS(p: BoardProfile): Record<string, { v: number; t: strin
     HTTP_GET: { v: 1, t: 'int' }, HTTP_POST: { v: 3, t: 'int' }, HTTP_ANY: { v: 0, t: 'int' },
     RGB_BRIGHTNESS: { v: 64, t: 'int' }, QTR_EMITTERS_ON: { v: 1, t: 'int' },
     SERIAL_8N1: { v: 0x06, t: 'int' },
+    SENSORS_PRESSURE_SEALEVELHPA: { v: 1013.25, t: 'float' },
   };
   for (const [k, v] of Object.entries(p.aliases)) c[k] = { v, t: k === 'LED_BUILTIN' || k === 'RGB_BUILTIN' ? 'int' : 'uint8_t' };
   if (p.id === 'esp32-devkitc') delete c.LED_BUILTIN;
@@ -685,18 +715,18 @@ const SerialClass: LibClass = {
   methods: {
     begin: { ret: 'void', fn: (_rt, self, [baud]) => void (self.baud = baud) },
     end: { ret: 'void', fn: (_rt, self) => void (self.baud = 0) },
-    print: { ret: 'size_t', fn: (rt, _s, a, ts) => { const s = fmtArgs(rt, a, ts); rt.world.print(s); return s.length; } },
-    println: { ret: 'size_t', fn: (rt, _s, a, ts) => { const s = fmtArgs(rt, a, ts) + '\r\n'; rt.world.print(s); return s.length; } },
-    printf: { ret: 'size_t', min: 1, fn: (rt, _s, [fmt, ...rest], ts) => { const s = cFormat(String(fmt), rest, ts.slice(1)); rt.world.print(s); return s.length; } },
+    print: { ret: 'size_t', fn: (rt, self, a, ts) => { const s = fmtArgs(rt, a, ts); serialSend(rt, self, s); return s.length; } },
+    println: { ret: 'size_t', fn: (rt, self, a, ts) => { const s = fmtArgs(rt, a, ts) + '\r\n'; serialSend(rt, self, s); return s.length; } },
+    printf: { ret: 'size_t', min: 1, fn: (rt, self, [fmt, ...rest], ts) => { const s = cFormat(String(fmt), rest, ts.slice(1)); serialSend(rt, self, s); return s.length; } },
     write: {
       ret: 'size_t',
-      fn: (rt, _s, [v], ts) => {
+      fn: (rt, self, [v], ts) => {
         const s = ts[0].k === 'cstr' || ts[0].k === 'string' ? String(v) : ts[0].k === 'array' ? charsToString(v) : String.fromCharCode(v & 0xff);
-        rt.world.print(s);
+        serialSend(rt, self, s);
         return s.length;
       },
     },
-    flush: { ret: 'void', fn: () => undefined },
+    flush: { ret: 'void', fn: (rt, self) => { if (self.txFreeAt > rt.world.now) rt.advance(self.txFreeAt); } },
     available: { ret: 'int', pure: true, fn: (rt) => rt.world.serialAvailable() },
     availableForWrite: { ret: 'int', pure: true, fn: () => 63 },
     read: { ret: 'int', fn: (rt) => rt.world.serialRead() },
@@ -706,6 +736,28 @@ const SerialClass: LibClass = {
     readStringUntil: { ret: 'String', gen: (rt, self, [c]) => readTimeout(rt, self.timeout, c) },
     parseInt: { ret: 'long', gen: function* (rt, self) { const s = yield* readTimeout(rt, self.timeout, 10); return parseInt(s.trim(), 10) || 0; } },
     parseFloat: { ret: 'float', gen: function* (rt, self) { const s = yield* readTimeout(rt, self.timeout, 10); return parseFloat(s.trim()) || 0; } },
+  },
+};
+
+const unmodelledWrite = (name: string): LibMethod => ({ ret: 'size_t', fn: () => { throw notModelled(`Serial1.${name}()`, 'bus-device-not-modelled', null); } });
+
+// A second UART has no device on it in the simulator: it stays silent and any output is an error, so text never lands in the Serial monitor.
+const HardwareSerial1Class: LibClass = {
+  ...SerialClass,
+  methods: {
+    ...SerialClass.methods,
+    print: unmodelledWrite('print'),
+    println: unmodelledWrite('println'),
+    write: unmodelledWrite('write'),
+    printf: { ...unmodelledWrite('printf'), min: 1 },
+    available: { ret: 'int', pure: true, fn: () => 0 },
+    availableForWrite: { ret: 'int', pure: true, fn: () => 0 },
+    read: { ret: 'int', fn: () => -1 },
+    peek: { ret: 'int', pure: true, fn: () => -1 },
+    readString: { ret: 'String', gen: function* () { return ''; } },
+    readStringUntil: { ret: 'String', gen: function* () { return ''; } },
+    parseInt: { ret: 'long', gen: function* () { return 0; } },
+    parseFloat: { ret: 'float', gen: function* () { return 0; } },
   },
 };
 
@@ -737,13 +789,27 @@ const StringClass: LibClass = {
   },
 };
 
+/** Wire.endTransmission() return codes: 0 ok, 2 NACK on address, 3 NACK on data, 4 other. */
+const WIRE_STATUS = { ok: 0, 'nack-address': 2, 'nack-data': 3, 'stuck-low': 4 } as const;
 const TWI = { tx: -1, buf: [] as number[], rx: [] as number[] };
 const WireClass: LibClass = {
   headers: ['Wire.h'],
   create: () => ({ ...TWI, buf: [], rx: [] }),
   methods: {
-    begin: { ret: 'void', fn: () => undefined },
-    setClock: { ret: 'void', fn: () => undefined },
+    begin: {
+      ret: 'void',
+      fn: (rt, _self, [sda, scl]) => {
+        if (sda !== undefined && scl === undefined) throw notModelled('Wire.begin(address) as a slave', 'library-method-not-modelled', null);
+        rt.world.bindI2c(sda, scl);
+      },
+    },
+    setClock: {
+      ret: 'void',
+      fn: (rt, _self, [hz]) => {
+        const applied = rt.world.bus.setClock(hz);
+        if (applied !== Math.round(hz)) rt.warn(`Wire.setClock(${hz}) is outside what I²C allows: using ${applied} Hz`);
+      },
+    },
     beginTransmission: { ret: 'void', fn: (_rt, self, [addr]) => { self.tx = addr & 0x7f; self.buf = []; } },
     write: {
       ret: 'size_t',
@@ -759,15 +825,18 @@ const WireClass: LibClass = {
     endTransmission: {
       ret: 'uint8_t',
       fn: (rt, self) => {
-        const ok = rt.world.i2cWrite(self.tx, self.buf);
+        const r = rt.world.i2cTransfer(self.tx, self.buf, 0);
         self.buf = [];
-        return ok ? 0 : 2; // 2 = NACK on address
+        rt.advance(rt.world.now + r.costUs);
+        return WIRE_STATUS[r.error ?? 'ok'];
       },
     },
     requestFrom: {
       ret: 'uint8_t',
       fn: (rt, self, [addr, n]) => {
-        self.rx = rt.world.i2cRead(addr & 0x7f, n);
+        const r = rt.world.i2cTransfer(addr & 0x7f, [], n);
+        rt.advance(rt.world.now + r.costUs);
+        self.rx = r.bytes;
         return self.rx.length;
       },
     },
@@ -784,7 +853,17 @@ const SpiClass: LibClass = {
     end: { ret: 'void', fn: () => undefined },
     beginTransaction: { ret: 'void', fn: () => undefined },
     endTransaction: { ret: 'void', fn: () => undefined },
-    transfer: { ret: 'uint8_t', fn: () => 0 },
+    transfer: {
+      ret: 'uint8_t',
+      fn: (rt, _self, [v]) => {
+        const r = rt.world.spiTransfer(v & 0xff);
+        if ('notModelled' in r) {
+          throw notModelled('SPI.transfer()', r.causeId, null, 'No device is selected on this bus (SPI devices are not modelled yet). Add a chip-select pin and a part that has an SPI model, or use I²C.');
+        }
+        rt.advance(rt.world.now + r.costUs);
+        return r.byte;
+      },
+    },
     setClockDivider: { ret: 'void', fn: () => undefined },
   },
 };
@@ -1407,6 +1486,7 @@ const EspClass: LibClass = {
 
 export const LIBS: Record<string, LibClass> = {
   HardwareSerial: SerialClass,
+  HardwareSerial1: HardwareSerial1Class,
   String: StringClass,
   TwoWire: WireClass,
   SPIClass: SpiClass,
@@ -1419,6 +1499,8 @@ export const LIBS: Record<string, LibClass> = {
   LiquidCrystal_I2C: LcdI2CClass,
   LiquidCrystal: LcdClass,
   MPU6050: MpuClass,
+  Adafruit_BME280: Bme280Class,
+  Adafruit_Sensor: SensorClass,
   QTRSensors: QtrClass,
   WiFiClass: WiFiClass,
   IPAddress: IPAddressClass,
@@ -1430,7 +1512,7 @@ export const LIBS: Record<string, LibClass> = {
 
 export const GLOBAL_OBJECTS: Record<string, { cls: string; headers: string[] | null; boards?: (p: BoardProfile) => boolean }> = {
   Serial: { cls: 'HardwareSerial', headers: null },
-  Serial1: { cls: 'HardwareSerial', headers: null, boards: (p) => !isAvr(p) },
+  Serial1: { cls: 'HardwareSerial1', headers: null, boards: (p) => !isAvr(p) },
   Wire: { cls: 'TwoWire', headers: ['Wire.h'] },
   SPI: { cls: 'SPIClass', headers: ['SPI.h'] },
   WiFi: { cls: 'WiFiClass', headers: ['WiFi.h', 'ESP8266WiFi.h', 'WiFiS3.h'], boards: (p) => p.hasWifi },
@@ -1438,3 +1520,15 @@ export const GLOBAL_OBJECTS: Record<string, { cls: string; headers: string[] | n
 };
 
 export { T, hasPwm };
+
+/** Headers of the Arduino core and the C library that need no simulated library behind them. */
+const BUILTIN_HEADERS = ['Arduino.h', 'stdint.h', 'stdlib.h', 'string.h', 'math.h', 'stdio.h', 'avr/pgmspace.h', 'avr/io.h'];
+
+/** Headers a simulated library answers to, sorted. */
+export const LIBRARY_HEADERS: readonly string[] = [
+  ...new Set([...Object.values(LIBS).flatMap((l) => l.headers), ...Object.values(GLOBAL_OBJECTS).flatMap((g) => g.headers ?? [])]),
+].sort();
+
+export function knownHeaders(): Set<string> {
+  return new Set([...LIBRARY_HEADERS, ...BUILTIN_HEADERS]);
+}

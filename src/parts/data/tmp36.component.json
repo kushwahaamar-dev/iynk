@@ -1,0 +1,646 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.tmp36",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Analog Devices",
+    "model": "TMP36 temperature sensor",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "sensor",
+    "category": "sensor",
+    "description": {
+      "en": "A three-pin analog temperature sensor. The output is 0.5 V at 0 degrees C plus 10 mV for each degree."
+    },
+    "legacy_ids": [
+      "tmp36"
+    ],
+    "tags": [
+      "tmp36",
+      "temperature",
+      "sensor",
+      "breadboard"
+    ],
+    "mpn": "TMP36",
+    "chip": {
+      "manufacturer": "Analog Devices",
+      "model": "TMP36",
+      "package": "TO-92"
+    }
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet (Learn Arduino parts and common sensors and actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It quotes maker sheets and reseller guides; the sheet marks the values it could not check as unverified. Section 18 quotes the Interlink FSR 400 series sheet and an Adafruit resistance table. Section 9 quotes the Analog Devices TMP36 sheet and Adafruit's guide."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/tmp36.js: header comment and elec()",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Constants in the figure code. Where the header names a maker sheet, that sheet was not read for this descriptor."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: the elements the bench solver stamps",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "PLUS_VS",
+      "name": {
+        "en": "Supply"
+      },
+      "designator": "+VS",
+      "type": "power_in",
+      "class": "power",
+      "polarity": "positive",
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Left with the flat face toward you and the legs down."
+      }
+    },
+    {
+      "id": "VOUT",
+      "name": {
+        "en": "Output"
+      },
+      "designator": "VOUT",
+      "type": "analog_out",
+      "class": "analog",
+      "position": {
+        "x": 2.54,
+        "y": 0.0
+      },
+      "connector": "legs"
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "Ground"
+      },
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "polarity": "negative",
+      "position": {
+        "x": 5.08,
+        "y": 0.0
+      },
+      "connector": "legs"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "PLUS_VS",
+        "VOUT",
+        "GND"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "TO-92",
+    "body": {
+      "w": 4.8,
+      "h": 3.7,
+      "d": 4.8
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 9"
+    }
+  },
+  "ratings": {
+    "supply_min": {
+      "measure": "voltage",
+      "role": "operating",
+      "description": {
+        "en": "Lowest supply for a valid output."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 2.7,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 9"
+        }
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 2.7,
+        "rationale": {
+          "en": "The solver reads 2.7 V as the start of a valid supply (bench-solve.js:194)."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:194"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "PLUS_VS",
+          "GND"
+        ]
+      }
+    },
+    "supply_max": {
+      "measure": "voltage",
+      "role": "operating",
+      "description": {
+        "en": "Highest supply in the specified range."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 5.5,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 9"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "PLUS_VS",
+          "GND"
+        ]
+      }
+    },
+    "supply_abs_max": {
+      "measure": "voltage",
+      "role": "abs_max",
+      "description": {
+        "en": "Supply above which the sensor is damaged."
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 7,
+        "rationale": {
+          "en": "The figure header states 7 V (tmp36.js:5) and the solver burns the part above it. The fact sheet does not state an absolute maximum."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tmp36.js:5 and :50"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "PLUS_VS",
+          "GND"
+        ]
+      }
+    },
+    "quiescent_current": {
+      "measure": "current",
+      "role": "consumption",
+      "description": {
+        "en": "Supply current of the sensor itself."
+      },
+      "manufacturer": {
+        "unit": "A",
+        "max": 5e-05,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 9"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "PLUS_VS"
+        ]
+      }
+    },
+    "output_at_0c": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Output at 0 degrees C."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 0.5,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 9"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "VOUT"
+        ]
+      }
+    },
+    "output_at_25c": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Output at 25 degrees C."
+      },
+      "manufacturer": {
+        "unit": "V",
+        "value": 0.75,
+        "source": {
+          "src": "factsheet",
+          "loc": "section 9"
+        }
+      },
+      "used_by_model": "none",
+      "scope": {
+        "pins": [
+          "VOUT"
+        ]
+      }
+    },
+    "output_default": {
+      "measure": "voltage",
+      "role": "operating",
+      "description": {
+        "en": "The output the model holds: 0.5 V plus 10 mV for the default 22 degrees C."
+      },
+      "simulation": {
+        "unit": "V",
+        "value": 0.72,
+        "rationale": {
+          "en": "0.5 V + 0.01 V per degree x 22 degrees C, the figure's default temperature. The model holds this value whatever the temperature."
+        },
+        "confidence": "medium",
+        "derived_from": [
+          "output_at_0c.manufacturer",
+          "output_at_25c.manufacturer"
+        ],
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/tmp36.js:13 and :49"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "VOUT"
+        ]
+      }
+    }
+  },
+  "parameters": [
+    {
+      "id": "temp_c",
+      "name": {
+        "en": "Temperature"
+      },
+      "kind": "environment",
+      "type": "number",
+      "default": 22,
+      "min": -40,
+      "max": 150,
+      "unit": "degC"
+    }
+  ],
+  "physical_inputs": [
+    {
+      "id": "temperature",
+      "name": {
+        "en": "Temperature at the sensor"
+      },
+      "unit": "degC",
+      "range": {
+        "min": -40,
+        "max": 150
+      },
+      "world_channel": "thermal.ambient"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "An active sensor that drives its output from its own supply, valid between 2.7 V and 7 V. The output is held at the default temperature's voltage."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "PLUS_VS",
+          "VOUT",
+          "GND"
+        ],
+        "summary": {
+          "en": "A supply draw, and an output pulled to the held voltage through 20 ohms while the supply is in range."
+        },
+        "model": {
+          "kind": "element",
+          "element": "sensor",
+          "terminals": {
+            "supply_pos": "PLUS_VS",
+            "supply_neg": "GND",
+            "out": "VOUT"
+          },
+          "params": {
+            "out_volts": {
+              "from_rating": "output_default",
+              "pick": "value"
+            },
+            "vmin": {
+              "from_rating": "supply_min",
+              "pick": "value"
+            },
+            "vabs": {
+              "from_rating": "supply_abs_max",
+              "pick": "value"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "reverse_supply",
+      "name": {
+        "en": "Destroyed by a reversed supply"
+      },
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-dead",
+        "part-hot"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage_reverse",
+          "target": "PLUS_VS",
+          "op": ">",
+          "threshold": {
+            "literal": {
+              "unit": "V",
+              "value": 0.5
+            }
+          },
+          "for": {
+            "unit": "s",
+            "value": 3
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The sensor gets hot and stops working."
+        }
+      },
+      "derivation": {
+        "en": "The solver counts the seconds the supply is more than 0.5 V negative and burns the part after 3 s. The 0.5 V and 3 s are iynk choices; the fact sheet only says it gets very hot within seconds."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:372"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "overvoltage",
+      "name": {
+        "en": "Destroyed by too high a supply"
+      },
+      "cause_id": "x-supply-overvoltage",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "when": [
+        {
+          "measure": "pin_voltage",
+          "target": "PLUS_VS",
+          "op": ">",
+          "threshold": {
+            "rating": "supply_abs_max",
+            "pick": "value"
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced"
+      },
+      "derivation": {
+        "en": "The solver burns the sensor when the supply is above 7 V."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:372"
+      },
+      "implemented_as": "threshold"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "backwards",
+      "kind": "reversed_supply",
+      "target": {
+        "pins": [
+          "PLUS_VS",
+          "GND"
+        ]
+      },
+      "cause_id": "reverse-polarity",
+      "symptom_ids": [
+        "part-hot",
+        "part-dead"
+      ],
+      "description": {
+        "en": "Fit the sensor with the supply and ground legs swapped."
+      },
+      "legacy_id": "backwards"
+    },
+    {
+      "id": "destroyed",
+      "kind": "other",
+      "target": {
+        "pins": [
+          "PLUS_VS",
+          "VOUT",
+          "GND"
+        ]
+      },
+      "cause_id": "x-tmp36-destroyed",
+      "symptom_ids": [
+        "part-dead"
+      ],
+      "description": {
+        "en": "The sensor is dead and gives no output."
+      },
+      "legacy_id": "destroyed"
+    },
+    {
+      "id": "supply_too_low",
+      "kind": "wrong_supply_voltage",
+      "target": {
+        "pins": [
+          "PLUS_VS",
+          "GND"
+        ]
+      },
+      "cause_id": "part-not-powered",
+      "symptom_ids": [
+        "reading-erratic"
+      ],
+      "description": {
+        "en": "The supply is below 2.7 V, where the output is not valid."
+      },
+      "legacy_id": "supply too low"
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A powered output at one held voltage, 0.72 V, with 20 ohms of output resistance."
+      },
+      {
+        "en": "No output below 2.7 V or above 7 V on the supply."
+      },
+      {
+        "en": "Burn-out from a reversed or too high supply."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Output that follows temperature in the descriptor layer; the live adapter sets it from the temperature setting."
+      },
+      {
+        "en": "Accuracy of +-2 degrees C and self-heating."
+      },
+      {
+        "en": "Supply current that changes with temperature."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "supply voltage",
+        "min": 2.7,
+        "max": 5.5,
+        "unit": "V"
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "output_not_temperature",
+        "text": {
+          "en": "The layer holds the output at the default temperature. The live circuit builder sets it from the temperature setting in live.ts."
+        },
+        "evidence": "src/sim/analog/live.ts:329"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No numeric test exists: the golden harness has no shape for a powered sensor."
+        }
+      },
+      {
+        "id": "quiescent_unused",
+        "text": {
+          "en": "The quiescent current is shown but the solver draws a fixed small conductance."
+        },
+        "evidence": "src/sim/analog/elements.ts:109"
+      }
+    ],
+    "solver_requires": [
+      "sensor"
+    ],
+    "tests": [
+      {
+        "id": "tmp36_layers",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/tmp36.conformance.json"
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "tmp36",
+        "path": "public/figures/parts/tmp36.html",
+        "sha256": "a798662c3787d788208aecce419aa974cce216152dc2b333a267b3b3c7ec5e97",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "PLUS_VS",
+        "VOUT",
+        "GND"
+      ],
+      "span": [
+        2,
+        2
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-dip",
+      "label": "TMP36",
+      "body_colour": "#33302d",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      },
+      {
+        "text": "Supply range and output figures after the TMP36 sheet as quoted in docs/facts/la-components.md section 9."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/tmp36.js, figures/engine/bench-solve.js and the fact sheet.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "id": "device:ssd1306@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "SSD1306 OLED, command subset",
+  "tier": "T1",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "cmds",
+      "text": "Display on/off, invert and contrast commands; address 0x3C; the Adafruit_GFX text cursor rules (6x8 cells per text size)"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "bus-time",
+      "text": "Bus time: a transfer completes instantly; pull-ups, clock stretching and repeated start are not modelled"
+    },
+    {
+      "id": "pixels",
+      "text": "Rendering of every command; only the subset is modelled"
+    },
+    {
+      "id": "scroll",
+      "text": "Hardware scrolling"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "devices-test",
+      "kind": "self-consistency",
+      "dataset": "src/lib/interp/devices.test.ts: Ssd1306",
+      "result": {
+        "n": 3,
+        "passed": 3,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "src/lib/interp@12f7ba7",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "Commands outside the subset are accepted and ignored"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

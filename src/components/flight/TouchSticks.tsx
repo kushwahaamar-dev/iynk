@@ -59,13 +59,13 @@ function Stick({ label, short, springY, restY, onChange, side }: StickProps) {
       onPointerUp={end}
       onPointerCancel={end}
     >
-      {/* a ring, not a disc: the range stays visible under the thumbs */}
-      <div className="absolute inset-0 rounded-full border-2 border-black/25" />
+      {/* the outline marks the travel range under the thumb */}
+      <div className="absolute inset-0 rounded-full border-2 border-rule bg-hover" />
       <div
-        className="absolute rounded-full border-2 border-black/80 bg-tomato/85"
+        className="absolute rounded-full border border-ink bg-accent"
         style={{ width: 38, height: 38, left: SIZE / 2 - 19 + shown.x * TRAVEL, top: SIZE / 2 - 19 - shown.y * TRAVEL }}
       />
-      <span aria-hidden className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-paper/90 px-2 py-0.5 font-ui text-xs font-semibold text-ink">
+      <span aria-hidden className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-paper/90 px-2 py-0.5 text-xs font-semibold text-ink">
         {short}
       </span>
     </div>

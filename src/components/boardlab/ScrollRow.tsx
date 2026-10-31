@@ -14,27 +14,27 @@ type Props = {
 /** One row that scrolls sideways when it can't fit (German, a phone), with a fade at the end while there is more. */
 export function ScrollRow({ label, className, children, "data-testid": testId }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const end = useRef<HTMLSpanElement>(null);
   const [scrolls, setScrolls] = useState(false);
   const [more, setMore] = useState(false);
 
   useLayoutEffect(() => {
     const row = ref.current;
     if (!row) return;
-    const measure = () => {
-      setScrolls(row.scrollWidth > row.clientWidth + 2);
-      setMore(row.scrollLeft + row.clientWidth < row.scrollWidth - 2);
-    };
+    const measure = () => setScrolls(row.scrollWidth > row.clientWidth + 2);
     measure();
     // The row's own size changes with the page; its content changes as the figure reports.
     const resize = new ResizeObserver(measure);
     resize.observe(row);
     const content = new MutationObserver(measure);
     content.observe(row, { childList: true, subtree: true, characterData: true });
-    row.addEventListener("scroll", measure, { passive: true });
+    // There is more to scroll to while the marker after the last child is out of view.
+    const edge = new IntersectionObserver(([entry]) => setMore(!entry.isIntersecting), { root: row });
+    if (end.current) edge.observe(end.current);
     return () => {
       resize.disconnect();
       content.disconnect();
-      row.removeEventListener("scroll", measure);
+      edge.disconnect();
     };
   }, []);
 
@@ -49,11 +49,12 @@ export function ScrollRow({ label, className, children, "data-testid": testId }:
       className={cx(
         // Positioned, so its visually hidden labels (absolute) sit inside it and don't widen the page by the
         // scrolled-off width. The fade would mask the focus ring, so a focused row drops it.
-        "relative flex shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] data-more:not-focus-visible:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] [&::-webkit-scrollbar]:hidden",
+        "relative flex shrink-0 flex-nowrap items-center gap-2 overflow-x-auto [scrollbar-width:none] data-more:not-focus-visible:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] [&::-webkit-scrollbar]:hidden",
         className,
       )}
     >
       {children}
+      <span ref={end} aria-hidden="true" className="-ms-2 h-px w-px shrink-0" />
     </div>
   );
 }

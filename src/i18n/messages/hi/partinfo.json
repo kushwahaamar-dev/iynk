@@ -1,0 +1,204 @@
+{
+  "title": "पार्ट का विवरण",
+  "back": "स्टूडियो में वापस",
+  "edit": "इस पार्ट को बदलें",
+  "notFound": {
+    "title": "ऐसा कोई पार्ट नहीं",
+    "body": "लाइब्रेरी में इस आईडी और वर्शन का कोई पार्ट नहीं है।",
+    "link": "पैलेट पर वापस"
+  },
+  "tier": {
+    "T0": "चित्रण",
+    "T1": "सिखाने वाला मॉडल",
+    "T2": "गणना वाला मॉडल",
+    "T3": "फ़र्मवेयर चलाता है",
+    "none": "कोई मॉडल नहीं"
+  },
+  "status": {
+    "modelled": "मॉडल बना है",
+    "partly-modelled": "आंशिक मॉडल",
+    "not-modelled-yet": "अभी मॉडल नहीं बना"
+  },
+  "trust": {
+    "core": "iynk के साथ आता है",
+    "local": "आपका अपना पार्ट",
+    "imported": "इम्पोर्ट किया पैक"
+  },
+  "thirdParty": "तीसरे पक्ष की सामग्री शामिल है",
+  "models": "यह क्या मॉडल करता है",
+  "notModelled": "यह क्या मॉडल नहीं करता",
+  "ratings": {
+    "heading": "रेटिंग",
+    "empty": "कोई रेटिंग नहीं दी गई।",
+    "rating": "रेटिंग",
+    "readBy": "मॉडल इसे पढ़ता है",
+    "readByNone": "सिर्फ़ दिखाया गया है, कोई मॉडल इसे नहीं पढ़ता",
+    "notGiven": "नहीं दिया गया",
+    "confidence": "भरोसा: {level}",
+    "measure": {
+      "voltage": "वोल्टेज",
+      "current": "करंट",
+      "power": "पावर",
+      "temperature": "तापमान",
+      "frequency": "आवृत्ति",
+      "resistance": "प्रतिरोध",
+      "capacitance": "धारिता",
+      "time": "समय",
+      "thermal_resistance": "ऊष्मीय प्रतिरोध",
+      "torque": "टॉर्क",
+      "rate": "दर",
+      "acceleration": "त्वरण",
+      "ratio": "अनुपात",
+      "misc": "अन्य"
+    },
+    "role": {
+      "abs_max": "परम अधिकतम",
+      "abs_min": "परम न्यूनतम",
+      "operating": "चलने के लिए",
+      "recommended": "सुझाया गया",
+      "threshold": "सीमा",
+      "characteristic": "विशेषता",
+      "consumption": "खपत",
+      "thermal": "ऊष्मीय",
+      "timing": "समय सीमा"
+    }
+  },
+  "slot": {
+    "manufacturer": "निर्माता का बताया",
+    "simulation": "iynk की मान्यता",
+    "measured": "बेंच पर नापा गया"
+  },
+  "confidence": {
+    "low": "कम",
+    "medium": "मध्यम",
+    "high": "ज़्यादा"
+  },
+  "unsourced": "माना गया, कोई स्रोत नहीं",
+  "unsourcedSummary": {
+    "heading": "बिना स्रोत वाली संख्याएँ",
+    "count": "बिना स्रोत की मानी हुई संख्याएँ: {count}",
+    "none": "इस पार्ट की हर संख्या किसी स्रोत से जुड़ी है।"
+  },
+  "sources": {
+    "heading": "स्रोत",
+    "empty": "कोई स्रोत नहीं दिया गया।",
+    "open": "स्रोत खोलें",
+    "retrieved": "{date} को देखा गया",
+    "reliability": {
+      "primary": "प्राथमिक",
+      "secondary": "द्वितीयक",
+      "unverified": "अपरखा हुआ"
+    },
+    "kind": {
+      "datasheet": "डेटाशीट",
+      "application-note": "एप्लिकेशन नोट",
+      "schematic": "सर्किट आरेख",
+      "product-page": "प्रोडक्ट पेज",
+      "reseller-guide": "विक्रेता की गाइड",
+      "library": "लाइब्रेरी",
+      "photo": "फ़ोटो",
+      "measurement": "माप",
+      "fact-sheet": "तथ्य पत्र",
+      "lesson": "पाठ",
+      "standard": "मानक",
+      "own-estimate": "हमारा अपना अनुमान"
+    }
+  },
+  "validity": "मान्य दायरा",
+  "gaps": {
+    "heading": "ज्ञात कमियाँ",
+    "evidence": "प्रमाण: {text}"
+  },
+  "layers": {
+    "heading": "परतें",
+    "equation": "समीकरण",
+    "notModelledYet": "अभी मॉडल नहीं बना",
+    "kind": {
+      "element": "सॉल्वर तत्व",
+      "subcircuit": "उप-सर्किट",
+      "logic": "लॉजिक",
+      "builtin": "अंतर्निहित व्यवहार",
+      "extension": "कोड",
+      "none": "कोई नहीं"
+    },
+    "reason": {
+      "declared": "पार्ट ने खुद बताया",
+      "solver-lacks-element": "सॉल्वर में यह तत्व नहीं है",
+      "unknown-builtin": "इस बिल्ड में यह व्यवहार नहीं है",
+      "extension-disabled": "कोड वाले पार्ट बंद हैं",
+      "subcircuit-invalid": "उप-सर्किट हल नहीं होता"
+    }
+  },
+  "labels": {
+    "heading": "गुणवत्ता लेबल",
+    "schemaValid": "पार्ट स्कीमा पर खरा उतरता है",
+    "hasTests": "टेस्ट बताता है",
+    "testsRun": "टेस्ट चलाए गए",
+    "hasReferenceTest": "संदर्भ टेस्ट है",
+    "code": "कोड चलाता है",
+    "permissions": "कोड की अनुमतियाँ",
+    "thirdPartyContent": "तीसरे पक्ष की सामग्री",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "none": "कोई नहीं",
+    "run": {
+      "not-run": "नहीं चलाए",
+      "pass": "पास",
+      "fail": "फ़ेल"
+    }
+  },
+  "tests": {
+    "heading": "पार्ट के बताए टेस्ट",
+    "empty": "कोई टेस्ट नहीं बताया गया।",
+    "present": "मौजूद",
+    "to-write": "लिखना बाकी"
+  },
+  "license": "लाइसेंस",
+  "versions": {
+    "heading": "दूसरे वर्शन",
+    "only": "यही अकेला वर्शन है।"
+  },
+  "usage": {
+    "heading": "इस प्रोजेक्ट में इस्तेमाल",
+    "empty": "रखा हुआ कोई पार्ट इसे इस्तेमाल नहीं करता।",
+    "instance": "{label}, वर्शन {version}"
+  },
+  "upgrade": {
+    "button": "{version} पर अपग्रेड करें",
+    "title": "{version} पर अपग्रेड",
+    "close": "बंद करें",
+    "summary": "{from} से {to}, {bump} बदलाव। बदलने वाले रखे हुए पार्ट: {count}।",
+    "bump": {
+      "major": "बड़ा",
+      "minor": "मध्यम",
+      "patch": "छोटा"
+    },
+    "changes": "डिस्क्रिप्टर में बदलाव",
+    "noChanges": "डिस्क्रिप्टर का कोई फ़ील्ड अलग नहीं है।",
+    "change": {
+      "added": "जोड़ा गया",
+      "removed": "हटाया गया",
+      "changed": "बदला गया"
+    },
+    "readByModel": "मॉडल इसे पढ़ता है",
+    "pinsRemoved": "हटाए गए पिन: {list}",
+    "pinsAdded": "जोड़े गए पिन: {list}",
+    "dropped": "छूट रहे पैरामीटर, इनके मान खो जाएँगे: {list}",
+    "blocked": {
+      "pins-removed-in-use": "रुका हुआ है। ये तार ऐसे पिन पर खत्म होते हैं जिसे नया वर्शन हटाता है: {list}।",
+      "not-newer": "रुका हुआ है। {to}, {from} से नया नहीं है।"
+    },
+    "golden": {
+      "heading": "गोल्डन ट्रेस की मात्राएँ",
+      "empty": "तुलना के लिए कोई गोल्डन ट्रेस फ़िक्स्चर नहीं है।",
+      "fixture": "फ़िक्स्चर",
+      "quantity": "मात्रा",
+      "before": "{version} पर",
+      "after": "{version} पर",
+      "missing": "कोई नहीं",
+      "error": "गड़बड़ी"
+    },
+    "apply": "अपग्रेड लागू करें",
+    "cancel": "{from} पर ही रहें"
+  }
+}

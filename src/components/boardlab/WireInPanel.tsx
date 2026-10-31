@@ -25,7 +25,7 @@ export const WIRE_HEX: Record<WireColor, string> = {
 };
 
 export function WireDot({ color }: { color: WireColor }) {
-  return <span aria-hidden="true" className="inline-block size-3 shrink-0 rounded-full border border-ink" style={{ background: WIRE_HEX[color] }} />;
+  return <span aria-hidden="true" className="inline-block size-4 shrink-0 rounded-md border border-ink" style={{ background: WIRE_HEX[color] }} />;
 }
 
 const isModule = (part: string) => (MODULE_IDS as readonly string[]).includes(part);
@@ -58,20 +58,20 @@ export function WireInPanel({ wireables, all }: Props) {
   return (
     <section aria-labelledby={`${id}-title`} className="flex flex-col gap-2" data-testid="wire-panel">
       {/* On the board page a tab already names it. */}
-      <h2 id={`${id}-title`} className={all ? "font-head text-2xl" : "sr-only"}>
+      <h2 id={`${id}-title`} className={all ? "text-2xl font-semibold" : "sr-only"}>
         {t("wire.title")}
       </h2>
       <p className="text-sm text-muted">{t("wire.lede")}</p>
-      <ul className="mt-1 divide-y-[1.5px] divide-rule border-y-[1.5px] border-rule">
+      <ul className="mt-1 divide-y divide-rule border-y border-rule">
         {wireables.map((w) => (
           <li key={w.part} data-part={w.part}>
             <details className="group" open={!!all}>
               <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 py-2 [&::-webkit-details-marker]:hidden">
-                <Icon name="chevron-right" size={16} aria-hidden="true" className="shrink-0 text-muted transition-transform group-open:rotate-90" />
+                <Icon name="chevron-right" size={16} aria-hidden="true" className="shrink-0 text-muted motion-move group-open:rotate-90" />
                 <span className="min-w-0 flex-1 font-semibold">{partName(w.part)}</span>
                 <span className="tabular shrink-0 text-sm text-muted">{t("wire.supply", { volts: w.supplyVolts })}</span>
               </summary>
-              <div className="flex max-w-[68ch] flex-col gap-3 pb-4 ps-7">
+              <div className="flex max-w-[68ch] flex-col gap-3 pb-4 ps-8">
                 <p className="text-sm">{tc(w.note)}</p>
                 <table className="w-full max-w-md text-sm">
                   <thead>
@@ -89,7 +89,7 @@ export function WireInPanel({ wireables, all }: Props) {
                       <tr key={`${c.from}-${c.to}`} className="border-t border-rule">
                         <td className="py-1 font-mono">{c.from}</td>
                         <td className="py-1">
-                          <span className="flex items-center gap-2 font-mono">
+                          <span className="tabular flex items-center gap-2 font-mono">
                             <WireDot color={c.color} />
                             {c.to}
                             <span className="sr-only">{t("wire.wire", { color: t(`wire.colors.${c.color}`) })}</span>

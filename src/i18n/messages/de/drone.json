@@ -1,0 +1,115 @@
+{
+  "notice": {
+    "title": "Vor dem Bauen oder Fliegen",
+    "sourceLabel": {
+      "external": "Externe Quelle",
+      "hypothesis": "Hypothese",
+      "iynk": "iynk-Aussage"
+    },
+    "SN-1": "LiPo-Akkus nur mit einem Balancer-Ladegerät laden, nie unbeaufsichtigt, in einem feuerfesten Beutel oder Behälter. Aufgeblähte oder beschädigte Akkus aussortieren. Bei etwa 3,8 V pro Zelle lagern.",
+    "SN-2": "Für jeden Tischtest die Propeller abnehmen. Beim Fliegen eine Schutzbrille tragen. Nie versuchen, eine fliegende Drohne zu fangen.",
+    "SN-3": "Ein Akku kann bei einem Kurzschluss sehr hohe Ströme liefern. Einen neuen Aufbau beim ersten Mal über ein strombegrenztes Netzteil oder einen Smoke Stopper versorgen.",
+    "SN-4": "Dieses Fluggerät ist stabil, weil die Simulation es sagt. Ein echtes Fluggerät mit denselben Werten muss es nicht sein.",
+    "SN-5": "In dieser Reihenfolge testen: ohne Propeller, dann angeleint oder sehr niedrig über weichem Boden schweben, dann auf freier Fläche abseits von Menschen.",
+    "SN-6": "Registrierung, Remote ID, Höhengrenzen, Sichtflug und Altersregeln hängen davon ab, wo du fliegst. Frage deine nationale Behörde. Dieser Simulator macht niemanden zum rechtmäßigen Piloten.",
+    "SN-7": "Die autonomen Modi hier sind Lehrmodelle. Sie erkennen keine Hindernisse, Menschen oder anderen Luftfahrzeuge.",
+    "SN-8": "Diese Simulation ist ein Lehrwerkzeug, keine offizielle Freigabe eines Entwurfs. Sie sagt nicht voraus, dass ein echtes Fluggerät fliegt oder sicher fliegt.",
+    "ack": "Ich habe das gelesen",
+    "acked": "Bestätigt am {date}"
+  },
+  "numbers": {
+    "title": "Zahlen",
+    "auw": "Gewicht",
+    "thrust": "Schub pro Motor",
+    "tw": "Schub-Gewicht-Verhältnis",
+    "hoverThrottle": "Schwebe-Gas",
+    "hoverAmps": "Strom im Schwebeflug",
+    "maxAmps": "Strom bei Vollgas",
+    "endurance": "Flugzeit",
+    "na": "nicht verfügbar",
+    "notYet": "Noch nicht berechnet.",
+    "missing": "Benötigt {paths}.",
+    "range": "{low} bis {high} min",
+    "unit": {
+      "g": "{value} g",
+      "ratio": "{value} zu 1",
+      "pct": "{value} %",
+      "a": "{value} A"
+    }
+  },
+  "band": {
+    "fit": "Innerhalb des Bereichs deiner Datenblattzeilen: etwa 9 von 10 deiner eigenen Zeilen liegen in diesem Band. Es sagt nichts darüber, wie gut die Zeilen zu einem echten Teil passen.",
+    "none": "Es wurden keine Datenblattzeilen angegeben, also gibt es nichts, womit sich das prüfen ließe.",
+    "outside": "Dieser Aufbau liegt außerhalb des Bereichs deiner Datenblattzeilen, das Band gilt hier nicht.",
+    "short": {
+      "fit": "Band etwa {value} %",
+      "none": "Keine Daten zum Prüfen",
+      "outside": "Außerhalb deiner Zeilen"
+    }
+  },
+  "check": {
+    "title": "Prüfungen",
+    "none": "Noch keine Prüfungen. Ergänze zuerst die fehlenden Teile.",
+    "reading": "{value} {unit}",
+    "value": "Wert",
+    "limit": "Grenze",
+    "part": "Teil",
+    "formula": "Formel",
+    "assumptions": "Annahmen",
+    "state": {
+      "fail": "Fehlgeschlagen",
+      "warn": "Warnung",
+      "info": "Hinweis",
+      "ok": "Bestanden"
+    },
+    "DB-C-01": {
+      "name": "Schub-Gewicht-Verhältnis"
+    },
+    "DB-C-02": {
+      "name": "Schwebe-Gas"
+    },
+    "DB-C-03": {
+      "name": "Regler-Strom"
+    },
+    "DB-C-04": {
+      "name": "Akku-Strom"
+    },
+    "DB-C-05": {
+      "name": "Spannungsgrenzen"
+    },
+    "DB-C-06": {
+      "name": "Propeller-Abstand"
+    },
+    "DB-C-07": {
+      "name": "Propellergröße für den Rahmen"
+    },
+    "DB-C-08": {
+      "name": "Schwerpunkt"
+    },
+    "DB-C-09": {
+      "name": "Flugzeit"
+    },
+    "DB-C-10": {
+      "name": "Zellspannung unter Last"
+    },
+    "DB-C-11": {
+      "name": "Gierausgleich"
+    },
+    "DB-C-12": {
+      "name": "Regelkreis-Rate"
+    },
+    "DB-C-13": {
+      "name": "Gewichtsklasse"
+    },
+    "DB-C-14": {
+      "name": "Herstellerangaben"
+    }
+  },
+  "error": {
+    "DB-E-INERTIA": "Das Trägheitsmoment dieses Aufbaus ist ungültig. Prüfe die Massen und Positionen der Teile.",
+    "DB-E-MIXER": "Der Motor-Mixer kann nicht alle Achsen steuern. Prüfe Position und Drehrichtung der Motoren.",
+    "DB-E-MIXER-YAW": "Die Motoren können das Gieren nicht steuern. Prüfe, ob die Drehrichtungen abwechseln.",
+    "DB-E-FIELD": "Ein Wert fehlt: {path}.",
+    "DB-E-CHEMISTRY": "Die Akkuchemie ist dem Modell unbekannt ({path})."
+  }
+}

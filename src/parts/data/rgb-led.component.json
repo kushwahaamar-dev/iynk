@@ -1,0 +1,725 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.rgb-led",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "RGB LED, 5 mm, common cathode",
+    "generic": true,
+    "refdes_prefix": "D",
+    "kind": "discrete",
+    "category": "semiconductor",
+    "description": {
+      "en": "A 5 mm diffused LED with a red, a green and a blue die and one common lead. This part is modelled as common cathode."
+    },
+    "legacy_ids": [
+      "rgb-led"
+    ],
+    "tags": [
+      "led",
+      "rgb",
+      "semiconductor",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet (Learn Arduino parts and common sensors and actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It quotes maker sheets and reseller guides; the sheet marks the values it could not check as unverified."
+    },
+    {
+      "id": "figurejs",
+      "kind": "own-estimate",
+      "title": "figures/parts/rgb-led.js: header comment and elec()",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Constants in the figure code. Where the header names a maker sheet, that sheet was not read for this descriptor."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: the elements the bench solver stamps",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "pins": [
+    {
+      "id": "R",
+      "name": {
+        "en": "Red anode"
+      },
+      "designator": "R",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "anode",
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "Leftmost leg with the flat of the rim on the left and the legs toward you."
+      }
+    },
+    {
+      "id": "COM",
+      "name": {
+        "en": "Common cathode"
+      },
+      "designator": "COM",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "cathode",
+      "position": {
+        "x": 2.54,
+        "y": 0.0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The longest lead."
+      }
+    },
+    {
+      "id": "G",
+      "name": {
+        "en": "Green anode"
+      },
+      "designator": "G",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "anode",
+      "position": {
+        "x": 5.08,
+        "y": 0.0
+      },
+      "connector": "legs"
+    },
+    {
+      "id": "B",
+      "name": {
+        "en": "Blue anode"
+      },
+      "designator": "B",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "anode",
+      "position": {
+        "x": 7.62,
+        "y": 0.0
+      },
+      "connector": "legs"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "R",
+        "COM",
+        "G",
+        "B"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "5 mm diffused, 4 leads",
+    "accuracy": 0.3,
+    "source": {
+      "src": "figurejs",
+      "loc": "figures/parts/rgb-led.js:1-12"
+    }
+  },
+  "ratings": {
+    "forward_voltage_red": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Forward voltage of the red die at about 20 mA."
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 2.0,
+        "typ": 2.0,
+        "max": 2.0,
+        "rationale": {
+          "en": "The fact sheet gives about 2.0 V for the red die and no spread. The model uses typ."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 5"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "COM"
+        ]
+      }
+    },
+    "forward_voltage_green": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Forward voltage of the green die at about 20 mA."
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "typ": 3.1,
+        "max": 3.2,
+        "rationale": {
+          "en": "The fact sheet gives 3.0 to 3.2 V for the InGaN green die; the figure uses 3.1 V (rgb-led.js:25). The model uses typ."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 5"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "COM"
+        ]
+      }
+    },
+    "forward_voltage_blue": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "description": {
+        "en": "Forward voltage of the blue die at about 20 mA."
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "typ": 3.1,
+        "max": 3.2,
+        "rationale": {
+          "en": "The fact sheet gives 3.0 to 3.2 V for the blue die; the figure uses 3.1 V (rgb-led.js:25). The model uses typ."
+        },
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 5"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "COM"
+        ]
+      }
+    },
+    "forward_current_continuous": {
+      "measure": "current",
+      "role": "abs_max",
+      "description": {
+        "en": "Highest steady forward current per die before the model counts it as overdriven."
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.02,
+        "rationale": {
+          "en": "The figure passes imax 0.02 for every die. The fact sheet gives no per-die limit for this part."
+        },
+        "confidence": "low",
+        "source": {
+          "src": "figurejs",
+          "loc": "figures/parts/rgb-led.js:60"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "COM"
+        ]
+      }
+    },
+    "dynamic_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "description": {
+        "en": "Slope of the on-state line above the forward voltage."
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 0.5,
+        "rationale": {
+          "en": "One fixed value for every die, set by the solver."
+        },
+        "confidence": "low",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:102"
+        }
+      },
+      "used_by_model": "simulation",
+      "scope": {
+        "pins": [
+          "COM"
+        ]
+      }
+    }
+  },
+  "parameters": [
+    {
+      "id": "common",
+      "name": {
+        "en": "Common lead"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "cathode",
+      "values": [
+        "cathode",
+        "anode"
+      ]
+    },
+    {
+      "id": "r",
+      "name": {
+        "en": "Red duty"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "unit": "ratio"
+    },
+    {
+      "id": "g",
+      "name": {
+        "en": "Green duty"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "unit": "ratio"
+    },
+    {
+      "id": "b",
+      "name": {
+        "en": "Blue duty"
+      },
+      "kind": "setting",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "unit": "ratio"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "Three LEDs sharing one cathode lead. Each colour conducts above its own forward voltage with a small series resistance."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "R",
+          "COM",
+          "G",
+          "B"
+        ],
+        "summary": {
+          "en": "Three piecewise-linear diodes from each colour lead to the common lead."
+        },
+        "model": {
+          "kind": "subcircuit",
+          "instances": [
+            {
+              "id": "led_r",
+              "element": "led",
+              "params": {
+                "vf": {
+                  "from_rating": "forward_voltage_red",
+                  "pick": "typ"
+                },
+                "rd": {
+                  "from_rating": "dynamic_resistance",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "forward_current_continuous",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "led_g",
+              "element": "led",
+              "params": {
+                "vf": {
+                  "from_rating": "forward_voltage_green",
+                  "pick": "typ"
+                },
+                "rd": {
+                  "from_rating": "dynamic_resistance",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "forward_current_continuous",
+                  "pick": "value"
+                }
+              }
+            },
+            {
+              "id": "led_b",
+              "element": "led",
+              "params": {
+                "vf": {
+                  "from_rating": "forward_voltage_blue",
+                  "pick": "typ"
+                },
+                "rd": {
+                  "from_rating": "dynamic_resistance",
+                  "pick": "value"
+                },
+                "imax": {
+                  "from_rating": "forward_current_continuous",
+                  "pick": "value"
+                }
+              }
+            }
+          ],
+          "nets": [
+            {
+              "id": "red",
+              "nodes": [
+                "pin:R",
+                "led_r.anode"
+              ]
+            },
+            {
+              "id": "green",
+              "nodes": [
+                "pin:G",
+                "led_g.anode"
+              ]
+            },
+            {
+              "id": "blue",
+              "nodes": [
+                "pin:B",
+                "led_b.anode"
+              ]
+            },
+            {
+              "id": "common",
+              "nodes": [
+                "pin:COM",
+                "led_r.cathode",
+                "led_g.cathode",
+                "led_b.cathode"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "red_overcurrent_burn",
+      "name": {
+        "en": "Red die burned out by too much current"
+      },
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led-burnt"
+      ],
+      "when": [
+        {
+          "measure": "pin_current_peak",
+          "target": "R",
+          "op": ">",
+          "threshold": {
+            "rating": "forward_current_continuous",
+            "pick": "value",
+            "factor": 2.5
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The colour goes dark and stays open."
+        }
+      },
+      "derivation": {
+        "en": "The solver burns a die when its peak current is more than 2.5 times its rated current. The factor is an iynk teaching rule, not a datasheet figure."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:317"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "green_overcurrent_burn",
+      "name": {
+        "en": "Green die burned out by too much current"
+      },
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led-burnt"
+      ],
+      "when": [
+        {
+          "measure": "pin_current_peak",
+          "target": "G",
+          "op": ">",
+          "threshold": {
+            "rating": "forward_current_continuous",
+            "pick": "value",
+            "factor": 2.5
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The colour goes dark and stays open."
+        }
+      },
+      "derivation": {
+        "en": "The solver burns a die when its peak current is more than 2.5 times its rated current. The factor is an iynk teaching rule, not a datasheet figure."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:317"
+      },
+      "implemented_as": "threshold"
+    },
+    {
+      "id": "blue_overcurrent_burn",
+      "name": {
+        "en": "Blue die burned out by too much current"
+      },
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led-burnt"
+      ],
+      "when": [
+        {
+          "measure": "pin_current_peak",
+          "target": "B",
+          "op": ">",
+          "threshold": {
+            "rating": "forward_current_continuous",
+            "pick": "value",
+            "factor": 2.5
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The colour goes dark and stays open."
+        }
+      },
+      "derivation": {
+        "en": "The solver burns a die when its peak current is more than 2.5 times its rated current. The factor is an iynk teaching rule, not a datasheet figure."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:317"
+      },
+      "implemented_as": "threshold"
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "no_resistors",
+      "kind": "overload",
+      "target": {
+        "pins": [
+          "R",
+          "G",
+          "B"
+        ]
+      },
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led-burnt"
+      ],
+      "description": {
+        "en": "Every driven colour runs without its series resistor."
+      },
+      "legacy_id": "no resistors"
+    },
+    {
+      "id": "backwards",
+      "kind": "reversed_part",
+      "target": {
+        "pins": [
+          "R",
+          "COM",
+          "G",
+          "B"
+        ]
+      },
+      "cause_id": "led-reversed",
+      "symptom_ids": [
+        "led-dark"
+      ],
+      "description": {
+        "en": "Fit the LED the other way round: no colour lights."
+      },
+      "legacy_id": "backwards"
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Three diodes sharing a cathode, one forward voltage per colour plus a 0.5 ohm slope."
+      },
+      {
+        "en": "Burn-out of one colour above 2.5 times its continuous current rating."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Common-anode wiring."
+      },
+      {
+        "en": "Brightness and the mixed colour; the drawing works them out from the solved currents."
+      },
+      {
+        "en": "Temperature and part-to-part spread in forward voltage."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "forward current",
+        "min": 0.0003,
+        "max": 0.12,
+        "unit": "A",
+        "note": {
+          "en": "The range the single LED was compared over; the RGB part has no comparison of its own."
+        }
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "common_anode",
+        "text": {
+          "en": "Common anode is not represented. The common parameter has no effect on the model, which is always common cathode."
+        },
+        "evidence": "figures/parts/rgb-led.js:53-58"
+      },
+      {
+        "id": "no_numeric_test",
+        "text": {
+          "en": "No numeric test exists: the golden harness has no shape for three diodes with a shared lead."
+        }
+      },
+      {
+        "id": "no_optical_layer",
+        "text": {
+          "en": "The descriptor has no brightness layer; the figure computes brightness from current in rgb-led.js:46."
+        }
+      }
+    ],
+    "solver_requires": [
+      "led"
+    ],
+    "tests": [
+      {
+        "id": "rgb_led_layers",
+        "kind": "conformance",
+        "file": "src/parts/data/tests/rgb-led.conformance.json",
+        "note": "Checks that the subcircuit layer resolves and the ratings have their slots."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "rgb-led",
+        "path": "public/figures/parts/rgb-led.html",
+        "sha256": "8c59c284e99df7edd08727a319bc2109bf55625807b92068a0cb511c033a0470",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "R",
+        "COM",
+        "G",
+        "B"
+      ],
+      "span": [
+        3,
+        3
+      ]
+    },
+    "fallback": {
+      "renderer": "generic-dip",
+      "label": "RGB LED",
+      "body_colour": "#f8f5ee",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      },
+      {
+        "text": "Forward voltages after docs/facts/la-components.md section 5, which quotes maker values."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": true,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, from figures/parts/rgb-led.js, figures/engine/bench-solve.js and the fact sheet.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

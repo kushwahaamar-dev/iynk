@@ -1,0 +1,17 @@
+{
+  "description": "Une carte 5 V pour platine d’essai avec un ATmega328P, une puce USB-série FT232RNL, 14 broches numériques, 8 entrées analogiques et un connecteur ICSP.",
+  "summary": "La carte exécute le sketch dans l’interpréteur d’iynk. Les broches, le PWM, l’I2C, la liaison série et le temps suivent le profil de carte nano. Ce n’est pas la puce ATmega328P.",
+  "layer": "Environnement d’exécution du firmware.",
+  "models": {
+    "1": "Sous-ensemble d’Arduino C++ exécuté par l’interpréteur avec le brochage du Nano.",
+    "2": "E/S numériques sur D0 à D13 et A0 à A5, PWM sur D3, D5, D6, D9, D10 et D11, interruptions sur D2 et D3.",
+    "3": "Lectures analogiques 10 bits avec référence 5 V sur A0 à A7, maître I2C sur SDA et SCL, sortie série et la LED L sur D13."
+  },
+  "not": {
+    "1": "Le cœur AVR, les temporisateurs, le bootloader et le comportement de la flash.",
+    "2": "La puce USB-série FT232RNL et le circuit de réinitialisation automatique.",
+    "3": "Les régulateurs 5 V et 3,3 V, les limites de VIN et le seuil de brown-out.",
+    "4": "L’usure de l’EEPROM et le connecteur ICSP."
+  },
+  "gap": "A6 et A7 sont des entrées analogiques seulement : digitalRead et pinMode ne marchent pas dessus. Aucune limite électrique n’est encore renseignée, donc cette carte n’a pas de contrôle de surcharge de broche."
+}

@@ -1,17 +1,17 @@
 {
   "meta": {
-    "indexTitle": "Robotics Lab",
-    "indexDescription": "Thirteen benches on a six-month robotics roadmap: build each board part by part, power it up, break it on purpose and fix it, from Ohm's law to a ROS 2 robot brain.",
+    "indexTitle": "Robotics lab",
+    "indexDescription": "Thirteen benches on a six month robotics roadmap: build each board part by part, power it up, break it on purpose and fix it, from Ohm's law to a ROS 2 robot brain.",
     "benchDescription": "{name}: {teaches}"
   },
   "index": {
-    "kicker": "Robotics Lab",
+    "kicker": "Robotics lab",
     "title": "Build it, power it, break it, fix it",
     "count": {
       "one": "{count} bench",
       "other": "{count} benches"
     },
-    "lede": "Thirteen hand-inked benches in the order of a six-month robotics roadmap. Each one walks you through the build, lets you cause the failures that catch real builders, and ends with practice tasks you check by running code and a short quiz.",
+    "lede": "Thirteen hand drawn benches in the order of a six month robotics roadmap. Each one walks you through the build, lets you cause the failures that catch real builders, and ends with practice tasks you check by running code and a short quiz.",
     "fig": "Fig. {n}",
     "progress": "{done}/{total}",
     "progressLabel": "{done} of {total} steps, tasks and quizzes done",
@@ -44,7 +44,7 @@
   "benches": {
     "uno-r3-build": {
       "name": "Arduino Uno R3",
-      "teaches": "Meet the board: build it from a bare PCB, reflow the SMD parts, solder the through-hole parts, upload a sketch and break it on purpose."
+      "teaches": "Meet the board: build it from a bare PCB, reflow the SMD parts, solder the through hole parts, upload a sketch and break it on purpose."
     },
     "led-resistor": {
       "name": "LED + resistor",
@@ -52,7 +52,7 @@
     },
     "transistor-switch": {
       "name": "Transistor switch",
-      "teaches": "Logic drives power: one Nano pin switches a motor through a TIP120, and a flyback diode keeps the turn-off spike away from the transistor."
+      "teaches": "Logic drives power: one Nano pin switches a motor through a TIP120, and a flyback diode keeps the turn off spike away from the transistor."
     },
     "esp32-s3-build": {
       "name": "ESP32-S3 DevKitC-1",
@@ -60,7 +60,7 @@
     },
     "tb6612fng": {
       "name": "TB6612FNG driver",
-      "teaches": "A MOSFET H-bridge: direction, PWM speed, brake and standby for two DC motors from one Nano."
+      "teaches": "A MOSFET H bridge: direction, PWM speed, brake and standby for two DC motors from one Nano."
     },
     "l298n": {
       "name": "L298N driver",
@@ -88,17 +88,17 @@
     },
     "lm2596": {
       "name": "LM2596 buck module",
-      "teaches": "Power and brown-outs: turn the trimpot to set the output from a LiPo, then watch a stalled motor drag a shared rail down."
+      "teaches": "Power and brownouts: turn the trimpot to set the output from a LiPo, then watch a stalled motor drag a shared rail down."
     },
     "pi5-ros2": {
       "name": "Raspberry Pi 5",
-      "teaches": "The ROS 2 brain: the official 27 W USB-C supply (5.1 V, 5 A), the under-voltage flags, and nodes that talk over topics."
+      "teaches": "The ROS 2 brain: the official 27 W USB-C supply (5.1 V, 5 A), the undervoltage flags, and nodes that talk over topics."
     }
   },
   "tags": {
     "build": "build",
     "smd": "SMD",
-    "tht": "through-hole",
+    "tht": "through hole",
     "ohms-law": "Ohm's law",
     "meter": "multimeter",
     "transistor": "transistor",
@@ -120,12 +120,12 @@
     "rc-timing": "RC timing",
     "power": "power",
     "buck": "buck converter",
-    "brownout": "brown-out",
+    "brownout": "brownout",
     "linux": "Linux",
     "ros2": "ROS 2"
   },
   "bench": {
-    "kicker": "Fig. {n} · Robotics Lab",
+    "kicker": "Fig. {n} · Robotics lab",
     "back": "All benches",
     "progress": "{done}/{total}",
     "progressLabel": "{done} of {total} steps, tasks and quizzes done on this bench",
@@ -141,6 +141,7 @@
     "focusFigure": "Go into the figure",
     "selected": "Selected part",
     "walk": "More benches",
+    "concept": "concept model: Python API mock, not a Raspberry Pi OS and not a running ROS 2 graph",
     "tabs": {
       "label": "Bench panels",
       "steps": "Steps",
@@ -181,7 +182,7 @@
     "fix": "Fix",
     "kinds": {
       "reverse-polarity": "reverse polarity",
-      "brownout": "brown-out",
+      "brownout": "brownout",
       "wrong-voltage": "wrong voltage",
       "cold-solder": "cold solder joint",
       "short": "short circuit",
@@ -204,7 +205,7 @@
       "powered": "Powered",
       "running": "Running",
       "uploading": "Uploading",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "fault": "Fault",
       "reset": "In reset"
     },

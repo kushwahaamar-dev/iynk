@@ -1,0 +1,751 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.led-5mm",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "5 mm through-hole LED",
+    "generic": true,
+    "kind": "discrete",
+    "category": "semiconductor",
+    "description": {
+      "i18n_key": "parts.led-5mm.description",
+      "en": "A 5 mm through-hole light-emitting diode in red, yellow, green, blue or white. The longer leg is the anode."
+    },
+    "legacy_ids": [
+      "led"
+    ],
+    "tags": [
+      "led",
+      "diode",
+      "indicator",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 4: 5 mm LEDs",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. It says typical colour values and that maker datasheets vary, and marks the 20 to 30 mA ceiling unverified."
+    },
+    {
+      "id": "partjs",
+      "kind": "own-estimate",
+      "title": "figures/parts/led.js: forward voltage per colour, 20 mA continuous, brightness curve",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "The header comment cites the Learn Arduino lesson for the brightness curve."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: LED dynamic resistance and burn rule",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    },
+    {
+      "id": "rs08",
+      "kind": "own-estimate",
+      "title": "RS-08 spike: in-house solver against ngspice, cases C06 to C10",
+      "publisher": "iynk",
+      "retrieved": "2026-10-27",
+      "reliability": "secondary",
+      "note": "A comparison with simulated parts, not with hardware."
+    }
+  ],
+  "pins": [
+    {
+      "id": "A",
+      "name": {
+        "en": "Anode"
+      },
+      "designator": "A",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "anode",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The longer, bent leg."
+      }
+    },
+    {
+      "id": "K",
+      "name": {
+        "en": "Cathode"
+      },
+      "designator": "K",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "cathode",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The leg beside the flat on the rim."
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "A",
+        "K"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "T-1 3/4 (5 mm)",
+    "body": {
+      "w": 5.8,
+      "h": 5.8,
+      "d": 8.6
+    },
+    "mass": {
+      "unit": "g",
+      "typ": 0.3
+    },
+    "accuracy": 0.3,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 4, Package"
+    }
+  },
+  "ratings": {
+    "forward_current_continuous": {
+      "measure": "current",
+      "role": "abs_max",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "description": {
+        "en": "Highest steady forward current before the model counts the LED as overdriven."
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.02,
+        "confidence": "medium",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/led.js:3 and elec(): imax .02"
+        },
+        "rationale": {
+          "en": "A common value for 5 mm indicator LEDs. The fact sheet says maker datasheets give 20 to 30 mA and vary, so there is no single stated figure to copy."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "forward_voltage_red": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 1.8,
+        "typ": 2.0,
+        "max": 2.2,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 4, table"
+        },
+        "rationale": {
+          "en": "Typical AlGaInP red at about 20 mA. The model uses typ."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "forward_voltage_yellow": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 1.9,
+        "typ": 2.1,
+        "max": 2.4,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 4, table"
+        },
+        "rationale": {
+          "en": "Typical AlGaInP yellow at about 20 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "forward_voltage_green": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 2.1,
+        "typ": 2.2,
+        "max": 2.2,
+        "confidence": "low",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 4, table"
+        },
+        "rationale": {
+          "en": "A classic GaP green. A pure InGaN green is 3.0 to 3.2 V, which this value does not cover; the fact sheet asks the part to say which green it is."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "forward_voltage_blue": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "typ": 3.0,
+        "max": 3.2,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 4, table"
+        },
+        "rationale": {
+          "en": "Typical InGaN blue at about 20 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "forward_voltage_white": {
+      "measure": "voltage",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "typ": 3.1,
+        "max": 3.3,
+        "confidence": "medium",
+        "source": {
+          "src": "factsheet",
+          "loc": "section 4, table"
+        },
+        "rationale": {
+          "en": "Typical InGaN plus phosphor white at about 20 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "dynamic_resistance": {
+      "measure": "resistance",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "description": {
+        "en": "Slope of the on-state line above the forward voltage."
+      },
+      "simulation": {
+        "unit": "ohm",
+        "value": 0.5,
+        "confidence": "low",
+        "source": {
+          "src": "solverjs",
+          "loc": "figures/engine/bench-solve.js:102 rd: .5"
+        },
+        "rationale": {
+          "en": "One fixed value for every colour and every current. RS-08 shows it leaves the model 7 percent off a realistic LED model at 0.3 mA."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "brightness_reference_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "scope": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "description": {
+        "en": "The current at which the drawing shows full brightness."
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.0136,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/engine/bench-bb.js:211"
+        },
+        "rationale": {
+          "en": "13.6 mA is a red LED on 5 V through 220 ohm, the lesson circuit. It is a drawing choice, not a light measurement."
+        }
+      },
+      "used_by_model": "simulation"
+    },
+    "brightness_exponent": {
+      "measure": "ratio",
+      "role": "characteristic",
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 0.55,
+        "confidence": "low",
+        "source": {
+          "src": "partjs",
+          "loc": "figures/parts/led.js:3-4"
+        },
+        "rationale": {
+          "en": "A power law (I / 13.6 mA) ^ 0.55 that the Learn Arduino lesson uses. Not a photometric curve."
+        }
+      },
+      "used_by_model": "simulation"
+    }
+  },
+  "parameters": [
+    {
+      "id": "color",
+      "name": {
+        "en": "Colour"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "red",
+      "values": [
+        "red",
+        "yellow",
+        "green",
+        "blue",
+        "white"
+      ],
+      "affects": [
+        "forward_voltage_red",
+        "forward_voltage_yellow",
+        "forward_voltage_green",
+        "forward_voltage_blue",
+        "forward_voltage_white"
+      ]
+    }
+  ],
+  "physical_outputs": [
+    {
+      "id": "light",
+      "name": {
+        "en": "Light output, relative"
+      },
+      "unit": "ratio",
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "world_channel": "optical.led"
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A diode that conducts above its forward voltage, with a small series resistance. Brightness follows current."
+    },
+    "layers": [
+      {
+        "id": "dc",
+        "domain": "analog",
+        "reads": [
+          "A",
+          "K",
+          "color"
+        ],
+        "summary": {
+          "en": "Piecewise-linear diode: off below the forward voltage, a line of slope 1/rd above it."
+        },
+        "model": {
+          "kind": "element",
+          "element": "led",
+          "terminals": {
+            "anode": "A",
+            "cathode": "K"
+          },
+          "params": {
+            "vf": {
+              "by_parameter": {
+                "parameter": "color",
+                "map": {
+                  "red": "forward_voltage_red",
+                  "yellow": "forward_voltage_yellow",
+                  "green": "forward_voltage_green",
+                  "blue": "forward_voltage_blue",
+                  "white": "forward_voltage_white"
+                }
+              },
+              "pick": "typ"
+            },
+            "rd": {
+              "from_rating": "dynamic_resistance",
+              "pick": "value"
+            },
+            "imax": {
+              "from_rating": "forward_current_continuous",
+              "pick": "value"
+            }
+          }
+        }
+      },
+      {
+        "id": "brightness",
+        "domain": "optical",
+        "reads": [
+          "dc"
+        ],
+        "drives": [
+          "light"
+        ],
+        "summary": {
+          "en": "Relative light output from the solved current."
+        },
+        "model": {
+          "kind": "builtin",
+          "ref": "optical:power-law-brightness@1",
+          "params": {
+            "reference_current": {
+              "from_rating": "brightness_reference_current",
+              "pick": "value"
+            },
+            "exponent": {
+              "from_rating": "brightness_exponent",
+              "pick": "value"
+            }
+          },
+          "implementation": {
+            "path": "figures/engine/bench-bb.js",
+            "note": "Inline in the draw call at line 211 today; moves into a registered function."
+          }
+        }
+      }
+    ]
+  },
+  "failure_modes": [
+    {
+      "id": "overcurrent_burn",
+      "name": {
+        "en": "Burned out by too much current"
+      },
+      "cause_id": "led-no-series-resistor",
+      "symptom_ids": [
+        "led.dark",
+        "led.flash-then-dark"
+      ],
+      "when": [
+        {
+          "measure": "pin_current_peak",
+          "target": "A",
+          "op": ">",
+          "threshold": {
+            "rating": "forward_current_continuous",
+            "pick": "value",
+            "factor": 2.5
+          }
+        }
+      ],
+      "effect": {
+        "state": "burnt",
+        "latched": true,
+        "recovers_when": "the part is replaced",
+        "detail": {
+          "en": "The LED goes dark and stays open."
+        }
+      },
+      "derivation": {
+        "en": "The solver burns an LED when its peak current is more than 2.5 times the continuous rating, that is above 50 mA. The factor is iynk's own teaching rule and is not taken from a datasheet."
+      },
+      "basis": "simulation-assumption",
+      "source": {
+        "src": "solverjs",
+        "loc": "figures/engine/bench-solve.js:317"
+      },
+      "implemented_as": "threshold",
+      "hints": [
+        {
+          "level": 1,
+          "text": {
+            "en": "The LED was fine, then it flashed and went dark. What limits the current through it?"
+          }
+        },
+        {
+          "level": 2,
+          "text": {
+            "en": "Look at the wire from the pin to the LED. Is there anything in series with it?"
+          }
+        },
+        {
+          "level": 3,
+          "text": {
+            "en": "There is no resistor. Put 220 ohm in series and replace the LED."
+          }
+        }
+      ]
+    }
+  ],
+  "injectable_faults": [
+    {
+      "id": "reversed",
+      "kind": "reversed_part",
+      "target": {
+        "pins": [
+          "A",
+          "K"
+        ]
+      },
+      "cause_id": "led-reversed",
+      "symptom_ids": [
+        "led.dark"
+      ],
+      "description": {
+        "en": "Fit the LED the wrong way round."
+      },
+      "hints": [
+        {
+          "level": 1,
+          "text": {
+            "en": "The circuit looks right and the LED is dark. Is anything in it polarised?"
+          }
+        },
+        {
+          "level": 3,
+          "text": {
+            "en": "Turn the LED round: the long leg goes to the positive side."
+          }
+        }
+      ]
+    },
+    {
+      "id": "no_return",
+      "kind": "open_pin",
+      "target": {
+        "pins": [
+          "K"
+        ]
+      },
+      "cause_id": "x-led.open-return",
+      "symptom_ids": [
+        "led.dark"
+      ],
+      "description": {
+        "en": "The cathode leg is not connected to ground."
+      }
+    }
+  ],
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Forward conduction as a fixed forward voltage per colour plus a 0.5 ohm slope."
+      },
+      {
+        "en": "Burn-out above 2.5 times the continuous current rating."
+      },
+      {
+        "en": "A backwards LED passes no current and is flagged."
+      },
+      {
+        "en": "Relative brightness from current, for the drawing only."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The exponential diode curve: below about 1 mA the model is off or on, not gradual."
+      },
+      {
+        "en": "Reverse breakdown and the reverse voltage rating."
+      },
+      {
+        "en": "Temperature, ageing and part-to-part spread in forward voltage."
+      },
+      {
+        "en": "Pulsed or PWM peak ratings: the burn rule uses one factor for any pulse."
+      },
+      {
+        "en": "Light output as a physical unit."
+      }
+    ],
+    "validity": [
+      {
+        "measure": "forward current",
+        "min": 0.0003,
+        "max": 0.12,
+        "unit": "A",
+        "note": {
+          "en": "The range of the RS-08 comparison cases C06 to C10."
+        }
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "low_current_error",
+        "text": {
+          "en": "At 0.3 mA the solver reads 0.299 mA where a realistic LED model reads 0.321 mA (7 percent)."
+        },
+        "evidence": "RS-08 REPORT.md, case C08"
+      },
+      {
+        "id": "green_is_gap",
+        "text": {
+          "en": "The green option is a GaP green. A pure green LED needs a 3.0 V forward voltage that this part does not offer."
+        }
+      }
+    ],
+    "solver_requires": [
+      "led"
+    ],
+    "tests": [
+      {
+        "id": "solver_red_220",
+        "kind": "golden-trace",
+        "file": "figures/engine/bench-solve.test.mjs",
+        "note": "Red LED on D13 with 220 ohm reads 12.2 mA."
+      },
+      {
+        "id": "ngspice_dc",
+        "kind": "ngspice-comparison",
+        "file": "docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/data/results.json",
+        "source": {
+          "src": "rs08",
+          "loc": "cases C06, C07, C08, C10"
+        },
+        "tolerance": {
+          "rel": 0.07
+        },
+        "note": "Matched models agree to 10 digits; realistic models differ by 1.7, 0.0, 6.9 and 2.8 percent on these four."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "compatibility": {
+    "rules": [
+      {
+        "id": "needs_series_resistor",
+        "kind": "custom_warning",
+        "severity": "warning",
+        "params": {
+          "between": [
+            "A",
+            "K"
+          ],
+          "check": "series-current-limit"
+        },
+        "message": {
+          "en": "Put a resistor in series with the LED, or its current is limited only by the supply."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "led",
+        "path": "public/figures/parts/led.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "A",
+        "K"
+      ],
+      "span": [
+        1,
+        3
+      ]
+    },
+    "schematic": {
+      "symbol": "led"
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "LED",
+      "body_colour": "#e8392e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "license_scope": {
+      "art": "LicenseRef-iynk-pending",
+      "descriptor": "LicenseRef-iynk-pending"
+    },
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-28",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-28",
+        "note": "First descriptor, converted from figures/parts/led.js and docs/facts/la-components.md.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

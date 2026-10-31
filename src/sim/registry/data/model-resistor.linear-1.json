@@ -1,0 +1,130 @@
+{
+  "id": "model:resistor.linear@1",
+  "version": "1.0.0",
+  "kind": "part-model",
+  "title": "Resistor, linear",
+  "tier": "T2",
+  "layers": [
+    "L4"
+  ],
+  "implements": [
+    {
+      "id": "ohm",
+      "text": "Conductance 1 / R between its two nodes, ohms floored at 1 milliohm"
+    },
+    {
+      "id": "sensor-r",
+      "text": "LDR, force sensor and soil probe act as a resistor whose ohms come from the part's input"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "tolerance",
+      "text": "Tolerance, temperature coefficient and power rating"
+    },
+    {
+      "id": "reactive",
+      "text": "Parasitic capacitance and inductance"
+    },
+    {
+      "id": "noise",
+      "text": "Thermal noise"
+    }
+  ],
+  "parameterSources": [
+    {
+      "param": "ohms",
+      "value": "part parameter",
+      "unit": "ohm",
+      "type": "datasheet",
+      "ref": "figures/parts/resistor.js",
+      "note": "the value on the colour bands; used as printed"
+    },
+    {
+      "param": "min ohms",
+      "value": 0.001,
+      "unit": "ohm",
+      "type": "assumption",
+      "ref": "figures/engine/bench-solve.js:92",
+      "note": "floor that keeps the conductance finite"
+    },
+    {
+      "param": "GMIN",
+      "value": 1e-9,
+      "unit": "S",
+      "type": "numerical",
+      "ref": "figures/engine/bench-solve.js:10"
+    }
+  ],
+  "validation": [
+    {
+      "id": "rs08-resistive",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 resistive circuits C01-C05, C18, C19",
+      "flavour": "matched",
+      "result": {
+        "n": 7,
+        "passed": 7,
+        "metric": "worst relative error",
+        "worst": 7.177e-12,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass",
+      "report": "08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/REPORT.md"
+    },
+    {
+      "id": "rs08-random",
+      "kind": "oracle",
+      "oracle": {
+        "name": "ngspice",
+        "version": "45.2"
+      },
+      "dataset": "RS-08 60 random resistor networks",
+      "flavour": "linear, five decades of resistor spread",
+      "result": {
+        "n": 60,
+        "passed": 60,
+        "metric": "worst relative error",
+        "worst": 8.7e-13,
+        "unit": "fraction"
+      },
+      "date": "2026-10-27",
+      "engineVersion": "bench-solve.js@bb546d6",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [
+    {
+      "name": "random resistor networks vs ngspice",
+      "value": 8.7e-11,
+      "unit": "percent",
+      "condition": "320 node voltages, worst relative difference 8.7e-13"
+    }
+  ],
+  "operatingRange": [
+    {
+      "quantity": "resistance",
+      "min": 0.001,
+      "max": 1000000000,
+      "unit": "ohm",
+      "evidence": "RS-08 random networks span five orders of magnitude; the 1 milliohm floor is in bench-solve.js:92"
+    }
+  ],
+  "knownFailureCases": [
+    "min ohms: a 0 ohm resistor is solved as 1 milliohm",
+    "A resistor carrying more than its power rating is not flagged"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T2",
+    "summary": "fidelity.summary.assumed"
+  },
+  "status": "active"
+}

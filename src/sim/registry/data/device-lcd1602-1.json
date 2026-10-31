@@ -1,0 +1,44 @@
+{
+  "id": "device:lcd1602@1",
+  "version": "1.0.0",
+  "kind": "device",
+  "title": "LCD 1602 behind a PCF8574 backpack",
+  "tier": "T0",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "text",
+      "text": "16x2 character text, cursor and the backlight bit; address 0x27 or 0x3F"
+    }
+  ],
+  "mocked": [],
+  "unsupported": [
+    {
+      "id": "bus-time",
+      "text": "Bus time: a transfer completes instantly; pull-ups, clock stretching and repeated start are not modelled"
+    },
+    {
+      "id": "custom",
+      "text": "Custom characters and shift commands beyond the subset"
+    },
+    {
+      "id": "contrast",
+      "text": "Contrast and viewing angle"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "No test or lesson drives the LCD today, so the evidence supports no tier above T0"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T0",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

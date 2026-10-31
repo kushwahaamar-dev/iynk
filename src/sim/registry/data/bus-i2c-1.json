@@ -1,0 +1,69 @@
+{
+  "id": "bus:i2c@1",
+  "version": "1.0.0",
+  "kind": "bus",
+  "title": "I2C bus with timing",
+  "tier": "T1",
+  "layers": [
+    "L6"
+  ],
+  "implements": [
+    {
+      "id": "frames",
+      "text": "Start, address, write, read with ACK or NACK, and stop, one byte costing nine bit times"
+    },
+    {
+      "id": "timing",
+      "text": "Transfer time from the bus speed, 100 kHz standard mode up to 1 MHz"
+    },
+    {
+      "id": "faults",
+      "text": "NACK, address conflict, a bus with no pull-up held low, and a rise time over the mode limit from the pull-up and capacitance"
+    }
+  ],
+  "mocked": [
+    {
+      "id": "pullup",
+      "text": "A bus with no stated pull-up assumes one; the event says so"
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "stretching",
+      "text": "Clock stretching and multi-master arbitration"
+    },
+    {
+      "id": "waveform",
+      "text": "Edge shapes: the bus works in transfers, not voltages"
+    }
+  ],
+  "parameterSources": [],
+  "validation": [
+    {
+      "id": "avr8js-twi-tests",
+      "kind": "self-consistency",
+      "dataset": "src/sim/mcu/avr8js-bus.test.ts: TWI",
+      "result": {
+        "n": 6,
+        "passed": 6,
+        "metric": "tests",
+        "worst": 0,
+        "unit": "count"
+      },
+      "date": "2026-10-30",
+      "engineVersion": "68b0cf8",
+      "status": "pass"
+    }
+  ],
+  "errorMetrics": [],
+  "operatingRange": [],
+  "knownFailureCases": [
+    "The default 50 pF load is an assumed figure"
+  ],
+  "performance": [],
+  "labels": {
+    "chip": "fidelity.tier.T1",
+    "summary": "fidelity.summary"
+  },
+  "status": "active"
+}

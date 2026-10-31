@@ -1,8 +1,12 @@
 import { InterpError } from './errors';
 import type { World } from './world';
+import type { StatementDebugger } from '@/sim/debug/breakpoints';
 
 /** Yielded by a program generator when it must hand control back to the host. */
 export const PREEMPT = -1;
+
+/** Yielded when the debugger stops the program before a statement; the host holds time until resume. */
+export const PAUSE = -2;
 
 /**
  * A program is a generator that yields either PREEMPT or the simulated time
@@ -31,6 +35,10 @@ export class Exec {
   /** Statement budget for the current host step. */
   opBudget = Infinity;
   inIsr = false;
+  /** How many runSync calls are active; a statement inside one cannot pause. */
+  syncDepth = 0;
+  /** Attached debugger; null costs one check per statement. */
+  dbg: StatementDebugger | null = null;
   /** Bumped whenever a store changes a value; with world.version it detects idle loops. */
   fx = 0;
   /** Set when the code reads a fine-grained clock (micros, ticks_us). */
@@ -51,6 +59,16 @@ export class Exec {
     if (c.next() <= c.now) c.fireDue();
     if ((this.world.irqQueue.length || this.softQueue.length) && !this.inIsr) this.serviceIrqs();
     return c.now >= this.target || this.ops >= this.opBudget;
+  }
+
+  /** Charge extra simulated time for one call; returns true when the program should yield to the host. */
+  chargeUs(us: number): boolean {
+    if (us <= 0) return false;
+    const c = this.world.clock;
+    c.now += us;
+    if (c.next() <= c.now) c.fireDue();
+    if ((this.world.irqQueue.length || this.softQueue.length) && !this.inIsr) this.serviceIrqs();
+    return c.now >= this.target;
   }
 
   /** Run interrupt handlers queued by pin edges and timers. */
@@ -116,6 +134,15 @@ export class Exec {
    */
   runSync<T>(g: Gen<T>): T {
     const limit = this.ops + SYNC_LIMIT;
+    this.syncDepth++;
+    try {
+      return this.drive(g, limit);
+    } finally {
+      this.syncDepth--;
+    }
+  }
+
+  private drive<T>(g: Gen<T>, limit: number): T {
     let r = g.next();
     while (!r.done) {
       const t = r.value;

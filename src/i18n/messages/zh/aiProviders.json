@@ -1,0 +1,142 @@
+{
+  "list": {
+    "title": "AI 提供商",
+    "intro": "添加伙伴要使用的提供商。你的密钥只保存在这个浏览器里。",
+    "empty": "还没有提供商。添加一个即可启用伙伴。",
+    "add": "添加提供商",
+    "edit": "编辑",
+    "remove": "移除",
+    "removeAsk": "移除 {label}？它的密钥也会一并删除。",
+    "removeYes": "移除",
+    "removeNo": "保留",
+    "limit": "最多可以保留 {count} 个提供商。",
+    "key": "密钥末尾 {tail}",
+    "noKey": "没有密钥",
+    "local": "在这台电脑上运行",
+    "via": {
+      "auto": "先直连，再中继",
+      "direct": "直连",
+      "relay": "中继"
+    },
+    "tested": "测试于 {date}：{total} 项检查通过 {passed} 项",
+    "untested": "尚未测试",
+    "notPersisted": "关闭标签页后，这个浏览器无法保留提供商。"
+  },
+  "legacy": {
+    "offer": "用已保存的密钥连接",
+    "use": "使用已保存的密钥",
+    "failed": "无法转移已保存的密钥。请再试一次。"
+  },
+  "form": {
+    "addTitle": "添加提供商",
+    "editTitle": "编辑 {label}",
+    "preset": "提供商",
+    "custom": "其他地址",
+    "family": "类型",
+    "familyAnthropic": "Anthropic",
+    "familyOpenai": "兼容 OpenAI",
+    "label": "名称",
+    "baseUrl": "地址",
+    "baseUrlHint": "到版本号为止的网址，例如 https://api.openai.com/v1",
+    "key": "密钥",
+    "keyHint": "只保存在这个浏览器里，之后不会再显示。",
+    "keyKeep": "留空则保留已保存的密钥。",
+    "keySaved": "已保存的密钥末尾 {tail}",
+    "keyLocal": "这个提供商在你的电脑上运行，不需要密钥。",
+    "keyBad": "密钥须为 8 到 512 个可见字符。",
+    "via": "路线",
+    "viaAuto": "自动",
+    "viaDirect": "从这个浏览器直连",
+    "viaRelay": "经过你的服务器",
+    "models": "模型",
+    "modelsNone": "至少添加一个模型。",
+    "modelId": "模型 ID",
+    "tier": "档位",
+    "tierNone": "无档位",
+    "tierFast": "快速",
+    "tierStandard": "标准",
+    "tierStrong": "强力",
+    "context": "上下文 token 数",
+    "output": "输出 token 数",
+    "priceIn": "输入价格（美元 / 百万 token）",
+    "priceOut": "输出价格（美元 / 百万 token）",
+    "priceBoth": "两个价格要么都填，要么都不填。",
+    "priceStale": "这个价格来自 {date}。请向提供商核实。",
+    "modelAdd": "添加模型",
+    "modelRemove": "移除第 {n} 个模型",
+    "save": "保存",
+    "saved": "已保存。",
+    "close": "关闭",
+    "test": "保存并测试",
+    "testing": "正在测试"
+  },
+  "test": {
+    "title": "测试结果",
+    "date": "测试于 {date}",
+    "pass": "通过",
+    "fail": "未通过",
+    "toolsOff": "工具：此提供商已关闭。伙伴可以回答，但不能用工具读取你的项目。",
+    "csp": "本站的策略不允许访问该地址。请把它加入 IYNK_CONNECT_ORIGINS，并重启 web 容器。",
+    "noModel": "测试前请先添加模型。",
+    "error": "测试无法运行。请再试一次。",
+    "check": {
+      "C1": "能连上提供商",
+      "C2": "普通对话",
+      "C3": "带用量的流式输出",
+      "C4": "工具往返调用",
+      "C5": "并行工具",
+      "C6": "不选工具",
+      "C7": "JSON 文本后备",
+      "C8": "错误映射",
+      "C9": "缓存报告",
+      "C10": "中止"
+    }
+  },
+  "caps": {
+    "title": "花费上限",
+    "hint": "留空则使用默认值。输入「{word}」可取消上限。不接受 0。",
+    "word": "不限",
+    "dayUSD": "每天（美元）",
+    "monthUSD": "每月（美元）",
+    "sessionUSD": "每次会话（美元）",
+    "dayTokens": "每天 token 数",
+    "sessionTokens": "每次会话 token 数",
+    "default": "默认 {value}",
+    "zero": "不接受 0。输入「{word}」可取消上限。",
+    "number": "请输入大于 0 的数字。",
+    "save": "保存上限",
+    "saved": "上限已保存。"
+  },
+  "usage": {
+    "title": "在这个浏览器里的用量",
+    "today": "今天：{tokens} 个 token，{cost}",
+    "month": "本月：{tokens} 个 token，{cost}",
+    "unpriced": {
+      "one": "有 {count} 次调用没有已知价格。",
+      "other": "有 {count} 次调用没有已知价格。"
+    },
+    "search": "搜索次数：今天 {today}，本月 {month}"
+  },
+  "prices": {
+    "asOf": "价格表日期：{date}。",
+    "stale": "价格表日期：{date}。已超过 90 天，请向提供商核实价格。"
+  },
+  "retention": {
+    "title": "保留对话",
+    "session": "仅本次会话",
+    "project": "按项目，90 天",
+    "forever": "直到我删除"
+  },
+  "data": {
+    "delete": "删除 AI 数据",
+    "ask": "删除所有对话、日志和用量计数？你的密钥会保留。",
+    "yes": "删除",
+    "no": "保留",
+    "done": "AI 数据已删除。",
+    "failed": "无法删除 AI 数据。请再试一次。"
+  },
+  "notes": {
+    "relay": "如果用朋友的服务器做中继，每次调用你的密钥都会经过他的机器。",
+    "cap": "花费上限只在这个浏览器里计数，所以也请在提供商那里设置上限。"
+  }
+}

@@ -10,7 +10,7 @@
     "raceAcro": "Carrera de puertas (acro)",
     "range": "Circuito: {title}",
     "cine": "Cine suave",
-    "rescue": "GPS Rescue",
+    "rescue": "GPS rescue",
     "loiter": "Loiter (posición GPS)",
     "althold": "AltHold",
     "rtl": "RTL (volver al despegue)",
@@ -92,17 +92,17 @@
     "batteryEmptyLiion": "Batería vacía: el pack de Li-ion llegó a su tensión de corte. Los ESC cortan",
     "gate": "Puerta {n} de {total}",
     "lap": "Vuelta {time} s",
-    "lapBest": "Vuelta {time} s (¡récord!)",
+    "lapBest": "Vuelta {time} s, nuevo récord",
     "checkpoint": "{label} hecho",
     "runDone": "{title} completado: {time} s",
-    "runBest": "{title} completado: {time} s (¡récord!)",
+    "runBest": "{title} completado: {time} s, nuevo récord",
     "outOfField": "Fuera del campo: da la vuelta o pulsa R",
     "farOut": "Muy lejos: cambia a volver a casa o pulsa R",
-    "ceiling": "Altura máxima de este campo: {m} m",
-    "desync": "¡Desincronización! El ESC perdió el motor {motor}: gira y se hunde. Aterriza y deja que se enfríe",
+    "ceiling": "Mantente por debajo de {m} m",
+    "desync": "Desincronización. El ESC perdió el motor {motor}: gira y se hunde. Aterriza y deja que se enfríe",
     "motorOut": "Falló el motor {motor}: el mezclador reparte su empuje entre los demás",
     "stall": "PÉRDIDA: demasiado lento, el morro cae",
-    "launch": "¡Lanzamiento a mano!",
+    "launch": "Lanzamiento a mano.",
     "transition": "Transición: los motores se inclinan hacia delante y el ala carga con el peso",
     "hoverAgain": "De nuevo en estacionario: los motores vuelven a apuntar arriba",
     "rtl": "Volver al despegue: sube, vuela a casa y aterriza",
@@ -117,8 +117,8 @@
     "hintDemo": "El piloto automático está volando el circuito: cambia de modo para tomar el control",
     "demoTime": "Demo terminada en {time} s: el tiempo del piloto automático no cuenta",
     "missionTime": "Misión completada: {time} s",
-    "missionBest": "Misión completada: {time} s (¡récord!)",
-    "medal": "{line}. ¡Medalla de {medal}!",
+    "missionBest": "Misión completada: {time} s, nuevo récord",
+    "medal": "{line}. Medalla de {medal}.",
     "noMedal": "{line}. El bronce está en {s} s",
     "drop": "Paquete soltado: {kg} kg menos, así que vuelve a casa con menos acelerador"
   },
@@ -210,6 +210,10 @@
     "gold": "oro",
     "silver": "plata",
     "bronze": "bronce"
+  },
+  "model": {
+    "game": "Este modelo de vuelo está ajustado para dar buena sensación. No sirve para aprender a ajustar un PID. Los tiempos de medalla están fijados para el dron de fábrica.",
+    "rigid": "Este modelo de vuelo es una simulación de cuerpo rígido. Sus fantasmas se guardan aparte y no tiene medallas."
   },
   "ghosts": {
     "title": "Fantasmas",
@@ -324,5 +328,25 @@
     "shareText": "Reto diario de drones de iynk: {craft} en {course}.",
     "shareBeat": "Reto diario de drones de iynk: {craft} en {course}. ¿Puedes bajar de {time} s?",
     "board": "{course}, reto del {date}"
+  },
+  "board": {
+    "title": "Tabla de amigos",
+    "optIn": "Mostrarme en la tabla",
+    "optInHint": "Tus mejores tiempos solo los ven tus amigos.",
+    "empty": "Aún no hay tiempos. Vuela una vuelta y sé el primero.",
+    "needsServer": "La tabla necesita un servidor y este despliegue no tiene ninguno",
+    "signedOut": "Inicia sesión para ver la tabla",
+    "you": "Tú",
+    "rank": "Puesto {rank}",
+    "bestOnly": "Solo el mejor tiempo",
+    "claimed": "Tu tiempo está en la tabla",
+    "remove": "Quitarme de la tabla",
+    "retry": "Reintentar"
+  },
+  "fly": {
+    "blocked": "A tu montaje le falta {field}, así que aún no puede volar. Corrígelo en el constructor y vuelve.",
+    "cannotLift": "Este montaje no puede mantenerse en vuelo estacionario: el empuje no levanta su peso. Aun así puedes intentarlo, y las comprobaciones de abajo dicen por qué.",
+    "courses": "Recorridos",
+    "loading": "Cargando recorridos"
   }
 }

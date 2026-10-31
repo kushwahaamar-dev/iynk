@@ -1,0 +1,65 @@
+{
+  "title": "Code",
+  "files": "Codedateien",
+  "editor": "Code von {path}",
+  "noFiles": "Dieses Projekt hat keine Codedateien",
+  "noFilesHint": "Bauteile, die Code ausführen, etwa ein Board, bringen eine Firmware-Datei mit.",
+  "errors": "Fehler: {count}",
+  "position": "Zeile {line}, Spalte {col}",
+  "plain": "Nur Text",
+  "readOnly": "Schreibgeschützt",
+  "copy": "Code kopieren",
+  "copied": "Kopiert",
+  "run": "Starten",
+  "escape": "Mit Esc und dann Tab verlässt du den Editor.",
+  "tooBig": "Diese Änderung würde die Datei über 256 KB groß machen, deshalb wurde sie nicht übernommen.",
+  "failed": "Die Änderung konnte nicht gespeichert werden. Der Editor zeigt wieder den gespeicherten Text.",
+  "baton": {
+    "heldBy": "Tastatur bei {name}",
+    "nobody": "Niemand hat die Tastatur",
+    "you": "Du hast die Tastatur",
+    "ask": "Tastatur anfragen",
+    "giveBack": "Zurückgeben",
+    "viewer": "Du kannst diesen Raum ansehen, aber nicht bearbeiten",
+    "ended": "Dieser Raum ist beendet"
+  },
+  "marker": {
+    "error": "Fehler, Zeile {line}, Spalte {col}:",
+    "warning": "Warnung, Zeile {line}, Spalte {col}:"
+  },
+  "problem": {
+    "include": {
+      "unknown": "{name} ist keine Bibliothek, die iynk simulieren kann."
+    },
+    "limit": {
+      "statements": "Der Code hat zu viele Schritte gemacht, ohne einen Durchlauf zu beenden. Suche nach einer Schleife, die nie endet.",
+      "operations": "Ein Ausdruck brauchte zu viele Rechenschritte. Prüfe die Zahlen, mit denen er arbeitet.",
+      "memory": "Der Code hat mehr Speicher gebraucht, als der Simulator erlaubt.",
+      "time": "Der Lauf hat zu lange gedauert und wurde gestoppt."
+    },
+    "static": {
+      "short-circuit": "Plus und Masse sind direkt verbunden, ohne etwas dazwischen. {count} Pins treffen sich an dieser Verbindung.",
+      "output-contention": "Ausgänge, die dieselbe Verbindung treiben, arbeiten gegeneinander. {count} Pins treffen sich dort."
+    },
+    "run": {
+      "noModel": "{part} hat noch kein Simulatormodell und tut während eines Laufs nichts."
+    }
+  },
+  "problems": {
+    "title": "Probleme",
+    "empty": "Keine Probleme gefunden.",
+    "emptyHint": "Fehler im Code und in der Verdrahtung erscheinen hier.",
+    "count": {
+      "one": "1 Problem",
+      "other": "{count} Probleme"
+    },
+    "line": "Zeile {line}",
+    "severity": {
+      "error": "Fehler",
+      "warning": "Warnung",
+      "note": "Hinweis"
+    },
+    "hint": "Tipp: {hint}",
+    "jump": "Zum Problem springen"
+  }
+}

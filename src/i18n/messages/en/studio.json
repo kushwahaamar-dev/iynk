@@ -1,0 +1,806 @@
+{
+  "meta": {
+    "title": "Projects",
+    "description": "Your iynk projects, kept in this browser. Create, rename, duplicate, save to a file and restore."
+  },
+  "title": "Projects",
+  "lede": "Everything here is stored in this browser. Nothing is sent anywhere.",
+  "newProject": "New project",
+  "newName": "Blink",
+  "openFromFile": "Open from file",
+  "storage": {
+    "label": "Space used",
+    "value": "{used} of {quota}",
+    "unknown": "This browser does not say how much space is left."
+  },
+  "list": {
+    "title": "Your projects",
+    "loading": "Loading projects",
+    "failed": "The projects could not be read. Reload the page to try again.",
+    "emptyTitle": "No projects yet",
+    "emptyBody": "Start with a Blink project for the Uno. It is saved in this browser as you go.",
+    "columns": {
+      "name": "Name",
+      "board": "Board",
+      "size": "Size",
+      "file": "File copy",
+      "actions": "Actions"
+    },
+    "savedToFile": "Saved to file",
+    "notSavedToFile": "Not saved"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3",
+    "pin": "Pin",
+    "role": "Role",
+    "net": "Net",
+    "connectedTo": "Connected to",
+    "state": "State now",
+    "noneConnected": "Nothing connected",
+    "wireThis": "Wire this pin to...",
+    "ports": "Ports",
+    "notRunning": "Not running",
+    "high": "HIGH",
+    "low": "LOW",
+    "liveDot": "{pin}: {level}",
+    "missing": "This board is not in the project.",
+    "roles": {
+      "power": "Power",
+      "ground": "Ground",
+      "digital": "Digital",
+      "analog": "Analog",
+      "bus": "Bus",
+      "misc": "Other"
+    },
+    "dir": {
+      "in": "In",
+      "out": "Out"
+    },
+    "bits": "{count} bits",
+    "activeLow": "active low"
+  },
+  "row": {
+    "open": "Open {name}",
+    "saveToFile": "Save {name} to file",
+    "rename": "Rename {name}",
+    "duplicate": "Duplicate {name}",
+    "delete": "Delete {name}",
+    "openText": "Open",
+    "saveToFileText": "Save to file",
+    "renameText": "Rename",
+    "duplicateText": "Duplicate",
+    "deleteText": "Delete",
+    "couldNotOpen": "Could not open this project. Save to file keeps a copy of what is stored.",
+    "failed": "That did not work. Try again."
+  },
+  "rename": {
+    "label": "New name for {name}",
+    "save": "Save name",
+    "cancel": "Cancel",
+    "invalid": "Use 1 to 120 characters."
+  },
+  "selected": {
+    "title": "Open project",
+    "name": "Name",
+    "board": "Board",
+    "revision": "Revision",
+    "hash": "Hash",
+    "noEditor": "The editor arrives in a later step. This page lists and keeps your projects.",
+    "close": "Close details"
+  },
+  "trash": {
+    "title": "Trash",
+    "lede": "Deleted projects stay here for 30 days.",
+    "empty": "The trash is empty.",
+    "restore": "Restore {name}",
+    "restoreText": "Restore",
+    "emptyTrash": "Empty trash"
+  },
+  "banner": {
+    "degradedTitle": "Projects will not be kept",
+    "degraded": "This browser is not letting iynk store data, so projects last only until you close the tab. Save to file keeps a copy.",
+    "recoveredTitle": "A damaged save was replaced",
+    "recovered": "The last save of {name} was damaged, so the previous copy was opened.",
+    "lostTitle": "A project could not be read",
+    "lost": "Both saved copies of {name} are damaged. Nothing was deleted.",
+    "quotaTitle": "Out of space",
+    "quota": "The browser has no room left for this project. Save to file, then delete something you no longer need.",
+    "otherTabTitle": "Changed in another tab",
+    "otherTab": "A project was saved in another tab. The list is up to date.",
+    "fileTitle": "Not saved to a file",
+    "file": "Some projects have been here for over 10 minutes without a copy in a file. Save to file keeps a copy you control.",
+    "newerTitle": "This file is from a newer iynk",
+    "newer": "{name} was saved by a newer version, so it cannot be opened here. Download gives the file back unchanged.",
+    "newerDownload": "Download {name}",
+    "importTitle": "That file could not be opened",
+    "importTooLarge": "{name} is over the size limit.",
+    "importDamaged": "{name} is not a valid iynk project.",
+    "dismiss": "Dismiss"
+  },
+  "status": {
+    "created": "Created {name}",
+    "renamed": "Renamed to {name}",
+    "duplicated": "Duplicated as {name}",
+    "trashed": "{name} moved to the trash",
+    "restored": "Restored {name}",
+    "savedToFile": "Saved {name} to file",
+    "imported": "Opened {name} from file",
+    "importedForked": "Opened {name} from file as a new project"
+  },
+  "diag": {
+    "title": "Diagnostics",
+    "lede": "Checks for the simulator and the project worker, run in this browser. Each result updates in place.",
+    "noWorker": "This browser cannot start workers, so these checks are off.",
+    "running": "Running",
+    "failed": "Failed. {message}",
+    "frameGap": "Longest frame gap in the last 5 seconds",
+    "frameGapValue": "{ms} ms",
+    "groups": {
+      "sim": "Simulator",
+      "project": "Project worker",
+      "data": "Browser data"
+    },
+    "run": {
+      "sample": "Run sample",
+      "ten": "Run ten times",
+      "stall": "Stall the worker",
+      "killSim": "Kill the sim worker",
+      "killProject": "Kill the project worker",
+      "lessons": "Check 5 lessons",
+      "exportAll": "Export all data",
+      "wipe": "Wipe all data"
+    },
+    "probe": {
+      "list-repeat": "List repeat probe",
+      "bytearray-loop": "Bytearray loop probe",
+      "c-array": "C array probe",
+      "string-double": "String doubling probe",
+      "endless-loop": "Endless loop probe"
+    },
+    "save": {
+      "label": "Pick a project to time",
+      "hint": "Times 30 saves of the picked file."
+    },
+    "wipe": {
+      "label": "Type {phrase} to wipe everything iynk stores in this browser"
+    },
+    "result": {
+      "sample": "{edges} LED changes, on for {onMs} ms. Trace hash {hash}. {serial}.",
+      "noSerial": "No serial output",
+      "serial": "Serial: {text}",
+      "limit": "Limit hit: {message}.",
+      "noLimit": "No limit hit.",
+      "equal": "{equal} of {of} equal",
+      "equalFirstDiff": "{equal} of {of} equal. First difference: {diff}",
+      "probeLimit": "Ended at a limit in {ms} ms. {message}.",
+      "probeRunLength": "Ended at the run length in {ms} ms.",
+      "probeKilled": "Worker killed and restarted in {ms} ms. {message}.",
+      "answers": "Worker still answers.",
+      "silent": "Worker does not answer.",
+      "stall": "Worker killed after {killed} ms and answering again after {restarted} ms. Longest frame gap {gap} ms.",
+      "kill": "Recovered in {ms} ms. Hash before {before}, after {after}. {same}.",
+      "sameHash": "The hashes are equal",
+      "otherHash": "The hashes differ",
+      "saveSpeed": "p50 {p50} ms, p95 {p95} ms over {samples} saves.",
+      "exported": "Exported {size} bytes.",
+      "wiped": "Wiped {stores} stores and {keys} browser keys.",
+      "wipeErrors": "Some storage could not be wiped: {errors}"
+    }
+  },
+  "canvas": {
+    "label": "Circuit canvas",
+    "hint": "Arrow keys pan the view. Plus and minus zoom. Zero fits everything in view.",
+    "status": {
+      "label": "Canvas status",
+      "cursor": "Cursor",
+      "cursorValue": "{x}, {y} mm",
+      "zoom": "Zoom",
+      "zoomValue": "{value} px per mm",
+      "grid": "Grid {step} mm",
+      "gridOff": "Grid off",
+      "selected": {
+        "one": "1 selected",
+        "other": "{count} selected"
+      },
+      "scene": "{items} drawn, {culled} off screen",
+      "detail": "Detail low {low}, medium {mid}, full {high}"
+    }
+  },
+  "shell": {
+    "workspace": "Workspace"
+  },
+  "route": {
+    "loading": "Loading the Studio",
+    "noscript": "The Studio needs JavaScript. Turn it on and reload the page."
+  },
+  "topBar": {
+    "label": "Project bar",
+    "name": "Project name",
+    "save": {
+      "saved": "Saved",
+      "saving": "Saving",
+      "unsaved": "Unsaved changes",
+      "failed": "Autosave failed",
+      "readOnly": "Read only"
+    },
+    "undo": "Undo",
+    "redo": "Redo",
+    "run": "Run",
+    "stop": "Stop",
+    "reset": "Reset"
+  },
+  "layout": {
+    "regions": {
+      "top": "Top bar",
+      "left": "Parts and files",
+      "canvas": "Canvas area",
+      "right": "Inspector and checks",
+      "dock": "Code and serial"
+    },
+    "tabs": {
+      "palette": "Palette",
+      "files": "Files",
+      "outline": "Outline",
+      "inspector": "Inspector",
+      "problems": "Problems",
+      "models": "Models",
+      "partner": "Partner",
+      "code": "Code",
+      "serial": "Serial",
+      "faults": "Faults"
+    },
+    "separator": "Resize the bottom panel",
+    "narrow": "Phone layout comes later; view and run work",
+    "open": "Open {name}",
+    "close": "Close panel",
+    "boundary": {
+      "failed": "{name} stopped working. Your project is unchanged.",
+      "reload": "Reload {name}"
+    }
+  },
+  "workspace": {
+    "loading": "Opening the project",
+    "back": "Back to projects",
+    "missingTitle": "This project is not here",
+    "missing": "It may have been deleted, or it was made in another browser. Projects stay in the browser that made them.",
+    "lostTitle": "This project could not be read",
+    "lost": "Both saved copies are damaged. Nothing was deleted.",
+    "errorTitle": "This project could not be opened",
+    "error": "Something went wrong while reading it. Your other projects are not affected.",
+    "readOnlyTitle": "Read only",
+    "readOnly": "This project is open for viewing. You can look around and run it, but changes are not saved.",
+    "hashMismatchTitle": "Saved copy checked",
+    "hashMismatch": "The saved copy did not match this page, so it was written again from here.",
+    "files": {
+      "title": "Project files",
+      "empty": "This project has no files yet.",
+      "open": "Open {path} in the code panel"
+    },
+    "keys": {
+      "title": "Keyboard shortcuts",
+      "hint": "Single key shortcuts can be turned off in the view settings.",
+      "close": "Close"
+    }
+  },
+  "rooms": {
+    "banner": {
+      "live": "Live",
+      "connecting": "Joining the room",
+      "syncing": "Getting the bench from the host",
+      "reconnecting": "Connection lost. Reconnecting",
+      "offlineKept": "Room is offline, your changes are kept",
+      "queueFull": "{count} changes are waiting. Room editing is paused; your local copy is safe.",
+      "ended": "The room has ended",
+      "kicked": "The host removed you from the room",
+      "closed": "The room is closed",
+      "readOnlyShare": "You are looking at a shared link. You can read it but not change it.",
+      "readOnlyRole": "Your role in this room can read but not change the bench",
+      "unsupported": "This browser cannot open rooms",
+      "serverRestarted": "The server restarted. Rejoining the room",
+      "behind": "Catching up with the room",
+      "pending": {
+        "one": "{count} change waiting",
+        "other": "{count} changes waiting"
+      }
+    },
+    "members": {
+      "title": "People here",
+      "count": {
+        "one": "{count} person here",
+        "other": "{count} people here"
+      },
+      "you": "You",
+      "leave": "Leave the room",
+      "host": "Host",
+      "holder": "Has the keyboard",
+      "online": "Online",
+      "offline": "Offline",
+      "spectator": "Watching",
+      "role": {
+        "owner": "Owner",
+        "editor": "Editor",
+        "commenter": "Commenter",
+        "viewer": "Viewer"
+      },
+      "appVersion": "App version",
+      "cursorOf": "{name}'s pointer"
+    },
+    "baton": {
+      "youHold": "You have the keyboard",
+      "heldBy": "{name} has the keyboard",
+      "free": "The keyboard is free",
+      "request": "Ask for the keyboard",
+      "grant": "Give the keyboard",
+      "take": "Take the keyboard",
+      "release": "Give the keyboard back",
+      "asked": "You asked for the keyboard",
+      "denied": "The host said not now",
+      "freeIn": "{name} left. The keyboard is free in {seconds} s.",
+      "giveTo": "Give it to",
+      "takeBack": "Take it back",
+      "pickPerson": "Pick a person"
+    },
+    "host": {
+      "kick": "Remove",
+      "kickConfirm": "Remove {name} from the room?",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "lock": "Lock the room",
+      "unlock": "Unlock the room",
+      "close": "Close the room",
+      "closeConfirm": "Close the room for everyone?",
+      "pass": "Hand the room to {name}",
+      "claim": "Take over as host",
+      "settings": "Room settings",
+      "runControl": "Who runs the code",
+      "spectatorCursors": "Show watchers' pointers",
+      "title": "Host controls",
+      "keyboardPassing": "Keyboard passing",
+      "memberActions": "Actions for {name}",
+      "runEditors": "Editors",
+      "runHost": "Only the host"
+    },
+    "invite": {
+      "open": "Invite",
+      "titleFor": "Invite {name}",
+      "hint": "Send a link or pick a buddy. The room holds 8 people.",
+      "roleEditor": "Can edit",
+      "roleViewer": "Can watch",
+      "uses": "Uses: {count}",
+      "expires": "Expires {when}",
+      "revoke": "Revoke the invite",
+      "sent": "Invite sent",
+      "join": "Join",
+      "decline": "Decline",
+      "expired": "This invite does not work",
+      "workTogether": "Work together",
+      "pickBuddy": "Pick a buddy",
+      "noBuddies": "You have no buddies yet",
+      "needsServer": "Needs a server, and this deployment has none",
+      "menu": "Room",
+      "copyLink": "Copy an invite link",
+      "away": "away",
+      "invitations": {
+        "one": "{count} invitation",
+        "other": "{count} invitations"
+      },
+      "invitedBy": "{name} invites you to {title}",
+      "roleLabel": "What they can do",
+      "live": "Live invites",
+      "quota": "You have reached the room limit. Close a room to start another."
+    },
+    "chat": {
+      "title": "Chat",
+      "placeholder": "Write a message",
+      "send": "Send",
+      "rateLimited": "You are sending too fast. Wait a moment.",
+      "muted": "The host muted you",
+      "system": "Room",
+      "new": "{count} new",
+      "counter": "{count}/{max}",
+      "label": "Message",
+      "empty": "No messages yet",
+      "someone": "Someone"
+    },
+    "rebase": {
+      "title": "While you were offline",
+      "dropped": "{who} deleted {what} while you were offline, so your change to {what} was dropped",
+      "droppedGeneric": "Someone deleted a part while you were offline, so your change to it was dropped",
+      "keepCopy": "Keep a copy of my version",
+      "copyKept": "A copy of your version is saved in your projects",
+      "none": "None of your changes were dropped"
+    },
+    "fork": {
+      "closedTitle": "This room has closed",
+      "closedKept": "The room is closed. This project stays in your library.",
+      "keepCopy": "Keep a copy",
+      "kept": "Copy saved",
+      "ffNote": "Your copy continues from the room's last state",
+      "separateCopy": "This is a separate copy"
+    },
+    "share": {
+      "title": "Share this project",
+      "audienceLink": "Anyone with the link",
+      "audienceBuddies": "Only my buddies",
+      "expiry30": "Expires in 30 days",
+      "expiryNone": "Never expires",
+      "expiryDays": "Expires in {count} days",
+      "linkWarning": "Anyone with the link can see this project. Share it only with people you trust.",
+      "create": "Make a link",
+      "copy": "Copy the link",
+      "revoke": "Stop sharing",
+      "needsServer": "Sharing needs a server, and this deployment has none",
+      "makeCopy": "Make my own copy",
+      "copyDone": "Copy made",
+      "withdrawn": "The owner stopped sharing this",
+      "gone": "This link does not work any more",
+      "tooLarge": "This project is too big to share",
+      "secretWarning": "This project seems to contain a key or password. Remove it before sharing.",
+      "liveLimit": "You already have {count} live links. Stop one to make another.",
+      "opened": "Opened {count} times",
+      "close": "Close",
+      "expiryLabel": "Link lifetime",
+      "allowFork": "Let people make their own copy",
+      "labelField": "Name for this link",
+      "secretAck": "I checked and want to share anyway",
+      "secretField": "Found in {field}",
+      "confirmRevoke": "Stop sharing this link now?",
+      "keep": "Keep it",
+      "yourShares": "Your links",
+      "noShares": "You have not shared anything yet",
+      "revokedRow": "Withdrawn",
+      "expiresOn": "Expires {when}",
+      "expiryError": "The server does not allow that lifetime. Choose a shorter one.",
+      "networkError": "Could not reach the server. Try again.",
+      "hashMismatch": "The server's copy does not match this project. Do not share this link.",
+      "done": "Your link is ready",
+      "audienceLabel": "Who can open it",
+      "linkQr": "QR code for the share link",
+      "copied": "Copied",
+      "copyFailed": "Could not copy. Select the link and copy it by hand.",
+      "loadError": "Could not load your links."
+    },
+    "unsupported": {
+      "engine": "This browser cannot sign in to rooms. Try a current version of Chrome, Firefox, Safari or Edge.",
+      "privateWindow": "Rooms need a normal window, not a private one"
+    }
+  },
+  "views": {
+    "tab": {
+      "breadboard": "Breadboard",
+      "schematic": "Schematic",
+      "board": "Board"
+    },
+    "tablist": "Views",
+    "auto": "auto",
+    "arrange": "Arrange",
+    "schematicReadOnlyWire": "Wire in the breadboard view. The schematic shows the same connections.",
+    "sceneError": "This view could not be drawn. The other views still work.",
+    "cmd": {
+      "breadboard": "Breadboard view",
+      "schematic": "Schematic view",
+      "board": "Board view"
+    }
+  },
+  "history": {
+    "title": "History",
+    "nameThis": "Name this version",
+    "named": "Named",
+    "auto": "Automatic",
+    "compare": "Compare",
+    "restore": "Restore this version",
+    "restoreHelp": "Restoring adds changes on top of your work. You can undo it.",
+    "empty": "No versions yet.",
+    "limit": "The list keeps the newest {max} versions.",
+    "mismatch": "This version failed its check and was not opened.",
+    "diff": {
+      "added": "Added: {items}",
+      "removed": "Removed: {items}",
+      "changed": "Changed: {items}",
+      "nets": "Connections that differ: {count}",
+      "files": "Files that differ: {count}"
+    },
+    "storeFailed": "The version could not be saved: {reason}",
+    "nameLabel": "Version name (1 to 80 characters)",
+    "labelRequired": "Enter a name.",
+    "labelTooLong": "Use at most {max} characters.",
+    "runLabel": "Run",
+    "fileLabel": "Saved file"
+  },
+  "checks": {
+    "title": "Checks",
+    "add": "Add a check",
+    "run": "Run checks",
+    "pass": "Passed",
+    "fail": "Failed",
+    "notRun": "Not run",
+    "kind": {
+      "runs": "Runs without error",
+      "serial": "Serial output contains",
+      "pin-level": "Pin level at a time",
+      "pin-toggles": "Pin toggles",
+      "pwm": "PWM duty at a time",
+      "tone": "Tone frequency at a time",
+      "servo": "Servo angle at a time",
+      "responds": "Pin responds to an input",
+      "code": "Code contains"
+    },
+    "hiddenNote": "Hidden only hides the value on screen. Anyone with the file can read it.",
+    "badPin": "This board has no pin called {pin}.",
+    "needsRun": "Run to see results.",
+    "noSource": "This project has no firmware for the board.",
+    "unsupportedLanguage": "For this board's language only the Runs, Serial and Code checks work.",
+    "limit": "The run stopped at the 20 second limit.",
+    "empty": "No checks yet. Add one to see whether this project does what you expect.",
+    "running": "Running",
+    "edit": "Edit {name}",
+    "delete": "Delete {name}",
+    "editText": "Edit",
+    "deleteText": "Delete",
+    "save": "Save check",
+    "kindLabel": "Kind of check",
+    "hidden": "Hide the values",
+    "hiddenValue": "Hidden",
+    "rangeOrder": "The first number must not be above the second.",
+    "badRegex": "This pattern is not valid.",
+    "regexLong": "Use at most {max} characters.",
+    "afterRun": "This time is after the run ends at {runMs} ms.",
+    "mustHint": "One piece of text per line.",
+    "field": {
+      "pin": "Pin",
+      "level": "Level",
+      "atMs": "At (ms)",
+      "minMs": "Runs at least (ms)",
+      "match": "Text",
+      "regex": "Match as a pattern",
+      "minCount": "At least this many lines",
+      "periodMs": "Period (ms)",
+      "from": "From",
+      "to": "To",
+      "minCycles": "Cycles",
+      "duty": "Duty (0 to 1)",
+      "hz": "Frequency (Hz)",
+      "deg": "Angle (degrees)",
+      "input": "Input",
+      "afterAt": "Input changes at (ms)",
+      "afterValue": "Input value",
+      "withinMs": "Within (ms)",
+      "v": "Pin value",
+      "must": "Must contain",
+      "mustNot": "Must not contain",
+      "label": "Name"
+    }
+  },
+  "ino": {
+    "import": "Import a sketch",
+    "export": "Export as .ino",
+    "wiringCsv": "Wiring table (CSV)",
+    "lossTitle": "What changes",
+    "lossNone": "Nothing is lost.",
+    "lossBoard": "Board chosen: {board}. Change it if this is wrong.",
+    "unsupported": "Line {line}: {message}",
+    "banner": "Exported from a simulation. It may not compile as exported.",
+    "tooBig": "This file is larger than {max} characters.",
+    "notText": "This file is not text.",
+    "confirm": "Create project",
+    "firstOnly": "Only the first problem is shown. Fix it and import again.",
+    "noEntry": "No .ino file was found.",
+    "empty": "This file is empty.",
+    "badPath": "The file name {name} is not allowed.",
+    "tooMany": "At most {max} files.",
+    "cancel": "Cancel",
+    "exportBlocked": "This project has no Arduino sketch to export."
+  },
+  "align": {
+    "left": "Align left",
+    "right": "Align right",
+    "top": "Align top",
+    "bottom": "Align bottom",
+    "centerH": "Center horizontally",
+    "centerV": "Center vertically",
+    "distributeH": "Distribute horizontally",
+    "distributeV": "Distribute vertically",
+    "needThree": "Pick three or more parts to distribute.",
+    "group": "Group",
+    "ungroup": "Ungroup",
+    "groupNeedTwo": "Pick two or more things to group.",
+    "groupNesting": "A group cannot hold another group."
+  },
+  "projectMenu": {
+    "label": "Project",
+    "history": "History...",
+    "saveFile": "Save to file",
+    "historyTab": "History"
+  },
+  "rail": {
+    "history": "History",
+    "checks": "Checks"
+  },
+  "dialog": {
+    "cancel": "Cancel"
+  },
+  "phone": {
+    "tab": {
+      "canvas": "Canvas",
+      "code": "Code",
+      "run": "Run",
+      "project": "Project"
+    },
+    "tabs": "Studio sections",
+    "sheetClose": "Close"
+  },
+  "a11y": {
+    "viewAnnounce": "{view} view",
+    "groupMade": "Grouped {count} items.",
+    "restored": "Restored version {label}.",
+    "pinLevel": "{pin} is {level} ({mode})"
+  },
+  "lesson": {
+    "guide": {
+      "title": "Guide",
+      "stepOf": "Step {n} of {total}",
+      "step": {
+        "state": {
+          "notStarted": "Not started",
+          "current": "Current step",
+          "done": "Done",
+          "blocked": "Waiting for an earlier step"
+        }
+      },
+      "markDone": "Mark step done",
+      "reset": "Reset lesson",
+      "resetConfirm": "Restore the starting version? Your changes in this lesson are replaced. Your progress is kept.",
+      "hints": "Hints",
+      "hintReveal": "Show hint {n}",
+      "quiz": {
+        "title": "Quick check",
+        "answer": "Answer",
+        "correct": "Correct",
+        "wrong": "Not quite",
+        "why": "Why",
+        "next": "Next question"
+      },
+      "provenance": {
+        "unchecked": "{n} text items not reviewed yet",
+        "exportNote": "{n} text items in this project have not been reviewed. You can still export it.",
+        "shareNote": "{n} text items in this project have not been reviewed. Check them before you share this beyond your buddies."
+      },
+      "tier": "Simulated at {tier}"
+    },
+    "completion": {
+      "open": {
+        "edit": "Change something in the project to finish.",
+        "quiz": "Answer one question to finish.",
+        "checks": "Run the checks and make them pass.",
+        "fault": "A fault is on. Repair it to finish.",
+        "steps": "Finish the steps.",
+        "goal": "Reach the goal test."
+      },
+      "done": "Completed in simulation at {tier}.",
+      "legacy": "Done before the edit rule."
+    },
+    "checks": {
+      "title": "Checks",
+      "run": "Run checks",
+      "again": "Check again",
+      "pending": "Not run yet",
+      "running": "Running",
+      "allPass": "All checks pass",
+      "summary": "{passed} of {total} checks pass",
+      "faultOn": "Checks pass, but a fault is on",
+      "limit": "The run hit its time limit",
+      "textCheck": "Text check",
+      "hiddenNote": "{n} hidden checks also run",
+      "tier": "Result at {tier}",
+      "empty": "This lesson has no checks."
+    },
+    "nav": {
+      "board": "Board",
+      "prev": "Previous lesson",
+      "next": "Next lesson",
+      "count": "{done} of {total} done",
+      "list": "Lessons on this board",
+      "level": {
+        "intro": "Intro",
+        "io": "Inputs and outputs",
+        "input": "Inputs",
+        "analog": "Analog",
+        "protocol": "Protocols",
+        "wireless": "Wireless",
+        "project": "Project"
+      }
+    },
+    "gallery": {
+      "title": "Lessons and boards",
+      "byLevel": "By level",
+      "byBoard": "By board",
+      "start": "Open",
+      "startRun": "Open and run",
+      "runLength": "Checks run for {s} s of simulated time",
+      "rung": {
+        "lesson": "Lesson",
+        "tour": "Board tour",
+        "label": "Type"
+      },
+      "progress": {
+        "done": "Done",
+        "legacy": "Done (old record)",
+        "none": "Not started"
+      },
+      "empty": "No templates match.",
+      "all": "All",
+      "level": "Level",
+      "labs": {
+        "bench": "Robotics benches",
+        "craft": "Drone craft",
+        "task": "Practice tasks",
+        "steps": {
+          "one": "{count} step",
+          "other": "{count} steps"
+        }
+      }
+    },
+    "assembly": {
+      "title": "Build steps",
+      "showMe": "Show me",
+      "refused": "Do the earlier steps first.",
+      "manual": "Mark as done",
+      "needsLens": "This step is checked in the figure view.",
+      "break": "Break"
+    },
+    "wire": {
+      "title": "Wire it",
+      "lede": "What this board can drive, and how to wire it.",
+      "supply": "{volts} V supply",
+      "caution": "Be careful",
+      "none": "Nothing to wire for this lesson.",
+      "partPin": "Part pin",
+      "boardPin": "Board pin",
+      "colors": {
+        "red": "red",
+        "black": "black",
+        "orange": "orange",
+        "yellow": "yellow",
+        "green": "green",
+        "blue": "blue",
+        "white": "white",
+        "purple": "purple",
+        "brown": "brown",
+        "grey": "grey"
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "press": "Press",
+      "release": "Release",
+      "hold": "Hold",
+      "slider": "{label}: {value}",
+      "empty": "This lesson has no inputs."
+    },
+    "status": {
+      "title": "Board status",
+      "current": "Supply current {ma} mA",
+      "brownout": "Brown-out: the board resets",
+      "ok": "Power is fine",
+      "unknown": "Not available at this tier"
+    },
+    "lens": {
+      "open": "Show the figure",
+      "close": "Hide the figure",
+      "readOnly": "Read-only view of the original figure",
+      "unavailable": "No figure for this lesson"
+    },
+    "faults": {
+      "title": "Break it",
+      "own": "Faults for this circuit",
+      "more": "More faults on this board",
+      "trigger": "Break",
+      "repair": "Repair",
+      "active": "Fault on",
+      "notModelled": "Not modelled in Studio yet: {title}"
+    }
+  },
+  "lab": {
+    "roomLinkNote": "This was a room link. Rooms need a server and live in Studio now, so the lab opens on its own."
+  }
+}

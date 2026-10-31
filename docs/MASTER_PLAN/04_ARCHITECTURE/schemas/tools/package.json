@@ -1,0 +1,11 @@
+{
+  "name": "iynk-schema-tools",
+  "private": true,
+  "description": "Validation scripts for component.schema.json, project.schema.json and the robotics and drone domain schemas. Run npm install here first, then npm run check.",
+  "dependencies": {
+    "ajv": "8.17.1"
+  },
+  "scripts": {
+    "check": "node validate.mjs ../examples/components/*.component.json && node negative.mjs && node validate-project.mjs ../examples/*.project.json && node negative-project.mjs"
+  }
+}

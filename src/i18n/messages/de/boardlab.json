@@ -178,7 +178,7 @@
     "figureFault": "Die Abbildung meldet: {msg}",
     "kind": {
       "reverse-polarity": "Verpolung",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "wrong-voltage": "Falsche Spannung",
       "cold-solder": "Kalte Lötstelle",
       "short": "Kurzschluss",
@@ -293,7 +293,7 @@
     },
     "refused": {
       "unplugged": "Steck zuerst USB ein: Uploads laufen über das Kabel.",
-      "brownout": "Das Board startet immer wieder neu (Brown-out): Bring zuerst die Versorgung in Ordnung.",
+      "brownout": "Das Board startet immer wieder neu (Brownout): Bring zuerst die Versorgung in Ordnung.",
       "fault": "Beheb zuerst den Fehler: abklemmen, dann reparieren.",
       "notReady": "Das Board läuft nicht: Schließ zuerst den Zusammenbau ab und schalte es ein."
     },
@@ -351,7 +351,7 @@
       "powered": "Unter Strom, läuft nicht",
       "running": "Läuft",
       "uploading": "Upload läuft",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "fault": "Fehler"
     },
     "statusLabel": "Board-Status",
@@ -436,5 +436,7 @@
       "reverse": "{part}: verkehrt herum, dunkel",
       "open": "{part}: nicht verbunden"
     }
-  }
+  },
+  "openInStudio": "In Studio öffnen",
+  "lessonView": "Lektionsansicht: der vollständige Editor ist in Studio"
 }

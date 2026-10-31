@@ -9,11 +9,11 @@
     "robotics": "Robotik-Labor",
     "drones": "Drohnen-Labor",
     "together": "Gemeinsam",
-    "passport": "Pass",
-    "verify": "Prüfen",
     "about": "Über iynk",
     "menu": "Menü",
-    "closeMenu": "Menü schließen"
+    "closeMenu": "Menü schließen",
+    "search": "Suchen",
+    "searchHint": "Seiten und Aktionen suchen"
   },
   "language": {
     "label": "Sprache"
@@ -28,47 +28,19 @@
     "label": "Einstellungen"
   },
   "footer": {
-    "privacy": "Keine Konten. Dein Fortschritt bleibt in diesem Browser. Die Labs senden anonyme Nutzungszahlen, die du in den Einstellungen abschalten kannst.",
-    "figures": "Figuren gezeichnet mit Colorfigures von April Zhu (MIT-Lizenz).",
-    "pages": "Seiten der Website"
+    "privacy": "Keine Konten, keine Werbung, keine Analyse. Dein Fortschritt und deine Einstellungen bleiben in diesem Browser.",
+    "figures": "Gezeichnet mit Colorfigures",
+    "pages": "Seiten der Website",
+    "privacyLink": "Datenschutz",
+    "licenceLink": "Lizenzstatus",
+    "sourceLink": "Quellcode",
+    "licence": "Lizenz: noch nicht gewählt. Figuren: MIT, von April Zhu."
   },
   "ui": {
-    "close": "Schließen",
-    "copy": "Kopieren",
-    "copied": "Kopiert",
-    "copyCode": "Code kopieren",
-    "done": "Erledigt",
-    "current": "Aktueller Schritt",
-    "stepOf": "Schritt {n} von {total}",
     "progress": "{done}/{total}",
     "progressLabel": "{label}: {done} von {total} erledigt"
   },
   "dashboard": {
-    "metaTitle": "Übersicht",
-    "metaDescription": "Bauen, verkabeln, programmieren, kaputt machen und fliegen: {boards} Boards, {benches} Robotik-Aufbauten und {drones} Drohnen, mit Tusche gezeichnet und voll interaktiv.",
-    "kicker": "Entdecken · Verstehen · Bauen",
-    "title": "Hardware lernen, indem man sie *baut*",
-    "lede": "{boards} Boards, {benches} Robotik-Aufbauten und {drones} Drohnen, jedes eine von Hand getuschte 3D-Figur, die du drehen, verkabeln, programmieren und absichtlich kaputt machen kannst.",
-    "start": "Mit dem Arduino Uno R3 anfangen",
-    "browse": "Boards ansehen",
-    "heroFigure": "Arduino Uno R3 mit Blink auf einem Steckbrett, live: zum Drehen ziehen",
-    "labsTitle": "Die drei Labore",
-    "open": "{lab} öffnen",
-    "board": {
-      "text": "Vom Arduino Uno R3 bis zu zwei FPGA-Boards: Lektionen, ein Live-Code-Editor, Schaltplan- und Steckbrettansicht, ein serieller Monitor und Fehler, die wirklich auftreten.",
-      "unit": "Boards",
-      "progress": "Lektionen und Aufbauten"
-    },
-    "robotics": {
-      "text": "Motortreiber, Sensoren und Spannungsversorgungen, Teil für Teil auf dem Tisch aufgebaut, mit Übungsaufgaben, einem Quiz nach jedem Schritt, Live-Status und Stromaufnahme.",
-      "unit": "Aufbauten",
-      "progress": "Schritte, Aufgaben und Quiz"
-    },
-    "drones": {
-      "text": "Vom Tiny Whoop bis zum Oktocopter: Bau Teil für Teil, Gewicht und Schub live berechnet, Sicherheitstests, echte Betaflight- und ArduPilot-Einstellungen und ein Flugplatz.",
-      "unit": "Drohnen",
-      "progress": "Bauten, Tests und Parcours"
-    },
     "continue": {
       "title": "Weitermachen, wo du aufgehört hast",
       "empty": "Noch nichts abgeschlossen. Der Uno R3 ist der beste Einstieg: sechzehn kurze Lektionen, von den Teilen des Boards bis zur Einparkhilfe.",
@@ -88,42 +60,14 @@
       }
     },
     "overall": "Gesamtfortschritt",
-    "features": {
-      "title": "In jedem Labor",
-      "see": {
-        "title": "Hineinschauen",
-        "text": "Zieh, um jede Figur einmal ganz herumzudrehen, schalte die Durchsicht ein und sieh den Teilen im Inneren bei der Arbeit zu, mit Beschriftungen, die aufleuchten."
-      },
-      "code": {
-        "title": "Echten Code ausführen",
-        "text": "Bearbeite Arduino-C++, MicroPython oder Verilog und drück auf Ausführen: Der Simulator steuert die Figur, die Pins und den seriellen Monitor."
-      },
-      "break": {
-        "title": "Absichtlich kaputt machen",
-        "text": "Vertausch die Polarität, lass die Spannung einbrechen, lass ein Teil weg oder setz eine kalte Lötstelle, und sieh, was wirklich schiefgeht."
-      },
-      "fly": {
-        "title": "Armen und fliegen",
-        "text": "Bau eine Drohne, prüf ihre Werte, führe den Smoke-Stopper- und den Motortest durch und flieg dann durch Gates im Angle- oder Acro-Modus."
-      }
+    "board": {
+      "progress": "Lektionen und Aufbauten"
     },
-    "together": {
-      "rooms": {
-        "title": "Gemeinsame Räume",
-        "text": "Öffne einen Raum für ein Board, einen Roboter oder eine Drohne und schick den Link. Bis zu acht Leute teilen sich einen Aufbau, eine Person tippt."
-      },
-      "partner": {
-        "title": "Ein Laborpartner",
-        "text": "Muse Spark findet dir einen Bau-Buddy, dessen Können zu deinem passt, und plant einen Bauabend, der allen gefällt."
-      },
-      "languages": {
-        "title": "Sechs Sprachen",
-        "text": "Jede Seite, jede Lektion und jede Figurbeschriftung in deiner Sprache. Wähle unten eine aus."
-      }
+    "robotics": {
+      "progress": "Schritte, Aufgaben und Quiz"
     },
-    "closing": {
-      "title": "Die Werkbank ist *bereit*.",
-      "text": "Kostenlos, ohne Konto, nichts zu installieren."
+    "drones": {
+      "progress": "Bauten, Tests und Parcours"
     }
   },
   "about": {
@@ -132,13 +76,18 @@
     "title": "Über iynk",
     "lede": "iynk ist ein Hardware-Labor, das du im Browser öffnest. Jedes Board, Modul und jede Drohne ist eine von Hand getuschte 3D-Figur, die du drehen, öffnen und bedienen kannst, verbunden mit Lektionen, Code, der wirklich läuft, und Fehlern, die du absichtlich auslösen kannst.",
     "howTitle": "So funktioniert es",
+    "howHeads": {
+      "figures": "Figuren zum Bedienen",
+      "code": "Code, der läuft",
+      "privacy": "Bleibt im Browser"
+    },
     "how": {
       "figures": "Jede Figur ist eine eigenständige Seite, gezeichnet mit der Colorfigures-Engine: echte 3D-Körper in flachen hellen, mittleren und dunklen Tönen mit Tuschekonturen. Die Seite spricht über eine kleine Nachrichtenbrücke mit der Figur: Ein Druck auf einen Knopf in der Lektion bewegt das Teil in der Figur und umgekehrt.",
       "code": "Programme laufen in einem Simulator in deinem Browser, auf einer virtuellen Uhr: eine Teilmenge von Arduino-C++ mit der richtigen Integerbreite für jeden Chip, eine Teilmenge von MicroPython und eine Teilmenge von Verilog für die beiden FPGA-Boards.",
-      "privacy": "Fortschritt und Einstellungen werden im lokalen Speicher dieses Browsers gespeichert. Es gibt keine Konten. Wenn diese Installation eine Datenbank hat, senden die Labore anonyme Nutzungszahlen (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler, eine Rundenzeit) für die Live-Zähler und Bestenlisten, mit einer zufälligen ID für diesen Browser und nie mit deinem Namen oder deinem Code. Schalte „Anonyme Nutzungszahlen teilen“ in den Einstellungen (das Zahnrad oben in der Kopfzeile) aus, um sie zu stoppen."
+      "privacy": "Fortschritt und Einstellungen werden im lokalen Speicher dieses Browsers gespeichert. Es gibt keine Konten. iynk führt ein lokales Protokoll darüber, was in den Laboren passiert. Es bleibt in diesem Browser, und du kannst es unter Schlüssel und Nutzung lesen, kopieren oder löschen. Uns wird nichts gesendet."
     },
     "originalsTitle": "Die drei Originale",
-    "originalsLede": "iynk begann als Neubau von drei Lern-Websites und soll alles können, was sie können, und mehr. Es übernimmt ihre Fakten, Formeln, Zeiten und Lektionen, schreibt seinen ganzen Code selbst und behebt die Fehler, die es in ihnen gefunden hat.",
+    "originalsLede": "iynk wurde von drei Lern-Websites inspiriert. Es ist ein eigenes Projekt mit eigenem Code.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",
@@ -160,5 +109,45 @@
     "builtWithTitle": "Gebaut mit",
     "builtWith": "Next.js, React und Tailwind CSS (alle unter MIT-Lizenz) sowie der Colorfigures-Engine für jede Figur.",
     "colorfigures": "Seite des Colorfigures-Skills"
+  },
+  "command": {
+    "title": "Befehlsmenü",
+    "placeholder": "Seiten und Aktionen suchen",
+    "empty": "Nichts passt. Versuche den Namen eines Labors oder einer Einstellung.",
+    "groups": {
+      "pages": "Seiten",
+      "actions": "Aktionen",
+      "theme": "Darstellung",
+      "language": "Sprache"
+    },
+    "open": "Suchen",
+    "sound": {
+      "on": "Ton einschalten",
+      "off": "Ton ausschalten"
+    },
+    "motion": {
+      "on": "Bewegung reduzieren",
+      "off": "Bewegung zulassen"
+    },
+    "keys": "Schlüssel und Nutzung",
+    "hint": "{key} öffnet dieses Menü"
+  },
+  "privacy": {
+    "metaTitle": "Datenschutz",
+    "metaDescription": "Was iynk in deinem Browser speichert, was es sendet und was es nie tut.",
+    "title": "Datenschutz",
+    "lede": "iynk hat keine Konten, keine Werbung und keine Analyse. Das ist eine kurze Notiz dazu, was die App speichert und sendet. Sie ist keine Rechtsberatung.",
+    "stays": {
+      "title": "Was in deinem Browser bleibt",
+      "text": "Dein Fortschritt und deine Einstellungen werden im lokalen Speicher dieses Browsers unter iynk:v1 gespeichert. Die gewählte Sprache merkt sich ein Cookie namens iynk-lang. Wenn du einen KI- oder Suchschlüssel hinzufügst, liegt er unter iynk:keys:v1. Ein lokales Protokoll darüber, was in den Laboren passiert, liegt unter iynk:log:v1. Du kannst es unter Schlüssel und Nutzung lesen, kopieren oder löschen."
+    },
+    "leaves": {
+      "title": "Was deinen Browser verlässt",
+      "text": "Nichts, außer du nutzt einen Raum oder fügst einen Schlüssel hinzu. Ein Raum sendet deinen Namen, deinen Cursor und deine Chatnachrichten, auch den Text einer Sprachnachricht, an das Raum-Relay. Ein Schlüssel, den du hinzufügst, geht bei jedem KI- oder Suchaufruf an deinen eigenen iynk-Server, und eine Sprachaufnahme wird dorthin zur Transkription gesendet. Der Server speichert den Schlüssel nicht."
+    },
+    "never": {
+      "title": "Was wir nicht tun",
+      "text": "Es gibt keine Konten, keine Werbung und keine Analyse. Die Nutzungszahlen sind ein lokales Protokoll in deinem Browser. Du kannst es jederzeit lesen und löschen."
+    }
   }
 }

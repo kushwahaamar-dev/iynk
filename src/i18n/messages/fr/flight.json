@@ -10,7 +10,7 @@
     "raceAcro": "Course de portes (acro)",
     "range": "Parcours : {title}",
     "cine": "Ciné doux",
-    "rescue": "GPS Rescue",
+    "rescue": "GPS rescue",
     "loiter": "Loiter (maintien GPS)",
     "althold": "AltHold",
     "rtl": "RTL (retour au décollage)",
@@ -92,17 +92,17 @@
     "batteryEmptyLiion": "Batterie vide : le pack Li-ion a atteint sa tension de coupure. Les ESC coupent",
     "gate": "Porte {n} sur {total}",
     "lap": "Tour {time} s",
-    "lapBest": "Tour {time} s (record !)",
+    "lapBest": "Tour {time} s, nouveau record",
     "checkpoint": "{label} : fait",
     "runDone": "{title} terminé : {time} s",
-    "runBest": "{title} terminé : {time} s (record !)",
+    "runBest": "{title} terminé : {time} s, nouveau record",
     "outOfField": "Hors du terrain : faites demi-tour ou appuyez sur R",
     "farOut": "Très loin : passez en retour maison ou appuyez sur R",
-    "ceiling": "Hauteur maximale sur ce terrain : {m} m",
-    "desync": "Désynchro ! L'ESC a perdu le moteur {motor} : il tourne et s'enfonce. Posez-vous et laissez refroidir",
+    "ceiling": "Restez sous {m} m",
+    "desync": "Désynchro. L'ESC a perdu le moteur {motor} : il tourne et s'enfonce. Posez-vous et laissez refroidir",
     "motorOut": "Le moteur {motor} est en panne : le mixeur répartit sa poussée sur les autres",
     "stall": "DÉCROCHAGE : trop lent, le nez tombe",
-    "launch": "Lancer à la main !",
+    "launch": "Lancer à la main.",
     "transition": "Transition : les moteurs basculent vers l'avant et l'aile porte le poids",
     "hoverAgain": "De retour en stationnaire : les moteurs se redressent",
     "rtl": "Retour au décollage : montée, retour et atterrissage",
@@ -117,8 +117,8 @@
     "hintDemo": "Le pilote automatique fait le parcours : changez de mode pour reprendre la main",
     "demoTime": "Démo terminée en {time} s : le temps du pilote automatique ne compte pas",
     "missionTime": "Mission terminée : {time} s",
-    "missionBest": "Mission terminée : {time} s (record !)",
-    "medal": "{line}. C'est la {medal} !",
+    "missionBest": "Mission terminée : {time} s, nouveau record",
+    "medal": "{line}. C'est la {medal}.",
     "noMedal": "{line}. Le bronze, c'est {s} s",
     "drop": "Colis largué : {kg} kg en moins, il rentre donc avec moins de gaz"
   },
@@ -210,6 +210,10 @@
     "gold": "médaille d'or",
     "silver": "médaille d'argent",
     "bronze": "médaille de bronze"
+  },
+  "model": {
+    "game": "Ce modèle de vol est réglé pour le ressenti. Il ne permet pas d'apprendre le réglage d'un PID. Les temps des médailles sont fixés pour l'appareil d'usine.",
+    "rigid": "Ce modèle de vol est une simulation de corps rigide. Ses fantômes sont gardés à part, et il n'a pas de médailles."
   },
   "ghosts": {
     "title": "Fantômes",
@@ -324,5 +328,25 @@
     "shareText": "Défi drone du jour iynk : {craft} sur {course}.",
     "shareBeat": "Défi drone du jour iynk : {craft} sur {course}. Saurez-vous battre {time} s ?",
     "board": "{course}, défi du {date}"
+  },
+  "board": {
+    "title": "Classement des amis",
+    "optIn": "M'afficher dans le classement",
+    "optInHint": "Vos meilleurs temps ne sont vus que par vos amis.",
+    "empty": "Aucun temps pour l'instant. Volez un tour pour être le premier.",
+    "needsServer": "Le classement demande un serveur, et ce déploiement n'en a pas",
+    "signedOut": "Connectez-vous pour voir le classement",
+    "you": "Vous",
+    "rank": "Place {rank}",
+    "bestOnly": "Meilleur temps seulement",
+    "claimed": "Votre temps est dans le classement",
+    "remove": "Me retirer du classement",
+    "retry": "Réessayer"
+  },
+  "fly": {
+    "blocked": "Il manque {field} à ton montage, il ne peut donc pas encore voler. Corrige-le dans le constructeur puis reviens.",
+    "cannotLift": "Ce montage ne peut pas faire du vol stationnaire : la poussée ne soulève pas son poids. Tu peux quand même essayer, les vérifications ci-dessous disent pourquoi.",
+    "courses": "Parcours",
+    "loading": "Chargement des parcours"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useSyncExternalStore, type KeyboardEvent, type RefObject } from "react";
+import { focusQuietly } from "./Tooltip";
 
 const FOCUSABLE =
   'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), iframe, [contenteditable="true"], [tabindex]:not([tabindex="-1"])';
@@ -45,7 +46,7 @@ export function useModal(open: boolean, layerRef: RefObject<HTMLElement | null>,
     root.style.overflow = "hidden";
 
     const preferred = panel.querySelector<HTMLElement>("[data-autofocus]");
-    (preferred ?? focusableIn(panel)[0] ?? panel).focus();
+    focusQuietly(preferred ?? focusableIn(panel)[0] ?? panel);
 
     return () => {
       for (const el of madeInert) el.removeAttribute("inert");

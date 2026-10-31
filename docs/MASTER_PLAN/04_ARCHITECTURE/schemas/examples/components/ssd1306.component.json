@@ -1,0 +1,363 @@
+{
+  "$schema": "../../component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.ssd1306",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic (unbranded module)",
+    "model": "0.96 inch 128 x 64 I2C OLED module with SSD1306",
+    "generic": true,
+    "refdes_prefix": "U",
+    "kind": "module",
+    "category": "display",
+    "description": {
+      "i18n_key": "parts.ssd1306.description",
+      "en": "A 128 by 64 pixel monochrome OLED on I2C, at address 0x3C or 0x3D."
+    },
+    "chip": {
+      "manufacturer": "Solomon Systech",
+      "model": "SSD1306"
+    },
+    "primary_source": "facts",
+    "legacy_ids": [
+      "ssd1306"
+    ],
+    "tags": [
+      "oled",
+      "display",
+      "i2c",
+      "ssd1306"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 17: SSD1306 OLED",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md."
+    },
+    {
+      "id": "devicets",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/devices.ts: class Ssd1306",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Line 173. ACKs and accepts command and data streams; the library writes a 1-bit framebuffer into world.oled."
+    }
+  ],
+  "pins": [
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "position": {
+        "x": 1.27,
+        "y": 7.62
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "VCC",
+      "designator": "VCC",
+      "type": "power_in",
+      "class": "power",
+      "position": {
+        "x": 1.27,
+        "y": 5.08
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "SCL",
+      "designator": "SCL",
+      "type": "digital_in",
+      "class": "bus",
+      "position": {
+        "x": 1.27,
+        "y": 2.54
+      },
+      "connector": "H1"
+    },
+    {
+      "id": "SDA",
+      "designator": "SDA",
+      "type": "open_drain",
+      "class": "bus",
+      "position": {
+        "x": 1.27,
+        "y": 0
+      },
+      "connector": "H1"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "H1",
+      "kind": "header",
+      "gender": "male",
+      "pitch": 2.54,
+      "pins": [
+        "GND",
+        "VCC",
+        "SCL",
+        "SDA"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "module",
+    "body": {
+      "w": 27,
+      "h": 27,
+      "d": 4
+    },
+    "accuracy": 1,
+    "source": {
+      "src": "facts",
+      "loc": "section 17"
+    }
+  },
+  "ratings": {
+    "supply_range": {
+      "measure": "voltage",
+      "role": "recommended",
+      "scope": {
+        "pins": [
+          "VCC"
+        ]
+      },
+      "manufacturer": {
+        "unit": "V",
+        "min": 3.3,
+        "max": 5,
+        "source": {
+          "src": "facts",
+          "loc": "section 17"
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "protocols": [
+    {
+      "id": "host_i2c",
+      "kind": "i2c",
+      "role": "slave",
+      "pins": {
+        "scl": "SCL",
+        "sda": "SDA"
+      },
+      "params": {
+        "address": 60,
+        "alt_address": 61
+      },
+      "status": "modelled"
+    }
+  ],
+  "power": {
+    "inputs": [
+      {
+        "id": "supply",
+        "pins": [
+          "VCC"
+        ],
+        "ground": [
+          "GND"
+        ],
+        "voltage": "supply_range"
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "id": "address",
+      "name": {
+        "en": "I2C address"
+      },
+      "kind": "build-option",
+      "type": "number",
+      "default": 60,
+      "min": 0,
+      "max": 127,
+      "unit": "1",
+      "affects": [
+        "host_i2c"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "An I2C slave that ACKs, accepts command and data bytes, and keeps a 1-bit framebuffer the drawing shows."
+    },
+    "layers": [
+      {
+        "id": "display",
+        "domain": "protocol",
+        "reads": [
+          "SCL",
+          "SDA"
+        ],
+        "drives": [
+          "SDA"
+        ],
+        "summary": {
+          "en": "Command subset: display on and off, invert, contrast, framebuffer writes."
+        },
+        "model": {
+          "kind": "builtin",
+          "ref": "device:ssd1306@1",
+          "params": {},
+          "implementation": {
+            "path": "src/lib/interp/devices.ts",
+            "note": "class Ssd1306 at line 173."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "ACK at the set address."
+      },
+      {
+        "en": "Display on and off, invert and contrast commands."
+      },
+      {
+        "en": "A 1-bit framebuffer written by the library and drawn on the module."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Scrolling, addressing modes, charge pump and panel voltage."
+      },
+      {
+        "en": "Bus timing and clock stretching."
+      },
+      {
+        "en": "Supply range: the 3.3 to 5 V window is shown but no model reads it."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_test",
+        "text": {
+          "en": "No test in src or figures/engine mentions the SSD1306 today."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "ack_and_on",
+        "kind": "conformance",
+        "file": "src/lib/interp/devices.test.ts",
+        "state": "to-write",
+        "note": "Address 0x3C ACKs and command 0xAF turns the display on."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Adafruit SSD1306",
+            "version": "2.5.9",
+            "install": "Adafruit SSD1306",
+            "iynk_support": "partial",
+            "note": {
+              "en": "The library writes a framebuffer straight to the world; see devices.ts line 169."
+            }
+          },
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "compatibility": {
+    "rules": [
+      {
+        "id": "i2c_address",
+        "kind": "bus_address_unique",
+        "severity": "error",
+        "params": {
+          "protocol": "host_i2c"
+        },
+        "message": {
+          "en": "Another device on this bus answers at the same address."
+        }
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "module",
+        "id": "ssd1306",
+        "path": "public/figures/modules/ssd1306.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "GND",
+        "VCC",
+        "SCL",
+        "SDA"
+      ],
+      "span": [
+        4,
+        4
+      ]
+    },
+    "schematic": {
+      "symbol": "module-box",
+      "pin_sides": {
+        "GND": "bottom",
+        "VCC": "top",
+        "SCL": "left",
+        "SDA": "left"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "SSD1306",
+      "body_colour": "#1a1a1a",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-27",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-27",
+        "note": "First descriptor for the env-monitor example, from figures/modules/ssd1306.js, src/lib/interp/devices.ts and docs/facts/la-components.md.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

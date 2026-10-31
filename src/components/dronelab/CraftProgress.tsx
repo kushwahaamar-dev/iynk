@@ -30,7 +30,7 @@ export function CraftProgress({
   /** "{done} of {total} done" */
   valueTemplate: string;
   size?: "xs" | "sm" | "md";
-  /** A 3 px line along the bottom of the card it sits in (the card is `relative`); it fills once something is done. */
+  /** A 2 px line along the bottom of the card it sits in (the card is `relative`); it fills once something is done. */
   line?: boolean;
   className?: string;
 }) {
@@ -46,9 +46,12 @@ export function CraftProgress({
         aria-valuemax={total}
         aria-valuenow={done}
         aria-valuetext={fill(valueTemplate, { done, total })}
-        className={`absolute inset-x-0 bottom-0 h-[3px] ${className ?? ""}`}
+        className={`absolute inset-x-0 bottom-0 h-0.5 ${className ?? ""}`}
       >
-        <span className="block h-full bg-mustard transition-[width] duration-700" style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
+        <span
+          className="block h-full w-full origin-left bg-accent motion-move"
+          style={{ transform: `scaleX(${total ? done / total : 0})` }}
+        />
       </div>
     );
   }

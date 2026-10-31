@@ -11,6 +11,7 @@ import {
   type ReactNode,
   type Ref,
 } from "react";
+import { Button } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
 import { useCommonT, useLocale } from "@/i18n/client";
 import { loadFigureStrings } from "@/i18n/figure-strings";
@@ -306,11 +307,11 @@ export function FigureFrame({
       className={cx(
         "text-sm",
         fill
-          ? "ink-card absolute inset-x-3 bottom-3 z-10 max-h-[50%] overflow-auto border-line px-4 py-3 shadow-ink [&:not(:focus-within)]:sr-only"
-          : "ink-card px-4 py-3",
+          ? "absolute inset-x-3 bottom-3 z-sticky max-h-[50%] overflow-auto rounded-2xl bg-raised px-4 py-3 shadow-lg [&:not(:focus-within)]:sr-only"
+          : "rounded-2xl bg-raised px-4 py-3 shadow-lg",
       )}
     >
-      <summary className="cursor-pointer font-body font-semibold">
+      <summary className="cursor-pointer font-semibold">
         {t("figure.controls")} ({count})
       </summary>
       <p className="mt-2 text-muted">{t("figure.controlsHint")}</p>
@@ -357,7 +358,7 @@ export function FigureFrame({
           onLoad={onLoad}
           aria-busy={!info && !failed}
           className={cx(
-            "ink-plate block w-full",
+            "plate block w-full",
             fill ? "h-full" : "aspect-[10/11] max-h-[80vh] sm:aspect-[4/3]",
             frameClassName,
           )}
@@ -367,7 +368,7 @@ export function FigureFrame({
             <div
               aria-hidden="true"
               data-shown={!info || failed}
-              className="ink-plate pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden shadow-none transition-opacity duration-500 data-[shown=false]:opacity-0 motion-reduce:transition-none"
+              className="plate pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden motion-fade data-[shown=false]:opacity-0"
             >
               {poster}
             </div>
@@ -379,8 +380,8 @@ export function FigureFrame({
           <p role="status" className="sr-only" />
         ) : (
           // The plate while the figure loads (or after it failed): its name and one quiet line, no spinner.
-          <div className="ink-plate pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 p-6 text-center shadow-none">
-            <p aria-hidden="true" className="max-w-full truncate font-head text-lg text-muted">
+          <div className="plate pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 p-6 text-center">
+            <p aria-hidden="true" className="max-w-full truncate text-lg font-semibold text-muted">
               {title}
             </p>
             <p role="status" className={cx("text-sm", failed ? "font-semibold text-bad" : "text-muted")}>
@@ -405,20 +406,15 @@ type ControlItem = { key: string; label: string; pressed?: boolean; onPress: () 
 function ControlGroup({ label, items }: { label: string; items: ControlItem[] }) {
   return (
     <div className="mt-3" role="group" aria-label={label}>
-      <p className="ink-kicker" aria-hidden="true">
+      <p className="kicker" aria-hidden="true">
         {label}
       </p>
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) => (
           <li key={item.key}>
-            <button
-              type="button"
-              aria-pressed={item.pressed}
-              onClick={item.onPress}
-              className="touch-target rounded-full border-2 border-line bg-surface px-3 py-1.5 font-body text-sm font-semibold text-ink hover:bg-sunken aria-pressed:bg-ink aria-pressed:text-paper"
-            >
+            <Button size="sm" variant="ghost" outline aria-pressed={item.pressed} onClick={item.onPress}>
               {item.label}
-            </button>
+            </Button>
           </li>
         ))}
       </ul>

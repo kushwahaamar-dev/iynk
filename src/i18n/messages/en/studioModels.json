@@ -1,0 +1,43 @@
+{
+  "title": "What it models",
+  "chip": "Model level",
+  "tiers": {
+    "T0": {
+      "name": "Illustration",
+      "meaning": "Drawn only. Nothing is computed for it."
+    },
+    "T1": {
+      "name": "Teaching model",
+      "meaning": "A simple model that shows how the part behaves. Not exact."
+    },
+    "T2": {
+      "name": "Calculated model",
+      "meaning": "Values come from the part's data sheet numbers."
+    },
+    "T3": {
+      "name": "Runs your firmware",
+      "meaning": "The real chip program runs, instruction by instruction."
+    },
+    "none": {
+      "name": "No level",
+      "meaning": "No model level is set for this part."
+    }
+  },
+  "status": {
+    "modelled": "Modelled",
+    "partly-modelled": "Partly modelled",
+    "not-modelled-yet": "Not modelled yet"
+  },
+  "engine": {
+    "label": "Engine",
+    "value": "Arduino C++ subset interpreter, digital pin model"
+  },
+  "boardNotes": "Board notes",
+  "notModelledHelp": "Not modelled yet means the part is drawn and wired but nothing is computed for it.",
+  "models": "What it models",
+  "notModelled": "What it does not model",
+  "showAll": "Show all",
+  "showLess": "Show fewer",
+  "unknownPart": "unknown part",
+  "empty": "No parts in this project yet."
+}

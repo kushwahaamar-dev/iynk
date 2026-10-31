@@ -1,0 +1,16 @@
+{
+ "motor": {
+  "samples": 132,
+  "withinTwoPercent": 132,
+  "fraction": 1,
+  "worstAbsDiff": 0.011,
+  "worstAtMs": 1967
+ },
+ "knob": {
+  "samples": 117,
+  "withinTwoPercent": 117,
+  "fraction": 1,
+  "worstAbsDiff": 0,
+  "worstAtMs": 767
+ }
+}

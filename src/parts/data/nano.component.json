@@ -1,0 +1,596 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.nano",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Arduino",
+    "model": "Arduino Nano",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "legacy_ids": [
+      "nano"
+    ],
+    "mpn": "A000005",
+    "description": {
+      "i18n_key": "parts.nano.description",
+      "en": "A 5 V breadboard-friendly board with an ATmega328P, an FT232RNL USB-serial chip, 14 digital pins, 8 analog inputs and an ICSP header."
+    },
+    "chip": {
+      "manufacturer": "Microchip",
+      "model": "ATmega328P-MU",
+      "package": "QFN-32"
+    },
+    "primary_source": "datasheet",
+    "tags": [
+      "arduino",
+      "avr",
+      "dev-board",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "datasheet",
+      "kind": "datasheet",
+      "title": "Arduino Nano user manual and datasheet, SKU A000005",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/datasheets/A000005-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through src/content/boards/nano.ts; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "pinout",
+      "kind": "product-page",
+      "title": "Arduino Nano full pinout",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/pinouts/A000005-full-pinout.pdf",
+      "reliability": "secondary",
+      "note": "Pin functions, cited through src/content/boards/nano.ts."
+    },
+    {
+      "id": "mcu",
+      "kind": "datasheet",
+      "title": "ATmega48A/PA/88A/PA/168A/PA/328/P datasheet DS40002061",
+      "publisher": "Microchip",
+      "url": "https://www.microchip.com/en-us/product/ATmega328P",
+      "reliability": "secondary",
+      "note": "Pin current limits, cited through src/content/boards/nano.ts."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile nano) and src/content/boards/nano.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "J1",
+      "kind": "header",
+      "pins": [
+        "D1",
+        "D0",
+        "RESET",
+        "GND",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12"
+      ]
+    },
+    {
+      "id": "J2",
+      "kind": "header",
+      "pins": [
+        "VIN",
+        "J2_2",
+        "J2_3",
+        "P5V",
+        "A7",
+        "A6",
+        "A5",
+        "A4",
+        "A3",
+        "A2",
+        "A1",
+        "A0",
+        "AREF",
+        "P3V3",
+        "D13"
+      ]
+    },
+    {
+      "id": "J4",
+      "kind": "header",
+      "pins": [
+        "J4_1",
+        "J4_2",
+        "J4_3",
+        "J4_4",
+        "J4_5",
+        "J4_6"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "D1",
+      "designator": "TX1",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D0",
+      "designator": "RX0",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "RESET",
+      "designator": "RST",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J1"
+    },
+    {
+      "id": "D2",
+      "designator": "D2",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D3",
+      "designator": "D3",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D4",
+      "designator": "D4",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D5",
+      "designator": "D5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D6",
+      "designator": "D6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D7",
+      "designator": "D7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D8",
+      "designator": "D8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D9",
+      "designator": "D9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D10",
+      "designator": "D10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D11",
+      "designator": "D11",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D12",
+      "designator": "D12",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "VIN",
+      "designator": "VIN",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J2"
+    },
+    {
+      "id": "J2_2",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J2"
+    },
+    {
+      "id": "J2_3",
+      "designator": "RST",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "P5V",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J2"
+    },
+    {
+      "id": "A7",
+      "designator": "A7",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2",
+      "note": {
+        "en": "Input only"
+      }
+    },
+    {
+      "id": "A6",
+      "designator": "A6",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2",
+      "note": {
+        "en": "Input only"
+      }
+    },
+    {
+      "id": "A5",
+      "designator": "A5",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A4",
+      "designator": "A4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A3",
+      "designator": "A3",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A2",
+      "designator": "A2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A1",
+      "designator": "A1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A0",
+      "designator": "A0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "AREF",
+      "designator": "REF",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "J2"
+    },
+    {
+      "id": "P3V3",
+      "designator": "3.3V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J2"
+    },
+    {
+      "id": "D13",
+      "designator": "D13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "J2",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "J4_1",
+      "designator": "MISO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "J4",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "J4_2",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "J4"
+    },
+    {
+      "id": "J4_3",
+      "designator": "SCK",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "J4",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "J4_4",
+      "designator": "MOSI",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "J4",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "J4_5",
+      "designator": "RESET",
+      "type": "digital_in",
+      "class": "digital",
+      "connector": "J4",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "J4_6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "J4"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_5V",
+      "kind": "internal-short",
+      "pins": [
+        "P5V",
+        "J4_2"
+      ]
+    },
+    {
+      "id": "g_D11",
+      "kind": "internal-short",
+      "pins": [
+        "D11",
+        "J4_4"
+      ]
+    },
+    {
+      "id": "g_D12",
+      "kind": "internal-short",
+      "pins": [
+        "D12",
+        "J4_1"
+      ]
+    },
+    {
+      "id": "g_D13",
+      "kind": "internal-short",
+      "pins": [
+        "D13",
+        "J4_3"
+      ]
+    },
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "J2_2",
+        "J4_6"
+      ]
+    },
+    {
+      "id": "g_RESET",
+      "kind": "internal-short",
+      "pins": [
+        "RESET",
+        "J2_3",
+        "J4_5"
+      ]
+    }
+  ],
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "i18n_key": "parts.nano.summary",
+      "en": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the nano board profile. It is not the ATmega328P chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "i18n_key": "parts.nano.layer",
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile nano in src/lib/interp/profiles.ts) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T0",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "i18n_key": "parts.nano.models.1",
+        "en": "Arduino-C++ subset run by the interpreter with the Nano pin map."
+      },
+      {
+        "i18n_key": "parts.nano.models.2",
+        "en": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3."
+      },
+      {
+        "i18n_key": "parts.nano.models.3",
+        "en": "10-bit analog reads against a 5 V reference on A0 to A7, I2C master on SDA and SCL, serial output, and the L LED on D13."
+      }
+    ],
+    "not_modelled": [
+      {
+        "i18n_key": "parts.nano.not.1",
+        "en": "The AVR core, timers, bootloader and flash behaviour."
+      },
+      {
+        "i18n_key": "parts.nano.not.2",
+        "en": "The FT232RNL USB-serial bridge and the auto-reset circuit."
+      },
+      {
+        "i18n_key": "parts.nano.not.3",
+        "en": "The 5 V and 3.3 V regulators, the VIN limits and the brown-out level."
+      },
+      {
+        "i18n_key": "parts.nano.not.4",
+        "en": "EEPROM wear and the ICSP header."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "i18n_key": "parts.nano.gap",
+          "en": "A6 and A7 are analog inputs only: digitalRead and pinMode do not work on them. No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a sketch on the nano profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "nano",
+        "path": "public/figures/boards/nano.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Arduino Nano",
+      "body_colour": "#1a6fa8",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-30",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-30",
+        "note": "First descriptor. The pin table is the 36 rows of src/content/boards/nano.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}
