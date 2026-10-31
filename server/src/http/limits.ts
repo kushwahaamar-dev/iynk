@@ -28,6 +28,7 @@ export const DEFAULT_RULES: Record<BucketName, Rule[]> = {
   ],
   read: [{ limit: 300, windowMs: MINUTE }],
   write: [{ limit: 120, windowMs: MINUTE }],
+  compile: [{ limit: 10, windowMs: MINUTE }],
 };
 
 const seconds = (ms: number) => Math.max(1, Math.ceil(ms / 1000));

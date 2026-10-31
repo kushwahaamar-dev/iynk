@@ -129,3 +129,15 @@ test("addressKey treats IPv4-mapped IPv6 as IPv4", () => {
   assert.equal(addressKey("::ffff:102:304", null, 0), "1.2.3.4");
   assert.equal(addressKey("10.0.0.9", "::ffff:5.6.7.8", 1), "5.6.7.8");
 });
+
+test("the compile bucket allows ten a minute per identity", () => {
+  const { deps, advance } = clockDeps();
+  const limiter = createLimiter(deps);
+  for (let i = 0; i < 10; i++) assert.equal(limiter.take("compile", "dev:a").ok, true);
+  const refused = limiter.take("compile", "dev:a");
+  assert.equal(refused.ok, false);
+  assert.ok(refused.retryAfter > 0);
+  assert.equal(limiter.take("compile", "dev:b").ok, true);
+  advance(60_001);
+  assert.equal(limiter.take("compile", "dev:a").ok, true);
+});

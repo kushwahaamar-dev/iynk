@@ -11,6 +11,7 @@ export const BUCKET_NAMES = [
   "pairing.guess",
   "read",
   "write",
+  "compile",
 ] as const;
 export type BucketName = (typeof BUCKET_NAMES)[number];
 
