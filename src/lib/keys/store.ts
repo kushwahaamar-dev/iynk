@@ -7,6 +7,7 @@
 // behind an in-memory mirror; the server token stays in localStorage until B6.
 
 import { useSyncExternalStore } from "react";
+import type { ProviderProfile } from "../../ai/profiles";
 import { parseSecret, type SecretProblem } from "./format";
 
 export const KEYS_STORAGE_KEY = "iynk:keys:v1";
@@ -17,8 +18,7 @@ export type KeyKind = "ai" | "search" | "server";
 export type KeySlot = "ai" | "search";
 
 export interface KeyRow {
-  /** The ProviderProfile arrives in B14; until then rows are keyed by slot. */
-  providerProfile: null;
+  providerProfile: ProviderProfile | null;
   key: string;
   label?: string;
   addedAt: number;
