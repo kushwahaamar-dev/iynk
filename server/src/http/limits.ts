@@ -28,6 +28,15 @@ export const DEFAULT_RULES: Record<BucketName, Rule[]> = {
   ],
   read: [{ limit: 300, windowMs: MINUTE }],
   write: [{ limit: 120, windowMs: MINUTE }],
+  "asset.write": [{ limit: 60, windowMs: MINUTE }],
+  "share.read": [{ limit: 120, windowMs: MINUTE }],
+  "room.write": [{ limit: 30, windowMs: MINUTE }],
+  "room.create": [
+    { limit: 6, windowMs: MINUTE },
+    { limit: 30, windowMs: HOUR },
+  ],
+  "room.invite.redeem": [{ limit: 5, windowMs: HOUR }],
+  "room.read": [{ limit: 60, windowMs: MINUTE }],
 };
 
 const seconds = (ms: number) => Math.max(1, Math.ceil(ms / 1000));

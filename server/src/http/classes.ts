@@ -11,6 +11,12 @@ export const BUCKET_NAMES = [
   "pairing.guess",
   "read",
   "write",
+  "asset.write",
+  "share.read",
+  "room.write",
+  "room.create",
+  "room.invite.redeem",
+  "room.read",
 ] as const;
 export type BucketName = (typeof BUCKET_NAMES)[number];
 
