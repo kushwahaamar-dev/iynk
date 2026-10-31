@@ -1,8 +1,8 @@
-import { InterpError } from '../errors';
+import { InterpError, notModelled } from '../errors';
 import { Lcd1602, Mpu6050, Pca9685, Ssd1306 } from '../devices';
 import type { Gen } from '../exec';
 import type { BoardProfile } from '../profiles';
-import { hasPwm } from '../profiles';
+import { hasPwm, isKnownPin } from '../profiles';
 import type { ArduinoRt, Ref } from './interp';
 import { T, type CValue, type Ty, type TypeEnv } from './types';
 
@@ -187,8 +187,7 @@ export function cFormat(fmt: string, args: CValue[], types: Ty[]): string {
 function pinArg(rt: ArduinoRt, v: number, what = 'pin'): number {
   const n = Math.trunc(v);
   const p = rt.world.profile;
-  const known = p.digitalPins.includes(n) || p.analogPins.includes(n) || p.leds.some((l) => l.pin === n) || p.buttons.some((b) => b.pin === n);
-  if (!known) throw new InterpError('runtime', `${what} ${n} does not exist on ${p.name}`, null, p.notes.find((x) => /pin|GPIO|D\d/.test(x)));
+  if (!isKnownPin(p, n)) throw new InterpError('runtime', `${what} ${n} does not exist on ${p.name}`, null, p.notes.find((x) => /pin|GPIO|D\d/.test(x)));
   return n;
 }
 
@@ -634,6 +633,7 @@ export function CONSTANTS(p: BoardProfile): Record<string, { v: number; t: strin
     CHANGE: { v: 1, t: 'int' }, FALLING: { v: 2, t: 'int' }, RISING: { v: 3, t: 'int' },
     DEC: { v: 10, t: 'int' }, HEX: { v: 16, t: 'int' }, OCT: { v: 8, t: 'int' }, BIN: { v: 2, t: 'int' },
     LSBFIRST: { v: 0, t: 'int' }, MSBFIRST: { v: 1, t: 'int' },
+    SPI_MODE0: { v: 0, t: 'int' }, SPI_MODE1: { v: 1, t: 'int' }, SPI_MODE2: { v: 2, t: 'int' }, SPI_MODE3: { v: 3, t: 'int' },
     PI: { v: Math.PI, t: 'float' }, HALF_PI: { v: Math.PI / 2, t: 'float' }, TWO_PI: { v: Math.PI * 2, t: 'float' },
     DEG_TO_RAD: { v: Math.PI / 180, t: 'float' }, RAD_TO_DEG: { v: 180 / Math.PI, t: 'float' }, EULER: { v: Math.E, t: 'float' },
     NULL: { v: 0, t: 'int' }, NOT_AN_INTERRUPT: { v: -1, t: 'int' },
@@ -706,6 +706,28 @@ const SerialClass: LibClass = {
     readStringUntil: { ret: 'String', gen: (rt, self, [c]) => readTimeout(rt, self.timeout, c) },
     parseInt: { ret: 'long', gen: function* (rt, self) { const s = yield* readTimeout(rt, self.timeout, 10); return parseInt(s.trim(), 10) || 0; } },
     parseFloat: { ret: 'float', gen: function* (rt, self) { const s = yield* readTimeout(rt, self.timeout, 10); return parseFloat(s.trim()) || 0; } },
+  },
+};
+
+const unmodelledWrite = (name: string): LibMethod => ({ ret: 'size_t', fn: () => { throw notModelled(`Serial1.${name}()`, 'bus-device-not-modelled', null); } });
+
+// A second UART has no device on it in the simulator: it stays silent and any output is an error, so text never lands in the Serial monitor.
+const HardwareSerial1Class: LibClass = {
+  ...SerialClass,
+  methods: {
+    ...SerialClass.methods,
+    print: unmodelledWrite('print'),
+    println: unmodelledWrite('println'),
+    write: unmodelledWrite('write'),
+    printf: { ...unmodelledWrite('printf'), min: 1 },
+    available: { ret: 'int', pure: true, fn: () => 0 },
+    availableForWrite: { ret: 'int', pure: true, fn: () => 0 },
+    read: { ret: 'int', fn: () => -1 },
+    peek: { ret: 'int', pure: true, fn: () => -1 },
+    readString: { ret: 'String', gen: function* () { return ''; } },
+    readStringUntil: { ret: 'String', gen: function* () { return ''; } },
+    parseInt: { ret: 'long', gen: function* () { return 0; } },
+    parseFloat: { ret: 'float', gen: function* () { return 0; } },
   },
 };
 
@@ -784,7 +806,7 @@ const SpiClass: LibClass = {
     end: { ret: 'void', fn: () => undefined },
     beginTransaction: { ret: 'void', fn: () => undefined },
     endTransaction: { ret: 'void', fn: () => undefined },
-    transfer: { ret: 'uint8_t', fn: () => 0 },
+    transfer: { ret: 'uint8_t', fn: () => { throw notModelled('SPI.transfer()', 'bus-device-not-modelled', null); } },
     setClockDivider: { ret: 'void', fn: () => undefined },
   },
 };
@@ -1407,6 +1429,7 @@ const EspClass: LibClass = {
 
 export const LIBS: Record<string, LibClass> = {
   HardwareSerial: SerialClass,
+  HardwareSerial1: HardwareSerial1Class,
   String: StringClass,
   TwoWire: WireClass,
   SPIClass: SpiClass,
@@ -1430,7 +1453,7 @@ export const LIBS: Record<string, LibClass> = {
 
 export const GLOBAL_OBJECTS: Record<string, { cls: string; headers: string[] | null; boards?: (p: BoardProfile) => boolean }> = {
   Serial: { cls: 'HardwareSerial', headers: null },
-  Serial1: { cls: 'HardwareSerial', headers: null, boards: (p) => !isAvr(p) },
+  Serial1: { cls: 'HardwareSerial1', headers: null, boards: (p) => !isAvr(p) },
   Wire: { cls: 'TwoWire', headers: ['Wire.h'] },
   SPI: { cls: 'SPIClass', headers: ['SPI.h'] },
   WiFi: { cls: 'WiFiClass', headers: ['WiFi.h', 'ESP8266WiFi.h', 'WiFiS3.h'], boards: (p) => p.hasWifi },

@@ -1170,7 +1170,7 @@ class Compiler {
           t: ret,
           ev: (f) => {
             const self = { v: oe(f) as string };
-            const r = m.fn!(rt, self, evs.map((x) => x(f)), types);
+            const r = positioned(e.p, () => m.fn!(rt, self, evs.map((x) => x(f)), types));
             if (lv && self.v !== oe(f)) lv.set(f, self.v);
             return r;
           },
@@ -1189,16 +1189,21 @@ class Compiler {
       const ret = typeof m.ret === 'function' ? m.ret(types, env) : env.named(m.ret) ?? T.void;
       const oe = obj.ev;
       const evs = args.map((a) => a.ev);
+      const p = e.p;
       if (m.gen) {
         const mg = m.gen;
         const run = function* (f: Frame): Gen<CValue> {
-          return yield* mg(rt, oe(f), evs.map((x) => x(f)), types);
+          try {
+            return yield* mg(rt, oe(f), evs.map((x) => x(f)), types);
+          } catch (err) {
+            throw atCall(err, p);
+          }
         };
         return { t: ret, ev: (f) => rt.runSync(run(f)), gen: run };
       }
       const mf = m.fn!;
-      if (m.pure) return { t: ret, ev: (f) => mf(rt, oe(f), evs.map((x) => x(f)), types) };
-      return { t: ret, ev: (f) => { rt.fx++; return mf(rt, oe(f), evs.map((x) => x(f)), types); } };
+      if (m.pure) return { t: ret, ev: (f) => positioned(p, () => mf(rt, oe(f), evs.map((x) => x(f)), types)) };
+      return { t: ret, ev: (f) => { rt.fx++; return positioned(p, () => mf(rt, oe(f), evs.map((x) => x(f)), types)); } };
     }
     if (e.fn.k !== 'id') this.err('only named functions can be called', e.p);
     const name = e.fn.name;
@@ -1238,6 +1243,12 @@ class Compiler {
       if (e.args.length !== 1) this.err(`${name}(…) takes one value`, e.p);
       return this.coerce(this.expr(e.args[0]), asType, e.p);
     }
+    const ctor = LIBS[name];
+    if (ctor && !sym) {
+      const ty = this.type({ base: name, ptr: 0, isConst: false, isStatic: false, isVolatile: false, rtc: false, ref: false }, e.p);
+      const args = e.args.map((a) => this.expr(a));
+      return { t: ty, ev: (f) => ctor.create(rt, args.map((a) => a.ev(f)), args.map((a) => a.t)) };
+    }
     const b = BUILTINS[name];
     if (!b) {
       if (sym) this.err(`'${name}' is a variable, not a function`, e.p);
@@ -1273,14 +1284,6 @@ class Compiler {
     const evs = args.map((a, i) => (b.fnArgs?.includes(i) && a.t.k !== 'fn' ? this.err(`argument ${i + 1} of ${name}() must be a function name`, e.args[i].p) : a.ev));
     const fine = b.fineClock;
     const p = e.p;
-    const wrapErr = <R>(run: () => R): R => {
-      try {
-        return run();
-      } catch (err) {
-        if (err instanceof InterpError && !err.line) throw new InterpError(err.kind, err.message, p, err.hint);
-        throw err;
-      }
-    };
     if (b.gen) {
       const bg = b.gen;
       const run = function* (f: Frame): Gen<CValue> {
@@ -1288,7 +1291,7 @@ class Compiler {
         if (fine) rt.fineClock++;
         return yield* bg(rt, vals, types);
       };
-      return { t: ret, ev: (f) => wrapErr(() => rt.runSync(run(f))), gen: run };
+      return { t: ret, ev: (f) => positioned(p, () => rt.runSync(run(f))), gen: run };
     }
     const bf = b.fn!;
     const pure = b.pure;
@@ -1301,13 +1304,26 @@ class Compiler {
         const vals = evs.map((x) => x(f));
         if (fine) rt.fineClock++;
         if (!pure) rt.fx++;
-        return wrapErr(() => bf(rt, vals, types));
+        return positioned(p, () => bf(rt, vals, types));
       },
     };
   }
 }
 
 // Helpers ------------------------------------------------------------------------
+
+/** An error a library raised without a line gets the line of the call. */
+function atCall(err: unknown, p: SourcePos): unknown {
+  return err instanceof InterpError && !err.line ? err.at(p) : err;
+}
+
+function positioned<R>(p: SourcePos, run: () => R): R {
+  try {
+    return run();
+  } catch (err) {
+    throw atCall(err, p);
+  }
+}
 
 function truthy(c: CE): (f: Frame) => boolean {
   const ev = c.ev;

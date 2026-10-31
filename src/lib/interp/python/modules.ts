@@ -1,4 +1,5 @@
 import type { Gen } from '../exec';
+import { isKnownPin } from '../profiles';
 import { installMicrobit } from './microbit';
 import { mod, nat, natGen, nclass, sleepGen } from './native';
 import {
@@ -19,13 +20,12 @@ const ms = (rt: PyRt) => Math.floor(rt.world.now / 1000);
 /** Pin number from an int, "GP25", "LED", "P0" or a Pin object. */
 function pinNo(rt: PyRt, v: PyValue): number {
   if (v instanceof PyInstance && v.native && 'pin' in v.native) return v.native.pin;
-  if (isInt(v)) return Number(toBig(v));
-  if (typeof v === 'string') {
-    const n = rt.world.profile.aliases[v] ?? rt.world.profile.aliases[v.toUpperCase()];
-    if (n !== undefined) return n;
-    if (/^\d+$/.test(v)) return Number(v);
-  }
-  throw pyErr('ValueError', `invalid pin ${typeof v === 'string' ? `'${v}'` : rt.repr(v)}`);
+  let n: number | undefined;
+  if (isInt(v)) n = Number(toBig(v));
+  else if (typeof v === 'string') n = rt.world.profile.aliases[v] ?? rt.world.profile.aliases[v.toUpperCase()] ?? (/^\d+$/.test(v) ? Number(v) : undefined);
+  if (n === undefined) throw pyErr('ValueError', `invalid pin ${typeof v === 'string' ? `'${v}'` : rt.repr(v)}`, 'invalid-pin');
+  if (!isKnownPin(rt.world.profile, n)) throw pyErr('ValueError', `invalid pin ${n}`, 'invalid-pin');
+  return n;
 }
 
 export function installBuiltins(rt: PyRt): void {
@@ -389,8 +389,11 @@ export function installModules(rt: PyRt, onRos: (m: RosMessage) => void): void {
       w.clock.after(periodUs, fire);
       self.native.cancel = () => (live = false);
     };
+    const unmodelledBus = (name: string) => nclass(name, {
+      __init__: () => { throw pyErr('NotImplementedError', `machine.${name}() is not modelled yet. Your code is not wrong.`, 'bus-device-not-modelled'); },
+    });
     M.set('machine', () => mod('machine', {
-      Pin, PWM, ADC, I2C, SoftI2C: I2C, Timer,
+      Pin, PWM, ADC, I2C, SoftI2C: I2C, Timer, SPI: unmodelledBus('SPI'), SoftSPI: unmodelledBus('SoftSPI'), UART: unmodelledBus('UART'),
       freq: nat('freq', () => BigInt(prof.clockHz)),
       reset: nat('reset', () => { throw pyErr('SystemExit', 'machine.reset()'); }),
       unique_id: nat('unique_id', () => new PyBytes([0xe6, 0x61, 0x38, 0x52, 0x83, 0x3a, 0x2c, 0x2f])),
