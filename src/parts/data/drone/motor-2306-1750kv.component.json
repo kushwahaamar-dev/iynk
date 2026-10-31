@@ -1,0 +1,197 @@
+{
+  "$schema": "../../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.motor-2306-1750kv",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "Generic 2306 brushless motor, 1750 kv",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "drone",
+    "description": {
+      "en": "A generic 2306 outrunner for 4S builds. Every number is an iynk assumption until a datasheet part replaces it."
+    },
+    "primary_source": "assumption",
+    "tags": [
+      "motor",
+      "bldc"
+    ]
+  },
+  "sources": [
+    {
+      "id": "assumption",
+      "kind": "own-estimate",
+      "title": "Typical value for this class of part, chosen by iynk; not read from a datasheet",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Every number in mechanics is an iynk assumption picked by physical scaling from the part class. No maker datasheet was read."
+    }
+  ],
+  "pins": [
+    {
+      "id": "A",
+      "name": {
+        "en": "Phase A"
+      },
+      "designator": "A",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "connector": "leads"
+    },
+    {
+      "id": "B",
+      "name": {
+        "en": "Phase B"
+      },
+      "designator": "B",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      },
+      "connector": "leads"
+    },
+    {
+      "id": "C",
+      "name": {
+        "en": "Phase C"
+      },
+      "designator": "C",
+      "type": "passive",
+      "class": "passive",
+      "position": {
+        "x": 5.08,
+        "y": 0
+      },
+      "connector": "leads"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "leads",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pins": [
+        "A",
+        "B",
+        "C"
+      ]
+    }
+  ],
+  "ratings": {},
+  "mechanics": {
+    "motor": {
+      "kv_rpm_per_v": 1750,
+      "r_ohm": 0.035,
+      "i_noload_a": 1,
+      "v_max": 16.8,
+      "i_max_a": 35,
+      "i_burst_a": 46,
+      "j_kgm2": 3.2e-7,
+      "mass_g": 32,
+      "stator_mm": [
+        23,
+        6
+      ],
+      "source": {
+        "src": "assumption"
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "Three-phase motor. The flight solver reads kv, resistance and no-load current."
+    },
+    "layers": [
+      {
+        "id": "plant",
+        "domain": "mechanical",
+        "summary": {
+          "en": "Three-phase motor. The flight solver reads kv, resistance and no-load current."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The flight solver reads the mechanics block directly; there is no circuit element."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Back-EMF and winding resistance with a constant no-load current: Q = ke (I - I0), V = ke omega + R I."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Heating, ESC timing, stall, ground effect and the change of the coefficients with forward speed."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "not_checked_against_real_part",
+        "text": {
+          "en": "not checked against a real part"
+        }
+      }
+    ],
+    "solver_requires": [],
+    "tests": [
+      {
+        "id": "torque_balance",
+        "kind": "property",
+        "file": "src/parts/data/drone/drone-parts.test.ts",
+        "tolerance": {
+          "abs": 1e-9
+        },
+        "note": "torque balance residual of the closed-form solve",
+        "state": "present"
+      }
+    ]
+  },
+  "visual": {
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "2306 motor",
+      "body_colour": "#3a3f4a",
+      "show_pin_labels": false
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-27",
+    "third_party_content": false,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-27",
+        "note": "Generic part with assumed numbers.",
+        "behaviour_change": false
+      }
+    ]
+  },
+  "x_price": {
+    "amount": 17,
+    "currency": "USD",
+    "as_of": "2026-10-27",
+    "estimate": true
+  }
+}
