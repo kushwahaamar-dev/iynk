@@ -1,13 +1,18 @@
 // Compares a running local build with the baselines in budgets.json.
 //
-//   node scripts/perf-budget.mjs <baseUrl> [--record] [--runs 3] [--file budgets.json]
+//   node scripts/perf-budget.mjs <baseUrl> [--record] [--check] [--editor] [--runs 3] [--file budgets.json]
 //
 // <baseUrl> may also come from PERF_BASE_URL. The tool builds nothing and starts no server.
 // Metrics: script bytes transferred on the landing page and on a lesson, main thread busy time while the landing
 // page, a lesson and a bench sit idle, and the time from Run to the first serial line on Blink at 4x CPU.
 // Each metric is the median of --runs runs. A metric fails when it grows more than 10 percent over its baseline.
+// --editor also measures BUD-09, the time from navigation to the first editable frame of the 500-part scene. That page
+// exists only in a build made with NEXT_PUBLIC_STUDIO_TEST=1, so the plain run leaves it out.
 // --record writes the measured numbers as the new baselines and keeps the proposed budgets already in the file.
-// Exit 0: within tolerance (or recorded, or timings skipped on a busy machine). 1: a metric regressed.
+// --check is the scheduled job's mode: it measures every timing even on a busy machine, and a baseline that was not
+// measured fails instead of being reported.
+// Exit 0: within tolerance (or recorded, or timings skipped on a busy machine). 1: a metric regressed or, with
+// --check, went unmeasured.
 // 2: bad arguments, or budgets.json is missing or unreadable.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { cpus, loadavg } from 'node:os';
@@ -23,6 +28,7 @@ const SLOW_CPU = 4;
 const LANDING = '/en';
 const LESSON = '/en/boards/uno-r3/blink';
 const BENCH = '/en/robotics/uno-r3-build';
+const STUDIO_PERF = '/en/studio/perf';
 
 const PROPOSED = {
   'landing.js.gzipTransferred': 400 * 1024,
@@ -31,6 +37,7 @@ const PROPOSED = {
   'idle.lesson.mainThreadPct': 5,
   'idle.bench.mainThreadPct': 5,
   'run.blink.startMs.cpu4x': 4000,
+  'open.studio500.firstEditableMs': 2000,
 };
 
 const UNITS = {
@@ -40,6 +47,7 @@ const UNITS = {
   'idle.lesson.mainThreadPct': 'percent',
   'idle.bench.mainThreadPct': 'percent',
   'run.blink.startMs.cpu4x': 'ms',
+  'open.studio500.firstEditableMs': 'ms',
 };
 
 const TIMING = new Set(Object.keys(UNITS).filter((name) => UNITS[name] !== 'bytes'));
@@ -73,14 +81,18 @@ export function compare(baseline, current, tolerance = TOLERANCE) {
 
 const show = (value) => (value === undefined ? '-' : String(Math.round(value * 10) / 10));
 
-/** @param {Finding[]} findings */
-export function summarise(findings) {
+/**
+ * @param {Finding[]} findings
+ * @param {{ strict?: boolean }} [options] strict makes a baseline that was not measured a failure
+ */
+export function summarise(findings, { strict = false } = {}) {
   const width = Math.max(6, ...findings.map((f) => f.metric.length));
   const lines = [`${'metric'.padEnd(width)}  ${'baseline'.padStart(10)}  ${'current'.padStart(10)}  result`];
   for (const f of findings) {
     lines.push(`${f.metric.padEnd(width)}  ${show(f.baseline).padStart(10)}  ${show(f.current).padStart(10)}  ${f.status}`);
   }
-  return { ok: findings.every((f) => f.status !== 'regressed'), lines };
+  const failing = strict ? ['regressed', 'missing'] : ['regressed'];
+  return { ok: findings.every((f) => !failing.includes(f.status)), lines };
 }
 
 const median = (values) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
@@ -149,7 +161,21 @@ async function runStartMs(browser, url) {
   }
 }
 
-async function measureAll(baseUrl, runs, includeTimings) {
+async function firstEditableMs(browser, url) {
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    const response = await page.goto(url, { waitUntil: 'commit' });
+    if (!response?.ok()) throw new Error(`${url} answered ${response?.status()}: build with NEXT_PUBLIC_STUDIO_TEST=1`);
+    await page.waitForFunction(() => window.__iynkPerf !== undefined, undefined, { timeout: 60_000 });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    return await page.evaluate(() => performance.now());
+  } finally {
+    await context.close();
+  }
+}
+
+async function measureAll(baseUrl, runs, { timings, editor }) {
   const { chromium } = await import('@playwright/test');
   const browser = await chromium.launch();
   const at = (route) => new URL(route, baseUrl).href;
@@ -169,6 +195,7 @@ async function measureAll(baseUrl, runs, includeTimings) {
       measured['idle.bench.mainThreadPct'] = await medianOf(() => idleBusy(browser, at(BENCH)));
       measured['run.blink.startMs.cpu4x'] = await medianOf(() => runStartMs(browser, at(LESSON)));
     }
+    if (editor) measured['open.studio500.firstEditableMs'] = await medianOf(() => firstEditableMs(browser, at(STUDIO_PERF)));
     return measured;
   } finally {
     await browser.close();
@@ -176,9 +203,11 @@ async function measureAll(baseUrl, runs, includeTimings) {
 }
 
 function parseArgs(argv) {
-  const opts = { baseUrl: process.env.PERF_BASE_URL, record: false, runs: 3, file: 'budgets.json' };
+  const opts = { baseUrl: process.env.PERF_BASE_URL, record: false, check: false, editor: false, runs: 3, file: 'budgets.json' };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--record') opts.record = true;
+    else if (argv[i] === '--check') opts.check = true;
+    else if (argv[i] === '--editor') opts.editor = true;
     else if (argv[i] === '--runs') opts.runs = Number(argv[++i]);
     else if (argv[i] === '--file') opts.file = argv[++i];
     else opts.baseUrl = argv[i];
@@ -209,7 +238,7 @@ function recorded(measured, previous, load1) {
 async function main(argv) {
   const opts = parseArgs(argv);
   if (!opts) {
-    console.error('usage: node scripts/perf-budget.mjs <baseUrl> [--record] [--runs 3] [--file budgets.json]');
+    console.error('usage: node scripts/perf-budget.mjs <baseUrl> [--record] [--check] [--editor] [--runs 3] [--file budgets.json]');
     return 2;
   }
   let previous;
@@ -228,16 +257,16 @@ async function main(argv) {
   const load1 = Math.round(loadavg()[0] * 100) / 100;
   const noisy = load1 > cpus().length;
   if (noisy) console.log(`noisy: load ${load1} is above ${cpus().length} CPUs, result not trusted`);
-  const measured = await measureAll(opts.baseUrl, opts.runs, opts.record || !noisy);
+  const measured = await measureAll(opts.baseUrl, opts.runs, { timings: opts.record || opts.check || !noisy, editor: opts.editor });
 
   if (opts.record) {
     writeFileSync(opts.file, `${JSON.stringify(recorded(measured, previous, load1), null, 2)}\n`);
     console.log(`recorded ${Object.keys(measured).length} baselines in ${opts.file}`);
     return 0;
   }
-  const { ok, lines } = summarise(compare(previous, measured));
+  const { ok, lines } = summarise(compare(previous, measured), { strict: opts.check });
   console.log(lines.join('\n'));
-  if (noisy) console.log(`skipped on a busy machine: ${[...TIMING].join(', ')}`);
+  if (noisy && !opts.check) console.log(`skipped on a busy machine: ${[...TIMING].join(', ')}`);
   return ok ? 0 : 1;
 }
 

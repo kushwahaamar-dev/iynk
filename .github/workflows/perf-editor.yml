@@ -1,0 +1,72 @@
+name: Editor performance
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  budgets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_DIST_DIR: .next-perf
+      NEXT_PUBLIC_STUDIO_TEST: "1"
+      PERF_BASE_URL: http://127.0.0.1:47500
+      NEXT_PUBLIC_REALTIME_URL: ""
+      IYNK_SERVER_TOKEN: ""
+      IYNK_AI_ENABLE: ""
+      IYNK_SEARCH_ENABLE: ""
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Measure against budgets.json
+        shell: bash
+        run: |
+          set -o pipefail
+          npx next start --port 47500 &
+          server=$!
+          trap 'kill $server' EXIT
+          node -e "const u=process.env.PERF_BASE_URL;(async()=>{for(let i=0;i<60;i++){try{if((await fetch(u)).status<500)return}catch{}await new Promise(r=>setTimeout(r,1000))}process.exit(1)})()"
+          node scripts/perf-budget.mjs --check --editor | tee perf-budget.txt
+          { echo '```'; cat perf-budget.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+  frames-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        throttle: [1, 4, 6]
+        dpr: [1, 2]
+    env:
+      NEXT_DIST_DIR: .next-perf
+      PERF_THROTTLE: ${{ matrix.throttle }}
+      PERF_DPR: ${{ matrix.dpr }}
+      NEXT_PUBLIC_REALTIME_URL: ""
+      IYNK_SERVER_TOKEN: ""
+      IYNK_AI_ENABLE: ""
+      IYNK_SEARCH_ENABLE: ""
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=perf e2e/studio-perf.spec.ts
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: studio-perf-chromium-${{ matrix.throttle }}x-dpr${{ matrix.dpr }}
+          path: .perf/

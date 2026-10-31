@@ -4,7 +4,7 @@ import { PERF_DEFAULT } from "../src/studio/engine/scene-fixture";
 import { ELEMENT_BUDGET } from "../src/studio/engine/constants";
 import type { PerfName } from "../src/components/studio/PerfHarness";
 import { expect, test } from "./support/no-egress";
-import { collectFrames } from "./support/frames";
+import { collectFrames, throttleCpu } from "./support/frames";
 
 // RS-01 on the shipped renderer: 500 parts and 1,000 wires. The default run records the numbers and keeps to a
 // three-frame ceiling; PERF_STRICT=1 in headed Chromium asserts the 20 ms of BUD-01. PERF_THROTTLE and PERF_DPR
@@ -30,7 +30,7 @@ async function open(page: Page, query = "") {
   const response = await page.goto(`/en/studio/perf${query}`);
   if (response?.status() === 404) throw new Error("build without the test flag; unset E2E_SKIP_BUILD");
   await page.waitForFunction(() => window.__iynkPerf !== undefined);
-  if (throttle > 1) await (await page.context().newCDPSession(page)).send("Emulation.setCPUThrottlingRate", { rate: throttle });
+  await throttleCpu(page, throttle as 1 | 4 | 6);
 }
 
 function record(name: string, data: unknown) {
