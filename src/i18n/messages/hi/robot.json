@@ -169,7 +169,9 @@
     "minSupply": "बैटरी की न्यूनतम वोल्टेज {voltage} वोल्ट।",
     "resets": "बोर्ड {count} बार रीसेट हुआ।",
     "tipped": "रोबोट {time} सेकंड पर पलट गया।",
-    "finished": "रन {time} सेकंड बाद समाप्त हुआ।"
+    "finished": "रन {time} सेकंड बाद समाप्त हुआ।",
+    "physicsLoading": "फ़िज़िक्स इंजन लोड हो रहा है ({kb} KB)।",
+    "physicsFailed": "फ़िज़िक्स इंजन शुरू नहीं हुआ: {reason}"
   },
   "pid": {
     "title": "PID",

@@ -4,7 +4,15 @@ import { parsePidLines } from "./pid-sources";
 
 const TRAIL_POINTS = 600;
 
+/** Where the physics engine is: not asked for yet, coming in, ready, or refused. */
+export interface PhysicsStatus {
+  state: "loading-physics" | "ready" | "failed" | null;
+  wireBytes?: number;
+  reason?: string;
+}
+
 export interface RobotView {
+  physics: PhysicsStatus;
   problems: RobotProblem[];
   checks: RobotCheck[];
   coupling: CouplingReport[];
@@ -19,6 +27,7 @@ export interface RobotView {
 }
 
 export type RobotMsg =
+  | ({ t: "mech_status" } & { state: NonNullable<PhysicsStatus["state"]>; wireBytes?: number; reason?: string })
   | { t: "mech_frame"; frame: PhysicsFrame }
   | { t: "robot_problems"; problems: RobotProblem[]; checks: RobotCheck[]; coupling: CouplingReport[] }
   | { t: "mech_report"; report: MechReport }
@@ -32,6 +41,7 @@ export interface RobotStore {
 }
 
 const EMPTY: RobotView = {
+  physics: { state: null },
   problems: [],
   checks: [],
   coupling: [],
@@ -76,6 +86,8 @@ export function createRobotStore(): RobotStore {
     apply(msg) {
       store.setState((view) => {
         switch (msg.t) {
+          case "mech_status":
+            return { ...view, physics: { state: msg.state, ...(msg.wireBytes === undefined ? {} : { wireBytes: msg.wireBytes }), ...(msg.reason === undefined ? {} : { reason: msg.reason }) } };
           case "mech_frame": {
             const point = floorPoint(msg.frame);
             return { ...view, frame: msg.frame, trail: point ? [...view.trail, point].slice(-TRAIL_POINTS) : view.trail };

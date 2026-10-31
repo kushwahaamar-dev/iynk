@@ -169,7 +169,9 @@
     "minSupply": "Tensión mínima de la batería {voltage} V.",
     "resets": "La placa se reinició {count} veces.",
     "tipped": "El robot volcó a los {time} s.",
-    "finished": "La ejecución terminó tras {time} s."
+    "finished": "La ejecución terminó tras {time} s.",
+    "physicsLoading": "Cargando el motor de física ({kb} KB).",
+    "physicsFailed": "El motor de física no arrancó: {reason}"
   },
   "pid": {
     "title": "PID",

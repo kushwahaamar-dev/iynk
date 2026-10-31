@@ -6,6 +6,7 @@ import type { Op, Project } from "@/project/generated/types";
 import type { OpImpact } from "@/project/opImpact";
 import type { SimHost } from "@/sim-host/host";
 import { buildSimNetlist } from "@/sim-host";
+import { needsPhysics } from "@/sim-host/robot-doc";
 import type { SimEv } from "@/sim-host/protocol";
 import type { ProgramImage, SimDiagnostic, SimRunOptions, StepUnit } from "@/sim/engine";
 import type { RobotStore } from "@/studio/robot/store";
@@ -121,7 +122,7 @@ export async function loadForRun(host: Pick<SimHost, "load">, state: Project, se
   if (!program) throw new Error("The project has no code to run.");
   const blocked = diagnostics.find((d) => d.severity === "error");
   if (blocked) throw new Error(String(blocked.args?.message ?? blocked.text_key));
-  const loaded = await host.load(net, { seed, speed: 0, limits: LIMITS, tier: "T1" }, program);
+  const loaded = await host.load(net, { seed, speed: 0, limits: LIMITS, tier: "T1" }, program, needsPhysics(state) ? state : undefined);
   const failed = loaded.diagnostics.find((d) => d.severity === "error");
   if (failed) throw new Error(String(failed.args?.message ?? failed.text_key));
 }
@@ -136,6 +137,10 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
       run.apply({ t: "frame", frame: { tNs: ev.at, pins: ev.pins, parts: ev.parts } });
       for (const chunk of ev.serial) run.apply({ t: "serial", tNs: chunk.at, kind: "out", text: chunk.text });
       if (ev.serial.length > 0) robot?.apply({ t: "serial", entries: ev.serial.map((chunk) => ({ tNs: chunk.at, text: chunk.text })) });
+      return;
+    }
+    if (ev.t === "mech_status") {
+      robot?.apply({ t: "mech_status", state: ev.state, ...(ev.wireBytes === undefined ? {} : { wireBytes: ev.wireBytes }), ...(ev.reason === undefined ? {} : { reason: ev.reason }) });
       return;
     }
     if (ev.t === "mech_frame") {
@@ -206,7 +211,7 @@ export function linkSim({ doc, run, host, impact, reg = builtinRegistry(), break
     if (!program) return fail([compiled ? failure("no-firmware-image", "Import a .hex file to run in Firmware mode.") : failure("no-firmware", "The project has no code to run.")]);
     const opts: SimRunOptions = { seed: state.simulation.seed, speed: run.getState().speed, limits: LIMITS, tier: "T1" };
     try {
-      const loaded = await host.load(net, opts, program);
+      const loaded = await host.load(net, opts, program, needsPhysics(state) ? state : undefined);
       if (mine !== generation) return;
       const errors = loaded.diagnostics.filter((d) => d.severity === "error").map(diagnosticOf);
       if (errors.length > 0) return fail(errors);

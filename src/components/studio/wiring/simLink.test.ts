@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createInlinePort } from "@/protocol";
 import type { Op } from "@/project/generated/types";
@@ -11,12 +12,13 @@ import { createInterpEngine } from "@/sim-host/engines/interp-engine";
 import { createSimHandler } from "@/sim-host/handler";
 import { createSimHost } from "@/sim-host/host";
 import type { SimEv } from "@/sim-host/protocol";
+import type { Project } from "@/project/generated/types";
 import { INTERP_LANGUAGE } from "@/lib/interp";
 import { createDigitalNets } from "@/sim/digital/nets";
 import { createDocStore } from "@/studio/stores/doc";
 import { createRunStore } from "@/studio/stores/run";
 import { createRecordingDoc } from "@/studio/testing/recording-doc";
-import { linkSim, type SimHostLike } from "./simLink";
+import { linkSim, loadForRun, type SimHostLike } from "./simLink";
 
 function blinkSession(code?: string) {
   const report = validateValue(sampleBlinkD12());
@@ -319,5 +321,17 @@ describe("simLink with the real simulator", () => {
     expect(first.map((l) => l.split(" ")[1])).toEqual(["on", "off", "on", "off", "on"]);
     expect(Number(first[4]!.split(" ")[0])).toBeGreaterThan(1.9e9);
     expect(await blinkRun()).toEqual(first);
+  });
+});
+
+describe("loadForRun", () => {
+  it("hands a robot project to the host so the physics engine is fetched, and a plain project without it", async () => {
+    const seen: Array<Project | undefined> = [];
+    const host = { load: async (_n: unknown, _o: unknown, _p: unknown, robot?: Project) => (seen.push(robot), { diagnostics: [], runId: 1 }) };
+    const robot = JSON.parse(readFileSync("content/projects/robots/drive-base.project.json", "utf8")) as Project;
+    await loadForRun(host, robot, 1);
+    await loadForRun(host, validateValue(sampleBlinkD12()).doc!, 1);
+    expect(seen[0]?.id).toBe(robot.id);
+    expect(seen[1]).toBeUndefined();
   });
 });

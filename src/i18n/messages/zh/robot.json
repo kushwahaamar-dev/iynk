@@ -169,7 +169,9 @@
     "minSupply": "电池最低电压 {voltage} 伏。",
     "resets": "开发板重启了 {count} 次。",
     "tipped": "机器人在 {time} 秒时倾覆。",
-    "finished": "运行在 {time} 秒后结束。"
+    "finished": "运行在 {time} 秒后结束。",
+    "physicsLoading": "正在加载物理引擎({kb} KB)。",
+    "physicsFailed": "物理引擎未能启动:{reason}"
   },
   "pid": {
     "title": "PID",

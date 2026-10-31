@@ -169,7 +169,9 @@
     "minSupply": "Niedrigste Akkuspannung {voltage} V.",
     "resets": "Das Board wurde {count} Mal zurückgesetzt.",
     "tipped": "Der Roboter ist nach {time} s gekippt.",
-    "finished": "Der Lauf endete nach {time} s."
+    "finished": "Der Lauf endete nach {time} s.",
+    "physicsLoading": "Die Physik-Engine wird geladen ({kb} KB).",
+    "physicsFailed": "Die Physik-Engine ist nicht gestartet: {reason}"
   },
   "pid": {
     "title": "PID",

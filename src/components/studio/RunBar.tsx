@@ -80,10 +80,17 @@ function Clock({ run, label }: { run: RunStore; label: string }) {
 function RunHash({ store, messages, lang }: { store: RobotStore; messages: Messages["robot"]; lang: Locale }) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/robot`), [lang, messages]);
   const hash = useSyncExternalStore(store.subscribe, () => store.get().runHash, () => null);
-  if (hash === null) return null;
+  const physics = useSyncExternalStore(store.subscribe, () => store.get().physics, () => null);
+  const note =
+    physics?.state === "loading-physics"
+      ? t("run.physicsLoading", { kb: Math.round((physics.wireBytes ?? 0) / 1024) })
+      : physics?.state === "failed"
+        ? t("run.physicsFailed", { reason: physics.reason ?? "" })
+        : null;
+  if (hash === null && note === null) return null;
   return (
     <p className="font-mono text-sm tabular-nums text-muted" role="status">
-      {t("run.hash", { hash })}
+      {note ?? t("run.hash", { hash: hash ?? "" })}
     </p>
   );
 }

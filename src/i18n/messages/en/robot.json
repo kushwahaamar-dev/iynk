@@ -169,7 +169,9 @@
     "minSupply": "Lowest battery voltage {voltage} V.",
     "resets": "The board reset {count} times.",
     "tipped": "The robot tipped over at {time} s.",
-    "finished": "The run ended after {time} s."
+    "finished": "The run ended after {time} s.",
+    "physicsLoading": "Loading the physics engine ({kb} KB).",
+    "physicsFailed": "The physics engine did not start: {reason}"
   },
   "pid": {
     "title": "PID",

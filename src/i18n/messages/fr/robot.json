@@ -169,7 +169,9 @@
     "minSupply": "Tension minimale de la batterie {voltage} V.",
     "resets": "La carte a redémarré {count} fois.",
     "tipped": "Le robot a basculé à {time} s.",
-    "finished": "L'exécution s'est terminée après {time} s."
+    "finished": "L'exécution s'est terminée après {time} s.",
+    "physicsLoading": "Chargement du moteur physique ({kb} Ko).",
+    "physicsFailed": "Le moteur physique n'a pas démarré : {reason}"
   },
   "pid": {
     "title": "PID",
