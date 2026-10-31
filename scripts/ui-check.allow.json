@@ -18,12 +18,6 @@
     "reason": "Ghost lines on the flight chart are data colours."
   },
   {
-    "file": "src/lib/realtime/identity.ts",
-    "code": "R16",
-    "pattern": ".",
-    "reason": "Peer colours are data: each peer picks one."
-  },
-  {
     "file": "src/styles/tokens.css",
     "code": "R16",
     "pattern": "^--plate-bg:",

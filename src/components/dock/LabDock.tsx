@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { DOCK_TABS, type DockTab, type LabDockProps } from "@/components/dock/types";
-import { setPointing, usePointing } from "@/components/realtime/pointing";
 import { PanelSkeleton, useSearchAvailability } from "@/components/search/shared";
 import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
@@ -76,13 +75,10 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const [phone, setPhone] = useState(false);
 
   const [tab, setTab] = useState<DockTab | null>(null);
-  const [open, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(false);
   const [visited, setVisited] = useState<readonly DockTab[]>([]);
   const shown = DOCK_TABS.filter((id) => tabShown(id, features));
   const selected = tab && shown.includes(tab) ? tab : shown[0];
-  // On a phone the sheet covers the figure, so it steps aside while you point and comes back after.
-  const pointing = usePointing();
-  const isOpen = open && !(phone && pointing);
   // A panel's code is fetched the first time its tab is on screen, then it stays mounted like before.
   if (isOpen && !visited.includes(selected)) setVisited([...visited, selected]);
 
@@ -150,7 +146,6 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       aria-pressed={!phone && isOpen ? true : undefined}
       onClick={() => {
         if (isOpen && !phone) return close();
-        setPointing(false);
         setOpen(true);
       }}
       className="w-fit shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
