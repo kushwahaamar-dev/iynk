@@ -41,7 +41,9 @@
     "measure:apply": "node scripts/measure-apply.mjs",
     "icons": "node scripts/gen-icons.mjs",
     "ui:check": "node scripts/ui-check.mjs",
-    "check": "npm run content:check && npm run schema:check && npm run parts:check && npm run typecheck && npm run lint && npm run ui:check && npm run server:typecheck && npm run server:test && npm run test && npm run test:perf && npm run e2e"
+    "templates": "node scripts/build-templates.mjs --all",
+    "templates:check": "node scripts/build-templates.mjs --all --check",
+    "check": "npm run content:check && npm run templates:check && npm run schema:check && npm run parts:check && npm run typecheck && npm run lint && npm run ui:check && npm run server:typecheck && npm run server:test && npm run test && npm run test:perf && npm run e2e"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
