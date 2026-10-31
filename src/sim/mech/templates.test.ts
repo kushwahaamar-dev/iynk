@@ -92,3 +92,42 @@ describe("drive base template", () => {
     expect(run.diagnostics).toEqual([]);
   });
 });
+
+describe("speed control template", () => {
+  const doc = loadTemplate("speed-control");
+
+  it("passes the schema and the robotics cross-references", () => {
+    const report = validateValue(doc);
+    expect(report.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+    expect(validateRoboticsRefs(doc)).toEqual([]);
+  });
+
+  it("has no robot validator error", () => {
+    const errors = validateRobot(doc, { describe: describePart, dmath: Math }).filter((p) => p.severity === "error");
+    expect(errors).toEqual([]);
+  });
+
+  it("has five faults with registry cause ids, all off", () => {
+    const faults = doc.simulation.faults ?? [];
+    expect(faults.map((f) => f.cause_id).sort()).toEqual(["battery-sag-reset", "encoder-channel-swapped", "loop-too-slow", "motor-direction-reversed", "wheel-slip"]);
+    for (const fault of faults) {
+      expect(isCauseId(fault.cause_id), fault.cause_id).toBe(true);
+      expect(fault.enabled).toBe(false);
+    }
+  });
+
+  it("passes the robot checks", () => {
+    const checks = runChecks({ doc, describe: describePart, slopeDeg: 0, supplyV: 7.4 });
+    expect(checks.filter((c) => c.result === "fail")).toEqual([]);
+  });
+
+  it("names the heartbeat pin and the loop period the loop-timing view reads", () => {
+    expect((doc.ext as Record<string, unknown>)["x-iynk-robot"]).toEqual({ loopPeriodUs: 20000, loopPin: "D13" });
+  });
+
+  it("compiles in the interpreter without a diagnostic", () => {
+    const source = doc.sources.find((s) => s.role === "firmware")!.content;
+    const run = createRun({ board: "uno-r3", source });
+    expect(run.diagnostics).toEqual([]);
+  });
+});
