@@ -1,4 +1,5 @@
 import type { SimTime } from "../core/clock.ts";
+import { WatchList } from "./watch.ts";
 
 export type PauseReason = "breakpoint" | "step" | "watch";
 
@@ -15,6 +16,8 @@ export interface VarInfo {
   name: string;
   type: string;
   value: string;
+  /** The bytes behind the value, as hex, when the engine has them. */
+  raw?: string;
   address?: number;
 }
 
@@ -25,6 +28,15 @@ export interface FrameInfo {
   line: number;
   locals: VarInfo[];
   globals: VarInfo[];
+  /** Set instead of `locals` when the engine cannot name them; the value is an i18n key. */
+  localsUnavailable?: string;
+}
+
+/** What the interpreter lets the debugger read: the variables of the statement it is stopped at or running. */
+export interface VariableReader {
+  functionName(): string;
+  globals(): VarInfo[];
+  locals(): VarInfo[];
 }
 
 export interface DebugPort {
@@ -32,7 +44,9 @@ export interface DebugPort {
   step(unit: "line" | "over" | "out"): void;
   resume(): void;
   inspect(frame: number): FrameInfo;
-  watch(addr: number, len: number): void;
+  readonly watches: WatchList;
+  /** Raw memory, where the engine has some. */
+  readMemory?(addr: number, len: number): Uint8Array | null;
   readonly paused: PauseEvent | null;
   onPause(cb: (e: PauseEvent) => void): void;
 }
@@ -80,6 +94,8 @@ type Mode = "run" | "line" | "over" | "out";
  */
 export class StatementDebugger implements DebugPort {
   readonly breakpoints = new BreakpointSet();
+  readonly watches = new WatchList();
+  private vars: VariableReader | null = null;
   private mode: Mode = "run";
   private startDepth = 0;
   private current: PauseEvent | null = null;
@@ -124,10 +140,16 @@ export class StatementDebugger implements DebugPort {
 
   inspect(frame: number): FrameInfo {
     const at = this.current;
-    return { frame, function: "", file: at?.file ?? "", line: at?.line ?? 0, locals: [], globals: [] };
+    const vars = this.vars;
+    return {
+      frame,
+      function: vars?.functionName() ?? "",
+      file: at?.file ?? "",
+      line: at?.line ?? 0,
+      locals: at && vars ? vars.locals() : [],
+      globals: vars?.globals() ?? [],
+    };
   }
-
-  watch(): void {}
 
   onPause(cb: (e: PauseEvent) => void): void {
     this.pauseListeners.push(cb);
@@ -139,8 +161,10 @@ export class StatementDebugger implements DebugPort {
   }
 
   /** True when the statement at `p` should pause before it runs; `pausable` is false inside code that runs to completion in one go. */
-  check(p: { line: number; col: number }, depth: number, pausable = true): boolean {
-    if (this.mode === "run" && this.breakpoints.size === 0) return false;
+  check(p: { line: number; col: number }, depth: number, pausable = true, vars?: VariableReader): boolean {
+    if (vars) this.vars = vars;
+    const watching = this.watches.armed;
+    if (this.mode === "run" && this.breakpoints.size === 0 && !watching) return false;
     const at = this.map(p.line);
     const atBreakpoint = this.breakpoints.has(at.file, at.line);
     if (!pausable) {
@@ -150,11 +174,14 @@ export class StatementDebugger implements DebugPort {
       }
       return false;
     }
+    const watched = watching && this.watches.changedSincePause(this).length > 0;
     const stepped =
       this.mode === "line" || (this.mode === "over" && depth <= this.startDepth) || (this.mode === "out" && depth < this.startDepth);
-    if (!stepped && !atBreakpoint) return false;
+    if (!stepped && !atBreakpoint && !watched) return false;
     this.mode = "run";
-    this.current = { reason: atBreakpoint ? "breakpoint" : "step", file: at.file, line: at.line, column: p.col, atNs: this.now(), depth };
+    const reason = atBreakpoint ? "breakpoint" : watched ? "watch" : "step";
+    this.current = { reason, file: at.file, line: at.line, column: p.col, atNs: this.now(), depth };
+    this.watches.snapshot(this);
     for (const cb of this.pauseListeners) cb(this.current);
     return true;
   }

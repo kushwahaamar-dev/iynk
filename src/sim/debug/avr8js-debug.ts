@@ -1,9 +1,53 @@
 import type { SourceMap } from "../../export/dwarf-lines.ts";
+import type { ElfImage } from "../../export/elf.ts";
 import type { AvrAdapter, AvrContext, AvrEngine } from "../mcu/avr8js.ts";
-import { MAX_BREAKPOINTS, MAX_BREAKPOINTS_PER_FILE, type DebugPort, type FrameInfo, type PauseEvent } from "./breakpoints.ts";
+import { MAX_BREAKPOINTS, MAX_BREAKPOINTS_PER_FILE, type DebugPort, type FrameInfo, type PauseEvent, type VarInfo } from "./breakpoints.ts";
+import { WatchList } from "./watch.ts";
 
 const FLASH_WORDS = 16384;
+const RAM_START = 0x100;
 const RAM_END = 0x8ff;
+const SHOWN_ELEMENTS = 16;
+
+export interface AvrDebugSymbols {
+  symbols: ElfImage["symbols"];
+  /** Declared type text by global name, from the interpreter's parse of the same sketch. */
+  types?: ReadonlyMap<string, string>;
+}
+
+function bytesHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** Reads a little-endian integer; `signed` sign-extends it. */
+function readInt(bytes: Uint8Array, signed: boolean): number {
+  let v = 0;
+  for (let i = bytes.length - 1; i >= 0; i--) v = v * 256 + (bytes[i] as number);
+  return signed && v >= 2 ** (bytes.length * 8 - 1) ? v - 2 ** (bytes.length * 8) : v;
+}
+
+/** Text for the bytes of one value, using the declared type when there is one. */
+function decode(bytes: Uint8Array, type: string): string {
+  const array = /^(.+)\[(\d+)\]$/.exec(type);
+  if (array) {
+    const count = Number(array[2]);
+    const width = count ? Math.floor(bytes.length / count) : 0;
+    if (width > 0) {
+      const items: string[] = [];
+      for (let i = 0; i < Math.min(count, SHOWN_ELEMENTS); i++) items.push(decode(bytes.subarray(i * width, (i + 1) * width), array[1] as string));
+      const more = count - items.length;
+      return `[${items.join(", ")}${more > 0 ? `, ... ${more} more` : ""}]`;
+    }
+  }
+  if (bytes.length === 4 && type === "float") return String(new DataView(bytes.buffer, bytes.byteOffset, 4).getFloat32(0, true));
+  if (bytes.length === 1 || bytes.length === 2 || bytes.length === 4) {
+    const signed = !/^(unsigned|uint|bool|byte)/.test(type);
+    const v = readInt(bytes, signed);
+    if (type === "char") return `'${String.fromCharCode(v & 0xff)}' (${v})`;
+    return `${v} (0x${bytesHex(bytes.slice().reverse())})`;
+  }
+  return bytes.length > SHOWN_ELEMENTS ? `${bytesHex(bytes.subarray(0, SHOWN_ELEMENTS))}...` : bytesHex(bytes);
+}
 
 interface LineStart {
   pc: number;
@@ -77,10 +121,15 @@ class AvrDebuggerImpl implements AvrDebugger {
   private readonly starts: LineStart[];
   private readonly byPc = new Map<number, LineStart>();
   private breakPcs = new Set<number>();
+  readonly watches = new WatchList();
+  private readonly symbols: AvrDebugSymbols;
+  private hooked: number[] = [];
+  private watchHit = false;
 
-  constructor(engine: AvrEngine, map: SourceMap) {
+  constructor(engine: AvrEngine, map: SourceMap, symbols: AvrDebugSymbols) {
     this.engine = engine;
     this.map = map;
+    this.symbols = symbols;
     this.starts = lineStarts(map);
     for (const s of this.starts) this.byPc.set(s.pc, s);
     engine.onBreak = (pc) => this.onBreak(pc);
@@ -125,10 +174,66 @@ class AvrDebuggerImpl implements AvrDebugger {
 
   inspect(frame: number): FrameInfo {
     const at = this.current;
-    return { frame, function: "", file: at?.file ?? "", line: at?.line ?? 0, locals: [], globals: [] };
+    return {
+      frame,
+      function: "",
+      file: at?.file ?? "",
+      line: at?.line ?? 0,
+      locals: [],
+      localsUnavailable: "fidelity.debug.noSymbols",
+      globals: this.globals(),
+    };
   }
 
-  watch(): void {}
+  readMemory(addr: number, len: number): Uint8Array | null {
+    const ctx = this.ctx;
+    if (!ctx || addr < RAM_START || addr + len - 1 > RAM_END) return null;
+    return ctx.cpu.data.slice(addr, addr + len);
+  }
+
+  private globals(): VarInfo[] {
+    const out: VarInfo[] = [];
+    for (const sym of this.symbols.symbols) {
+      if (sym.section !== ".data" && sym.section !== ".bss") continue;
+      const address = sym.addr & 0xffff;
+      const bytes = this.readMemory(address, sym.size);
+      if (!bytes || sym.size === 0) continue;
+      const type = this.symbols.types?.get(sym.name) ?? `${sym.size} bytes`;
+      out.push({ name: sym.name, type, value: decode(bytes, type), raw: bytesHex(bytes), address });
+    }
+    return out;
+  }
+
+  /** The address ranges the pause-on-change watches cover. */
+  private watchedRanges(): Array<{ addr: number; len: number }> {
+    const ranges: Array<{ addr: number; len: number }> = [];
+    for (const w of this.watches.targets) {
+      if (!w.pauseOnChange) continue;
+      if (w.target.kind === "mem") ranges.push({ addr: w.target.addr, len: w.target.len });
+      else {
+        const name = w.target.name;
+        const sym = this.symbols.symbols.find((x) => x.name === name && (x.section === ".data" || x.section === ".bss"));
+        if (sym) ranges.push({ addr: sym.addr & 0xffff, len: sym.size });
+      }
+    }
+    return ranges;
+  }
+
+  /** Writes to watched bytes flag a hit; the pause comes at the next line, where the engine can stop. */
+  private hookWrites(): void {
+    const hooks = this.ctx?.cpu.writeHooks;
+    if (!hooks) return;
+    for (const addr of this.hooked) delete hooks[addr];
+    this.hooked = [];
+    for (const { addr, len } of this.watchedRanges()) {
+      for (let a = addr; a < addr + len; a++) {
+        hooks[a] = (value, old) => {
+          if (value !== old) this.watchHit = true;
+        };
+        this.hooked.push(a);
+      }
+    }
+  }
 
   onPause(cb: (e: PauseEvent) => void): void {
     this.listeners.push(cb);
@@ -161,7 +266,9 @@ class AvrDebuggerImpl implements AvrDebugger {
 
   /** The engine checks the bitmap only when one is set, so it stays null with nothing to stop on. */
   private arm(): void {
-    const addresses = this.mode === "run" ? this.breakPcs : new Set([...this.breakPcs, ...this.byPc.keys()]);
+    this.hookWrites();
+    const everyLine = this.mode !== "run" || this.hooked.length > 0;
+    const addresses = everyLine ? new Set([...this.breakPcs, ...this.byPc.keys()]) : this.breakPcs;
     if (addresses.size === 0) {
       this.engine.breakBitmap = null;
       return;
@@ -180,10 +287,14 @@ class AvrDebuggerImpl implements AvrDebugger {
     if (!ctx || !start) return;
     const file = this.map.files[start.file] as string;
     const atBreakpoint = this.breakPcs.has(start.pc);
-    if (!atBreakpoint && !this.stepDone(file, start.line, ctx.cpu.SP)) return;
+    const watched = this.watchHit;
+    if (!atBreakpoint && !watched && !this.stepDone(file, start.line, ctx.cpu.SP)) return;
+    this.watchHit = false;
     this.mode = "run";
     this.arm();
-    this.current = { reason: atBreakpoint ? "breakpoint" : "step", file, line: start.line, atNs: ctx.cyclesToNs(ctx.cpu.cycles), depth: RAM_END - ctx.cpu.SP };
+    const reason = atBreakpoint ? "breakpoint" : watched ? "watch" : "step";
+    this.current = { reason, file, line: start.line, atNs: ctx.cyclesToNs(ctx.cpu.cycles), depth: RAM_END - ctx.cpu.SP };
+    this.watches.snapshot(this);
     for (const cb of this.listeners) cb(this.current);
   }
 
@@ -196,6 +307,6 @@ class AvrDebuggerImpl implements AvrDebugger {
   }
 }
 
-export function createAvrDebugger(engine: AvrEngine, map: SourceMap): AvrDebugger {
-  return new AvrDebuggerImpl(engine, map);
+export function createAvrDebugger(engine: AvrEngine, map: SourceMap, symbols: AvrDebugSymbols = { symbols: [] }): AvrDebugger {
+  return new AvrDebuggerImpl(engine, map, symbols);
 }
