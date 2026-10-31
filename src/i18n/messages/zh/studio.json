@@ -268,7 +268,8 @@
       "readOnlyRole": "你在这个房间的角色只能阅读，不能修改工作台",
       "unsupported": "此浏览器无法打开房间",
       "serverRestarted": "服务器已重启。正在重新加入房间",
-      "behind": "正在与房间同步"
+      "behind": "正在与房间同步",
+      "pending": { "one": "{count} 项更改等待中", "other": "{count} 项更改等待中" }
     },
     "members": {
       "title": "在场的人",

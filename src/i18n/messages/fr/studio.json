@@ -268,7 +268,8 @@
       "readOnlyRole": "Votre rôle dans cette salle permet de lire, pas de modifier le banc",
       "unsupported": "Ce navigateur ne peut pas ouvrir de salles",
       "serverRestarted": "Le serveur a redémarré. Retour dans la salle",
-      "behind": "Rattrapage de la salle"
+      "behind": "Rattrapage de la salle",
+      "pending": { "one": "{count} modification en attente", "other": "{count} modifications en attente" }
     },
     "members": {
       "title": "Personnes présentes",

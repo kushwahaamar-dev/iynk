@@ -268,7 +268,8 @@
       "readOnlyRole": "Con tu rol en esta sala puedes leer, pero no cambiar el banco",
       "unsupported": "Este navegador no puede abrir salas",
       "serverRestarted": "El servidor se reinició. Volviendo a entrar en la sala",
-      "behind": "Poniéndote al día con la sala"
+      "behind": "Poniéndote al día con la sala",
+      "pending": { "one": "{count} cambio en espera", "other": "{count} cambios en espera" }
     },
     "members": {
       "title": "Personas aquí",

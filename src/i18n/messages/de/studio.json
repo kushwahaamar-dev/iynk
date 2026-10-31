@@ -268,7 +268,8 @@
       "readOnlyRole": "Mit deiner Rolle in diesem Raum kannst du lesen, aber nichts ändern",
       "unsupported": "Dieser Browser kann keine Räume öffnen",
       "serverRestarted": "Der Server wurde neu gestartet. Du trittst dem Raum erneut bei",
-      "behind": "Du holst den Raum ein"
+      "behind": "Du holst den Raum ein",
+      "pending": { "one": "{count} Änderung wartet", "other": "{count} Änderungen warten" }
     },
     "members": {
       "title": "Anwesende",

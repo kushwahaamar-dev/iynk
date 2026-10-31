@@ -268,7 +268,8 @@
       "readOnlyRole": "Your role in this room can read but not change the bench",
       "unsupported": "This browser cannot open rooms",
       "serverRestarted": "The server restarted. Rejoining the room",
-      "behind": "Catching up with the room"
+      "behind": "Catching up with the room",
+      "pending": { "one": "{count} change waiting", "other": "{count} changes waiting" }
     },
     "members": {
       "title": "People here",
