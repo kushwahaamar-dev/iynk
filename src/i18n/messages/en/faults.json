@@ -158,7 +158,13 @@
     "found": "Devices found",
     "none": "No device answered.",
     "pins": "Pins used",
-    "noPins": "No I2C pins are connected."
+    "noPins": "No I2C pins are connected.",
+    "tally": "{found} of {probed} addresses answered",
+    "address": "Address",
+    "status": "Status",
+    "answered": "Answered",
+    "scanning": "Scanning the bus",
+    "failed": "The scan could not run. Restart the simulation and try again."
   },
   "evidence": {
     "kind": {

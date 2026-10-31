@@ -158,7 +158,13 @@
     "found": "Gefundene Geräte",
     "none": "Kein Gerät hat geantwortet.",
     "pins": "Verwendete Pins",
-    "noPins": "Es sind keine I2C-Pins verbunden."
+    "noPins": "Es sind keine I2C-Pins verbunden.",
+    "tally": "{found} von {probed} Adressen haben geantwortet",
+    "address": "Adresse",
+    "status": "Status",
+    "answered": "Geantwortet",
+    "scanning": "Der Bus wird gescannt",
+    "failed": "Der Scan konnte nicht laufen. Starte die Simulation neu und versuche es erneut."
   },
   "evidence": {
     "kind": {

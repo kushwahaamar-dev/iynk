@@ -158,7 +158,13 @@
     "found": "Périphériques trouvés",
     "none": "Aucun périphérique n'a répondu.",
     "pins": "Broches utilisées",
-    "noPins": "Aucune broche I2C n'est connectée."
+    "noPins": "Aucune broche I2C n'est connectée.",
+    "tally": "{found} adresses sur {probed} ont répondu",
+    "address": "Adresse",
+    "status": "État",
+    "answered": "A répondu",
+    "scanning": "Scan du bus en cours",
+    "failed": "Le scan n'a pas pu s'exécuter. Relancez la simulation et réessayez."
   },
   "evidence": {
     "kind": {

@@ -158,7 +158,13 @@
     "found": "找到的设备",
     "none": "没有设备应答。",
     "pins": "使用的引脚",
-    "noPins": "没有连接 I2C 引脚。"
+    "noPins": "没有连接 I2C 引脚。",
+    "tally": "{probed} 个地址中有 {found} 个应答",
+    "address": "地址",
+    "status": "状态",
+    "answered": "已应答",
+    "scanning": "正在扫描总线",
+    "failed": "扫描无法运行。请重新启动仿真后再试。"
   },
   "evidence": {
     "kind": {

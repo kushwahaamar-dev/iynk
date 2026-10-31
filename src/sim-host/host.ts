@@ -2,7 +2,7 @@ import type { CheckJob, CheckOutcome } from "@/lib/interp";
 import { createRpcPort, type RpcPort, type WorkerLike } from "@/protocol";
 import type { SimTime } from "@/sim/core/clock";
 import type { HostInput, ProgramImage, SimDiagnostic, SimNetlist, SimRunOptions, StepUnit } from "@/sim/engine";
-import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
+import type { ControlOp, DiagnosticsReply, HashesReply, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 import type { ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
 import { createWatchdog, type KillReason, type Timers } from "./watchdog";
 
@@ -73,6 +73,8 @@ export interface SimHost {
   readonly probes: SimHostProbes;
   /** The class hashes of the run at `tNs`; rejects when the run is somewhere else. */
   hashes(tNs: SimTime): Promise<{ hb: string; hd: string }>;
+  /** Probes 0x08 to 0x77 on a copy of the run, which is left untouched. Rejects with `scan_failed` when the copy cannot be built or no pins are bound. */
+  i2cScan(bus?: string): Promise<ScannedReply>;
   /** Events of the current run only; a late message of an older run is dropped. */
   onEvent(fn: (e: SimEv) => void): () => void;
   /** Stops the worker. Calls fail until `restart`. A stalled worker is killed and reloaded by the host itself. */
@@ -288,6 +290,9 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     async hashes(tNs) {
       const { hb, hd } = (await port.call({ t: "hashes.request", run: current(), tNs })).result as HashesReply;
       return { hb, hd };
+    },
+    async i2cScan(bus) {
+      return (await port.call({ t: "i2c-scan", run: current(), bus })).result as ScannedReply;
     },
     onEvent(fn) {
       listeners.add(fn);

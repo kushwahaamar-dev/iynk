@@ -158,7 +158,13 @@
     "found": "Dispositivos encontrados",
     "none": "Ningún dispositivo respondió.",
     "pins": "Pines usados",
-    "noPins": "No hay pines I2C conectados."
+    "noPins": "No hay pines I2C conectados.",
+    "tally": "{found} de {probed} direcciones respondieron",
+    "address": "Dirección",
+    "status": "Estado",
+    "answered": "Respondió",
+    "scanning": "Escaneando el bus",
+    "failed": "No se pudo hacer el escaneo. Reinicia la simulación e inténtalo de nuevo."
   },
   "evidence": {
     "kind": {

@@ -6,6 +6,7 @@ import type {
   DigitalLayer,
   Engine,
   McuEngine,
+  OrchestratorSnapshot,
   PartState,
   ProgramImage,
   SimDiagnostic,
@@ -23,11 +24,12 @@ import { runRules } from "@/sim/faults/rules";
 import { runFactsFrom } from "@/sim/faults/run-facts";
 import type { CodeFacts, Rule } from "@/sim/faults/types";
 import type { BoardId } from "@/lib/interp/profiles";
+import { scanBus, ScanError, type ScanSession } from "@/sim/bus/scan";
 import { createOrchestrator, type Orchestrator } from "@/sim/orchestrator";
 import type { ProbeHandle, ProbeTap, TraceChunk } from "@/sim/probe/tap";
 import { classHashes } from "@/sim/replay/trace";
 import { MAX_BREAKPOINTS_PER_FILE } from "@/sim/debug/breakpoints";
-import type { DebugStepReply, DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
+import type { DebugStepReply, DiagnosticsReply, HashesReply, IgnoredReply, PinLevel, ProbeAddReply, ScannedReply, SimEv, SimReq, SimRunState, StaticCheckReply } from "./protocol";
 
 /** What the handler reads from an engine beyond `McuEngine`; the interpreter engines have both. */
 export type SimEngine = McuEngine & {
@@ -45,6 +47,8 @@ export interface SimHandlerDeps {
   makeDigital(): DigitalLayer;
   /** Without it every probe is refused. The tap stays outside the orchestrator so that probes never reach a hash. */
   makeTap?(): ProbeTap & Engine;
+  /** Without it `i2c-scan` is refused. Opens the I2C bus of a scratch engine; the pins are read once the sketch has run. */
+  scan?(engine: SimEngine): Omit<ScanSession, "dispose">;
   /** Without it `static-check` finds nothing and a run posts no `findings` events. */
   faults?: {
     describe(descriptorId: string): Descriptor | undefined;
@@ -72,6 +76,8 @@ const PROBE_BATCH_MS = 1000 / 30;
 const MAX_CHUNK_BYTES = 512 * 1024;
 /** The tap never yields: it only copies values. */
 const NEVER_YIELD: SliceBudget = { shouldYield: () => false, work: { statements: Infinity, events: Infinity, outputBytes: Infinity } };
+/** The scan snapshots the live run only to read its time and input cursor, so no document hash is involved. */
+const SCAN_DOC_HASH = "i2c-scan";
 const SERIAL_LINES_PER_FRAME = 500;
 const SERIAL_CAP_CHARS = 1024 * 1024;
 
@@ -407,6 +413,37 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     return { diagnostics };
   }
 
+  /** The run as it is now, rebuilt from t = 0 with its recorded inputs on engines of its own. */
+  function restoreForScan(r: Runtime, snapshot: OrchestratorSnapshot): ScanSession {
+    if (!loaded || !deps.scan) throw new WorkerError({ kind: "no-scan", message: "this worker cannot scan the bus" });
+    const { net, opts, program } = loaded;
+    const digital = deps.makeDigital();
+    const engine = deps.makeEngine(program, net, opts);
+    const scratch = createOrchestrator({ engines: [engine], digital });
+    const loadedNet = scratch.load(net, opts);
+    if (!loadedNet.ok || !engine.load(program).ok) throw new ScanError("the program did not load");
+    const bus = deps.scan(engine);
+    for (const input of r.orch.inputs.slice(0, snapshot.logCursor)) {
+      scratch.runUntil(input.at, NEVER_YIELD);
+      scratch.inject({ kind: input.kind, target: input.target, value: input.value });
+    }
+    scratch.runUntil(snapshot.at, NEVER_YIELD);
+    if (scratch.now !== snapshot.at || scratch.snapshot(snapshot).stateHash !== snapshot.stateHash) {
+      throw new ScanError("the run could not be rebuilt for the scan");
+    }
+    return { ...bus, dispose: () => undefined };
+  }
+
+  function i2cScan(r: Runtime, msg: Extract<SimReq, { t: "i2c-scan" }>): ScannedReply {
+    const snapshot = r.orch.snapshot({ docHash: SCAN_DOC_HASH, logCursor: r.orch.inputs.length });
+    try {
+      return { t: "scanned", ...scanBus(snapshot, (s) => restoreForScan(r, s), { bus: msg.bus }) };
+    } catch (e) {
+      if (e instanceof ScanError) throw new WorkerError({ kind: "scan_failed", message: e.message });
+      throw e;
+    }
+  }
+
   function anchorAtNow(r: Runtime) {
     const wall = deps.wallMs();
     r.anchor = { wall, sim: r.orch.now };
@@ -514,6 +551,7 @@ export function createSimHandler(deps: SimHandlerDeps): WorkerHandler<SimReq, Si
     if (msg.t === "debug") return debugOp(msg);
     if (!rt) throw bad("nothing is loaded");
     if (msg.t === "input") return void rt.orch.inject(msg.input);
+    if (msg.t === "i2c-scan") return i2cScan(rt, msg);
     return probe(rt, msg);
   };
 }

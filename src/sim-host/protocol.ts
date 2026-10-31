@@ -50,6 +50,8 @@ export type SimReq =
   | { t: "debug"; run: number; runtime: string; op: DebugOp }
   /** Answered only when the run is at `tNs`. */
   | { t: "hashes.request"; run: number; tNs: SimTime }
+  /** Probes 0x08 to 0x77 on a restored copy of the run; the run itself is not stepped. Answered with `ScannedReply`. */
+  | { t: "i2c-scan"; run: number; bus?: string }
   /** Busy-loops for ever so the watchdog can be tested; answered only by a worker created with `diag`. */
   | { t: "diag"; op: "stall" };
 
@@ -111,6 +113,16 @@ export interface IgnoredReply {
 /** The ack of `probe.add`. */
 export interface ProbeAddReply {
   error?: NonNullable<ProbeHandle["error"]>;
+}
+
+/** The ack of `i2c-scan`: the pins the scan used, how many addresses it probed and the ones that answered, ascending. */
+export interface ScannedReply {
+  t: "scanned";
+  bus: string;
+  sda: string;
+  scl: string;
+  probed: number;
+  found: number[];
 }
 
 /** The ack of `hashes.request`: the two class hashes of the run at `tNs`. */
