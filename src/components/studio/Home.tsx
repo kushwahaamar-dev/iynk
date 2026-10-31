@@ -16,6 +16,7 @@ import { forkProject } from "@/project/fork";
 import type { Op, Project, SourceLanguage } from "@/project/generated/types";
 import { createSession } from "@/project/session";
 import { navigate } from "@/studio/router";
+import { createDocStore } from "@/studio/stores/doc";
 import { STARTERS as STARTER_ENTRIES, starterFor } from "@/studio/starters";
 import { LOCAL_ACTOR, loadStarter, newUnoProject, STARTERS, type StarterDef } from "@/studio/templates";
 import { analyserFor, inoErrorKey } from "./inoAnalyser";
@@ -89,7 +90,7 @@ export async function projectFromIno(imported: InoImport, lang: string, now: str
     { k: "board.set", id: board.id, firmware: { ...firmware, sources: [entry.id, ...extra.map((source) => source.id)] } },
   ];
   const session = createSession({ state: base, clock: () => Date.parse(now), rnd: cryptoRandom });
-  const done = session.apply(ops, { actor: LOCAL_ACTOR, kind: "user" });
+  const done = createDocStore(session).commit(ops, { label: "Import sketch", author: { actor: LOCAL_ACTOR, kind: "user" } });
   if (!done.ok) throw new Error(`${done.reject}: ${done.message}`);
   return session.state;
 }
