@@ -1,8 +1,9 @@
 import type { WorldInput as LegacyWorldInput } from "@/content/schema";
-import { netResolver } from "@/lib/interp/pins";
+import { netResolver, pinNet } from "@/lib/interp/pins";
 import { WorldBinding } from "@/lib/interp/lesson-world";
 import type { BoardProfile } from "@/lib/interp/profiles";
 import type { WorldInput as ProjectWorldInput } from "@/project/generated/types";
+import { type LiveAnalog, pinElementId } from "@/sim/analog/live";
 import type { SimNetlist } from "@/sim/engine";
 import { deriveInputPins } from "@/sim/world-pins";
 import type { InterpEngine } from "./interp-engine";
@@ -43,4 +44,9 @@ export function bindWorld(
   const converted = inputs.filter(isBuiltin).map((i) => legacyInput(net, i));
   const binding = new WorldBinding(engine.run, { inputs: converted, script: [] }, { logicV: profile.logicV, resolve: netResolver(profile) });
   return { binding, inputs: converted };
+}
+
+/** `analogRead` on the engine's board returns what the solver finds on the pin. */
+export function bindAnalog(engine: InterpEngine, live: LiveAnalog, board: string, profile: BoardProfile): void {
+  engine.run.world.setAnalogSource((pin) => live.pinVolts(pinElementId(board, pinNet(profile, pin))));
 }

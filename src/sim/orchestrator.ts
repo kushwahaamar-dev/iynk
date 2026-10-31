@@ -18,6 +18,9 @@ import {
   type SliceResult,
   type StepUnit,
 } from "./engine.ts";
+import { PWL_OPTIONS } from "./analog/elements.ts";
+import type { AnalogStepResult, Change, LiveAnalog } from "./analog/live.ts";
+import { type BoardPinOwner, analogChangeOf, boardPinOwners } from "./digital/pins.ts";
 import { EventQueue } from "./queue.ts";
 
 export interface PinEdge {
@@ -46,6 +49,7 @@ const SLICE_NS = NS_PER_MS;
 const CHECKPOINT_NS = 1000 * NS_PER_MS;
 const NO_PROGRESS_LIMIT = 10_000_000;
 const MAX_PARTS = 2000;
+const ANALOG_ID = "engine:analog-live";
 
 const NEVER_YIELD: SliceBudget = {
   shouldYield: () => false,
@@ -76,6 +80,9 @@ function validate(net: SimNetlist): SimDiagnostic[] {
   return diagnostics;
 }
 
+const isParamValue = (v: unknown): v is { path: string; value: number } =>
+  typeof v === "object" && v !== null && typeof (v as { path: unknown }).path === "string" && typeof (v as { value: unknown }).value === "number";
+
 const isPinPayload = (p: unknown): p is PinEventPayload =>
   typeof p === "object" && p !== null && typeof (p as PinEventPayload).pin === "string";
 
@@ -93,11 +100,15 @@ class SimOrchestrator implements Orchestrator, EventSink {
   private problems: SimDiagnostic[] = [];
   private current: Orchestrator["state"] = "idle";
   private readonly digital: DigitalLayer;
+  private readonly live: LiveAnalog | null;
+  private owners = new Map<string, BoardPinOwner>();
+  private solveAt: SimTime | null = null;
   now = 0;
   readonly analog = analogHook;
 
-  constructor(engines: Engine[], digital: DigitalLayer) {
+  constructor(engines: Engine[], digital: DigitalLayer, live: LiveAnalog | null) {
     this.digital = digital;
+    this.live = live;
     this.engines = [...engines].sort((a, b) => a.rank - b.rank || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
     for (const engine of this.engines) engine.attach(this);
   }
@@ -138,7 +149,10 @@ class SimOrchestrator implements Orchestrator, EventSink {
     this.logged = [];
     this.hashes = [];
     const problems = validate(net);
+    this.owners = boardPinOwners(net);
+    this.solveAt = null;
     if (problems.length === 0) problems.push(...this.digital.load(net));
+    if (this.live && !problems.some((d) => d.severity === "error")) problems.push(...this.loadAnalog(net));
     this.problems = problems;
     const ok = !problems.some((d) => d.severity === "error");
     this.current = ok ? "idle" : "halted";
@@ -252,7 +266,58 @@ class SimOrchestrator implements Orchestrator, EventSink {
     }
   }
 
+  private loadAnalog(net: SimNetlist): SimDiagnostic[] {
+    const live = this.live!;
+    const report = live.load(net, PWL_OPTIONS);
+    this.collect(live.advanceTo(0));
+    return report.diagnostics;
+  }
+
+  /** Keeps the solver's events and its diagnostics, apart from writes to pins the circuit does not have. */
+  private collect(step: AnalogStepResult): void {
+    for (const event of step.events) this.enqueue({ ...event, seq: ++this.seq });
+    const found = step.diagnostics.filter((d) => d.id !== "unknown-pin");
+    if (found.length > 0) this.problems = [...this.problems, ...found];
+  }
+
+  /** A pin or parameter change reaches the solver now; the solve itself waits for P3 of the same timestamp. */
+  private applyAnalog(at: SimTime, change: Change): void {
+    this.live!.apply([change]);
+    if (this.solveAt === at) return;
+    this.solveAt = at;
+    this.enqueue({ at, phase: 3, rank: RANK.analog, seq: ++this.seq, src: ANALOG_ID, kind: "solve", payload: null });
+  }
+
+  private deliverAnalog(e: SimEvent): void {
+    if (e.kind === "solve") {
+      this.solveAt = null;
+      this.collect(this.live!.advanceTo(e.at));
+      return;
+    }
+    const p = e.payload as { net: string; level: 0 | 1 };
+    const pin = [...this.owners].find(([, owner]) => owner.net === p.net)?.[0];
+    if (pin === undefined) return;
+    const input: SimEvent = { ...e, phase: 0, rank: 0, src: "host", kind: "pin", payload: { target: pin, value: p.level } };
+    for (const engine of this.engines) engine.onEvent(input);
+  }
+
   private deliver(e: SimEvent): void {
+    if (e.src === ANALOG_ID) {
+      this.deliverAnalog(e);
+      return;
+    }
+    if (this.live && e.phase === 0 && e.kind === "param") {
+      const { target, value } = e.payload as { target: string; value: unknown };
+      if (isParamValue(value)) this.applyAnalog(e.at, { kind: "param", element: target, path: value.path, value: value.value });
+    }
+    if (this.live && e.phase === 2 && e.kind === "pin" && isPinPayload(e.payload)) {
+      const owner = this.owners.get(e.payload.pin);
+      if (owner) {
+        const { pin, level, duty, hz } = e.payload;
+        const pwm = duty !== undefined && hz !== undefined ? { duty, hz } : undefined;
+        this.applyAnalog(e.at, analogChangeOf({ board: owner.board, pin, level, pwm }));
+      }
+    }
     if (e.phase === 3 && e.rank === RANK.digital && e.kind === "pin" && isPinPayload(e.payload)) {
       this.resolvePin(e.at, e.payload);
       return;
@@ -291,6 +356,6 @@ class SimOrchestrator implements Orchestrator, EventSink {
   }
 }
 
-export function createOrchestrator(parts: { engines: Engine[]; digital: DigitalLayer }): Orchestrator {
-  return new SimOrchestrator(parts.engines, parts.digital);
+export function createOrchestrator(parts: { engines: Engine[]; digital: DigitalLayer; analog?: LiveAnalog }): Orchestrator {
+  return new SimOrchestrator(parts.engines, parts.digital, parts.analog ?? null);
 }

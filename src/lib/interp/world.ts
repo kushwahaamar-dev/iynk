@@ -8,6 +8,9 @@ type OnboardSensor = Extract<DeviceModel, { kind: 'onboard' }>['sensor'];
 export type PinMode = 'unset' | 'input' | 'input_pullup' | 'input_pulldown' | 'output' | 'open_drain';
 export type Edge = 'rising' | 'falling' | 'change' | 'low' | 'high';
 
+/** Volts the circuit puts on a pin, or null when nothing is connected to it. */
+export type AnalogSource = (pin: number) => number | null;
+
 export interface PinState {
   mode: PinMode;
   /** Level the sketch drives (outputs). */
@@ -144,6 +147,7 @@ export class World {
   readonly irqQueue: Array<() => void> = [];
   private irqs: IrqHandler[] = [];
   private pinListeners: Array<(pin: number, level: 0 | 1) => void> = [];
+  private analogSource: AnalogSource | null = null;
   private serialIn = '';
   serialOut: SerialSink = () => {};
   /** Warnings for the learner (wrong pin for PWM, 5 V into a 3.3 V pin...). */
@@ -320,11 +324,17 @@ export class World {
     this.edge(n, before);
   }
 
+  /** Where the circuit solver puts the voltage on a pin; null removes it and `analogRead` goes back to the pin's own state. */
+  setAnalogSource(source: AnalogSource | null): void {
+    this.analogSource = source;
+  }
+
   /** Raw ADC reading from the voltage on the pin. */
   analogRead(n: number, bits = this.adcBits): number {
     const p = this.pin(n);
     const max = (1 << bits) - 1;
-    let v = p.volts;
+    const solved = this.analogSource?.(n) ?? null;
+    let v = solved ?? p.volts;
     if (v === null) {
       if (p.ext !== null) v = p.ext ? this.profile.adcVref : 0;
       else if (p.dac !== null) v = p.dac;
@@ -333,6 +343,7 @@ export class World {
       else return Math.floor(this.rng.float() * max * 0.25 + max * 0.3); // floating: noise
     }
     if (this.damaged.has(n)) return 0;
+    if (solved !== null) return Math.max(0, Math.min(max, Math.floor((v * (max + 1)) / this.profile.adcVref)));
     return Math.max(0, Math.min(max, Math.round((v / this.profile.adcVref) * max)));
   }
 
