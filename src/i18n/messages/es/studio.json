@@ -719,14 +719,17 @@
       "runLength": "Las comprobaciones corren {s} s de tiempo simulado",
       "rung": {
         "lesson": "Lección",
-        "tour": "Recorrido por la placa"
+        "tour": "Recorrido por la placa",
+        "label": "Tipo"
       },
       "progress": {
         "done": "Hecha",
         "legacy": "Hecha (registro antiguo)",
         "none": "Sin empezar"
       },
-      "empty": "Ninguna plantilla coincide."
+      "empty": "Ninguna plantilla coincide.",
+      "all": "Todos",
+      "level": "Nivel"
     },
     "assembly": {
       "title": "Pasos de montaje",

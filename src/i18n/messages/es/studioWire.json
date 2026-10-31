@@ -141,6 +141,10 @@
     "partner": {
       "focus": "Abrir al compañero"
     },
+    "guide": {
+      "stepPrev": "Paso anterior de la guía",
+      "stepNext": "Paso siguiente de la guía"
+    },
     "help": {
       "keys": "Mostrar los atajos de teclado"
     },

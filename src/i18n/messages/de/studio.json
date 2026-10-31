@@ -719,14 +719,17 @@
       "runLength": "Die Prüfungen laufen {s} s simulierte Zeit",
       "rung": {
         "lesson": "Lektion",
-        "tour": "Board-Rundgang"
+        "tour": "Board-Rundgang",
+        "label": "Art"
       },
       "progress": {
         "done": "Erledigt",
         "legacy": "Erledigt (alter Eintrag)",
         "none": "Nicht begonnen"
       },
-      "empty": "Keine Vorlage passt."
+      "empty": "Keine Vorlage passt.",
+      "all": "Alle",
+      "level": "Stufe"
     },
     "assembly": {
       "title": "Aufbauschritte",

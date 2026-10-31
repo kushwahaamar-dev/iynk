@@ -719,14 +719,17 @@
       "runLength": "Checks run for {s} s of simulated time",
       "rung": {
         "lesson": "Lesson",
-        "tour": "Board tour"
+        "tour": "Board tour",
+        "label": "Type"
       },
       "progress": {
         "done": "Done",
         "legacy": "Done (old record)",
         "none": "Not started"
       },
-      "empty": "No templates match."
+      "empty": "No templates match.",
+      "all": "All",
+      "level": "Level"
     },
     "assembly": {
       "title": "Build steps",

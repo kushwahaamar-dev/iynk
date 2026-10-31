@@ -141,6 +141,10 @@
     "partner": {
       "focus": "打开搭档"
     },
+    "guide": {
+      "stepPrev": "上一个引导步骤",
+      "stepNext": "下一个引导步骤"
+    },
     "help": {
       "keys": "显示键盘快捷键"
     },

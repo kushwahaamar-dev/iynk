@@ -719,14 +719,17 @@
       "runLength": "检查会运行 {s} 秒的模拟时间",
       "rung": {
         "lesson": "课程",
-        "tour": "开发板导览"
+        "tour": "开发板导览",
+        "label": "类型"
       },
       "progress": {
         "done": "已完成",
         "legacy": "已完成（旧记录）",
         "none": "未开始"
       },
-      "empty": "没有匹配的模板。"
+      "empty": "没有匹配的模板。",
+      "all": "全部",
+      "level": "级别"
     },
     "assembly": {
       "title": "搭建步骤",

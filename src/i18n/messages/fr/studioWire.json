@@ -141,6 +141,10 @@
     "partner": {
       "focus": "Ouvrir le partenaire"
     },
+    "guide": {
+      "stepPrev": "Étape précédente du guide",
+      "stepNext": "Étape suivante du guide"
+    },
     "help": {
       "keys": "Afficher les raccourcis clavier"
     },

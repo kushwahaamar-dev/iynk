@@ -15,6 +15,7 @@ import { blankProject } from "@/project/blank";
 import { forkProject } from "@/project/fork";
 import type { Op, Project, SourceLanguage } from "@/project/generated/types";
 import { createSession } from "@/project/session";
+import { navigate } from "@/studio/router";
 import { STARTERS as STARTER_ENTRIES, starterFor } from "@/studio/starters";
 import { LOCAL_ACTOR, loadStarter, newUnoProject, STARTERS, type StarterDef } from "@/studio/templates";
 import { analyserFor, inoErrorKey } from "./inoAnalyser";
@@ -247,6 +248,10 @@ export function Home({ messages, strings, lang, onOpen }: HomeProps) {
             </li>
           ))}
         </ul>
+        <Button variant="secondary" className="mt-4" onClick={() => navigate({ kind: "lessons" })}>
+          {ts("lesson.gallery.title")}
+          <Icon name="arrow-right" size={16} aria-hidden="true" />
+        </Button>
         {failed ? (
           <p role="alert" className="mt-4 text-sm text-bad">
             {t("starters.failed", { name: titleOf(failed) })}

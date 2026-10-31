@@ -719,14 +719,17 @@
       "runLength": "Les vérifications durent {s} s de temps simulé",
       "rung": {
         "lesson": "Leçon",
-        "tour": "Visite de la carte"
+        "tour": "Visite de la carte",
+        "label": "Type"
       },
       "progress": {
         "done": "Terminée",
         "legacy": "Terminée (ancien relevé)",
         "none": "Pas commencée"
       },
-      "empty": "Aucun modèle ne correspond."
+      "empty": "Aucun modèle ne correspond.",
+      "all": "Tous",
+      "level": "Niveau"
     },
     "assembly": {
       "title": "Étapes de montage",

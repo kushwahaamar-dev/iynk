@@ -80,6 +80,8 @@ export const STUDIO_KEYS: readonly KeyDef[] = [
   row("region.next", ["F6"], "global"),
   row("region.prev", ["Shift+F6"], "global"),
   row("partner.focus", ["Mod+/"], "global"),
+  row("guide.stepPrev", ["["]),
+  row("guide.stepNext", ["]"]),
   row("help.keys", ["?"]),
 ];
 
@@ -175,6 +177,8 @@ export type KeymapDeps = {
   jumpProblem(dir: 1 | -1): void;
   focusRegion(dir: 1 | -1): void;
   showKeys(): void;
+  /** Moves the viewed guide step. Left out where the open project has no guide. */
+  stepGuide?(dir: 1 | -1): void;
 };
 
 const ZOOM_STEP = 1.25;
@@ -462,6 +466,8 @@ export function installKeymap(root: HTMLElement, deps: KeymapDeps): () => void {
     "region.next": () => deps.focusRegion(1),
     "region.prev": () => deps.focusRegion(-1),
     "partner.focus": () => deps.focusPartner(),
+    "guide.stepPrev": () => deps.stepGuide?.(-1),
+    "guide.stepNext": () => deps.stepGuide?.(1),
     "help.keys": () => deps.showKeys(),
   };
   for (const id of Object.keys(FORWARDED)) actions[id] ??= () => forward(id);
