@@ -16,6 +16,8 @@ export type Settings = {
   lofi: boolean;
   labels: boolean;
   reduceMotion: boolean;
+  /** Technical words show the English term beside the translated one (src/components/ui/Term). */
+  englishTerms: boolean;
   /** Anonymous usage events (src/lib/telemetry). Off until the learner turns it on. */
   telemetry: boolean;
 };
@@ -37,6 +39,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   lofi: false,
   labels: true,
   reduceMotion: false,
+  englishTerms: true,
   telemetry: false,
 });
 
@@ -104,6 +107,7 @@ function normalize(doc: Record<string, unknown>): Saved {
     lofi: typeof raw.lofi === "boolean" ? raw.lofi : DEFAULT_SETTINGS.lofi,
     labels: typeof raw.labels === "boolean" ? raw.labels : DEFAULT_SETTINGS.labels,
     reduceMotion: typeof raw.reduceMotion === "boolean" ? raw.reduceMotion : DEFAULT_SETTINGS.reduceMotion,
+    englishTerms: typeof raw.englishTerms === "boolean" ? raw.englishTerms : DEFAULT_SETTINGS.englishTerms,
     telemetry: typeof raw.telemetry === "boolean" ? raw.telemetry : DEFAULT_SETTINGS.telemetry,
   };
 

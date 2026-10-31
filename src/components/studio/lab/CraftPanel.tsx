@@ -4,13 +4,17 @@ import { useMemo, type ReactNode } from "react";
 import { CraftView } from "@/components/dronelab/CraftView";
 import type { ChallengeEntry } from "@/components/flight/DailyChallenge";
 import { contentT, type DroneLabMessages } from "@/components/dronelab/text";
+import { TermList } from "@/components/ui/Term";
 import type { DroneContent } from "@/content/schema";
 import type { Locale } from "@/i18n/config";
+import type { TermId } from "@/i18n/terms";
 import type { Messages } from "@/i18n/namespaces";
 import type { LearnStore } from "@/local/learn-store";
 import type { DocStore } from "@/studio/stores/doc";
 import { FlyPanel } from "./FlyPanel";
 import { useCraft } from "./useCraft";
+
+const CRAFT_TERMS: readonly TermId[] = ["esc", "thrust", "hover-throttle", "brushless-motor", "flight-controller", "pid"];
 
 type Props = {
   doc: DocStore;
@@ -35,6 +39,7 @@ export function CraftPanel({ doc, learn, content, text, messages, flightMessages
   const note = (
     <>
       {notice}
+      <TermList ids={CRAFT_TERMS} />
       {refusal ? (
         <p role="status" className="text-sm text-bad">
           {refusal}

@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 test("settings start at the defaults and setSetting saves one field", () => {
-  expect(getSettings()).toEqual({ theme: "light", sound: false, lofi: false, labels: true, reduceMotion: false, telemetry: false });
+  expect(getSettings()).toEqual({ theme: "light", sound: false, lofi: false, labels: true, reduceMotion: false, englishTerms: true, telemetry: false });
   setSetting("lofi", true);
   setSetting("theme", "dark");
   expect(getSettings()).toMatchObject({ lofi: true, theme: "dark" });
@@ -36,10 +36,10 @@ test("resolveTheme follows the OS only for system", () => {
 
 test("applySettingsToDocument sets the attributes globals.css reads", () => {
   const root = document.documentElement;
-  applySettingsToDocument({ theme: "dark", sound: true, lofi: false, labels: true, reduceMotion: true, telemetry: true });
+  applySettingsToDocument({ theme: "dark", sound: true, lofi: false, labels: true, reduceMotion: true, englishTerms: true, telemetry: true });
   expect(root.dataset.theme).toBe("dark");
   expect(root.dataset.reduceMotion).toBe("true");
-  applySettingsToDocument({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false, telemetry: true });
+  applySettingsToDocument({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false, englishTerms: true, telemetry: true });
   expect(root.dataset.theme).toBeUndefined();
   expect(root.dataset.reduceMotion).toBeUndefined();
 });

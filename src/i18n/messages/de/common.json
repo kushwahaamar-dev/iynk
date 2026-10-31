@@ -53,6 +53,10 @@
     "motion": {
       "label": "Bewegung reduzieren"
     },
+    "terms": {
+      "label": "Englische Begriffe",
+      "toggle": "Englische Begriffe anzeigen"
+    },
     "usage": {
       "label": "Anonyme Nutzungszahlen",
       "body": "iynk schreibt, was in den Laboren passiert, in ein Protokoll in diesem Browser. Nichts wird irgendwohin gesendet. Fehler werden immer protokolliert, und du kannst das Protokoll unter Schlüssel und Nutzung lesen, kopieren oder löschen.",

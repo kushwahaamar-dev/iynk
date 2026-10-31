@@ -53,6 +53,10 @@
     "motion": {
       "label": "Reducir el movimiento"
     },
+    "terms": {
+      "label": "Términos en inglés",
+      "toggle": "Mostrar los términos en inglés"
+    },
     "usage": {
       "label": "Recuentos de uso anónimos",
       "body": "iynk anota lo que pasa en los laboratorios en un registro de este navegador. No se envía nada a ningún sitio. Los errores se anotan siempre, y puedes leer, copiar o borrar el registro en Claves y uso.",

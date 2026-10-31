@@ -53,6 +53,10 @@
     "motion": {
       "label": "Reduce motion"
     },
+    "terms": {
+      "label": "English terms",
+      "toggle": "Show English terms"
+    },
     "usage": {
       "label": "Anonymous usage counts",
       "body": "iynk writes what happens in the labs to a log in this browser. Nothing is sent anywhere. Errors are always logged, and you can read, copy or clear the log under Keys and usage.",

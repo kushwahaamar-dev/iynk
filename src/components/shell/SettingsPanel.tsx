@@ -18,7 +18,7 @@ import { ThemeControl } from "./ThemeControl";
 /** Every site setting in one place: theme, language, sound, motion, usage counts and the way into the keys dialog. */
 export function SettingsPanel({ lang, labels }: { lang: Locale; labels: SettingsLabels }) {
   const t = useCommonT();
-  const { sound, reduceMotion } = useSettings();
+  const { sound, reduceMotion, englishTerms } = useSettings();
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -38,6 +38,7 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
           }}
         />
         <Toggle label={t("motion.label")} checked={reduceMotion} onChange={(on) => setSetting("reduceMotion", on)} />
+        <Toggle label={t("terms.toggle")} checked={englishTerms} onChange={(on) => setSetting("englishTerms", on)} />
         <UsageToggle />
       </div>
       <ServerPanel />

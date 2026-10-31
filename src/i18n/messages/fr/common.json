@@ -53,6 +53,10 @@
     "motion": {
       "label": "Réduire les animations"
     },
+    "terms": {
+      "label": "Termes en anglais",
+      "toggle": "Afficher les termes anglais"
+    },
     "usage": {
       "label": "Statistiques d’usage anonymes",
       "body": "iynk écrit ce qui se passe dans les labos dans un journal de ce navigateur. Rien n’est envoyé ailleurs. Les erreurs sont toujours consignées, et vous pouvez lire, copier ou effacer le journal dans Clés et utilisation.",
