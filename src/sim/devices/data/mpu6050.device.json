@@ -1,0 +1,17 @@
+{
+  "id": "device:i2c/mpu6050@1",
+  "bus": "i2c",
+  "addresses": [104, 105],
+  "addressSelect": { "pin": "AD0", "low": 104, "high": 105 },
+  "unmapped": "zero",
+  "registers": [
+    { "addr": 63, "name": "ACCEL_ZOUT_H", "width": 2, "signed": true, "access": "r", "expr": "round(clamp(accelZ, -2, 2) * 16384) * awake", "source": "datasheet" },
+    { "addr": 107, "name": "PWR_MGMT_1", "access": "rw", "reset": 64, "onWrite": "behaviour:wake", "source": "datasheet" },
+    { "addr": 117, "name": "WHO_AM_I", "access": "r", "reset": 104, "source": "datasheet" }
+  ],
+  "state": [{ "name": "awake", "reset": 0 }],
+  "inputs": [{ "name": "accelZ", "unit": "g", "default": 1, "range": [-16, 16] }],
+  "behaviours": [{ "id": "wake", "kind": "builtin", "ref": "mpu6050.wake" }],
+  "tier": "T1",
+  "registry": "device:mpu6050.regs@1"
+}
