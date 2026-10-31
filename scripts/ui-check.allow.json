@@ -108,6 +108,18 @@
     "reason": "The virtualised outline reads scrollTop once per animation frame, so the handler is throttled."
   },
   {
+    "file": "src/components/studio/instruments/Scope.tsx",
+    "code": "R9",
+    "pattern": ".",
+    "reason": "The waveform is drawn data, not an icon."
+  },
+  {
+    "file": "src/components/studio/instruments/Scope.tsx",
+    "code": "R16",
+    "pattern": ".",
+    "reason": "Trace colours are data colours on the dark console surface."
+  },
+  {
     "file": "src/components/studio/instruments/Plotter.tsx",
     "code": "R9",
     "pattern": ".",

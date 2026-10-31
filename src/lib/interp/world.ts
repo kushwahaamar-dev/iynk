@@ -41,6 +41,8 @@ export interface PinView {
 }
 
 export interface Snapshot {
+  /** Pin edges that did not fit in the trace; absent when none were lost. */
+  droppedEdges?: number;
   /** Simulated time in ms. */
   t: number;
   pins: Record<number, PinView>;
@@ -107,8 +109,11 @@ export interface WorldOptions {
   networks?: WifiNetwork[];
   /** Fake internet for HTTP clients: URL → response body. */
   web?: Record<string, string>;
+  /** How many pin edges `trace` keeps before it counts them in `droppedEdges` instead. */
+  traceCap?: number;
 }
 
+const DEFAULT_TRACE_CAP = 20_000;
 const DEFAULT_SEED = 0x2545f491;
 
 /** xorshift32: small, fast, deterministic. */
@@ -166,8 +171,10 @@ export class World {
   adcBits: number;
   pwmBits: number;
   interruptsEnabled = true;
-  /** Edge trace for lesson checks: [µs, pin, level]. Capped. */
+  /** Edge trace for lesson checks: [µs, pin, level]. Capped at `traceCap`; the edges beyond it are counted in `droppedEdges`. */
   readonly trace: Array<[number, number, 0 | 1]> = [];
+  readonly traceCap: number;
+  droppedEdges = 0;
   readonly damaged = new Set<number>();
   /** Warnings already shown, so a loop does not repeat them. */
   readonly warned = new Set<string>();
@@ -202,6 +209,7 @@ export class World {
   constructor(profile: BoardProfile, opts: WorldOptions = {}) {
     this.profile = profile;
     this.seed = opts.seed ?? DEFAULT_SEED;
+    this.traceCap = opts.traceCap ?? DEFAULT_TRACE_CAP;
     this.rng = new Rng(this.seed);
     this.adcBits = profile.adcBits;
     this.pwmBits = profile.pwmBits;
@@ -405,7 +413,8 @@ export class World {
   private edge(n: number, before: 0 | 1): void {
     const after = this.level(n);
     if (after === before) return;
-    if (this.trace.length < 20000) this.trace.push([this.clock.now, n, after]);
+    if (this.trace.length < this.traceCap) this.trace.push([this.clock.now, n, after]);
+    else this.droppedEdges++;
     for (const l of this.pinListeners) l(n, after);
     for (const h of this.irqs) {
       if (h.pin !== n) continue;
@@ -571,6 +580,7 @@ export class World {
     const pixels: Record<number, [number, number, number][]> = {};
     for (const [pin, arr] of this.pixels) pixels[pin] = arr.map((c) => [c[0], c[1], c[2]]);
     const snap: Snapshot = { t: Math.round(this.clock.now / 100) / 10, pins, leds, pixels, powered: this.powered };
+    if (this.droppedEdges > 0) snap.droppedEdges = this.droppedEdges;
     if (this.matrix) snap.matrix = { w: this.matrix.w, h: this.matrix.h, px: this.matrix.px.slice() };
     if (this.oled) snap.oled = { w: this.oled.w, h: this.oled.h, on: this.oled.on, inverted: this.oled.inverted, contrast: this.oled.contrast, rows: oledRows(this.oled.fb, this.oled.w, this.oled.h), texts: this.oled.texts.map((t) => ({ ...t })) };
     if (this.lcd) snap.lcd = { ...this.lcd, text: this.lcd.text.slice(), cursor: [this.lcd.cursor[0], this.lcd.cursor[1]] };
