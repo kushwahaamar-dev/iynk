@@ -1,0 +1,14 @@
+{
+  "columns": {
+    "qty": "数量",
+    "ref": "零件",
+    "name": "名称",
+    "mpn": "制造商型号",
+    "mass_g": "质量 (g)",
+    "source": "数值来源",
+    "price": "价格",
+    "currency": "币种",
+    "asOf": "价格日期",
+    "estimate": "价格类型"
+  }
+}

@@ -47,7 +47,9 @@ export interface Build {
   pack: PackSI | null;
   packRef: string;
   frame: FrameSI | null;
+  frameRef: string;
   fc: FcSI | null;
+  fcRef: string;
   bodies: PlacedBody[];
   flight: DroneData["flight"] & { gyroLpfHz?: number };
   /** The fit record of each slot's prop that was made with the slot's motor. */
@@ -281,8 +283,8 @@ export function buildFromProject(
     const d = resolve(c.definition);
     return d !== undefined && roleOf(d) === "frame";
   })?.id;
-  const frame = frameId === undefined ? null : part(frameId, "frame", readFrame).value;
-  const fc = data.controller === undefined ? null : part(data.controller, "fc", readFc).value;
+  const frame = frameId === undefined ? undefined : part(frameId, "frame", readFrame);
+  const fc = data.controller === undefined ? undefined : part(data.controller, "fc", readFc);
 
   const bodies = placedBodies(p);
   if (bodies.length === 0) need({ path: "mechanical.bodies", why: "no body has a mass" });
@@ -295,8 +297,10 @@ export function buildFromProject(
       slots,
       pack,
       packRef,
-      frame,
-      fc,
+      frame: frame?.value ?? null,
+      frameRef: frame?.ref ?? "",
+      fc: fc?.value ?? null,
+      fcRef: fc?.ref ?? "",
       bodies,
       flight: gyroLpfHz === undefined ? data.flight : { ...data.flight, gyroLpfHz },
       fits,

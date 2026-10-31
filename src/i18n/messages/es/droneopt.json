@@ -1,0 +1,14 @@
+{
+  "columns": {
+    "qty": "Cantidad",
+    "ref": "Pieza",
+    "name": "Nombre",
+    "mpn": "Número de pieza del fabricante",
+    "mass_g": "Masa (g)",
+    "source": "Origen de los números",
+    "price": "Precio",
+    "currency": "Moneda",
+    "asOf": "Fecha del precio",
+    "estimate": "Tipo de precio"
+  }
+}
