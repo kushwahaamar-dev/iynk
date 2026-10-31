@@ -1,9 +1,12 @@
 import { newId, newProjectId } from "../core/ids.ts";
 import type { RandomSource } from "../core/ids.ts";
 import type { PartRegistry } from "../parts/registry.ts";
-import { forkProject } from "../project/fork.ts";
+import { chainStart, stateHash } from "../project/hash.ts";
 import type { Project } from "../project/generated/types.ts";
+import type { TemplateEntry, TemplateKind } from "../project/guided/plan.ts";
 import { createSession } from "../project/session.ts";
+import { forkTemplate, withStartCheckpoint } from "./fork.ts";
+import type { ForkDeps } from "./fork.ts";
 import { createDocStore } from "./stores/doc.ts";
 import { breadboardBatch } from "./views/breadboard.ts";
 
@@ -71,8 +74,42 @@ export async function loadStarter(id: string, deps: { rnd: RandomSource; now: st
   const load = FILES[id];
   if (!load) throw new Error(`no starter named ${id}`);
   const source = (await load()).default as Project;
-  const fork = forkProject(source, { id: newProjectId(Date.parse(deps.now), deps.rnd), now: deps.now, actor: deps.actor });
+  const fork = forkTemplate({ ...source, id }, "template", {
+    newId: () => newProjectId(Date.parse(deps.now), deps.rnd),
+    now: () => deps.now,
+    actor: deps.actor,
+    genesis: chainStart,
+    stateHash,
+  });
   fork.meta.kind = "project";
-  fork.provenance.origin = { kind: "template", template: id };
   return fork;
+}
+
+export interface TemplateQuery {
+  board?: string;
+  level?: string;
+  kind?: TemplateKind;
+}
+
+export function listTemplates(entries: readonly TemplateEntry[], q: TemplateQuery = {}): readonly TemplateEntry[] {
+  return entries.filter(
+    (e) => (q.board === undefined || e.board === q.board) && (q.level === undefined || e.level === q.level) && (q.kind === undefined || e.kind === q.kind),
+  );
+}
+
+export type OpenDeps = ForkDeps & {
+  load(id: string): Promise<Project>;
+  library: { create(p: Project): Promise<string> };
+  findFork(templateId: string): Promise<string | undefined>;
+};
+
+/** Opens a template as the learner's own copy. An existing fork is reopened unless `fresh` asks for a new one. */
+export async function openTemplate(id: string, deps: OpenDeps, opts: { fresh?: boolean } = {}): Promise<{ projectId: string; created: boolean }> {
+  if (!opts.fresh) {
+    const existing = await deps.findFork(id);
+    if (existing !== undefined) return { projectId: existing, created: false };
+  }
+  const template = await deps.load(id);
+  const fork = withStartCheckpoint(forkTemplate(template, "lesson", deps), deps);
+  return { projectId: await deps.library.create(fork), created: true };
 }
