@@ -1,0 +1,102 @@
+{
+  "dock": {
+    "title": "仪器",
+    "add": "添加仪器",
+    "remove": "移除",
+    "empty": "还没有仪器",
+    "targetMissing": "目标缺失",
+    "viewerOnly": "观看者不能更改仪器。",
+    "pickKind": "仪器类型",
+    "pickPoint": "测量点"
+  },
+  "kind": {
+    "multimeter": "万用表",
+    "oscilloscope": "示波器",
+    "logicAnalyser": "逻辑分析仪",
+    "serialPlotter": "串口绘图器",
+    "voltmeter": "电压表",
+    "ammeter": "电流表",
+    "serialMonitor": "串口监视器"
+  },
+  "meter": {
+    "red": "红表笔",
+    "black": "黑表笔",
+    "loading": "仪表负载（10 兆欧）",
+    "mode": {
+      "dcVolts": "直流电压",
+      "dcAmps": "直流电流",
+      "resistance": "电阻，断电",
+      "continuity": "通断"
+    },
+    "notBuilt": "{mode} 尚未建模",
+    "cond": {
+      "ideal": "理想仪表，无负载",
+      "powerOff": "断电状态，在测试电平下结按开路读取",
+      "loaded": "仪表负载 10 兆欧"
+    }
+  },
+  "scope": {
+    "timeBase": "时基",
+    "trigger": "触发",
+    "cursor": "光标",
+    "table": "表格视图",
+    "export": "导出 CSV",
+    "summary": "{n} 个边沿，最后一个在 {t} ms",
+    "rising": "上升沿",
+    "falling": "下降沿",
+    "level": "电平",
+    "pwm": "占空比 {duty}%，{hz} Hz",
+    "delta": "差值：{dt} ms"
+  },
+  "cap": "保留 {kept} 个采样，丢弃 {dropped} 个",
+  "staircase": "事件之间没有波形：以阶梯形显示",
+  "decoders": "总线解码尚未建模",
+  "costModel": "边沿时间遵循语句耗时模型",
+  "plotter": {
+    "empty": "在一行中输出数字即可绘制曲线",
+    "window": "窗口",
+    "clear": "清除",
+    "columnsIgnored": "只绘制前 8 列，其余的列会被忽略。",
+    "legend": "图例",
+    "latest": "最新：{value}",
+    "col": "列{n}",
+    "dropped": "丢弃了 {n} 行"
+  },
+  "tolerance": {
+    "label": "元件容差",
+    "nominal": "标称值",
+    "seeded": "带种子的随机分布",
+    "runActive": "停止共享运行后才能更改元件容差。"
+  },
+  "speed": {
+    "label": "速度",
+    "max": "尽可能快",
+    "behind": "在此设备上以实时的 {x} 倍速度运行。",
+    "preset": "{x}x"
+  },
+  "run": {
+    "pause": "暂停",
+    "resume": "继续",
+    "step": "单步",
+    "stepUnit": "步进单位",
+    "cycleNeedsFirmware": "需要固件模式",
+    "unit": {
+      "ns": "ns",
+      "event": "事件",
+      "statement": "语句",
+      "line": "行",
+      "cycle": "周期"
+    },
+    "notPaused": "请先暂停运行再单步执行。"
+  },
+  "band": {
+    "corners": "由元件容差边界得出的范围",
+    "monteCarlo": "由 {n} 次随机抽样得出的范围",
+    "noTolerance": "{part} 没有容差数据，按标称值使用"
+  },
+  "channel": "通道 {n}",
+  "capSet": "采样上限",
+  "column": {
+    "time": "时间"
+  }
+}

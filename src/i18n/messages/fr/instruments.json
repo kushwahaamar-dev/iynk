@@ -1,0 +1,102 @@
+{
+  "dock": {
+    "title": "Instruments",
+    "add": "Ajouter un instrument",
+    "remove": "Retirer",
+    "empty": "Pas encore d'instruments",
+    "targetMissing": "cible manquante",
+    "viewerOnly": "Les spectateurs ne peuvent pas modifier les instruments.",
+    "pickKind": "Type d'instrument",
+    "pickPoint": "Point de mesure"
+  },
+  "kind": {
+    "multimeter": "Multimètre",
+    "oscilloscope": "Oscilloscope",
+    "logicAnalyser": "Analyseur logique",
+    "serialPlotter": "Traceur série",
+    "voltmeter": "Voltmètre",
+    "ammeter": "Ampèremètre",
+    "serialMonitor": "Moniteur série"
+  },
+  "meter": {
+    "red": "Pointe rouge",
+    "black": "Pointe noire",
+    "loading": "Charge du multimètre (10 mégohms)",
+    "mode": {
+      "dcVolts": "Volts continu",
+      "dcAmps": "Ampères continu",
+      "resistance": "Résistance, hors tension",
+      "continuity": "Continuité"
+    },
+    "notBuilt": "{mode} n'est pas encore modélisé",
+    "cond": {
+      "ideal": "Multimètre idéal, sans charge",
+      "powerOff": "Hors tension, les jonctions sont lues comme ouvertes au niveau d'essai",
+      "loaded": "Charge du multimètre 10 mégohms"
+    }
+  },
+  "scope": {
+    "timeBase": "Base de temps",
+    "trigger": "Déclenchement",
+    "cursor": "Curseur",
+    "table": "Vue en tableau",
+    "export": "Exporter en CSV",
+    "summary": "{n} fronts, le dernier à {t} ms",
+    "rising": "Front montant",
+    "falling": "Front descendant",
+    "level": "Niveau",
+    "pwm": "{duty} pour cent de rapport cyclique, {hz} Hz",
+    "delta": "Écart : {dt} ms"
+  },
+  "cap": "{kept} échantillons conservés, {dropped} abandonnés",
+  "staircase": "Pas de forme d'onde entre les événements : affiché en marches",
+  "decoders": "Le décodage de bus n'est pas encore modélisé",
+  "costModel": "Les instants des fronts suivent le modèle de coût des instructions",
+  "plotter": {
+    "empty": "Affiche des nombres sur une ligne pour les tracer",
+    "window": "Fenêtre",
+    "clear": "Effacer",
+    "columnsIgnored": "Seules les 8 premières colonnes sont tracées. Les suivantes sont ignorées.",
+    "legend": "Légende",
+    "latest": "Dernière : {value}",
+    "col": "col{n}",
+    "dropped": "{n} lignes abandonnées"
+  },
+  "tolerance": {
+    "label": "Tolérance des composants",
+    "nominal": "Nominal",
+    "seeded": "Dispersion avec graine",
+    "runActive": "Arrête l'exécution partagée pour modifier la tolérance des composants."
+  },
+  "speed": {
+    "label": "Vitesse",
+    "max": "Aussi vite que possible",
+    "behind": "Tourne à {x} fois le temps réel sur cet appareil.",
+    "preset": "{x}x"
+  },
+  "run": {
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "step": "Pas",
+    "stepUnit": "Avancer par",
+    "cycleNeedsFirmware": "nécessite le mode firmware",
+    "unit": {
+      "ns": "ns",
+      "event": "Événement",
+      "statement": "Instruction",
+      "line": "Ligne",
+      "cycle": "Cycle"
+    },
+    "notPaused": "Mets d'abord l'exécution en pause pour avancer pas à pas."
+  },
+  "band": {
+    "corners": "Plage issue des bornes de tolérance des composants",
+    "monteCarlo": "Plage issue de {n} tirages aléatoires",
+    "noTolerance": "{part} n'a pas de données de tolérance et est utilisé à sa valeur nominale"
+  },
+  "channel": "Voie {n}",
+  "capSet": "Limite d'échantillons",
+  "column": {
+    "time": "Temps"
+  }
+}

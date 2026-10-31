@@ -1,0 +1,57 @@
+{
+  "tier": {
+    "T0": "示意图。不是计算结果。",
+    "T1": "教学模型",
+    "T2": "计算模型",
+    "T3": "运行你编译好的固件",
+    "none": "尚未建模",
+    "T3.note": "面板中没有列出的外设都没有建模。"
+  },
+  "layer": {
+    "execution": "执行",
+    "circuit": "电路",
+    "protocols": "协议",
+    "mechanics": "机械"
+  },
+  "summary": "整体：{tier}",
+  "panel": {
+    "title": "模拟了什么",
+    "modelled": "已建模",
+    "mocked": "仅作模拟",
+    "unmodelled": "尚未建模",
+    "stale": "参考数据比此模型更旧",
+    "staleTag": "已过期"
+  },
+  "validation": {
+    "none": "尚未与参考结果比对。",
+    "oracle": "在 {n} 个电路上与 {oracle} 相差不超过 {pct}%（{date}）",
+    "bench": "在硬件上实测：{n} 个电路，含误差表"
+  },
+  "reading": {
+    "computed": "{value} {unit}，{tier}，由 {model} 计算得出",
+    "approx": "近似值，{why}",
+    "notModelled": "尚未建模",
+    "outsideRange": "超出了此模型经过检验的范围",
+    "knownGap": "此模型在这里有已知的缺口：{why}",
+    "noResult": "无结果"
+  },
+  "notice": {
+    "part": "{part} 尚未建模。电路的其余部分仍会运行。",
+    "model": "{model} 尚未建模"
+  },
+  "states": {
+    "led": "{name} 烧坏了：{n} mA 远高于它的 {imax} mA。",
+    "diode": "{name} 烧坏了：{n} mA 超过了它能承受的电流。",
+    "npn": "{name} 过热损坏了。",
+    "tmp36": "{name} 过热损坏了。",
+    "pot": "{name} 烧坏了：{w} W 对它的电阻轨道来说太大了。",
+    "pin": "引脚 {pin} 输出 {n} mA，超过了这块开发板允许的 {max} mA。",
+    "brownout": "供电降到了 {v} V，低于这颗芯片所需的 {min} V，所以它会复位。",
+    "brownoutUnknown": "这块开发板的掉电复位电平未知，因此不会模拟复位。",
+    "floating": "{pin} 没有连接任何东西，所以它的读数只是噪声。",
+    "noconv": "电路没有稳定下来。最后状态：{net} 为 {v} V。"
+  },
+  "chip": {
+    "aria": "{layer}：{tier}。打开详情"
+  }
+}

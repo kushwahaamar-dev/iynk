@@ -1,0 +1,57 @@
+{
+  "tier": {
+    "T0": "Illustration. Keine Berechnung.",
+    "T1": "Lernmodell",
+    "T2": "Berechnetes Modell",
+    "T3": "Führt die kompilierte Firmware aus",
+    "none": "Noch nicht abgebildet",
+    "T3.note": "Peripheriegeräte, die nicht im Bereich aufgeführt sind, werden nicht abgebildet."
+  },
+  "layer": {
+    "execution": "Ausführung",
+    "circuit": "Schaltung",
+    "protocols": "Protokolle",
+    "mechanics": "Mechanik"
+  },
+  "summary": "Gesamt: {tier}",
+  "panel": {
+    "title": "Was es abbildet",
+    "modelled": "Abgebildet",
+    "mocked": "Nur nachgestellt",
+    "unmodelled": "Noch nicht abgebildet",
+    "stale": "Die Referenz ist älter als dieses Modell",
+    "staleTag": "veraltet"
+  },
+  "validation": {
+    "none": "Nicht mit einer Referenz verglichen.",
+    "oracle": "Innerhalb von {pct} Prozent von {oracle} bei {n} Schaltungen ({date})",
+    "bench": "Auf Hardware gemessen: {n} Schaltungen, Fehlertabelle"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, berechnet aus {model}",
+    "approx": "ungefähr, {why}",
+    "notModelled": "noch nicht abgebildet",
+    "outsideRange": "außerhalb des Bereichs, für den dieses Modell geprüft wurde",
+    "knownGap": "dieses Modell hat hier eine bekannte Lücke: {why}",
+    "noResult": "kein Ergebnis"
+  },
+  "notice": {
+    "part": "{part} ist noch nicht abgebildet. Der Rest der Schaltung läuft weiter.",
+    "model": "{model} ist noch nicht abgebildet"
+  },
+  "states": {
+    "led": "{name} ist durchgebrannt: {n} mA liegen weit über den {imax} mA.",
+    "diode": "{name} ist durchgebrannt: {n} mA sind mehr, als es verträgt.",
+    "npn": "{name} hat sich überhitzt und ist ausgefallen.",
+    "tmp36": "{name} hat sich überhitzt und ist ausgefallen.",
+    "pot": "{name} ist durchgebrannt: {w} W sind zu viel für die Widerstandsbahn.",
+    "pin": "Pin {pin} liefert {n} mA, mehr als die {max} mA, die dieses Board erlaubt.",
+    "brownout": "Die Versorgung fiel auf {v} V, unter die {min} V, die dieser Chip braucht, daher wird er zurückgesetzt.",
+    "brownoutUnknown": "Die Brownout-Schwelle dieses Boards ist nicht bekannt, daher wird kein Reset simuliert.",
+    "floating": "{pin} ist mit nichts verbunden, daher ist der Messwert Rauschen.",
+    "noconv": "Die Schaltung hat sich nicht eingeschwungen. Letzter Zustand: {net} bei {v} V."
+  },
+  "chip": {
+    "aria": "{layer}: {tier}. Details öffnen"
+  }
+}

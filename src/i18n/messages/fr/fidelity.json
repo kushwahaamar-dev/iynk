@@ -1,0 +1,57 @@
+{
+  "tier": {
+    "T0": "Illustration. Pas un calcul.",
+    "T1": "Modèle pédagogique",
+    "T2": "Modèle calculé",
+    "T3": "Exécute ton firmware compilé",
+    "none": "Pas encore modélisé",
+    "T3.note": "Les périphériques absents du panneau ne sont pas modélisés."
+  },
+  "layer": {
+    "execution": "Exécution",
+    "circuit": "Circuit",
+    "protocols": "Protocoles",
+    "mechanics": "Mécanique"
+  },
+  "summary": "Globalement : {tier}",
+  "panel": {
+    "title": "Ce qui est modélisé",
+    "modelled": "Modélisé",
+    "mocked": "Simulé sommairement",
+    "unmodelled": "Pas encore modélisé",
+    "stale": "La référence est plus ancienne que ce modèle",
+    "staleTag": "périmé"
+  },
+  "validation": {
+    "none": "Non comparé à une référence.",
+    "oracle": "À moins de {pct} pour cent de {oracle} sur {n} circuits ({date})",
+    "bench": "Mesuré sur matériel : {n} circuits, tableau des erreurs"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, calculé à partir de {model}",
+    "approx": "approximatif, {why}",
+    "notModelled": "pas encore modélisé",
+    "outsideRange": "hors de la plage sur laquelle ce modèle a été vérifié",
+    "knownGap": "ce modèle a ici une lacune connue : {why}",
+    "noResult": "aucun résultat"
+  },
+  "notice": {
+    "part": "{part} n'est pas encore modélisé. Le reste du circuit fonctionne toujours.",
+    "model": "{model} n'est pas encore modélisé"
+  },
+  "states": {
+    "led": "{name} a grillé : {n} mA, bien au-dessus de ses {imax} mA.",
+    "diode": "{name} a grillé : {n} mA, c'est plus qu'il ne supporte.",
+    "npn": "{name} a surchauffé et est tombé en panne.",
+    "tmp36": "{name} a surchauffé et est tombé en panne.",
+    "pot": "{name} a grillé : {w} W, c'est trop pour sa piste.",
+    "pin": "La broche {pin} fournit {n} mA, au-dessus des {max} mA que cette carte permet.",
+    "brownout": "L'alimentation est tombée à {v} V, sous les {min} V dont cette puce a besoin, elle redémarre donc.",
+    "brownoutUnknown": "Le seuil de brown-out de cette carte est inconnu, aucun redémarrage n'est donc simulé.",
+    "floating": "{pin} n'est relié à rien, sa lecture n'est donc que du bruit.",
+    "noconv": "Le circuit ne s'est pas stabilisé. Dernier état : {net} à {v} V."
+  },
+  "chip": {
+    "aria": "{layer} : {tier}. Ouvrir les détails"
+  }
+}

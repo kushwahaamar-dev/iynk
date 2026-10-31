@@ -1,0 +1,33 @@
+{
+  "runner": "Ausführer: {name}",
+  "you": "Du",
+  "inSync": "Synchron bei {t} s",
+  "catchingUp": "Holt auf",
+  "watching": "Du siehst den Lauf von {name}",
+  "private": "Privater Lauf",
+  "detach": "Eigene Kopie ausführen",
+  "rejoin": "Zum Lauf des Raums zurückkehren",
+  "moveRunner": "Bitte {host}, die Ausführung auf ein schnelleres Gerät zu verlegen",
+  "pickRunner": "Ausführer",
+  "halt": {
+    "edited": "Der Lauf wurde angehalten, weil die Schaltung bearbeitet wurde.",
+    "logFull": "Der Lauf wurde angehalten, weil sein Protokoll voll ist.",
+    "server": "Der Lauf wurde angehalten, weil der Server neu gestartet wurde.",
+    "runnerLost": "Der Ausführer hat den Raum verlassen, daher ist der Lauf pausiert.",
+    "error": "Der Lauf wurde wegen eines Fehlers angehalten."
+  },
+  "reason": {
+    "diverged": "deine Kopie und die des Ausführers stimmen nicht mehr überein",
+    "engines": "deine Engines unterscheiden sich von denen des Ausführers"
+  },
+  "badge": "Ausführer",
+  "indicator": "Gemeinsamer Lauf",
+  "controlDenied": "Du kannst den gemeinsamen Lauf nicht steuern.",
+  "state": {
+    "idle": "Läuft nicht",
+    "running": "Läuft",
+    "paused": "Pausiert",
+    "halted": "Angehalten",
+    "done": "Beendet"
+  }
+}

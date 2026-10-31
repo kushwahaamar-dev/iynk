@@ -1,0 +1,102 @@
+{
+  "dock": {
+    "title": "Instrumentos",
+    "add": "Añadir instrumento",
+    "remove": "Quitar",
+    "empty": "Aún no hay instrumentos",
+    "targetMissing": "falta el objetivo",
+    "viewerOnly": "Los espectadores no pueden cambiar los instrumentos.",
+    "pickKind": "Tipo de instrumento",
+    "pickPoint": "Punto de medida"
+  },
+  "kind": {
+    "multimeter": "Multímetro",
+    "oscilloscope": "Osciloscopio",
+    "logicAnalyser": "Analizador lógico",
+    "serialPlotter": "Trazador serie",
+    "voltmeter": "Voltímetro",
+    "ammeter": "Amperímetro",
+    "serialMonitor": "Monitor serie"
+  },
+  "meter": {
+    "red": "Punta roja",
+    "black": "Punta negra",
+    "loading": "Carga del medidor (10 megaohmios)",
+    "mode": {
+      "dcVolts": "Voltios CC",
+      "dcAmps": "Amperios CC",
+      "resistance": "Resistencia, sin alimentación",
+      "continuity": "Continuidad"
+    },
+    "notBuilt": "{mode} aún no está modelado",
+    "cond": {
+      "ideal": "Medidor ideal, sin carga",
+      "powerOff": "Sin alimentación, las uniones se leen como abiertas al nivel de prueba",
+      "loaded": "Carga del medidor 10 megaohmios"
+    }
+  },
+  "scope": {
+    "timeBase": "Base de tiempos",
+    "trigger": "Disparo",
+    "cursor": "Cursor",
+    "table": "Vista de tabla",
+    "export": "Exportar CSV",
+    "summary": "{n} flancos, el último a los {t} ms",
+    "rising": "Flanco de subida",
+    "falling": "Flanco de bajada",
+    "level": "Nivel",
+    "pwm": "{duty} por ciento de ciclo de trabajo, {hz} Hz",
+    "delta": "Diferencia: {dt} ms"
+  },
+  "cap": "{kept} muestras conservadas, {dropped} descartadas",
+  "staircase": "Sin forma de onda entre eventos: se muestra como escalones",
+  "decoders": "La decodificación de bus aún no está modelada",
+  "costModel": "Los tiempos de flanco siguen el modelo de coste por sentencia",
+  "plotter": {
+    "empty": "Imprime números en una línea para trazarlos",
+    "window": "Ventana",
+    "clear": "Borrar",
+    "columnsIgnored": "Solo se dibujan las primeras 8 columnas. El resto se ignora.",
+    "legend": "Leyenda",
+    "latest": "Último: {value}",
+    "col": "col{n}",
+    "dropped": "{n} filas descartadas"
+  },
+  "tolerance": {
+    "label": "Tolerancia de las piezas",
+    "nominal": "Nominal",
+    "seeded": "Dispersión con semilla",
+    "runActive": "Detén la ejecución compartida para cambiar la tolerancia de las piezas."
+  },
+  "speed": {
+    "label": "Velocidad",
+    "max": "Lo más rápido posible",
+    "behind": "Se ejecuta a {x} veces el tiempo real en este dispositivo.",
+    "preset": "{x}x"
+  },
+  "run": {
+    "pause": "Pausa",
+    "resume": "Reanudar",
+    "step": "Paso",
+    "stepUnit": "Avanzar por",
+    "cycleNeedsFirmware": "requiere el modo firmware",
+    "unit": {
+      "ns": "ns",
+      "event": "Evento",
+      "statement": "Sentencia",
+      "line": "Línea",
+      "cycle": "Ciclo"
+    },
+    "notPaused": "Pausa primero la ejecución para avanzar paso a paso."
+  },
+  "band": {
+    "corners": "Rango a partir de los extremos de tolerancia de las piezas",
+    "monteCarlo": "Rango a partir de {n} sorteos aleatorios",
+    "noTolerance": "{part} no tiene datos de tolerancia y se usa con su valor nominal"
+  },
+  "channel": "Canal {n}",
+  "capSet": "Límite de muestras",
+  "column": {
+    "time": "Tiempo"
+  }
+}

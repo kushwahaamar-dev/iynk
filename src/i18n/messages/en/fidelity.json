@@ -1,0 +1,57 @@
+{
+  "tier": {
+    "T0": "Illustration. Not a calculation.",
+    "T1": "Teaching model",
+    "T2": "Calculated model",
+    "T3": "Runs your compiled firmware",
+    "none": "Not modelled yet",
+    "T3.note": "Peripherals not listed in the panel are not modelled."
+  },
+  "layer": {
+    "execution": "Execution",
+    "circuit": "Circuit",
+    "protocols": "Protocols",
+    "mechanics": "Mechanics"
+  },
+  "summary": "Overall: {tier}",
+  "panel": {
+    "title": "What it models",
+    "modelled": "Modelled",
+    "mocked": "Mocked",
+    "unmodelled": "Not modelled yet",
+    "stale": "The reference is older than this model",
+    "staleTag": "stale"
+  },
+  "validation": {
+    "none": "Not checked against a reference.",
+    "oracle": "Within {pct} percent of {oracle} on {n} circuits ({date})",
+    "bench": "Measured on hardware: {n} circuits, error table"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, computed from {model}",
+    "approx": "approximate, {why}",
+    "notModelled": "not modelled yet",
+    "outsideRange": "outside the range this model was checked over",
+    "knownGap": "this model has a known gap here: {why}",
+    "noResult": "no result"
+  },
+  "notice": {
+    "part": "{part} is not modelled yet. The rest of the circuit still runs.",
+    "model": "{model} is not modelled yet"
+  },
+  "states": {
+    "led": "{name} burned out: {n} mA is far above its {imax} mA.",
+    "diode": "{name} burned out: {n} mA is more than it can carry.",
+    "npn": "{name} overheated and failed.",
+    "tmp36": "{name} overheated and failed.",
+    "pot": "{name} burned out: {w} W is too much for its track.",
+    "pin": "Pin {pin} supplies {n} mA, above the {max} mA this board allows.",
+    "brownout": "The supply fell to {v} V, below the {min} V this chip needs, so it resets.",
+    "brownoutUnknown": "The brownout level of this board is not known, so no reset is simulated.",
+    "floating": "{pin} is not connected to anything, so its reading is noise.",
+    "noconv": "The circuit did not settle. Last state: {net} at {v} V."
+  },
+  "chip": {
+    "aria": "{layer}: {tier}. Open details"
+  }
+}

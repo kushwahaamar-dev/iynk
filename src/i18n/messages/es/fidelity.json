@@ -1,0 +1,57 @@
+{
+  "tier": {
+    "T0": "Ilustración. No es un cálculo.",
+    "T1": "Modelo didáctico",
+    "T2": "Modelo calculado",
+    "T3": "Ejecuta tu firmware compilado",
+    "none": "Aún sin modelar",
+    "T3.note": "Los periféricos que no aparecen en el panel no se modelan."
+  },
+  "layer": {
+    "execution": "Ejecución",
+    "circuit": "Circuito",
+    "protocols": "Protocolos",
+    "mechanics": "Mecánica"
+  },
+  "summary": "En conjunto: {tier}",
+  "panel": {
+    "title": "Qué modela",
+    "modelled": "Modelado",
+    "mocked": "Simulado de forma simple",
+    "unmodelled": "Aún sin modelar",
+    "stale": "La referencia es más antigua que este modelo",
+    "staleTag": "desactualizado"
+  },
+  "validation": {
+    "none": "No se ha comparado con una referencia.",
+    "oracle": "A menos de un {pct} por ciento de {oracle} en {n} circuitos ({date})",
+    "bench": "Medido en hardware: {n} circuitos, tabla de errores"
+  },
+  "reading": {
+    "computed": "{value} {unit}, {tier}, calculado con {model}",
+    "approx": "aproximado, {why}",
+    "notModelled": "aún sin modelar",
+    "outsideRange": "fuera del rango en el que se comprobó este modelo",
+    "knownGap": "este modelo tiene aquí una limitación conocida: {why}",
+    "noResult": "sin resultado"
+  },
+  "notice": {
+    "part": "{part} aún no está modelado. El resto del circuito sigue funcionando.",
+    "model": "{model} aún no está modelado"
+  },
+  "states": {
+    "led": "{name} se quemó: {n} mA está muy por encima de sus {imax} mA.",
+    "diode": "{name} se quemó: {n} mA es más de lo que soporta.",
+    "npn": "{name} se sobrecalentó y falló.",
+    "tmp36": "{name} se sobrecalentó y falló.",
+    "pot": "{name} se quemó: {w} W es demasiado para su pista.",
+    "pin": "El pin {pin} entrega {n} mA, por encima de los {max} mA que admite esta placa.",
+    "brownout": "La alimentación cayó a {v} V, por debajo de los {min} V que necesita este chip, así que se reinicia.",
+    "brownoutUnknown": "Se desconoce el nivel de brown-out de esta placa, así que no se simula ningún reinicio.",
+    "floating": "{pin} no está conectado a nada, así que su lectura es ruido.",
+    "noconv": "El circuito no se estabilizó. Último estado: {net} a {v} V."
+  },
+  "chip": {
+    "aria": "{layer}: {tier}. Abrir detalles"
+  }
+}
