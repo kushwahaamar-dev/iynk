@@ -25,4 +25,16 @@ describe("flight module layers", () => {
   it("keeps state.ts below the sim", () => {
     expect(importsOf("state").sort()).toEqual(["battery", "math", "route", "types", "world"]);
   });
+
+  it("keeps autopilot and scoring below the sim and apart", () => {
+    const below = ["battery", "math", "route", "state", "types", "world"];
+    for (const name of ["autopilot", "scoring"]) {
+      for (const dep of importsOf(name)) expect([...below, ...(name === "scoring" ? ["autopilot"] : [])], `${name} imports ${dep}`).toContain(dep);
+    }
+  });
+
+  it("calls collide only from scoring", () => {
+    const callers = modules.filter((m) => /\bcollide\(/.test(readFileSync(join(DIR, `${m}.ts`), "utf8")) && !["world", "route"].includes(m));
+    expect(callers).toEqual(["scoring"]);
+  });
 });
