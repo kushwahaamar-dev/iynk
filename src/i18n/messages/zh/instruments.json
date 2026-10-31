@@ -22,11 +22,19 @@
     "red": "红表笔",
     "black": "黑表笔",
     "loading": "仪表负载（10 兆欧）",
+    "burden": "仪表串联电阻（欧）",
+    "open": "开路",
+    "connected": "导通，低于 {ohms} 欧",
+    "notConnected": "不通",
+    "reading": "读数",
     "mode": {
       "dcVolts": "直流电压",
       "dcAmps": "直流电流",
       "resistance": "电阻，断电",
-      "continuity": "通断"
+      "continuity": "通断",
+      "diode": "二极管测试",
+      "frequency": "频率",
+      "duty": "占空比"
     },
     "notBuilt": "{mode} 尚未建模",
     "cond": {

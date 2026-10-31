@@ -22,11 +22,19 @@
     "red": "Rote Messspitze",
     "black": "Schwarze Messspitze",
     "loading": "Belastung durch das Messgerät (10 Megaohm)",
+    "burden": "Bürde des Messgeräts (Ohm)",
+    "open": "Offener Stromkreis",
+    "connected": "Verbunden, unter {ohms} Ohm",
+    "notConnected": "Nicht verbunden",
+    "reading": "Messwert",
     "mode": {
       "dcVolts": "Gleichspannung",
       "dcAmps": "Gleichstrom",
       "resistance": "Widerstand, ohne Spannung",
-      "continuity": "Durchgang"
+      "continuity": "Durchgang",
+      "diode": "Diodentest",
+      "frequency": "Frequenz",
+      "duty": "Tastgrad"
     },
     "notBuilt": "{mode} ist noch nicht abgebildet",
     "cond": {

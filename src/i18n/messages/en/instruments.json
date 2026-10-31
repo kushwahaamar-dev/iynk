@@ -22,11 +22,19 @@
     "red": "Red probe",
     "black": "Black probe",
     "loading": "Meter loading (10 megohm)",
+    "burden": "Meter burden (ohms)",
+    "open": "Open circuit",
+    "connected": "Connected, below {ohms} ohms",
+    "notConnected": "Not connected",
+    "reading": "Reading",
     "mode": {
       "dcVolts": "DC volts",
       "dcAmps": "DC amps",
       "resistance": "Resistance, power off",
-      "continuity": "Continuity"
+      "continuity": "Continuity",
+      "diode": "Diode test",
+      "frequency": "Frequency",
+      "duty": "Duty"
     },
     "notBuilt": "{mode} is not modelled yet",
     "cond": {

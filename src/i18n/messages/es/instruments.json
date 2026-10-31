@@ -22,11 +22,19 @@
     "red": "Punta roja",
     "black": "Punta negra",
     "loading": "Carga del medidor (10 megaohmios)",
+    "burden": "Carga en serie del medidor (ohmios)",
+    "open": "Circuito abierto",
+    "connected": "Conectado, por debajo de {ohms} ohmios",
+    "notConnected": "No conectado",
+    "reading": "Lectura",
     "mode": {
       "dcVolts": "Voltios CC",
       "dcAmps": "Amperios CC",
       "resistance": "Resistencia, sin alimentación",
-      "continuity": "Continuidad"
+      "continuity": "Continuidad",
+      "diode": "Prueba de diodo",
+      "frequency": "Frecuencia",
+      "duty": "Ciclo de trabajo"
     },
     "notBuilt": "{mode} aún no está modelado",
     "cond": {

@@ -22,11 +22,19 @@
     "red": "Pointe rouge",
     "black": "Pointe noire",
     "loading": "Charge du multimètre (10 mégohms)",
+    "burden": "Résistance série du multimètre (ohms)",
+    "open": "Circuit ouvert",
+    "connected": "Connecté, sous {ohms} ohms",
+    "notConnected": "Non connecté",
+    "reading": "Mesure",
     "mode": {
       "dcVolts": "Volts continu",
       "dcAmps": "Ampères continu",
       "resistance": "Résistance, hors tension",
-      "continuity": "Continuité"
+      "continuity": "Continuité",
+      "diode": "Test de diode",
+      "frequency": "Fréquence",
+      "duty": "Rapport cyclique"
     },
     "notBuilt": "{mode} n'est pas encore modélisé",
     "cond": {
