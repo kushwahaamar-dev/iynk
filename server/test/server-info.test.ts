@@ -50,7 +50,7 @@ test("schemas and limits are the ones the card fixes", async () => {
   assert.deepEqual(body.schemas.project, ["1.1"]);
   assert.equal(body.schemas.opSchema, "1.1");
   assert.deepEqual(body.schemas.component, [1]);
-  assert.deepEqual(body.limits, { documentBytes: 5242880, assetBytes: 16777216, peersPerRoom: 8, buddiesPerIdentity: 64 });
+  assert.deepEqual(body.limits, { documentBytes: 5242880, assetBytes: 16777216, peersPerRoom: 8, buddiesPerIdentity: 64, storageBytesPerIdentity: 268435456 });
 });
 
 test("the project schema list matches CURRENT_SCHEMA_VERSION in src/project/migrate.ts", () => {
@@ -66,14 +66,14 @@ test("the probe leaks no version, commit, address or counts", async () => {
   assert.ok(!("version" in body.software));
 });
 
-test("features are the B6 set", async () => {
+test("features are the B7 set", async () => {
   const { body } = await info();
   assert.deepEqual(body.features, {
     identities: true,
     buddies: true,
-    shares: false,
-    rooms: false,
-    assets: false,
+    shares: true,
+    rooms: true,
+    assets: true,
     aiRelay: false,
     searchProxy: false,
     compile: false,

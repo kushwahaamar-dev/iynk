@@ -4,7 +4,7 @@ import type { RouteDeps } from "../app.ts";
 export const PROJECT_SCHEMAS = ["1.1"];
 
 export function serverInfoRoutes(ctx: RouteDeps): RouteDef[] {
-  const { config } = ctx;
+  const { config, limits } = ctx;
   const body = {
     audience: config.audience,
     name: config.serverName,
@@ -17,15 +17,21 @@ export function serverInfoRoutes(ctx: RouteDeps): RouteDef[] {
     features: {
       identities: true,
       buddies: true,
-      shares: false,
-      rooms: false,
-      assets: false,
+      shares: true,
+      rooms: true,
+      assets: true,
       aiRelay: false,
       searchProxy: false,
       compile: false,
       tools: false,
     },
-    limits: { documentBytes: 5_242_880, assetBytes: 16_777_216, peersPerRoom: 8, buddiesPerIdentity: 64 },
+    limits: {
+      documentBytes: limits.maxProjectBytes,
+      assetBytes: limits.assetBytes,
+      peersPerRoom: limits.maxMembers,
+      buddiesPerIdentity: 64,
+      storageBytesPerIdentity: limits.deviceQuotaBytes,
+    },
   };
   return defineRoutes([{ method: "GET", path: "/v1/server", operation: "getServerInfo", cls: "public", bucket: "public.read", handler: () => ({ status: 200, body }) }]);
 }

@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { loadCollabLimits } from "./collab-config.ts";
 import { ConfigError, loadConfig } from "./config.ts";
 import { realDeps } from "./deps.ts";
 import { createApp } from "./app.ts";
@@ -9,7 +10,7 @@ const EXIT_CONFIG = 2;
 
 function startConfig() {
   try {
-    return loadConfig(process.env);
+    return { config: loadConfig(process.env), collab: loadCollabLimits(process.env) };
   } catch (error) {
     if (!(error instanceof ConfigError)) throw error;
     for (const problem of error.problems) console.error(problem);
@@ -17,11 +18,13 @@ function startConfig() {
   }
 }
 
-const config = startConfig();
+const { config, collab } = startConfig();
 const deps = realDeps();
-const app = createApp(config, deps);
+const app = createApp(config, deps, { collab });
+
 const server = createServer(app.handler);
 
+server.on("upgrade", app.onUpgrade);
 server.on("error", (error: NodeJS.ErrnoException) => {
   console.error(error.code === "EADDRINUSE" ? `Port ${config.port} is already in use.` : `The server could not start: ${error.message}`);
   process.exit(1);

@@ -5,6 +5,7 @@ import type { Logger } from "../ops/log.ts";
 import { unpackDoc } from "../store/rooms.ts";
 import type { DeviceId, RoomRow, RoomsRepo } from "../store/rooms.ts";
 import { loadRoomState } from "./checkpoint.ts";
+import type { CommitWrite } from "./commit.ts";
 import { RoomCore } from "./core.ts";
 import type { Checkpointer, CommandRegistry, CoreMetrics, Outbound } from "./types.ts";
 
@@ -25,6 +26,7 @@ export type RegistryDeps = {
   metrics: CoreMetrics;
   emit: (core: RoomCore, out: Outbound[]) => void;
   log: Logger;
+  afterCommit?: (group: CommitWrite[]) => void;
 };
 
 /** A room that was locked before it went idle or was restored comes back locked. */
@@ -75,6 +77,7 @@ export class RoomRegistry {
         log: this.#d.log,
         checkpointer: this.#d.checkpoints,
         commands: this.#d.commands,
+        ...(this.#d.afterCommit ? { afterCommit: this.#d.afterCommit } : {}),
       },
     );
     this.#live.set(id, core);
