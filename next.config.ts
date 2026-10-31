@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import type { NextConfig } from "next";
 import { buildCsp, buildFigureCsp, parseOrigins } from "./src/lib/csp";
+import { PRESET_ORIGINS } from "./src/protocol/ai-presets";
 import { DEFAULT_LOCALE, LANG_COOKIE, LOCALES, acceptLanguagePattern } from "./src/i18n/config";
 
 // One id for three uses: Next's build id, the page's NEXT_PUBLIC_BUILD_ID and the service worker's ?v=. The config
@@ -17,8 +18,8 @@ function computeBuildId() {
 const BUILD_ID = (process.env.IYNK_BUILD_ID ??= computeBuildId());
 
 const rawOrigins = process.env.IYNK_CONNECT_ORIGINS ?? "";
-const connectOrigins = parseOrigins(rawOrigins);
-if (connectOrigins.length < rawOrigins.split(",").filter((origin) => origin.trim()).length) {
+const connectOrigins = [...new Set([...PRESET_ORIGINS, ...parseOrigins(rawOrigins)])];
+if (parseOrigins(rawOrigins).length < rawOrigins.split(",").filter((origin) => origin.trim()).length) {
   console.warn("IYNK_CONNECT_ORIGINS: ignored entries that are not a bare http, https, ws or wss origin");
 }
 
