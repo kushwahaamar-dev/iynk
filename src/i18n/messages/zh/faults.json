@@ -10,7 +10,39 @@
     "none": "这里暂时还不能注入故障。",
     "explain": "发生了什么？",
     "undone": "故障已移除。",
-    "needsDescriptor": "这个元件还没有故障描述，所以无法弄坏。"
+    "needsDescriptor": "这个元件还没有故障描述，所以无法弄坏。",
+    "family": {
+      "wiring": "接线",
+      "power": "供电",
+      "code": "代码",
+      "bus": "总线",
+      "value": "数值",
+      "mechanical": "机械",
+      "flight": "飞行"
+    },
+    "where": {
+      "partPin": "{part}，引脚 {pin}",
+      "part": "{part}",
+      "nets": "{a} 与 {b} 之间"
+    },
+    "apply": "弄坏它",
+    "why": "为什么会这样",
+    "seed": "种子 {seed}。用这个数字可以重现同一次选择。",
+    "restarted": "故障已应用。运行从时间零重新开始。",
+    "inProject": "在这个项目里",
+    "inProjectNone": "这个项目里没有保存任何故障。",
+    "turnOn": "打开",
+    "turnOff": "关闭",
+    "nowOn": "故障已打开。",
+    "nowOff": "故障已关闭。",
+    "on": "已开",
+    "off": "已关",
+    "faultsOn": "已开故障：{count}",
+    "hidden": "一个隐藏的故障",
+    "duplicate": "这个故障已经在项目里了。",
+    "limit": "这个项目的故障数量已达上限。",
+    "noCandidate": "这里无法添加这类故障。",
+    "buddyDone": "已为朋友保存一份密封副本。"
   },
   "diagnose": {
     "title": "找出故障",

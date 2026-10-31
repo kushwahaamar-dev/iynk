@@ -10,7 +10,39 @@
     "none": "Hier lassen sich noch keine Fehler einbauen.",
     "explain": "Was ist passiert?",
     "undone": "Fehler entfernt.",
-    "needsDescriptor": "Dieses Bauteil beschreibt seine Ausfälle noch nicht und lässt sich daher nicht kaputt machen."
+    "needsDescriptor": "Dieses Bauteil beschreibt seine Ausfälle noch nicht und lässt sich daher nicht kaputt machen.",
+    "family": {
+      "wiring": "Verdrahtung",
+      "power": "Stromversorgung",
+      "code": "Code",
+      "bus": "Busse",
+      "value": "Werte",
+      "mechanical": "Mechanik",
+      "flight": "Flug"
+    },
+    "where": {
+      "partPin": "{part}, Pin {pin}",
+      "part": "{part}",
+      "nets": "zwischen {a} und {b}"
+    },
+    "apply": "Kaputt machen",
+    "why": "Warum es passiert",
+    "seed": "Startwert {seed}. Mit dieser Zahl wiederholst du die Auswahl.",
+    "restarted": "Fehler angewendet. Der Lauf beginnt wieder bei Zeit null.",
+    "inProject": "In diesem Projekt",
+    "inProjectNone": "In diesem Projekt sind keine Fehler gespeichert.",
+    "turnOn": "Einschalten",
+    "turnOff": "Ausschalten",
+    "nowOn": "Fehler eingeschaltet.",
+    "nowOff": "Fehler ausgeschaltet.",
+    "on": "An",
+    "off": "Aus",
+    "faultsOn": "Fehler aktiv: {count}",
+    "hidden": "Ein versteckter Fehler",
+    "duplicate": "Dieser Fehler ist schon in diesem Projekt.",
+    "limit": "Dieses Projekt enthält bereits so viele Fehler wie möglich.",
+    "noCandidate": "Ein Fehler dieser Art lässt sich hier nicht hinzufügen.",
+    "buddyDone": "Versiegelte Kopie für einen Freund gespeichert."
   },
   "diagnose": {
     "title": "Finde den Fehler",

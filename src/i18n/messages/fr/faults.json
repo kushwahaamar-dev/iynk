@@ -10,7 +10,39 @@
     "none": "Aucune panne ne peut encore être injectée ici.",
     "explain": "Que s'est-il passé ?",
     "undone": "Panne retirée.",
-    "needsDescriptor": "Cette pièce ne décrit pas encore ses pannes, on ne peut donc pas la casser."
+    "needsDescriptor": "Cette pièce ne décrit pas encore ses pannes, on ne peut donc pas la casser.",
+    "family": {
+      "wiring": "Câblage",
+      "power": "Alimentation",
+      "code": "Code",
+      "bus": "Bus",
+      "value": "Valeurs",
+      "mechanical": "Mécanique",
+      "flight": "Vol"
+    },
+    "where": {
+      "partPin": "{part}, broche {pin}",
+      "part": "{part}",
+      "nets": "entre {a} et {b}"
+    },
+    "apply": "Casse-le",
+    "why": "Pourquoi cela arrive",
+    "seed": "Graine {seed}. Rejoue avec ce numéro.",
+    "restarted": "Panne appliquée. L'exécution repart du temps zéro.",
+    "inProject": "Dans ce projet",
+    "inProjectNone": "Aucune panne n'est enregistrée dans ce projet.",
+    "turnOn": "Activer",
+    "turnOff": "Désactiver",
+    "nowOn": "Panne activée.",
+    "nowOff": "Panne désactivée.",
+    "on": "Active",
+    "off": "Inactive",
+    "faultsOn": "Pannes actives : {count}",
+    "hidden": "Une panne cachée",
+    "duplicate": "Cette panne est déjà dans ce projet.",
+    "limit": "Ce projet contient déjà le maximum de pannes.",
+    "noCandidate": "Aucune panne de ce type ne peut être ajoutée ici.",
+    "buddyDone": "Copie scellée enregistrée pour un ami."
   },
   "diagnose": {
     "title": "Trouve la panne",

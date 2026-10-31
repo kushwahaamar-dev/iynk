@@ -10,7 +10,39 @@
     "none": "No faults can be injected here yet.",
     "explain": "What happened?",
     "undone": "Fault removed.",
-    "needsDescriptor": "This part has no description of its failures yet, so it cannot be broken."
+    "needsDescriptor": "This part has no description of its failures yet, so it cannot be broken.",
+    "family": {
+      "wiring": "Wiring",
+      "power": "Power",
+      "code": "Code",
+      "bus": "Buses",
+      "value": "Values",
+      "mechanical": "Mechanical",
+      "flight": "Flight"
+    },
+    "where": {
+      "partPin": "{part}, pin {pin}",
+      "part": "{part}",
+      "nets": "between {a} and {b}"
+    },
+    "apply": "Break it",
+    "why": "Why it happens",
+    "seed": "Seed {seed}. Replay with this number.",
+    "restarted": "Fault applied. The run starts again from time zero.",
+    "inProject": "In this project",
+    "inProjectNone": "No faults are stored in this project.",
+    "turnOn": "Turn on",
+    "turnOff": "Turn off",
+    "nowOn": "Fault turned on.",
+    "nowOff": "Fault turned off.",
+    "on": "On",
+    "off": "Off",
+    "faultsOn": "Faults on: {count}",
+    "hidden": "A hidden fault",
+    "duplicate": "That fault is already in this project.",
+    "limit": "This project already holds as many faults as it can.",
+    "noCandidate": "No fault of that kind can be added here.",
+    "buddyDone": "Saved a sealed copy for a buddy."
   },
   "diagnose": {
     "title": "Find the fault",

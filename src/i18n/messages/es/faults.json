@@ -10,7 +10,39 @@
     "none": "Aún no se pueden inyectar averías aquí.",
     "explain": "¿Qué pasó?",
     "undone": "Avería quitada.",
-    "needsDescriptor": "Esta pieza aún no describe sus fallos, así que no se puede romper."
+    "needsDescriptor": "Esta pieza aún no describe sus fallos, así que no se puede romper.",
+    "family": {
+      "wiring": "Cableado",
+      "power": "Alimentación",
+      "code": "Código",
+      "bus": "Buses",
+      "value": "Valores",
+      "mechanical": "Mecánico",
+      "flight": "Vuelo"
+    },
+    "where": {
+      "partPin": "{part}, pin {pin}",
+      "part": "{part}",
+      "nets": "entre {a} y {b}"
+    },
+    "apply": "Rómpelo",
+    "why": "Por qué ocurre",
+    "seed": "Semilla {seed}. Repite con este número.",
+    "restarted": "Avería aplicada. La ejecución empieza de nuevo desde el tiempo cero.",
+    "inProject": "En este proyecto",
+    "inProjectNone": "Este proyecto no guarda ninguna avería.",
+    "turnOn": "Activar",
+    "turnOff": "Desactivar",
+    "nowOn": "Avería activada.",
+    "nowOff": "Avería desactivada.",
+    "on": "Activa",
+    "off": "Inactiva",
+    "faultsOn": "Averías activas: {count}",
+    "hidden": "Una avería oculta",
+    "duplicate": "Esa avería ya está en este proyecto.",
+    "limit": "Este proyecto ya tiene todas las averías que admite.",
+    "noCandidate": "Aquí no se puede añadir ninguna avería de ese tipo.",
+    "buddyDone": "Copia sellada guardada para un amigo."
   },
   "diagnose": {
     "title": "Encuentra la avería",
