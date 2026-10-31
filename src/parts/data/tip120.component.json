@@ -594,13 +594,13 @@
       {
         "id": "golden",
         "kind": "golden-trace",
-        "file": "tests/tip120.golden.json",
+        "file": "src/parts/data/tests/tip120.golden.json",
         "state": "present"
       },
       {
         "id": "conformance",
         "kind": "conformance",
-        "file": "tests/tip120.conformance.json",
+        "file": "src/parts/data/tests/tip120.conformance.json",
         "state": "present"
       }
     ]

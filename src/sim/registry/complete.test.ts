@@ -24,7 +24,9 @@ const builtinRefs = (part: PartFile): string[] =>
 /** A part with no solver element and no builtin model has its own `part:` row. */
 function entryIdsOf(part: PartFile): string[] {
   const ids = [...modelIdsOf(part.id), ...builtinRefs(part)];
-  return ids.length > 0 ? ids : [`part:${part.id.replace(/^core\./, "")}@1`];
+  if (ids.length > 0) return ids;
+  const handWritten = `part:${part.id.replace(/^core\./, "")}@1`;
+  return [reg.get(handWritten) ? handWritten : `part:${part.id}@1`];
 }
 
 describe("registry completeness", () => {

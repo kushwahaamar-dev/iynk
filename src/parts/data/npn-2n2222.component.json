@@ -537,13 +537,13 @@
       {
         "id": "golden",
         "kind": "golden-trace",
-        "file": "tests/npn-2n2222.golden.json",
+        "file": "src/parts/data/tests/npn-2n2222.golden.json",
         "state": "present"
       },
       {
         "id": "conformance",
         "kind": "conformance",
-        "file": "tests/npn-2n2222.conformance.json",
+        "file": "src/parts/data/tests/npn-2n2222.conformance.json",
         "state": "present"
       }
     ]

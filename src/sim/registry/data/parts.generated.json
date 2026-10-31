@@ -1,6 +1,234 @@
 {
   "entries": [
     {
+      "id": "part:core.a4988-module@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "A4988 Stepper Motor Driver Carrier, item 1182, PCB md09b",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing runs in the Studio yet. The page lists the limits of the board and how VREF sets the current limit, for reading."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The step translator, the microstep tables and the current DAC."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The current limit set by VREF, and the 70.71 percent of it that full step puts in each coil."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The chopper, decay modes and the motor current waveform."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Thermal shutdown at 165 degC, undervoltage lockout, and damage from a reversed or too high supply."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vmot_operating",
+          "value": 8,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.2, VMOT"
+        },
+        {
+          "param": "vmot_abs_max",
+          "value": 35,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.2, VMOT"
+        },
+        {
+          "param": "vdd_operating",
+          "value": 3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.2, VDD"
+        },
+        {
+          "param": "vdd_abs_max",
+          "value": 5.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.2, VDD"
+        },
+        {
+          "param": "vdd_uvlo",
+          "value": 2.8,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.2, VDD"
+        },
+        {
+          "param": "logic_high_fraction",
+          "value": 0.7,
+          "unit": "ratio",
+          "type": "datasheet",
+          "ref": "facts section 3.3, logic levels"
+        },
+        {
+          "param": "ms1_pulldown",
+          "value": 100000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, internal pull-downs"
+        },
+        {
+          "param": "ms2_pulldown",
+          "value": 50000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, internal pull-downs"
+        },
+        {
+          "param": "ms3_pulldown",
+          "value": 100000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, internal pull-downs"
+        },
+        {
+          "param": "slp_pullup",
+          "value": 100000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, board pulls"
+        },
+        {
+          "param": "en_pulldown",
+          "value": 100000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, board pulls"
+        },
+        {
+          "param": "coil_current_abs_max",
+          "value": 2,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.3, output current"
+        },
+        {
+          "param": "coil_current_no_sink",
+          "value": 1,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.3, continuous per coil"
+        },
+        {
+          "param": "fet_on_resistance",
+          "value": 0.32,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.1, Rds(on)"
+        },
+        {
+          "param": "sense_resistance",
+          "value": 0.068,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.4, R_CS"
+        },
+        {
+          "param": "thermal_shutdown",
+          "value": 165,
+          "unit": "degC",
+          "type": "datasheet",
+          "ref": "facts section 3.6, thermal shutdown"
+        },
+        {
+          "param": "coil_path_resistance",
+          "value": 0.64,
+          "unit": "ohm",
+          "type": "fit",
+          "ref": "figurejs figures/modules/a4988.js:25"
+        },
+        {
+          "param": "vref_default",
+          "value": 0.3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/modules/a4988.js:23"
+        },
+        {
+          "param": "vref_one_amp",
+          "value": 0.544,
+          "unit": "V",
+          "type": "fit",
+          "ref": "figurejs figures/modules/a4988.js:24"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The VREF to current-limit rule, the coil path resistance and the shutdown temperature are constants in the figure page, not in the Studio solver.",
+        "No test checks the current limit against the datasheet."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.aa-holder-4@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "4 x AA battery holder",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing runs. The drawing shows the pack and a bench model's reported voltage and state."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Supply voltage, sag under load, internal resistance, reverse connection and discharge. The Studio does not run it until the solver has a voltage source element."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "nominal_voltage",
+          "value": 6,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/aa-holder-4.js"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "No voltage source element exists in the solver (the figure has no elec line), so the layer is none.",
+        "The figure's 1.6 V fresh cell and 0.15 to 0.3 ohm internal resistance are quoted from Energizer E91 data in a comment. That data sheet was not read here, and no value is stored."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
       "id": "part:core.bme280-module@1",
       "version": "1.1.0",
       "kind": "part-model",
@@ -137,6 +365,1132 @@
       "operatingRange": [],
       "knownFailureCases": [
         "The test covers the passive kind only."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.dc-motor@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "130-size brushed DC motor, 3 to 6 V",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A two-lead brushed motor that draws the no-load current plus the propeller current once it spins, starts above one volt average and stops below 0.6 V."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Stall current of the supply voltage over the armature resistance when the shaft is held."
+        },
+        {
+          "id": "modelled-3",
+          "text": "A winding that burns out above 9 V and a switch-off spike when there is no flyback diode."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Motor speed against torque beyond the propeller case, and the shaft inertia."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Brush noise and the heat of the winding over time."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "armature_resistance",
+          "value": 1.43,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:66"
+        },
+        {
+          "param": "back_emf_constant",
+          "value": 0.000306,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:12 and 66"
+        },
+        {
+          "param": "no_load_current",
+          "value": 0.12,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 13; figures/parts/dc-motor.js:66"
+        },
+        {
+          "param": "propeller_load_current",
+          "value": 0.08,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:66"
+        },
+        {
+          "param": "start_voltage",
+          "value": 1,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:66"
+        },
+        {
+          "param": "stop_voltage",
+          "value": 0.6,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:66"
+        },
+        {
+          "param": "rated_voltage",
+          "value": 3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:66"
+        },
+        {
+          "param": "max_voltage",
+          "value": 9,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/dc-motor.js:66"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "average voltage",
+          "min": 0.6,
+          "max": 9,
+          "unit": "V",
+          "evidence": "core.dc-motor"
+        }
+      ],
+      "knownFailureCases": [
+        "Every number is a constant in the figure with no source. The fact sheet gives FA-130RA values and marks them unverified, so all of them sit in the simulation slot with low confidence.",
+        "The solver stamps the motor between two nodes and reads only the resistance and a current table, not the back-EMF constant.",
+        "The load option (prop, free, stalled) changes the figure and the old solver loop but is not wired to a model parameter here; the propeller current is always used.",
+        "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.diode-1n4007@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "1N4007 rectifier diode",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Conduction above a fixed 0.7 V with a 0.2 ohm slope."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Blocking in reverse."
+        },
+        {
+          "id": "modelled-3",
+          "text": "Burn-out above 1 A average or 30 A peak."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The exponential forward curve: the figure's fit gives 0.56 V at 1 mA and 0.91 V at 1 A, the solver gives 0.7 V throughout."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Reverse breakdown and the 1000 V rating."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Reverse recovery, leakage and temperature."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "forward_current_average",
+          "value": 1,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 12"
+        },
+        {
+          "param": "surge_current",
+          "value": 30,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 12"
+        },
+        {
+          "param": "reverse_voltage",
+          "value": 1000,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 12"
+        },
+        {
+          "param": "forward_voltage_max",
+          "value": 1,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 12"
+        },
+        {
+          "param": "forward_voltage_figure",
+          "value": 0.8,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/diode-1n4007.js:31"
+        },
+        {
+          "param": "forward_voltage_solver",
+          "value": 0.7,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:104"
+        },
+        {
+          "param": "dynamic_resistance",
+          "value": 0.2,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:104"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "forward current",
+          "min": 0.01,
+          "max": 1,
+          "unit": "A",
+          "evidence": "core.diode-1n4007"
+        }
+      ],
+      "knownFailureCases": [
+        "The solver uses a fixed 0.7 V and 0.2 ohm for every diode. The figure states 0.8 V, n 1.808, rs 34 milliohm and a SPICE fit, none of which the solver reads.",
+        "The figure's type selector (1N4001 to 1N4007) is not carried. This part is the 1N4007; the other types have no descriptor.",
+        "The burn-out rule has a 30 A peak condition besides the 1 A average. Only the average is written as a failure mode."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.fan@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "4010 axial fan, 5 V, brushless",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A brushless fan as a motor element that stalls below 2.5 V average and runs above it."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A driver chip that fails above 6.5 V."
+        },
+        {
+          "id": "modelled-3",
+          "text": "A switch-off spike when no flyback diode is across the fan."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Speed as a function of voltage inside the solver: the figure draws it, the element reads no speed."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Airflow, noise and the Hall sensor."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "rated_voltage",
+          "value": 5,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/fan.js:20 and 54"
+        },
+        {
+          "param": "nominal_current",
+          "value": 0.1,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/fan.js:20"
+        },
+        {
+          "param": "nominal_speed",
+          "value": 6000,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/fan.js:20"
+        },
+        {
+          "param": "start_voltage",
+          "value": 2.5,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/fan.js:20"
+        },
+        {
+          "param": "stop_voltage",
+          "value": 1.8,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/fan.js:20"
+        },
+        {
+          "param": "max_voltage",
+          "value": 6.5,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/fan.js:20"
+        },
+        {
+          "param": "equivalent_resistance",
+          "value": 50,
+          "unit": "ohm",
+          "type": "fit",
+          "ref": "figurejs figures/parts/fan.js:54"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "average voltage",
+          "min": 1.8,
+          "max": 6.5,
+          "unit": "V",
+          "evidence": "core.fan"
+        }
+      ],
+      "knownFailureCases": [
+        "Every number is a figure constant with no source. The ratings the figure cites came from distributor listings that nobody read for this file, so all sit in the simulation slot.",
+        "The figure sets polar: true and draws a fan that does not spin when reversed, but the motor element has no polarity rule, so this part lists no reverse-polarity failure mode.",
+        "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.fsr402@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Force-sensing resistor, FSR 402",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "The unloaded sensor as a 10 megohm resistor."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Resistance that follows force."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Hysteresis, drift under load and part-to-part spread."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Force below the 0.2 N threshold acting as a true open circuit; the model keeps a 10 megohm path."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "resistance_unloaded",
+          "value": 10000000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "factsheet section 18"
+        },
+        {
+          "param": "actuation_force_min",
+          "value": 0.2,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "factsheet section 18"
+        },
+        {
+          "param": "resistance_at_0_2_n",
+          "value": 30000,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "factsheet section 18"
+        },
+        {
+          "param": "resistance_at_1_n",
+          "value": 6000,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "factsheet section 18"
+        },
+        {
+          "param": "resistance_at_10_n",
+          "value": 1000,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "factsheet section 18"
+        },
+        {
+          "param": "resistance_at_100_n",
+          "value": 250,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "factsheet section 18"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "force",
+          "min": 0,
+          "max": 0.2,
+          "unit": "1",
+          "evidence": "Newtons. Only the unloaded case is modelled."
+        }
+      ],
+      "knownFailureCases": [
+        "The resistance does not follow force until a curve model kind exists (Q1). The figure interpolates log R against log F in fsr402.js:19 and passes the result to the solver.",
+        "The figure removes the element below the threshold (open: true). The descriptor keeps a 10 megohm resistor instead."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.gy521-mpu6050@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "GY-521 breakout with MPU-6050",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "The I2C slave at 0x68 or 0x69 with the sample, range, sleep, reset and WHO_AM_I registers."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Power-on in sleep: samples read 0 until the host clears the sleep bit."
+        },
+        {
+          "id": "modelled-3",
+          "text": "Sensitivity per range for the accelerometer, gyroscope and temperature, with 16-bit signed output and clamping."
+        },
+        {
+          "id": "modelled-4",
+          "text": "A constant gyro bias, so integrating the rate drifts."
+        },
+        {
+          "id": "modelled-5",
+          "text": "The board's over-voltage and reversed-supply failures."
+        }
+      ],
+      "mocked": [
+        {
+          "id": "scripted-reversed_supply_burn",
+          "text": "Reversed supply"
+        }
+      ],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Noise, temperature drift and part-to-part spread: the datasheet gives them and the model does not apply them."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The digital low-pass filter, sample-rate divider, FIFO, interrupts and the DMP."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The auxiliary I2C master and any magnetometer behind it."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "I2C timing: clock speed, clock stretching and start-up delay."
+        },
+        {
+          "id": "not-modelled-5",
+          "text": "Pull-up variants of 2.2k or 10k, and the second regulator type (A249)."
+        },
+        {
+          "id": "not-modelled-6",
+          "text": "Damage from 5 V on the logic pins."
+        },
+        {
+          "id": "not-modelled-7",
+          "text": "The 3.3 V regulator and the power LED: both are rules in the figure page, not in the solver."
+        },
+        {
+          "id": "not-modelled-8",
+          "text": "In the Studio's register map only ACCEL_ZOUT, PWR_MGMT_1 and WHO_AM_I exist. The gyroscope, temperature, X and Y registers and the range selects are in the sketch interpreter's class only."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vcc_recommended",
+          "value": 3.3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "modulejs figures/modules/mpu6050.js: elec.pins.VCC range [3.3, 5.5]"
+        },
+        {
+          "param": "vcc_abs_max",
+          "value": 6,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "xc6206 Absolute maximum, input voltage"
+        },
+        {
+          "param": "vdd_chip_range",
+          "value": 2.375,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "ps_mpu Electrical characteristics, VDD"
+        },
+        {
+          "param": "logic_input_abs_max",
+          "value": 3.8,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "ps_mpu Absolute maximum ratings: VDD + 0.5 V"
+        },
+        {
+          "param": "ldo_output",
+          "value": 3.3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "umw_digikey Product attributes: output voltage 3.3 V"
+        },
+        {
+          "param": "ldo_dropout",
+          "value": 0.24,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "umw_digikey Dropout at 50 mA"
+        },
+        {
+          "param": "supply_current_active",
+          "value": 0.0038,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "ps_mpu Electrical characteristics: gyro and accelerometer on, DMP off"
+        },
+        {
+          "param": "supply_current_active",
+          "value": 0.005,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "modulejs figures/modules/mpu6050.js: elec.pins.VCC mA: 5"
+        },
+        {
+          "param": "supply_current_sleep",
+          "value": 0.000005,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "ps_mpu Electrical characteristics: sleep mode"
+        },
+        {
+          "param": "i2c_pullup_ohms",
+          "value": 4700,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "gy521_sch R4 and R5"
+        },
+        {
+          "param": "ad0_pulldown_ohms",
+          "value": 4700,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "gy521_sch R6"
+        },
+        {
+          "param": "power_led_series_ohms",
+          "value": 1000,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "gy521_sch R201"
+        },
+        {
+          "param": "i2c_speed_max",
+          "value": 400000,
+          "unit": "Hz",
+          "type": "datasheet",
+          "ref": "ps_mpu Serial interface: I2C fast mode"
+        },
+        {
+          "param": "startup_time",
+          "value": 0.02,
+          "unit": "s",
+          "type": "datasheet",
+          "ref": "ps_mpu Electrical characteristics: start-up time for register read and write"
+        },
+        {
+          "param": "gyro_zero_rate_tolerance",
+          "value": -20,
+          "unit": "deg_per_s",
+          "type": "datasheet",
+          "ref": "ps_mpu Gyroscope specifications: ZRO initial tolerance, 25 C"
+        },
+        {
+          "param": "gyro_noise_rms",
+          "value": 0.05,
+          "unit": "deg_per_s",
+          "type": "datasheet",
+          "ref": "ps_mpu Gyroscope specifications: total RMS noise, DLPF_CFG = 2"
+        },
+        {
+          "param": "accel_zero_g_tolerance_xy",
+          "value": -0.05,
+          "unit": "g0",
+          "type": "datasheet",
+          "ref": "ps_mpu Accelerometer specifications: zero-g initial calibration tolerance, X and Y"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "acceleration",
+          "min": -16,
+          "max": 16,
+          "unit": "g0",
+          "evidence": "core.gy521-mpu6050"
+        },
+        {
+          "quantity": "angular rate",
+          "min": -2000,
+          "max": 2000,
+          "unit": "deg_per_s",
+          "evidence": "core.gy521-mpu6050"
+        }
+      ],
+      "knownFailureCases": [
+        "The module figure prints its own sample text from a second, simpler model, not from this register model.",
+        "One test reads 1 g on Z after waking the chip; no test checks the sensitivities or the reset values against the datasheet.",
+        "Two models of the chip exist: the Studio's register map and the sketch interpreter's class. They agree on WHO_AM_I, the sleep bit and the Z reading but not on the rest."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.hc-sr04@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "HC-SR04 ultrasonic ranging module",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing in the Studio yet. The sketch interpreter runs class HcSr04: a 10 microsecond trigger starts a ping and Echo is HIGH for 58.3 microseconds per centimetre."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The transmit driver, the receive amplifier and the comparator: the board is treated as two pins."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Soft and angled targets, the 15 degree beam and the speed of sound changing with temperature."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "A clone whose Echo stays HIGH after a missed ping, and the HC-SR04P 3.3 V variant."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Damage from reversed or too high a supply."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_range",
+          "value": 4.5,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 1 item 2 and section 3.1"
+        },
+        {
+          "param": "supply_abs_max",
+          "value": 6,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "modulejs figures/modules/hc-sr04.js: elec.pins.VCC max: 6"
+        },
+        {
+          "param": "supply_current_active",
+          "value": 0.015,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 3.1, power tree"
+        },
+        {
+          "param": "echo_timeout",
+          "value": 0.038,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 3.2, No echo"
+        },
+        {
+          "param": "ping_interval_min",
+          "value": 0.06,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 3.2, Measurement cycle"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The card for this part expected a registered device, but only the register-map devices mpu6050, bme280, ssd1306 and pca9685 are registered. HcSr04 is a class the interpreter picks by name.",
+        "No test checks the echo width against the 58 microseconds per centimetre rule."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.l298n-module@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "L298N dual H-bridge motor driver module (red, 43 x 43 mm)",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing runs in the Studio yet. The page lists the limits of the board, its seven faults and the truth table of one channel for reading."
+        }
+      ],
+      "mocked": [
+        {
+          "id": "mocked-1",
+          "text": "The overtemperature cut-out is a timer: with the stall fault set, the outputs switch off for 2 s of every 5 s once 6 s have passed."
+        },
+        {
+          "id": "scripted-overtemperature_cutout",
+          "text": "Overtemperature cut-out on a stalled motor"
+        },
+        {
+          "id": "scripted-reversed_supply_burn",
+          "text": "Burned by a reversed supply"
+        }
+      ],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The two H-bridges: drive, brake and coast, with the enable as a duty from 0 to 1."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The voltage lost in the switches, which the figure fits to the datasheet typical totals at 1 A and 2 A."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The 5V-EN regulator, and the over-voltage and under-voltage thresholds the board is known to have."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Heat in the chip and the overtemperature cut-out."
+        },
+        {
+          "id": "not-modelled-5",
+          "text": "Motor back-EMF, inductance and the flyback current through the eight diodes."
+        },
+        {
+          "id": "not-modelled-6",
+          "text": "Switching loss, PWM frequency limits, ripple, damage above 2 A and any current limit."
+        },
+        {
+          "id": "not-modelled-7",
+          "text": "The analog level on the inputs, clone chips and part-to-part variation."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vs_abs_max",
+          "value": 50,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Absolute maximum ratings, VS"
+        },
+        {
+          "param": "vs_operating",
+          "value": 4.8,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Recommended operating conditions, VS: VIH + 2.5 V to 46 V"
+        },
+        {
+          "param": "vs_module_max",
+          "value": 35,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Features: input voltage (LM78M05 product page, via the fact sheet)"
+        },
+        {
+          "param": "vs_min_for_logic",
+          "value": 6.5,
+          "unit": "V",
+          "type": "fit",
+          "ref": "figurejs figures/modules/l298n.js:218 power.mcu min 6.5"
+        },
+        {
+          "param": "vss_range",
+          "value": 5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Electrical characteristics, VSS (logic supply)"
+        },
+        {
+          "param": "v5_level",
+          "value": 5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Product page: 5 V output"
+        },
+        {
+          "param": "regulator_dropout",
+          "value": 1.8,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Product page: dropout"
+        },
+        {
+          "param": "regulator_dropout",
+          "value": 2,
+          "unit": "V",
+          "type": "fit",
+          "ref": "figurejs figures/modules/l298n.js:214 rails 5V dropout: 2"
+        },
+        {
+          "param": "regulator_current_max",
+          "value": 0.5,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts Product page: 0.5 A"
+        },
+        {
+          "param": "logic_low_max",
+          "value": 1.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Electrical characteristics, input low voltage"
+        },
+        {
+          "param": "logic_high_min",
+          "value": 2.3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Electrical characteristics, input high voltage"
+        },
+        {
+          "param": "input_abs_max",
+          "value": -0.3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts Absolute maximum ratings, Vi and Ven"
+        },
+        {
+          "param": "channel_current_dc",
+          "value": 2,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts Absolute maximum ratings, DC output current per channel"
+        },
+        {
+          "param": "saturation_drop_1a",
+          "value": 2.55,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts VCEsat(H) + VCEsat(L) at IL = 1 A"
+        },
+        {
+          "param": "saturation_drop_2a",
+          "value": 3.7,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts VCEsat(H) + VCEsat(L) at IL = 2 A"
+        },
+        {
+          "param": "drop_fit_offset",
+          "value": 1.4,
+          "unit": "V",
+          "type": "fit",
+          "ref": "figurejs figures/modules/l298n.js:28"
+        },
+        {
+          "param": "drop_fit_slope",
+          "value": 1.15,
+          "unit": "ohm",
+          "type": "fit",
+          "ref": "figurejs figures/modules/l298n.js:28"
+        },
+        {
+          "param": "run_current",
+          "value": 0.6,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/modules/l298n.js:25"
+        },
+        {
+          "param": "motor_winding_resistance",
+          "value": 3,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "figurejs figures/modules/l298n.js:26"
+        },
+        {
+          "param": "quiescent_current_vs",
+          "value": 0.05,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts Electrical characteristics, IS with enable high and input high"
+        },
+        {
+          "param": "quiescent_current_vs",
+          "value": 0.05,
+          "unit": "A",
+          "type": "fit",
+          "ref": "figurejs figures/modules/l298n.js:61 iBatt: ... + .05"
+        },
+        {
+          "param": "commutation_frequency_max",
+          "value": 25000,
+          "unit": "Hz",
+          "type": "datasheet",
+          "ref": "facts Electrical characteristics, commutation frequency"
+        },
+        {
+          "param": "rth_junction_case",
+          "value": 3,
+          "unit": "C_per_W",
+          "type": "datasheet",
+          "ref": "facts Thermal data, Rth j-case"
+        },
+        {
+          "param": "rth_case_sink",
+          "value": 1,
+          "unit": "C_per_W",
+          "type": "assumption",
+          "ref": "figurejs figures/modules/l298n.js:27"
+        },
+        {
+          "param": "rth_sink_air",
+          "value": 12,
+          "unit": "C_per_W",
+          "type": "assumption",
+          "ref": "figurejs figures/modules/l298n.js:27"
+        },
+        {
+          "param": "tj_max",
+          "value": 130,
+          "unit": "degC",
+          "type": "datasheet",
+          "ref": "facts Thermal data, operating junction temperature -25 to 130 degC"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "motor supply",
+          "min": 4.8,
+          "max": 46,
+          "unit": "V",
+          "evidence": "core.l298n-module"
+        },
+        {
+          "quantity": "channel current",
+          "min": 0.8,
+          "max": 2.4,
+          "unit": "A",
+          "evidence": "The range of the datasheet curve the drop fit follows."
+        }
+      ],
+      "knownFailureCases": [
+        "The bridge assumes a fixed 0.6 A motor and a 3 ohm stall resistance instead of reading the motor that is attached.",
+        "The overtemperature cut-out switches the outputs off for 2 s of every 5 s once 6 s have passed with the stall fault set. It does not read the computed junction temperature.",
+        "No test checks the drop fit or the truth table against the datasheet; the existing tests check texts and ids only."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.ldr@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Light-dependent resistor GL5528",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A fixed resistor of about 1.9 kilohm, the value at 300 lux."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Resistance that follows the light level."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The 20 ms and 30 ms response lag."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Power and voltage limits: the solver never overheats a resistor."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Temperature and part-to-part spread."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "resistance_at_10_lux",
+          "value": 10000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "resistance_dark",
+          "value": 1000000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "gamma",
+          "value": 0.6,
+          "unit": "ratio",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "power_max",
+          "value": 0.1,
+          "unit": "W",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "voltage_max",
+          "value": 150,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "rise_time",
+          "value": 0.02,
+          "unit": "s",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "decay_time",
+          "value": 0.03,
+          "unit": "s",
+          "type": "datasheet",
+          "ref": "factsheet section 8"
+        },
+        {
+          "param": "resistance_default",
+          "value": 1949,
+          "unit": "ohm",
+          "type": "fit",
+          "ref": "figurejs figures/parts/ldr.js:6-7 and :16"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "light level",
+          "min": 299,
+          "max": 301,
+          "unit": "lux",
+          "evidence": "The model is a fixed value at the default light level only."
+        }
+      ],
+      "knownFailureCases": [
+        "The resistance does not follow light until a curve model kind exists (Q1). The figure computes ohmsAt(lux) in ldr.js:16 and the solver is given that value per run.",
+        "The figure passes lag [0.02, 0.03] to the solver, which does not read it."
       ],
       "performance": [],
       "labels": {
@@ -283,6 +1637,534 @@
       "status": "active"
     },
     {
+      "id": "part:core.lipo-2s@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "2S LiPo battery (7.4 V)",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing runs. The drawing shows the pack and a bench model's reported voltage and state."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Supply voltage, sag under load, internal resistance, reverse connection and discharge. The Studio does not run it until the solver has a voltage source element."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "nominal_voltage",
+          "value": 7.4,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/lipo-2s.js"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "No voltage source element exists in the solver (the figure has no elec line), so the layer is none.",
+        "The mechanics battery block is left out. It needs a cell resistance, and the figure states none.",
+        "The 8.4 V full, 7.4 V nominal and 1000 mAh figures are the figure's own text. No datasheet was read."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.lm2596-module@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "LM2596 DC-DC step-down module with LED voltmeter (2596-SDC)",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing is solved here. The module page computes the output voltage, efficiency, current limit and heat for its own display."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The output voltage from the trimmer setting and the input."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Losses in the switch, the catch diode and the inductor, and the heat they make."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The 4.5 A peak current limit and the thermal shutdown."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Damage from a reversed or over-voltage input: the board has no protection."
+        },
+        {
+          "id": "not-modelled-5",
+          "text": "The 3-digit voltmeter and its IN and OUT select button."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vin_range",
+          "value": 4.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 3.1, Input range"
+        },
+        {
+          "param": "vin_abs_max",
+          "value": 45,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 3.1, Input range"
+        },
+        {
+          "param": "vref",
+          "value": 1.23,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 3.1, Feedback reference"
+        },
+        {
+          "param": "current_continuous",
+          "value": 2,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 0, Ratings as sold"
+        },
+        {
+          "param": "switch_frequency",
+          "value": 150000,
+          "unit": "Hz",
+          "type": "datasheet",
+          "ref": "factsheet section 3.1, Switching frequency"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The whole converter model, built from the datasheet curves in the fact sheet, is code in the module page and is not data.",
+        "No test checks the converter against the datasheet curves."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.multimeter@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Pocket digital multimeter",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing yet: the part places two probe tips and a drawing of the meter."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The reading, the range dial and the loading of the circuit by the meter."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The current ranges and the 10 A jack."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The displayed reading is computed by the bench that uses the meter, not by this descriptor."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.nema17@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "NEMA 17 stepper motor (SY42STH38-1684A class)",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing runs. The part page and the bench drawing show the shaft angle and coil currents that a driver module reports."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Coil current, step loss, pull-out torque and heating. The motor numbers are stored for the robot engine and no layer reads them yet."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The Studio does not run it until a bipolar stepper element exists in the solver."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "coil_current_rated",
+          "value": 1.68,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 1, motor modelled"
+        },
+        {
+          "param": "coil_resistance",
+          "value": 1.65,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "factsheet section 1, motor modelled"
+        },
+        {
+          "param": "holding_torque",
+          "value": 0.36,
+          "unit": "N_m",
+          "type": "datasheet",
+          "ref": "factsheet section 1, motor modelled"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "No bipolar stepper element exists in the solver, so the layer is none.",
+        "The motor numbers come from a fact sheet that quotes the SOYO datasheet. This descriptor did not read the datasheet.",
+        "No pull-out torque curve is stored, because none is stated in the figure or the fact sheet."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.npn-2n2222@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "2N2222A NPN transistor, TO-92",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A saturating switch: a fixed base-emitter drop, a fixed gain and a fixed saturation voltage."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A transistor fitted backwards, with a gain of 5 from collector to emitter."
+        },
+        {
+          "id": "modelled-3",
+          "text": "Failure by heat or by a collector peak above 1.5 times the current rating."
+        },
+        {
+          "id": "modelled-4",
+          "text": "A hot state above 0.75 times the power rating."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The change of gain, base-emitter drop and saturation voltage with current."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The linear region, switching speed and capacitance."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Temperature effects on gain and the base-emitter drop."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "The collector-emitter and emitter-base voltage ratings."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "current_gain",
+          "value": 100,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:20 HFE=100, header line 9"
+        },
+        {
+          "param": "current_gain_reverse",
+          "value": 5,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:108 hfr: +e.hfr || 5"
+        },
+        {
+          "param": "base_emitter_voltage",
+          "value": 0.7,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 vbe: .7"
+        },
+        {
+          "param": "collector_emitter_saturation",
+          "value": 0.2,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 vcesat: .2"
+        },
+        {
+          "param": "collector_current_max",
+          "value": 0.6,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 icmax: .6"
+        },
+        {
+          "param": "collector_emitter_voltage_max",
+          "value": 40,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 vceo: 40"
+        },
+        {
+          "param": "emitter_base_voltage_max",
+          "value": 6,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 vebo: 6"
+        },
+        {
+          "param": "power_max",
+          "value": 0.625,
+          "unit": "W",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 pmax: .625"
+        },
+        {
+          "param": "thermal_resistance",
+          "value": 200,
+          "unit": "C_per_W",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:20 THETA=200"
+        },
+        {
+          "param": "junction_temperature_max",
+          "value": 150,
+          "unit": "degC",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/npn-2n2222.js:43 tjmax: 150"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "collector current",
+          "min": 0,
+          "max": 0.6,
+          "unit": "A",
+          "evidence": "Up to the continuous rating in the figure header."
+        }
+      ],
+      "knownFailureCases": [
+        "The figure lets you pick the pin order EBC or CBE. A descriptor cannot swap terminals by a parameter, so this one fixes EBC and the C B E order of P2N2222A parts is not represented.",
+        "The solver uses 0.7 V and 0.2 V at any current, while the figure's own curves move between 0.6 and 1.2 V and between 0.05 and 0.3 V."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.pca9685-module@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "16-Channel 12-bit PWM/Servo Driver, product 815, rev C",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "An I2C slave at 0x40 with the register map the libraries use: MODE1 with its sleep and auto-increment bits, PRE_SCALE and sixteen on and off counts."
+        },
+        {
+          "id": "modelled-2",
+          "text": "PRE_SCALE is ignored unless MODE1 SLEEP is set, and the chip powers up asleep at 200 Hz with every output off."
+        },
+        {
+          "id": "modelled-3",
+          "text": "The duty and pulse width of each channel, worked out from the counts and the 25 MHz oscillator, with the full-on and full-off bits."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The oscillator error: the clock is a fixed 25 MHz, where a board runs between 23 and 27 MHz."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The All Call address 0x70 and the software reset call."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The OE pin, MODE2 and the output drive mode, and the voltage on the outputs."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "The servo supply, the reverse-polarity MOSFET, the power LED and the jumpers on the address pins."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vcc_operating",
+          "value": 2.3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, Supply VDD"
+        },
+        {
+          "param": "vcc_abs_max",
+          "value": 6,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, Supply VDD"
+        },
+        {
+          "param": "vplus_silk_max",
+          "value": 6,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.3, V+"
+        },
+        {
+          "param": "io_abs_max",
+          "value": 5.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, I/O voltage"
+        },
+        {
+          "param": "output_current_abs_max",
+          "value": 0.025,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.4, Any PWM output"
+        },
+        {
+          "param": "package_current_max",
+          "value": 0.4,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.4, All outputs together"
+        },
+        {
+          "param": "output_series_resistance",
+          "value": 220,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.4, Any PWM output"
+        },
+        {
+          "param": "i2c_pullup",
+          "value": 10000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, Logic level"
+        },
+        {
+          "param": "oe_pulldown",
+          "value": 10000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.5, OE"
+        },
+        {
+          "param": "supply_current",
+          "value": 0.006,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.1, Supply VDD"
+        },
+        {
+          "param": "oscillator",
+          "value": 25000000,
+          "unit": "Hz",
+          "type": "datasheet",
+          "ref": "facts section 3.1, Clock"
+        },
+        {
+          "param": "pwm_frequency",
+          "value": 24,
+          "unit": "Hz",
+          "type": "datasheet",
+          "ref": "facts section 3.1, PWM frequency"
+        },
+        {
+          "param": "protection_fet_on_resistance",
+          "value": 0.055,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, Power tree"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The model's oscillator is 25 MHz with no error, so a program that calibrates it sees no effect.",
+        "There is no numeric test of the pulse width or the frequency; only the conformance checks run."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
       "id": "part:core.potentiometer-10k@1",
       "version": "1.0.0",
       "kind": "part-model",
@@ -375,6 +2257,91 @@
       "status": "active"
     },
     {
+      "id": "part:core.qtr-8rc@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "QTR-8RC reflectance sensor array",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing in the Studio yet. The figure page computes each sensor's fall time from the line position, the supply and the faults in force."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The phototransistor, the infrared LEDs and the RC nodes as circuit elements."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Height above the floor, surface colour and the light that comes back: the figure takes them from a mode."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The 2-sensor piece that snaps off, and the 3.3V BYPASS pads as a build option."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Damage from reversed or too high a supply."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_range",
+          "value": 3.3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 3, supply"
+        },
+        {
+          "param": "supply_current_active",
+          "value": 0.1,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 3, current"
+        },
+        {
+          "param": "emitter_current_max",
+          "value": 0.05,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 3, emitter"
+        },
+        {
+          "param": "white_decay",
+          "value": 0.00012,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "modulejs figures/modules/qtr-8rc.js: WHITE_US"
+        },
+        {
+          "param": "black_timeout",
+          "value": 0.0025,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 3, RC decay timing"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The solver has no element that turns a light level into a pin fall time, so no layer can run.",
+        "The white decay and the 1.6 power in the light response are fitted in the figure, with no source."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
       "id": "part:core.resistor@1",
       "version": "1.0.0",
       "kind": "part-model",
@@ -422,6 +2389,290 @@
         "summary": "fidelity.summary"
       },
       "status": "active"
+    },
+    {
+      "id": "part:core.rgb-led@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "RGB LED, 5 mm, common cathode",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Three diodes sharing a cathode, one forward voltage per colour plus a 0.5 ohm slope."
+        },
+        {
+          "id": "modelled-2",
+          "text": "Burn-out of one colour above 2.5 times its continuous current rating."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Common-anode wiring."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Brightness and the mixed colour; the drawing works them out from the solved currents."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Temperature and part-to-part spread in forward voltage."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "forward_voltage_red",
+          "value": 2,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 5"
+        },
+        {
+          "param": "forward_voltage_green",
+          "value": 3.1,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 5"
+        },
+        {
+          "param": "forward_voltage_blue",
+          "value": 3.1,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 5"
+        },
+        {
+          "param": "forward_current_continuous",
+          "value": 0.02,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/rgb-led.js:60"
+        },
+        {
+          "param": "dynamic_resistance",
+          "value": 0.5,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:102"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "forward current",
+          "min": 0.0003,
+          "max": 0.12,
+          "unit": "A",
+          "evidence": "The range the single LED was compared over; the RGB part has no comparison of its own."
+        }
+      ],
+      "knownFailureCases": [
+        "Common anode is not represented. The common parameter has no effect on the model, which is always common cathode.",
+        "No numeric test exists: the golden harness has no shape for three diodes with a shared lead.",
+        "The descriptor has no brightness layer; the figure computes brightness from current in rgb-led.js:46."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.servo-sg90@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "TowerPro SG90 micro servo",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A three-lead servo that loads its supply through V+ and GND with a small constant conductance."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The pulse on SIG: arm angle, dead band and the end stop are drawn by the figure only."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Moving and stall current: the element stamps a fixed load, so the 200 mA and 700 mA figures are shown but not drawn."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Gear wear and the potentiometer on the output shaft."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_voltage",
+          "value": 4.8,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 14; figures/parts/servo-sg90.js:53"
+        },
+        {
+          "param": "min_supply",
+          "value": 4,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/servo-sg90.js:53"
+        },
+        {
+          "param": "idle_current",
+          "value": 0.008,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 14; figures/parts/servo-sg90.js:53"
+        },
+        {
+          "param": "moving_current",
+          "value": 0.2,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 14; figures/parts/servo-sg90.js:53"
+        },
+        {
+          "param": "stall_current",
+          "value": 0.7,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "factsheet section 14; figures/parts/servo-sg90.js:53"
+        },
+        {
+          "param": "pulse_period",
+          "value": 0.02,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 14"
+        },
+        {
+          "param": "pulse_min",
+          "value": 0.0005,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 14"
+        },
+        {
+          "param": "pulse_max",
+          "value": 0.0024,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 14"
+        },
+        {
+          "param": "dead_band",
+          "value": 0.00001,
+          "unit": "s",
+          "type": "assumption",
+          "ref": "factsheet section 14"
+        },
+        {
+          "param": "turn_speed",
+          "value": 600,
+          "unit": "deg_per_s",
+          "type": "assumption",
+          "ref": "factsheet section 14; figures/parts/servo-sg90.js:24"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "supply voltage",
+          "min": 4,
+          "max": 6,
+          "unit": "V",
+          "evidence": "core.servo-sg90"
+        }
+      ],
+      "knownFailureCases": [
+        "The idle, moving and stall currents are seller figures from the fact sheet, marked unverified there. They sit in the simulation slot, not as datasheet values.",
+        "The solver servo element reads no signal; pulse width to angle is figure code only. The servo-pwm protocol is listed as not modelled yet.",
+        "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.soil-moisture@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Capacitive soil moisture sensor v1.2",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing is solved. The figure draws the probe, the pot and the cable, and the moisture setting darkens the soil."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The 555 oscillator, the pad as one plate of a capacitor, the peak detector and the bleed resistor."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The AOUT level that falls as the soil gets wetter."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The NE555 clone that never starts on 3.3 V, and the clone without a bleed resistor."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_range",
+          "value": 3.3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 16, Supply"
+        },
+        {
+          "param": "aout_dry",
+          "value": 2.6,
+          "unit": "V",
+          "type": "assumption"
+        },
+        {
+          "param": "aout_water",
+          "value": 1.4,
+          "unit": "V",
+          "type": "assumption"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The AOUT level, the NE555 and bleed-resistor variants and the watering cycle live in the module page only.",
+        "No test checks the AOUT level against a measurement. The 2.6 V and 1.4 V ends are the figure's constants, not maker figures."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
     },
     {
       "id": "part:core.ssd1306@1",
@@ -478,6 +2729,801 @@
       "labels": {
         "chip": "fidelity.tier.T0",
         "summary": "fidelity.summary"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.stepper-28byj48@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "28BYJ-48 geared stepper, 5 V",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Four coils of 50 ohm from the common red lead to the blue, pink, yellow and orange leads."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Which coils are energised and in what order: step sequences, speed and stall stay in the figure."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Coil inductance, the gearbox and the torque."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "coil_resistance",
+          "value": 50,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "factsheet section 15.1"
+        },
+        {
+          "param": "rated_voltage",
+          "value": 5,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 15.1"
+        },
+        {
+          "param": "full_steps_per_turn",
+          "value": 2037.8864,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "factsheet section 15.1; figures/parts/stepper-28byj48.js:28"
+        },
+        {
+          "param": "half_steps_per_turn",
+          "value": 4075.7728,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "factsheet section 15.1; figures/parts/stepper-28byj48.js:28"
+        },
+        {
+          "param": "full_step_rate_limit",
+          "value": 510,
+          "unit": "Hz",
+          "type": "assumption",
+          "ref": "factsheet section 15.1; figures/parts/stepper-28byj48.js:29"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "supply voltage",
+          "min": 0,
+          "max": 5,
+          "unit": "V",
+          "evidence": "core.stepper-28byj48"
+        }
+      ],
+      "knownFailureCases": [
+        "Full, half and wave step tables, the pin-order check and the stall rate are figure code. The descriptor holds the coil resistance only.",
+        "The fact sheet gives pull-in and self-positioning torque but no holding torque, so the mechanics block is left out.",
+        "The coil resistance and the 5 V rating come from the fact sheet's quote of the datasheet, which was not read here, so they sit in the simulation slot.",
+        "No test checks a number. Motors, servos and steppers have no golden-trace shape, so the one fixture only checks that the layers resolve and every pin and rating is wired."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.tb6612fng-module@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Motor Driver - Dual TB6612FNG (1A), ROB-14451, board v1.1c",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing runs in the Studio yet. The page lists the limits of the board and the truth table of one channel for reading."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The two H-bridges: drive, reverse, short brake, stop and standby."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The voltage lost in the bridge, about 0.5 ohm, which the figure applies to a fixed running current."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Thermal shutdown at 175 degC, and the 1 A operating limit."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Damage from a reversed or too high supply."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "vm_operating",
+          "value": 5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, VM operating"
+        },
+        {
+          "param": "vm_abs_max",
+          "value": 15,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, VM absolute max"
+        },
+        {
+          "param": "vcc_operating",
+          "value": 3,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, VCC operating"
+        },
+        {
+          "param": "vcc_abs_max",
+          "value": 6,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, VCC absolute max"
+        },
+        {
+          "param": "input_abs_max",
+          "value": -0.2,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, input pins"
+        },
+        {
+          "param": "input_pulldown",
+          "value": 200000,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.4, internal pull-downs"
+        },
+        {
+          "param": "logic_high_fraction",
+          "value": 0.7,
+          "unit": "ratio",
+          "type": "datasheet",
+          "ref": "facts section 3.4, logic thresholds"
+        },
+        {
+          "param": "uvlo_detect",
+          "value": 1.9,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, UVLO"
+        },
+        {
+          "param": "uvlo_recover",
+          "value": 2.2,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 3.1, UVLO"
+        },
+        {
+          "param": "channel_current_avg",
+          "value": 1.2,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.2, IOUT average"
+        },
+        {
+          "param": "channel_current_peak",
+          "value": 3.2,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.2, IOUT peak"
+        },
+        {
+          "param": "channel_current_operating",
+          "value": 1,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 3.2, IOUT operating range"
+        },
+        {
+          "param": "bridge_on_resistance",
+          "value": 0.5,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 3.3, Vsat(U+L)"
+        },
+        {
+          "param": "bridge_on_resistance",
+          "value": 0.5,
+          "unit": "ohm",
+          "type": "fit",
+          "ref": "figurejs figures/modules/tb6612fng.js:20"
+        },
+        {
+          "param": "pwm_frequency_max",
+          "value": 100000,
+          "unit": "Hz",
+          "type": "datasheet",
+          "ref": "facts section 3.4, PWM frequency"
+        },
+        {
+          "param": "thermal_shutdown",
+          "value": 175,
+          "unit": "degC",
+          "type": "datasheet",
+          "ref": "facts section 3.2, thermal shutdown"
+        },
+        {
+          "param": "run_current",
+          "value": 0.15,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/modules/tb6612fng.js:21"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The bridge truth table and the 0.5 ohm drop live in the figure page and are not available to the Studio solver.",
+        "The figure assumes a motor running current of 0.15 A instead of reading the attached motor.",
+        "No test checks the bridge against the datasheet."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.tip120@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "TIP120 NPN Darlington transistor, TO-220",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A saturating Darlington switch with the stated minimum gain of 1000, a 1.3 V base drop and a 0.9 V saturation drop."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A transistor fitted backwards, with a gain of 5 from collector to emitter."
+        },
+        {
+          "id": "modelled-3",
+          "text": "Failure by heat or by a collector peak above 1.5 times the current rating, with a burnt part shorting collector to emitter."
+        },
+        {
+          "id": "modelled-4",
+          "text": "A hot state above 0.75 times the free-air power rating, and an overdriven state above the base current rating."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The two internal transistors and the 8 kilohm and 120 ohm resistors: the model sees one transistor."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The change of base drop and saturation drop with current."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The built-in diode some makers show from emitter to collector."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "A heatsink: the power rating is the free-air one."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "current_gain",
+          "value": 1000,
+          "unit": "1",
+          "type": "datasheet",
+          "ref": "factsheet hFE >= 1000 at VCE 3 V, IC 0.5 A and 3 A"
+        },
+        {
+          "param": "current_gain",
+          "value": 1000,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "factsheet section 11, Characteristics"
+        },
+        {
+          "param": "current_gain_reverse",
+          "value": 5,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:108 hfr: +e.hfr || 5"
+        },
+        {
+          "param": "base_emitter_voltage",
+          "value": 2.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Characteristics"
+        },
+        {
+          "param": "base_emitter_voltage",
+          "value": 1.3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 11, Characteristics"
+        },
+        {
+          "param": "collector_emitter_saturation",
+          "value": 2,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Characteristics"
+        },
+        {
+          "param": "collector_emitter_saturation",
+          "value": 0.9,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "factsheet section 11, Characteristics"
+        },
+        {
+          "param": "collector_current_max",
+          "value": 5,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Ratings"
+        },
+        {
+          "param": "base_current_max",
+          "value": 0.12,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Ratings"
+        },
+        {
+          "param": "collector_emitter_voltage_max",
+          "value": 60,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Ratings"
+        },
+        {
+          "param": "emitter_base_voltage_max",
+          "value": 5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Ratings"
+        },
+        {
+          "param": "power_free_air",
+          "value": 2,
+          "unit": "W",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Ratings"
+        },
+        {
+          "param": "junction_temperature_max",
+          "value": 150,
+          "unit": "degC",
+          "type": "datasheet",
+          "ref": "factsheet section 11, Ratings"
+        },
+        {
+          "param": "thermal_resistance",
+          "value": 62.5,
+          "unit": "C_per_W",
+          "type": "fit",
+          "ref": "figurejs figures/parts/tip120.js:20 THETA=62.5"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "collector current",
+          "min": 0.1,
+          "max": 0.3,
+          "unit": "A",
+          "evidence": "The lesson currents the base and saturation drops were read for."
+        }
+      ],
+      "knownFailureCases": [
+        "The solver uses 1.3 V and 0.9 V at any current. At 3 A the sheet allows up to 2.5 V and 2.0 V.",
+        "The 62.5 degC per watt is worked back from the 2 W free-air rating, not stated by the maker."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.tmp36@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "TMP36 temperature sensor",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "A powered output at one held voltage, 0.72 V, with 20 ohms of output resistance."
+        },
+        {
+          "id": "modelled-2",
+          "text": "No output below 2.7 V or above 7 V on the supply."
+        },
+        {
+          "id": "modelled-3",
+          "text": "Burn-out from a reversed or too high supply."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Output that follows temperature in the descriptor layer; the live adapter sets it from the temperature setting."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "Accuracy of +-2 degrees C and self-heating."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "Supply current that changes with temperature."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_min",
+          "value": 2.7,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 9"
+        },
+        {
+          "param": "supply_min",
+          "value": 2.7,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "solverjs figures/engine/bench-solve.js:194"
+        },
+        {
+          "param": "supply_max",
+          "value": 5.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 9"
+        },
+        {
+          "param": "supply_abs_max",
+          "value": 7,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/tmp36.js:5 and :50"
+        },
+        {
+          "param": "quiescent_current",
+          "value": 0.00005,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "factsheet section 9"
+        },
+        {
+          "param": "output_at_0c",
+          "value": 0.5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 9"
+        },
+        {
+          "param": "output_at_25c",
+          "value": 0.75,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "factsheet section 9"
+        },
+        {
+          "param": "output_default",
+          "value": 0.72,
+          "unit": "V",
+          "type": "fit",
+          "ref": "figurejs figures/parts/tmp36.js:13 and :49"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [
+        {
+          "quantity": "supply voltage",
+          "min": 2.7,
+          "max": 5.5,
+          "unit": "V",
+          "evidence": "core.tmp36"
+        }
+      ],
+      "knownFailureCases": [
+        "The layer holds the output at the default temperature. The live circuit builder sets it from the temperature setting in live.ts.",
+        "No numeric test exists: the golden harness has no shape for a powered sensor.",
+        "The quiescent current is shown but the solver draws a fixed small conductance."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "active"
+    },
+    {
+      "id": "part:core.traffic-light@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Traffic-light LED module",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Nothing is solved. The figure lights each lamp from the pin its leg is wired to while the sketch runs."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The current in each lamp: the resistor, the forward voltage and the pin driver."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "A lamp burning out when its resistor is removed."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The 3.3 V board case, where each lamp takes 3 to 4 mA."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "lamp_current",
+          "value": 0.01,
+          "unit": "A",
+          "type": "assumption"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The lamp current, the 330 ohm resistor and the forward voltages of 2.0, 2.1 and 2.2 V live in the module page only.",
+        "The part figure draws a 14 x 30 mm board and the module page a 56 x 21 mm one. The dimensions here follow the part figure."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.tt-motor@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "TT gear motor, 3 to 6 V, 1:48",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Everything. The figure has no elec line, so the solver sees a TT motor as nothing. The robotics benches model it in their own figure code until B13."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "rated_voltage",
+          "value": 3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/tt-motor.js:1"
+        },
+        {
+          "param": "free_current",
+          "value": 0.16,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/tt-motor.js:7"
+        },
+        {
+          "param": "wheel_speed",
+          "value": 220,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/tt-motor.js:16"
+        },
+        {
+          "param": "stall_current",
+          "value": 1,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "figurejs figures/parts/tt-motor.js:8"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "tt-motor.js has no elec line, so there is no legacy model to port.",
+        "The figure uses a 4 ohm armature and a back-EMF constant for its own drawing; they are not given here because they have no source."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.uln2003-module@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "ULN2003 stepper driver board for the 28BYJ-48 (35 x 32 mm)",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [
+        {
+          "id": "modelled-1",
+          "text": "Four channels, each a 2.7 kohm base resistor, a Darlington transistor and a clamp diode to the + rail, built from the solver's resistor, transistor and diode elements."
+        },
+        {
+          "id": "modelled-2",
+          "text": "A high input pulls its output down to about 1 V above ground, so a coil from + to that output carries current."
+        }
+      ],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "The four LEDs and their 1 kohm resistors."
+        },
+        {
+          "id": "not-modelled-2",
+          "text": "The power-on jumper: the model assumes the cap is fitted."
+        },
+        {
+          "id": "not-modelled-3",
+          "text": "The motor itself and the step sequence; both belong to the stepper part and the program."
+        },
+        {
+          "id": "not-modelled-4",
+          "text": "Heat in the chip, and damage above 0.5 A a channel or 50 V."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "supply_range",
+          "value": 5,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 15.2, ULN2003 driver board"
+        },
+        {
+          "param": "output_abs_max",
+          "value": 50,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 15.2, ULN2003 driver board"
+        },
+        {
+          "param": "channel_current_peak",
+          "value": 0.5,
+          "unit": "A",
+          "type": "datasheet",
+          "ref": "facts section 15.2, ULN2003 driver board"
+        },
+        {
+          "param": "base_resistance",
+          "value": 2700,
+          "unit": "ohm",
+          "type": "datasheet",
+          "ref": "facts section 15.2, ULN2003 driver board"
+        },
+        {
+          "param": "vce_sat",
+          "value": 1,
+          "unit": "V",
+          "type": "datasheet",
+          "ref": "facts section 15.2, ULN2003 driver board"
+        },
+        {
+          "param": "vce_sat",
+          "value": 1,
+          "unit": "V",
+          "type": "fit",
+          "ref": "partjs figures/parts/uln2003.js:40"
+        },
+        {
+          "param": "darlington_hfe",
+          "value": 1000,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "partjs figures/parts/uln2003.js:40"
+        },
+        {
+          "param": "darlington_hfr",
+          "value": 5,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "partjs figures/parts/uln2003.js:40"
+        },
+        {
+          "param": "darlington_vbe",
+          "value": 1.4,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "partjs figures/parts/uln2003.js:40"
+        },
+        {
+          "param": "clamp_diode_vf",
+          "value": 0.7,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "partjs figures/parts/uln2003.js:41"
+        },
+        {
+          "param": "clamp_diode_rd",
+          "value": 0.2,
+          "unit": "ohm",
+          "type": "assumption",
+          "ref": "partjs figures/parts/uln2003.js:41"
+        },
+        {
+          "param": "clamp_diode_imax",
+          "value": 0.5,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "partjs figures/parts/uln2003.js:41"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The transistor gain and base-emitter drop come from constants in the part figure, and the diode drop from the solver's fixed value. None has a datasheet source.",
+        "There is no numeric test of the saturation voltage against the datasheet; only the conformance checks run."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
       },
       "status": "active"
     },
