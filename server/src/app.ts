@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import type { ServerConfig } from "./config.ts";
 import type { Deps } from "./deps.ts";
 import { authRoutes } from "./http/auth.ts";
+import { compileRoutes } from "./compile/routes.ts";
+import { COMPILE_LIMITS, createHttpClient, createRunner, type CompileClient, type CompileRunner } from "./compile/runner.ts";
 import { buddyRoutes } from "./http/buddies.ts";
 import type { Authed, RouteDef } from "./http/classes.ts";
 import { deletionRoutes } from "./http/deletion.ts";
@@ -26,6 +28,7 @@ export type RouteDeps = {
   log: Logger;
   limiter: Limiter;
   app: { draining(): boolean };
+  compile: CompileRunner;
 };
 
 export type App = {
@@ -46,10 +49,10 @@ function serverVersion(): string {
 }
 
 export function allRoutes(ctx: RouteDeps & { challenges: ChallengeStore }): RouteDef[] {
-  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx), ...deletionRoutes(ctx), ...buddyRoutes(ctx)];
+  return [...serverInfoRoutes(ctx), ...healthRoutes(ctx), ...authRoutes(ctx), ...identityRoutes(ctx), ...deletionRoutes(ctx), ...buddyRoutes(ctx), ...compileRoutes(ctx)];
 }
 
-export function createApp(config: ServerConfig, deps: Deps, opts: { store?: ServerStore; log?: Logger } = {}): App {
+export function createApp(config: ServerConfig, deps: Deps, opts: { store?: ServerStore; log?: Logger; compileClient?: CompileClient } = {}): App {
   const log = opts.log ?? createLogger({ level: config.logLevel });
   const store =
     opts.store ??
@@ -81,7 +84,16 @@ export function createApp(config: ServerConfig, deps: Deps, opts: { store?: Serv
     return authed;
   };
 
-  const routes = allRoutes({ config, store, deps, log, limiter, challenges, app: { draining: () => draining } });
+  const compile = createRunner({
+    client: opts.compileClient ?? createHttpClient(config.compile.url),
+    now: () => deps.clock.now(),
+    ids: deps.ids,
+    log,
+    limits: COMPILE_LIMITS,
+  });
+  if (config.compile.enabled) void compile.probe();
+
+  const routes = allRoutes({ config, store, deps, log, limiter, challenges, compile, app: { draining: () => draining } });
   const handler = createRouter({ routes, config, deps, log, limiter, authenticate });
 
   return {

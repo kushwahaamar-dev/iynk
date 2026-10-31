@@ -20,6 +20,7 @@ export type ServerConfig = {
   deletionGraceHours: number;
   serverName: string;
   minClient: string;
+  compile: { enabled: boolean; url: URL };
 };
 
 export type FsProbe = {
@@ -208,6 +209,16 @@ function evaluate(env: Env, probe: FsProbe): { config: ServerConfig | null; prob
   const minClient = text("IYNK_MIN_CLIENT", "0.0.0");
   if (!/^\d+\.\d+\.\d+$/.test(minClient)) fail(`IYNK_MIN_CLIENT: "${minClient}" is not a version; use something like 0.1.0.`);
 
+  const compileUrl = text("IYNK_COMPILE_URL", "http://compile:8788");
+  let compileService = new URL("http://compile:8788");
+  try {
+    const url = new URL(compileUrl);
+    if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("not a web address");
+    compileService = url;
+  } catch {
+    fail(`IYNK_COMPILE_URL: "${compileUrl}" is not a web address; use something like http://compile:8788.`);
+  }
+
   const config: ServerConfig = {
     dataDir,
     publicUrl,
@@ -227,6 +238,7 @@ function evaluate(env: Env, probe: FsProbe): { config: ServerConfig | null; prob
     deletionGraceHours: integer("IYNK_DELETION_GRACE_HOURS", 24, 0, 720),
     serverName,
     minClient,
+    compile: { enabled: flag("IYNK_COMPILE_ENABLE"), url: compileService },
   };
 
   return { config: problems.length === 0 ? config : null, problems };
