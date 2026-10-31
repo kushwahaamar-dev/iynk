@@ -9,6 +9,7 @@ import { createTranslator } from "@/i18n/translate";
 import type { RunState } from "@/protocol";
 import type { StepUnit } from "@/sim/engine";
 import { registerCommand } from "@/studio/commands";
+import type { RobotStore } from "@/studio/robot/store";
 import { useStoreSelector } from "@/studio/stores/select";
 import type { RunPhase, RunStore } from "@/studio/stores/run";
 import { useEditAccess } from "./room/RoomDock";
@@ -26,6 +27,8 @@ export interface RunBarProps {
   firmware?: ReactNode;
   /** The Build control and its status, when the project has firmware a server could compile. */
   compile?: ReactNode;
+  /** The robot's results, when the project is a robot: the hash of the finished run is shown. */
+  robot?: { store: RobotStore; messages: Messages["robot"] };
 }
 
 const PHASE_TONE: Record<RunPhase, ChipTone> = {
@@ -74,7 +77,18 @@ function Clock({ run, label }: { run: RunStore; label: string }) {
   );
 }
 
-export function RunBar({ run, link, messages, instruments, roomRun, lang, firmware, compile }: RunBarProps) {
+function RunHash({ store, messages, lang }: { store: RobotStore; messages: Messages["robot"]; lang: Locale }) {
+  const t = useMemo(() => createTranslator(lang, messages, `${lang}/robot`), [lang, messages]);
+  const hash = useSyncExternalStore(store.subscribe, () => store.get().runHash, () => null);
+  if (hash === null) return null;
+  return (
+    <p className="font-mono text-sm tabular-nums text-muted" role="status">
+      {t("run.hash", { hash })}
+    </p>
+  );
+}
+
+export function RunBar({ run, link, messages, instruments, roomRun, lang, firmware, compile, robot }: RunBarProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioRun`), [lang, messages]);
   const ti = useMemo(() => createTranslator(lang, instruments, `${lang}/instruments`), [lang, instruments]);
   const tr = useMemo(() => createTranslator(lang, roomRun, `${lang}/run`), [lang, roomRun]);
@@ -175,6 +189,7 @@ export function RunBar({ run, link, messages, instruments, roomRun, lang, firmwa
       </div>
       {firmware}
       {compile}
+      {robot ? <RunHash store={robot.store} messages={robot.messages} lang={lang} /> : null}
       <fieldset disabled={denied} className="m-0 min-w-0 border-0 p-0">
         <SpeedControl t={ti} speed={speed} achieved={achieved} behind={behind && phase === "running"} onChange={(x) => link.setSpeed(x)} />
       </fieldset>

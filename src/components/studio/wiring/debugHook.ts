@@ -1,6 +1,7 @@
 import type { ProjectEv, SaveFailure } from "@/local/project-protocol";
 import { netlist } from "@/project/netlist";
 import { stateHash } from "@/project/hash";
+import type { RobotStore } from "@/studio/robot/store";
 import type { DocStore } from "@/studio/stores/doc";
 import type { RunStore } from "@/studio/stores/run";
 import type { Announcer } from "@/studio/tools/keyboard";
@@ -21,9 +22,15 @@ export interface StudioDebug {
   failNextSave(kind: InjectedFailure): void;
 }
 
+/** The hashes of the last robot run, for the cross-browser determinism job. */
+export interface MechHashes {
+  latest(): { runHash: string; sceneHash: string; checkpoints: string[] } | null;
+}
+
 declare global {
   interface Window {
     __iynkStudioDebug?: StudioDebug;
+    __iynkMechHashes?: MechHashes;
   }
 }
 
@@ -32,6 +39,7 @@ export interface DebugDeps {
   run: RunStore;
   announcer: Announcer;
   tools: () => readonly ToolLogEntry[];
+  robot?: RobotStore;
 }
 
 export interface DebugHook {
@@ -42,7 +50,7 @@ export interface DebugHook {
 
 const byText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
-export function installDebugHook({ doc, run, announcer, tools }: DebugDeps): DebugHook {
+export function installDebugHook({ doc, run, announcer, tools, robot }: DebugDeps): DebugHook {
   if (process.env.NEXT_PUBLIC_STUDIO_TEST !== "1") return { dispose() {}, wrapHost: (host) => host };
 
   let failure: InjectedFailure | null = null;
@@ -68,9 +76,18 @@ export function installDebugHook({ doc, run, announcer, tools }: DebugDeps): Deb
   };
   window.__iynkStudioDebug = hook;
 
+  const hashes: MechHashes = {
+    latest() {
+      const view = robot?.get();
+      return view?.runHash != null && view.sceneHash != null ? { runHash: view.runHash, sceneHash: view.sceneHash, checkpoints: view.checkpoints } : null;
+    },
+  };
+  window.__iynkMechHashes = hashes;
+
   return {
     dispose() {
       if (window.__iynkStudioDebug === hook) delete window.__iynkStudioDebug;
+      if (window.__iynkMechHashes === hashes) delete window.__iynkMechHashes;
     },
     wrapHost(host) {
       return Object.assign(Object.create(host) as typeof host, {

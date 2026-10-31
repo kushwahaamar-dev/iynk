@@ -1,0 +1,2689 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [],
+    "owners": [
+      "usr_amar"
+    ],
+    "visibility": "private"
+  },
+  "actors": [
+    {
+      "id": "usr_amar",
+      "name": "Amar"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      "firmware": {
+        "entry": "src_follow",
+        "language": "arduino-cpp",
+        "libraries": [
+          "QTRSensors"
+        ],
+        "sources": [
+          "src_follow"
+        ]
+      },
+      "id": "brd_uno",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.lipo-2s",
+        "version": "1.0.1"
+      },
+      "id": "cmp_bat",
+      "refdes": "BT1"
+    },
+    {
+      "definition": {
+        "ref": "core.caster-ball",
+        "version": "1.0.0"
+      },
+      "id": "cmp_caster",
+      "refdes": "C1"
+    },
+    {
+      "definition": {
+        "ref": "core.chassis-2wd",
+        "version": "1.0.0"
+      },
+      "id": "cmp_chassis",
+      "refdes": "CH1"
+    },
+    {
+      "definition": {
+        "ref": "core.tb6612fng-module",
+        "version": "1.0.1"
+      },
+      "id": "cmp_drv",
+      "refdes": "U2"
+    },
+    {
+      "definition": {
+        "ref": "core.tt-motor",
+        "version": "1.0.1"
+      },
+      "id": "cmp_motor_l",
+      "refdes": "M1"
+    },
+    {
+      "definition": {
+        "ref": "core.tt-motor",
+        "version": "1.0.1"
+      },
+      "id": "cmp_motor_r",
+      "refdes": "M2"
+    },
+    {
+      "definition": {
+        "ref": "core.qtr-8rc",
+        "version": "1.0.1"
+      },
+      "id": "cmp_qtr",
+      "refdes": "SN1"
+    },
+    {
+      "definition": {
+        "ref": "core.wheel-65",
+        "version": "1.0.0"
+      },
+      "id": "cmp_wheel_l",
+      "refdes": "W1"
+    },
+    {
+      "definition": {
+        "ref": "core.wheel-65",
+        "version": "1.0.0"
+      },
+      "id": "cmp_wheel_r",
+      "refdes": "W2"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "mechanical",
+              "designator": "M",
+              "id": "MOUNT",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "mechanical"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.caster-ball",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "mechanical",
+              "designator": "D",
+              "id": "DECK",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "mechanical"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.chassis-2wd",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": "full",
+              "id": "demo",
+              "type": "enum",
+              "values": [
+                "full",
+                "nominal",
+                "low"
+              ]
+            }
+          ],
+          "pins": [
+            {
+              "class": "power",
+              "designator": "+",
+              "id": "PLUS",
+              "polarity": "positive",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "ground",
+              "designator": "-",
+              "id": "MINUS",
+              "polarity": "negative",
+              "position": {
+                "x": 2.54,
+                "y": 0
+              },
+              "type": "ground"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.lipo-2s",
+        "version": "1.0.1"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND",
+              "position": {
+                "x": 20.955,
+                "y": 3.81
+              },
+              "type": "ground"
+            },
+            {
+              "class": "power",
+              "designator": "VCC",
+              "id": "VCC",
+              "position": {
+                "x": 23.494999999999997,
+                "y": 3.81
+              },
+              "type": "power_in"
+            },
+            {
+              "class": "digital",
+              "designator": "LEDON",
+              "id": "LEDON",
+              "position": {
+                "x": 26.034999999999997,
+                "y": 3.81
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT1",
+              "id": "OUT1",
+              "position": {
+                "x": 28.575,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT2",
+              "id": "OUT2",
+              "position": {
+                "x": 31.115,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT3",
+              "id": "OUT3",
+              "position": {
+                "x": 33.655,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT4",
+              "id": "OUT4",
+              "position": {
+                "x": 36.195,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT5",
+              "id": "OUT5",
+              "position": {
+                "x": 38.735,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT6",
+              "id": "OUT6",
+              "position": {
+                "x": 41.275,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT7",
+              "id": "OUT7",
+              "position": {
+                "x": 43.815,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            },
+            {
+              "class": "digital",
+              "designator": "OUT8",
+              "id": "OUT8",
+              "position": {
+                "x": 46.355,
+                "y": 3.81
+              },
+              "type": "digital_io"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.qtr-8rc",
+        "version": "1.0.1"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "ground",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "GND2",
+                "GND3"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "class": "power",
+              "designator": "VM",
+              "id": "VM",
+              "position": {
+                "x": 2.54,
+                "y": 19.05
+              },
+              "type": "power_in"
+            },
+            {
+              "class": "power",
+              "designator": "VCC",
+              "id": "VCC",
+              "position": {
+                "x": 2.54,
+                "y": 16.51
+              },
+              "type": "power_in"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND",
+              "position": {
+                "x": 2.54,
+                "y": 13.97
+              },
+              "type": "ground"
+            },
+            {
+              "class": "power",
+              "designator": "A01",
+              "id": "A01",
+              "position": {
+                "x": 2.54,
+                "y": 11.43
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "power",
+              "designator": "A02",
+              "id": "A02",
+              "position": {
+                "x": 2.54,
+                "y": 8.89
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "power",
+              "designator": "B02",
+              "id": "B02",
+              "position": {
+                "x": 2.54,
+                "y": 6.35
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "power",
+              "designator": "B01",
+              "id": "B01",
+              "position": {
+                "x": 2.54,
+                "y": 3.81
+              },
+              "type": "power_out"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND2",
+              "position": {
+                "x": 2.54,
+                "y": 1.27
+              },
+              "type": "ground"
+            },
+            {
+              "class": "digital",
+              "designator": "PWMA",
+              "id": "PWMA",
+              "position": {
+                "x": 17.78,
+                "y": 19.05
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "AIN2",
+              "id": "AIN2",
+              "position": {
+                "x": 17.78,
+                "y": 16.51
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "AIN1",
+              "id": "AIN1",
+              "position": {
+                "x": 17.78,
+                "y": 13.97
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "STBY",
+              "id": "STBY",
+              "position": {
+                "x": 17.78,
+                "y": 11.43
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "BIN1",
+              "id": "BIN1",
+              "position": {
+                "x": 17.78,
+                "y": 8.89
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "BIN2",
+              "id": "BIN2",
+              "position": {
+                "x": 17.78,
+                "y": 6.35
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "digital",
+              "designator": "PWMB",
+              "id": "PWMB",
+              "position": {
+                "x": 17.78,
+                "y": 3.81
+              },
+              "type": "digital_in"
+            },
+            {
+              "class": "ground",
+              "designator": "GND",
+              "id": "GND3",
+              "position": {
+                "x": 17.78,
+                "y": 1.27
+              },
+              "type": "ground"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.tb6612fng-module",
+        "version": "1.0.1"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": "stopped",
+              "id": "demo",
+              "type": "enum",
+              "values": [
+                "stopped",
+                "half",
+                "full",
+                "reversed",
+                "stalled",
+                "burnt"
+              ]
+            }
+          ],
+          "pins": [
+            {
+              "class": "passive",
+              "designator": "+",
+              "id": "PLUS",
+              "polarity": "positive",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "passive"
+            },
+            {
+              "class": "passive",
+              "designator": "-",
+              "id": "MINUS",
+              "polarity": "negative",
+              "position": {
+                "x": 2.54,
+                "y": 0
+              },
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.tt-motor",
+        "version": "1.0.1"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_D11",
+              "kind": "internal-short",
+              "pins": [
+                "D11",
+                "ICSP_4"
+              ]
+            },
+            {
+              "id": "g_D12",
+              "kind": "internal-short",
+              "pins": [
+                "D12",
+                "ICSP_1"
+              ]
+            },
+            {
+              "id": "g_D13",
+              "kind": "internal-short",
+              "pins": [
+                "D13",
+                "ICSP_3"
+              ]
+            },
+            {
+              "id": "g_GND",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "POWER_6",
+                "POWER_7",
+                "ICSP_6",
+                "ICSP1_6"
+              ]
+            },
+            {
+              "id": "g_RESET",
+              "kind": "internal-short",
+              "pins": [
+                "RESET",
+                "ICSP_5"
+              ]
+            },
+            {
+              "id": "g_P5V",
+              "kind": "internal-short",
+              "pins": [
+                "P5V",
+                "ICSP_2",
+                "ICSP1_2"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "designator": "D0",
+              "header": "IOL",
+              "id": "D0",
+              "net": "D0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D1",
+              "header": "IOL",
+              "id": "D1",
+              "net": "D1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D2",
+              "header": "IOL",
+              "id": "D2",
+              "net": "D2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D3",
+              "header": "IOL",
+              "id": "D3",
+              "net": "D3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D4",
+              "header": "IOL",
+              "id": "D4",
+              "net": "D4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D5",
+              "header": "IOL",
+              "id": "D5",
+              "net": "D5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D6",
+              "header": "IOL",
+              "id": "D6",
+              "net": "D6",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D7",
+              "header": "IOL",
+              "id": "D7",
+              "net": "D7",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D8",
+              "header": "IOH",
+              "id": "D8",
+              "net": "D8",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D9",
+              "header": "IOH",
+              "id": "D9",
+              "net": "D9",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D10",
+              "header": "IOH",
+              "id": "D10",
+              "net": "D10",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D11",
+              "header": "IOH",
+              "id": "D11",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D12",
+              "header": "IOH",
+              "id": "D12",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D13",
+              "header": "IOH",
+              "id": "D13",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "IOH",
+              "id": "GND",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "AREF",
+              "header": "IOH",
+              "id": "AREF",
+              "net": "AREF",
+              "type": "analog_in"
+            },
+            {
+              "designator": "SDA",
+              "header": "IOH",
+              "id": "SDA",
+              "net": "SDA",
+              "type": "digital_io"
+            },
+            {
+              "designator": "SCL",
+              "header": "IOH",
+              "id": "SCL",
+              "net": "SCL",
+              "type": "digital_io"
+            },
+            {
+              "designator": "NC",
+              "header": "POWER",
+              "id": "NC",
+              "net": "NC",
+              "type": "nc"
+            },
+            {
+              "designator": "IOREF",
+              "header": "POWER",
+              "id": "IOREF",
+              "net": "IOREF",
+              "type": "passive"
+            },
+            {
+              "designator": "RESET",
+              "header": "POWER",
+              "id": "RESET",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "3V3",
+              "header": "POWER",
+              "id": "P3V3",
+              "net": "3V3",
+              "type": "power_io"
+            },
+            {
+              "designator": "5V",
+              "header": "POWER",
+              "id": "P5V",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_7",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "VIN",
+              "header": "POWER",
+              "id": "VIN",
+              "net": "VIN",
+              "type": "power_io"
+            },
+            {
+              "designator": "A0",
+              "header": "AD",
+              "id": "A0",
+              "net": "A0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A1",
+              "header": "AD",
+              "id": "A1",
+              "net": "A1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A2",
+              "header": "AD",
+              "id": "A2",
+              "net": "A2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A3",
+              "header": "AD",
+              "id": "A3",
+              "net": "A3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A4",
+              "header": "AD",
+              "id": "A4",
+              "net": "A4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A5",
+              "header": "AD",
+              "id": "A5",
+              "net": "A5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MISO",
+              "header": "ICSP",
+              "id": "ICSP_1",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP",
+              "id": "ICSP_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK",
+              "header": "ICSP",
+              "id": "ICSP_3",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI",
+              "header": "ICSP",
+              "id": "ICSP_4",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET",
+              "header": "ICSP",
+              "id": "ICSP_5",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP",
+              "id": "ICSP_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "MISO2",
+              "header": "ICSP1",
+              "id": "MISO2",
+              "net": "MISO2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP1",
+              "id": "ICSP1_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK2",
+              "header": "ICSP1",
+              "id": "SCK2",
+              "net": "SCK2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI2",
+              "header": "ICSP1",
+              "id": "MOSI2",
+              "net": "MOSI2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET2",
+              "header": "ICSP1",
+              "id": "RESET2",
+              "net": "RESET2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP1",
+              "id": "ICSP1_6",
+              "net": "GND",
+              "type": "ground"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [],
+          "pins": [
+            {
+              "class": "mechanical",
+              "designator": "S",
+              "id": "SHAFT",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "mechanical"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.wheel-65",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": [
+      {
+        "ecosystem": "arduino",
+        "name": "QTRSensors"
+      }
+    ]
+  },
+  "domains": {
+    "robotics": {
+      "data": {
+        "arena": {
+          "floor": {
+            "size_mm": [
+              1800,
+              1200
+            ],
+            "surface": "floor"
+          },
+          "start": {
+            "x_mm": 700,
+            "y_mm": 0,
+            "yaw_deg": 90
+          },
+          "statics": [
+            {
+              "id": "wall_n",
+              "pose": {
+                "position_mm": [
+                  0,
+                  610,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                1800,
+                20,
+                60
+              ],
+              "surface": "wall"
+            },
+            {
+              "id": "wall_s",
+              "pose": {
+                "position_mm": [
+                  0,
+                  -610,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                1800,
+                20,
+                60
+              ],
+              "surface": "wall"
+            },
+            {
+              "id": "wall_e",
+              "pose": {
+                "position_mm": [
+                  910,
+                  0,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                20,
+                1200,
+                60
+              ],
+              "surface": "wall"
+            },
+            {
+              "id": "wall_w",
+              "pose": {
+                "position_mm": [
+                  -910,
+                  0,
+                  30
+                ],
+                "rpy_deg": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "size_mm": [
+                20,
+                1200,
+                60
+              ],
+              "surface": "wall"
+            }
+          ],
+          "tracks": [
+            {
+              "closed": true,
+              "id": "oval",
+              "points_mm": [
+                [
+                  700,
+                  0
+                ],
+                [
+                  686.55,
+                  78.04
+                ],
+                [
+                  646.72,
+                  153.07
+                ],
+                [
+                  582.03,
+                  222.23
+                ],
+                [
+                  494.97,
+                  282.84
+                ],
+                [
+                  388.9,
+                  332.59
+                ],
+                [
+                  267.88,
+                  369.55
+                ],
+                [
+                  136.56,
+                  392.31
+                ],
+                [
+                  0,
+                  400
+                ],
+                [
+                  -136.56,
+                  392.31
+                ],
+                [
+                  -267.88,
+                  369.55
+                ],
+                [
+                  -388.9,
+                  332.59
+                ],
+                [
+                  -494.97,
+                  282.84
+                ],
+                [
+                  -582.03,
+                  222.23
+                ],
+                [
+                  -646.72,
+                  153.07
+                ],
+                [
+                  -686.55,
+                  78.04
+                ],
+                [
+                  -700,
+                  0
+                ],
+                [
+                  -686.55,
+                  -78.04
+                ],
+                [
+                  -646.72,
+                  -153.07
+                ],
+                [
+                  -582.03,
+                  -222.23
+                ],
+                [
+                  -494.97,
+                  -282.84
+                ],
+                [
+                  -388.9,
+                  -332.59
+                ],
+                [
+                  -267.88,
+                  -369.55
+                ],
+                [
+                  -136.56,
+                  -392.31
+                ],
+                [
+                  0,
+                  -400
+                ],
+                [
+                  136.56,
+                  -392.31
+                ],
+                [
+                  267.88,
+                  -369.55
+                ],
+                [
+                  388.9,
+                  -332.59
+                ],
+                [
+                  494.97,
+                  -282.84
+                ],
+                [
+                  582.03,
+                  -222.23
+                ],
+                [
+                  646.72,
+                  -153.07
+                ],
+                [
+                  686.55,
+                  -78.04
+                ]
+              ],
+              "reflectance": 0.05,
+              "width_mm": 19
+            }
+          ]
+        },
+        "bodies": {
+          "bdy_caster": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0,
+            "restitution": 0
+          },
+          "bdy_chassis": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0.3,
+            "restitution": 0
+          },
+          "bdy_wheel_l": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0.9,
+            "restitution": 0
+          },
+          "bdy_wheel_r": {
+            "collider": "from-shape",
+            "damping_ang": 0,
+            "damping_lin": 0,
+            "fast": false,
+            "friction": 0.9,
+            "restitution": 0
+          }
+        },
+        "joints": {
+          "jnt_wheel_l": {
+            "damping": 0.0005,
+            "friction_nm": 0.002
+          },
+          "jnt_wheel_r": {
+            "damping": 0.0005,
+            "friction_nm": 0.002
+          }
+        },
+        "physics": {
+          "ccd": "auto",
+          "gravity_mps2": [
+            0,
+            0,
+            -9.81
+          ],
+          "length_scale": 1,
+          "params": {
+            "solver_iterations": 4
+          },
+          "sleeping": false
+        },
+        "sensors": [
+          {
+            "component": "cmp_qtr",
+            "id": "line",
+            "mount": "mnt_qtr",
+            "query": "surface-sample"
+          }
+        ],
+        "surfaces": [
+          {
+            "crr": 0.02,
+            "id": "floor",
+            "mu": 0.8,
+            "name": "Matte white board",
+            "reflectance": 0.85
+          },
+          {
+            "crr": 0,
+            "id": "wall",
+            "mu": 0.5,
+            "name": "Foam board wall",
+            "reflectance": 0.6
+          }
+        ],
+        "wheels": {
+          "jnt_wheel_l": {
+            "crr": 0.02,
+            "radius_mm": 32.5,
+            "surface_mu": 0.8,
+            "width_mm": 26
+          },
+          "jnt_wheel_r": {
+            "crr": 0.02,
+            "radius_mm": 32.5,
+            "surface_mu": 0.8,
+            "width_mm": 26
+          }
+        }
+      },
+      "schemaVersion": "1.0"
+    }
+  },
+  "ext": {
+    "x-iynk-robot": {
+      "loopPeriodUs": 10000,
+      "loopPin": "D13"
+    }
+  },
+  "format": "iynk.project",
+  "guide": {
+    "features": [
+      {
+        "icon": "play",
+        "text": "Motor torque and back-EMF, the gearbox, wheel grip and rolling resistance."
+      },
+      {
+        "icon": "board",
+        "text": "Battery sag under load and the Uno brown-out."
+      },
+      {
+        "icon": "tip",
+        "text": "The reflectance array reading the surface under it, with its height."
+      }
+    ],
+    "hints": [
+      "The robot resets as soon as the motors start: look at the battery voltage while the motors start. A weak pack sags and the Uno browns out.",
+      "The robot steers away from the line: one motor runs the wrong way. Check the left motor leads.",
+      "The robot never finds the line: read the sensor channels. If every one sits at the same value the array is too high or stuck.",
+      "The left wheel spins and the robot drifts: the wheel is slipping, so look at the grip under it.",
+      "Still stuck? Compare each reading with the run before you changed anything."
+    ],
+    "kind": "challenge",
+    "lede": "A two-wheel robot that follows a black line round an oval track.",
+    "level": "project",
+    "overview": "Eight reflectance sensors under the nose see the line. The Uno turns where the line sits under the array into a steering difference between the two motors, and the robot follows the track for a lap.",
+    "pins": [
+      {
+        "color": "orange",
+        "pin": "D5",
+        "role": "Left motor speed",
+        "to": "TB6612 PWMA"
+      },
+      {
+        "color": "green",
+        "pin": "D7",
+        "role": "Left motor direction",
+        "to": "TB6612 AIN1"
+      },
+      {
+        "color": "green",
+        "pin": "D8",
+        "role": "Left motor direction",
+        "to": "TB6612 AIN2"
+      },
+      {
+        "color": "orange",
+        "pin": "D6",
+        "role": "Right motor speed",
+        "to": "TB6612 PWMB"
+      },
+      {
+        "color": "yellow",
+        "pin": "D10",
+        "role": "Right motor direction",
+        "to": "TB6612 BIN1"
+      },
+      {
+        "color": "yellow",
+        "pin": "D4",
+        "role": "Right motor direction",
+        "to": "TB6612 BIN2"
+      },
+      {
+        "color": "white",
+        "pin": "D2",
+        "role": "Array emitters",
+        "to": "QTR LEDON"
+      },
+      {
+        "color": "purple",
+        "pin": "D13",
+        "role": "Toggles once per loop",
+        "to": "Loop heartbeat"
+      }
+    ],
+    "specs": [
+      {
+        "label": "Board",
+        "value": "Arduino Uno R3"
+      },
+      {
+        "label": "Driver",
+        "value": "TB6612FNG module"
+      },
+      {
+        "label": "Motors",
+        "value": "Two TT gear motors, 48:1"
+      },
+      {
+        "label": "Wheels",
+        "value": "65 mm"
+      },
+      {
+        "label": "Battery",
+        "value": "2S LiPo, 7.4 V"
+      },
+      {
+        "label": "Sensor",
+        "value": "QTR-8RC, 8 channels, 9.5 mm pitch"
+      },
+      {
+        "label": "Track",
+        "value": "19 mm line, oval 1400 by 800 mm"
+      },
+      {
+        "label": "What it models",
+        "value": "Motor torque and back-EMF, the gearbox, wheel grip and rolling resistance, battery sag, the array's reading and its height. It does not model the IMU, wheel flex or the floor's roughness."
+      }
+    ],
+    "steps": [
+      "Fix the two TT gear motors to the chassis and press a 65 mm wheel onto each shaft. Put the caster ball at the back.",
+      "Mount the QTR-8RC array at the nose, about 3 mm above the floor, with OUT1 on the left.",
+      "Wire the battery to VIN on the Uno and to VM on the TB6612FNG, and join the grounds.",
+      "Wire the driver: PWMA to D5, AIN1 to D7, AIN2 to D8, PWMB to D6, BIN1 to D10, BIN2 to D4. Put STBY on 5 V.",
+      "Wire the array: OUT1 to OUT8 to A0 to A5, D11 and D12, LEDON to D2, VCC to 5 V.",
+      "Press Run. The robot follows the oval and the serial monitor prints a line each time it completes a lap.",
+      "Open the Robot checks and the top-down view, then enable a fault and run again."
+    ],
+    "title": "Line follower"
+  },
+  "history": {
+    "baseChain": "270b5b75114c9735eeb9782a7dd1ad2f582afa9ac1608c91d39f256d8fe56e52",
+    "baseRevision": 0,
+    "checkpoints": [],
+    "ops": []
+  },
+  "id": "prj_robot-line-follower",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "mechanical": {
+    "bodies": [
+      {
+        "component": "cmp_caster",
+        "frame": "frm_caster",
+        "id": "bdy_caster",
+        "mass_g": 6,
+        "name": "Caster ball",
+        "shape": {
+          "kind": "sphere",
+          "radius_mm": 7.5
+        }
+      },
+      {
+        "com_mm": [
+          -35,
+          0,
+          -8
+        ],
+        "component": "cmp_chassis",
+        "frame": "frm_plate",
+        "id": "bdy_chassis",
+        "mass_g": 290,
+        "name": "Chassis with electronics (iynk estimate)",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            160,
+            110,
+            20
+          ]
+        }
+      },
+      {
+        "component": "cmp_wheel_l",
+        "frame": "frm_wheel_l",
+        "id": "bdy_wheel_l",
+        "mass_g": 25,
+        "name": "Left wheel",
+        "shape": {
+          "height_mm": 26,
+          "kind": "cylinder",
+          "radius_mm": 32.5
+        }
+      },
+      {
+        "component": "cmp_wheel_r",
+        "frame": "frm_wheel_r",
+        "id": "bdy_wheel_r",
+        "mass_g": 25,
+        "name": "Right wheel",
+        "shape": {
+          "height_mm": 26,
+          "kind": "cylinder",
+          "radius_mm": 32.5
+        }
+      }
+    ],
+    "frames": [
+      {
+        "id": "frm_caster",
+        "name": "Caster ball",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            -95,
+            0,
+            7.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_plate",
+        "name": "Chassis plate",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            -10,
+            0,
+            30
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_robot",
+        "name": "Robot (ground under the axle midpoint)",
+        "parent": "world",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_wheel_l",
+        "name": "Left wheel",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            0,
+            70,
+            32.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "id": "frm_wheel_r",
+        "name": "Right wheel",
+        "parent": "frm_robot",
+        "pose": {
+          "position_mm": [
+            0,
+            -70,
+            32.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "joints": [
+      {
+        "child": "bdy_caster",
+        "id": "jnt_caster",
+        "kind": "fixed",
+        "origin": {
+          "position_mm": [
+            -85,
+            0,
+            -22.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        },
+        "parent": "bdy_chassis"
+      },
+      {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "child": "bdy_wheel_l",
+        "drive": {
+          "component": "cmp_motor_l"
+        },
+        "id": "jnt_wheel_l",
+        "kind": "wheel",
+        "origin": {
+          "position_mm": [
+            10,
+            70,
+            2.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        },
+        "parent": "bdy_chassis"
+      },
+      {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "child": "bdy_wheel_r",
+        "drive": {
+          "component": "cmp_motor_r"
+        },
+        "id": "jnt_wheel_r",
+        "kind": "wheel",
+        "origin": {
+          "position_mm": [
+            10,
+            -70,
+            2.5
+          ],
+          "rpy_deg": [
+            -90,
+            0,
+            0
+          ]
+        },
+        "parent": "bdy_chassis"
+      }
+    ],
+    "mounts": [
+      {
+        "component": "cmp_bat",
+        "frame": "frm_plate",
+        "id": "mnt_bat",
+        "pose": {
+          "position_mm": [
+            -60,
+            0,
+            -2
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_drv",
+        "frame": "frm_plate",
+        "id": "mnt_drv",
+        "pose": {
+          "position_mm": [
+            30,
+            0,
+            8
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_motor_l",
+        "frame": "frm_plate",
+        "id": "mnt_motor_l",
+        "pose": {
+          "position_mm": [
+            10,
+            50,
+            2.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_motor_r",
+        "frame": "frm_plate",
+        "id": "mnt_motor_r",
+        "pose": {
+          "position_mm": [
+            10,
+            -50,
+            2.5
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_qtr",
+        "frame": "frm_plate",
+        "id": "mnt_qtr",
+        "pose": {
+          "position_mm": [
+            95,
+            0,
+            -27
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "brd_uno",
+        "frame": "frm_plate",
+        "id": "mnt_uno",
+        "pose": {
+          "position_mm": [
+            -25,
+            0,
+            12
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "meta": {
+    "createdAt": "2026-10-27T12:00:00.000Z",
+    "description": "An Arduino Uno, a TB6612FNG driver, two TT gear motors with 65 mm wheels, a caster and an eight-sensor reflectance array on a two-wheel chassis. It drives round a 19 mm oval track in the physics arena. Part values are iynk assumptions unless a part says otherwise.",
+    "kind": "template",
+    "locale": "en",
+    "tags": [
+      "robot",
+      "line-follower",
+      "uno",
+      "tb6612"
+    ],
+    "title": "Line follower",
+    "updatedAt": "2026-10-27T12:00:00.000Z"
+  },
+  "nets": [
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "P5V"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "STBY"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "VCC"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "VCC"
+        }
+      ],
+      "id": "net_5v",
+      "name": "5V"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D7"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "AIN1"
+        }
+      ],
+      "id": "net_ain1",
+      "name": "AIN1"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D8"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "AIN2"
+        }
+      ],
+      "id": "net_ain2",
+      "name": "AIN2"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D10"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "BIN1"
+        }
+      ],
+      "id": "net_bin1",
+      "name": "BIN1"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D4"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "BIN2"
+        }
+      ],
+      "id": "net_bin2",
+      "name": "BIN2"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_bat",
+          "p": "MINUS"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "GND"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D2"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "LEDON"
+        }
+      ],
+      "id": "net_ledon",
+      "name": "LEDON"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "A01"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "PLUS"
+        }
+      ],
+      "id": "net_ml1",
+      "name": "M1+"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "A02"
+        },
+        {
+          "c": "cmp_motor_l",
+          "p": "MINUS"
+        }
+      ],
+      "id": "net_ml2",
+      "name": "M1-"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "B01"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "PLUS"
+        }
+      ],
+      "id": "net_mr1",
+      "name": "M2+"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_drv",
+          "p": "B02"
+        },
+        {
+          "c": "cmp_motor_r",
+          "p": "MINUS"
+        }
+      ],
+      "id": "net_mr2",
+      "name": "M2-"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D5"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "PWMA"
+        }
+      ],
+      "id": "net_pwma",
+      "name": "PWMA"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D6"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "PWMB"
+        }
+      ],
+      "id": "net_pwmb",
+      "name": "PWMB"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "A0"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT1"
+        }
+      ],
+      "id": "net_q1",
+      "name": "Q1"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "A1"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT2"
+        }
+      ],
+      "id": "net_q2",
+      "name": "Q2"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "A2"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT3"
+        }
+      ],
+      "id": "net_q3",
+      "name": "Q3"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "A3"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT4"
+        }
+      ],
+      "id": "net_q4",
+      "name": "Q4"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "A4"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT5"
+        }
+      ],
+      "id": "net_q5",
+      "name": "Q5"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "A5"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT6"
+        }
+      ],
+      "id": "net_q6",
+      "name": "Q6"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D11"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT7"
+        }
+      ],
+      "id": "net_q7",
+      "name": "Q7"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D12"
+        },
+        {
+          "c": "cmp_qtr",
+          "p": "OUT8"
+        }
+      ],
+      "id": "net_q8",
+      "name": "Q8"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "VIN"
+        },
+        {
+          "c": "cmp_bat",
+          "p": "PLUS"
+        },
+        {
+          "c": "cmp_drv",
+          "p": "VM"
+        }
+      ],
+      "id": "net_vbat",
+      "name": "VBAT"
+    }
+  ],
+  "parameters": [],
+  "provenance": {
+    "createdBy": "usr_amar",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0-spec"
+    },
+    "origin": {
+      "kind": "template",
+      "template": "iynk/templates/line-follower"
+    }
+  },
+  "revision": 0,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 40000,
+    "faults": [
+      {
+        "cause_id": "battery-sag-reset",
+        "enabled": false,
+        "id": "flt_brownout",
+        "kind": "brownout",
+        "note": "Weak pack: the Uno resets when both motors start.",
+        "symptom_ids": [
+          "robot-resets-at-start",
+          "mcu-resets"
+        ],
+        "target": {
+          "net": "net_vbat"
+        }
+      },
+      {
+        "cause_id": "motor-direction-reversed",
+        "enabled": false,
+        "id": "flt_motor_swap",
+        "kind": "wrong-connection",
+        "note": "Swaps the left motor leads: the robot steers away from the line.",
+        "symptom_ids": [
+          "robot-turns-wrong-way"
+        ],
+        "target": {
+          "nets": [
+            "net_ml1",
+            "net_ml2"
+          ]
+        }
+      },
+      {
+        "cause_id": "sensor-too-high",
+        "enabled": false,
+        "id": "flt_sensor_high",
+        "kind": "config",
+        "note": "Lifts the sensor array to 30 mm: the reflectance contrast fades.",
+        "params": {
+          "height_mm": 30
+        },
+        "symptom_ids": [
+          "line-not-detected"
+        ],
+        "target": {
+          "component": "cmp_qtr"
+        }
+      },
+      {
+        "cause_id": "sensor-saturated",
+        "enabled": false,
+        "id": "flt_sensor_sat",
+        "kind": "sensor",
+        "note": "Every channel is stuck at full scale: the array sees no edge.",
+        "params": {
+          "reading": "full-scale"
+        },
+        "symptom_ids": [
+          "line-not-detected"
+        ],
+        "target": {
+          "component": "cmp_qtr"
+        }
+      },
+      {
+        "cause_id": "wheel-slip",
+        "enabled": false,
+        "id": "flt_wheel_slip",
+        "kind": "param",
+        "note": "The left wheel grips a quarter as well: it spins and the robot drifts.",
+        "params": {
+          "joint": "jnt_wheel_l",
+          "surface_mu_scale": 0.25
+        },
+        "symptom_ids": [
+          "wheel-spins-no-motion"
+        ],
+        "target": {
+          "component": "cmp_wheel_l"
+        }
+      }
+    ],
+    "physics": {
+      "engine": "rapier",
+      "step_hz": 240
+    },
+    "runtimes": [
+      {
+        "board": "brd_uno",
+        "engine": "iynk-interp",
+        "id": "rtm_main"
+      }
+    ],
+    "seed": 1,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [],
+      "script": []
+    }
+  },
+  "sources": [
+    {
+      "board": "brd_uno",
+      "content": "// Two-wheel line follower: an eight-sensor QTR-8RC array, a TB6612FNG driver, proportional steering.\n#include <QTRSensors.h>\n\nQTRSensors qtr;\nconst uint8_t SENSORS[8] = {A0, A1, A2, A3, A4, A5, 11, 12};   // left to right\nuint16_t values[8];\n\nconst int PWMA = 5, AIN1 = 7, AIN2 = 8;      // left motor\nconst int PWMB = 6, BIN1 = 10, BIN2 = 4;     // right motor\nconst int STBY = 9, EMITTER = 2, LOOP_PIN = 13;\n\nconst int BASE = 140;                // out of 255; the pack is 7.4 V and the motors are 6 V\nconst int DARK_FLOOR = 500;          // microseconds; white reads about 120, the line reads 2500\nconst float DEG_PER_S_PER_COUNT = 1.2;   // turn rate for each count of left-right difference (iynk estimate)\n\nint lastPos = 3500;\nfloat heading = 0;\nint laps = 0;\nunsigned long lastUs;\n\nint linePosition() {\n  qtr.read(values);\n  long weighted = 0, total = 0;\n  for (int i = 0; i < 8; i++) {\n    long dark = values[i] > DARK_FLOOR ? values[i] : 0;\n    weighted += dark * i * 1000L;\n    total += dark;\n  }\n  if (total > 0) lastPos = weighted / total;   // 0 (line far left) to 7000 (far right)\n  return lastPos;\n}\n\nvoid wheel(int in1, int in2, int pwm, int speed) {\n  digitalWrite(in1, speed >= 0 ? HIGH : LOW);\n  digitalWrite(in2, speed >= 0 ? LOW : HIGH);\n  analogWrite(pwm, constrain(abs(speed), 0, 255));\n}\n\nvoid drive(int left, int right) {\n  wheel(AIN1, AIN2, PWMA, left);\n  wheel(BIN1, BIN2, PWMB, right);\n}\n\n// The track runs anticlockwise, so one lap is 360 degrees of turning left.\nvoid countLaps(int left, int right) {\n  unsigned long now = micros();\n  heading += (constrain(right, 0, 255) - constrain(left, 0, 255)) * DEG_PER_S_PER_COUNT * (now - lastUs) * 0.000001;\n  lastUs = now;\n  if (heading >= 360) {\n    heading -= 360;\n    laps++;\n    Serial.print(\"lap \");\n    Serial.println(laps);\n  }\n}\n\nvoid setup() {\n  Serial.begin(9600);\n  qtr.setTypeRC();\n  qtr.setSensorPins(SENSORS, 8);\n  qtr.setEmitterPin(EMITTER);\n  for (int p = 4; p <= 10; p++) pinMode(p, OUTPUT);\n  pinMode(LOOP_PIN, OUTPUT);\n  digitalWrite(STBY, HIGH);\n  lastUs = micros();\n  Serial.println(\"follow: Kp 0.05, base 140\");\n}\n\nvoid loop() {\n  static bool beat = false;\n  beat = !beat;\n  digitalWrite(LOOP_PIN, beat);\n\n  int error = linePosition() - 3500;\n  int turn = error / 20;\n  drive(BASE + turn, BASE - turn);\n  countLaps(BASE + turn, BASE - turn);\n  delay(7);\n}\n",
+      "id": "src_follow",
+      "language": "arduino-cpp",
+      "path": "follow.ino",
+      "role": "firmware"
+    }
+  ],
+  "tests": [
+    {
+      "checks": [
+        {
+          "id": "c1",
+          "kind": "runs",
+          "label": "Runs for the whole 40 s",
+          "minMs": 40000,
+          "visibility": "visible"
+        },
+        {
+          "byMs": 40000,
+          "id": "c2",
+          "kind": "serial",
+          "label": "Counts a lap",
+          "match": "lap",
+          "minCount": 1,
+          "regex": false,
+          "visibility": "visible"
+        }
+      ],
+      "id": "lap",
+      "name": "Follows the line for a lap",
+      "runMs": 40000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_sch",
+      "kind": "schematic",
+      "name": "Schematic",
+      "placements": [
+        {
+          "c": "brd_uno",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bat",
+          "x_mm": 120,
+          "y_mm": 50
+        },
+        {
+          "c": "cmp_drv",
+          "x_mm": 60,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_motor_l",
+          "x_mm": 120,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_motor_r",
+          "x_mm": 180,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_qtr",
+          "x_mm": 0,
+          "y_mm": 50
+        }
+      ],
+      "wires": [
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s1",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "VCC"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s10",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D2"
+          },
+          "id": "wir_s11",
+          "net": "net_ledon",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "LEDON"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "A01"
+          },
+          "id": "wir_s12",
+          "net": "net_ml1",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "PLUS"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "A02"
+          },
+          "id": "wir_s13",
+          "net": "net_ml2",
+          "to": {
+            "c": "cmp_motor_l",
+            "kind": "pin",
+            "p": "MINUS"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "B01"
+          },
+          "id": "wir_s14",
+          "net": "net_mr1",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "PLUS"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "B02"
+          },
+          "id": "wir_s15",
+          "net": "net_mr2",
+          "to": {
+            "c": "cmp_motor_r",
+            "kind": "pin",
+            "p": "MINUS"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D5"
+          },
+          "id": "wir_s16",
+          "net": "net_pwma",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "PWMA"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D6"
+          },
+          "id": "wir_s17",
+          "net": "net_pwmb",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "PWMB"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "A0"
+          },
+          "id": "wir_s18",
+          "net": "net_q1",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT1"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "A1"
+          },
+          "id": "wir_s19",
+          "net": "net_q2",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT2"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s2",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "STBY"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "A2"
+          },
+          "id": "wir_s20",
+          "net": "net_q3",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT3"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "A3"
+          },
+          "id": "wir_s21",
+          "net": "net_q4",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT4"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "A4"
+          },
+          "id": "wir_s22",
+          "net": "net_q5",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT5"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "A5"
+          },
+          "id": "wir_s23",
+          "net": "net_q6",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT6"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D11"
+          },
+          "id": "wir_s24",
+          "net": "net_q7",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT7"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D12"
+          },
+          "id": "wir_s25",
+          "net": "net_q8",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "OUT8"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "PLUS"
+          },
+          "id": "wir_s26",
+          "net": "net_vbat",
+          "to": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "VIN"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "PLUS"
+          },
+          "id": "wir_s27",
+          "net": "net_vbat",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "VM"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "P5V"
+          },
+          "id": "wir_s3",
+          "net": "net_5v",
+          "to": {
+            "c": "cmp_qtr",
+            "kind": "pin",
+            "p": "VCC"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D7"
+          },
+          "id": "wir_s4",
+          "net": "net_ain1",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "AIN1"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D8"
+          },
+          "id": "wir_s5",
+          "net": "net_ain2",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "AIN2"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D10"
+          },
+          "id": "wir_s6",
+          "net": "net_bin1",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "BIN1"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D4"
+          },
+          "id": "wir_s7",
+          "net": "net_bin2",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "BIN2"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s8",
+          "net": "net_gnd",
+          "to": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bat",
+            "kind": "pin",
+            "p": "MINUS"
+          },
+          "id": "wir_s9",
+          "net": "net_gnd",
+          "to": {
+            "c": "cmp_drv",
+            "kind": "pin",
+            "p": "GND"
+          }
+        }
+      ]
+    }
+  ]
+}

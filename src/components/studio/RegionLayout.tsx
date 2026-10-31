@@ -55,11 +55,13 @@ export class RegionBoundary extends Component<BoundaryProps, { failed: boolean; 
 
 export interface RegionLayoutProps {
   top: ReactNode;
-  /** The guide tab exists only for a project that has a guide. */
-  left: Record<Exclude<UiState["leftRail"], "guide">, ReactNode> & { guide?: ReactNode };
+  /** The guide tab exists only for a project that has a guide, the robot tab only for a robot. */
+  left: Record<Exclude<UiState["leftRail"], "guide" | "robot">, ReactNode> & { guide?: ReactNode; robot?: ReactNode };
   centre: ReactNode;
-  right: Record<UiState["rightRail"], ReactNode>;
-  dock: Record<UiState["dock"], ReactNode>;
+  right: Record<Exclude<UiState["rightRail"], "robotChecks">, ReactNode> & { robotChecks?: ReactNode };
+  dock: Record<Exclude<UiState["dock"], "pid" | "loopTiming">, ReactNode> & { pid?: ReactNode; loopTiming?: ReactNode };
+  /** The names of the tabs that `messages` has no name for. */
+  tabLabels?: Partial<Record<UiState["leftRail"] | UiState["rightRail"] | UiState["dock"], string>>;
   ui: UiStore;
   messages: StudioStrings;
 }
@@ -103,26 +105,28 @@ function DockSeparator({ ui, messages }: Pick<RegionLayoutProps, "ui" | "message
   );
 }
 
-function Rail<K extends string>({ region, order, panels, value, onChange, messages }: {
+function Rail<K extends string>({ region, order, panels, value, onChange, messages, tabLabels }: {
   region: Region;
   order: readonly K[];
-  panels: Record<K, ReactNode>;
+  panels: Partial<Record<K, ReactNode>>;
   value: K;
   onChange: (id: K) => void;
   messages: StudioStrings;
+  tabLabels: RegionLayoutProps["tabLabels"];
 }) {
-  const labels: Record<string, string> = { guide: messages.lesson.guide.title, ...messages.layout.tabs, ...messages.rail };
-  const tabs: TabItem[] = order.map((id) => ({ id, label: labels[id]!, content: panels[id] }));
-  return <Tabs fill className="flex-1" label={messages.layout.regions[region]} tabs={tabs} value={value} onChange={(id) => onChange(id as K)} />;
+  const labels: Record<string, string | undefined> = { guide: messages.lesson.guide.title, ...messages.layout.tabs, ...messages.rail, ...tabLabels };
+  const shown = order.filter((id) => id === order[0] || panels[id] != null);
+  const tabs: TabItem[] = shown.map((id) => ({ id, label: labels[id]!, content: panels[id] }));
+  return <Tabs fill className="flex-1" label={messages.layout.regions[region]} tabs={tabs} value={shown.includes(value) ? value : shown[0]!} onChange={(id) => onChange(id as K)} />;
 }
 
-const LEFT_ORDER = ["palette", "files", "outline"] as const;
-const GUIDED_LEFT_ORDER = ["guide", ...LEFT_ORDER] as const;
-const RIGHT_ORDER = ["inspector", "problems", "models", "history", "checks", "partner"] as const;
-const DOCK_ORDER = ["code", "serial", "faults"] as const;
+const LEFT_ORDER: readonly UiState["leftRail"][] = ["palette", "files", "outline", "robot"];
+const GUIDED_LEFT_ORDER: readonly UiState["leftRail"][] = ["guide", ...LEFT_ORDER];
+const RIGHT_ORDER: readonly UiState["rightRail"][] = ["inspector", "problems", "models", "history", "checks", "partner", "robotChecks"];
+const DOCK_ORDER: readonly UiState["dock"][] = ["code", "serial", "faults", "pid", "loopTiming"];
 
 /** The five regions of the workspace. Under 768 px the canvas keeps the room and each rail opens as a drawer. */
-export function RegionLayout({ top, left, centre, right, dock, ui, messages }: RegionLayoutProps) {
+export function RegionLayout({ top, left, centre, right, dock, ui, messages, tabLabels }: RegionLayoutProps) {
   const t = messages.layout;
   const wide = useSyncExternalStore(subscribeWide, isWide, () => true);
   const leftRail = useStoreSelector(ui, (s) => s.leftRail);
@@ -138,18 +142,18 @@ export function RegionLayout({ top, left, centre, right, dock, ui, messages }: R
   );
 
   const guided = left.guide != null;
-  const leftValue = leftRail === "guide" && !guided ? "palette" : leftRail;
   const leftNode = (
     <Rail
       region="left"
       order={guided ? GUIDED_LEFT_ORDER : LEFT_ORDER}
-      panels={{ ...left, guide: left.guide ?? null }}
-      value={leftValue}
+      panels={left}
+      value={leftRail}
       onChange={(id) => ui.set("leftRail", id)}
       messages={messages}
+      tabLabels={tabLabels}
     />
   );
-  const rightNode = <Rail region="right" order={RIGHT_ORDER} panels={right} value={rightRail} onChange={(id) => ui.set("rightRail", id)} messages={messages} />;
+  const rightNode = <Rail region="right" order={RIGHT_ORDER} panels={right} value={rightRail} onChange={(id) => ui.set("rightRail", id)} messages={messages} tabLabels={tabLabels} />;
 
   return (
     <div className="flex h-[calc(100dvh-var(--header-h))] min-h-96 flex-col gap-2 p-2">
@@ -175,7 +179,7 @@ export function RegionLayout({ top, left, centre, right, dock, ui, messages }: R
           </Panel>
           <DockSeparator ui={ui} messages={messages} />
           <Panel aria-label={t.regions.dock} className="shrink-0" style={{ height: dockHeight }}>
-            {guarded("dock", <Rail region="dock" order={DOCK_ORDER} panels={dock} value={dockTab} onChange={(id) => ui.set("dock", id)} messages={messages} />)}
+            {guarded("dock", <Rail region="dock" order={DOCK_ORDER} panels={dock} value={dockTab} onChange={(id) => ui.set("dock", id)} messages={messages} tabLabels={tabLabels} />)}
           </Panel>
         </div>
         {wide ? <Panel aria-label={t.regions.right}>{guarded("right", rightNode)}</Panel> : null}

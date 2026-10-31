@@ -37,7 +37,11 @@ export type MosParams =
 /** `params` is what `mode: 'newton'` solves; `pwl` reads `hfe`, `hfr`, `vbe` and `vcesat`. */
 export interface ElementQ extends ElementBase { kind: 'Q'; c: number; b: number; e: number; polarity: 'npn' | 'pnp'; modelId: string; hfe: number; hfr: number; vbe: number; vcesat: number; params?: BjtParams }
 export interface ElementMos extends ElementBase { kind: 'MOS'; d: number; g: number; s: number; polarity: 'n' | 'p'; modelId: string; params?: MosParams }
-export interface ElementM extends ElementBase { kind: 'M'; a: number; b: number; ohms: number }
+/**
+ * `form` absent or 'legacy' is the conductance the solver settles on. 'emf' is `ohms` in series with a voltage
+ * source of `emfV` that opposes the current from a to b. A current-sink form was not needed and is not built.
+ */
+export interface ElementM extends ElementBase { kind: 'M'; a: number; b: number; ohms: number; form?: 'legacy' | 'emf'; emfV?: number }
 export interface ElementSv extends ElementBase { kind: 'SV'; gnd: number; vplus: number; sig: number }
 export interface ElementTs extends ElementBase { kind: 'TS'; supplyPos: number; supplyNeg: number; out: number; outVolts?: number }
 export interface ElementBz extends ElementBase { kind: 'BZ'; a: number; b: number; active: boolean; vf: number; rdOhms: number }

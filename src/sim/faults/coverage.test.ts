@@ -13,10 +13,10 @@ describe("detector coverage", () => {
     expect(statuses).toHaveLength(45);
   });
 
-  it("splits the ids into 16 detected, 2 diagnostic and 27 not modelled yet", () => {
-    expect(count((s) => s.status === "static" || s.status === "code" || s.status === "solved")).toBe(16);
+  it("splits the ids into 25 detected, 2 diagnostic and 18 not modelled yet", () => {
+    expect(count((s) => s.status === "static" || s.status === "code" || s.status === "solved")).toBe(25);
     expect(count((s) => s.status === "diagnostic")).toBe(2);
-    expect(count((s) => s.status === "not-modelled-yet")).toBe(27);
+    expect(count((s) => s.status === "not-modelled-yet")).toBe(18);
   });
 
   it("reports the cheapest layer first and lists every rule", () => {
@@ -32,7 +32,9 @@ describe("detector coverage", () => {
     expect(detectorStatus("bus-device-not-modelled")).toEqual({ status: "diagnostic", source: "T-B8-01" });
     expect(detectorStatus("library-not-modelled")).toEqual({ status: "diagnostic", source: "T-B8-02" });
     expect(detectorStatus("prop-clash")).toMatchObject({ status: "not-modelled-yet", phase: "B18" });
-    expect(detectorStatus("motor-stall")).toMatchObject({ status: "not-modelled-yet", phase: "B16" });
+    expect(detectorStatus("motor-stall")).toEqual({ status: "solved", rules: ["solve:motor-stall@1"] });
+    expect(detectorStatus("driver-undersized")).toEqual({ status: "solved", rules: ["solve:driver-undersized@1"] });
+    expect(detectorStatus("sensor-saturated")).toMatchObject({ status: "not-modelled-yet", phase: "B16" });
   });
 
   it("keeps rules sound: unique ids, known causes and symptoms, a reason when switched off", () => {

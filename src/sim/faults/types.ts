@@ -1,6 +1,7 @@
 import type { SimTime } from "../core/clock.ts";
 import type { Descriptor } from "../../parts/descriptor.ts";
 import type { Evidence } from "../../project/diagnosis.ts";
+import type { RobotFacts } from "../mech/facts.ts";
 import type { Instrument, Op, Pose } from "../../project/generated/types.ts";
 
 export type { SimTime };
@@ -201,6 +202,7 @@ export interface RunFacts {
     addr?: number;
   }[];
   resets: SimTime[];
+  robot?: RobotFacts;
 }
 
 export interface CheckOutcome {

@@ -7,9 +7,9 @@ import { createStore } from "./select.ts";
 import type { Store } from "./select.ts";
 
 export type UiState = {
-  leftRail: "palette" | "files" | "outline" | "guide";
-  rightRail: "inspector" | "problems" | "models" | "history" | "checks" | "partner";
-  dock: "code" | "serial" | "faults";
+  leftRail: "palette" | "files" | "outline" | "guide" | "robot";
+  rightRail: "inspector" | "problems" | "models" | "history" | "checks" | "partner" | "robotChecks";
+  dock: "code" | "serial" | "faults" | "pid" | "loopTiming";
   dockHeightPx: number;
   artMode: "illustrated" | "simple";
   snapMm: number;
@@ -80,9 +80,9 @@ function breakpointsOf(raw: unknown): Record<string, number[]> {
 function normalise(raw: unknown): UiState {
   const r = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
   return {
-    leftRail: oneOf(r.leftRail, ["palette", "files", "outline", "guide"], DEFAULTS.leftRail),
-    rightRail: oneOf(r.rightRail, ["inspector", "problems", "models", "history", "checks", "partner"], DEFAULTS.rightRail),
-    dock: oneOf(r.dock, ["code", "serial", "faults"], DEFAULTS.dock),
+    leftRail: oneOf(r.leftRail, ["palette", "files", "outline", "guide", "robot"], DEFAULTS.leftRail),
+    rightRail: oneOf(r.rightRail, ["inspector", "problems", "models", "history", "checks", "partner", "robotChecks"], DEFAULTS.rightRail),
+    dock: oneOf(r.dock, ["code", "serial", "faults", "pid", "loopTiming"], DEFAULTS.dock),
     dockHeightPx: finite(r.dockHeightPx) ? Math.max(DOCK_MIN_PX, r.dockHeightPx) : DEFAULTS.dockHeightPx,
     artMode: oneOf(r.artMode, ["illustrated", "simple"], DEFAULTS.artMode),
     snapMm: finite(r.snapMm) ? Math.min(SNAP_MAX_MM, Math.max(SNAP_MIN_MM, r.snapMm)) : DEFAULTS.snapMm,

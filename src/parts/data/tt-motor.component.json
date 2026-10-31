@@ -2,7 +2,7 @@
   "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
   "schema": "iynk.component/1",
   "id": "core.tt-motor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identity": {
     "manufacturer": "generic",
     "model": "TT gear motor, 3 to 6 V, 1:48",
@@ -41,6 +41,14 @@
       "title": "figures/parts/tt-motor.js",
       "publisher": "iynk",
       "reliability": "unverified"
+    },
+    {
+      "id": "assumption",
+      "kind": "own-estimate",
+      "title": "iynk assumption",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "A typical value for this kind of part, chosen by iynk. No maker datasheet or bench measurement stands behind it. Replace it when one is read."
     }
   ],
   "pins": [
@@ -209,6 +217,31 @@
       ]
     }
   ],
+  "mechanics": {
+    "motor": {
+      "r_ohm": 6.0,
+      "l_henry": 0.0015,
+      "ke_vs_per_rad": 0.00456,
+      "j_kgm2": 1e-07,
+      "b_nms_per_rad": 1e-06,
+      "i_noload_a": 0.16,
+      "v_nominal": 6,
+      "v_max": 6,
+      "i_stall_a": 1.0,
+      "torque_stall_nm": 0.153,
+      "gear": {
+        "ratio": 48,
+        "efficiency": 0.7,
+        "backlash_deg": 3,
+        "j_out_kgm2": 2e-06
+      },
+      "mass_g": 30,
+      "source": {
+        "src": "assumption",
+        "loc": "i_noload_a, v_nominal, v_max, i_stall_a, ratio: figures/parts/tt-motor.js header; ke from 220 rpm at 6 V; the rest iynk assumptions"
+      }
+    }
+  },
   "behaviour": {
     "summary": {
       "en": "A hobby gear motor shown on the breadboard. It has no electrical model yet."
@@ -250,7 +283,7 @@
       {
         "id": "constants_unsourced",
         "text": {
-          "en": "The figure uses a 4 ohm armature and a back-EMF constant for its own drawing; they are not given here because they have no source."
+          "en": "The figure uses a 4 ohm armature and a back-EMF constant for its own drawing; they are not used here. The mechanics block carries iynk assumptions for the robot engine."
         },
         "evidence": "figures/parts/tt-motor.js:20"
       }
@@ -309,7 +342,14 @@
         "date": "2026-10-31",
         "note": "First descriptor, from figures/parts/tt-motor.js.",
         "behaviour_change": false
+      },
+      {
+        "version": "1.0.1",
+        "date": "2026-10-31",
+        "note": "Added the mechanics motor block for the robot engine; every number is labelled as an iynk assumption or a figure-header value.",
+        "behaviour_change": false
       }
-    ]
+    ],
+    "modified": "2026-10-31"
   }
 }

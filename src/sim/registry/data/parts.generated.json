@@ -426,6 +426,68 @@
       "status": "active"
     },
     {
+      "id": "part:core.caster-ball@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Ball caster",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Ball bearing friction, a ball that sticks on a bump, or a caster that jams. It is a frictionless ball."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "Diameter and mass are iynk assumptions. A caster has no sourced friction; the engine gives the ball no friction on purpose."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.chassis-2wd@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Two-wheel chassis plate",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Flex, vibration and the mass of screws, spacers and wires."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The 120 g mass of the plate with its motor mounts is an iynk assumption, and so are the plate dimensions."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "planned"
+    },
+    {
       "id": "part:core.dc-motor@1",
       "version": "1.0.0",
       "kind": "part-model",
@@ -1245,7 +1307,7 @@
     },
     {
       "id": "part:core.hc-sr04@1",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "part-model",
       "title": "HC-SR04 ultrasonic ranging module",
       "tier": "T0",
@@ -1330,7 +1392,7 @@
     },
     {
       "id": "part:core.l298n-module@1",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "part-model",
       "title": "L298N dual H-bridge motor driver module (red, 43 x 43 mm)",
       "tier": "T0",
@@ -1854,7 +1916,7 @@
     },
     {
       "id": "part:core.lipo-2s@1",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "part-model",
       "title": "2S LiPo battery (7.4 V)",
       "tier": "T0",
@@ -1888,8 +1950,8 @@
       "operatingRange": [],
       "knownFailureCases": [
         "No voltage source element exists in the solver (the figure has no elec line), so the layer is none.",
-        "The mechanics battery block is left out. It needs a cell resistance, and the figure states none.",
-        "The 8.4 V full, 7.4 V nominal and 1000 mAh figures are the figure's own text. No datasheet was read."
+        "The 8.4 V full, 7.4 V nominal and 1000 mAh figures are the figure's own text. No datasheet was read.",
+        "Cell resistance and mass in the mechanics block are iynk assumptions. The pack takes its open-circuit curve from the lipo table in src/core/battery.ts."
       ],
       "performance": [],
       "labels": {
@@ -2786,7 +2848,7 @@
     },
     {
       "id": "part:core.qtr-8rc@1",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "part-model",
       "title": "QTR-8RC reflectance sensor array",
       "tier": "T0",
@@ -2860,7 +2922,8 @@
       "operatingRange": [],
       "knownFailureCases": [
         "The solver has no element that turns a light level into a pin fall time, so no layer can run.",
-        "The white decay and the 1.6 power in the light response are fitted in the figure, with no source."
+        "The white decay and the 1.6 power in the light response are fitted in the figure, with no source.",
+        "The best height is 3 mm and the maximum recommended height is 9.5 mm. The descriptor has no field for the best height, so the robot engine takes it from the sensor binding params (h_opt_mm, h_range_mm)."
       ],
       "performance": [],
       "labels": {
@@ -3349,7 +3412,7 @@
     },
     {
       "id": "part:core.tb6612fng-module@1",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "part-model",
       "title": "Motor Driver - Dual TB6612FNG (1A), ROB-14451, board v1.1c",
       "tier": "T0",
@@ -3508,7 +3571,8 @@
       "knownFailureCases": [
         "The bridge truth table and the 0.5 ohm drop live in the figure page and are not available to the Studio solver.",
         "The figure assumes a motor running current of 0.15 A instead of reading the attached motor.",
-        "No test checks the bridge against the datasheet."
+        "No test checks the bridge against the datasheet.",
+        "The fact sheet does not say which decay mode PWM on the input pins gives against PWM on the enable pin. The mechanics block says slow, which is an iynk assumption."
       ],
       "performance": [],
       "labels": {
@@ -3857,8 +3921,68 @@
       "status": "planned"
     },
     {
-      "id": "part:core.tt-motor@1",
+      "id": "part:core.tt-motor-encoder@1",
       "version": "1.0.0",
+      "kind": "part-model",
+      "title": "TT gear motor with encoder, 3 to 6 V, 1:48",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Everything electrical. The robot physics engine models the motor and the encoder edges from the mechanics block."
+        }
+      ],
+      "parameterSources": [
+        {
+          "param": "rated_voltage",
+          "value": 3,
+          "unit": "V",
+          "type": "assumption",
+          "ref": "assumption same value as core.tt-motor"
+        },
+        {
+          "param": "free_current",
+          "value": 0.16,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "assumption same value as core.tt-motor"
+        },
+        {
+          "param": "wheel_speed",
+          "value": 220,
+          "unit": "1",
+          "type": "assumption",
+          "ref": "assumption same value as core.tt-motor"
+        },
+        {
+          "param": "stall_current",
+          "value": 1,
+          "unit": "A",
+          "type": "assumption",
+          "ref": "assumption same value as core.tt-motor"
+        }
+      ],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "The encoder resolution is an iynk assumption, and so is every motor number. They match core.tt-motor."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary.assumed"
+      },
+      "status": "planned"
+    },
+    {
+      "id": "part:core.tt-motor@1",
+      "version": "1.0.1",
       "kind": "part-model",
       "title": "TT gear motor, 3 to 6 V, 1:48",
       "tier": "T0",
@@ -3908,7 +4032,7 @@
       "operatingRange": [],
       "knownFailureCases": [
         "tt-motor.js has no elec line, so there is no legacy model to port.",
-        "The figure uses a 4 ohm armature and a back-EMF constant for its own drawing; they are not given here because they have no source."
+        "The figure uses a 4 ohm armature and a back-EMF constant for its own drawing; they are not used here. The mechanics block carries iynk assumptions for the robot engine."
       ],
       "performance": [],
       "labels": {
@@ -4170,6 +4294,37 @@
         "summary": "fidelity.summary"
       },
       "status": "active"
+    },
+    {
+      "id": "part:core.wheel-65@1",
+      "version": "1.0.0",
+      "kind": "part-model",
+      "title": "Wheel, 65 mm",
+      "tier": "T0",
+      "layers": [
+        "L4"
+      ],
+      "implements": [],
+      "mocked": [],
+      "unsupported": [
+        {
+          "id": "not-modelled-1",
+          "text": "Tyre deformation, slip angle and wear. The wheel is a rigid cylinder with one friction coefficient."
+        }
+      ],
+      "parameterSources": [],
+      "validation": [],
+      "errorMetrics": [],
+      "operatingRange": [],
+      "knownFailureCases": [
+        "Width, mass, friction (mu) and rolling resistance (crr) are iynk assumptions. The friction coefficient is against a reference floor; the contact uses the average of wheel and floor."
+      ],
+      "performance": [],
+      "labels": {
+        "chip": "fidelity.tier.T0",
+        "summary": "fidelity.summary"
+      },
+      "status": "planned"
     }
   ]
 }

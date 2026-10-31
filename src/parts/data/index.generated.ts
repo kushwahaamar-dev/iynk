@@ -5,6 +5,8 @@ import basys3 from "./basys3.component.json" with { type: "json" };
 import bme280Module from "./bme280-module.component.json" with { type: "json" };
 import breadboard from "./breadboard.component.json" with { type: "json" };
 import buzzerPiezo from "./buzzer-piezo.component.json" with { type: "json" };
+import casterBall from "./caster-ball.component.json" with { type: "json" };
+import chassis2wd from "./chassis-2wd.component.json" with { type: "json" };
 import dcMotor from "./dc-motor.component.json" with { type: "json" };
 import de10Lite from "./de10-lite.component.json" with { type: "json" };
 import diode1n4007 from "./diode-1n4007.component.json" with { type: "json" };
@@ -42,9 +44,11 @@ import tb6612fngModule from "./tb6612fng-module.component.json" with { type: "js
 import tip120 from "./tip120.component.json" with { type: "json" };
 import tmp36 from "./tmp36.component.json" with { type: "json" };
 import trafficLight from "./traffic-light.component.json" with { type: "json" };
+import ttMotorEncoder from "./tt-motor-encoder.component.json" with { type: "json" };
 import ttMotor from "./tt-motor.component.json" with { type: "json" };
 import uln2003Module from "./uln2003-module.component.json" with { type: "json" };
 import unoR3 from "./uno-r3.component.json" with { type: "json" };
 import unoR4 from "./uno-r4.component.json" with { type: "json" };
+import wheel65 from "./wheel-65.component.json" with { type: "json" };
 
-export const GENERATED_DESCRIPTORS: readonly unknown[] = [a4988Module, aaHolder4, basys3, bme280Module, breadboard, buzzerPiezo, dcMotor, de10Lite, diode1n4007, esp32Devkitc, esp32S3Devkitc1, fan, fsr402, gy521Mpu6050, hcSr04, l298nModule, ldr, led5mm, lipo2s, lm2596Module, microbitV2, multimeter, nano, nema17, nodemcu, npn2n2222, nucleoF401re, pca9685Module, pi4Pi5, pico, potentiometer10k, pushButton6mm, qtr8rc, resistor, rgbLed, servoSg90, soilMoisture, ssd1306, stepper28byj48, tb6612fngModule, tip120, tmp36, trafficLight, ttMotor, uln2003Module, unoR3, unoR4];
+export const GENERATED_DESCRIPTORS: readonly unknown[] = [a4988Module, aaHolder4, basys3, bme280Module, breadboard, buzzerPiezo, casterBall, chassis2wd, dcMotor, de10Lite, diode1n4007, esp32Devkitc, esp32S3Devkitc1, fan, fsr402, gy521Mpu6050, hcSr04, l298nModule, ldr, led5mm, lipo2s, lm2596Module, microbitV2, multimeter, nano, nema17, nodemcu, npn2n2222, nucleoF401re, pca9685Module, pi4Pi5, pico, potentiometer10k, pushButton6mm, qtr8rc, resistor, rgbLed, servoSg90, soilMoisture, ssd1306, stepper28byj48, tb6612fngModule, tip120, tmp36, trafficLight, ttMotorEncoder, ttMotor, uln2003Module, unoR3, unoR4, wheel65];

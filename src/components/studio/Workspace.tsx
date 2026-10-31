@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDeferredValue, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore, type MutableRefObject, type ReactNode } from "react";
 import { PartnerPanel, type PartnerHost } from "@/components/ai";
 import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
 import { Button, Callout, Chip, Dialog, EmptyState, Icon, Kbd, Skeleton, cx } from "@/components/ui";
@@ -36,7 +36,8 @@ import { focusNetOverlay } from "@/studio/overlays/netlist";
 import { stateOverlays } from "@/studio/overlays/state";
 import { resolvePart } from "@/studio/parts-view";
 import { problemOverlays } from "@/studio/overlays/netlist";
-import { collectProblems, nextProblem, staticProblems, type Problem } from "@/studio/problems";
+import { collectProblems, nextProblem, staticProblems, withRobotProblems, type Problem } from "@/studio/problems";
+import { createRobotStore, type RobotStore } from "@/studio/robot/store";
 import { staticFlags, type WireEndRef } from "@/studio/rules/connect";
 import { CHECKPOINT_POLICY } from "@/studio/history/revisions";
 import { navigate } from "@/studio/router";
@@ -115,6 +116,18 @@ const FaultDock = dynamic(() => import("./FaultDock").then((m) => m.FaultDock), 
   loading: () => <div className="min-h-32" aria-busy="true" />,
 });
 
+const robotPanel = <K extends keyof typeof import("./robot/RobotMount")>(name: K) =>
+  dynamic(() => import("./robot/RobotMount").then((m) => m[name] as never), {
+    ssr: false,
+    loading: () => <Skeleton className="m-2 h-48 rounded-xl" />,
+  }) as (typeof import("./robot/RobotMount"))[K];
+
+const RobotBuilderTab = robotPanel("RobotBuilderTab");
+const TopDownTab = robotPanel("TopDownTab");
+const RobotChecksTab = robotPanel("RobotChecksTab");
+const PidTab = robotPanel("PidTab");
+const LoopTimingTab = robotPanel("LoopTimingTab");
+
 const fidelityEntries = loadRegistry();
 const EDITABLE = ".cm-editor, input, textarea, select, [contenteditable='true']";
 const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
@@ -123,6 +136,7 @@ type Graph = {
   ui: UiStore;
   session: SessionStore;
   run: RunStore;
+  robot: RobotStore;
   engine: EditorEngine;
   tools: ToolHost;
   place: PlaceTool;
@@ -167,6 +181,7 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
   if (state.guide && readPlan(state) !== null && ui.getState().leftRail === "palette") ui.set("leftRail", "guide");
   const session = createSessionStore(shownView ?? (state.views.find((v) => v.kind === "breadboard") ?? state.views[0])?.id ?? "");
   const run = createRunStore();
+  const robot = createRobotStore();
 
   const tools = createToolHost({ doc, session });
   const place = createPlaceTool({ registry, session });
@@ -218,9 +233,9 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
 
   const announcer = createAnnouncer();
   const offHistory = registerHistoryCommands({ doc, focus: focusKind });
-  const debug = installDebugHook({ doc, run, announcer, tools: tools.recent });
+  const debug = installDebugHook({ doc, run, announcer, tools: tools.recent, robot });
   const offRepository = ephemeral ? () => {} : linkRepository(doc, debug.wrapHost(services.host), { onNotice, revisions: createPageRevisionPort() });
-  const sim = linkSim({ doc, run, host: services.sim, impact: classifyImpact, breakpoints: () => ui.getState().breakpoints });
+  const sim = linkSim({ doc, run, host: services.sim, impact: classifyImpact, breakpoints: () => ui.getState().breakpoints, robot });
   const link: SimLink = ephemeral
     ? sim
     : {
@@ -289,6 +304,7 @@ function buildGraph({ doc, services, projectId, lang, messages, reduceMotion, ep
     ui,
     session,
     run,
+    robot,
     engine,
     tools,
     place,
@@ -318,16 +334,17 @@ function useFirmwareDiagnostics(doc: DocStore): Diagnostic[] {
   return useMemo(() => (content === undefined || language !== "arduino-cpp" ? [] : check({ board: "uno-r3", language: "arduino", source: content })), [content, language]);
 }
 
-function useProblems(doc: DocStore, run: RunStore, diagnostics: Diagnostic[], faults: FaultLink, diagnose: DiagnoseStore): Problem[] {
+function useProblems(doc: DocStore, run: RunStore, robot: RobotStore, diagnostics: Diagnostic[], faults: FaultLink, diagnose: DiagnoseStore): Problem[] {
   const state = useDeferredValue(useStoreSelector(doc, (s) => s.state));
   const limit = useStoreSelector(run, (s) => s.limit);
   const frame = useStoreSelector(run, (s) => s.frame);
   const findings = useStoreSelector(faults.store, (s) => s.findings);
   const sealedUnrevealed = useStoreSelector(diagnose, () => diagnose.isSealedUnrevealed());
+  const robotProblems = useSyncExternalStore(robot.subscribe, () => robot.get().problems, () => robot.get().problems);
   const flags = useMemo(() => staticFlags(state, state.nets.map((n) => n.id)), [state]);
   return useMemo(
-    () => [...collectProblems({ diagnostics, run: { limit, frame }, flags }), ...staticProblems(state, findings, { sealedUnrevealed }).problems],
-    [diagnostics, limit, frame, flags, state, findings, sealedUnrevealed],
+    () => withRobotProblems([...collectProblems({ diagnostics, run: { limit, frame }, flags }), ...staticProblems(state, findings, { sealedUnrevealed }).problems], robotProblems),
+    [diagnostics, limit, frame, flags, state, findings, sealedUnrevealed, robotProblems],
   );
 }
 
@@ -599,7 +616,7 @@ type RegionsProps = {
 };
 
 function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss, onPlaceAtCentre, onWireFrom, problemsRef, currentProblemRef, checksRun, projectMenu, versionWarning, guideAllowed }: RegionsProps) {
-  const { ui, session, run, engine, tools, place, link, controller, announcer } = graph;
+  const { ui, session, run, robot, engine, tools, place, link, controller, announcer } = graph;
   const t = messages.studio;
   const title = useStoreSelector(doc, (s) => s.state.meta.title);
   const readOnly = useStoreSelector(doc, (s) => s.readOnly);
@@ -608,11 +625,20 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
   const activeView = useStoreSelector(ui, (s) => s.activeView);
   const sceneFailed = useStoreSelector(session, (s) => s.status?.key === SCENE_ERROR);
   const diagnostics = useFirmwareDiagnostics(doc);
-  const problems = useProblems(doc, run, diagnostics, graph.faults, graph.diagnose);
+  const problems = useProblems(doc, run, robot, diagnostics, graph.faults, graph.diagnose);
   const faultsView = useStoreSelector(graph.faults.store, (s) => s);
   const sealed = useStoreSelector(graph.diagnose, () => graph.diagnose.isSealedUnrevealed());
   const faultRequest = useFaultCommands(ui);
   const partIndex = useMemo(() => buildPartIndex(registry), []);
+  const isRobot = useStoreSelector(doc, (s) => s.state.domains?.robotics !== undefined);
+  const [topView, setTopView] = useState(false);
+  const robotT = useMemo(() => createTranslator(lang, messages.robot, `${lang}/robot`), [lang, messages.robot]);
+  const showTopView = isRobot && topView;
+  const robotProps = { doc, store: robot, messages: messages.robot, lang };
+  const selectRobotPart = (id: string) => {
+    session.setSelection([{ kind: "part", view: session.getState().viewId, id }]);
+    ui.set("rightRail", "inspector");
+  };
 
   useEffect(() => {
     problemsRef.current = problems;
@@ -622,6 +648,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
     <RegionLayout
       ui={ui}
       messages={t}
+      tabLabels={isRobot ? { robot: robotT("builder.title"), robotChecks: robotT("checks.title"), pid: robotT("pid.title"), loopTiming: robotT("loop.title") } : undefined}
       top={
         <>
           <TopBar doc={doc} run={run} link={link} menu={projectMenu} settings={<StudioSettings ui={ui} messages={messages.studioHome} />} messages={t} modelMessages={messages.studioModels} />
@@ -656,20 +683,31 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         ),
         files: <FilesTab doc={doc} ui={ui} messages={messages} />,
         outline: <Outline doc={doc} session={session} messages={messages.studioWire} lang={lang} />,
+        robot: isRobot ? <RobotBuilderTab {...robotProps} /> : undefined,
       }}
       centre={
         <div className="flex min-h-0 flex-1 flex-col">
-          <div className="border-b border-rule px-2 py-1">
+          <div className="flex flex-wrap items-center gap-2 border-b border-rule px-2 py-1">
             <ViewTabs active={activeView} onChange={(kind) => runCommand(`view.${kind}`, { doc, session, ui })} messages={t} lang={lang} />
+            {isRobot ? (
+              <Button size="sm" variant={topView ? "secondary" : "ghost"} aria-pressed={topView} onClick={() => setTopView(!topView)}>
+                {robotT("topdown.title")}
+              </Button>
+            ) : null}
           </div>
           {sceneFailed ? (
             <Callout tone="warn" live className="m-2">
               {t.views.sceneError}
             </Callout>
           ) : null}
-          <div className={cx("min-h-0 flex-1 flex-col", activeView === "board" ? "hidden" : "flex")}>
+          <div className={cx("min-h-0 flex-1 flex-col", activeView === "board" || showTopView ? "hidden" : "flex")}>
             <CanvasView engine={engine} controller={controller} messages={t} />
           </div>
+          {showTopView ? (
+            <div className="min-h-0 flex-1 overflow-auto">
+              <TopDownTab {...robotProps} />
+            </div>
+          ) : null}
           {activeView === "board" ? <BoardPanel doc={doc} session={session} run={run} announcer={announcer} onWireFrom={onWireFrom} messages={messages} lang={lang} /> : null}
           <StatusLine status={controller.status} session={session} run={run} ui={ui} messages={t} runMessages={messages.studioRun} lang={lang} />
         </div>
@@ -690,6 +728,7 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
             }}
             messages={messages.studioCode}
             faultMessages={messages.faults}
+            robotMessages={messages.robot}
             lang={lang}
             onCheck={() => void graph.faults.check()}
             checkDisabled={checkBlock(sealed, faultsView)}
@@ -700,12 +739,13 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
         history: <HistoryTab doc={doc} messages={messages} lang={lang} />,
         checks: <ChecksTab doc={doc} checksRun={checksRun} messages={messages} lang={lang} />,
         partner: partner ? <PartnerPanel host={partner} /> : <Skeleton className="h-28 rounded-xl" />,
+        robotChecks: isRobot ? <RobotChecksTab {...robotProps} onSelectPart={selectRobotPart} /> : undefined,
       }}
       dock={{
         code: <CodeDock doc={doc} ui={ui} diagnostics={diagnostics} onRun={() => void link.run()} messages={messages.studioCode} debug={{ sim, run, messages: messages.fidelity.debug }} />,
         serial: (
           <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} roomRun={messages.run} lang={lang} firmware={<FirmwareControl doc={doc} host={sim} messages={messages} lang={lang} />} />
+            <RunBar run={run} link={link} messages={messages.studioRun} instruments={messages.instruments} roomRun={messages.run} lang={lang} firmware={<FirmwareControl doc={doc} host={sim} messages={messages} lang={lang} />} robot={isRobot ? { store: robot, messages: messages.robot } : undefined} />
             <SerialPane run={run} link={link} messages={messages.studioRun} lang={lang} />
             <InstrumentDock doc={doc} run={run} ui={ui} sim={sim} messages={messages.instruments} fidelity={messages.fidelity} faults={messages.faults} lang={lang} />
           </div>
@@ -723,6 +763,8 @@ function Regions({ graph, doc, sim, partner, messages, lang, notices, onDismiss,
             lang={lang}
           />
         ),
+        pid: isRobot ? <PidTab {...robotProps} /> : undefined,
+        loopTiming: isRobot ? <LoopTimingTab {...robotProps} /> : undefined,
       }}
     />
   );

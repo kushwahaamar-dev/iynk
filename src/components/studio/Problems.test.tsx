@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import faultMessages from "@/i18n/messages/en/faults.json";
+import robotMessages from "@/i18n/messages/en/robot.json";
 import messages from "@/i18n/messages/en/studioCode.json";
 import type { Problem } from "@/studio/problems";
 import { Problems } from "./Problems";
@@ -19,7 +20,7 @@ const plain: Problem = { id: "code:1", severity: "warning", source: "code", titl
 const flag: Problem = { id: "static:short-circuit:net_a", severity: "error", source: "static", titleKey: "problem.static.short-circuit", args: { net: "net_a", count: 2 } };
 
 const view = (problems: Problem[], onJump = vi.fn()) => {
-  render(<Problems problems={problems} onJump={onJump} messages={messages} faultMessages={faultMessages} lang="en" onCheck={() => {}} checkDisabled={false} counts={{ skipped: 0, errors: 0 }} />);
+  render(<Problems problems={problems} onJump={onJump} messages={messages} faultMessages={faultMessages} robotMessages={robotMessages} lang="en" onCheck={() => {}} checkDisabled={false} counts={{ skipped: 0, errors: 0 }} />);
   return onJump;
 };
 

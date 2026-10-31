@@ -8,6 +8,7 @@ import type { Project } from "./generated/types.ts";
 import { canonicalBytes } from "./hash.ts";
 import { hygieneDiagnostics, limitDiagnostics, MAX_STORED_DIAGNOSTICS } from "./limits.ts";
 import { CURRENT_SCHEMA_VERSION, parseSchemaVersion } from "./migrate.ts";
+import { validateRoboticsRefs } from "./apply/domain-robotics.ts";
 import { toFileText } from "./normalize.ts";
 import { checkAll } from "./semantic.ts";
 
@@ -117,6 +118,13 @@ function sizeOf(value: unknown, valid: boolean): number | null {
   }
 }
 
+/** V3 diagnostics for the robotics references. Only a document that passed the schema has a shape to read. */
+function roboticsDiagnostics(doc: Project): Diagnostic[] {
+  return validateRoboticsRefs(doc).map((e) =>
+    diag(`V3-ROBOTICS-${e.code.toUpperCase()}`, "error", "/" + e.path.replaceAll(".", "/"), e.message),
+  );
+}
+
 function check(value: unknown): Findings {
   if (isNewer(value)) {
     const message = `made by a newer iynk, version ${value.schemaVersion}`;
@@ -125,6 +133,7 @@ function check(value: unknown): Findings {
   const valid = validateProject(value);
   const diagnostics = valid ? [] : schemaDiagnostics(validateProject.errors ?? []);
   diagnostics.push(...checkAll(value as Project));
+  if (valid) diagnostics.push(...roboticsDiagnostics(value));
   const bytes = sizeOf(value, valid);
   diagnostics.push(...limitDiagnostics(value as Project, bytes ?? 0), ...hygieneDiagnostics(value));
   return valid ? { diagnostics, doc: value } : { diagnostics };

@@ -419,6 +419,7 @@ function Studio({ messages, lang, collab }: StudioEntryProps) {
             <>
               <Home
                 messages={messages.studioHome}
+                robot={messages.robot}
                 strings={strings}
                 lang={lang}
                 onOpen={(id, opts) => navigate({ kind: "project", id, autorun: opts?.run === true })}

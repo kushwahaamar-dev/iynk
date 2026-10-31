@@ -1,0 +1,305 @@
+{
+  "builder": {
+    "title": "Roboter",
+    "add": "Zum Roboter hinzufügen",
+    "driveBase": "Fahrgestell",
+    "wheelPair": "Radpaar",
+    "caster": "Stützrad",
+    "arm": "Armglied",
+    "bodies": "Körper",
+    "joints": "Gelenke",
+    "sensors": "Sensoren",
+    "mass": "Masse",
+    "size": "Größe",
+    "axis": "Achse",
+    "limits": "Grenzen",
+    "unit": "Einheiten",
+    "unitMetric": "Metrisch",
+    "unitImperial": "Imperial",
+    "problems": "Probleme",
+    "noProblems": "In diesem Roboter wurden keine Probleme gefunden.",
+    "empty": "Dieser Roboter hat noch keine Teile. Füge ein Fahrgestell hinzu, um zu beginnen.",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "added": "{part} hinzugefügt.",
+    "target": "Zu bearbeitendes Teil",
+    "properties": "Eigenschaften",
+    "noTarget": "Noch nichts zu bearbeiten.",
+    "unitLength": "Längeneinheit",
+    "unitMass": "Masseneinheit",
+    "props": {
+      "mass": "Masse",
+      "length": "Länge",
+      "width": "Breite",
+      "height": "Höhe",
+      "diameter": "Durchmesser",
+      "track": "Spurweite",
+      "damping": "Dämpfung",
+      "friction": "Reibung",
+      "offset": "Versatz nach vorn"
+    },
+    "errors": {
+      "no-chassis": "Füge zuerst ein Chassis hinzu.",
+      "no-descriptor": "Dieses Teil ist nicht in der Teilebibliothek.",
+      "occupied": "Dieser Platz am Roboter ist schon belegt.",
+      "rejected": "Die Änderung wurde abgelehnt. Es wurde nichts hinzugefügt.",
+      "value": "Gib eine Zahl ein."
+    }
+  },
+  "parts": {
+    "motor": "Motor",
+    "gearbox": "Getriebe",
+    "driver": "Motortreiber",
+    "battery": "Akku",
+    "wheel": "Rad",
+    "servo": "Servo",
+    "stepper": "Schrittmotor",
+    "encoder": "Encoder",
+    "lineSensor": "Liniensensor",
+    "ranger": "Abstandssensor",
+    "imu": "Bewegungssensor",
+    "chassis": "Chassis",
+    "massValue": "{mass} g",
+    "limitingPart": "Begrenzendes Teil: {part}",
+    "openPart": "{part} öffnen"
+  },
+  "checks": {
+    "title": "Roboter-Prüfungen",
+    "status": {
+      "ok": "Bestanden",
+      "warn": "Nahe am Grenzwert",
+      "fail": "Nicht bestanden"
+    },
+    "value": "Wert",
+    "limit": "Grenzwert",
+    "line": "{title}: {status}, {value} bei einem Grenzwert von {limit}",
+    "formula": "Formel und Annahmen",
+    "margin": "Sicherheitsfaktor von iynk: {factor}",
+    "none": "Starte die Prüfungen, um Ergebnisse zu sehen.",
+    "noPart": "Kein einzelnes Bauteil",
+    "coupling": "Kopplung von Motor und Physik",
+    "RB-C-01": {
+      "title": "Steigung",
+      "asks": "Kann der Antrieb den Roboter auf dieser Steigung bewegen?",
+      "note": "Verfügbares Raddrehmoment gegen benötigtes, mit dem Sicherheitsfaktor 1,5 von iynk."
+    },
+    "RB-C-02": {
+      "title": "Höchstgeschwindigkeit",
+      "asks": "Wie schnell kann der Roboter mit diesem Motor, Getriebe und dieser Versorgung fahren?",
+      "note": "Radradius mal Leerlaufdrehzahl durch Übersetzung, bei der Versorgung minus Treiberabfall, dann durch die Lastgerade verringert."
+    },
+    "RB-C-03": {
+      "title": "Beschleunigung",
+      "asks": "Wie schnell kann der Roboter beschleunigen?",
+      "note": "Antriebskraft minus Rollwiderstand, geteilt durch die Masse plus die Drehträgheit von Rädern und Getriebe."
+    },
+    "RB-C-04": {
+      "title": "Blockierstrom",
+      "asks": "Wenn alle Motoren blockieren, können Treiber und Akku den Strom liefern?",
+      "note": "Versorgungsspannung durch Wicklungswiderstand jedes Motors, summiert, gegen die Grenzwerte von Treiber, Akku und Kabel."
+    },
+    "RB-C-05": {
+      "title": "Einbruch der Logikversorgung",
+      "asks": "Bleibt die Logikversorgung beim Anlaufen der Motoren hoch genug?",
+      "note": "Spitzenstrom des Motors mal Quellwiderstand gegen die niedrigste Spannung, die die Logik akzeptiert. Das rechnet der Schaltungslöser."
+    },
+    "RB-C-06": {
+      "title": "Laufzeit",
+      "asks": "Wie lange hält der Akku bei diesem Lastprofil?",
+      "note": "Nutzbare Akkuenergie durch mittlere Leistung, für den angegebenen Zeitanteil bei Fahrt, Blockade und Leerlauf. Das Ergebnis ist ein Bereich."
+    },
+    "RB-C-07": {
+      "title": "Kippen",
+      "asks": "Bei welcher Steigung oder Bremsung kippt der Roboter?",
+      "note": "Winkel vom Schwerpunkt zu den Radkontakten, seitlich und längs, gegen die Steigung und die Beschleunigung durch g."
+    },
+    "RB-C-08": {
+      "title": "Haltemoment des Arms",
+      "asks": "Kann jedes Gelenk den Arm und seine Last halten?",
+      "note": "Moment der Massen hinter jedem Gelenk um seine Achse, gegen das Blockier- oder Haltemoment des Servos."
+    },
+    "RB-C-09": {
+      "title": "Encoder-Auflösung",
+      "asks": "Ist ein Encoder-Schritt klein genug, um die Geschwindigkeit gleichmäßig zu regeln?",
+      "note": "Weg pro Schritt aus Radgröße, Schritten pro Umdrehung und Übersetzung, dann der Geschwindigkeitssprung pro Schleifenperiode. Über 10 Prozent der Zielgeschwindigkeit wird die Regelung unruhig."
+    },
+    "RB-C-10": {
+      "title": "Sensorposition",
+      "asks": "Sitzen die Sensoren in einer Höhe und Position, in der sie etwas erfassen?",
+      "note": "Höhe und Fläche eines Liniensensors gegen die Linienbreite. Mindestreichweite eines Abstandssensors gegen das nächste Roboterteil in seinem Strahl."
+    }
+  },
+  "problems": {
+    "RB-E-TREE": "Die Gelenke müssen die Körper als Baum mit genau einem Wurzelkörper verbinden. Prüfe {joint}.",
+    "RB-E-MASS": "{body} hat keine Masse. Gib ihr eine Masse über 0.",
+    "RB-E-INERTIA": "Die Trägheit von {body} ist nicht möglich: keine Achse darf größer sein als die Summe der beiden anderen.",
+    "RB-E-THIN": "{body} hat eine Seite von {size_mm} mm. Jede Kollisionsseite muss mindestens {min_mm} mm messen.",
+    "RB-E-AXIS": "Die Achse von {joint} ist null. Gib ihr eine Richtung.",
+    "RB-E-LIMITS": "Die Grenzen von {joint} sind falsch: die untere Grenze {min} muss unter der oberen {max} liegen. Eine Drehung ab 360 Grad ist ein durchgehendes Gelenk.",
+    "RB-E-DRIVE": "{joint} wird von {component} angetrieben, das weder Motor noch Servo noch Schrittmotor ist.",
+    "RB-E-WHEEL": "Das Rad {joint} braucht eine Radangabe und eine waagerechte Achse auf 1 Grad genau.",
+    "RB-E-SURFACE": "{body} verweist auf die Oberfläche {surface}, die es nicht gibt.",
+    "RB-E-COUPLING": "Der Motor {component} wäre bei dieser Schrittweite instabil (Schritt mal Ansprechgeschwindigkeit ist {factor}, über 1). Verkleinere den Schritt oder füge Trägheit hinzu.",
+    "RB-W-TUNNEL": "{body} kann dünne Wände durchdringen: bei {speed} m/s bewegt er sich {step_mm} mm pro Schritt, mehr als die Hälfte von {thin_mm} mm.",
+    "RB-W-INERTIA-BOX": "{body} ist ein Mesh, daher wird seine Trägheit aus dem umschließenden Quader berechnet.",
+    "RB-W-ASPECT": "{body} ist {ratio}-mal länger als dick, was den Kontakt instabil macht.",
+    "RB-W-MASSRATIO": "Die Massen auf beiden Seiten von {joint} unterscheiden sich um das {ratio}-Fache. Der Löser kann instabil werden.",
+    "RB-W-CG": "Der Schwerpunkt liegt {offset_mm} mm von der Mitte der Standfläche entfernt, mehr als deren halbe Breite von {half_mm} mm. Der Roboter kippt wahrscheinlich.",
+    "RB-W-UNDRIVEN": "{joint} hat keinen Motor und bewegt sich frei. Füge einen Motor aus der Teilebibliothek hinzu.",
+    "RB-E-SENSOR": {
+      "unknown-component": "Der Sensor {sensor} nutzt {component}, das nicht in der Teilebibliothek ist.",
+      "not-a-sensor": "Der Sensor {sensor} nutzt {component}, das diese Messung nicht liefern kann."
+    },
+    "RB-E-LIMIT": {
+      "bodies": "Dieser Roboter hat {count} bewegte Körper, über dem Limit von {max}.",
+      "colliders": "Dieser Roboter hat {count} Kollisionskörper, über dem Limit von {max}.",
+      "joints": "Dieser Roboter hat {count} Gelenke, über dem Limit von {max}.",
+      "sensors": "Dieser Roboter hat {count} Sensoren, über dem Limit von {max}.",
+      "statics": "Dieser Roboter hat {count} feste Quader, über dem Limit von {max}."
+    }
+  },
+  "run": {
+    "title": "Ergebnisse des Laufs",
+    "hash": "Lauf-Hash: {hash}",
+    "distance": "{distance} m in {time} s zurückgelegt.",
+    "speed": "Höchstgeschwindigkeit {speed} m/s, Durchschnitt {mean} m/s.",
+    "lap": "Runde {n}: {time} s.",
+    "lineLost": "Die Linie {count} Mal verloren.",
+    "peakCurrent": "Motorspitzenstrom {current} A.",
+    "minSupply": "Niedrigste Akkuspannung {voltage} V.",
+    "resets": "Das Board wurde {count} Mal zurückgesetzt.",
+    "tipped": "Der Roboter ist nach {time} s gekippt.",
+    "finished": "Der Lauf endete nach {time} s."
+  },
+  "pid": {
+    "title": "PID",
+    "target": "Sollwert",
+    "measured": "Gemessen",
+    "error": "Fehler",
+    "output": "Ausgabe",
+    "integral": "Integralanteil",
+    "riseTime": "Anstiegszeit",
+    "overshoot": "Überschwingen",
+    "settlingTime": "Einschwingzeit",
+    "steadyError": "Bleibender Fehler",
+    "table": "Werte als Tabelle",
+    "empty": "Es wurden noch keine PID-Zeilen ausgegeben. Starte einen Sketch, der sie ausgibt.",
+    "insert": "PID-Code einfügen",
+    "noGains": "Das Panel zeigt das Verhalten des Reglers. Es ändert nie deine Verstärkungen."
+  },
+  "loop": {
+    "title": "Schleifenzeit",
+    "mean": "Mittel {ms} ms",
+    "p95": "95. Perzentil {ms} ms",
+    "max": "Längste {ms} ms",
+    "jitter": "Jitter {ms} ms",
+    "histogram": "Histogramm der Schleifenzeiten",
+    "overrun": "{percent} Prozent der Schleifen dauerten länger als ihre Periode. Der Regelcode ist für diese Rate zu langsam.",
+    "empty": "Noch keine Schleifenzeiten. Starte zuerst den Roboter."
+  },
+  "home": {
+    "group": "Roboter",
+    "blank": "Leerer Roboter",
+    "blankHint": "Fang bei null an und füge die Teile selbst hinzu.",
+    "lineFollower": "Linienfolger",
+    "lineFollowerHint": "Zwei Räder und Liniensensoren folgen einer Spur auf dem Boden.",
+    "driveBase": "Fahrgestell",
+    "driveBaseHint": "Ein Zweirad-Fahrgestell mit Motoren, Treiber und Akku, bereit zum Prüfen.",
+    "speedControl": "Geschwindigkeitsregelung",
+    "speedControlHint": "Halte ein Rad mit Encoder und PID-Regler auf einer Zielgeschwindigkeit."
+  },
+  "models": {
+    "title": "Was modelliert wird",
+    "notYet": "Noch nicht modelliert",
+    "tier": "Modellstufe: {tier}",
+    "notChecked": "Noch nicht mit einer Referenz verglichen."
+  },
+  "safety": {
+    "title": "Sicherheit im Labor",
+    "lipo": "Lade und lagere LiPo-Akkus an einem sicheren Ort, lass sie nie unbeaufsichtigt laden und benutze keinen, der aufgebläht oder beschädigt ist.",
+    "pinch": "Räder, Zahnräder und Arme können Finger einklemmen. Halte die Hände fern, solange der Roboter eingeschaltet ist.",
+    "stall": "Ein blockierter Motor wird schnell heiß. Schalte den Strom ab, wenn ein Motor brummt und sich nicht dreht.",
+    "unattended": "Lass einen eingeschalteten Roboter nie unbeaufsichtigt.",
+    "simulation": "Die Simulation kann ein Problem zeigen, ersetzt aber nicht die Vorsicht bei echter Hardware."
+  },
+  "cause": {
+    "motor-stall": {
+      "symptom": "Der Motor ist blockiert",
+      "hint1": "Sieh dir das Rad bei eingeschaltetem Strom an. Steht es still, obwohl der Motor angesteuert wird?",
+      "hint2": "Miss Strom und Drehzahl des Motors. Ist der Strom hoch, während die Drehzahl nahe null ist?",
+      "hint3": "Die Last ist größer, als der Motor bei dieser Spannung drehen kann. Verringere die Last, ergänze eine Untersetzung oder erhöhe die Versorgung."
+    },
+    "motor-direction-reversed": {
+      "symptom": "Der Roboter dreht in die falsche Richtung",
+      "hint1": "Fahre vorwärts und beobachte jedes Rad. Dreht sich eines rückwärts?",
+      "hint2": "Prüfe, wie die zwei Kabel jedes Motors am Treiber ankommen. Sind linker und rechter Motor gleich herum angeschlossen?",
+      "hint3": "Ein Motor ist verkehrt herum angeschlossen. Vertausche seine zwei Kabel oder kehre die Richtung im Code um."
+    },
+    "encoder-channel-swapped": {
+      "symptom": "Der Encoder zählt falsch herum",
+      "hint1": "Dreh das Rad von Hand oder im Lauf vorwärts und beobachte den Zählerstand. Sinkt er?",
+      "hint2": "Sieh dir die beiden Encoder-Kanäle A und B im Oszilloskop an. Welcher eilt voraus, wenn das Rad vorwärts läuft?",
+      "hint3": "Die Kanäle A und B sind vertauscht, daher zählt Vorwärts als Rückwärts. Vertausche die zwei Kabel oder die zwei Pins im Code."
+    },
+    "wheel-slip": {
+      "symptom": "Das Rad dreht durch, aber der Roboter bewegt sich nicht",
+      "hint1": "Beobachte das Rad und den Boden darunter. Dreht sich das Rad, während der Roboter stehen bleibt?",
+      "hint2": "Vergleiche die Raddrehzahl mit der Geschwindigkeit des Roboters über dem Boden und prüfe die Last auf dem Rad und die Haftung des Bodens.",
+      "hint3": "Das Rad hat keinen Grip. Füge Gewicht darüber hinzu, nimm einen griffigeren Reifen oder einen raueren Boden, oder beschleunige sanfter."
+    },
+    "driver-undersized": {
+      "symptom": "Der Motortreiber kann nicht genug Strom liefern",
+      "hint1": "Fühle oder beobachte den Treiberchip. Wird er zu heiß oder schaltet er ab, wenn die Motoren anlaufen?",
+      "hint2": "Vergleiche den Blockierstrom des Motors mit dem Nennstrom des Treibers.",
+      "hint3": "Der Treiber ist für weniger ausgelegt, als die Motoren ziehen können. Nimm einen stärkeren Treiber, einen Motor mit weniger Strom oder eine leichtere Last."
+    },
+    "battery-sag-reset": {
+      "symptom": "Das Board startet neu, wenn die Motoren anlaufen",
+      "hint1": "Notiere, wann die Neustarts passieren. Kommen sie genau beim Einschalten der Motoren?",
+      "hint2": "Miss die Spannung von Akku oder Logikversorgung, während die Motoren anlaufen. Fällt sie unter das, was das Board braucht?",
+      "hint3": "Die Motoren ziehen die Akkuspannung so weit herunter, dass das Board neu startet. Nimm einen stärkeren Akku, füge einen Kondensator hinzu oder versorge das Board getrennt."
+    },
+    "sensor-too-high": {
+      "symptom": "Der Liniensensor sieht die Linie nicht",
+      "hint1": "Sieh nach, wie hoch der Sensor über dem Boden sitzt. Ist das viel mehr, als sein Datenblatt nahelegt?",
+      "hint2": "Lies den Sensorwert über der Linie und über dem blanken Boden. Sind die beiden Werte fast gleich?",
+      "hint3": "Der Sensor sitzt zu hoch, um Linie und Boden zu unterscheiden. Setze ihn auf die Höhe aus seinem Datenblatt herunter."
+    },
+    "sensor-saturated": {
+      "symptom": "Der Liniensensor liest überall denselben Wert",
+      "hint1": "Fahre den Roboter über die Linie und über den Boden. Bleibt der Sensorwert auf seinem höchsten oder niedrigsten Wert?",
+      "hint2": "Prüfe das Licht um den Sensor und wie nah er an der Oberfläche ist. Wird er mit Licht überflutet oder ist er ganz im Schatten?",
+      "hint3": "Der Sensor ist übersteuert und unterscheidet Dunkel nicht von Hell. Schirme ihn vor Fremdlicht ab, setze ihn etwas höher oder verringere den Sendestrom."
+    },
+    "ranger-beam-blocked": {
+      "symptom": "Der Abstandssensor zeigt immer nah an",
+      "hint1": "Sieh nach, was direkt vor dem Sensor liegt. Ragt ein Teil des Roboters in seinen Strahl?",
+      "hint2": "Vergleiche den gemessenen Abstand mit der Mindestreichweite des Sensors und mit dem Abstand zum nächsten Roboterteil.",
+      "hint3": "Ein Teil des Roboters blockiert den Strahl. Setze den Sensor so, dass er freie Sicht hat, oder verschiebe das Teil."
+    },
+    "tip-over": {
+      "symptom": "Der Roboter kippt um",
+      "hint1": "Beobachte, wann er kippt: beim Beschleunigen, Bremsen, Kurvenfahren oder an einer Steigung?",
+      "hint2": "Miss, wie hoch der Schwerpunkt liegt und wie weit die Räder auseinander stehen. Ist der Roboter hoch und schmal?",
+      "hint3": "Der Schwerpunkt liegt für die Spurweite zu hoch. Setze schwere Teile tiefer, verbreitere die Spur oder beschleunige und bremse sanfter."
+    },
+    "loop-too-slow": {
+      "symptom": "Die Geschwindigkeit schwankt auf und ab",
+      "hint1": "Zeichne die Geschwindigkeit über der Zeit. Schwingt sie in gleichmäßigem Rhythmus um den Sollwert?",
+      "hint2": "Öffne das Panel für die Schleifenzeit. Braucht die Regelschleife länger als ihre Periode oder schwankt sie stark von Durchlauf zu Durchlauf?",
+      "hint3": "Die Regelschleife läuft zu langsam. Verkürze die Arbeit pro Durchlauf oder senke die Zielrate oder die Verstärkungen."
+    }
+  },
+  "topdown": {
+    "title": "Draufsicht",
+    "canvas": "Draufsicht auf den Roboter und seine Strecke",
+    "readout": "Pose jedes Körpers",
+    "groundTruth": "Referenzwerte",
+    "noFrame": "Kein Lauf. Die Körper stehen in ihrer Startpose.",
+    "skipped": "Nicht gezeichnet, keine Form: {names}",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "fit": "An Arena anpassen",
+    "empty": "Dieser Roboter hat keine Körper zum Zeichnen."
+  }
+}

@@ -1,3 +1,4 @@
+import type { RobotProblem } from "../core/robot-report.ts";
 import type { Diagnostic, ErrorKind } from "../lib/interp/errors.ts";
 import type { Project } from "../project/generated/types.ts";
 import type { Diagnosis } from "../project/diagnosis.ts";
@@ -11,8 +12,8 @@ export type ProblemSeverity = "error" | "warning" | "note";
 export type Problem = {
   id: string;
   severity: ProblemSeverity;
-  source: "code" | "run" | "static";
-  /** A key of the `studioCode` namespace. `problem.interp` has no template: show `fallbackText`. */
+  source: "code" | "run" | "static" | "robot";
+  /** A key of the `studioCode` namespace; for a robot problem, of the `robot` namespace. `problem.interp` has no template: show `fallbackText`. */
   titleKey: string;
   args: Record<string, string | number>;
   /** English text from the interpreter, for a message it gave no code. */
@@ -25,6 +26,8 @@ export type Problem = {
   rule?: string;
   targets?: ProblemTarget[];
   diagnosis?: Diagnosis;
+  /** Where a robot problem is in the document, such as `domains.robotics.data.bodies.bdy_chassis`. */
+  path?: string;
 };
 
 export type ProblemInput = {
@@ -147,4 +150,10 @@ export function nextProblem(list: readonly Problem[], current: string | null, di
   const at = list.findIndex((p) => p.id === current);
   if (at === -1) return dir === 1 ? list[0]! : list[list.length - 1]!;
   return list[(at + dir + list.length) % list.length]!;
+}
+
+/** The robot's problems in the list: ahead of the others of the same severity. */
+export function withRobotProblems(base: Problem[], robot: RobotProblem[]): Problem[] {
+  const fromRobot = robot.map((p): Problem => ({ id: `robot:${p.code}:${p.path}`, severity: p.severity, source: "robot", titleKey: p.messageKey, args: p.args, path: p.path }));
+  return [...fromRobot, ...base].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
 }

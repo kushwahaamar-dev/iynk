@@ -2,7 +2,7 @@
   "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
   "schema": "iynk.component/1",
   "id": "core.tb6612fng-module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identity": {
     "manufacturer": "SparkFun Electronics (board design)",
     "model": "Motor Driver - Dual TB6612FNG (1A), ROB-14451, board v1.1c",
@@ -798,6 +798,19 @@
       }
     ]
   },
+  "mechanics": {
+    "driver": {
+      "kind": "h-bridge",
+      "decay": "slow",
+      "vdrop_v": 0.5,
+      "i_max_a": 1.2,
+      "pwm_max_hz": 100000,
+      "source": {
+        "src": "facts",
+        "loc": "vdrop_v: section 3.3 (0.5 V typical at 1 A); i_max_a: 3.2 (1.2 A average); pwm_max_hz: sources 3 and 8. decay: iynk assumption (RK-4)"
+      }
+    }
+  },
   "behaviour": {
     "summary": {
       "en": "Per channel, IN1 and IN2 pick forward, reverse, short brake or stop, and PWM high drives while PWM low short-brakes, so speed follows duty. STBY low turns every output off. The Studio does not run this yet."
@@ -917,6 +930,13 @@
           "en": "No test checks the bridge against the datasheet."
         },
         "evidence": "src/content/robotics/tb6612fng.test.ts"
+      },
+      {
+        "id": "decay_mode_assumed",
+        "text": {
+          "en": "The fact sheet does not say which decay mode PWM on the input pins gives against PWM on the enable pin. The mechanics block says slow, which is an iynk assumption."
+        },
+        "evidence": "docs/facts/tb6612.md"
       }
     ],
     "solver_requires": [],
@@ -1054,8 +1074,15 @@
         "date": "2026-10-31",
         "note": "First descriptor, converted from figures/modules/tb6612fng.js and docs/facts/tb6612.md.",
         "behaviour_change": false
+      },
+      {
+        "version": "1.0.1",
+        "date": "2026-10-31",
+        "note": "Added the mechanics driver block for the robot engine.",
+        "behaviour_change": false
       }
-    ]
+    ],
+    "modified": "2026-10-31"
   },
   "x_legacy_model": [
     {

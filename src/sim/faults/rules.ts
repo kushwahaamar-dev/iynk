@@ -1,4 +1,6 @@
 import { CODE_RULES } from "./code.ts";
+import { ROBOT_MOTION_RULES } from "./robot.ts";
+import { ROBOT_SENSOR_POWER_RULES } from "./robot-power.ts";
 import { SOLVED_RULES } from "./solved.ts";
 import { BUS_RULES } from "./static-bus.ts";
 import { POWER_RULES } from "./static-power.ts";
@@ -59,7 +61,7 @@ export function runRules(rules: readonly Rule[], input: Omit<RuleInput, "skipped
 
 /** Every rule of every layer. */
 export function allRules(): Rule[] {
-  return [...STATIC_RULES, ...POWER_RULES, ...BUS_RULES, ...CODE_RULES, ...SOLVED_RULES];
+  return [...STATIC_RULES, ...POWER_RULES, ...BUS_RULES, ...CODE_RULES, ...SOLVED_RULES, ...ROBOT_MOTION_RULES, ...ROBOT_SENSOR_POWER_RULES];
 }
 
 export const defaultRules = allRules;

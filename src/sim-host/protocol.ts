@@ -11,8 +11,11 @@ import type {
   SimRunOptions,
   StepUnit,
 } from "@/sim/engine";
+import type { MechReport, PhysicsFrame } from "@/core/robot-report";
+import type { Project } from "@/project/generated/types";
 import type { Finding } from "@/sim/faults/types";
 import type { ProbeHandle, ProbeSpec, Reading, TraceChunk } from "@/sim/probe/tap";
+import type { MechRefusal, MechState, RobotReport } from "./mech";
 
 export type ControlOp = "run" | "pause" | "stop" | "reset" | "cancel";
 
@@ -32,7 +35,8 @@ export type SimRunState = "idle" | "running" | "paused" | "halted" | "done" | "l
 
 /** The port adds `v: 1` and the call id on the way out and the handler never sees them. `run` is the run id (R-041). */
 export type SimReq =
-  | { t: "load"; run: number; net: SimNetlist; opts: SimRunOptions; program: ProgramImage }
+  /** `robot` is the document of a robot project; the physics engine is fetched only when it needs one (`needsPhysics`). */
+  | { t: "load"; run: number; net: SimNetlist; opts: SimRunOptions; program: ProgramImage; robot?: Project }
   | { t: "control"; run: number; op: ControlOp }
   /** Only `ns` and `event` run; the other units ack with the diagnostic `step-unit-unsupported`. A running run refuses with `not_paused`. */
   | { t: "step"; run: number; unit: StepUnit; n: number }
@@ -60,6 +64,8 @@ export type SimReq =
   | { t: "hashes.request"; run: number; tNs: SimTime }
   /** Probes 0x08 to 0x77 on a restored copy of the run; the run itself is not stepped. Answered with `ScannedReply`. */
   | { t: "i2c-scan"; run: number; bus?: string }
+  /** Runs the robot validator and checks over a document, with no run and no engine download. Answered with `RobotReport`. */
+  | { t: "robot_validate"; doc: Project }
   /** Busy-loops for ever so the watchdog can be tested; answered only by a worker created with `diag`. */
   | { t: "diag"; op: "stall" };
 
@@ -79,6 +85,14 @@ export type SimEv =
   /** The run is sitting on the horizon it was given, at `at`. */
   | { t: "reached"; run: number; at: SimTime }
   | { t: "speed.report"; run: number; achieved: number; behind: boolean }
+  /** The physics engine on its way in. `wireBytes` comes with `loading-physics`; a refusal carries its code and, for a bad pin, both hashes. */
+  | { t: "mech_status"; run: number; state: MechState; wireBytes?: number; reason?: string; refusal?: Omit<MechRefusal, "problems"> }
+  | { t: "mech_frame"; run: number; frame: PhysicsFrame }
+  /** The robot validator's list for the run, posted once after a successful load. */
+  | ({ t: "robot_problems"; run: number } & RobotReport)
+  /** The engine stopped on a numeric fault or a diverged body; `frame` is the last good state. */
+  | { t: "mech_halt"; run: number; code: "numeric-fault" | "physics-diverged"; body: string; at: SimTime; frame: PhysicsFrame }
+  | { t: "mech_report"; run: number; report: MechReport }
   | {
       t: "event";
       run: number;

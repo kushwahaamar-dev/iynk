@@ -82,7 +82,8 @@ export function stampElement(el: Element, A: Float64Array[], b: Float64Array, ix
       conduct(A, ix(el.a), ix(el.b), siemens(el.ohms));
       break;
     case 'M':
-      conduct(A, ix(el.a), ix(el.b), st.gm);
+      if (el.form === 'emf') branchSource(A, b, ix(el.a), ix(el.b), siemens(el.ohms), el.emfV ?? 0);
+      else conduct(A, ix(el.a), ix(el.b), st.gm);
       break;
     case 'POT': {
       const x = Math.max(0, Math.min(1, el.position));
@@ -184,6 +185,7 @@ export function measureElement(el: Element, st: PwlState, v: NodeVolts): Measure
     }
     case 'M': {
       const vd = v(el.a) - v(el.b);
+      if (el.form === 'emf') return measured((vd - (el.emfV ?? 0)) * siemens(el.ohms), vd);
       return measured(vd * st.gm, vd);
     }
     case 'POT': {

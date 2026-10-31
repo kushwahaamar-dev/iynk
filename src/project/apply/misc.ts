@@ -12,6 +12,8 @@ import type {
   Provenance,
 } from "../generated/types.ts";
 import { validateBody, validateDomains, validateFrame, validateJoint, validateMount } from "../generated/validate.mjs";
+import { afterDomainOp } from "./domain-robotics.ts";
+import type { RefError } from "./domain-robotics.ts";
 import { instanceOf, isRejected, put, take } from "./sim.ts";
 import { pathOwner, pathProblem } from "./source.ts";
 import { allEntityIds, findById, mergePatch, pointer, reject, schemaMessage, setOwn, upsertBy } from "./types.ts";
@@ -353,6 +355,9 @@ function reversePatch(target: unknown, patch: Bag): Bag {
   return undo;
 }
 
+const refsReject = (errors: RefError[]): Reject =>
+  reject("invariant", errors.map((e) => `${e.path}: ${e.message}`).join("; "), errors.map((e) => e.path));
+
 const domainSet: Handler<"domain.set"> = (state, op, ctx) => {
   if (ctx.author.kind !== "import" && ctx.author.kind !== "system") {
     return reject("permission", "domain.set is for import and migration; editors use domain.patch");
@@ -360,8 +365,11 @@ const domainSet: Handler<"domain.set"> = (state, op, ctx) => {
   const domains = { ...state.domains, [op.domain]: op.value };
   if (!validateDomains(domains)) return reject("malformed", schemaMessage(validateDomains.errors));
   const previous = state.domains?.[op.domain];
+  const next = { ...state, domains: domains as Domains };
+  const refs = afterDomainOp(next, op);
+  if (!refs.ok) return refsReject(refs.errors);
   return {
-    state: { ...state, domains: domains as Domains },
+    state: next,
     inverse: previous ? [{ k: "domain.set", domain: op.domain, value: previous }] : [],
   };
 };
@@ -372,8 +380,11 @@ const domainPatch: Handler<"domain.patch"> = (state, op) => {
   const entry = { schemaVersion: current.schemaVersion, data: mergePatch(current.data, op.patch) };
   const domains = { ...state.domains, [op.domain]: entry };
   if (!validateDomains(domains)) return reject("malformed", schemaMessage(validateDomains.errors));
+  const next = { ...state, domains: domains as Domains };
+  const refs = afterDomainOp(next, op);
+  if (!refs.ok) return refsReject(refs.errors);
   return {
-    state: { ...state, domains: domains as Domains },
+    state: next,
     inverse: [{ k: "domain.patch", domain: op.domain, patch: reversePatch(current.data, op.patch) }],
   };
 };

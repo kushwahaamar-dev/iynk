@@ -1,0 +1,667 @@
+[
+  {
+    "id": "engine:rapier@0.21.0",
+    "version": "1.0.0",
+    "kind": "engine",
+    "title": "Rapier rigid-body engine for robots",
+    "tier": "T0",
+    "layers": [
+      "L7"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Rigid bodies, joints and contact with friction on a fixed 1/240 s step"
+      },
+      {
+        "id": "modelled-2",
+        "text": "Wheel rolling and slip from the friction coefficients of the wheel and the floor"
+      },
+      {
+        "id": "modelled-3",
+        "text": "A ball caster with no friction"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Tyre deformation and rolling resistance beyond one coefficient"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Soft bodies, cables and fluids"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "Collision shapes finer than boxes, cylinders, spheres and convex hulls"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "step",
+        "value": 0.004166666666666667,
+        "unit": "s",
+        "type": "numerical",
+        "ref": "src/sim/mech/ports.ts"
+      },
+      {
+        "param": "friction combine rule",
+        "value": "average",
+        "type": "numerical",
+        "ref": "docs/MASTER_PLAN/04_ARCHITECTURE/ROBOTICS_ARCHITECTURE.md section 4.4"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares a contact result with a hand calculation or a bench run yet",
+      "Contact is an approximation of real friction and impact"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:dc-motor-cycle@1",
+    "version": "1.0.0",
+    "kind": "part-model",
+    "title": "DC motor with back-EMF, coupled to the wheel",
+    "tier": "T0",
+    "layers": [
+      "L4",
+      "L7"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Armature current from the voltage across the motor, the back-EMF and the armature resistance"
+      },
+      {
+        "id": "modelled-2",
+        "text": "Torque from the motor constant, geared down with a fixed efficiency"
+      },
+      {
+        "id": "modelled-3",
+        "text": "Stall current and stall torque"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Brush wear, commutator noise and temperature rise"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Magnetic saturation and the change of resistance with heat"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "Backlash dynamics beyond a fixed dead angle"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "r_ohm",
+        "value": 6,
+        "unit": "ohm",
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json"
+      },
+      {
+        "param": "ke_vs_per_rad",
+        "value": 0.00456,
+        "unit": "V s/rad",
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json",
+        "note": "from 220 rpm at the wheel and 6 V"
+      },
+      {
+        "param": "efficiency",
+        "value": 0.7,
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json"
+      },
+      {
+        "param": "ratio",
+        "value": 48,
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json",
+        "note": "the 1:48 of the kit gearbox, from the part name"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary.assumed"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:driver-hbridge@1",
+    "version": "1.0.0",
+    "kind": "part-model",
+    "title": "H-bridge motor driver with a voltage drop",
+    "tier": "T0",
+    "layers": [
+      "L4"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Forward, reverse, brake and coast from the input pins"
+      },
+      {
+        "id": "modelled-2",
+        "text": "A voltage drop between supply and motor"
+      },
+      {
+        "id": "modelled-3",
+        "text": "A current limit that flags overload"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Shoot-through and dead time"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Thermal shutdown timing"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "Switching losses at high PWM"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "vdrop_v TB6612",
+        "value": 0.5,
+        "unit": "V",
+        "type": "datasheet",
+        "ref": "docs/facts/tb6612.md section 3.3",
+        "note": "typical at 1 A"
+      },
+      {
+        "param": "vdrop_v L298N",
+        "value": 2.55,
+        "unit": "V",
+        "type": "datasheet",
+        "ref": "docs/facts/l298n.md section 3.3",
+        "note": "typical at 1 A"
+      },
+      {
+        "param": "decay TB6612",
+        "value": "slow",
+        "type": "assumption",
+        "ref": "docs/facts/tb6612.md",
+        "note": "the fact sheet does not say"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "The TB6612 decay mode is an assumption (RK-4)"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary.assumed"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:gearbox@1",
+    "version": "1.0.0",
+    "kind": "part-model",
+    "title": "Gearbox with ratio, efficiency and backlash",
+    "tier": "T0",
+    "layers": [
+      "L7"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Speed and torque scaled by the ratio"
+      },
+      {
+        "id": "modelled-2",
+        "text": "A fixed efficiency"
+      },
+      {
+        "id": "modelled-3",
+        "text": "The motor inertia reflected to the output"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Efficiency that changes with load or speed"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Wear and play that grows over time"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "ratio",
+        "value": 48,
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json"
+      },
+      {
+        "param": "efficiency",
+        "value": 0.7,
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json"
+      },
+      {
+        "param": "backlash_deg",
+        "value": 3,
+        "unit": "deg",
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor.component.json"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary.assumed"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:pack-ocv-r@1",
+    "version": "1.0.0",
+    "kind": "part-model",
+    "title": "Battery pack from open-circuit voltage and cell resistance",
+    "tier": "T0",
+    "layers": [
+      "L4"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Open-circuit voltage from the state of charge, per cell"
+      },
+      {
+        "id": "modelled-2",
+        "text": "A series resistance that makes the voltage sag under load"
+      },
+      {
+        "id": "modelled-3",
+        "text": "Charge drawn from the pack over time"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Temperature, ageing and cell imbalance"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Recovery of the voltage after a load is removed"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "Protection circuits"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "r_cell_ohm",
+        "value": 0.0066,
+        "unit": "ohm",
+        "type": "assumption",
+        "ref": "src/core/battery.ts IR_AH lipo"
+      },
+      {
+        "param": "capacity_mah",
+        "value": 1000,
+        "unit": "mAh",
+        "type": "assumption",
+        "ref": "src/parts/data/lipo-2s.component.json"
+      },
+      {
+        "param": "ocv table",
+        "value": "lipo",
+        "type": "assumption",
+        "ref": "src/core/battery.ts OCV"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary.assumed"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:line-surface-sample@1",
+    "version": "1.0.0",
+    "kind": "sensor",
+    "title": "Line sensor array sampling the floor surface",
+    "tier": "T0",
+    "layers": [
+      "L9"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Eight reflectance readings along a row, from the floor surface under each sensor"
+      },
+      {
+        "id": "modelled-2",
+        "text": "Weaker contrast as the height above the floor grows"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Ambient light and sunlight"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Sensor to sensor spread"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "The footprint of the light spot: each sensor reads one point"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "range_max_mm",
+        "value": 9.5,
+        "unit": "mm",
+        "type": "datasheet",
+        "ref": "docs/facts/qtr8rc.md section 3",
+        "note": "maximum recommended height"
+      },
+      {
+        "param": "h_opt_mm",
+        "value": 3,
+        "unit": "mm",
+        "type": "datasheet",
+        "ref": "docs/facts/qtr8rc.md section 3",
+        "note": "a sensor binding default"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:ranger-rayfan@1",
+    "version": "1.0.0",
+    "kind": "sensor",
+    "title": "Ultrasonic ranger as a fan of rays",
+    "tier": "T0",
+    "layers": [
+      "L9"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "The nearest hit along a fan of rays inside the beam"
+      },
+      {
+        "id": "modelled-2",
+        "text": "A minimum and a maximum range"
+      },
+      {
+        "id": "modelled-3",
+        "text": "A reading only every 60 ms"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Soft targets that absorb sound and small targets"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Echoes that reach the receiver from a wall tilted beyond a fixed angle, which is an iynk reading of the fact sheet"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "Temperature change of the speed of sound"
+      },
+      {
+        "id": "not-modelled-4",
+        "text": "Two rangers hearing each other"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "beam_deg",
+        "value": 30,
+        "unit": "deg",
+        "type": "datasheet",
+        "ref": "docs/facts/hcsr04.md section 3.4",
+        "note": "full cone"
+      },
+      {
+        "param": "range_max_mm",
+        "value": 4000,
+        "unit": "mm",
+        "type": "datasheet",
+        "ref": "docs/facts/hcsr04.md section 3.4"
+      },
+      {
+        "param": "period_s",
+        "value": 0.06,
+        "unit": "s",
+        "type": "datasheet",
+        "ref": "docs/facts/hcsr04.md section 3.2"
+      },
+      {
+        "param": "echo_max_angle_deg",
+        "value": 15,
+        "unit": "deg",
+        "type": "assumption",
+        "ref": "docs/facts/hcsr04.md section 3.5"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary.assumed"
+    },
+    "status": "active"
+  },
+  {
+    "id": "model:encoder-quadrature@1",
+    "version": "1.0.0",
+    "kind": "sensor",
+    "title": "Quadrature encoder edges from wheel angle",
+    "tier": "T0",
+    "layers": [
+      "L7",
+      "L9"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Channel A and B edges at the angles where the shaft crosses a count"
+      },
+      {
+        "id": "modelled-2",
+        "text": "Edge times found inside each physics step"
+      },
+      {
+        "id": "modelled-3",
+        "text": "Direction from the order of the edges"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Contact bounce and jitter in the edges"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "A missing or dirty magnetic pole"
+      },
+      {
+        "id": "not-modelled-3",
+        "text": "Edges lost when the host reads too slowly"
+      }
+    ],
+    "parameterSources": [
+      {
+        "param": "counts_per_rev",
+        "value": 44,
+        "type": "assumption",
+        "ref": "src/parts/data/tt-motor-encoder.component.json"
+      }
+    ],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary.assumed"
+    },
+    "status": "active"
+  },
+  {
+    "id": "instrument:pid@1",
+    "version": "1.0.0",
+    "kind": "rule",
+    "title": "PID readout of rise time, overshoot and settling",
+    "tier": "T0",
+    "layers": [
+      "L11"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "Rise time, overshoot and settling time from a recorded speed trace"
+      },
+      {
+        "id": "modelled-2",
+        "text": "The gains and the loop period of the shipped sketch"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Auto-tuning"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Gain advice for a motor the trace does not cover"
+      }
+    ],
+    "parameterSources": [],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary"
+    },
+    "status": "active"
+  },
+  {
+    "id": "instrument:loop-timing@1",
+    "version": "1.0.0",
+    "kind": "rule",
+    "title": "Loop timing readout",
+    "tier": "T0",
+    "layers": [
+      "L11"
+    ],
+    "implements": [
+      {
+        "id": "modelled-1",
+        "text": "The period of the control loop and how far it drifts from the plan"
+      },
+      {
+        "id": "modelled-2",
+        "text": "A count of late or skipped iterations"
+      }
+    ],
+    "mocked": [],
+    "unsupported": [
+      {
+        "id": "not-modelled-1",
+        "text": "Timing of the interrupts and of the serial port"
+      },
+      {
+        "id": "not-modelled-2",
+        "text": "Jitter from a real operating system"
+      }
+    ],
+    "parameterSources": [],
+    "validation": [],
+    "errorMetrics": [],
+    "operatingRange": [],
+    "knownFailureCases": [
+      "No test in the repository compares this model with a reference or a bench run yet"
+    ],
+    "performance": [],
+    "labels": {
+      "chip": "fidelity.tier.T0",
+      "summary": "fidelity.summary"
+    },
+    "status": "active"
+  }
+]

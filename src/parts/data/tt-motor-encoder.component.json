@@ -1,0 +1,356 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.tt-motor-encoder",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "TT gear motor with encoder, 3 to 6 V, 1:48",
+    "generic": true,
+    "refdes_prefix": "M",
+    "kind": "actuator",
+    "category": "actuator",
+    "description": {
+      "en": "The TT gear motor with a two-channel magnetic encoder on the motor shaft, as sold for speed-control robots."
+    },
+    "primary_source": "assumption",
+    "tags": [
+      "motor",
+      "gearmotor",
+      "encoder",
+      "robot",
+      "actuator"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components: fact sheet (Learn Arduino parts + common sensors/actuators)",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md has no TT motor or encoder entry."
+    },
+    {
+      "id": "assumption",
+      "kind": "own-estimate",
+      "title": "iynk assumption",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "A typical value for this kind of part, chosen by iynk. No maker datasheet or bench measurement stands behind it. Replace it when one is read."
+    }
+  ],
+  "pins": [
+    {
+      "id": "PLUS",
+      "name": {
+        "en": "Positive lead (red)"
+      },
+      "designator": "+",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "positive",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "MINUS",
+      "name": {
+        "en": "Negative lead (black)"
+      },
+      "designator": "-",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "negative",
+      "position": {
+        "x": 2.54,
+        "y": 0
+      }
+    },
+    {
+      "id": "VCC",
+      "name": {
+        "en": "Encoder supply"
+      },
+      "designator": "V",
+      "type": "power_in",
+      "class": "power",
+      "polarity": "positive",
+      "position": {
+        "x": 5.08,
+        "y": 0
+      }
+    },
+    {
+      "id": "GND",
+      "name": {
+        "en": "Encoder ground"
+      },
+      "designator": "G",
+      "type": "ground",
+      "class": "ground",
+      "polarity": "negative",
+      "position": {
+        "x": 7.62,
+        "y": 0
+      }
+    },
+    {
+      "id": "A",
+      "name": {
+        "en": "Encoder channel A"
+      },
+      "designator": "A",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 10.16,
+        "y": 0
+      }
+    },
+    {
+      "id": "B",
+      "name": {
+        "en": "Encoder channel B"
+      },
+      "designator": "B",
+      "type": "digital_out",
+      "class": "digital",
+      "position": {
+        "x": 12.7,
+        "y": 0
+      }
+    }
+  ],
+  "dimensions": {
+    "package": "TT gearbox with 65 mm wheel",
+    "body": {
+      "w": 45,
+      "h": 18.8,
+      "d": 22.5
+    },
+    "accuracy": 1.0,
+    "source": {
+      "src": "assumption",
+      "loc": "same body as core.tt-motor"
+    }
+  },
+  "ratings": {
+    "rated_voltage": {
+      "measure": "voltage",
+      "role": "recommended",
+      "description": {
+        "en": "Rated supply window."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "V",
+        "min": 3.0,
+        "max": 6.0,
+        "confidence": "medium",
+        "source": {
+          "src": "assumption",
+          "loc": "same value as core.tt-motor"
+        },
+        "rationale": {
+          "en": "The 3 to 6 V window in the figure header. The header cites Adafruit 3777 measurements; that page was not read."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "free_current": {
+      "measure": "current",
+      "role": "consumption",
+      "description": {
+        "en": "Current with the wheel in the air at 6 V."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "value": 0.16,
+        "confidence": "low",
+        "source": {
+          "src": "assumption",
+          "loc": "same value as core.tt-motor"
+        },
+        "rationale": {
+          "en": "About 160 mA with the wheel free at 6 V, as the figure header says; the Adafruit 3777 page behind it was not read."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "wheel_speed": {
+      "measure": "rate",
+      "role": "characteristic",
+      "description": {
+        "en": "Wheel speed at 6 V, in rpm."
+      },
+      "scope": {
+        "part": true
+      },
+      "simulation": {
+        "unit": "1",
+        "value": 220,
+        "confidence": "low",
+        "source": {
+          "src": "assumption",
+          "loc": "same value as core.tt-motor"
+        },
+        "rationale": {
+          "en": "About 220 rpm at the wheel at 6 V, from the figure header (page not read). Written as a plain number of rpm."
+        }
+      },
+      "used_by_model": "none"
+    },
+    "stall_current": {
+      "measure": "current",
+      "role": "characteristic",
+      "description": {
+        "en": "Current when the shaft is held."
+      },
+      "scope": {
+        "pins": [
+          "PLUS",
+          "MINUS"
+        ]
+      },
+      "simulation": {
+        "unit": "A",
+        "min": 1.0,
+        "confidence": "low",
+        "source": {
+          "src": "assumption",
+          "loc": "same value as core.tt-motor"
+        },
+        "rationale": {
+          "en": "The figure header says over 1 A held still or at the instant it starts; no exact value is given."
+        }
+      },
+      "used_by_model": "none"
+    }
+  },
+  "mechanics": {
+    "motor": {
+      "r_ohm": 6.0,
+      "l_henry": 0.0015,
+      "ke_vs_per_rad": 0.00456,
+      "j_kgm2": 1e-07,
+      "b_nms_per_rad": 1e-06,
+      "i_noload_a": 0.16,
+      "v_nominal": 6,
+      "v_max": 6,
+      "i_stall_a": 1.0,
+      "torque_stall_nm": 0.153,
+      "gear": {
+        "ratio": 48,
+        "efficiency": 0.7,
+        "backlash_deg": 3,
+        "j_out_kgm2": 2e-06
+      },
+      "mass_g": 30,
+      "source": {
+        "src": "assumption",
+        "loc": "i_noload_a, v_nominal, v_max, i_stall_a, ratio: figures/parts/tt-motor.js header; ke from 220 rpm at 6 V; the rest iynk assumptions"
+      }
+    },
+    "encoder": {
+      "counts_per_rev": 44,
+      "channels": "ab",
+      "index": false,
+      "source": {
+        "src": "assumption",
+        "loc": "11 pulses per channel per motor revolution, four edges each; iynk assumption"
+      }
+    }
+  },
+  "behaviour": {
+    "summary": {
+      "en": "A hobby gear motor with an encoder. It has no electrical model yet; the robot physics engine reads its mechanics block."
+    },
+    "layers": [
+      {
+        "id": "plant",
+        "domain": "analog",
+        "reads": [
+          "PLUS",
+          "MINUS"
+        ],
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The solver has nothing to run for this part."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "none",
+    "status": "not-modelled-yet",
+    "what_it_models": [],
+    "not_modelled": [
+      {
+        "en": "Everything electrical. The robot physics engine models the motor and the encoder edges from the mechanics block."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "encoder_numbers_assumed",
+        "text": {
+          "en": "The encoder resolution is an iynk assumption, and so is every motor number. They match core.tt-motor."
+        },
+        "evidence": "docs/MASTER_PLAN/05_ENGINEERING/tasks/B16-robotics-physics.md T-B16-26"
+      }
+    ],
+    "solver_requires": [],
+    "tests": []
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "none"
+      }
+    ]
+  },
+  "visual": {
+    "fallback": {
+      "renderer": "generic-header-module",
+      "label": "TT motor + encoder",
+      "body_colour": "#f6cf3e",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-31",
+    "third_party_content": false,
+    "review": {
+      "status": "ci-checked"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-31",
+        "note": "First descriptor, for the robot physics engine (B16).",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

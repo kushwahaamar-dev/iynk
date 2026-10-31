@@ -1,7 +1,7 @@
 // UI string namespaces (D5). Each lives in src/i18n/messages/<lang>/<ns>.json,
 // and the English file defines the keys every other language must have.
 
-export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "drone", "dronebuild", "droneopt", "droneparts", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "aiProviders", "aiInsight", "aiEffects", "fidelity", "instruments", "run", "faults", "parteditor", "partpack", "partinfo"] as const;
+export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "drone", "dronebuild", "droneopt", "droneparts", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "aiProviders", "aiInsight", "aiEffects", "fidelity", "instruments", "run", "faults", "parteditor", "partpack", "partinfo", "robot"] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
 
@@ -39,10 +39,11 @@ export type Messages = {
   parteditor: typeof import("./messages/en/parteditor.json");
   partpack: typeof import("./messages/en/partpack.json");
   partinfo: typeof import("./messages/en/partinfo.json");
+  robot: typeof import("./messages/en/robot.json");
 };
 
 /** The namespaces the Studio owns; its page passes all of them down together. */
-export const STUDIO_NAMESPACES = ["studio", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "fidelity", "instruments", "run", "faults", "parteditor", "partinfo"] as const;
+export const STUDIO_NAMESPACES = ["studio", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels", "fidelity", "instruments", "run", "faults", "parteditor", "partinfo", "robot"] as const;
 
 export type StudioNamespace = (typeof STUDIO_NAMESPACES)[number];
 

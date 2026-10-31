@@ -4,6 +4,7 @@ import type { SimDiagnostic } from "./core/diagnostic.ts";
 import type { NoneReason } from "./models/kinds.ts";
 import type { PartRegistry } from "../parts/registry.ts";
 import type { FaultState } from "./faults/types.ts";
+import type { PhysicsRecord } from "./replay/record.ts";
 
 export type { SimDiagnostic, SolveDiagnostic } from "./core/diagnostic.ts";
 
@@ -109,6 +110,7 @@ export interface SimSettings {
   toleranceMode: "nominal";
   analog: { mode: "dc-event"; stepNs: number };
   speed: number;
+  physics?: PhysicsRecord;
 }
 
 export type Phase = 0 | 1 | 2 | 3 | 4 | 5 | 6;
