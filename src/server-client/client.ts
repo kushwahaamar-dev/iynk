@@ -6,6 +6,9 @@ import { ClientError, NeedsEnrolment, SigningInputMismatch } from "./types.ts";
 import type {
   Api,
   Buddy,
+  CompileArtifact,
+  CompileJob,
+  CompileJobCreate,
   DeletionStatus,
   Identity,
   IdentityPatch,
@@ -43,6 +46,9 @@ export type ServerClient = {
   removeBuddy(id: string): Promise<void>;
   requestDeletion(confirm: string): Promise<DeletionStatus>;
   cancelDeletion(): Promise<void>;
+  createCompileJob(job: CompileJobCreate, idempotencyKey: string): Promise<CompileJob>;
+  getCompileJob(id: string): Promise<CompileJob>;
+  getCompileArtifact(id: string, kind: "hex" | "elf"): Promise<CompileArtifact>;
 };
 
 function query(page: PageOptions | undefined): string {
@@ -85,18 +91,18 @@ export function createClient(o: {
     return renewing;
   };
 
-  const send = <T>(method: string, path: string, body?: unknown) =>
-    request<T>(api, method, path, { body, token: session?.token });
+  const send = <T>(method: string, path: string, body?: unknown, headers?: Record<string, string>) =>
+    request<T>(api, method, path, { body, token: session?.token, headers });
 
-  const call = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
+  const call = async <T>(method: string, path: string, body?: unknown, headers?: Record<string, string>): Promise<T> => {
     try {
-      return await send<T>(method, path, body);
+      return await send<T>(method, path, body, headers);
     } catch (e) {
       if (!(e instanceof ClientError) || e.status !== 401) throw e;
     }
     try {
       await renew();
-      return await send<T>(method, path, body);
+      return await send<T>(method, path, body, headers);
     } catch (e) {
       // An unknown identity gets a challenge with a dummy thumbprint, so it shows up here as a mismatch.
       const refused = e instanceof NeedsEnrolment || e instanceof SigningInputMismatch;
@@ -141,5 +147,8 @@ export function createClient(o: {
     removeBuddy: (id) => call("DELETE", `/buddies/${enc(id)}`),
     requestDeletion: (confirm) => call("POST", "/identities/me/deletion", { confirm }),
     cancelDeletion: () => call("DELETE", "/identities/me/deletion"),
+    createCompileJob: (job, idempotencyKey) => call("POST", "/compile/jobs", job, { "idempotency-key": idempotencyKey }),
+    getCompileJob: (id) => call("GET", `/compile/jobs/${enc(id)}`),
+    getCompileArtifact: (id, kind) => call("GET", `/compile/jobs/${enc(id)}/artifact?kind=${kind}`),
   };
 }

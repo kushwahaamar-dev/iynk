@@ -126,6 +126,20 @@
     "size": "Flash {flash}, RAM {ram}",
     "cached": "From cache",
     "tool": "Toolchain",
-    "importInstead": "Import a .hex file instead"
+    "importInstead": "Import a .hex file instead",
+    "offHint": "Ask whoever runs the server to set IYNK_COMPILE_ENABLE=1.",
+    "noServer": "Compiling needs your own iynk server.",
+    "notReachable": "Compiling is turned on but the compiler is not reachable",
+    "rateLimited": "Too many builds. Try again in {seconds} s",
+    "stale": "The sketch changed since this build",
+    "flash": "Flash {flash} of {max} bytes",
+    "debugBuild": "Build for debugging",
+    "cancel": "Cancel",
+    "needsSignIn": "Sign in to your server to build",
+    "severity": {
+      "error": "Error",
+      "warning": "Warning",
+      "note": "Note"
+    }
   }
 }

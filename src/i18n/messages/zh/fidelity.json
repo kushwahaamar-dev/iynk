@@ -126,6 +126,20 @@
     "size": "Flash {flash},RAM {ram}",
     "cached": "来自缓存",
     "tool": "工具链",
-    "importInstead": "改为导入 .hex 文件"
+    "importInstead": "改为导入 .hex 文件",
+    "offHint": "请让运行服务器的人设置 IYNK_COMPILE_ENABLE=1。",
+    "noServer": "编译需要你自己的 iynk 服务器。",
+    "notReachable": "编译已开启,但无法连接到编译器",
+    "rateLimited": "构建过于频繁,请在 {seconds} s 后重试",
+    "stale": "自此次构建后草图已更改",
+    "flash": "Flash {flash} / {max} 字节",
+    "debugBuild": "为调试而构建",
+    "cancel": "取消",
+    "needsSignIn": "请登录你的服务器后再构建",
+    "severity": {
+      "error": "错误",
+      "warning": "警告",
+      "note": "备注"
+    }
   }
 }

@@ -22,7 +22,7 @@ const I2C_HZ = 100_000;
 const BOARDS: readonly string[] = ["uno-r3", "nano"];
 
 /** Source lines are a convenience: a damaged line table leaves the map out and the image still runs. */
-function sourceMapOf(elf: Uint8Array, image: ElfImage): SourceMap | undefined {
+export function sourceMapOf(elf: Uint8Array, image: ElfImage): SourceMap | undefined {
   const section = image.sections.find((s) => s.name === ".debug_line");
   if (!section) return undefined;
   const lines = parseLines(elf.subarray(section.offset, section.offset + section.size), {});

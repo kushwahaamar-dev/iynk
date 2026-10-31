@@ -29,15 +29,15 @@ type Challenge = {
   signingInput: string;
 };
 
-type RequestOptions = { body?: unknown; token?: string | null };
+type RequestOptions = { body?: unknown; token?: string | null; headers?: Record<string, string> };
 
 function readError(body: unknown, status: number, header: string | null): ClientError {
   const envelope = (body as Partial<ApiErrorBody> | null)?.error;
-  return new ClientError(envelope?.code ?? `http_${status}`, status, envelope?.requestId ?? header);
+  return new ClientError(envelope?.code ?? `http_${status}`, status, envelope?.requestId ?? header, envelope?.retryAfterSeconds ?? null);
 }
 
 export async function request<T>(api: Api, method: string, path: string, o: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = { accept: "application/json" };
+  const headers: Record<string, string> = { accept: "application/json", ...o.headers };
   if (o.body !== undefined) headers["content-type"] = "application/json";
   if (o.token) headers.authorization = `Bearer ${o.token}`;
   let res: Response;

@@ -126,6 +126,20 @@
     "size": "Flash {flash}, RAM {ram}",
     "cached": "Depuis le cache",
     "tool": "Toolchain",
-    "importInstead": "Importe plutôt un fichier .hex"
+    "importInstead": "Importe plutôt un fichier .hex",
+    "offHint": "Demande à la personne qui gère le serveur de définir IYNK_COMPILE_ENABLE=1.",
+    "noServer": "La compilation nécessite ton propre serveur iynk.",
+    "notReachable": "La compilation est activée, mais le compilateur est injoignable",
+    "rateLimited": "Trop de compilations. Réessaie dans {seconds} s",
+    "stale": "Le sketch a changé depuis cette compilation",
+    "flash": "Flash {flash} sur {max} octets",
+    "debugBuild": "Compiler pour le débogage",
+    "cancel": "Annuler",
+    "needsSignIn": "Connecte-toi à ton serveur pour compiler",
+    "severity": {
+      "error": "Erreur",
+      "warning": "Avertissement",
+      "note": "Note"
+    }
   }
 }

@@ -20,6 +20,8 @@ export interface RunBarProps {
   lang: Locale;
   /** The Interpreter / Firmware control, when the project has a board it can apply to. */
   firmware?: ReactNode;
+  /** The Build control and its status, when the project has firmware a server could compile. */
+  compile?: ReactNode;
 }
 
 const PHASE_TONE: Record<RunPhase, ChipTone> = {
@@ -50,7 +52,7 @@ function Clock({ run, label }: { run: RunStore; label: string }) {
   );
 }
 
-export function RunBar({ run, link, messages, instruments, lang, firmware }: RunBarProps) {
+export function RunBar({ run, link, messages, instruments, lang, firmware, compile }: RunBarProps) {
   const t = useMemo(() => createTranslator(lang, messages, `${lang}/studioRun`), [lang, messages]);
   const ti = useMemo(() => createTranslator(lang, instruments, `${lang}/instruments`), [lang, instruments]);
   const [unit, setUnit] = useState<StepUnit>("statement");
@@ -142,6 +144,7 @@ export function RunBar({ run, link, messages, instruments, lang, firmware }: Run
         <Clock run={run} label={t("bar.time")} />
       </div>
       {firmware}
+      {compile}
       <SpeedControl t={ti} speed={speed} achieved={achieved} behind={behind && phase === "running"} onChange={(x) => link.setSpeed(x)} />
       {restart ? (
         <p className="text-sm text-muted" role="status">
